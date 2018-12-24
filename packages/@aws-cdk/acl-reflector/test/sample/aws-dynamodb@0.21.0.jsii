@@ -1,0 +1,3486 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-applicationautoscaling": {
+      "dependencies": {
+        "@aws-cdk/aws-autoscaling-common": {
+          "dependencies": {
+            "@aws-cdk/aws-iam": {
+              "dependencies": {
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK.CXAPI",
+                          "packageId": "Amazon.CDK.CXAPI",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk-cx-api",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK",
+                      "packageId": "Amazon.CDK",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.AWS.IAM",
+                  "packageId": "Amazon.CDK.AWS.IAM",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "iam",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.services.iam"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-iam"
+                }
+              },
+              "version": "0.21.0"
+            },
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
+              "packageId": "Amazon.CDK.AWS.AutoScaling.Common",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "autoscaling-common",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.autoscaling.common"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-autoscaling-common"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/aws-cloudwatch": {
+          "dependencies": {
+            "@aws-cdk/aws-iam": {
+              "dependencies": {
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK.CXAPI",
+                          "packageId": "Amazon.CDK.CXAPI",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk-cx-api",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK",
+                      "packageId": "Amazon.CDK",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.AWS.IAM",
+                  "packageId": "Amazon.CDK.AWS.IAM",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "iam",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.services.iam"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-iam"
+                }
+              },
+              "version": "0.21.0"
+            },
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.CloudWatch",
+              "packageId": "Amazon.CDK.AWS.CloudWatch",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cloudwatch",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.cloudwatch"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-cloudwatch"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
+          "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "applicationautoscaling",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.applicationautoscaling"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-applicationautoscaling"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "CDK Constructs for AWS DynamoDB",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-dynamodb",
+  "readme": {
+    "markdown": "## AWS DynamoDB Construct Library\n\nHere is a minimal deployable DynamoDB table definition:\n\n```ts\nimport dynamodb = require('@aws-cdk/aws-dynamodb');\n\nconst table = new dynamodb.Table(stack, 'Table', {\n  partitionKey: { name: 'id', type: dynamodb.AttributeType.String }\n});\n```\n\n### Keys\n\nYou can either specify `partitionKey` and/or `sortKey` when you initialize the\ntable, or call `addPartitionKey` and `addSortKey` after initialization.\n\n### Billing Mode\n\nDynamoDB supports two billing modes:\n* PROVISIONED - the default mode where the table and global secondary indexes have configured read and write capacity.\n* PAY_PER_REQUEST - on-demand pricing and scaling. You only pay for what you use and there is no read and write capacity for the table or its gloal secondary indexes.\n\n```ts\nimport dynamodb = require('@aws-cdk/aws-dynamodb');\n\nconst table = new dynamodb.Table(stack, 'Table', {\n  partitionKey: { name: 'id', type: dynamodb.AttributeType.String },\n  billingMode: dynamodb.BillingMode.PayPerRequest\n});\n```\n\nFurther reading:\nhttps://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.\n\n### Configure AutoScaling for your table\n\nYou can have DynamoDB automatically raise and lower the read and write capacities\nof your table by setting up autoscaling. You can use this to either keep your\ntables at a desired utilization level, or by scaling up and down at preconfigured\ntimes of the day:\n\nAuto-scaling is only relevant for tables with the billing mode, PROVISIONED.\n\n```ts\nconst readScaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 50 });\n\nreadScaling.scaleOnUtilization({\n  targetUtilizationPercent: 50\n});\n\nreadScaling.scaleOnSchedule('ScaleUpInTheMorning', {\n  schedule: appscaling.Cron.dailyUtc(8),\n  minCapacity: 20,\n});\n\nreadScaling.scaleOnSchedule('ScaleDownAtNight', {\n  schedule: appscaling.Cron.dailyUtc(20),\n  maxCapacity: 20\n});\n```\n\nFurther reading:\nhttps://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html\nhttps://aws.amazon.com/blogs/database/how-to-use-aws-cloudformation-to-configure-auto-scaling-for-amazon-dynamodb-tables-and-indexes/\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.DynamoDB",
+      "packageId": "Amazon.CDK.AWS.DynamoDB",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "dynamodb",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.dynamodb"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-dynamodb"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-dynamodb.Attribute": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-dynamodb.Attribute",
+      "kind": "interface",
+      "name": "Attribute",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of an attribute."
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The data type of an attribute."
+          },
+          "name": "type",
+          "type": {
+            "fqn": "@aws-cdk/aws-dynamodb.AttributeType"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.AttributeType": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "fqn": "@aws-cdk/aws-dynamodb.AttributeType",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "Binary"
+        },
+        {
+          "name": "Number"
+        },
+        {
+          "name": "String"
+        }
+      ],
+      "name": "AttributeType"
+    },
+    "@aws-cdk/aws-dynamodb.BillingMode": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "docs": {
+        "comment": "DyanmoDB's Read/Write capacity modes."
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.BillingMode",
+      "kind": "enum",
+      "members": [
+        {
+          "docs": {
+            "comment": "Pay only for what you use. You don't configure Read/Write capacity units."
+          },
+          "name": "PayPerRequest"
+        },
+        {
+          "docs": {
+            "comment": "Explicitly specified Read/Write capacity units."
+          },
+          "name": "Provisioned"
+        }
+      ],
+      "name": "BillingMode"
+    },
+    "@aws-cdk/aws-dynamodb.CfnTable": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::DynamoDB::Table``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnTable`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnTable``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-dynamodb.CfnTableProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnTable",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-dynamodb.CfnTableProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "tableArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "tableName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "StreamArn"
+          },
+          "immutable": true,
+          "name": "tableStreamArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.CfnTable.AttributeDefinitionProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-attributedef.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTable.AttributeDefinitionProperty",
+      "kind": "interface",
+      "name": "AttributeDefinitionProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.AttributeDefinitionProperty.AttributeName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-attributedef.html#cfn-dynamodb-attributedef-attributename"
+          },
+          "name": "attributeName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.AttributeDefinitionProperty.AttributeType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-attributedef.html#cfn-dynamodb-attributedef-attributename-attributetype"
+          },
+          "name": "attributeType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.CfnTable.GlobalSecondaryIndexProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTable.GlobalSecondaryIndexProperty",
+      "kind": "interface",
+      "name": "GlobalSecondaryIndexProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.GlobalSecondaryIndexProperty.IndexName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-indexname"
+          },
+          "name": "indexName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.GlobalSecondaryIndexProperty.KeySchema``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-keyschema"
+          },
+          "name": "keySchema",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.CfnTable.KeySchemaProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.GlobalSecondaryIndexProperty.Projection``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-projection"
+          },
+          "name": "projection",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable.ProjectionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.GlobalSecondaryIndexProperty.ProvisionedThroughput``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-provisionedthroughput"
+          },
+          "name": "provisionedThroughput",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable.ProvisionedThroughputProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.CfnTable.KeySchemaProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-keyschema.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTable.KeySchemaProperty",
+      "kind": "interface",
+      "name": "KeySchemaProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.KeySchemaProperty.AttributeName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-keyschema.html#aws-properties-dynamodb-keyschema-attributename"
+          },
+          "name": "attributeName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.KeySchemaProperty.KeyType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-keyschema.html#aws-properties-dynamodb-keyschema-keytype"
+          },
+          "name": "keyType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.CfnTable.LocalSecondaryIndexProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-lsi.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTable.LocalSecondaryIndexProperty",
+      "kind": "interface",
+      "name": "LocalSecondaryIndexProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.LocalSecondaryIndexProperty.IndexName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-lsi.html#cfn-dynamodb-lsi-indexname"
+          },
+          "name": "indexName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.LocalSecondaryIndexProperty.KeySchema``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-lsi.html#cfn-dynamodb-lsi-keyschema"
+          },
+          "name": "keySchema",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.CfnTable.KeySchemaProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.LocalSecondaryIndexProperty.Projection``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-lsi.html#cfn-dynamodb-lsi-projection"
+          },
+          "name": "projection",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable.ProjectionProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.CfnTable.PointInTimeRecoverySpecificationProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-pointintimerecoveryspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTable.PointInTimeRecoverySpecificationProperty",
+      "kind": "interface",
+      "name": "PointInTimeRecoverySpecificationProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.PointInTimeRecoverySpecificationProperty.PointInTimeRecoveryEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-pointintimerecoveryspecification.html#cfn-dynamodb-table-pointintimerecoveryspecification-pointintimerecoveryenabled"
+          },
+          "name": "pointInTimeRecoveryEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.CfnTable.ProjectionProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTable.ProjectionProperty",
+      "kind": "interface",
+      "name": "ProjectionProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.ProjectionProperty.NonKeyAttributes``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html#cfn-dynamodb-projectionobj-nonkeyatt"
+          },
+          "name": "nonKeyAttributes",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.ProjectionProperty.ProjectionType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html#cfn-dynamodb-projectionobj-projtype"
+          },
+          "name": "projectionType",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.CfnTable.ProvisionedThroughputProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTable.ProvisionedThroughputProperty",
+      "kind": "interface",
+      "name": "ProvisionedThroughputProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.ProvisionedThroughputProperty.ReadCapacityUnits``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html#cfn-dynamodb-provisionedthroughput-readcapacityunits"
+          },
+          "name": "readCapacityUnits",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.ProvisionedThroughputProperty.WriteCapacityUnits``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html#cfn-dynamodb-provisionedthroughput-writecapacityunits"
+          },
+          "name": "writeCapacityUnits",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.CfnTable.SSESpecificationProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-ssespecification.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTable.SSESpecificationProperty",
+      "kind": "interface",
+      "name": "SSESpecificationProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.SSESpecificationProperty.SSEEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-ssespecification.html#cfn-dynamodb-table-ssespecification-sseenabled"
+          },
+          "name": "sseEnabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.CfnTable.StreamSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-streamspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTable.StreamSpecificationProperty",
+      "kind": "interface",
+      "name": "StreamSpecificationProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.StreamSpecificationProperty.StreamViewType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-streamspecification.html#cfn-dynamodb-streamspecification-streamviewtype"
+          },
+          "name": "streamViewType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.CfnTable.TimeToLiveSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-timetolivespecification.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTable.TimeToLiveSpecificationProperty",
+      "kind": "interface",
+      "name": "TimeToLiveSpecificationProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.TimeToLiveSpecificationProperty.AttributeName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-timetolivespecification.html#cfn-dynamodb-timetolivespecification-attributename"
+          },
+          "name": "attributeName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTable.TimeToLiveSpecificationProperty.Enabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-timetolivespecification.html#cfn-dynamodb-timetolivespecification-enabled"
+          },
+          "name": "enabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.CfnTableProps": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.CfnTableProps",
+      "kind": "interface",
+      "name": "CfnTableProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.KeySchema``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-keyschema"
+          },
+          "name": "keySchema",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.CfnTable.KeySchemaProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.AttributeDefinitions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-attributedef"
+          },
+          "name": "attributeDefinitions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.CfnTable.AttributeDefinitionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.BillingMode``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-billingmode"
+          },
+          "name": "billingMode",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.GlobalSecondaryIndexes``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-gsi"
+          },
+          "name": "globalSecondaryIndexes",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.CfnTable.GlobalSecondaryIndexProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.LocalSecondaryIndexes``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-lsi"
+          },
+          "name": "localSecondaryIndexes",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.CfnTable.LocalSecondaryIndexProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.PointInTimeRecoverySpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-pointintimerecoveryspecification"
+          },
+          "name": "pointInTimeRecoverySpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable.PointInTimeRecoverySpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.ProvisionedThroughput``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-provisionedthroughput"
+          },
+          "name": "provisionedThroughput",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable.ProvisionedThroughputProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.SSESpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-ssespecification"
+          },
+          "name": "sseSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable.SSESpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.StreamSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-streamspecification"
+          },
+          "name": "streamSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable.StreamSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.TableName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-tablename"
+          },
+          "name": "tableName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.TimeToLiveSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-timetolivespecification"
+          },
+          "name": "timeToLiveSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable.TimeToLiveSpecificationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.EnableScalingProps": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for enabling DynamoDB capacity scaling"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.EnableScalingProps",
+      "kind": "interface",
+      "name": "EnableScalingProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Maximum capacity to scale to"
+          },
+          "name": "maxCapacity",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Minimum capacity to scale to"
+          },
+          "name": "minCapacity",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.GlobalSecondaryIndexProps": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-dynamodb.GlobalSecondaryIndexProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-dynamodb.SecondaryIndexProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "GlobalSecondaryIndexProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The attribute of a partition key for the global secondary index."
+          },
+          "name": "partitionKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-dynamodb.Attribute"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The read capacity for the global secondary index.\n\nCan only be provided if table billingMode is Provisioned or undefined.",
+            "default": "5"
+          },
+          "name": "readCapacity",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The attribute of a sort key for the global secondary index.",
+            "default": "undefined"
+          },
+          "name": "sortKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-dynamodb.Attribute",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The write capacity for the global secondary index.\n\nCan only be provided if table billingMode is Provisioned or undefined.",
+            "default": "5"
+          },
+          "name": "writeCapacity",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.IScalableTableAttribute": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "docs": {
+        "comment": "Interface for scalable attributes"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.IScalableTableAttribute",
+      "kind": "interface",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Add scheduled scaling for this scaling attribute"
+          },
+          "name": "scaleOnSchedule",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "actions",
+              "type": {
+                "fqn": "@aws-cdk/aws-applicationautoscaling.ScalingSchedule"
+              }
+            }
+          ]
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Scale out or in to keep utilization at a given level"
+          },
+          "name": "scaleOnUtilization",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-dynamodb.UtilizationScalingProps"
+              }
+            }
+          ]
+        }
+      ],
+      "name": "IScalableTableAttribute"
+    },
+    "@aws-cdk/aws-dynamodb.LocalSecondaryIndexProps": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-dynamodb.LocalSecondaryIndexProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-dynamodb.SecondaryIndexProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "LocalSecondaryIndexProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The attribute of a sort key for the local secondary index."
+          },
+          "name": "sortKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-dynamodb.Attribute"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.ProjectionType": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "fqn": "@aws-cdk/aws-dynamodb.ProjectionType",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "KeysOnly"
+        },
+        {
+          "name": "Include"
+        },
+        {
+          "name": "All"
+        }
+      ],
+      "name": "ProjectionType"
+    },
+    "@aws-cdk/aws-dynamodb.SecondaryIndexProps": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-dynamodb.SecondaryIndexProps",
+      "kind": "interface",
+      "name": "SecondaryIndexProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the secondary index."
+          },
+          "name": "indexName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The non-key attributes that are projected into the secondary index.",
+            "default": "undefined"
+          },
+          "name": "nonKeyAttributes",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The set of attributes that are projected into the secondary index.",
+            "default": "ALL"
+          },
+          "name": "projectionType",
+          "type": {
+            "fqn": "@aws-cdk/aws-dynamodb.ProjectionType",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.StreamViewType": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "docs": {
+        "comment": "When an item in the table is modified, StreamViewType determines what information\nis written to the stream for this table. Valid values for StreamViewType are:",
+        "link": "https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_StreamSpecification.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.StreamViewType",
+      "kind": "enum",
+      "members": [
+        {
+          "docs": {
+            "comment": "The entire item, as it appears after it was modified, is written to the stream."
+          },
+          "name": "NewImage"
+        },
+        {
+          "docs": {
+            "comment": "The entire item, as it appeared before it was modified, is written to the stream."
+          },
+          "name": "OldImage"
+        },
+        {
+          "docs": {
+            "comment": "Both the new and the old item images of the item are written to the stream."
+          },
+          "name": "NewAndOldImages"
+        },
+        {
+          "docs": {
+            "comment": "Only the key attributes of the modified item are written to the stream."
+          },
+          "name": "KeysOnly"
+        }
+      ],
+      "name": "StreamViewType"
+    },
+    "@aws-cdk/aws-dynamodb.Table": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Provides a DynamoDB table."
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.Table",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-dynamodb.TableProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Add a global secondary index of table."
+          },
+          "name": "addGlobalSecondaryIndex",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "the property of global secondary index"
+              },
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-dynamodb.GlobalSecondaryIndexProps"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Add a local secondary index of table."
+          },
+          "name": "addLocalSecondaryIndex",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "the property of local secondary index"
+              },
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-dynamodb.LocalSecondaryIndexProps"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Add a partition key of table.",
+            "return": "a reference to this object so that method calls can be chained together"
+          },
+          "name": "addPartitionKey",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "the partition key attribute of table"
+              },
+              "name": "attribute",
+              "type": {
+                "fqn": "@aws-cdk/aws-dynamodb.Attribute"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-dynamodb.Table"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Add a sort key of table.",
+            "return": "a reference to this object so that method calls can be chained together"
+          },
+          "name": "addSortKey",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "the sort key of table"
+              },
+              "name": "attribute",
+              "type": {
+                "fqn": "@aws-cdk/aws-dynamodb.Attribute"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-dynamodb.Table"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Enable read capacity scaling for the given GSI",
+            "return": "An object to configure additional AutoScaling settings for this attribute"
+          },
+          "name": "autoScaleGlobalSecondaryIndexReadCapacity",
+          "parameters": [
+            {
+              "name": "indexName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-dynamodb.EnableScalingProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-dynamodb.IScalableTableAttribute"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Enable write capacity scaling for the given GSI",
+            "return": "An object to configure additional AutoScaling settings for this attribute"
+          },
+          "name": "autoScaleGlobalSecondaryIndexWriteCapacity",
+          "parameters": [
+            {
+              "name": "indexName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-dynamodb.EnableScalingProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-dynamodb.IScalableTableAttribute"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Enable read capacity scaling for this table",
+            "return": "An object to configure additional AutoScaling settings"
+          },
+          "name": "autoScaleReadCapacity",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-dynamodb.EnableScalingProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-dynamodb.IScalableTableAttribute"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Enable write capacity scaling for this table",
+            "return": "An object to configure additional AutoScaling settings for this attribute"
+          },
+          "name": "autoScaleWriteCapacity",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-dynamodb.EnableScalingProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-dynamodb.IScalableTableAttribute"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds an IAM policy statement associated with this table to an IAM\nprincipal's policy."
+          },
+          "name": "grant",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The principal (no-op if undefined)"
+              },
+              "name": "principal",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            },
+            {
+              "docs": {
+                "comment": "The set of actions to allow (i.e. \"dynamodb:PutItem\", \"dynamodb:GetItem\", ...)"
+              },
+              "name": "actions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Permits all DynamoDB operations (\"dynamodb:*\") to an IAM principal."
+          },
+          "name": "grantFullAccess",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The principal to grant access to"
+              },
+              "name": "principal",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Permits an IAM principal all data read operations from this table:\nBatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan."
+          },
+          "name": "grantReadData",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The principal to grant access to"
+              },
+              "name": "principal",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Permits an IAM principal to all data read/write operations to this table.\nBatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,\nBatchWriteItem, PutItem, UpdateItem, DeleteItem"
+          },
+          "name": "grantReadWriteData",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The principal to grant access to"
+              },
+              "name": "principal",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Permits an IAM principal all data write operations to this table:\nBatchWriteItem, PutItem, UpdateItem, DeleteItem."
+          },
+          "name": "grantWriteData",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The principal to grant access to"
+              },
+              "name": "principal",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Validate the table construct.",
+            "return": "an array of validation error message"
+          },
+          "name": "validate",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "Table",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "tableArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "tableName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "tableStreamArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.TableProps": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-dynamodb.TableProps",
+      "kind": "interface",
+      "name": "TableProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Specify how you are charged for read and write throughput and how you manage capacity.",
+            "default": "Provisioned"
+          },
+          "name": "billingMode",
+          "type": {
+            "fqn": "@aws-cdk/aws-dynamodb.BillingMode",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Partition key attribute definition. This is eventually required, but you\ncan also use `addPartitionKey` to specify the partition key at a later stage."
+          },
+          "name": "partitionKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-dynamodb.Attribute",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether point-in-time recovery is enabled.",
+            "default": "undefined, point-in-time recovery is disabled"
+          },
+          "name": "pitrEnabled",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The read capacity for the table. Careful if you add Global Secondary Indexes, as\nthose will share the table's provisioned throughput.\n\nCan only be provided if billingMode is Provisioned.",
+            "default": "5"
+          },
+          "name": "readCapacity",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Table sort key attribute definition. You can also use `addSortKey` to set\nthis up later."
+          },
+          "name": "sortKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-dynamodb.Attribute",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether server-side encryption is enabled.",
+            "default": "undefined, server-side encryption is disabled"
+          },
+          "name": "sseEnabled",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "When an item in the table is modified, StreamViewType determines what information\nis written to the stream for this table. Valid values for StreamViewType are:",
+            "default": "undefined, streams are disabled"
+          },
+          "name": "streamSpecification",
+          "type": {
+            "fqn": "@aws-cdk/aws-dynamodb.StreamViewType",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Enforces a particular physical table name.",
+            "default": "<generated>"
+          },
+          "name": "tableName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The AWS resource tags to associate with the table.",
+            "default": "undefined"
+          },
+          "name": "tags",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of TTL attribute.",
+            "default": "undefined, TTL is disabled"
+          },
+          "name": "ttlAttributeName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The write capacity for the table. Careful if you add Global Secondary Indexes, as\nthose will share the table's provisioned throughput.\n\nCan only be provided if billingMode is Provisioned.",
+            "default": "5"
+          },
+          "name": "writeCapacity",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.UtilizationScalingProps": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for enabling DynamoDB utilization tracking"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.UtilizationScalingProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-applicationautoscaling.BaseTargetTrackingProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "UtilizationScalingProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Target utilization percentage for the attribute"
+          },
+          "name": "targetUtilizationPercent",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResource": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.TableResource\" will be deprecated in a future release in favor of \"CfnTable\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::DynamoDB::Table``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``TableResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``TableResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "TableResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResourceProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "tableArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "tableName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "StreamArn"
+          },
+          "immutable": true,
+          "name": "tableStreamArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResource.AttributeDefinitionProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-attributedef.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.AttributeDefinitionProperty",
+      "kind": "interface",
+      "name": "AttributeDefinitionProperty",
+      "namespace": "cloudformation.TableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.AttributeDefinitionProperty.AttributeName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-attributedef.html#cfn-dynamodb-attributedef-attributename"
+          },
+          "name": "attributeName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.AttributeDefinitionProperty.AttributeType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-attributedef.html#cfn-dynamodb-attributedef-attributename-attributetype"
+          },
+          "name": "attributeType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResource.GlobalSecondaryIndexProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.GlobalSecondaryIndexProperty",
+      "kind": "interface",
+      "name": "GlobalSecondaryIndexProperty",
+      "namespace": "cloudformation.TableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.GlobalSecondaryIndexProperty.IndexName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-indexname"
+          },
+          "name": "indexName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.GlobalSecondaryIndexProperty.KeySchema``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-keyschema"
+          },
+          "name": "keySchema",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.KeySchemaProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.GlobalSecondaryIndexProperty.Projection``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-projection"
+          },
+          "name": "projection",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.ProjectionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.GlobalSecondaryIndexProperty.ProvisionedThroughput``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-gsi.html#cfn-dynamodb-gsi-provisionedthroughput"
+          },
+          "name": "provisionedThroughput",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.ProvisionedThroughputProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResource.KeySchemaProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-keyschema.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.KeySchemaProperty",
+      "kind": "interface",
+      "name": "KeySchemaProperty",
+      "namespace": "cloudformation.TableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.KeySchemaProperty.AttributeName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-keyschema.html#aws-properties-dynamodb-keyschema-attributename"
+          },
+          "name": "attributeName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.KeySchemaProperty.KeyType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-keyschema.html#aws-properties-dynamodb-keyschema-keytype"
+          },
+          "name": "keyType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResource.LocalSecondaryIndexProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-lsi.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.LocalSecondaryIndexProperty",
+      "kind": "interface",
+      "name": "LocalSecondaryIndexProperty",
+      "namespace": "cloudformation.TableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.LocalSecondaryIndexProperty.IndexName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-lsi.html#cfn-dynamodb-lsi-indexname"
+          },
+          "name": "indexName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.LocalSecondaryIndexProperty.KeySchema``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-lsi.html#cfn-dynamodb-lsi-keyschema"
+          },
+          "name": "keySchema",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.KeySchemaProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.LocalSecondaryIndexProperty.Projection``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-lsi.html#cfn-dynamodb-lsi-projection"
+          },
+          "name": "projection",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.ProjectionProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResource.PointInTimeRecoverySpecificationProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-pointintimerecoveryspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.PointInTimeRecoverySpecificationProperty",
+      "kind": "interface",
+      "name": "PointInTimeRecoverySpecificationProperty",
+      "namespace": "cloudformation.TableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.PointInTimeRecoverySpecificationProperty.PointInTimeRecoveryEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-pointintimerecoveryspecification.html#cfn-dynamodb-table-pointintimerecoveryspecification-pointintimerecoveryenabled"
+          },
+          "name": "pointInTimeRecoveryEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResource.ProjectionProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.ProjectionProperty",
+      "kind": "interface",
+      "name": "ProjectionProperty",
+      "namespace": "cloudformation.TableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.ProjectionProperty.NonKeyAttributes``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html#cfn-dynamodb-projectionobj-nonkeyatt"
+          },
+          "name": "nonKeyAttributes",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.ProjectionProperty.ProjectionType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html#cfn-dynamodb-projectionobj-projtype"
+          },
+          "name": "projectionType",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResource.ProvisionedThroughputProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.ProvisionedThroughputProperty",
+      "kind": "interface",
+      "name": "ProvisionedThroughputProperty",
+      "namespace": "cloudformation.TableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.ProvisionedThroughputProperty.ReadCapacityUnits``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html#cfn-dynamodb-provisionedthroughput-readcapacityunits"
+          },
+          "name": "readCapacityUnits",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.ProvisionedThroughputProperty.WriteCapacityUnits``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html#cfn-dynamodb-provisionedthroughput-writecapacityunits"
+          },
+          "name": "writeCapacityUnits",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResource.SSESpecificationProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-ssespecification.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.SSESpecificationProperty",
+      "kind": "interface",
+      "name": "SSESpecificationProperty",
+      "namespace": "cloudformation.TableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.SSESpecificationProperty.SSEEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-ssespecification.html#cfn-dynamodb-table-ssespecification-sseenabled"
+          },
+          "name": "sseEnabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResource.StreamSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-streamspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.StreamSpecificationProperty",
+      "kind": "interface",
+      "name": "StreamSpecificationProperty",
+      "namespace": "cloudformation.TableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.StreamSpecificationProperty.StreamViewType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-streamspecification.html#cfn-dynamodb-streamspecification-streamviewtype"
+          },
+          "name": "streamViewType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResource.TimeToLiveSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-timetolivespecification.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.TimeToLiveSpecificationProperty",
+      "kind": "interface",
+      "name": "TimeToLiveSpecificationProperty",
+      "namespace": "cloudformation.TableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.TimeToLiveSpecificationProperty.AttributeName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-timetolivespecification.html#cfn-dynamodb-timetolivespecification-attributename"
+          },
+          "name": "attributeName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TableResource.TimeToLiveSpecificationProperty.Enabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-timetolivespecification.html#cfn-dynamodb-timetolivespecification-enabled"
+          },
+          "name": "enabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-dynamodb.cloudformation.TableResourceProps": {
+      "assembly": "@aws-cdk/aws-dynamodb",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html"
+      },
+      "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResourceProps",
+      "kind": "interface",
+      "name": "TableResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.KeySchema``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-keyschema"
+          },
+          "name": "keySchema",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.KeySchemaProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.AttributeDefinitions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-attributedef"
+          },
+          "name": "attributeDefinitions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.AttributeDefinitionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.BillingMode``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-billingmode"
+          },
+          "name": "billingMode",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.GlobalSecondaryIndexes``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-gsi"
+          },
+          "name": "globalSecondaryIndexes",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.GlobalSecondaryIndexProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.LocalSecondaryIndexes``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-lsi"
+          },
+          "name": "localSecondaryIndexes",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.LocalSecondaryIndexProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.PointInTimeRecoverySpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-pointintimerecoveryspecification"
+          },
+          "name": "pointInTimeRecoverySpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.PointInTimeRecoverySpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.ProvisionedThroughput``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-provisionedthroughput"
+          },
+          "name": "provisionedThroughput",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.ProvisionedThroughputProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.SSESpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-ssespecification"
+          },
+          "name": "sseSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.SSESpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.StreamSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-streamspecification"
+          },
+          "name": "streamSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.StreamSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.TableName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-tablename"
+          },
+          "name": "tableName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::DynamoDB::Table.TimeToLiveSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-timetolivespecification"
+          },
+          "name": "timeToLiveSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dynamodb.cloudformation.TableResource.TimeToLiveSpecificationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "EvfqxEWa5MDpYjtSPyDWxa7g/K9xopQ/V8qCeUXrJuQ="
+}

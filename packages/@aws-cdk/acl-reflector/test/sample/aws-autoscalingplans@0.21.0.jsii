@@ -1,0 +1,2527 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "The CDK Construct Library for AWS::AutoScalingPlans",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-autoscalingplans",
+  "readme": {
+    "markdown": "## The CDK Construct Library for AWS Auto-Scaling Plans\nThis module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.AutoScalingPlans",
+      "packageId": "Amazon.CDK.AWS.AutoScalingPlans",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "autoscalingplans",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.autoscalingplans"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-autoscalingplans"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::AutoScalingPlans::ScalingPlan``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnScalingPlan`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnScalingPlan``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlanProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnScalingPlan",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlanProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "scalingPlanArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ScalingPlanName"
+          },
+          "immutable": true,
+          "name": "scalingPlanName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ScalingPlanVersion"
+          },
+          "immutable": true,
+          "name": "scalingPlanVersion",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ApplicationSourceProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-applicationsource.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ApplicationSourceProperty",
+      "kind": "interface",
+      "name": "ApplicationSourceProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ApplicationSourceProperty.CloudFormationStackARN``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-applicationsource.html#cfn-autoscalingplans-scalingplan-applicationsource-cloudformationstackarn"
+          },
+          "name": "cloudFormationStackArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ApplicationSourceProperty.TagFilters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-applicationsource.html#cfn-autoscalingplans-scalingplan-applicationsource-tagfilters"
+          },
+          "name": "tagFilters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TagFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedLoadMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedLoadMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "CustomizedLoadMetricSpecificationProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.CustomizedLoadMetricSpecificationProperty.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.CustomizedLoadMetricSpecificationProperty.Namespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-namespace"
+          },
+          "name": "namespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.CustomizedLoadMetricSpecificationProperty.Statistic``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-statistic"
+          },
+          "name": "statistic",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.CustomizedLoadMetricSpecificationProperty.Dimensions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-dimensions"
+          },
+          "name": "dimensions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.MetricDimensionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.CustomizedLoadMetricSpecificationProperty.Unit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-unit"
+          },
+          "name": "unit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedScalingMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedScalingMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "CustomizedScalingMetricSpecificationProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.CustomizedScalingMetricSpecificationProperty.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.CustomizedScalingMetricSpecificationProperty.Namespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-namespace"
+          },
+          "name": "namespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.CustomizedScalingMetricSpecificationProperty.Statistic``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-statistic"
+          },
+          "name": "statistic",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.CustomizedScalingMetricSpecificationProperty.Dimensions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-dimensions"
+          },
+          "name": "dimensions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.MetricDimensionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.CustomizedScalingMetricSpecificationProperty.Unit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-unit"
+          },
+          "name": "unit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.MetricDimensionProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-metricdimension.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.MetricDimensionProperty",
+      "kind": "interface",
+      "name": "MetricDimensionProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.MetricDimensionProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-metricdimension.html#cfn-autoscalingplans-scalingplan-metricdimension-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.MetricDimensionProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-metricdimension.html#cfn-autoscalingplans-scalingplan-metricdimension-value"
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedLoadMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedloadmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedLoadMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "PredefinedLoadMetricSpecificationProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.PredefinedLoadMetricSpecificationProperty.PredefinedLoadMetricType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedloadmetricspecification-predefinedloadmetrictype"
+          },
+          "name": "predefinedLoadMetricType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.PredefinedLoadMetricSpecificationProperty.ResourceLabel``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedloadmetricspecification-resourcelabel"
+          },
+          "name": "resourceLabel",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedScalingMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedscalingmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedScalingMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "PredefinedScalingMetricSpecificationProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.PredefinedScalingMetricSpecificationProperty.PredefinedScalingMetricType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedscalingmetricspecification-predefinedscalingmetrictype"
+          },
+          "name": "predefinedScalingMetricType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.PredefinedScalingMetricSpecificationProperty.ResourceLabel``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedscalingmetricspecification-resourcelabel"
+          },
+          "name": "resourceLabel",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ScalingInstructionProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ScalingInstructionProperty",
+      "kind": "interface",
+      "name": "ScalingInstructionProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.MaxCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-maxcapacity"
+          },
+          "name": "maxCapacity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.MinCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-mincapacity"
+          },
+          "name": "minCapacity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.ResourceId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-resourceid"
+          },
+          "name": "resourceId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.ScalableDimension``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-scalabledimension"
+          },
+          "name": "scalableDimension",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.ServiceNamespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-servicenamespace"
+          },
+          "name": "serviceNamespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.TargetTrackingConfigurations``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-targettrackingconfigurations"
+          },
+          "name": "targetTrackingConfigurations",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TargetTrackingConfigurationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.CustomizedLoadMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-customizedloadmetricspecification"
+          },
+          "name": "customizedLoadMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedLoadMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.DisableDynamicScaling``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-disabledynamicscaling"
+          },
+          "name": "disableDynamicScaling",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.PredefinedLoadMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predefinedloadmetricspecification"
+          },
+          "name": "predefinedLoadMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedLoadMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.PredictiveScalingMaxCapacityBehavior``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predictivescalingmaxcapacitybehavior"
+          },
+          "name": "predictiveScalingMaxCapacityBehavior",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.PredictiveScalingMaxCapacityBuffer``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predictivescalingmaxcapacitybuffer"
+          },
+          "name": "predictiveScalingMaxCapacityBuffer",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.PredictiveScalingMode``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predictivescalingmode"
+          },
+          "name": "predictiveScalingMode",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.ScalingPolicyUpdateBehavior``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-scalingpolicyupdatebehavior"
+          },
+          "name": "scalingPolicyUpdateBehavior",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.ScalingInstructionProperty.ScheduledActionBufferTime``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-scheduledactionbuffertime"
+          },
+          "name": "scheduledActionBufferTime",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TagFilterProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-tagfilter.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TagFilterProperty",
+      "kind": "interface",
+      "name": "TagFilterProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.TagFilterProperty.Key``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-tagfilter.html#cfn-autoscalingplans-scalingplan-tagfilter-key"
+          },
+          "name": "key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.TagFilterProperty.Values``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-tagfilter.html#cfn-autoscalingplans-scalingplan-tagfilter-values"
+          },
+          "name": "values",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TargetTrackingConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TargetTrackingConfigurationProperty",
+      "kind": "interface",
+      "name": "TargetTrackingConfigurationProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.TargetTrackingConfigurationProperty.TargetValue``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-targetvalue"
+          },
+          "name": "targetValue",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.TargetTrackingConfigurationProperty.CustomizedScalingMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-customizedscalingmetricspecification"
+          },
+          "name": "customizedScalingMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedScalingMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.TargetTrackingConfigurationProperty.DisableScaleIn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-disablescalein"
+          },
+          "name": "disableScaleIn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.TargetTrackingConfigurationProperty.EstimatedInstanceWarmup``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-estimatedinstancewarmup"
+          },
+          "name": "estimatedInstanceWarmup",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.TargetTrackingConfigurationProperty.PredefinedScalingMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-predefinedscalingmetricspecification"
+          },
+          "name": "predefinedScalingMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedScalingMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.TargetTrackingConfigurationProperty.ScaleInCooldown``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-scaleincooldown"
+          },
+          "name": "scaleInCooldown",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPlan.TargetTrackingConfigurationProperty.ScaleOutCooldown``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-scaleoutcooldown"
+          },
+          "name": "scaleOutCooldown",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlanProps": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlanProps",
+      "kind": "interface",
+      "name": "CfnScalingPlanProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::AutoScalingPlans::ScalingPlan.ApplicationSource``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html#cfn-autoscalingplans-scalingplan-applicationsource"
+          },
+          "name": "applicationSource",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ApplicationSourceProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::AutoScalingPlans::ScalingPlan.ScalingInstructions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html#cfn-autoscalingplans-scalingplan-scalinginstructions"
+          },
+          "name": "scalingInstructions",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ScalingInstructionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.ScalingPlanResource\" will be deprecated in a future release in favor of \"CfnScalingPlan\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::AutoScalingPlans::ScalingPlan``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ScalingPlanResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ScalingPlanResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ScalingPlanResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "scalingPlanArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ScalingPlanName"
+          },
+          "immutable": true,
+          "name": "scalingPlanName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ScalingPlanVersion"
+          },
+          "immutable": true,
+          "name": "scalingPlanVersion",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.ApplicationSourceProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-applicationsource.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.ApplicationSourceProperty",
+      "kind": "interface",
+      "name": "ApplicationSourceProperty",
+      "namespace": "cloudformation.ScalingPlanResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ApplicationSourceProperty.CloudFormationStackARN``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-applicationsource.html#cfn-autoscalingplans-scalingplan-applicationsource-cloudformationstackarn"
+          },
+          "name": "cloudFormationStackArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ApplicationSourceProperty.TagFilters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-applicationsource.html#cfn-autoscalingplans-scalingplan-applicationsource-tagfilters"
+          },
+          "name": "tagFilters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.TagFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.CustomizedLoadMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.CustomizedLoadMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "CustomizedLoadMetricSpecificationProperty",
+      "namespace": "cloudformation.ScalingPlanResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.CustomizedLoadMetricSpecificationProperty.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.CustomizedLoadMetricSpecificationProperty.Namespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-namespace"
+          },
+          "name": "namespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.CustomizedLoadMetricSpecificationProperty.Statistic``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-statistic"
+          },
+          "name": "statistic",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.CustomizedLoadMetricSpecificationProperty.Dimensions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-dimensions"
+          },
+          "name": "dimensions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.MetricDimensionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.CustomizedLoadMetricSpecificationProperty.Unit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-unit"
+          },
+          "name": "unit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.CustomizedScalingMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.CustomizedScalingMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "CustomizedScalingMetricSpecificationProperty",
+      "namespace": "cloudformation.ScalingPlanResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.CustomizedScalingMetricSpecificationProperty.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.CustomizedScalingMetricSpecificationProperty.Namespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-namespace"
+          },
+          "name": "namespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.CustomizedScalingMetricSpecificationProperty.Statistic``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-statistic"
+          },
+          "name": "statistic",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.CustomizedScalingMetricSpecificationProperty.Dimensions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-dimensions"
+          },
+          "name": "dimensions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.MetricDimensionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.CustomizedScalingMetricSpecificationProperty.Unit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-unit"
+          },
+          "name": "unit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.MetricDimensionProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-metricdimension.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.MetricDimensionProperty",
+      "kind": "interface",
+      "name": "MetricDimensionProperty",
+      "namespace": "cloudformation.ScalingPlanResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.MetricDimensionProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-metricdimension.html#cfn-autoscalingplans-scalingplan-metricdimension-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.MetricDimensionProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-metricdimension.html#cfn-autoscalingplans-scalingplan-metricdimension-value"
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.PredefinedLoadMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedloadmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.PredefinedLoadMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "PredefinedLoadMetricSpecificationProperty",
+      "namespace": "cloudformation.ScalingPlanResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.PredefinedLoadMetricSpecificationProperty.PredefinedLoadMetricType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedloadmetricspecification-predefinedloadmetrictype"
+          },
+          "name": "predefinedLoadMetricType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.PredefinedLoadMetricSpecificationProperty.ResourceLabel``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedloadmetricspecification-resourcelabel"
+          },
+          "name": "resourceLabel",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.PredefinedScalingMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedscalingmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.PredefinedScalingMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "PredefinedScalingMetricSpecificationProperty",
+      "namespace": "cloudformation.ScalingPlanResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.PredefinedScalingMetricSpecificationProperty.PredefinedScalingMetricType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedscalingmetricspecification-predefinedscalingmetrictype"
+          },
+          "name": "predefinedScalingMetricType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.PredefinedScalingMetricSpecificationProperty.ResourceLabel``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedscalingmetricspecification-resourcelabel"
+          },
+          "name": "resourceLabel",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.ScalingInstructionProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.ScalingInstructionProperty",
+      "kind": "interface",
+      "name": "ScalingInstructionProperty",
+      "namespace": "cloudformation.ScalingPlanResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.MaxCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-maxcapacity"
+          },
+          "name": "maxCapacity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.MinCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-mincapacity"
+          },
+          "name": "minCapacity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.ResourceId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-resourceid"
+          },
+          "name": "resourceId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.ScalableDimension``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-scalabledimension"
+          },
+          "name": "scalableDimension",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.ServiceNamespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-servicenamespace"
+          },
+          "name": "serviceNamespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.TargetTrackingConfigurations``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-targettrackingconfigurations"
+          },
+          "name": "targetTrackingConfigurations",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.TargetTrackingConfigurationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.CustomizedLoadMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-customizedloadmetricspecification"
+          },
+          "name": "customizedLoadMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.CustomizedLoadMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.DisableDynamicScaling``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-disabledynamicscaling"
+          },
+          "name": "disableDynamicScaling",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.PredefinedLoadMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predefinedloadmetricspecification"
+          },
+          "name": "predefinedLoadMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.PredefinedLoadMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.PredictiveScalingMaxCapacityBehavior``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predictivescalingmaxcapacitybehavior"
+          },
+          "name": "predictiveScalingMaxCapacityBehavior",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.PredictiveScalingMaxCapacityBuffer``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predictivescalingmaxcapacitybuffer"
+          },
+          "name": "predictiveScalingMaxCapacityBuffer",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.PredictiveScalingMode``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predictivescalingmode"
+          },
+          "name": "predictiveScalingMode",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.ScalingPolicyUpdateBehavior``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-scalingpolicyupdatebehavior"
+          },
+          "name": "scalingPolicyUpdateBehavior",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.ScalingInstructionProperty.ScheduledActionBufferTime``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-scheduledactionbuffertime"
+          },
+          "name": "scheduledActionBufferTime",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.TagFilterProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-tagfilter.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.TagFilterProperty",
+      "kind": "interface",
+      "name": "TagFilterProperty",
+      "namespace": "cloudformation.ScalingPlanResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.TagFilterProperty.Key``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-tagfilter.html#cfn-autoscalingplans-scalingplan-tagfilter-key"
+          },
+          "name": "key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.TagFilterProperty.Values``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-tagfilter.html#cfn-autoscalingplans-scalingplan-tagfilter-values"
+          },
+          "name": "values",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.TargetTrackingConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.TargetTrackingConfigurationProperty",
+      "kind": "interface",
+      "name": "TargetTrackingConfigurationProperty",
+      "namespace": "cloudformation.ScalingPlanResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.TargetTrackingConfigurationProperty.TargetValue``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-targetvalue"
+          },
+          "name": "targetValue",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.TargetTrackingConfigurationProperty.CustomizedScalingMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-customizedscalingmetricspecification"
+          },
+          "name": "customizedScalingMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.CustomizedScalingMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.TargetTrackingConfigurationProperty.DisableScaleIn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-disablescalein"
+          },
+          "name": "disableScaleIn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.TargetTrackingConfigurationProperty.EstimatedInstanceWarmup``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-estimatedinstancewarmup"
+          },
+          "name": "estimatedInstanceWarmup",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.TargetTrackingConfigurationProperty.PredefinedScalingMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-predefinedscalingmetricspecification"
+          },
+          "name": "predefinedScalingMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.PredefinedScalingMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.TargetTrackingConfigurationProperty.ScaleInCooldown``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-scaleincooldown"
+          },
+          "name": "scaleInCooldown",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPlanResource.TargetTrackingConfigurationProperty.ScaleOutCooldown``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-scaleoutcooldown"
+          },
+          "name": "scaleOutCooldown",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResourceProps": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html"
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResourceProps",
+      "kind": "interface",
+      "name": "ScalingPlanResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::AutoScalingPlans::ScalingPlan.ApplicationSource``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html#cfn-autoscalingplans-scalingplan-applicationsource"
+          },
+          "name": "applicationSource",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.ApplicationSourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::AutoScalingPlans::ScalingPlan.ScalingInstructions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html#cfn-autoscalingplans-scalingplan-scalinginstructions"
+          },
+          "name": "scalingInstructions",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.cloudformation.ScalingPlanResource.ScalingInstructionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "nhZwUJ8K6Rrs8YdHOc+9udxauSm7cpFNZ51lHqwgETc="
+}

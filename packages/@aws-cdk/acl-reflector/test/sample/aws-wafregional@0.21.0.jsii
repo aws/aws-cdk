@@ -1,0 +1,4399 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "The CDK Construct Library for AWS::WAFRegional",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-wafregional",
+  "readme": {
+    "markdown": "## The CDK Construct Library for AWS Web Application Firewall (Regional)\nThis module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.WAFRegional",
+      "packageId": "Amazon.CDK.AWS.WAFRegional",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "wafregional",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.waf.regional"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-wafregional"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-wafregional.CfnByteMatchSet": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-bytematchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnByteMatchSet",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::ByteMatchSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnByteMatchSet`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnByteMatchSet``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.CfnByteMatchSetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnByteMatchSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "byteMatchSetId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.CfnByteMatchSetProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnByteMatchSet.ByteMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnByteMatchSet.ByteMatchTupleProperty",
+      "kind": "interface",
+      "name": "ByteMatchTupleProperty",
+      "namespace": "CfnByteMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnByteMatchSet.ByteMatchTupleProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html#cfn-wafregional-bytematchset-bytematchtuple-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.CfnByteMatchSet.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnByteMatchSet.ByteMatchTupleProperty.PositionalConstraint``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html#cfn-wafregional-bytematchset-bytematchtuple-positionalconstraint"
+          },
+          "name": "positionalConstraint",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnByteMatchSet.ByteMatchTupleProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html#cfn-wafregional-bytematchset-bytematchtuple-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnByteMatchSet.ByteMatchTupleProperty.TargetString``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html#cfn-wafregional-bytematchset-bytematchtuple-targetstring"
+          },
+          "name": "targetString",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnByteMatchSet.ByteMatchTupleProperty.TargetStringBase64``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html#cfn-wafregional-bytematchset-bytematchtuple-targetstringbase64"
+          },
+          "name": "targetStringBase64",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnByteMatchSet.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnByteMatchSet.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "CfnByteMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnByteMatchSet.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-fieldtomatch.html#cfn-wafregional-bytematchset-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnByteMatchSet.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-fieldtomatch.html#cfn-wafregional-bytematchset-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnByteMatchSetProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-bytematchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnByteMatchSetProps",
+      "kind": "interface",
+      "name": "CfnByteMatchSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::ByteMatchSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-bytematchset.html#cfn-wafregional-bytematchset-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::ByteMatchSet.ByteMatchTuples``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-bytematchset.html#cfn-wafregional-bytematchset-bytematchtuples"
+          },
+          "name": "byteMatchTuples",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.CfnByteMatchSet.ByteMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnIPSet": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-ipset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnIPSet",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::IPSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnIPSet`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnIPSet``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.CfnIPSetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnIPSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "ipSetId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.CfnIPSetProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnIPSet.IPSetDescriptorProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-ipset-ipsetdescriptor.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnIPSet.IPSetDescriptorProperty",
+      "kind": "interface",
+      "name": "IPSetDescriptorProperty",
+      "namespace": "CfnIPSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnIPSet.IPSetDescriptorProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-ipset-ipsetdescriptor.html#cfn-wafregional-ipset-ipsetdescriptor-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnIPSet.IPSetDescriptorProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-ipset-ipsetdescriptor.html#cfn-wafregional-ipset-ipsetdescriptor-value"
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnIPSetProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-ipset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnIPSetProps",
+      "kind": "interface",
+      "name": "CfnIPSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::IPSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-ipset.html#cfn-wafregional-ipset-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::IPSet.IPSetDescriptors``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-ipset.html#cfn-wafregional-ipset-ipsetdescriptors"
+          },
+          "name": "ipSetDescriptors",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.CfnIPSet.IPSetDescriptorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnRule": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnRule",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::Rule``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnRule`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnRule``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.CfnRuleProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnRule",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.CfnRuleProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "ruleId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnRule.PredicateProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-rule-predicate.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnRule.PredicateProperty",
+      "kind": "interface",
+      "name": "PredicateProperty",
+      "namespace": "CfnRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.PredicateProperty.DataId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-rule-predicate.html#cfn-wafregional-rule-predicate-dataid"
+          },
+          "name": "dataId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.PredicateProperty.Negated``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-rule-predicate.html#cfn-wafregional-rule-predicate-negated"
+          },
+          "name": "negated",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.PredicateProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-rule-predicate.html#cfn-wafregional-rule-predicate-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnRuleProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnRuleProps",
+      "kind": "interface",
+      "name": "CfnRuleProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::Rule.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html#cfn-wafregional-rule-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::Rule.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html#cfn-wafregional-rule-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::Rule.Predicates``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html#cfn-wafregional-rule-predicates"
+          },
+          "name": "predicates",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.CfnRule.PredicateProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnSizeConstraintSet": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sizeconstraintset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnSizeConstraintSet",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::SizeConstraintSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnSizeConstraintSet`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnSizeConstraintSet``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.CfnSizeConstraintSetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnSizeConstraintSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.CfnSizeConstraintSetProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "sizeConstraintSetId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnSizeConstraintSet.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnSizeConstraintSet.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "CfnSizeConstraintSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSizeConstraintSet.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-fieldtomatch.html#cfn-wafregional-sizeconstraintset-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSizeConstraintSet.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-fieldtomatch.html#cfn-wafregional-sizeconstraintset-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnSizeConstraintSet.SizeConstraintProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-sizeconstraint.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnSizeConstraintSet.SizeConstraintProperty",
+      "kind": "interface",
+      "name": "SizeConstraintProperty",
+      "namespace": "CfnSizeConstraintSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSizeConstraintSet.SizeConstraintProperty.ComparisonOperator``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-sizeconstraint.html#cfn-wafregional-sizeconstraintset-sizeconstraint-comparisonoperator"
+          },
+          "name": "comparisonOperator",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSizeConstraintSet.SizeConstraintProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-sizeconstraint.html#cfn-wafregional-sizeconstraintset-sizeconstraint-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.CfnSizeConstraintSet.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSizeConstraintSet.SizeConstraintProperty.Size``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-sizeconstraint.html#cfn-wafregional-sizeconstraintset-sizeconstraint-size"
+          },
+          "name": "size",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSizeConstraintSet.SizeConstraintProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-sizeconstraint.html#cfn-wafregional-sizeconstraintset-sizeconstraint-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnSizeConstraintSetProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sizeconstraintset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnSizeConstraintSetProps",
+      "kind": "interface",
+      "name": "CfnSizeConstraintSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::SizeConstraintSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sizeconstraintset.html#cfn-wafregional-sizeconstraintset-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::SizeConstraintSet.SizeConstraints``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sizeconstraintset.html#cfn-wafregional-sizeconstraintset-sizeconstraints"
+          },
+          "name": "sizeConstraints",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.CfnSizeConstraintSet.SizeConstraintProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSet": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sqlinjectionmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSet",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::SqlInjectionMatchSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnSqlInjectionMatchSet`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnSqlInjectionMatchSet``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnSqlInjectionMatchSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSetProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "sqlInjectionMatchSetId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSet.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSet.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "CfnSqlInjectionMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSqlInjectionMatchSet.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-fieldtomatch.html#cfn-wafregional-sqlinjectionmatchset-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSqlInjectionMatchSet.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-fieldtomatch.html#cfn-wafregional-sqlinjectionmatchset-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSet.SqlInjectionMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuple.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSet.SqlInjectionMatchTupleProperty",
+      "kind": "interface",
+      "name": "SqlInjectionMatchTupleProperty",
+      "namespace": "CfnSqlInjectionMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSqlInjectionMatchSet.SqlInjectionMatchTupleProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuple.html#cfn-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuple-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSet.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSqlInjectionMatchSet.SqlInjectionMatchTupleProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuple.html#cfn-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuple-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSetProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sqlinjectionmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSetProps",
+      "kind": "interface",
+      "name": "CfnSqlInjectionMatchSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::SqlInjectionMatchSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sqlinjectionmatchset.html#cfn-wafregional-sqlinjectionmatchset-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::SqlInjectionMatchSet.SqlInjectionMatchTuples``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sqlinjectionmatchset.html#cfn-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuples"
+          },
+          "name": "sqlInjectionMatchTuples",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.CfnSqlInjectionMatchSet.SqlInjectionMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnWebACL": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnWebACL",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::WebACL``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnWebACL`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnWebACL``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.CfnWebACLProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnWebACL",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.CfnWebACLProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "webAclId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnWebACL.ActionProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-action.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnWebACL.ActionProperty",
+      "kind": "interface",
+      "name": "ActionProperty",
+      "namespace": "CfnWebACL",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnWebACL.ActionProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-action.html#cfn-wafregional-webacl-action-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnWebACL.RuleProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnWebACL.RuleProperty",
+      "kind": "interface",
+      "name": "RuleProperty",
+      "namespace": "CfnWebACL",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnWebACL.RuleProperty.Action``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-rule.html#cfn-wafregional-webacl-rule-action"
+          },
+          "name": "action",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.CfnWebACL.ActionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnWebACL.RuleProperty.Priority``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-rule.html#cfn-wafregional-webacl-rule-priority"
+          },
+          "name": "priority",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnWebACL.RuleProperty.RuleId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-rule.html#cfn-wafregional-webacl-rule-ruleid"
+          },
+          "name": "ruleId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnWebACLAssociation": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webaclassociation.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnWebACLAssociation",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::WebACLAssociation``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnWebACLAssociation`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnWebACLAssociation``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.CfnWebACLAssociationProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnWebACLAssociation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.CfnWebACLAssociationProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "webAclAssociationId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnWebACLAssociationProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webaclassociation.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnWebACLAssociationProps",
+      "kind": "interface",
+      "name": "CfnWebACLAssociationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACLAssociation.ResourceArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webaclassociation.html#cfn-wafregional-webaclassociation-resourcearn"
+          },
+          "name": "resourceArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACLAssociation.WebACLId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webaclassociation.html#cfn-wafregional-webaclassociation-webaclid"
+          },
+          "name": "webAclId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnWebACLProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnWebACLProps",
+      "kind": "interface",
+      "name": "CfnWebACLProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACL.DefaultAction``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html#cfn-wafregional-webacl-defaultaction"
+          },
+          "name": "defaultAction",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.CfnWebACL.ActionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACL.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html#cfn-wafregional-webacl-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACL.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html#cfn-wafregional-webacl-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACL.Rules``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html#cfn-wafregional-webacl-rules"
+          },
+          "name": "rules",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.CfnWebACL.RuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnXssMatchSet": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-xssmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnXssMatchSet",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::XssMatchSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnXssMatchSet`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnXssMatchSet``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.CfnXssMatchSetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnXssMatchSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.CfnXssMatchSetProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "xssMatchSetId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnXssMatchSet.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnXssMatchSet.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "CfnXssMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnXssMatchSet.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-fieldtomatch.html#cfn-wafregional-xssmatchset-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnXssMatchSet.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-fieldtomatch.html#cfn-wafregional-xssmatchset-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnXssMatchSet.XssMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-xssmatchtuple.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnXssMatchSet.XssMatchTupleProperty",
+      "kind": "interface",
+      "name": "XssMatchTupleProperty",
+      "namespace": "CfnXssMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnXssMatchSet.XssMatchTupleProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-xssmatchtuple.html#cfn-wafregional-xssmatchset-xssmatchtuple-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.CfnXssMatchSet.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnXssMatchSet.XssMatchTupleProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-xssmatchtuple.html#cfn-wafregional-xssmatchset-xssmatchtuple-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.CfnXssMatchSetProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-xssmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.CfnXssMatchSetProps",
+      "kind": "interface",
+      "name": "CfnXssMatchSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::XssMatchSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-xssmatchset.html#cfn-wafregional-xssmatchset-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::XssMatchSet.XssMatchTuples``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-xssmatchset.html#cfn-wafregional-xssmatchset-xssmatchtuples"
+          },
+          "name": "xssMatchTuples",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.CfnXssMatchSet.XssMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResource": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.ByteMatchSetResource\" will be deprecated in a future release in favor of \"CfnByteMatchSet\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-bytematchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::ByteMatchSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ByteMatchSetResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ByteMatchSetResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ByteMatchSetResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "byteMatchSetId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResource.ByteMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResource.ByteMatchTupleProperty",
+      "kind": "interface",
+      "name": "ByteMatchTupleProperty",
+      "namespace": "cloudformation.ByteMatchSetResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ByteMatchSetResource.ByteMatchTupleProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html#cfn-wafregional-bytematchset-bytematchtuple-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResource.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ByteMatchSetResource.ByteMatchTupleProperty.PositionalConstraint``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html#cfn-wafregional-bytematchset-bytematchtuple-positionalconstraint"
+          },
+          "name": "positionalConstraint",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ByteMatchSetResource.ByteMatchTupleProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html#cfn-wafregional-bytematchset-bytematchtuple-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ByteMatchSetResource.ByteMatchTupleProperty.TargetString``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html#cfn-wafregional-bytematchset-bytematchtuple-targetstring"
+          },
+          "name": "targetString",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ByteMatchSetResource.ByteMatchTupleProperty.TargetStringBase64``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html#cfn-wafregional-bytematchset-bytematchtuple-targetstringbase64"
+          },
+          "name": "targetStringBase64",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResource.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResource.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "cloudformation.ByteMatchSetResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ByteMatchSetResource.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-fieldtomatch.html#cfn-wafregional-bytematchset-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ByteMatchSetResource.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-fieldtomatch.html#cfn-wafregional-bytematchset-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResourceProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-bytematchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResourceProps",
+      "kind": "interface",
+      "name": "ByteMatchSetResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::ByteMatchSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-bytematchset.html#cfn-wafregional-bytematchset-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::ByteMatchSet.ByteMatchTuples``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-bytematchset.html#cfn-wafregional-bytematchset-bytematchtuples"
+          },
+          "name": "byteMatchTuples",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.cloudformation.ByteMatchSetResource.ByteMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.IPSetResource": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.IPSetResource\" will be deprecated in a future release in favor of \"CfnIPSet\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-ipset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.IPSetResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::IPSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``IPSetResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``IPSetResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.cloudformation.IPSetResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "IPSetResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "ipSetId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.cloudformation.IPSetResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.IPSetResource.IPSetDescriptorProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-ipset-ipsetdescriptor.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.IPSetResource.IPSetDescriptorProperty",
+      "kind": "interface",
+      "name": "IPSetDescriptorProperty",
+      "namespace": "cloudformation.IPSetResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``IPSetResource.IPSetDescriptorProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-ipset-ipsetdescriptor.html#cfn-wafregional-ipset-ipsetdescriptor-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``IPSetResource.IPSetDescriptorProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-ipset-ipsetdescriptor.html#cfn-wafregional-ipset-ipsetdescriptor-value"
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.IPSetResourceProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-ipset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.IPSetResourceProps",
+      "kind": "interface",
+      "name": "IPSetResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::IPSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-ipset.html#cfn-wafregional-ipset-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::IPSet.IPSetDescriptors``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-ipset.html#cfn-wafregional-ipset-ipsetdescriptors"
+          },
+          "name": "ipSetDescriptors",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.cloudformation.IPSetResource.IPSetDescriptorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.RuleResource": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.RuleResource\" will be deprecated in a future release in favor of \"CfnRule\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.RuleResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::Rule``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``RuleResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``RuleResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.cloudformation.RuleResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "RuleResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.cloudformation.RuleResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "ruleId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.RuleResource.PredicateProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-rule-predicate.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.RuleResource.PredicateProperty",
+      "kind": "interface",
+      "name": "PredicateProperty",
+      "namespace": "cloudformation.RuleResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.PredicateProperty.DataId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-rule-predicate.html#cfn-wafregional-rule-predicate-dataid"
+          },
+          "name": "dataId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.PredicateProperty.Negated``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-rule-predicate.html#cfn-wafregional-rule-predicate-negated"
+          },
+          "name": "negated",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.PredicateProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-rule-predicate.html#cfn-wafregional-rule-predicate-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.RuleResourceProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.RuleResourceProps",
+      "kind": "interface",
+      "name": "RuleResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::Rule.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html#cfn-wafregional-rule-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::Rule.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html#cfn-wafregional-rule-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::Rule.Predicates``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html#cfn-wafregional-rule-predicates"
+          },
+          "name": "predicates",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.cloudformation.RuleResource.PredicateProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResource": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.SizeConstraintSetResource\" will be deprecated in a future release in favor of \"CfnSizeConstraintSet\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sizeconstraintset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::SizeConstraintSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``SizeConstraintSetResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``SizeConstraintSetResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "SizeConstraintSetResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "sizeConstraintSetId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResource.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResource.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "cloudformation.SizeConstraintSetResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SizeConstraintSetResource.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-fieldtomatch.html#cfn-wafregional-sizeconstraintset-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SizeConstraintSetResource.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-fieldtomatch.html#cfn-wafregional-sizeconstraintset-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResource.SizeConstraintProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-sizeconstraint.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResource.SizeConstraintProperty",
+      "kind": "interface",
+      "name": "SizeConstraintProperty",
+      "namespace": "cloudformation.SizeConstraintSetResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SizeConstraintSetResource.SizeConstraintProperty.ComparisonOperator``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-sizeconstraint.html#cfn-wafregional-sizeconstraintset-sizeconstraint-comparisonoperator"
+          },
+          "name": "comparisonOperator",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SizeConstraintSetResource.SizeConstraintProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-sizeconstraint.html#cfn-wafregional-sizeconstraintset-sizeconstraint-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResource.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SizeConstraintSetResource.SizeConstraintProperty.Size``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-sizeconstraint.html#cfn-wafregional-sizeconstraintset-sizeconstraint-size"
+          },
+          "name": "size",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SizeConstraintSetResource.SizeConstraintProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sizeconstraintset-sizeconstraint.html#cfn-wafregional-sizeconstraintset-sizeconstraint-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResourceProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sizeconstraintset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResourceProps",
+      "kind": "interface",
+      "name": "SizeConstraintSetResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::SizeConstraintSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sizeconstraintset.html#cfn-wafregional-sizeconstraintset-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::SizeConstraintSet.SizeConstraints``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sizeconstraintset.html#cfn-wafregional-sizeconstraintset-sizeconstraints"
+          },
+          "name": "sizeConstraints",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.cloudformation.SizeConstraintSetResource.SizeConstraintProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResource": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.SqlInjectionMatchSetResource\" will be deprecated in a future release in favor of \"CfnSqlInjectionMatchSet\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sqlinjectionmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::SqlInjectionMatchSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``SqlInjectionMatchSetResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``SqlInjectionMatchSetResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "SqlInjectionMatchSetResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "sqlInjectionMatchSetId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResource.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResource.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "cloudformation.SqlInjectionMatchSetResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SqlInjectionMatchSetResource.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-fieldtomatch.html#cfn-wafregional-sqlinjectionmatchset-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SqlInjectionMatchSetResource.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-fieldtomatch.html#cfn-wafregional-sqlinjectionmatchset-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResource.SqlInjectionMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuple.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResource.SqlInjectionMatchTupleProperty",
+      "kind": "interface",
+      "name": "SqlInjectionMatchTupleProperty",
+      "namespace": "cloudformation.SqlInjectionMatchSetResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SqlInjectionMatchSetResource.SqlInjectionMatchTupleProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuple.html#cfn-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuple-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResource.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SqlInjectionMatchSetResource.SqlInjectionMatchTupleProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuple.html#cfn-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuple-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResourceProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sqlinjectionmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResourceProps",
+      "kind": "interface",
+      "name": "SqlInjectionMatchSetResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::SqlInjectionMatchSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sqlinjectionmatchset.html#cfn-wafregional-sqlinjectionmatchset-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::SqlInjectionMatchSet.SqlInjectionMatchTuples``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-sqlinjectionmatchset.html#cfn-wafregional-sqlinjectionmatchset-sqlinjectionmatchtuples"
+          },
+          "name": "sqlInjectionMatchTuples",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.cloudformation.SqlInjectionMatchSetResource.SqlInjectionMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.WebACLAssociationResource": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.WebACLAssociationResource\" will be deprecated in a future release in favor of \"CfnWebACLAssociation\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webaclassociation.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLAssociationResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::WebACLAssociation``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``WebACLAssociationResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``WebACLAssociationResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLAssociationResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "WebACLAssociationResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLAssociationResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "webAclAssociationId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.WebACLAssociationResourceProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webaclassociation.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLAssociationResourceProps",
+      "kind": "interface",
+      "name": "WebACLAssociationResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACLAssociation.ResourceArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webaclassociation.html#cfn-wafregional-webaclassociation-resourcearn"
+          },
+          "name": "resourceArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACLAssociation.WebACLId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webaclassociation.html#cfn-wafregional-webaclassociation-webaclid"
+          },
+          "name": "webAclId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.WebACLResource": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.WebACLResource\" will be deprecated in a future release in favor of \"CfnWebACL\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::WebACL``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``WebACLResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``WebACLResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "WebACLResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "webAclId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.WebACLResource.ActionProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-action.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLResource.ActionProperty",
+      "kind": "interface",
+      "name": "ActionProperty",
+      "namespace": "cloudformation.WebACLResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``WebACLResource.ActionProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-action.html#cfn-wafregional-webacl-action-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.WebACLResource.RuleProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLResource.RuleProperty",
+      "kind": "interface",
+      "name": "RuleProperty",
+      "namespace": "cloudformation.WebACLResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``WebACLResource.RuleProperty.Action``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-rule.html#cfn-wafregional-webacl-rule-action"
+          },
+          "name": "action",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLResource.ActionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``WebACLResource.RuleProperty.Priority``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-rule.html#cfn-wafregional-webacl-rule-priority"
+          },
+          "name": "priority",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``WebACLResource.RuleProperty.RuleId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-rule.html#cfn-wafregional-webacl-rule-ruleid"
+          },
+          "name": "ruleId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.WebACLResourceProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLResourceProps",
+      "kind": "interface",
+      "name": "WebACLResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACL.DefaultAction``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html#cfn-wafregional-webacl-defaultaction"
+          },
+          "name": "defaultAction",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLResource.ActionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACL.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html#cfn-wafregional-webacl-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACL.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html#cfn-wafregional-webacl-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::WebACL.Rules``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-webacl.html#cfn-wafregional-webacl-rules"
+          },
+          "name": "rules",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.cloudformation.WebACLResource.RuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResource": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.XssMatchSetResource\" will be deprecated in a future release in favor of \"CfnXssMatchSet\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-xssmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAFRegional::XssMatchSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``XssMatchSetResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``XssMatchSetResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "XssMatchSetResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "xssMatchSetId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResource.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResource.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "cloudformation.XssMatchSetResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``XssMatchSetResource.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-fieldtomatch.html#cfn-wafregional-xssmatchset-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``XssMatchSetResource.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-fieldtomatch.html#cfn-wafregional-xssmatchset-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResource.XssMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-xssmatchtuple.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResource.XssMatchTupleProperty",
+      "kind": "interface",
+      "name": "XssMatchTupleProperty",
+      "namespace": "cloudformation.XssMatchSetResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``XssMatchSetResource.XssMatchTupleProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-xssmatchtuple.html#cfn-wafregional-xssmatchset-xssmatchtuple-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResource.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``XssMatchSetResource.XssMatchTupleProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-xssmatchset-xssmatchtuple.html#cfn-wafregional-xssmatchset-xssmatchtuple-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResourceProps": {
+      "assembly": "@aws-cdk/aws-wafregional",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-xssmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResourceProps",
+      "kind": "interface",
+      "name": "XssMatchSetResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::XssMatchSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-xssmatchset.html#cfn-wafregional-xssmatchset-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::WAFRegional::XssMatchSet.XssMatchTuples``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-xssmatchset.html#cfn-wafregional-xssmatchset-xssmatchtuples"
+          },
+          "name": "xssMatchTuples",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-wafregional.cloudformation.XssMatchSetResource.XssMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "ulI7FiQRtmr/lySvZvAdFdMJx4UnGCKemIRomaBQiBE="
+}

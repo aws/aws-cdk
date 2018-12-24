@@ -1,0 +1,201 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "Bucket Notifications API for AWS S3",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-s3-notifications",
+  "readme": {
+    "markdown": "## S3 Bucket Notifications API\n\nThis module includes the API that constructs should implement in order to be\nable to be used as destinations for bucket notifications.\n\nTo implement the `IBucketNotificationDestination`, a construct should implement\na method `asBucketNotificationDestination(bucketArn, bucketId)` which registers\nthis resource as a destination for bucket notifications _for the specified\nbucket_ and returns the ARN of the destination and it's type.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.S3.Notifications",
+      "packageId": "Amazon.CDK.AWS.S3.Notifications",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "s3-notifications",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.s3.notifications"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-s3-notifications"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-s3-notifications.BucketNotificationDestinationProps": {
+      "assembly": "@aws-cdk/aws-s3-notifications",
+      "datatype": true,
+      "docs": {
+        "comment": "Represents the properties of a notification destination."
+      },
+      "fqn": "@aws-cdk/aws-s3-notifications.BucketNotificationDestinationProps",
+      "kind": "interface",
+      "name": "BucketNotificationDestinationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of the destination (i.e. Lambda, SNS, SQS)."
+          },
+          "name": "arn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The notification type."
+          },
+          "name": "type",
+          "type": {
+            "fqn": "@aws-cdk/aws-s3-notifications.BucketNotificationDestinationType"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Any additional dependencies that should be resolved before the bucket notification\ncan be configured (for example, the SNS Topic Policy resource)."
+          },
+          "name": "dependencies",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-s3-notifications.BucketNotificationDestinationType": {
+      "assembly": "@aws-cdk/aws-s3-notifications",
+      "docs": {
+        "comment": "Supported types of notification destinations."
+      },
+      "fqn": "@aws-cdk/aws-s3-notifications.BucketNotificationDestinationType",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "Lambda"
+        },
+        {
+          "name": "Queue"
+        },
+        {
+          "name": "Topic"
+        }
+      ],
+      "name": "BucketNotificationDestinationType"
+    },
+    "@aws-cdk/aws-s3-notifications.IBucketNotificationDestination": {
+      "assembly": "@aws-cdk/aws-s3-notifications",
+      "docs": {
+        "comment": "Implemented by constructs that can be used as bucket notification destinations."
+      },
+      "fqn": "@aws-cdk/aws-s3-notifications.IBucketNotificationDestination",
+      "kind": "interface",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Registers this resource to receive notifications for the specified\nbucket. This method will only be called once for each destination/bucket\npair and the result will be cached, so there is no need to implement\nidempotency in each destination."
+          },
+          "name": "asBucketNotificationDestination",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The ARN of the bucket"
+              },
+              "name": "bucketArn",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "A unique ID of this bucket in the stack"
+              },
+              "name": "bucketId",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-s3-notifications.BucketNotificationDestinationProps"
+          }
+        }
+      ],
+      "name": "IBucketNotificationDestination"
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "wxek4e+UOWzM1S77WGMHhNobIXanasHfue2zTq4Rq8s="
+}

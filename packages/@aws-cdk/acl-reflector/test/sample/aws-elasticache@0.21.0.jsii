@@ -1,0 +1,4894 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "The CDK Construct Library for AWS::ElastiCache",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-elasticache",
+  "readme": {
+    "markdown": "## The CDK Construct Library for AWS ElastiCache\nThis module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.ElastiCache",
+      "packageId": "Amazon.CDK.AWS.ElastiCache",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "elasticache",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.elasticache"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-elasticache"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-elasticache.CfnCacheCluster": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnCacheCluster",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::CacheCluster``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnCacheCluster`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnCacheCluster``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.CfnCacheClusterProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnCacheCluster",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConfigurationEndpoint.Address"
+          },
+          "immutable": true,
+          "name": "cacheClusterConfigurationEndpointAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConfigurationEndpoint.Port"
+          },
+          "immutable": true,
+          "name": "cacheClusterConfigurationEndpointPort",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "cacheClusterName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "RedisEndpoint.Address"
+          },
+          "immutable": true,
+          "name": "cacheClusterRedisEndpointAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "RedisEndpoint.Port"
+          },
+          "immutable": true,
+          "name": "cacheClusterRedisEndpointPort",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.CfnCacheClusterProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnCacheClusterProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnCacheClusterProps",
+      "kind": "interface",
+      "name": "CfnCacheClusterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.CacheNodeType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-cachenodetype"
+          },
+          "name": "cacheNodeType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.Engine``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-engine"
+          },
+          "name": "engine",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.NumCacheNodes``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-numcachenodes"
+          },
+          "name": "numCacheNodes",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.AutoMinorVersionUpgrade``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-autominorversionupgrade"
+          },
+          "name": "autoMinorVersionUpgrade",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.AZMode``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-azmode"
+          },
+          "name": "azMode",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.CacheParameterGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-cacheparametergroupname"
+          },
+          "name": "cacheParameterGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.CacheSecurityGroupNames``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-cachesecuritygroupnames"
+          },
+          "name": "cacheSecurityGroupNames",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.CacheSubnetGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-cachesubnetgroupname"
+          },
+          "name": "cacheSubnetGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.ClusterName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-clustername"
+          },
+          "name": "clusterName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.EngineVersion``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-engineversion"
+          },
+          "name": "engineVersion",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.NotificationTopicArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-notificationtopicarn"
+          },
+          "name": "notificationTopicArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.Port``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-port"
+          },
+          "name": "port",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.PreferredAvailabilityZone``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-preferredavailabilityzone"
+          },
+          "name": "preferredAvailabilityZone",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.PreferredAvailabilityZones``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-preferredavailabilityzones"
+          },
+          "name": "preferredAvailabilityZones",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.PreferredMaintenanceWindow``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-preferredmaintenancewindow"
+          },
+          "name": "preferredMaintenanceWindow",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.SnapshotArns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-snapshotarns"
+          },
+          "name": "snapshotArns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.SnapshotName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-snapshotname"
+          },
+          "name": "snapshotName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.SnapshotRetentionLimit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-snapshotretentionlimit"
+          },
+          "name": "snapshotRetentionLimit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.SnapshotWindow``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-snapshotwindow"
+          },
+          "name": "snapshotWindow",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.VpcSecurityGroupIds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-vpcsecuritygroupids"
+          },
+          "name": "vpcSecurityGroupIds",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnParameterGroup": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-parameter-group.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnParameterGroup",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::ParameterGroup``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnParameterGroup`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnParameterGroup``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.CfnParameterGroupProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnParameterGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "parameterGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.CfnParameterGroupProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnParameterGroupProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-parameter-group.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnParameterGroupProps",
+      "kind": "interface",
+      "name": "CfnParameterGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ParameterGroup.CacheParameterGroupFamily``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-parameter-group.html#cfn-elasticache-parametergroup-cacheparametergroupfamily"
+          },
+          "name": "cacheParameterGroupFamily",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ParameterGroup.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-parameter-group.html#cfn-elasticache-parametergroup-description"
+          },
+          "name": "description",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ParameterGroup.Properties``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-parameter-group.html#cfn-elasticache-parametergroup-properties"
+          },
+          "name": "properties",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnReplicationGroup": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnReplicationGroup",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::ReplicationGroup``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnReplicationGroup`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnReplicationGroup``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.CfnReplicationGroupProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnReplicationGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.CfnReplicationGroupProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConfigurationEndPoint.Address"
+          },
+          "immutable": true,
+          "name": "replicationGroupConfigurationEndPointAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConfigurationEndPoint.Port"
+          },
+          "immutable": true,
+          "name": "replicationGroupConfigurationEndPointPort",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "replicationGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "PrimaryEndPoint.Address"
+          },
+          "immutable": true,
+          "name": "replicationGroupPrimaryEndPointAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "PrimaryEndPoint.Port"
+          },
+          "immutable": true,
+          "name": "replicationGroupPrimaryEndPointPort",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ReadEndPoint.Addresses"
+          },
+          "immutable": true,
+          "name": "replicationGroupReadEndPointAddresses",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ReadEndPoint.Addresses.List"
+          },
+          "immutable": true,
+          "name": "replicationGroupReadEndPointAddressesList",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.ReplicationGroupReadEndPointAddressesList"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ReadEndPoint.Ports"
+          },
+          "immutable": true,
+          "name": "replicationGroupReadEndPointPorts",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ReadEndPoint.Ports.List"
+          },
+          "immutable": true,
+          "name": "replicationGroupReadEndPointPortsList",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.ReplicationGroupReadEndPointPortsList"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnReplicationGroup.NodeGroupConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnReplicationGroup.NodeGroupConfigurationProperty",
+      "kind": "interface",
+      "name": "NodeGroupConfigurationProperty",
+      "namespace": "CfnReplicationGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnReplicationGroup.NodeGroupConfigurationProperty.NodeGroupId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html#cfn-elasticache-replicationgroup-nodegroupconfiguration-nodegroupid"
+          },
+          "name": "nodeGroupId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnReplicationGroup.NodeGroupConfigurationProperty.PrimaryAvailabilityZone``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html#cfn-elasticache-replicationgroup-nodegroupconfiguration-primaryavailabilityzone"
+          },
+          "name": "primaryAvailabilityZone",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnReplicationGroup.NodeGroupConfigurationProperty.ReplicaAvailabilityZones``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html#cfn-elasticache-replicationgroup-nodegroupconfiguration-replicaavailabilityzones"
+          },
+          "name": "replicaAvailabilityZones",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnReplicationGroup.NodeGroupConfigurationProperty.ReplicaCount``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html#cfn-elasticache-replicationgroup-nodegroupconfiguration-replicacount"
+          },
+          "name": "replicaCount",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnReplicationGroup.NodeGroupConfigurationProperty.Slots``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html#cfn-elasticache-replicationgroup-nodegroupconfiguration-slots"
+          },
+          "name": "slots",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnReplicationGroupProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnReplicationGroupProps",
+      "kind": "interface",
+      "name": "CfnReplicationGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.ReplicationGroupDescription``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-replicationgroupdescription"
+          },
+          "name": "replicationGroupDescription",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.AtRestEncryptionEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-atrestencryptionenabled"
+          },
+          "name": "atRestEncryptionEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.AuthToken``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-authtoken"
+          },
+          "name": "authToken",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.AutomaticFailoverEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-automaticfailoverenabled"
+          },
+          "name": "automaticFailoverEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.AutoMinorVersionUpgrade``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-autominorversionupgrade"
+          },
+          "name": "autoMinorVersionUpgrade",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.CacheNodeType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-cachenodetype"
+          },
+          "name": "cacheNodeType",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.CacheParameterGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-cacheparametergroupname"
+          },
+          "name": "cacheParameterGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.CacheSecurityGroupNames``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-cachesecuritygroupnames"
+          },
+          "name": "cacheSecurityGroupNames",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.CacheSubnetGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-cachesubnetgroupname"
+          },
+          "name": "cacheSubnetGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.Engine``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-engine"
+          },
+          "name": "engine",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.EngineVersion``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-engineversion"
+          },
+          "name": "engineVersion",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.NodeGroupConfiguration``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-nodegroupconfiguration"
+          },
+          "name": "nodeGroupConfiguration",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-elasticache.CfnReplicationGroup.NodeGroupConfigurationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.NotificationTopicArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-notificationtopicarn"
+          },
+          "name": "notificationTopicArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.NumCacheClusters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-numcacheclusters"
+          },
+          "name": "numCacheClusters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.NumNodeGroups``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-numnodegroups"
+          },
+          "name": "numNodeGroups",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.Port``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-port"
+          },
+          "name": "port",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.PreferredCacheClusterAZs``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-preferredcacheclusterazs"
+          },
+          "name": "preferredCacheClusterAZs",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.PreferredMaintenanceWindow``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-preferredmaintenancewindow"
+          },
+          "name": "preferredMaintenanceWindow",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.PrimaryClusterId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-primaryclusterid"
+          },
+          "name": "primaryClusterId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.ReplicasPerNodeGroup``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-replicaspernodegroup"
+          },
+          "name": "replicasPerNodeGroup",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.ReplicationGroupId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-replicationgroupid"
+          },
+          "name": "replicationGroupId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SecurityGroupIds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-securitygroupids"
+          },
+          "name": "securityGroupIds",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SnapshotArns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-snapshotarns"
+          },
+          "name": "snapshotArns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SnapshotName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-snapshotname"
+          },
+          "name": "snapshotName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SnapshotRetentionLimit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-snapshotretentionlimit"
+          },
+          "name": "snapshotRetentionLimit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SnapshottingClusterId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-snapshottingclusterid"
+          },
+          "name": "snapshottingClusterId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SnapshotWindow``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-snapshotwindow"
+          },
+          "name": "snapshotWindow",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.TransitEncryptionEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-transitencryptionenabled"
+          },
+          "name": "transitEncryptionEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnSecurityGroup": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnSecurityGroup",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::SecurityGroup``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnSecurityGroup`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnSecurityGroup``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.CfnSecurityGroupProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnSecurityGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.CfnSecurityGroupProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "securityGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnSecurityGroupIngress": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group-ingress.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnSecurityGroupIngress",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::SecurityGroupIngress``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnSecurityGroupIngress`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnSecurityGroupIngress``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.CfnSecurityGroupIngressProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnSecurityGroupIngress",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.CfnSecurityGroupIngressProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "securityGroupIngressId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnSecurityGroupIngressProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group-ingress.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnSecurityGroupIngressProps",
+      "kind": "interface",
+      "name": "CfnSecurityGroupIngressProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SecurityGroupIngress.CacheSecurityGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group-ingress.html#cfn-elasticache-securitygroupingress-cachesecuritygroupname"
+          },
+          "name": "cacheSecurityGroupName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SecurityGroupIngress.EC2SecurityGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group-ingress.html#cfn-elasticache-securitygroupingress-ec2securitygroupname"
+          },
+          "name": "ec2SecurityGroupName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SecurityGroupIngress.EC2SecurityGroupOwnerId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group-ingress.html#cfn-elasticache-securitygroupingress-ec2securitygroupownerid"
+          },
+          "name": "ec2SecurityGroupOwnerId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnSecurityGroupProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnSecurityGroupProps",
+      "kind": "interface",
+      "name": "CfnSecurityGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SecurityGroup.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group.html#cfn-elasticache-securitygroup-description"
+          },
+          "name": "description",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnSubnetGroup": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnSubnetGroup",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::SubnetGroup``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnSubnetGroup`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnSubnetGroup``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.CfnSubnetGroupProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnSubnetGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.CfnSubnetGroupProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "subnetGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.CfnSubnetGroupProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.CfnSubnetGroupProps",
+      "kind": "interface",
+      "name": "CfnSubnetGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SubnetGroup.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-description"
+          },
+          "name": "description",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SubnetGroup.SubnetIds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-subnetids"
+          },
+          "name": "subnetIds",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SubnetGroup.CacheSubnetGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-cachesubnetgroupname"
+          },
+          "name": "cacheSubnetGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.ReplicationGroupReadEndPointAddressesList": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Token"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.ReplicationGroupReadEndPointAddressesList",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`.\n\nIf value is a function, the function is evaluated upon resolution and\nthe value it returns will be used as the token's value.\n\ndisplayName is used to represent the Token when it's embedded into a string; it\nwill look something like this:\n\n    \"embedded in a larger string is ${Token[DISPLAY_NAME.123]}\"\n\nThis value is used as a hint to humans what the meaning of the Token is,\nand does not have any effect on the evaluation.\n\nMust contain only alphanumeric and simple separator characters (_.:-)."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "What this token will evaluate to, literal or function."
+            },
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          },
+          {
+            "docs": {
+              "comment": "A human-readable display hint for this Token"
+            },
+            "name": "displayName",
+            "type": {
+              "optional": true,
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "ReplicationGroupReadEndPointAddressesList"
+    },
+    "@aws-cdk/aws-elasticache.ReplicationGroupReadEndPointPortsList": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Token"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.ReplicationGroupReadEndPointPortsList",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`.\n\nIf value is a function, the function is evaluated upon resolution and\nthe value it returns will be used as the token's value.\n\ndisplayName is used to represent the Token when it's embedded into a string; it\nwill look something like this:\n\n    \"embedded in a larger string is ${Token[DISPLAY_NAME.123]}\"\n\nThis value is used as a hint to humans what the meaning of the Token is,\nand does not have any effect on the evaluation.\n\nMust contain only alphanumeric and simple separator characters (_.:-)."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "What this token will evaluate to, literal or function."
+            },
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          },
+          {
+            "docs": {
+              "comment": "A human-readable display hint for this Token"
+            },
+            "name": "displayName",
+            "type": {
+              "optional": true,
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "ReplicationGroupReadEndPointPortsList"
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.CacheClusterResource": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.CacheClusterResource\" will be deprecated in a future release in favor of \"CfnCacheCluster\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.CacheClusterResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::CacheCluster``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CacheClusterResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CacheClusterResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.cloudformation.CacheClusterResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CacheClusterResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConfigurationEndpoint.Address"
+          },
+          "immutable": true,
+          "name": "cacheClusterConfigurationEndpointAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConfigurationEndpoint.Port"
+          },
+          "immutable": true,
+          "name": "cacheClusterConfigurationEndpointPort",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "cacheClusterName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "RedisEndpoint.Address"
+          },
+          "immutable": true,
+          "name": "cacheClusterRedisEndpointAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "RedisEndpoint.Port"
+          },
+          "immutable": true,
+          "name": "cacheClusterRedisEndpointPort",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.cloudformation.CacheClusterResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.CacheClusterResourceProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.CacheClusterResourceProps",
+      "kind": "interface",
+      "name": "CacheClusterResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.CacheNodeType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-cachenodetype"
+          },
+          "name": "cacheNodeType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.Engine``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-engine"
+          },
+          "name": "engine",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.NumCacheNodes``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-numcachenodes"
+          },
+          "name": "numCacheNodes",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.AutoMinorVersionUpgrade``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-autominorversionupgrade"
+          },
+          "name": "autoMinorVersionUpgrade",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.AZMode``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-azmode"
+          },
+          "name": "azMode",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.CacheParameterGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-cacheparametergroupname"
+          },
+          "name": "cacheParameterGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.CacheSecurityGroupNames``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-cachesecuritygroupnames"
+          },
+          "name": "cacheSecurityGroupNames",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.CacheSubnetGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-cachesubnetgroupname"
+          },
+          "name": "cacheSubnetGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.ClusterName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-clustername"
+          },
+          "name": "clusterName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.EngineVersion``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-engineversion"
+          },
+          "name": "engineVersion",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.NotificationTopicArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-notificationtopicarn"
+          },
+          "name": "notificationTopicArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.Port``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-port"
+          },
+          "name": "port",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.PreferredAvailabilityZone``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-preferredavailabilityzone"
+          },
+          "name": "preferredAvailabilityZone",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.PreferredAvailabilityZones``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-preferredavailabilityzones"
+          },
+          "name": "preferredAvailabilityZones",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.PreferredMaintenanceWindow``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-preferredmaintenancewindow"
+          },
+          "name": "preferredMaintenanceWindow",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.SnapshotArns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-snapshotarns"
+          },
+          "name": "snapshotArns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.SnapshotName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-snapshotname"
+          },
+          "name": "snapshotName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.SnapshotRetentionLimit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-snapshotretentionlimit"
+          },
+          "name": "snapshotRetentionLimit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.SnapshotWindow``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-snapshotwindow"
+          },
+          "name": "snapshotWindow",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::CacheCluster.VpcSecurityGroupIds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-cache-cluster.html#cfn-elasticache-cachecluster-vpcsecuritygroupids"
+          },
+          "name": "vpcSecurityGroupIds",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.ParameterGroupResource": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.ParameterGroupResource\" will be deprecated in a future release in favor of \"CfnParameterGroup\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-parameter-group.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.ParameterGroupResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::ParameterGroup``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ParameterGroupResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ParameterGroupResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.cloudformation.ParameterGroupResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ParameterGroupResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "parameterGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.cloudformation.ParameterGroupResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.ParameterGroupResourceProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-parameter-group.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.ParameterGroupResourceProps",
+      "kind": "interface",
+      "name": "ParameterGroupResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ParameterGroup.CacheParameterGroupFamily``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-parameter-group.html#cfn-elasticache-parametergroup-cacheparametergroupfamily"
+          },
+          "name": "cacheParameterGroupFamily",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ParameterGroup.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-parameter-group.html#cfn-elasticache-parametergroup-description"
+          },
+          "name": "description",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ParameterGroup.Properties``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-parameter-group.html#cfn-elasticache-parametergroup-properties"
+          },
+          "name": "properties",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.ReplicationGroupResource": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.ReplicationGroupResource\" will be deprecated in a future release in favor of \"CfnReplicationGroup\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.ReplicationGroupResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::ReplicationGroup``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ReplicationGroupResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ReplicationGroupResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.cloudformation.ReplicationGroupResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ReplicationGroupResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.cloudformation.ReplicationGroupResourceProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConfigurationEndPoint.Address"
+          },
+          "immutable": true,
+          "name": "replicationGroupConfigurationEndPointAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConfigurationEndPoint.Port"
+          },
+          "immutable": true,
+          "name": "replicationGroupConfigurationEndPointPort",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "replicationGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "PrimaryEndPoint.Address"
+          },
+          "immutable": true,
+          "name": "replicationGroupPrimaryEndPointAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "PrimaryEndPoint.Port"
+          },
+          "immutable": true,
+          "name": "replicationGroupPrimaryEndPointPort",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ReadEndPoint.Addresses"
+          },
+          "immutable": true,
+          "name": "replicationGroupReadEndPointAddresses",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ReadEndPoint.Addresses.List"
+          },
+          "immutable": true,
+          "name": "replicationGroupReadEndPointAddressesList",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.ReplicationGroupReadEndPointAddressesList"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ReadEndPoint.Ports"
+          },
+          "immutable": true,
+          "name": "replicationGroupReadEndPointPorts",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ReadEndPoint.Ports.List"
+          },
+          "immutable": true,
+          "name": "replicationGroupReadEndPointPortsList",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.ReplicationGroupReadEndPointPortsList"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.ReplicationGroupResource.NodeGroupConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.ReplicationGroupResource.NodeGroupConfigurationProperty",
+      "kind": "interface",
+      "name": "NodeGroupConfigurationProperty",
+      "namespace": "cloudformation.ReplicationGroupResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ReplicationGroupResource.NodeGroupConfigurationProperty.NodeGroupId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html#cfn-elasticache-replicationgroup-nodegroupconfiguration-nodegroupid"
+          },
+          "name": "nodeGroupId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ReplicationGroupResource.NodeGroupConfigurationProperty.PrimaryAvailabilityZone``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html#cfn-elasticache-replicationgroup-nodegroupconfiguration-primaryavailabilityzone"
+          },
+          "name": "primaryAvailabilityZone",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ReplicationGroupResource.NodeGroupConfigurationProperty.ReplicaAvailabilityZones``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html#cfn-elasticache-replicationgroup-nodegroupconfiguration-replicaavailabilityzones"
+          },
+          "name": "replicaAvailabilityZones",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ReplicationGroupResource.NodeGroupConfigurationProperty.ReplicaCount``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html#cfn-elasticache-replicationgroup-nodegroupconfiguration-replicacount"
+          },
+          "name": "replicaCount",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ReplicationGroupResource.NodeGroupConfigurationProperty.Slots``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-replicationgroup-nodegroupconfiguration.html#cfn-elasticache-replicationgroup-nodegroupconfiguration-slots"
+          },
+          "name": "slots",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.ReplicationGroupResourceProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.ReplicationGroupResourceProps",
+      "kind": "interface",
+      "name": "ReplicationGroupResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.ReplicationGroupDescription``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-replicationgroupdescription"
+          },
+          "name": "replicationGroupDescription",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.AtRestEncryptionEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-atrestencryptionenabled"
+          },
+          "name": "atRestEncryptionEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.AuthToken``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-authtoken"
+          },
+          "name": "authToken",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.AutomaticFailoverEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-automaticfailoverenabled"
+          },
+          "name": "automaticFailoverEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.AutoMinorVersionUpgrade``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-autominorversionupgrade"
+          },
+          "name": "autoMinorVersionUpgrade",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.CacheNodeType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-cachenodetype"
+          },
+          "name": "cacheNodeType",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.CacheParameterGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-cacheparametergroupname"
+          },
+          "name": "cacheParameterGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.CacheSecurityGroupNames``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-cachesecuritygroupnames"
+          },
+          "name": "cacheSecurityGroupNames",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.CacheSubnetGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-cachesubnetgroupname"
+          },
+          "name": "cacheSubnetGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.Engine``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-engine"
+          },
+          "name": "engine",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.EngineVersion``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-engineversion"
+          },
+          "name": "engineVersion",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.NodeGroupConfiguration``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-nodegroupconfiguration"
+          },
+          "name": "nodeGroupConfiguration",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-elasticache.cloudformation.ReplicationGroupResource.NodeGroupConfigurationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.NotificationTopicArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-notificationtopicarn"
+          },
+          "name": "notificationTopicArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.NumCacheClusters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-numcacheclusters"
+          },
+          "name": "numCacheClusters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.NumNodeGroups``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-numnodegroups"
+          },
+          "name": "numNodeGroups",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.Port``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-port"
+          },
+          "name": "port",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.PreferredCacheClusterAZs``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-preferredcacheclusterazs"
+          },
+          "name": "preferredCacheClusterAZs",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.PreferredMaintenanceWindow``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-preferredmaintenancewindow"
+          },
+          "name": "preferredMaintenanceWindow",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.PrimaryClusterId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-primaryclusterid"
+          },
+          "name": "primaryClusterId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.ReplicasPerNodeGroup``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-replicaspernodegroup"
+          },
+          "name": "replicasPerNodeGroup",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.ReplicationGroupId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-replicationgroupid"
+          },
+          "name": "replicationGroupId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SecurityGroupIds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-securitygroupids"
+          },
+          "name": "securityGroupIds",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SnapshotArns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-snapshotarns"
+          },
+          "name": "snapshotArns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SnapshotName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-snapshotname"
+          },
+          "name": "snapshotName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SnapshotRetentionLimit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-snapshotretentionlimit"
+          },
+          "name": "snapshotRetentionLimit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SnapshottingClusterId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-snapshottingclusterid"
+          },
+          "name": "snapshottingClusterId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.SnapshotWindow``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-snapshotwindow"
+          },
+          "name": "snapshotWindow",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::ReplicationGroup.TransitEncryptionEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticache-replicationgroup.html#cfn-elasticache-replicationgroup-transitencryptionenabled"
+          },
+          "name": "transitEncryptionEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupIngressResource": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.SecurityGroupIngressResource\" will be deprecated in a future release in favor of \"CfnSecurityGroupIngress\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group-ingress.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupIngressResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::SecurityGroupIngress``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``SecurityGroupIngressResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``SecurityGroupIngressResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupIngressResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "SecurityGroupIngressResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupIngressResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "securityGroupIngressId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupIngressResourceProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group-ingress.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupIngressResourceProps",
+      "kind": "interface",
+      "name": "SecurityGroupIngressResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SecurityGroupIngress.CacheSecurityGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group-ingress.html#cfn-elasticache-securitygroupingress-cachesecuritygroupname"
+          },
+          "name": "cacheSecurityGroupName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SecurityGroupIngress.EC2SecurityGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group-ingress.html#cfn-elasticache-securitygroupingress-ec2securitygroupname"
+          },
+          "name": "ec2SecurityGroupName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SecurityGroupIngress.EC2SecurityGroupOwnerId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group-ingress.html#cfn-elasticache-securitygroupingress-ec2securitygroupownerid"
+          },
+          "name": "ec2SecurityGroupOwnerId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupResource": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.SecurityGroupResource\" will be deprecated in a future release in favor of \"CfnSecurityGroup\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::SecurityGroup``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``SecurityGroupResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``SecurityGroupResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "SecurityGroupResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "securityGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupResourceProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.SecurityGroupResourceProps",
+      "kind": "interface",
+      "name": "SecurityGroupResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SecurityGroup.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-security-group.html#cfn-elasticache-securitygroup-description"
+          },
+          "name": "description",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.SubnetGroupResource": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.SubnetGroupResource\" will be deprecated in a future release in favor of \"CfnSubnetGroup\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.SubnetGroupResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElastiCache::SubnetGroup``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``SubnetGroupResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``SubnetGroupResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticache.cloudformation.SubnetGroupResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "SubnetGroupResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticache.cloudformation.SubnetGroupResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "subnetGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticache.cloudformation.SubnetGroupResourceProps": {
+      "assembly": "@aws-cdk/aws-elasticache",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticache.cloudformation.SubnetGroupResourceProps",
+      "kind": "interface",
+      "name": "SubnetGroupResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SubnetGroup.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-description"
+          },
+          "name": "description",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SubnetGroup.SubnetIds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-subnetids"
+          },
+          "name": "subnetIds",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ElastiCache::SubnetGroup.CacheSubnetGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticache-subnetgroup.html#cfn-elasticache-subnetgroup-cachesubnetgroupname"
+          },
+          "name": "cacheSubnetGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "XqFkMj5fo2J8tGOpI7Ut+bKtVvjmFd6szbvhklfi3Yo="
+}

@@ -1,0 +1,235 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "API package for @aws-cdk/aws-autoscaling",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-autoscaling-api",
+  "readme": {
+    "markdown": "## AWS AutoScaling API Library\n\nThis is a sister package to `@aws-cdk/aws-autoscaling`. It contains interface\ndefinitions that cannot be placed inside the other package to avoid dependency cycles.\n\nIt does not need to be used directly."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.AutoScaling.Api",
+      "packageId": "Amazon.CDK.AWS.AutoScaling.Api",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "autoscaling-api",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.autoscaling.api"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-autoscaling-api"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-autoscaling-api.ILifecycleHook": {
+      "assembly": "@aws-cdk/aws-autoscaling-api",
+      "docs": {
+        "comment": "A basic lifecycle hook object"
+      },
+      "fqn": "@aws-cdk/aws-autoscaling-api.ILifecycleHook",
+      "kind": "interface",
+      "name": "ILifecycleHook",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The role for the lifecycle hook to execute"
+          },
+          "immutable": true,
+          "name": "role",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscaling-api.ILifecycleHookTarget": {
+      "assembly": "@aws-cdk/aws-autoscaling-api",
+      "docs": {
+        "comment": "Interface for autoscaling lifecycle hook targets"
+      },
+      "fqn": "@aws-cdk/aws-autoscaling-api.ILifecycleHookTarget",
+      "kind": "interface",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Called when this object is used as the target of a lifecycle hook"
+          },
+          "name": "asLifecycleHookTarget",
+          "parameters": [
+            {
+              "name": "lifecycleHook",
+              "type": {
+                "fqn": "@aws-cdk/aws-autoscaling-api.ILifecycleHook"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-autoscaling-api.LifecycleHookTargetProps"
+          }
+        }
+      ],
+      "name": "ILifecycleHookTarget"
+    },
+    "@aws-cdk/aws-autoscaling-api.LifecycleHookTargetProps": {
+      "assembly": "@aws-cdk/aws-autoscaling-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties to add the target to a lifecycle hook"
+      },
+      "fqn": "@aws-cdk/aws-autoscaling-api.LifecycleHookTargetProps",
+      "kind": "interface",
+      "name": "LifecycleHookTargetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN to use as the notification target"
+          },
+          "name": "notificationTargetArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "jOePyCgw4kcDRXjl6he7s1b6wKQF8UGsi9GS6dIkr/w="
+}

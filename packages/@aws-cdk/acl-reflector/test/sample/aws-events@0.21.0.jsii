@@ -1,0 +1,2938 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "AWS CloudWatch Events Construct Library",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-events",
+  "readme": {
+    "markdown": "## AWS CloudWatch Events Construct Library\n\nAmazon CloudWatch Events delivers a near real-time stream of system events that\ndescribe changes in AWS resources. For example, an AWS CodePipeline emits the\n[State\nChange](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#codepipeline_event_type)\nevent when the pipeline changes it's state.\n\n* __Events__: An event indicates a change in your AWS environment. AWS resources\n  can generate events when their state changes. For example, Amazon EC2\n  generates an event when the state of an EC2 instance changes from pending to\n  running, and Amazon EC2 Auto Scaling generates events when it launches or\n  terminates instances. AWS CloudTrail publishes events when you make API calls.\n  You can generate custom application-level events and publish them to\n  CloudWatch Events. You can also set up scheduled events that are generated on\n  a periodic basis. For a list of services that generate events, and sample\n  events from each service, see [CloudWatch Events Event Examples From Each\n  Supported\n  Service](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html).\n* __Targets__: A target processes events. Targets can include Amazon EC2\n  instances, AWS Lambda functions, Kinesis streams, Amazon ECS tasks, Step\n  Functions state machines, Amazon SNS topics, Amazon SQS queues, and built-in\n  targets. A target receives events in JSON format.\n* __Rules__: A rule matches incoming events and routes them to targets for\n  processing. A single rule can route to multiple targets, all of which are\n  processed in parallel. Rules are not processed in a particular order. This\n  enables different parts of an organization to look for and process the events\n  that are of interest to them. A rule can customize the JSON sent to the\n  target, by passing only certain parts or by overwriting it with a constant.\n\nThe `EventRule` construct defines a CloudWatch events rule which monitors an\nevent based on an [event\npattern](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html)\nand invoke __event targets__ when the pattern is matched against a triggered\nevent. Event targets are objects that implement the `IEventTarget` interface.\n\nNormally, you will use one of the `source.onXxx(name[, target[, options]]) ->\nEventRule` methods on the event source to define an event rule associated with\nthe specific activity. You can targets either via props, or add targets using\n`rule.addTarget`.\n\nFor example, to define an rule that triggers a CodeBuild project build when a\ncommit is pushed to the \"master\" branch of a CodeCommit repository:\n\n```ts\nconst onCommitRule = repo.onCommit('OnCommitToMaster', project, 'master');\n```\n\nYou can add additional targets, with optional [input\ntransformer](https://docs.aws.amazon.com/AmazonCloudWatchEvents/latest/APIReference/API_InputTransformer.html)\nusing `eventRule.addTarget(target[, input])`. For example, we can add a SNS\ntopic target which formats a human-readable message for the commit.\n\nFor example, this adds an SNS topic as a target:\n\n```ts\nonCommitRule.addTarget(topic, {\n    template: 'A commit was pushed to the repository <repo> on branch <branch>',\n    pathsMap: {\n        branch: '$.detail.referenceName',\n        repo: '$.detail.repositoryName'\n    }\n});\n```\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.Events",
+      "packageId": "Amazon.CDK.AWS.Events",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "events",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.events"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-events"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-events.CfnEventBusPolicy": {
+      "assembly": "@aws-cdk/aws-events",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnEventBusPolicy",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Events::EventBusPolicy``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnEventBusPolicy`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnEventBusPolicy``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-events.CfnEventBusPolicyProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnEventBusPolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "eventBusPolicyId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-events.CfnEventBusPolicyProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.CfnEventBusPolicy.ConditionProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-eventbuspolicy-condition.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnEventBusPolicy.ConditionProperty",
+      "kind": "interface",
+      "name": "ConditionProperty",
+      "namespace": "CfnEventBusPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnEventBusPolicy.ConditionProperty.Key``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-eventbuspolicy-condition.html#cfn-events-eventbuspolicy-condition-key"
+          },
+          "name": "key",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnEventBusPolicy.ConditionProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-eventbuspolicy-condition.html#cfn-events-eventbuspolicy-condition-type"
+          },
+          "name": "type",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnEventBusPolicy.ConditionProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-eventbuspolicy-condition.html#cfn-events-eventbuspolicy-condition-value"
+          },
+          "name": "value",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.CfnEventBusPolicyProps": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnEventBusPolicyProps",
+      "kind": "interface",
+      "name": "CfnEventBusPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::EventBusPolicy.Action``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html#cfn-events-eventbuspolicy-action"
+          },
+          "name": "action",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::EventBusPolicy.Principal``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html#cfn-events-eventbuspolicy-principal"
+          },
+          "name": "principal",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::EventBusPolicy.StatementId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html#cfn-events-eventbuspolicy-statementid"
+          },
+          "name": "statementId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::EventBusPolicy.Condition``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html#cfn-events-eventbuspolicy-condition"
+          },
+          "name": "condition",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-events.CfnEventBusPolicy.ConditionProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.CfnRule": {
+      "assembly": "@aws-cdk/aws-events",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnRule",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Events::Rule``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnRule`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnRule``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-events.CfnRuleProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnRule",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-events.CfnRuleProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "ruleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "ruleId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.CfnRule.EcsParametersProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-ecsparameters.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnRule.EcsParametersProperty",
+      "kind": "interface",
+      "name": "EcsParametersProperty",
+      "namespace": "CfnRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.EcsParametersProperty.TaskDefinitionArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-ecsparameters.html#cfn-events-rule-ecsparameters-taskdefinitionarn"
+          },
+          "name": "taskDefinitionArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.EcsParametersProperty.TaskCount``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-ecsparameters.html#cfn-events-rule-ecsparameters-taskcount"
+          },
+          "name": "taskCount",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.CfnRule.InputTransformerProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-inputtransformer.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnRule.InputTransformerProperty",
+      "kind": "interface",
+      "name": "InputTransformerProperty",
+      "namespace": "CfnRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.InputTransformerProperty.InputTemplate``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-inputtransformer.html#cfn-events-rule-inputtransformer-inputtemplate"
+          },
+          "name": "inputTemplate",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.InputTransformerProperty.InputPathsMap``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-inputtransformer.html#cfn-events-rule-inputtransformer-inputpathsmap"
+          },
+          "name": "inputPathsMap",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.CfnRule.KinesisParametersProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-kinesisparameters.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnRule.KinesisParametersProperty",
+      "kind": "interface",
+      "name": "KinesisParametersProperty",
+      "namespace": "CfnRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.KinesisParametersProperty.PartitionKeyPath``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-kinesisparameters.html#cfn-events-rule-kinesisparameters-partitionkeypath"
+          },
+          "name": "partitionKeyPath",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.CfnRule.RunCommandParametersProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-runcommandparameters.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnRule.RunCommandParametersProperty",
+      "kind": "interface",
+      "name": "RunCommandParametersProperty",
+      "namespace": "CfnRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.RunCommandParametersProperty.RunCommandTargets``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-runcommandparameters.html#cfn-events-rule-runcommandparameters-runcommandtargets"
+          },
+          "name": "runCommandTargets",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-events.CfnRule.RunCommandTargetProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.CfnRule.RunCommandTargetProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-runcommandtarget.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnRule.RunCommandTargetProperty",
+      "kind": "interface",
+      "name": "RunCommandTargetProperty",
+      "namespace": "CfnRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.RunCommandTargetProperty.Key``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-runcommandtarget.html#cfn-events-rule-runcommandtarget-key"
+          },
+          "name": "key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.RunCommandTargetProperty.Values``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-runcommandtarget.html#cfn-events-rule-runcommandtarget-values"
+          },
+          "name": "values",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.CfnRule.SqsParametersProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-sqsparameters.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnRule.SqsParametersProperty",
+      "kind": "interface",
+      "name": "SqsParametersProperty",
+      "namespace": "CfnRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.SqsParametersProperty.MessageGroupId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-sqsparameters.html#cfn-events-rule-sqsparameters-messagegroupid"
+          },
+          "name": "messageGroupId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.CfnRule.TargetProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnRule.TargetProperty",
+      "kind": "interface",
+      "name": "TargetProperty",
+      "namespace": "CfnRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.TargetProperty.Arn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-arn"
+          },
+          "name": "arn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.TargetProperty.Id``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-id"
+          },
+          "name": "id",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.TargetProperty.EcsParameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-ecsparameters"
+          },
+          "name": "ecsParameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-events.CfnRule.EcsParametersProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.TargetProperty.Input``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-input"
+          },
+          "name": "input",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.TargetProperty.InputPath``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-inputpath"
+          },
+          "name": "inputPath",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.TargetProperty.InputTransformer``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-inputtransformer"
+          },
+          "name": "inputTransformer",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-events.CfnRule.InputTransformerProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.TargetProperty.KinesisParameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-kinesisparameters"
+          },
+          "name": "kinesisParameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-events.CfnRule.KinesisParametersProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.TargetProperty.RoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.TargetProperty.RunCommandParameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-runcommandparameters"
+          },
+          "name": "runCommandParameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-events.CfnRule.RunCommandParametersProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRule.TargetProperty.SqsParameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-sqsparameters"
+          },
+          "name": "sqsParameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-events.CfnRule.SqsParametersProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.CfnRuleProps": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-events.CfnRuleProps",
+      "kind": "interface",
+      "name": "CfnRuleProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.EventPattern``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-eventpattern"
+          },
+          "name": "eventPattern",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.RoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.ScheduleExpression``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-scheduleexpression"
+          },
+          "name": "scheduleExpression",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.State``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-state"
+          },
+          "name": "state",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.Targets``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-targets"
+          },
+          "name": "targets",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-events.CfnRule.TargetProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.EventPattern": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "comment": "Events in Amazon CloudWatch Events are represented as JSON objects. For more\ninformation about JSON objects, see RFC 7159.\n\nRules use event patterns to select events and route them to targets. A\npattern either matches an event or it doesn't. Event patterns are represented\nas JSON objects with a structure that is similar to that of events, for\nexample:\n\nIt is important to remember the following about event pattern matching:\n\n- For a pattern to match an event, the event must contain all the field names\n   listed in the pattern. The field names must appear in the event with the\n   same nesting structure.\n\n- Other fields of the event not mentioned in the pattern are ignored;\n   effectively, there is a ``\"*\": \"*\"`` wildcard for fields not mentioned.\n\n- The matching is exact (character-by-character), without case-folding or any\n   other string normalization.\n\n- The values being matched follow JSON rules: Strings enclosed in quotes,\n   numbers, and the unquoted keywords true, false, and null.\n\n- Number matching is at the string representation level. For example, 300,\n   300.0, and 3.0e2 are not considered equal.",
+        "see": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html"
+      },
+      "fqn": "@aws-cdk/aws-events.EventPattern",
+      "kind": "interface",
+      "name": "EventPattern",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The 12-digit number identifying an AWS account."
+          },
+          "name": "account",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A JSON object, whose content is at the discretion of the service\noriginating the event."
+          },
+          "name": "detail",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Identifies, in combination with the source field, the fields and values\nthat appear in the detail field.\n\nRepresents the \"detail-type\" event field."
+          },
+          "name": "detailType",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A unique value is generated for every event. This can be helpful in\ntracing events as they move through rules to targets, and are processed."
+          },
+          "name": "id",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Identifies the AWS region where the event originated."
+          },
+          "name": "region",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "This JSON array contains ARNs that identify resources that are involved\nin the event. Inclusion of these ARNs is at the discretion of the\nservice.\n\nFor example, Amazon EC2 instance state-changes include Amazon EC2\ninstance ARNs, Auto Scaling events include ARNs for both instances and\nAuto Scaling groups, but API calls with AWS CloudTrail do not include\nresource ARNs."
+          },
+          "name": "resources",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Identifies the service that sourced the event. All events sourced from\nwithin AWS begin with \"aws.\" Customer-generated events can have any value\nhere, as long as it doesn't begin with \"aws.\" We recommend the use of\nJava package-name style reverse domain-name strings.\n\nTo find the correct value for source for an AWS service, see the table in\nAWS Service Namespaces. For example, the source value for Amazon\nCloudFront is aws.cloudfront.",
+            "see": "http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#genref-aws-service-namespaces"
+          },
+          "name": "source",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The event timestamp, which can be specified by the service originating\nthe event. If the event spans a time interval, the service might choose\nto report the start time, so this value can be noticeably before the time\nthe event is actually received."
+          },
+          "name": "time",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "By default, this is set to 0 (zero) in all events."
+          },
+          "name": "version",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.EventRule": {
+      "assembly": "@aws-cdk/aws-events",
+      "base": {
+        "fqn": "@aws-cdk/aws-events.EventRuleRef"
+      },
+      "docs": {
+        "comment": "Defines a CloudWatch Event Rule in this stack."
+      },
+      "fqn": "@aws-cdk/aws-events.EventRule",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-events.EventRuleProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Adds an event pattern filter to this rule. If a pattern was already specified,\nthese values are merged into the existing pattern.\n\nFor example, if the rule already contains the pattern:\n\n    {\n      \"resources\": [ \"r1\" ],\n      \"detail\": {\n        \"hello\": [ 1 ]\n      }\n    }\n\nAnd `addEventPattern` is called with the pattern:\n\n    {\n      \"resources\": [ \"r2\" ],\n      \"detail\": {\n        \"foo\": [ \"bar\" ]\n      }\n    }\n\nThe resulting event pattern will be:\n\n    {\n      \"resources\": [ \"r1\", \"r2\" ],\n      \"detail\": {\n        \"hello\": [ 1 ],\n        \"foo\": [ \"bar\" ]\n      }\n    }"
+          },
+          "name": "addEventPattern",
+          "parameters": [
+            {
+              "name": "eventPattern",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.EventPattern",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Adds a target to the rule. The abstract class RuleTarget can be extended to define new\ntargets.\n\nNo-op if target is undefined."
+          },
+          "name": "addTarget",
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+                "optional": true
+              }
+            },
+            {
+              "name": "inputOptions",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.TargetInputTemplate",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "This method can be implemented by derived constructs in order to perform\nvalidation logic. It is called on all constructs before synthesis."
+          },
+          "name": "validate",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "EventRule",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The value of the event rule Amazon Resource Name (ARN), such as\narn:aws:events:us-east-2:123456789012:rule/example."
+          },
+          "immutable": true,
+          "name": "ruleArn",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-events.EventRuleRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.EventRuleProps": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-events.EventRuleProps",
+      "kind": "interface",
+      "name": "EventRuleProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A description of the rule's purpose."
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Indicates whether the rule is enabled.",
+            "default": "Rule is enabled"
+          },
+          "name": "enabled",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Describes which events CloudWatch Events routes to the specified target.\nThese routed events are matched events. For more information, see Events\nand Event Patterns in the Amazon CloudWatch User Guide.",
+            "see": "http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/CloudWatchEventsandEventPatterns.html\n\nYou must specify this property (either via props or via\n`addEventPattern`), the `scheduleExpression` property, or both. The\nmethod `addEventPattern` can be used to add filter values to the event\npattern."
+          },
+          "name": "eventPattern",
+          "type": {
+            "fqn": "@aws-cdk/aws-events.EventPattern",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A name for the rule. If you don't specify a name, AWS CloudFormation\ngenerates a unique physical ID and uses that ID for the rule name. For\nmore information, see Name Type."
+          },
+          "name": "ruleName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The schedule or rate (frequency) that determines when CloudWatch Events\nruns the rule. For more information, see Schedule Expression Syntax for\nRules in the Amazon CloudWatch User Guide.",
+            "see": "http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html\n\nYou must specify this property, the `eventPattern` property, or both."
+          },
+          "name": "scheduleExpression",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Targets to invoke when this rule matches an event.\n\nInput will be the full matched event. If you wish to specify custom\ntarget input, use `addTarget(target[, inputOptions])`."
+          },
+          "name": "targets",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.EventRuleRef": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-events",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "fqn": "@aws-cdk/aws-events.EventRuleRef",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "The local logical ID of the construct. Must be unique amongst\nsiblings. If the ID includes a path separator (`/`), then it will be\nreplaced by double dash `--`."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Imports a rule by ARN into this stack."
+          },
+          "name": "import",
+          "parameters": [
+            {
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.EventRuleRefProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRuleRef"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Exports this rule resource from this stack and returns an import token."
+          },
+          "name": "export",
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRuleRefProps"
+          }
+        }
+      ],
+      "name": "EventRuleRef",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The value of the event rule Amazon Resource Name (ARN), such as\narn:aws:events:us-east-2:123456789012:rule/example."
+          },
+          "immutable": true,
+          "name": "ruleArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.EventRuleRefProps": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-events.EventRuleRefProps",
+      "kind": "interface",
+      "name": "EventRuleRefProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The value of the event rule Amazon Resource Name (ARN), such as\narn:aws:events:us-east-2:123456789012:rule/example."
+          },
+          "name": "eventRuleArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.EventRuleTargetProps": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-events.EventRuleTargetProps",
+      "kind": "interface",
+      "name": "EventRuleTargetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The Amazon Resource Name (ARN) of the target."
+          },
+          "name": "arn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A unique, user-defined identifier for the target. Acceptable values\ninclude alphanumeric characters, periods (.), hyphens (-), and\nunderscores (_)."
+          },
+          "name": "id",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The Amazon ECS task definition and task count to use, if the event target\nis an Amazon ECS task."
+          },
+          "name": "ecsParameters",
+          "type": {
+            "fqn": "@aws-cdk/aws-events.CfnRule.EcsParametersProperty",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Settings that control shard assignment, when the target is a Kinesis\nstream. If you don't include this parameter, eventId is used as the\npartition key."
+          },
+          "name": "kinesisParameters",
+          "type": {
+            "fqn": "@aws-cdk/aws-events.CfnRule.KinesisParametersProperty",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The Amazon Resource Name (ARN) of the AWS Identity and Access Management\n(IAM) role to use for this target when the rule is triggered. If one rule\ntriggers multiple targets, you can use a different IAM role for each\ntarget."
+          },
+          "name": "roleArn",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Parameters used when the rule invokes Amazon EC2 Systems Manager Run\nCommand."
+          },
+          "name": "runCommandParameters",
+          "type": {
+            "fqn": "@aws-cdk/aws-events.CfnRule.RunCommandParametersProperty",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.IEventRuleTarget": {
+      "assembly": "@aws-cdk/aws-events",
+      "docs": {
+        "comment": "An abstract target for EventRules."
+      },
+      "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+      "kind": "interface",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Returns the rule target specification.\nNOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`."
+          },
+          "name": "asEventRuleTarget",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The ARN of the CloudWatch Event Rule that would trigger this target."
+              },
+              "name": "ruleArn",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "A unique ID for this rule. Can be used to implement idempotency."
+              },
+              "name": "ruleUniqueId",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRuleTargetProps"
+          }
+        }
+      ],
+      "name": "IEventRuleTarget"
+    },
+    "@aws-cdk/aws-events.TargetInputTemplate": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "comment": "Specifies settings that provide custom input to an Amazon CloudWatch Events\nrule target based on certain event data.",
+        "see": "https://docs.aws.amazon.com/AmazonCloudWatchEvents/latest/APIReference/API_InputTransformer.html"
+      },
+      "fqn": "@aws-cdk/aws-events.TargetInputTemplate",
+      "kind": "interface",
+      "name": "TargetInputTemplate",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Input template where you can use the values of the keys from\ninputPathsMap to customize the data sent to the target. Enclose each\nInputPathsMaps value in brackets: <value>\n\nThis option is mutually exclusive with `textTemplate`.",
+            "example": "{\njsonTemplate: '{ \"commands\": <commandsToRun> }' ,\npathsMap: {\ncommandsToRun: '$.detail.commands'\n}\n}"
+          },
+          "name": "jsonTemplate",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Map of JSON paths to be extracted from the event. These are key-value\npairs, where each value is a JSON path. You must use JSON dot notation,\nnot bracket notation."
+          },
+          "name": "pathsMap",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Input template where you can use the values of the keys from\ninputPathsMap to customize the data sent to the target. Enclose each\nInputPathsMaps value in brackets: <value>\n\nThe value passed here will be double-quoted to indicate it's a string value.\nThis option is mutually exclusive with `jsonTemplate`.",
+            "example": "{\ntextTemplate: 'Build <buildid> started',\npathsMap: {\nbuildid: '$.detail.id'\n}\n}"
+          },
+          "name": "textTemplate",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.EventBusPolicyResource": {
+      "assembly": "@aws-cdk/aws-events",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.EventBusPolicyResource\" will be deprecated in a future release in favor of \"CfnEventBusPolicy\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.EventBusPolicyResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Events::EventBusPolicy``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``EventBusPolicyResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``EventBusPolicyResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-events.cloudformation.EventBusPolicyResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "EventBusPolicyResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "eventBusPolicyId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-events.cloudformation.EventBusPolicyResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.EventBusPolicyResource.ConditionProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-eventbuspolicy-condition.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.EventBusPolicyResource.ConditionProperty",
+      "kind": "interface",
+      "name": "ConditionProperty",
+      "namespace": "cloudformation.EventBusPolicyResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``EventBusPolicyResource.ConditionProperty.Key``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-eventbuspolicy-condition.html#cfn-events-eventbuspolicy-condition-key"
+          },
+          "name": "key",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``EventBusPolicyResource.ConditionProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-eventbuspolicy-condition.html#cfn-events-eventbuspolicy-condition-type"
+          },
+          "name": "type",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``EventBusPolicyResource.ConditionProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-eventbuspolicy-condition.html#cfn-events-eventbuspolicy-condition-value"
+          },
+          "name": "value",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.EventBusPolicyResourceProps": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.EventBusPolicyResourceProps",
+      "kind": "interface",
+      "name": "EventBusPolicyResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::EventBusPolicy.Action``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html#cfn-events-eventbuspolicy-action"
+          },
+          "name": "action",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::EventBusPolicy.Principal``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html#cfn-events-eventbuspolicy-principal"
+          },
+          "name": "principal",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::EventBusPolicy.StatementId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html#cfn-events-eventbuspolicy-statementid"
+          },
+          "name": "statementId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::EventBusPolicy.Condition``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbuspolicy.html#cfn-events-eventbuspolicy-condition"
+          },
+          "name": "condition",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-events.cloudformation.EventBusPolicyResource.ConditionProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.RuleResource": {
+      "assembly": "@aws-cdk/aws-events",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.RuleResource\" will be deprecated in a future release in favor of \"CfnRule\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Events::Rule``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``RuleResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``RuleResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-events.cloudformation.RuleResourceProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "RuleResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-events.cloudformation.RuleResourceProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "ruleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "ruleId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.RuleResource.EcsParametersProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-ecsparameters.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.EcsParametersProperty",
+      "kind": "interface",
+      "name": "EcsParametersProperty",
+      "namespace": "cloudformation.RuleResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.EcsParametersProperty.TaskDefinitionArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-ecsparameters.html#cfn-events-rule-ecsparameters-taskdefinitionarn"
+          },
+          "name": "taskDefinitionArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.EcsParametersProperty.TaskCount``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-ecsparameters.html#cfn-events-rule-ecsparameters-taskcount"
+          },
+          "name": "taskCount",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.RuleResource.InputTransformerProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-inputtransformer.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.InputTransformerProperty",
+      "kind": "interface",
+      "name": "InputTransformerProperty",
+      "namespace": "cloudformation.RuleResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.InputTransformerProperty.InputTemplate``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-inputtransformer.html#cfn-events-rule-inputtransformer-inputtemplate"
+          },
+          "name": "inputTemplate",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.InputTransformerProperty.InputPathsMap``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-inputtransformer.html#cfn-events-rule-inputtransformer-inputpathsmap"
+          },
+          "name": "inputPathsMap",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.RuleResource.KinesisParametersProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-kinesisparameters.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.KinesisParametersProperty",
+      "kind": "interface",
+      "name": "KinesisParametersProperty",
+      "namespace": "cloudformation.RuleResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.KinesisParametersProperty.PartitionKeyPath``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-kinesisparameters.html#cfn-events-rule-kinesisparameters-partitionkeypath"
+          },
+          "name": "partitionKeyPath",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.RuleResource.RunCommandParametersProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-runcommandparameters.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.RunCommandParametersProperty",
+      "kind": "interface",
+      "name": "RunCommandParametersProperty",
+      "namespace": "cloudformation.RuleResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.RunCommandParametersProperty.RunCommandTargets``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-runcommandparameters.html#cfn-events-rule-runcommandparameters-runcommandtargets"
+          },
+          "name": "runCommandTargets",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.RunCommandTargetProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.RuleResource.RunCommandTargetProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-runcommandtarget.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.RunCommandTargetProperty",
+      "kind": "interface",
+      "name": "RunCommandTargetProperty",
+      "namespace": "cloudformation.RuleResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.RunCommandTargetProperty.Key``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-runcommandtarget.html#cfn-events-rule-runcommandtarget-key"
+          },
+          "name": "key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.RunCommandTargetProperty.Values``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-runcommandtarget.html#cfn-events-rule-runcommandtarget-values"
+          },
+          "name": "values",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.RuleResource.SqsParametersProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-sqsparameters.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.SqsParametersProperty",
+      "kind": "interface",
+      "name": "SqsParametersProperty",
+      "namespace": "cloudformation.RuleResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.SqsParametersProperty.MessageGroupId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-sqsparameters.html#cfn-events-rule-sqsparameters-messagegroupid"
+          },
+          "name": "messageGroupId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.RuleResource.TargetProperty": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.TargetProperty",
+      "kind": "interface",
+      "name": "TargetProperty",
+      "namespace": "cloudformation.RuleResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.TargetProperty.Arn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-arn"
+          },
+          "name": "arn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.TargetProperty.Id``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-id"
+          },
+          "name": "id",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.TargetProperty.EcsParameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-ecsparameters"
+          },
+          "name": "ecsParameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.EcsParametersProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.TargetProperty.Input``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-input"
+          },
+          "name": "input",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.TargetProperty.InputPath``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-inputpath"
+          },
+          "name": "inputPath",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.TargetProperty.InputTransformer``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-inputtransformer"
+          },
+          "name": "inputTransformer",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.InputTransformerProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.TargetProperty.KinesisParameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-kinesisparameters"
+          },
+          "name": "kinesisParameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.KinesisParametersProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.TargetProperty.RoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.TargetProperty.RunCommandParameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-runcommandparameters"
+          },
+          "name": "runCommandParameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.RunCommandParametersProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RuleResource.TargetProperty.SqsParameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-rule-target.html#cfn-events-rule-target-sqsparameters"
+          },
+          "name": "sqsParameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.SqsParametersProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-events.cloudformation.RuleResourceProps": {
+      "assembly": "@aws-cdk/aws-events",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-events.cloudformation.RuleResourceProps",
+      "kind": "interface",
+      "name": "RuleResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.EventPattern``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-eventpattern"
+          },
+          "name": "eventPattern",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.RoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.ScheduleExpression``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-scheduleexpression"
+          },
+          "name": "scheduleExpression",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.State``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-state"
+          },
+          "name": "state",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Events::Rule.Targets``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-targets"
+          },
+          "name": "targets",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-events.cloudformation.RuleResource.TargetProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "N9PGj+35e6ofitBU/Q67Ep7JwA4lDu/BWf0ubMEaqNQ="
+}

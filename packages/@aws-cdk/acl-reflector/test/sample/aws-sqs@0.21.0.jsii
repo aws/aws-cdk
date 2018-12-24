@@ -1,0 +1,2375 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-autoscaling-api": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.AutoScaling.Api",
+          "packageId": "Amazon.CDK.AWS.AutoScaling.Api",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "autoscaling-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.autoscaling.api"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-autoscaling-api"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-kms": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-s3-notifications": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.S3.Notifications",
+          "packageId": "Amazon.CDK.AWS.S3.Notifications",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3-notifications",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3.notifications"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3-notifications"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "CDK Constructs for AWS SQS",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-sqs",
+  "readme": {
+    "markdown": "## AWS SQS Construct Library\n\nAmazon Simple Queue Service (SQS) is a fully managed message queuing service that\nenables you to decouple and scale microservices, distributed systems, and serverless\napplications. SQS eliminates the complexity and overhead associated with managing and\noperating message oriented middleware, and empowers developers to focus on differentiating work.\nUsing SQS, you can send, store, and receive messages between software components at any volume,\nwithout losing messages or requiring other services to be available.\n\n### Installation\n\nImport to your project:\n\n```ts\nimport sqs = require('@aws-cdk/aws-sqs');\n```\n\n### Basic usage\n\n\nHere's how to add a basic queue to your application:\n\n```ts\nnew sqs.Queue(this, 'Queue');\n```\n\n### Encryption\n\nIf you want to encrypt the queue contents, set the `encryption` property. You can have\nthe messages encrypted with a key that SQS manages for you, or a key that you\ncan manage yourself.\n\n```ts\n// Use managed key\nnew sqs.Queue(this, 'Queue', {\n    encryption: QueueEncryption.Managed,\n});\n\n// Use custom key\nconst myKey = new EncryptionKey(this, 'Key');\n\nnew sqs.Queue(this, 'Queue', {\n    encryption: QueueEncryption.Kms,\n    encryptionMasterKey: myKey\n});\n```\n\n### First-In-First-Out (FIFO) queues\n\nFIFO queues give guarantees on the order in which messages are dequeued, and have additional\nfeatures in order to help guarantee exactly-once processing. For more information, see\nthe SQS manual. Note that FIFO queues are not available in all AWS regions.\n\nA queue can be made a FIFO queue by either setting `fifo: true`, giving it a name which ends\nin `\".fifo\"`, or enabling content-based deduplication (which requires FIFO queues).\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.SQS",
+      "packageId": "Amazon.CDK.AWS.SQS",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "sqs",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.sqs"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-sqs"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-sqs.CfnQueue": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html"
+      },
+      "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::SQS::Queue``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnQueue`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnQueue``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-sqs.CfnQueueProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnQueue",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.CfnQueueProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "queueArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "QueueName"
+          },
+          "immutable": true,
+          "name": "queueName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "queueUrl",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.CfnQueuePolicy": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html"
+      },
+      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::SQS::QueuePolicy``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnQueuePolicy`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnQueuePolicy``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicyProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnQueuePolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicyProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.CfnQueuePolicyProps": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html"
+      },
+      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicyProps",
+      "kind": "interface",
+      "name": "CfnQueuePolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::QueuePolicy.PolicyDocument``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-policydoc"
+          },
+          "name": "policyDocument",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::QueuePolicy.Queues``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-queues"
+          },
+          "name": "queues",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.CfnQueueProps": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html"
+      },
+      "fqn": "@aws-cdk/aws-sqs.CfnQueueProps",
+      "kind": "interface",
+      "name": "CfnQueueProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.ContentBasedDeduplication``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-contentbaseddeduplication"
+          },
+          "name": "contentBasedDeduplication",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.DelaySeconds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-delayseconds"
+          },
+          "name": "delaySeconds",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.FifoQueue``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-fifoqueue"
+          },
+          "name": "fifoQueue",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.KmsDataKeyReusePeriodSeconds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-kmsdatakeyreuseperiodseconds"
+          },
+          "name": "kmsDataKeyReusePeriodSeconds",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.KmsMasterKeyId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-kmsmasterkeyid"
+          },
+          "name": "kmsMasterKeyId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.MaximumMessageSize``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-maxmesgsize"
+          },
+          "name": "maximumMessageSize",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.MessageRetentionPeriod``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-msgretentionperiod"
+          },
+          "name": "messageRetentionPeriod",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.QueueName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-name"
+          },
+          "name": "queueName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.ReceiveMessageWaitTimeSeconds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-receivemsgwaittime"
+          },
+          "name": "receiveMessageWaitTimeSeconds",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.RedrivePolicy``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-redrive"
+          },
+          "name": "redrivePolicy",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#cfn-sqs-queue-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.VisibilityTimeout``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-visiblitytimeout"
+          },
+          "name": "visibilityTimeout",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.DeadLetterQueue": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "datatype": true,
+      "docs": {
+        "comment": "Dead letter queue settings"
+      },
+      "fqn": "@aws-cdk/aws-sqs.DeadLetterQueue",
+      "kind": "interface",
+      "name": "DeadLetterQueue",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue."
+          },
+          "name": "maxReceiveCount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The dead-letter queue to which Amazon SQS moves messages after the value of maxReceiveCount is exceeded."
+          },
+          "name": "queue",
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.QueueRef"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.Queue": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "base": {
+        "fqn": "@aws-cdk/aws-sqs.QueueRef"
+      },
+      "docs": {
+        "comment": "A new Amazon SQS queue"
+      },
+      "fqn": "@aws-cdk/aws-sqs.Queue",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-sqs.QueueProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "Queue",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Controls automatic creation of policy objects.\n\nSet by subclasses."
+          },
+          "immutable": true,
+          "name": "autoCreatePolicy",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-sqs.QueueRef"
+          },
+          "protected": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The ARN of this queue"
+          },
+          "immutable": true,
+          "name": "queueArn",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-sqs.QueueRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of this queue"
+          },
+          "immutable": true,
+          "name": "queueName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The URL of this queue"
+          },
+          "immutable": true,
+          "name": "queueUrl",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-sqs.QueueRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "If this queue is encrypted, this is the KMS key."
+          },
+          "immutable": true,
+          "name": "encryptionMasterKey",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-sqs.QueueRef"
+          },
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.QueueEncryption": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "docs": {
+        "comment": "What kind of encryption to apply to this queue"
+      },
+      "fqn": "@aws-cdk/aws-sqs.QueueEncryption",
+      "kind": "enum",
+      "members": [
+        {
+          "docs": {
+            "comment": "Messages in the queue are not encrypted"
+          },
+          "name": "Unencrypted"
+        },
+        {
+          "docs": {
+            "comment": "Server-side KMS encryption with a master key managed by SQS."
+          },
+          "name": "KmsManaged"
+        },
+        {
+          "docs": {
+            "comment": "Server-side encryption with a KMS key managed by the user.\n\nIf `encryptionKey` is specified, this key will be used, otherwise, one will be defined."
+          },
+          "name": "Kms"
+        }
+      ],
+      "name": "QueueEncryption"
+    },
+    "@aws-cdk/aws-sqs.QueuePolicy": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Applies a policy to SQS queues."
+      },
+      "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-sqs.QueuePolicyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/cdk.IDependable"
+        }
+      ],
+      "kind": "class",
+      "name": "QueuePolicy",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Allows adding QueuePolicy as a dependency."
+          },
+          "immutable": true,
+          "name": "dependencyElements",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.IDependable"
+          },
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "The IAM policy document for this policy."
+          },
+          "immutable": true,
+          "name": "document",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.PolicyDocument"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.QueuePolicyProps": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-sqs.QueuePolicyProps",
+      "kind": "interface",
+      "name": "QueuePolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The set of queues this policy applies to."
+          },
+          "name": "queues",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-sqs.QueueRef"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.QueueProps": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for creating a new Queue"
+      },
+      "fqn": "@aws-cdk/aws-sqs.QueueProps",
+      "kind": "interface",
+      "name": "QueueProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Specifies whether to enable content-based deduplication.\n\nDuring the deduplication interval (5 minutes), Amazon SQS treats\nmessages that are sent with identical content (excluding attributes) as\nduplicates and delivers only one copy of the message.\n\nIf you don't enable content-based deduplication and you want to deduplicate\nmessages, provide an explicit deduplication ID in your SendMessage() call.\n\n(Only applies to FIFO queues.)",
+            "default": "false"
+          },
+          "name": "contentBasedDeduplication",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The length of time that Amazon SQS reuses a data key before calling KMS again.\n\nThe value must be an integer between 60 (1 minute) and 86,400 (24\nhours). The default is 300 (5 minutes).",
+            "default": "300 (5 minutes)"
+          },
+          "name": "dataKeyReuseSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Send messages to this queue if they were unsuccessfully dequeued a number of times.",
+            "default": "no dead-letter queue"
+          },
+          "name": "deadLetterQueue",
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.DeadLetterQueue",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The time in seconds that the delivery of all messages in the queue is delayed.\n\nYou can specify an integer value of 0 to 900 (15 minutes). The default\nvalue is 0.",
+            "default": "0"
+          },
+          "name": "deliveryDelaySec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether the contents of the queue are encrypted, and by what type of key.\n\nBe aware that encryption is not available in all regions, please see the docs\nfor current availability details.",
+            "default": "Unencrypted"
+          },
+          "name": "encryption",
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.QueueEncryption",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "External KMS master key to use for queue encryption.\n\nIndividual messages will be encrypted using data keys. The data keys in\nturn will be encrypted using this key, and reused for a maximum of\n`dataKeyReuseSecs` seconds.\n\nThe 'encryption' property must be either not specified or set to \"Kms\".\nAn error will be emitted if encryption is set to \"Unencrypted\" or\n\"KmsManaged\".",
+            "default": "If encryption is set to KMS and not specified, a key will be created."
+          },
+          "name": "encryptionMasterKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether this a first-in-first-out (FIFO) queue.",
+            "default": "false, unless queueName ends in '.fifo' or 'contentBasedDeduplication' is true."
+          },
+          "name": "fifo",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The limit of how many bytes that a message can contain before Amazon SQS rejects it.\n\nYou can specify an integer value from 1024 bytes (1 KiB) to 262144 bytes\n(256 KiB). The default value is 262144 (256 KiB).",
+            "default": "256KiB"
+          },
+          "name": "maxMessageSizeBytes",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A name for the queue.\n\nIf specified and this is a FIFO queue, must end in the string '.fifo'.",
+            "default": "CloudFormation-generated name"
+          },
+          "name": "queueName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Default wait time for ReceiveMessage calls.\n\nDoes not wait if set to 0, otherwise waits this amount of seconds\nby default for messages to arrive.\n\nFor more information, see Amazon SQS Long Poll.",
+            "default": "0"
+          },
+          "name": "receiveMessageWaitTimeSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The number of seconds that Amazon SQS retains a message.\n\nYou can specify an integer value from 60 seconds (1 minute) to 1209600\nseconds (14 days). The default value is 345600 seconds (4 days).",
+            "default": "345600 seconds (4 days)"
+          },
+          "name": "retentionPeriodSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Timeout of processing a single message.\n\nAfter dequeuing, the processor has this much time to handle the message\nand delete it from the queue before it becomes visible again for dequeueing\nby another processor.\n\nValues must be from 0 to 43200 seconds (12 hours). If you don't specify\na value, AWS CloudFormation uses the default value of 30 seconds.",
+            "default": "30"
+          },
+          "name": "visibilityTimeoutSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.QueueRef": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-sqs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Reference to a new or existing Amazon SQS queue"
+      },
+      "fqn": "@aws-cdk/aws-sqs.QueueRef",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "The local logical ID of the construct. Must be unique amongst\nsiblings. If the ID includes a path separator (`/`), then it will be\nreplaced by double dash `--`."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-s3-notifications.IBucketNotificationDestination"
+        },
+        {
+          "fqn": "@aws-cdk/aws-autoscaling-api.ILifecycleHookTarget"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Import an existing queue"
+          },
+          "name": "import",
+          "parameters": [
+            {
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-sqs.QueueRefProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-sqs.QueueRef"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Adds a statement to the IAM resource policy associated with this queue.\n\nIf this queue was created in this stack (`new Queue`), a queue policy\nwill be automatically created upon the first call to `addToPolicy`. If\nthe queue is improted (`Queue.import`), then this is a no-op."
+          },
+          "name": "addToResourcePolicy",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Allows using SQS queues as destinations for bucket notifications.\nUse `bucket.onEvent(event, queue)` to subscribe."
+          },
+          "name": "asBucketNotificationDestination",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-s3-notifications.IBucketNotificationDestination"
+          },
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The ARN of the notifying bucket."
+              },
+              "name": "bucketArn",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "A unique ID for the notifying bucket."
+              },
+              "name": "bucketId",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-s3-notifications.BucketNotificationDestinationProps"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Allow using SQS queues as lifecycle hook targets"
+          },
+          "name": "asLifecycleHookTarget",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-autoscaling-api.ILifecycleHookTarget"
+          },
+          "parameters": [
+            {
+              "name": "lifecycleHook",
+              "type": {
+                "fqn": "@aws-cdk/aws-autoscaling-api.ILifecycleHook"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-autoscaling-api.LifecycleHookTargetProps"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Export a queue"
+          },
+          "name": "export",
+          "returns": {
+            "fqn": "@aws-cdk/aws-sqs.QueueRefProps"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Grant the actions defined in queueActions to the identity Principal given\non this SQS queue resource."
+          },
+          "name": "grant",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Principal to grant right to"
+              },
+              "name": "identity",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            },
+            {
+              "docs": {
+                "comment": "The actions to grant"
+              },
+              "name": "queueActions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Grant permissions to consume messages from a queue\n\nThis will grant the following permissions:\n\n   - sqs:ChangeMessageVisibility\n   - sqs:ChangeMessageVisibilityBatch\n   - sqs:DeleteMessage\n   - sqs:ReceiveMessage\n   - sqs:DeleteMessageBatch\n   - sqs:GetQueueAttributes\n   - sqs:GetQueueUrl"
+          },
+          "name": "grantConsumeMessages",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Principal to grant consume rights to"
+              },
+              "name": "identity",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Grant an IAM principal permissions to purge all messages from the queue.\n\nThis will grant the following permissions:\n\n  - sqs:PurgeQueue\n  - sqs:GetQueueAttributes\n  - sqs:GetQueueUrl"
+          },
+          "name": "grantPurge",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Principal to grant send rights to"
+              },
+              "name": "identity",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Grant access to send messages to a queue to the given identity.\n\nThis will grant the following permissions:\n\n  - sqs:SendMessage\n  - sqs:SendMessageBatch\n  - sqs:GetQueueAttributes\n  - sqs:GetQueueUrl"
+          },
+          "name": "grantSendMessages",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Principal to grant send rights to"
+              },
+              "name": "identity",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        }
+      ],
+      "name": "QueueRef",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Controls automatic creation of policy objects.\n\nSet by subclasses."
+          },
+          "immutable": true,
+          "name": "autoCreatePolicy",
+          "protected": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of this queue"
+          },
+          "immutable": true,
+          "name": "queueArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The URL of this queue"
+          },
+          "immutable": true,
+          "name": "queueUrl",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "If this queue is server-side encrypted, this is the KMS encryption key."
+          },
+          "immutable": true,
+          "name": "encryptionMasterKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.QueueRefProps": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "datatype": true,
+      "docs": {
+        "comment": "Reference to a queue"
+      },
+      "fqn": "@aws-cdk/aws-sqs.QueueRefProps",
+      "kind": "interface",
+      "name": "QueueRefProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of the queue."
+          },
+          "name": "queueArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The URL of the queue."
+          },
+          "name": "queueUrl",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "KMS encryption key, if this queue is server-side encrypted by a KMS key."
+          },
+          "name": "keyArn",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.cloudformation.QueuePolicyResource": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.QueuePolicyResource\" will be deprecated in a future release in favor of \"CfnQueuePolicy\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html"
+      },
+      "fqn": "@aws-cdk/aws-sqs.cloudformation.QueuePolicyResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::SQS::QueuePolicy``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``QueuePolicyResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``QueuePolicyResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-sqs.cloudformation.QueuePolicyResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "QueuePolicyResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.cloudformation.QueuePolicyResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.cloudformation.QueuePolicyResourceProps": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html"
+      },
+      "fqn": "@aws-cdk/aws-sqs.cloudformation.QueuePolicyResourceProps",
+      "kind": "interface",
+      "name": "QueuePolicyResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::QueuePolicy.PolicyDocument``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-policydoc"
+          },
+          "name": "policyDocument",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::QueuePolicy.Queues``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-queues"
+          },
+          "name": "queues",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.cloudformation.QueueResource": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.QueueResource\" will be deprecated in a future release in favor of \"CfnQueue\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html"
+      },
+      "fqn": "@aws-cdk/aws-sqs.cloudformation.QueueResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::SQS::Queue``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``QueueResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``QueueResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-sqs.cloudformation.QueueResourceProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "QueueResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.cloudformation.QueueResourceProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "queueArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "QueueName"
+          },
+          "immutable": true,
+          "name": "queueName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "queueUrl",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-sqs.cloudformation.QueueResourceProps": {
+      "assembly": "@aws-cdk/aws-sqs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html"
+      },
+      "fqn": "@aws-cdk/aws-sqs.cloudformation.QueueResourceProps",
+      "kind": "interface",
+      "name": "QueueResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.ContentBasedDeduplication``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-contentbaseddeduplication"
+          },
+          "name": "contentBasedDeduplication",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.DelaySeconds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-delayseconds"
+          },
+          "name": "delaySeconds",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.FifoQueue``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-fifoqueue"
+          },
+          "name": "fifoQueue",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.KmsDataKeyReusePeriodSeconds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-kmsdatakeyreuseperiodseconds"
+          },
+          "name": "kmsDataKeyReusePeriodSeconds",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.KmsMasterKeyId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-kmsmasterkeyid"
+          },
+          "name": "kmsMasterKeyId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.MaximumMessageSize``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-maxmesgsize"
+          },
+          "name": "maximumMessageSize",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.MessageRetentionPeriod``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-msgretentionperiod"
+          },
+          "name": "messageRetentionPeriod",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.QueueName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-name"
+          },
+          "name": "queueName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.ReceiveMessageWaitTimeSeconds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-receivemsgwaittime"
+          },
+          "name": "receiveMessageWaitTimeSeconds",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.RedrivePolicy``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-redrive"
+          },
+          "name": "redrivePolicy",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#cfn-sqs-queue-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::SQS::Queue.VisibilityTimeout``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-visiblitytimeout"
+          },
+          "name": "visibilityTimeout",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "6eaPDqVsaZDdnTkjNEuOVOwrRto23//NPgrbdvgxcy4="
+}

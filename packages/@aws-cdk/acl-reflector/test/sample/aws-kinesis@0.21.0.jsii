@@ -1,0 +1,1973 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-kms": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-logs": {
+      "dependencies": {
+        "@aws-cdk/aws-cloudwatch": {
+          "dependencies": {
+            "@aws-cdk/aws-iam": {
+              "dependencies": {
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK.CXAPI",
+                          "packageId": "Amazon.CDK.CXAPI",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk-cx-api",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK",
+                      "packageId": "Amazon.CDK",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.AWS.IAM",
+                  "packageId": "Amazon.CDK.AWS.IAM",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "iam",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.services.iam"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-iam"
+                }
+              },
+              "version": "0.21.0"
+            },
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.CloudWatch",
+              "packageId": "Amazon.CDK.AWS.CloudWatch",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cloudwatch",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.cloudwatch"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-cloudwatch"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.Logs",
+          "packageId": "Amazon.CDK.AWS.Logs",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "logs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.logs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-logs"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "CDK Constructs for AWS Kinesis",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-kinesis",
+  "readme": {
+    "markdown": "## AWS Kinesis Construct Library\n\nDefine an unencrypted Kinesis stream.\n\n```ts\nnew Stream(this, 'MyFirstStream');\n```\n\n### Encryption\n\nDefine a KMS-encrypted stream:\n\n```ts\nconst stream = newStream(this, 'MyEncryptedStream', {\n    encryption: StreamEncryption.Kms\n});\n\n// you can access the encryption key:\nassert(stream.encryptionKey instanceof kms.EncryptionKey);\n```\n\nYou can also supply your own key:\n\n```ts\nconst myKmsKey = new kms.EncryptionKey(this, 'MyKey');\n\nconst stream = new Stream(this, 'MyEncryptedStream', {\n    encryption: StreamEncryption.Kms,\n    encryptionKey: myKmsKey\n});\n\nassert(stream.encryptionKey === myKmsKey);\n```\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.Kinesis",
+      "packageId": "Amazon.CDK.AWS.Kinesis",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "kinesis",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.kinesis"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-kinesis"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-kinesis.CfnStream": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.CfnStream",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Kinesis::Stream``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnStream`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnStream``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesis.CfnStreamProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnStream",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-kinesis.CfnStreamProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "streamArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "streamId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.CfnStream.StreamEncryptionProperty": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.CfnStream.StreamEncryptionProperty",
+      "kind": "interface",
+      "name": "StreamEncryptionProperty",
+      "namespace": "CfnStream",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnStream.StreamEncryptionProperty.EncryptionType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html#cfn-kinesis-stream-streamencryption-encryptiontype"
+          },
+          "name": "encryptionType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnStream.StreamEncryptionProperty.KeyId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html#cfn-kinesis-stream-streamencryption-keyid"
+          },
+          "name": "keyId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.CfnStreamConsumer": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.CfnStreamConsumer",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Kinesis::StreamConsumer``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnStreamConsumer`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnStreamConsumer``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesis.CfnStreamConsumerProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnStreamConsumer",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-kinesis.CfnStreamConsumerProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "streamConsumerArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConsumerARN"
+          },
+          "immutable": true,
+          "name": "streamConsumerConsumerArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConsumerCreationTimestamp"
+          },
+          "immutable": true,
+          "name": "streamConsumerConsumerCreationTimestamp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConsumerName"
+          },
+          "immutable": true,
+          "name": "streamConsumerConsumerName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConsumerStatus"
+          },
+          "immutable": true,
+          "name": "streamConsumerConsumerStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "StreamARN"
+          },
+          "immutable": true,
+          "name": "streamConsumerStreamArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.CfnStreamConsumerProps": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.CfnStreamConsumerProps",
+      "kind": "interface",
+      "name": "CfnStreamConsumerProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::StreamConsumer.ConsumerName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html#cfn-kinesis-streamconsumer-consumername"
+          },
+          "name": "consumerName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::StreamConsumer.StreamARN``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html#cfn-kinesis-streamconsumer-streamarn"
+          },
+          "name": "streamArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.CfnStreamProps": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.CfnStreamProps",
+      "kind": "interface",
+      "name": "CfnStreamProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::Stream.ShardCount``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-shardcount"
+          },
+          "name": "shardCount",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::Stream.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::Stream.RetentionPeriodHours``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-retentionperiodhours"
+          },
+          "name": "retentionPeriodHours",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::Stream.StreamEncryption``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-streamencryption"
+          },
+          "name": "streamEncryption",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kinesis.CfnStream.StreamEncryptionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::Stream.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.Stream": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "base": {
+        "fqn": "@aws-cdk/aws-kinesis.StreamRef"
+      },
+      "docs": {
+        "comment": "A Kinesis stream. Can be encrypted with a KMS key."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.Stream",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesis.StreamProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "Stream",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The ARN of the stream."
+          },
+          "immutable": true,
+          "name": "streamArn",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-kinesis.StreamRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of the stream"
+          },
+          "immutable": true,
+          "name": "streamName",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-kinesis.StreamRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Optional KMS encryption key associated with this stream."
+          },
+          "immutable": true,
+          "name": "encryptionKey",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-kinesis.StreamRef"
+          },
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.StreamEncryption": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "docs": {
+        "comment": "What kind of server-side encryption to apply to this stream"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.StreamEncryption",
+      "kind": "enum",
+      "members": [
+        {
+          "docs": {
+            "comment": "Records in the stream are not encrypted."
+          },
+          "name": "Unencrypted"
+        },
+        {
+          "docs": {
+            "comment": "Server-side encryption with a KMS key managed by the user.\nIf `encryptionKey` is specified, this key will be used, otherwise, one will be defined."
+          },
+          "name": "Kms"
+        }
+      ],
+      "name": "StreamEncryption"
+    },
+    "@aws-cdk/aws-kinesis.StreamProps": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-kinesis.StreamProps",
+      "kind": "interface",
+      "name": "StreamProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The kind of server-side encryption to apply to this stream.\n\nIf you choose KMS, you can specify a KMS key via `encryptionKey`. If\nencryption key is not specified, a key will automatically be created.",
+            "default": "Unencrypted"
+          },
+          "name": "encryption",
+          "type": {
+            "fqn": "@aws-cdk/aws-kinesis.StreamEncryption",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "External KMS key to use for stream encryption.\n\nThe 'encryption' property must be set to \"Kms\".",
+            "default": "If encryption is set to \"Kms\" and this property is undefined, a\nnew KMS key will be created and associated with this stream."
+          },
+          "name": "encryptionKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The number of hours for the data records that are stored in shards to remain accessible.",
+            "default": "24"
+          },
+          "name": "retentionPeriodHours",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The number of shards for the stream.",
+            "default": "1"
+          },
+          "name": "shardCount",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Enforces a particular physical stream name.",
+            "default": "<generated>"
+          },
+          "name": "streamName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.StreamRef": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-kinesis",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Represents a Kinesis Stream.\n\nStreams can be either defined within this stack:\n\n   new Stream(this, 'MyStream', { props });\n\nOr imported from an existing stream:\n\n   StreamRef.import(this, 'MyImportedStream', { streamArn: ... });\n\nYou can also export a stream and import it into another stack:\n\n   const ref = myStream.export();\n   StreamRef.import(this, 'MyImportedStream', ref);"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.StreamRef",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "The local logical ID of the construct. Must be unique amongst\nsiblings. If the ID includes a path separator (`/`), then it will be\nreplaced by double dash `--`."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-logs.ILogSubscriptionDestination"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Creates a Stream construct that represents an external stream."
+          },
+          "name": "import",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The parent creating construct (usually `this`)."
+              },
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The construct's name."
+              },
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-kinesis.StreamRefProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-kinesis.StreamRef"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Exports this stream from the stack."
+          },
+          "name": "export",
+          "returns": {
+            "fqn": "@aws-cdk/aws-kinesis.StreamRefProps"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Grant write permissions for this stream and its contents to an IAM\nprincipal (Role/Group/User).\n\nIf an encryption key is used, permission to ues the key to decrypt the\ncontents of the stream will also be granted."
+          },
+          "name": "grantRead",
+          "parameters": [
+            {
+              "name": "identity",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Grants read/write permissions for this stream and its contents to an IAM\nprincipal (Role/Group/User).\n\nIf an encryption key is used, permission to use the key for\nencrypt/decrypt will also be granted."
+          },
+          "name": "grantReadWrite",
+          "parameters": [
+            {
+              "name": "identity",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Grant read permissions for this stream and its contents to an IAM\nprincipal (Role/Group/User).\n\nIf an encryption key is used, permission to ues the key to decrypt the\ncontents of the stream will also be granted."
+          },
+          "name": "grantWrite",
+          "parameters": [
+            {
+              "name": "identity",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Return the properties required to send subscription events to this destination.\n\nIf necessary, the destination can use the properties of the SubscriptionFilter\nobject itself to configure its permissions to allow the subscription to write\nto it.\n\nThe destination may reconfigure its own permissions in response to this\nfunction call."
+          },
+          "name": "logSubscriptionDestination",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-logs.ILogSubscriptionDestination"
+          },
+          "parameters": [
+            {
+              "name": "sourceLogGroup",
+              "type": {
+                "fqn": "@aws-cdk/aws-logs.LogGroupRef"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.LogSubscriptionDestination"
+          }
+        }
+      ],
+      "name": "StreamRef",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of the stream."
+          },
+          "immutable": true,
+          "name": "streamArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the stream"
+          },
+          "immutable": true,
+          "name": "streamName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Optional KMS encryption key associated with this stream."
+          },
+          "immutable": true,
+          "name": "encryptionKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.StreamRefProps": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "comment": "A reference to a stream. The easiest way to instantiate is to call\n`stream.export()`. Then, the consumer can use `Stream.import(this, ref)` and\nget a `Stream`."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.StreamRefProps",
+      "kind": "interface",
+      "name": "StreamRefProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of the stream."
+          },
+          "name": "streamArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The KMS key securing the contents of the stream if encryption is enabled."
+          },
+          "name": "encryptionKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRefProps",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.cloudformation.StreamConsumerResource": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.StreamConsumerResource\" will be deprecated in a future release in favor of \"CfnStreamConsumer\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.cloudformation.StreamConsumerResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Kinesis::StreamConsumer``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``StreamConsumerResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``StreamConsumerResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesis.cloudformation.StreamConsumerResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "StreamConsumerResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-kinesis.cloudformation.StreamConsumerResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "streamConsumerArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConsumerARN"
+          },
+          "immutable": true,
+          "name": "streamConsumerConsumerArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConsumerCreationTimestamp"
+          },
+          "immutable": true,
+          "name": "streamConsumerConsumerCreationTimestamp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConsumerName"
+          },
+          "immutable": true,
+          "name": "streamConsumerConsumerName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "ConsumerStatus"
+          },
+          "immutable": true,
+          "name": "streamConsumerConsumerStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "StreamARN"
+          },
+          "immutable": true,
+          "name": "streamConsumerStreamArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.cloudformation.StreamConsumerResourceProps": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.cloudformation.StreamConsumerResourceProps",
+      "kind": "interface",
+      "name": "StreamConsumerResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::StreamConsumer.ConsumerName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html#cfn-kinesis-streamconsumer-consumername"
+          },
+          "name": "consumerName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::StreamConsumer.StreamARN``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html#cfn-kinesis-streamconsumer-streamarn"
+          },
+          "name": "streamArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.cloudformation.StreamResource": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.StreamResource\" will be deprecated in a future release in favor of \"CfnStream\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.cloudformation.StreamResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Kinesis::Stream``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``StreamResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``StreamResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesis.cloudformation.StreamResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "StreamResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-kinesis.cloudformation.StreamResourceProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "streamArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "streamId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.cloudformation.StreamResource.StreamEncryptionProperty": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.cloudformation.StreamResource.StreamEncryptionProperty",
+      "kind": "interface",
+      "name": "StreamEncryptionProperty",
+      "namespace": "cloudformation.StreamResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``StreamResource.StreamEncryptionProperty.EncryptionType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html#cfn-kinesis-stream-streamencryption-encryptiontype"
+          },
+          "name": "encryptionType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``StreamResource.StreamEncryptionProperty.KeyId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html#cfn-kinesis-stream-streamencryption-keyid"
+          },
+          "name": "keyId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kinesis.cloudformation.StreamResourceProps": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html"
+      },
+      "fqn": "@aws-cdk/aws-kinesis.cloudformation.StreamResourceProps",
+      "kind": "interface",
+      "name": "StreamResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::Stream.ShardCount``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-shardcount"
+          },
+          "name": "shardCount",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::Stream.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::Stream.RetentionPeriodHours``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-retentionperiodhours"
+          },
+          "name": "retentionPeriodHours",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::Stream.StreamEncryption``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-streamencryption"
+          },
+          "name": "streamEncryption",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kinesis.cloudformation.StreamResource.StreamEncryptionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Kinesis::Stream.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "ZjR3+O1b3SQDY2Qrbd7DnlIWIXXEztZeT9Jt5QuLnCs="
+}

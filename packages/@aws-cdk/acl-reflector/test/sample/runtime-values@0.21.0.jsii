@@ -1,0 +1,361 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-ssm": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.SSM",
+          "packageId": "Amazon.CDK.AWS.SSM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ssm",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ssm"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ssm"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "Runtime values support for the AWS CDK",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/runtime-values",
+  "readme": {
+    "markdown": "## Runtime Values\n\nThe CDK allows apps to advertise values from __construction time__ to __runtime\ncode__. For example, consider code in a Lambda function which needs to know the\nURL of the SQS queue created as part of your CDK app.\n\nRuntime values are advertised as textual SSM parameters with the following key:\n\n```\n/rtv/<stack-name>/<package>/<name>\n```\n\nTherefore, in order to advertise a value you will need to:\n\n1. Make the current stack name available as an environment variable to your\n   runtime code. The convention is to use `RTV_STACK_NAME`.\n2. Use the `RuntimeValue` construct in order to create the SSM parameter and\n   specify least-privilege permissions.\n\nFor example, say we want to publish a queue's URL to a lambda function.\n\n### Construction Code\n\n```ts\nimport { RuntimeValue } from '@aws-cdk/runtime-values'\n\nconst queue = new Queue(this, 'MyQueue', { /* props.... */ });\nconst fn = new Lambda(this, 'MyFunction', { /* props... */ });\nconst fleet = new Fleet(this, 'MyFleet', { /* props... */ });\n\n// this line defines an AWS::SSM::Parameter resource with the\n// key \"/rtv/<stack-name>/com.myorg/MyQueueURL\" and the actual queue URL as value\nconst queueUrlRtv = new RuntimeValue(this, 'QueueRTV', {\n    package: 'com.myorg',\n    name: 'MyQueueURL',\n    value: queue.queueUrl\n});\n\n// this line adds read permissions for this SSM parameter to the policies associated with\n// the IAM roles of the Lambda function and the EC2 fleet\nqueueUrlRtv.grantRead(fn.role);\nqueueUrlRtv.grantRead(fleet.role);\n\n// adds the `RTV_STACK_NAME` to the environment of the lambda function\n// and the fleet (via user-data)\nfn.env(RuntimeValue.ENV_NAME, RuntimeValue.ENV_VALUE);\nfleet.env(RuntimeValue.ENV_NAME, RuntimeValue.ENV_VALUE);\n```\n\n### Runtime Code\n\nThen, your runtime code will need to use the SSM Parameter Store AWS SDK in\norder to format the SSM parameter key and read the value. In future releases, we\nwill provide runtime libraries to make this easy.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.RuntimeValues",
+      "packageId": "Amazon.CDK.RuntimeValues",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cdk-runtime-values",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.runtimevalues"
+    },
+    "js": {
+      "npm": "@aws-cdk/runtime-values"
+    }
+  },
+  "types": {
+    "@aws-cdk/runtime-values.RuntimeValue": {
+      "assembly": "@aws-cdk/runtime-values",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Defines a value published from construction code which needs to be accessible\nby runtime code."
+      },
+      "fqn": "@aws-cdk/runtime-values.RuntimeValue",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/runtime-values.RuntimeValueProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Grants a principal read permissions on this runtime value."
+          },
+          "name": "grantRead",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The principal (e.g. Role, User, Group)"
+              },
+              "name": "principal",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        }
+      ],
+      "name": "RuntimeValue",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The recommended name of the environment variable to use to set the stack name\nfrom which the runtime value is published."
+          },
+          "immutable": true,
+          "name": "ENV_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "The value to assign to the `RTV_STACK_NAME` environment variable."
+          },
+          "immutable": true,
+          "name": "ENV_VALUE",
+          "static": true,
+          "type": {
+            "fqn": "@aws-cdk/cdk.AwsStackName"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The ARN fo the SSM parameter used for this runtime value."
+          },
+          "immutable": true,
+          "name": "parameterArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of the runtime parameter."
+          },
+          "immutable": true,
+          "name": "parameterName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/runtime-values.RuntimeValueProps": {
+      "assembly": "@aws-cdk/runtime-values",
+      "datatype": true,
+      "fqn": "@aws-cdk/runtime-values.RuntimeValueProps",
+      "kind": "interface",
+      "name": "RuntimeValueProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A namespace for the runtime value.\nIt is recommended to use the name of the library/package that advertises this value."
+          },
+          "name": "package",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The value to advertise. Can be either a primitive value or a token."
+          },
+          "name": "value",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "O11/cfOMSNe5DIsxzy1yW7Q/PgPhOVVn2rS41TO7h/M="
+}

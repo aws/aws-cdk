@@ -2,16 +2,22 @@ import reflect = require('jsii-reflect');
 import { Report } from './report';
 
 export function writeHtml(ts: reflect.TypeSystem, report: Report, out: NodeJS.WriteStream = process.stdout) {
+  let indent = 0;
 
   const e = (open: string, block?: (() => void) | string) => {
+    out.write(' '.repeat(indent * 2));
     out.write(`<${open}>\n`);
     const close = open.split(' ')[0];
+    indent++;
     if (typeof block === 'string') {
+      out.write(' '.repeat(indent * 2));
       out.write(block);
       out.write('\n');
     } else if (typeof block === 'function') {
       block();
     }
+    indent--;
+    out.write(' '.repeat(indent * 2));
     out.write(`</${close}>\n`);
   };
 
@@ -49,7 +55,6 @@ export function writeHtml(ts: reflect.TypeSystem, report: Report, out: NodeJS.Wr
 
             e('tr', () => e('td colspan=6', () => e('h2', module.namespace)));
 
-
             e('tr', () => {
               e('th', 'layer1 construct');
               e('th', 'layer2 construct');
@@ -63,7 +68,7 @@ export function writeHtml(ts: reflect.TypeSystem, report: Report, out: NodeJS.Wr
               e('tr', () => {
                 const layer1 = ts.findFqn(resource.layer1);
                 e('td', () => doclink(layer1.fqn, layer1.name));
-  
+
                 if (resource.layer2) {
                   const layer2 = ts.findFqn(resource.layer2);
                   e('td', () => doclink(layer2.fqn, layer2.name));

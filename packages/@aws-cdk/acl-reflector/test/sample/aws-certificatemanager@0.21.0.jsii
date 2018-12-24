@@ -1,0 +1,1003 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "The CDK Construct Library for AWS::CertificateManager",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-certificatemanager",
+  "readme": {
+    "markdown": "## AWS Certificate Manager Construct Library\n\nThis package provides Constructs for provisioning and referencing certificates which\ncan be used in CloudFront and ELB.\n\n### Validation\n\nIf certificates are created as part of a CloudFormation run, the\nCloudFormation provisioning will not complete until domain ownership for the\ncertificate is completed. For email validation, this involves receiving an\nemail on one of a number of predefined domains and following the instructions\nin the email. The email addresses use will be:\n\n* admin@domain.com\n* administrator@domain.com\n* hostmaster@domain.com\n* postmaster@domain.com\n* webmaster@domain.com\n\nDNS validation is possible in ACM, but is not currently available in CloudFormation.\nA Custom Resource will be developed for this, but is not currently available.\n\nBecause of these blocks, it's probably better to provision your certificates either in a separate\nstack from your main service, or provision them manually. In both cases, you'll import the\ncertificate into your stack afterwards.\n\n### Provisioning\n\nProvision a new certificate by creating an instance of `Certificate`. Email validation will be sent\nto `example.com`:\n\n```ts\nconst certificate = new Certificate(this, 'Certificate', {\n    domainName: 'test.example.com'\n});\n```\n\n### Importing\n\nImport a certificate either manually, if you know the ARN:\n\n```ts\nconst certificate = Certificate.import(this, 'Certificate', {\n    certificteArn: \"arn:aws:...\"\n});\n```\n\nOr use exporting and importing mechanisms between stacks:\n\n```ts\nconst certRef = certStack.certificate.export();\n\nconst certificate = Certificate.import(this, 'Certificate', certRef);\n```\n\n> We should probably also make a Custom Resource that can looks up the certificate ARN\n> by domain name by querying ACM.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.CertificateManager",
+      "packageId": "Amazon.CDK.AWS.CertificateManager",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "certificatemanager",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.certificatemanager"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-certificatemanager"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-certificatemanager.Certificate": {
+      "assembly": "@aws-cdk/aws-certificatemanager",
+      "base": {
+        "fqn": "@aws-cdk/aws-certificatemanager.CertificateRef"
+      },
+      "docs": {
+        "comment": "A certificate managed by Amazon Certificate Manager\n\nIMPORTANT: if you are creating a certificate as part of your stack, the stack\nwill not complete creating until you read and follow the instructions in the\nemail that you will receive.\n\nACM will send validation emails to the following addresses:\n\n  admin@domain.com\n  administrator@domain.com\n  hostmaster@domain.com\n  postmaster@domain.com\n  webmaster@domain.com\n\nFor every domain that you register."
+      },
+      "fqn": "@aws-cdk/aws-certificatemanager.Certificate",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-certificatemanager.CertificateProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "Certificate",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The certificate's ARN"
+          },
+          "immutable": true,
+          "name": "certificateArn",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-certificatemanager.CertificateRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-certificatemanager.CertificateProps": {
+      "assembly": "@aws-cdk/aws-certificatemanager",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for your certificate"
+      },
+      "fqn": "@aws-cdk/aws-certificatemanager.CertificateProps",
+      "kind": "interface",
+      "name": "CertificateProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Fully-qualified domain name to request a certificate for.\n\nMay contain wildcards, such as ``*.domain.com``."
+          },
+          "name": "domainName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Alternative domain names on your certificate.\n\nUse this to register alternative domain names that represent the same site."
+          },
+          "name": "subjectAlternativeNames",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "What validation domain to use for every requested domain.\n\nHas to be a superdomain of the requested domain.",
+            "default": "Apex domain is used for every domain that's not overridden."
+          },
+          "name": "validationDomains",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            },
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-certificatemanager.CertificateRef": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-certificatemanager",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Interface for certificate-like objects"
+      },
+      "fqn": "@aws-cdk/aws-certificatemanager.CertificateRef",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "The local logical ID of the construct. Must be unique amongst\nsiblings. If the ID includes a path separator (`/`), then it will be\nreplaced by double dash `--`."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Import a certificate"
+          },
+          "name": "import",
+          "parameters": [
+            {
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-certificatemanager.CertificateRefProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-certificatemanager.CertificateRef"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Export this certificate from the stack"
+          },
+          "name": "export",
+          "returns": {
+            "fqn": "@aws-cdk/aws-certificatemanager.CertificateRefProps"
+          }
+        }
+      ],
+      "name": "CertificateRef",
+      "properties": [
+        {
+          "abstract": true,
+          "immutable": true,
+          "name": "certificateArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-certificatemanager.CertificateRefProps": {
+      "assembly": "@aws-cdk/aws-certificatemanager",
+      "datatype": true,
+      "docs": {
+        "comment": "Reference to an existing Certificate"
+      },
+      "fqn": "@aws-cdk/aws-certificatemanager.CertificateRefProps",
+      "kind": "interface",
+      "name": "CertificateRefProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The certificate's ARN"
+          },
+          "name": "certificateArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-certificatemanager.CfnCertificate": {
+      "assembly": "@aws-cdk/aws-certificatemanager",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html"
+      },
+      "fqn": "@aws-cdk/aws-certificatemanager.CfnCertificate",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::CertificateManager::Certificate``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnCertificate`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnCertificate``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-certificatemanager.CfnCertificateProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnCertificate",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "certificateArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-certificatemanager.CfnCertificateProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-certificatemanager.CfnCertificate.DomainValidationOptionProperty": {
+      "assembly": "@aws-cdk/aws-certificatemanager",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-certificatemanager-certificate-domainvalidationoption.html"
+      },
+      "fqn": "@aws-cdk/aws-certificatemanager.CfnCertificate.DomainValidationOptionProperty",
+      "kind": "interface",
+      "name": "DomainValidationOptionProperty",
+      "namespace": "CfnCertificate",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnCertificate.DomainValidationOptionProperty.DomainName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-certificatemanager-certificate-domainvalidationoption.html#cfn-certificatemanager-certificate-domainvalidationoptions-domainname"
+          },
+          "name": "domainName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnCertificate.DomainValidationOptionProperty.ValidationDomain``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-certificatemanager-certificate-domainvalidationoption.html#cfn-certificatemanager-certificate-domainvalidationoption-validationdomain"
+          },
+          "name": "validationDomain",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-certificatemanager.CfnCertificateProps": {
+      "assembly": "@aws-cdk/aws-certificatemanager",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html"
+      },
+      "fqn": "@aws-cdk/aws-certificatemanager.CfnCertificateProps",
+      "kind": "interface",
+      "name": "CfnCertificateProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CertificateManager::Certificate.DomainName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-domainname"
+          },
+          "name": "domainName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CertificateManager::Certificate.DomainValidationOptions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-domainvalidationoptions"
+          },
+          "name": "domainValidationOptions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-certificatemanager.CfnCertificate.DomainValidationOptionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CertificateManager::Certificate.SubjectAlternativeNames``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-subjectalternativenames"
+          },
+          "name": "subjectAlternativeNames",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CertificateManager::Certificate.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CertificateManager::Certificate.ValidationMethod``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-validationmethod"
+          },
+          "name": "validationMethod",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-certificatemanager.cloudformation.CertificateResource": {
+      "assembly": "@aws-cdk/aws-certificatemanager",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.CertificateResource\" will be deprecated in a future release in favor of \"CfnCertificate\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html"
+      },
+      "fqn": "@aws-cdk/aws-certificatemanager.cloudformation.CertificateResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::CertificateManager::Certificate``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CertificateResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CertificateResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-certificatemanager.cloudformation.CertificateResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CertificateResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "certificateArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-certificatemanager.cloudformation.CertificateResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-certificatemanager.cloudformation.CertificateResource.DomainValidationOptionProperty": {
+      "assembly": "@aws-cdk/aws-certificatemanager",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-certificatemanager-certificate-domainvalidationoption.html"
+      },
+      "fqn": "@aws-cdk/aws-certificatemanager.cloudformation.CertificateResource.DomainValidationOptionProperty",
+      "kind": "interface",
+      "name": "DomainValidationOptionProperty",
+      "namespace": "cloudformation.CertificateResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CertificateResource.DomainValidationOptionProperty.DomainName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-certificatemanager-certificate-domainvalidationoption.html#cfn-certificatemanager-certificate-domainvalidationoptions-domainname"
+          },
+          "name": "domainName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CertificateResource.DomainValidationOptionProperty.ValidationDomain``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-certificatemanager-certificate-domainvalidationoption.html#cfn-certificatemanager-certificate-domainvalidationoption-validationdomain"
+          },
+          "name": "validationDomain",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-certificatemanager.cloudformation.CertificateResourceProps": {
+      "assembly": "@aws-cdk/aws-certificatemanager",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html"
+      },
+      "fqn": "@aws-cdk/aws-certificatemanager.cloudformation.CertificateResourceProps",
+      "kind": "interface",
+      "name": "CertificateResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CertificateManager::Certificate.DomainName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-domainname"
+          },
+          "name": "domainName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CertificateManager::Certificate.DomainValidationOptions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-domainvalidationoptions"
+          },
+          "name": "domainValidationOptions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-certificatemanager.cloudformation.CertificateResource.DomainValidationOptionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CertificateManager::Certificate.SubjectAlternativeNames``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-subjectalternativenames"
+          },
+          "name": "subjectAlternativeNames",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CertificateManager::Certificate.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CertificateManager::Certificate.ValidationMethod``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-validationmethod"
+          },
+          "name": "validationMethod",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "cQRUy3hNe+K+24baBR3se1Xcdlkkx33STkrmFfybn2g="
+}

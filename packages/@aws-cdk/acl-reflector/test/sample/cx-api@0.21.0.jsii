@@ -1,0 +1,730 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "description": "Cloud executable protocol",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/cx-api",
+  "readme": {
+    "markdown": "## Cloud Executable protocol\nThis module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.CXAPI",
+      "packageId": "Amazon.CDK.CXAPI",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cdk-cx-api",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.cxapi"
+    },
+    "js": {
+      "npm": "@aws-cdk/cx-api"
+    }
+  },
+  "types": {
+    "@aws-cdk/cx-api.AppRuntime": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Information about the application's runtime components."
+      },
+      "fqn": "@aws-cdk/cx-api.AppRuntime",
+      "kind": "interface",
+      "name": "AppRuntime",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The list of libraries loaded in the application, associated with their versions."
+          },
+          "name": "libraries",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.AvailabilityZonesContextQuery": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Query to hosted zone context provider"
+      },
+      "fqn": "@aws-cdk/cx-api.AvailabilityZonesContextQuery",
+      "kind": "interface",
+      "name": "AvailabilityZonesContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Query account"
+          },
+          "name": "account",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Query region"
+          },
+          "name": "region",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.ContainerImageAssetMetadataEntry": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "fqn": "@aws-cdk/cx-api.ContainerImageAssetMetadataEntry",
+      "kind": "interface",
+      "name": "ContainerImageAssetMetadataEntry",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Logical identifier for the asset"
+          },
+          "name": "id",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "ECR Repository name and tag (separated by \":\") where this asset is stored."
+          },
+          "name": "imageNameParameter",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Type of asset"
+          },
+          "name": "packaging",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Path on disk to the asset"
+          },
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.Environment": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Models an AWS execution environment, for use within the CDK toolkit."
+      },
+      "fqn": "@aws-cdk/cx-api.Environment",
+      "kind": "interface",
+      "name": "Environment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The 12-digit AWS account ID for the account this environment deploys into"
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The arbitrary name of this environment (user-set, or at least user-meaningful)"
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The AWS region name where this environment deploys into"
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.FileAssetMetadataEntry": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "fqn": "@aws-cdk/cx-api.FileAssetMetadataEntry",
+      "kind": "interface",
+      "name": "FileAssetMetadataEntry",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Logical identifier for the asset"
+          },
+          "name": "id",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Requested packaging style"
+          },
+          "name": "packaging",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Path on disk to the asset"
+          },
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of parameter where S3 bucket should be passed in"
+          },
+          "name": "s3BucketParameter",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of parameter where S3 key should be passed in"
+          },
+          "name": "s3KeyParameter",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.HostedZoneContextQuery": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Query to hosted zone context provider"
+      },
+      "fqn": "@aws-cdk/cx-api.HostedZoneContextQuery",
+      "kind": "interface",
+      "name": "HostedZoneContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The domain name e.g. example.com to lookup"
+          },
+          "name": "domainName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Query account"
+          },
+          "name": "account",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "True if the zone you want to find is a private hosted zone"
+          },
+          "name": "privateZone",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Query region"
+          },
+          "name": "region",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The VPC ID to that the private zone must be associated with\n\nIf you provide VPC ID and privateZone is false, this will return no results\nand raise an error."
+          },
+          "name": "vpcId",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.MetadataEntry": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "An metadata entry in the construct."
+      },
+      "fqn": "@aws-cdk/cx-api.MetadataEntry",
+      "kind": "interface",
+      "name": "MetadataEntry",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A stack trace for when the entry was created."
+          },
+          "name": "trace",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The type of the metadata entry."
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The data."
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.MissingContext": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Represents a missing piece of context."
+      },
+      "fqn": "@aws-cdk/cx-api.MissingContext",
+      "kind": "interface",
+      "name": "MissingContext",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "props",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "name": "provider",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.SSMParameterContextQuery": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Query to hosted zone context provider"
+      },
+      "fqn": "@aws-cdk/cx-api.SSMParameterContextQuery",
+      "kind": "interface",
+      "name": "SSMParameterContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Query account"
+          },
+          "name": "account",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Parameter name to query"
+          },
+          "name": "parameterName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Query region"
+          },
+          "name": "region",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.SynthesizeResponse": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "fqn": "@aws-cdk/cx-api.SynthesizeResponse",
+      "kind": "interface",
+      "name": "SynthesizeResponse",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "stacks",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.SynthesizedStack"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Protocol version"
+          },
+          "name": "version",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "runtime",
+          "type": {
+            "fqn": "@aws-cdk/cx-api.AppRuntime",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.SynthesizedStack": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "A complete synthesized stack"
+      },
+      "fqn": "@aws-cdk/cx-api.SynthesizedStack",
+      "kind": "interface",
+      "name": "SynthesizedStack",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "environment",
+          "type": {
+            "fqn": "@aws-cdk/cx-api.Environment"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "metadata",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "collection": {
+                  "elementtype": {
+                    "fqn": "@aws-cdk/cx-api.MetadataEntry"
+                  },
+                  "kind": "array"
+                }
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "template",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "missing",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.MissingContext"
+              },
+              "kind": "map"
+            },
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.VpcContextQuery": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Query input for looking up a VPC"
+      },
+      "fqn": "@aws-cdk/cx-api.VpcContextQuery",
+      "kind": "interface",
+      "name": "VpcContextQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Filters to apply to the VPC\n\nFilter parameters are the same as passed to DescribeVpcs.",
+            "see": "https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeVpcs.html"
+          },
+          "name": "filter",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Query account"
+          },
+          "name": "account",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Query region"
+          },
+          "name": "region",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.VpcContextResponse": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties of a discovered VPC"
+      },
+      "fqn": "@aws-cdk/cx-api.VpcContextResponse",
+      "kind": "interface",
+      "name": "VpcContextResponse",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "AZs"
+          },
+          "name": "availabilityZones",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "VPC id"
+          },
+          "name": "vpcId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "IDs of all isolated subnets\n\nElement count: #(availabilityZones) · #(isolatedGroups)"
+          },
+          "name": "isolatedSubnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of isolated subnet groups\n\nElement count: #(isolatedGroups)"
+          },
+          "name": "isolatedSubnetNames",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "IDs of all private subnets\n\nElement count: #(availabilityZones) · #(privateGroups)"
+          },
+          "name": "privateSubnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of private subnet groups\n\nElement count: #(privateGroups)"
+          },
+          "name": "privateSubnetNames",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "IDs of all public subnets\n\nElement count: #(availabilityZones) · #(publicGroups)"
+          },
+          "name": "publicSubnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of public subnet groups\n\nElement count: #(publicGroups)"
+          },
+          "name": "publicSubnetNames",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "YvlMzQmlVztORhYu8KytDiv8ST4EzR4oWiSqZmK/S4U="
+}

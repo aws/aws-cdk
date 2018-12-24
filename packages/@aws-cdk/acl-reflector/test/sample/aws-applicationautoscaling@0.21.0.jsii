@@ -1,0 +1,4348 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-autoscaling-common": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
+          "packageId": "Amazon.CDK.AWS.AutoScaling.Common",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "autoscaling-common",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.autoscaling.common"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-autoscaling-common"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-cloudwatch": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.CloudWatch",
+          "packageId": "Amazon.CDK.AWS.CloudWatch",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudwatch",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudwatch"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudwatch"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "The CDK Construct Library for AWS::ApplicationAutoScaling",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-applicationautoscaling",
+  "readme": {
+    "markdown": "## AWS Application AutoScaling Construct Library\n\n**Application AutoScaling** is used to configure autoscaling for all\nservices other than scaling EC2 instances. For example, you will use this to\nscale ECS tasks, DynamoDB capacity, Spot Fleet sizes and more.\n\nAs a CDK user, you will probably not have to interact with this library\ndirectly; instead, it will be used by other construct libraries to\noffer AutoScaling features for their own constructs.\n\nThis document will describe the general autoscaling features and concepts;\nyour particular service may offer only a subset of these.\n\n### AutoScaling basics\n\nResources can offer one or more **attributes** to autoscale, typically\nrepresenting some capacity dimension of the underlying service. For example,\na DynamoDB Table offers autoscaling of the read and write capacity of the\ntable proper and its Global Secondary Indexes, an ECS Service offers\nautoscaling of its task count, an RDS Aurora cluster offers scaling of its\nreplica count, and so on.\n\nWhen you enable autoscaling for an attribute, you specify a minimum and a\nmaximum value for the capacity. AutoScaling policies that respond to metrics\nwill never go higher or lower than the indicated capacity (but scheduled\nscaling actions might, see below).\n\nThere are three ways to scale your capacity:\n\n* **In response to a metric** (also known as step scaling); for example, you\n  might want to scale out if the CPU usage across your cluster starts to rise,\n  and scale in when it drops again.\n* **By trying to keep a certain metric around a given value** (also known as\n  target tracking scaling); you might want to automatically scale out an in to\n  keep your CPU usage around 50%.\n* **On a schedule**; you might want to organize your scaling around traffic\n  flows you expect, by scaling out in the morning and scaling in in the\n  evening.\n\nThe general pattern of autoscaling will look like this:\n\n```ts\nconst capacity = resource.autoScaleCapacity({\n  minCapacity: 5,\n  maxCapacity: 100\n});\n\n// Enable a type of metric scaling and/or schedule scaling\ncapacity.scaleOnMetric(...);\ncapacity.scaleToTrackMetric(...);\ncapacity.scaleOnSchedule(...);\n```\n\n### Step Scaling\n\nThis type of scaling scales in and out in deterministics steps that you\nconfigure, in response to metric values. For example, your scaling strategy\nto scale in response to CPU usage might look like this:\n\n```\n Scaling        -1          (no change)          +1       +3\n            │        │                       │        │        │\n            ├────────┼───────────────────────┼────────┼────────┤\n            │        │                       │        │        │\nCPU usage   0%      10%                     50%       70%     100%\n```\n\n(Note that this is not necessarily a recommended scaling strategy, but it's\na possible one. You will have to determine what thresholds are right for you).\n\nYou would configure it like this:\n\n```ts\ncapacity.scaleOnMetric('ScaleToCPU', {\n  metric: service.metricCpuUtilization(),\n  scalingSteps: [\n    { upper: 10, change: -1 },\n    { lower: 50, change: +1 },\n    { lower: 70, change: +3 },\n  ],\n\n  // Change this to AdjustmentType.PercentChangeInCapacity to interpret the\n  // 'change' numbers before as percentages instead of capacity counts.\n  adjustmentType: autoscaling.AdjustmentType.ChangeInCapacity,\n});\n```\n\nThe AutoScaling construct library will create the required CloudWatch alarms and\nAutoScaling policies for you.\n\n### Target Tracking Scaling\n\nThis type of scaling scales in and out in order to keep a metric (typically\nrepresenting utilization) around a value you prefer. This type of scaling is\ntypically heavily service-dependent in what metric you can use, and so\ndifferent services will have different methods here to set up target tracking\nscaling.\n\nThe following example configures the read capacity of a DynamoDB table\nto be around 60% utilization:\n\n```ts\nconst readCapacity = table.autosScaleReadCapacity({\n  minCapacity: 10,\n  maxCapacity: 1000\n});\nreadCapacity.scaleOnUtilization({\n  targetUtilizationPercent: 60\n});\n```\n\n### Scheduled Scaling\n\nThis type of scaling is used to change capacities based on time. It works\nby changing the `minCapacity` and `maxCapacity` of the attribute, and so\ncan be used for two purposes:\n\n* Scale in and out on a schedule by setting the `minCapacity` high or\n  the `maxCapacity` low.\n* Still allow the regular scaling actions to do their job, but restrict\n  the range they can scale over (by setting both `minCapacity` and\n  `maxCapacity` but changing their range over time).\n\nThe following schedule expressions can be used:\n\n* `at(yyyy-mm-ddThh:mm:ss)` -- scale at a particular moment in time\n* `rate(value unit)` -- scale every minute/hour/day\n* `cron(mm hh dd mm dow)` -- scale on arbitrary schedules\n\nOf these, the cron expression is the most useful but also the most\ncomplicated. There is a `Cron` helper class to help build cron expressions.\n\nThe following example scales the fleet out in the morning, and lets natural\nscaling take over at night:\n\n```ts\nconst capacity = resource.autoScaleCapacity({\n  minCapacity: 1,\n  maxCapacity: 50,\n});\n\ncapacity.scaleOnSchedule('PrescaleInTheMorning', {\n  schedule: autoscaling.Cron.dailyUtc(8),\n  minCapacity: 20,\n});\n\ncapacity.scaleOnSchedule('AllowDownscalingAtNight', {\n  schedule: autoscaling.Cron.dailyUtc(20),\n  minCapacity: 1\n});\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
+      "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "applicationautoscaling",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.applicationautoscaling"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-applicationautoscaling"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-applicationautoscaling.AdjustmentTier": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "comment": "An adjustment"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.AdjustmentTier",
+      "kind": "interface",
+      "name": "AdjustmentTier",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "What number to adjust the capacity with\n\nThe number is interpeted as an added capacity, a new fixed capacity or an\nadded percentage depending on the AdjustmentType value of the\nStepScalingPolicy.\n\nCan be positive or negative."
+          },
+          "name": "adjustment",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Lower bound where this scaling tier applies.\n\nThe scaling tier applies if the difference between the metric\nvalue and its alarm threshold is higher than this value.",
+            "default": "-Infinity if this is the first tier, otherwise the upperBound of the previous tier"
+          },
+          "name": "lowerBound",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Upper bound where this scaling tier applies\n\nThe scaling tier applies if the difference between the metric\nvalue and its alarm threshold is lower than this value.",
+            "default": "+Infinity"
+          },
+          "name": "upperBound",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.AdjustmentType": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "docs": {
+        "comment": "How adjustment numbers are interpreted"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.AdjustmentType",
+      "kind": "enum",
+      "members": [
+        {
+          "docs": {
+            "comment": "Add the adjustment number to the current capacity.\n\nA positive number increases capacity, a negative number decreases capacity."
+          },
+          "name": "ChangeInCapacity"
+        },
+        {
+          "docs": {
+            "comment": "Add this percentage of the current capacity to itself.\n\nThe number must be between -100 and 100; a positive number increases\ncapacity and a negative number decreases it."
+          },
+          "name": "PercentChangeInCapacity"
+        },
+        {
+          "docs": {
+            "comment": "Make the capacity equal to the exact number given."
+          },
+          "name": "ExactCapacity"
+        }
+      ],
+      "name": "AdjustmentType"
+    },
+    "@aws-cdk/aws-applicationautoscaling.BaseScalableAttribute": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Represent an attribute for which autoscaling can be configured\n\nThis class is basically a light wrapper around ScalableTarget, but with\nall methods protected instead of public so they can be selectively\nexposed and/or more specific versions of them can be exposed by derived\nclasses for individual services support autoscaling.\n\nTypical use cases:\n\n- Hide away the PredefinedMetric enum for target tracking policies.\n- Don't expose all scaling methods (for example Dynamo tables don't support\n   Step Scaling, so the Dynamo subclass won't expose this method)."
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.BaseScalableAttribute",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-applicationautoscaling.BaseScalableAttributeProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Scale out or in based on a metric value"
+          },
+          "name": "doScaleOnMetric",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-applicationautoscaling.BasicStepScalingPolicyProps"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Scale out or in based on time"
+          },
+          "name": "doScaleOnSchedule",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-applicationautoscaling.ScalingSchedule"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Scale out or in in order to keep a metric around a target value"
+          },
+          "name": "doScaleToTrackMetric",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-applicationautoscaling.BasicTargetTrackingScalingPolicyProps"
+              }
+            }
+          ],
+          "protected": true
+        }
+      ],
+      "name": "BaseScalableAttribute",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "props",
+          "protected": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.BaseScalableAttributeProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.BaseScalableAttributeProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a ScalableTableAttribute"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.BaseScalableAttributeProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-applicationautoscaling.EnableScalingProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "BaseScalableAttributeProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Scalable dimension of the attribute"
+          },
+          "name": "dimension",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Resource ID of the attribute"
+          },
+          "name": "resourceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Role to use for scaling"
+          },
+          "name": "role",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Service namespace of the scalable attribute"
+          },
+          "name": "serviceNamespace",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.ServiceNamespace"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.BaseTargetTrackingProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "comment": "Base interface for target tracking props\n\nContains the attributes that are common to target tracking policies,\nexcept the ones relating to the metric and to the scalable target.\n\nThis interface is reused by more specific target tracking props objects\nin other services."
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.BaseTargetTrackingProps",
+      "kind": "interface",
+      "name": "BaseTargetTrackingProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Indicates whether scale in by the target tracking policy is disabled.\n\nIf the value is true, scale in is disabled and the target tracking policy\nwon't remove capacity from the scalable resource. Otherwise, scale in is\nenabled and the target tracking policy can remove capacity from the\nscalable resource.",
+            "default": "false"
+          },
+          "name": "disableScaleIn",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A name for the scaling policy",
+            "default": "Automatically generated name"
+          },
+          "name": "policyName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Period after a scale in activity completes before another scale in activity can start.",
+            "default": "No scale in cooldown"
+          },
+          "name": "scaleInCooldownSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Period after a scale out activity completes before another scale out activity can start.",
+            "default": "No scale out cooldown"
+          },
+          "name": "scaleOutCooldownSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.BasicStepScalingPolicyProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-applicationautoscaling.BasicStepScalingPolicyProps",
+      "kind": "interface",
+      "name": "BasicStepScalingPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Metric to scale on."
+          },
+          "name": "metric",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The intervals for scaling.\n\nMaps a range of metric values to a particular scaling behavior."
+          },
+          "name": "scalingSteps",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-applicationautoscaling.ScalingInterval"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "How the adjustment numbers inside 'intervals' are interpreted.",
+            "default": "ChangeInCapacity"
+          },
+          "name": "adjustmentType",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.AdjustmentType",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Grace period after scaling activity.\n\nSubsequent scale outs during the cooldown period are squashed so that only\nthe biggest scale out happens.\n\nSubsequent scale ins during the cooldown period are ignored.",
+            "default": "No cooldown period",
+            "see": "https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html"
+          },
+          "name": "cooldownSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Minimum absolute number to adjust capacity with as result of percentage scaling.\n\nOnly when using AdjustmentType = PercentChangeInCapacity, this number controls\nthe minimum absolute effect size.",
+            "default": "No minimum scaling effect"
+          },
+          "name": "minAdjustmentMagnitude",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.BasicTargetTrackingScalingPolicyProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a Target Tracking policy that include the metric but exclude the target"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.BasicTargetTrackingScalingPolicyProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-applicationautoscaling.BaseTargetTrackingProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "BasicTargetTrackingScalingPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The target value for the metric."
+          },
+          "name": "targetValue",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A custom metric for application autoscaling\n\nThe metric must track utilization. Scaling out will happen if the metric is higher than\nthe target value, scaling in will happen in the metric is lower than the target value.\n\nExactly one of customMetric or predefinedMetric must be specified."
+          },
+          "name": "customMetric",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A predefined metric for application autoscaling\n\nThe metric must track utilization. Scaling out will happen if the metric is higher than\nthe target value, scaling in will happen in the metric is lower than the target value.\n\nExactly one of customMetric or predefinedMetric must be specified."
+          },
+          "name": "predefinedMetric",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.PredefinedMetric",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Identify the resource associated with the metric type.\n\nOnly used for predefined metric ALBRequestCountPerTarget.",
+            "example": "app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>"
+          },
+          "name": "resourceLabel",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ApplicationAutoScaling::ScalableTarget``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnScalableTarget`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnScalableTarget``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTargetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnScalableTarget",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTargetProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "scalableTargetId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget.ScalableTargetActionProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scalabletargetaction.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget.ScalableTargetActionProperty",
+      "kind": "interface",
+      "name": "ScalableTargetActionProperty",
+      "namespace": "CfnScalableTarget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalableTarget.ScalableTargetActionProperty.MaxCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scalabletargetaction.html#cfn-applicationautoscaling-scalabletarget-scalabletargetaction-maxcapacity"
+          },
+          "name": "maxCapacity",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalableTarget.ScalableTargetActionProperty.MinCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scalabletargetaction.html#cfn-applicationautoscaling-scalabletarget-scalabletargetaction-mincapacity"
+          },
+          "name": "minCapacity",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget.ScheduledActionProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget.ScheduledActionProperty",
+      "kind": "interface",
+      "name": "ScheduledActionProperty",
+      "namespace": "CfnScalableTarget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalableTarget.ScheduledActionProperty.Schedule``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-schedule"
+          },
+          "name": "schedule",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalableTarget.ScheduledActionProperty.ScheduledActionName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-scheduledactionname"
+          },
+          "name": "scheduledActionName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalableTarget.ScheduledActionProperty.EndTime``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-endtime"
+          },
+          "name": "endTime",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "primitive": "date"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalableTarget.ScheduledActionProperty.ScalableTargetAction``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-scalabletargetaction"
+          },
+          "name": "scalableTargetAction",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget.ScalableTargetActionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalableTarget.ScheduledActionProperty.StartTime``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-starttime"
+          },
+          "name": "startTime",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "primitive": "date"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalableTargetProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTargetProps",
+      "kind": "interface",
+      "name": "CfnScalableTargetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.MaxCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-maxcapacity"
+          },
+          "name": "maxCapacity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.MinCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-mincapacity"
+          },
+          "name": "minCapacity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.ResourceId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-resourceid"
+          },
+          "name": "resourceId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.RoleARN``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.ScalableDimension``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-scalabledimension"
+          },
+          "name": "scalableDimension",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.ServiceNamespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-servicenamespace"
+          },
+          "name": "serviceNamespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.ScheduledActions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-scheduledactions"
+          },
+          "name": "scheduledActions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget.ScheduledActionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ApplicationAutoScaling::ScalingPolicy``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnScalingPolicy`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnScalingPolicy``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicyProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnScalingPolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicyProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "scalingPolicyArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.CustomizedMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.CustomizedMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "CustomizedMetricSpecificationProperty",
+      "namespace": "CfnScalingPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.CustomizedMetricSpecificationProperty.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-customizedmetricspecification-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.CustomizedMetricSpecificationProperty.Namespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-customizedmetricspecification-namespace"
+          },
+          "name": "namespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.CustomizedMetricSpecificationProperty.Statistic``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-customizedmetricspecification-statistic"
+          },
+          "name": "statistic",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.CustomizedMetricSpecificationProperty.Dimensions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-customizedmetricspecification-dimensions"
+          },
+          "name": "dimensions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.MetricDimensionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.CustomizedMetricSpecificationProperty.Unit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-customizedmetricspecification-unit"
+          },
+          "name": "unit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.MetricDimensionProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-metricdimension.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.MetricDimensionProperty",
+      "kind": "interface",
+      "name": "MetricDimensionProperty",
+      "namespace": "CfnScalingPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.MetricDimensionProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-metricdimension.html#cfn-applicationautoscaling-scalingpolicy-metricdimension-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.MetricDimensionProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-metricdimension.html#cfn-applicationautoscaling-scalingpolicy-metricdimension-value"
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.PredefinedMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-predefinedmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.PredefinedMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "PredefinedMetricSpecificationProperty",
+      "namespace": "CfnScalingPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.PredefinedMetricSpecificationProperty.PredefinedMetricType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-predefinedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-predefinedmetricspecification-predefinedmetrictype"
+          },
+          "name": "predefinedMetricType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.PredefinedMetricSpecificationProperty.ResourceLabel``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-predefinedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-predefinedmetricspecification-resourcelabel"
+          },
+          "name": "resourceLabel",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.StepAdjustmentProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.StepAdjustmentProperty",
+      "kind": "interface",
+      "name": "StepAdjustmentProperty",
+      "namespace": "CfnScalingPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.StepAdjustmentProperty.ScalingAdjustment``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment-scalingadjustment"
+          },
+          "name": "scalingAdjustment",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.StepAdjustmentProperty.MetricIntervalLowerBound``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment-metricintervallowerbound"
+          },
+          "name": "metricIntervalLowerBound",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.StepAdjustmentProperty.MetricIntervalUpperBound``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment-metricintervalupperbound"
+          },
+          "name": "metricIntervalUpperBound",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.StepScalingPolicyConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.StepScalingPolicyConfigurationProperty",
+      "kind": "interface",
+      "name": "StepScalingPolicyConfigurationProperty",
+      "namespace": "CfnScalingPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.StepScalingPolicyConfigurationProperty.AdjustmentType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-adjustmenttype"
+          },
+          "name": "adjustmentType",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.StepScalingPolicyConfigurationProperty.Cooldown``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-cooldown"
+          },
+          "name": "cooldown",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.StepScalingPolicyConfigurationProperty.MetricAggregationType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-metricaggregationtype"
+          },
+          "name": "metricAggregationType",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.StepScalingPolicyConfigurationProperty.MinAdjustmentMagnitude``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-minadjustmentmagnitude"
+          },
+          "name": "minAdjustmentMagnitude",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.StepScalingPolicyConfigurationProperty.StepAdjustments``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustments"
+          },
+          "name": "stepAdjustments",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.StepAdjustmentProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.TargetTrackingScalingPolicyConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.TargetTrackingScalingPolicyConfigurationProperty",
+      "kind": "interface",
+      "name": "TargetTrackingScalingPolicyConfigurationProperty",
+      "namespace": "CfnScalingPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.TargetTrackingScalingPolicyConfigurationProperty.TargetValue``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-targetvalue"
+          },
+          "name": "targetValue",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.TargetTrackingScalingPolicyConfigurationProperty.CustomizedMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-customizedmetricspecification"
+          },
+          "name": "customizedMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.CustomizedMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.TargetTrackingScalingPolicyConfigurationProperty.DisableScaleIn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-disablescalein"
+          },
+          "name": "disableScaleIn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.TargetTrackingScalingPolicyConfigurationProperty.PredefinedMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-predefinedmetricspecification"
+          },
+          "name": "predefinedMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.PredefinedMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.TargetTrackingScalingPolicyConfigurationProperty.ScaleInCooldown``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-scaleincooldown"
+          },
+          "name": "scaleInCooldown",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnScalingPolicy.TargetTrackingScalingPolicyConfigurationProperty.ScaleOutCooldown``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-scaleoutcooldown"
+          },
+          "name": "scaleOutCooldown",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicyProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicyProps",
+      "kind": "interface",
+      "name": "CfnScalingPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.PolicyName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-policyname"
+          },
+          "name": "policyName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.PolicyType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-policytype"
+          },
+          "name": "policyType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.ResourceId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-resourceid"
+          },
+          "name": "resourceId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.ScalableDimension``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-scalabledimension"
+          },
+          "name": "scalableDimension",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.ScalingTargetId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-scalingtargetid"
+          },
+          "name": "scalingTargetId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.ServiceNamespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-servicenamespace"
+          },
+          "name": "serviceNamespace",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.StepScalingPolicyConfiguration``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration"
+          },
+          "name": "stepScalingPolicyConfiguration",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.StepScalingPolicyConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.TargetTrackingScalingPolicyConfiguration``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration"
+          },
+          "name": "targetTrackingScalingPolicyConfiguration",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy.TargetTrackingScalingPolicyConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.Cron": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "docs": {
+        "comment": "Helper class to generate Cron expressions"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.Cron",
+      "initializer": {
+        "initializer": true
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Return a cron expression to run every day at a particular time\n\nThe time is specified in UTC."
+          },
+          "name": "dailyUtc",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The hour in UTC to schedule this action"
+              },
+              "name": "hour",
+              "type": {
+                "primitive": "number"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The minute in the our to schedule this action (defaults to 0)"
+              },
+              "name": "minute",
+              "type": {
+                "optional": true,
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "string"
+          },
+          "static": true
+        }
+      ],
+      "name": "Cron"
+    },
+    "@aws-cdk/aws-applicationautoscaling.EnableScalingProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for enabling DynamoDB capacity scaling"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.EnableScalingProps",
+      "kind": "interface",
+      "name": "EnableScalingProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Maximum capacity to scale to"
+          },
+          "name": "maxCapacity",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Minimum capacity to scale to",
+            "default": "1"
+          },
+          "name": "minCapacity",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.MetricAggregationType": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "docs": {
+        "comment": "How the scaling metric is going to be aggregated"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.MetricAggregationType",
+      "kind": "enum",
+      "members": [
+        {
+          "docs": {
+            "comment": "Average"
+          },
+          "name": "Average"
+        },
+        {
+          "docs": {
+            "comment": "Minimum"
+          },
+          "name": "Minimum"
+        },
+        {
+          "docs": {
+            "comment": "Maximum"
+          },
+          "name": "Maximum"
+        }
+      ],
+      "name": "MetricAggregationType"
+    },
+    "@aws-cdk/aws-applicationautoscaling.PredefinedMetric": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "docs": {
+        "comment": "One of the predefined autoscaling metrics"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.PredefinedMetric",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "DynamoDBReadCapacityUtilization"
+        },
+        {
+          "name": "DynamoDBWriteCapacityUtilization"
+        },
+        {
+          "name": "ALBRequestCountPerTarget"
+        },
+        {
+          "name": "RDSReaderAverageCPUUtilization"
+        },
+        {
+          "name": "RDSReaderAverageDatabaseConnections"
+        },
+        {
+          "name": "EC2SpotFleetRequestAverageCPUUtilization"
+        },
+        {
+          "name": "EC2SpotFleetRequestAverageNetworkIn"
+        },
+        {
+          "name": "EC2SpotFleetRequestAverageNetworkOut"
+        },
+        {
+          "name": "SageMakerVariantInvocationsPerInstance"
+        },
+        {
+          "name": "ECSServiceAverageCPUUtilization"
+        },
+        {
+          "name": "ECSServiceAverageMemoryUtilization"
+        }
+      ],
+      "name": "PredefinedMetric"
+    },
+    "@aws-cdk/aws-applicationautoscaling.ScalableTarget": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Define a scalable target"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.ScalableTarget",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-applicationautoscaling.ScalableTargetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Add a policy statement to the role's policy"
+          },
+          "name": "addToRolePolicy",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Scale out or in, in response to a metric"
+          },
+          "name": "scaleOnMetric",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-applicationautoscaling.BasicStepScalingPolicyProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingPolicy"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Scale out or in based on time"
+          },
+          "name": "scaleOnSchedule",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "action",
+              "type": {
+                "fqn": "@aws-cdk/aws-applicationautoscaling.ScalingSchedule"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Scale out or in in order to keep a metric around a target value"
+          },
+          "name": "scaleToTrackMetric",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-applicationautoscaling.BasicTargetTrackingScalingPolicyProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicy"
+          }
+        }
+      ],
+      "name": "ScalableTarget",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The role used to give AutoScaling permissions to your resource"
+          },
+          "immutable": true,
+          "name": "role",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        },
+        {
+          "docs": {
+            "comment": "ID of the Scalable Target",
+            "example": "service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH|ecs:service:DesiredCount|ecs"
+          },
+          "immutable": true,
+          "name": "scalableTargetId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.ScalableTargetProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a scalable target"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.ScalableTargetProps",
+      "kind": "interface",
+      "name": "ScalableTargetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The maximum value that Application Auto Scaling can use to scale a target during a scaling activity."
+          },
+          "name": "maxCapacity",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The minimum value that Application Auto Scaling can use to scale a target during a scaling activity."
+          },
+          "name": "minCapacity",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The resource identifier to associate with this scalable target.\n\nThis string consists of the resource type and unique identifier.",
+            "example": "service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH",
+            "see": "https://docs.aws.amazon.com/autoscaling/application/APIReference/API_RegisterScalableTarget.html"
+          },
+          "name": "resourceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The scalable dimension that's associated with the scalable target.\n\nSpecify the service namespace, resource type, and scaling property.",
+            "example": "ecs:service:DesiredCount",
+            "see": "https://docs.aws.amazon.com/autoscaling/application/APIReference/API_ScalingPolicy.html"
+          },
+          "name": "scalableDimension",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The namespace of the AWS service that provides the resource or\ncustom-resource for a resource provided by your own application or\nservice.\n\nFor valid AWS service namespace values, see the RegisterScalableTarget\naction in the Application Auto Scaling API Reference.",
+            "see": "https://docs.aws.amazon.com/autoscaling/application/APIReference/API_RegisterScalableTarget.html"
+          },
+          "name": "serviceNamespace",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.ServiceNamespace"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Role that allows Application Auto Scaling to modify your scalable target.",
+            "default": "A role is automatically created"
+          },
+          "name": "role",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.ScalingInterval": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "comment": "A range of metric values in which to apply a certain scaling operation"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.ScalingInterval",
+      "kind": "interface",
+      "name": "ScalingInterval",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The capacity adjustment to apply in this interval\n\nThe number is interpreted differently based on AdjustmentType:\n\n- ChangeInCapacity: add the adjustment to the current capacity.\n  The number can be positive or negative.\n- PercentChangeInCapacity: add or remove the given percentage of the current\n   capacity to itself. The number can be in the range [-100..100].\n- ExactCapacity: set the capacity to this number. The number must\n   be positive."
+          },
+          "name": "change",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The lower bound of the interval.\n\nThe scaling adjustment will be applied if the metric is higher than this value.",
+            "default": "Threshold automatically derived from neighbouring intervals"
+          },
+          "name": "lower",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The upper bound of the interval.\n\nThe scaling adjustment will be applied if the metric is lower than this value.",
+            "default": "Threshold automatically derived from neighbouring intervals"
+          },
+          "name": "upper",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.ScalingSchedule": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "comment": "A scheduled scaling action"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.ScalingSchedule",
+      "kind": "interface",
+      "name": "ScalingSchedule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "When to perform this action.\n\nSupport formats:\n- at(yyyy-mm-ddThh:mm:ss)\n- rate(value unit)\n- cron(fields)\n\n\"At\" expressions are useful for one-time schedules. Specify the time in\nUTC.\n\nFor \"rate\" expressions, value is a positive integer, and unit is minute,\nminutes, hour, hours, day, or days.\n\nFor more information about cron expressions, see https://en.wikipedia.org/wiki/Cron.",
+            "example": "rate(12 hours)"
+          },
+          "name": "schedule",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "When this scheduled action expires.",
+            "default": "The rule never expires."
+          },
+          "name": "endTime",
+          "type": {
+            "optional": true,
+            "primitive": "date"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The new maximum capacity.\n\nDuring the scheduled time, the current capacity is above the maximum\ncapacity, Application Auto Scaling scales in to the maximum capacity.\n\nAt least one of maxCapacity and minCapacity must be supplied.",
+            "default": "No new maximum capacity"
+          },
+          "name": "maxCapacity",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The new minimum capacity.\n\nDuring the scheduled time, if the current capacity is below the minimum\ncapacity, Application Auto Scaling scales out to the minimum capacity.\n\nAt least one of maxCapacity and minCapacity must be supplied.",
+            "default": "No new minimum capacity"
+          },
+          "name": "minCapacity",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "When this scheduled action becomes active.",
+            "default": "The rule is activate immediately"
+          },
+          "name": "startTime",
+          "type": {
+            "optional": true,
+            "primitive": "date"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.ServiceNamespace": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "docs": {
+        "comment": "The service that supports Application AutoScaling"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.ServiceNamespace",
+      "kind": "enum",
+      "members": [
+        {
+          "docs": {
+            "comment": "Elastic Container Service"
+          },
+          "name": "Ecs"
+        },
+        {
+          "docs": {
+            "comment": "Elastic Map Reduce"
+          },
+          "name": "ElasticMapReduce"
+        },
+        {
+          "docs": {
+            "comment": "Elastic Compute Cloud"
+          },
+          "name": "Ec2"
+        },
+        {
+          "docs": {
+            "comment": "App Stream"
+          },
+          "name": "AppStream"
+        },
+        {
+          "docs": {
+            "comment": "Dynamo DB"
+          },
+          "name": "DynamoDb"
+        },
+        {
+          "docs": {
+            "comment": "Relational Database Service"
+          },
+          "name": "Rds"
+        },
+        {
+          "docs": {
+            "comment": "SageMaker"
+          },
+          "name": "SageMaker"
+        },
+        {
+          "docs": {
+            "comment": "Custom Resource"
+          },
+          "name": "CustomResource"
+        }
+      ],
+      "name": "ServiceNamespace"
+    },
+    "@aws-cdk/aws-applicationautoscaling.StepScalingAction": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Define a step scaling action\n\nThis kind of scaling policy adjusts the target capacity in configurable\nsteps. The size of the step is configurable based on the metric's distance\nto its alarm threshold.\n\nThis Action must be used as the target of a CloudWatch alarm to take effect."
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingAction",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingActionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-cloudwatch.IAlarmAction"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Add an adjusment interval to the ScalingAction"
+          },
+          "name": "addAdjustment",
+          "parameters": [
+            {
+              "name": "adjustment",
+              "type": {
+                "fqn": "@aws-cdk/aws-applicationautoscaling.AdjustmentTier"
+              }
+            }
+          ]
+        }
+      ],
+      "name": "StepScalingAction",
+      "properties": [
+        {
+          "docs": {
+            "comment": "ARN when this scaling policy is used as an Alarm action"
+          },
+          "immutable": true,
+          "name": "alarmActionArn",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IAlarmAction"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "ARN of the scaling policy"
+          },
+          "immutable": true,
+          "name": "scalingPolicyArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.StepScalingActionProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a scaling policy"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingActionProps",
+      "kind": "interface",
+      "name": "StepScalingActionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The scalable target"
+          },
+          "name": "scalingTarget",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.ScalableTarget"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "How the adjustment numbers are interpreted",
+            "default": "ChangeInCapacity"
+          },
+          "name": "adjustmentType",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.AdjustmentType",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Grace period after scaling activity.\n\nFor scale out policies, multiple scale outs during the cooldown period are\nsquashed so that only the biggest scale out happens.\n\nFor scale in policies, subsequent scale ins during the cooldown period are\nignored.",
+            "default": "No cooldown period",
+            "see": "https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html"
+          },
+          "name": "cooldownSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The aggregation type for the CloudWatch metrics.",
+            "default": "Average"
+          },
+          "name": "metricAggregationType",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.MetricAggregationType",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Minimum absolute number to adjust capacity with as result of percentage scaling.\n\nOnly when using AdjustmentType = PercentChangeInCapacity, this number controls\nthe minimum absolute effect size.",
+            "default": "No minimum scaling effect"
+          },
+          "name": "minAdjustmentMagnitude",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A name for the scaling policy",
+            "default": "Automatically generated name"
+          },
+          "name": "policyName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.StepScalingPolicy": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Define a acaling strategy which scales depending on absolute values of some metric.\n\nYou can specify the scaling behavior for various values of the metric.\n\nImplemented using one or more CloudWatch alarms and Step Scaling Policies."
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingPolicy",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingPolicyProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "StepScalingPolicy",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "lowerAction",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingAction",
+            "optional": true
+          }
+        },
+        {
+          "immutable": true,
+          "name": "lowerAlarm",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+            "optional": true
+          }
+        },
+        {
+          "immutable": true,
+          "name": "upperAction",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingAction",
+            "optional": true
+          }
+        },
+        {
+          "immutable": true,
+          "name": "upperAlarm",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.StepScalingPolicyProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingPolicyProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-applicationautoscaling.BasicStepScalingPolicyProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "StepScalingPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The scaling target"
+          },
+          "name": "scalingTarget",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.ScalableTarget"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicy": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicy",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicyProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "TargetTrackingScalingPolicy",
+      "properties": [
+        {
+          "docs": {
+            "comment": "ARN of the scaling policy"
+          },
+          "immutable": true,
+          "name": "scalingPolicyArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicyProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a concrete TargetTrackingPolicy\n\nAdds the scalingTarget."
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicyProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-applicationautoscaling.BasicTargetTrackingScalingPolicyProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "TargetTrackingScalingPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "scalingTarget",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.ScalableTarget"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResource": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.ScalableTargetResource\" will be deprecated in a future release in favor of \"CfnScalableTarget\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ApplicationAutoScaling::ScalableTarget``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ScalableTargetResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ScalableTargetResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ScalableTargetResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "scalableTargetId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResource.ScalableTargetActionProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scalabletargetaction.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResource.ScalableTargetActionProperty",
+      "kind": "interface",
+      "name": "ScalableTargetActionProperty",
+      "namespace": "cloudformation.ScalableTargetResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalableTargetResource.ScalableTargetActionProperty.MaxCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scalabletargetaction.html#cfn-applicationautoscaling-scalabletarget-scalabletargetaction-maxcapacity"
+          },
+          "name": "maxCapacity",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalableTargetResource.ScalableTargetActionProperty.MinCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scalabletargetaction.html#cfn-applicationautoscaling-scalabletarget-scalabletargetaction-mincapacity"
+          },
+          "name": "minCapacity",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResource.ScheduledActionProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResource.ScheduledActionProperty",
+      "kind": "interface",
+      "name": "ScheduledActionProperty",
+      "namespace": "cloudformation.ScalableTargetResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalableTargetResource.ScheduledActionProperty.Schedule``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-schedule"
+          },
+          "name": "schedule",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalableTargetResource.ScheduledActionProperty.ScheduledActionName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-scheduledactionname"
+          },
+          "name": "scheduledActionName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalableTargetResource.ScheduledActionProperty.EndTime``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-endtime"
+          },
+          "name": "endTime",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "primitive": "date"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalableTargetResource.ScheduledActionProperty.ScalableTargetAction``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-scalabletargetaction"
+          },
+          "name": "scalableTargetAction",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResource.ScalableTargetActionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalableTargetResource.ScheduledActionProperty.StartTime``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalabletarget-scheduledaction.html#cfn-applicationautoscaling-scalabletarget-scheduledaction-starttime"
+          },
+          "name": "startTime",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "primitive": "date"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResourceProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResourceProps",
+      "kind": "interface",
+      "name": "ScalableTargetResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.MaxCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-maxcapacity"
+          },
+          "name": "maxCapacity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.MinCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-mincapacity"
+          },
+          "name": "minCapacity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.ResourceId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-resourceid"
+          },
+          "name": "resourceId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.RoleARN``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.ScalableDimension``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-scalabledimension"
+          },
+          "name": "scalableDimension",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.ServiceNamespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-servicenamespace"
+          },
+          "name": "serviceNamespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalableTarget.ScheduledActions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-scheduledactions"
+          },
+          "name": "scheduledActions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalableTargetResource.ScheduledActionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.ScalingPolicyResource\" will be deprecated in a future release in favor of \"CfnScalingPolicy\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ApplicationAutoScaling::ScalingPolicy``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ScalingPolicyResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ScalingPolicyResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ScalingPolicyResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "scalingPolicyArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.CustomizedMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.CustomizedMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "CustomizedMetricSpecificationProperty",
+      "namespace": "cloudformation.ScalingPolicyResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.CustomizedMetricSpecificationProperty.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-customizedmetricspecification-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.CustomizedMetricSpecificationProperty.Namespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-customizedmetricspecification-namespace"
+          },
+          "name": "namespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.CustomizedMetricSpecificationProperty.Statistic``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-customizedmetricspecification-statistic"
+          },
+          "name": "statistic",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.CustomizedMetricSpecificationProperty.Dimensions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-customizedmetricspecification-dimensions"
+          },
+          "name": "dimensions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.MetricDimensionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.CustomizedMetricSpecificationProperty.Unit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-customizedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-customizedmetricspecification-unit"
+          },
+          "name": "unit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.MetricDimensionProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-metricdimension.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.MetricDimensionProperty",
+      "kind": "interface",
+      "name": "MetricDimensionProperty",
+      "namespace": "cloudformation.ScalingPolicyResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.MetricDimensionProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-metricdimension.html#cfn-applicationautoscaling-scalingpolicy-metricdimension-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.MetricDimensionProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-metricdimension.html#cfn-applicationautoscaling-scalingpolicy-metricdimension-value"
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.PredefinedMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-predefinedmetricspecification.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.PredefinedMetricSpecificationProperty",
+      "kind": "interface",
+      "name": "PredefinedMetricSpecificationProperty",
+      "namespace": "cloudformation.ScalingPolicyResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.PredefinedMetricSpecificationProperty.PredefinedMetricType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-predefinedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-predefinedmetricspecification-predefinedmetrictype"
+          },
+          "name": "predefinedMetricType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.PredefinedMetricSpecificationProperty.ResourceLabel``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-predefinedmetricspecification.html#cfn-applicationautoscaling-scalingpolicy-predefinedmetricspecification-resourcelabel"
+          },
+          "name": "resourceLabel",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.StepAdjustmentProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.StepAdjustmentProperty",
+      "kind": "interface",
+      "name": "StepAdjustmentProperty",
+      "namespace": "cloudformation.ScalingPolicyResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.StepAdjustmentProperty.ScalingAdjustment``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment-scalingadjustment"
+          },
+          "name": "scalingAdjustment",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.StepAdjustmentProperty.MetricIntervalLowerBound``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment-metricintervallowerbound"
+          },
+          "name": "metricIntervalLowerBound",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.StepAdjustmentProperty.MetricIntervalUpperBound``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustment-metricintervalupperbound"
+          },
+          "name": "metricIntervalUpperBound",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.StepScalingPolicyConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.StepScalingPolicyConfigurationProperty",
+      "kind": "interface",
+      "name": "StepScalingPolicyConfigurationProperty",
+      "namespace": "cloudformation.ScalingPolicyResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.StepScalingPolicyConfigurationProperty.AdjustmentType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-adjustmenttype"
+          },
+          "name": "adjustmentType",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.StepScalingPolicyConfigurationProperty.Cooldown``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-cooldown"
+          },
+          "name": "cooldown",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.StepScalingPolicyConfigurationProperty.MetricAggregationType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-metricaggregationtype"
+          },
+          "name": "metricAggregationType",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.StepScalingPolicyConfigurationProperty.MinAdjustmentMagnitude``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-minadjustmentmagnitude"
+          },
+          "name": "minAdjustmentMagnitude",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.StepScalingPolicyConfigurationProperty.StepAdjustments``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration-stepadjustments"
+          },
+          "name": "stepAdjustments",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.StepAdjustmentProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.TargetTrackingScalingPolicyConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.TargetTrackingScalingPolicyConfigurationProperty",
+      "kind": "interface",
+      "name": "TargetTrackingScalingPolicyConfigurationProperty",
+      "namespace": "cloudformation.ScalingPolicyResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.TargetTrackingScalingPolicyConfigurationProperty.TargetValue``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-targetvalue"
+          },
+          "name": "targetValue",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.TargetTrackingScalingPolicyConfigurationProperty.CustomizedMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-customizedmetricspecification"
+          },
+          "name": "customizedMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.CustomizedMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.TargetTrackingScalingPolicyConfigurationProperty.DisableScaleIn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-disablescalein"
+          },
+          "name": "disableScaleIn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.TargetTrackingScalingPolicyConfigurationProperty.PredefinedMetricSpecification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-predefinedmetricspecification"
+          },
+          "name": "predefinedMetricSpecification",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.PredefinedMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.TargetTrackingScalingPolicyConfigurationProperty.ScaleInCooldown``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-scaleincooldown"
+          },
+          "name": "scaleInCooldown",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ScalingPolicyResource.TargetTrackingScalingPolicyConfigurationProperty.ScaleOutCooldown``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-scaleoutcooldown"
+          },
+          "name": "scaleOutCooldown",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResourceProps": {
+      "assembly": "@aws-cdk/aws-applicationautoscaling",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResourceProps",
+      "kind": "interface",
+      "name": "ScalingPolicyResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.PolicyName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-policyname"
+          },
+          "name": "policyName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.PolicyType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-policytype"
+          },
+          "name": "policyType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.ResourceId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-resourceid"
+          },
+          "name": "resourceId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.ScalableDimension``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-scalabledimension"
+          },
+          "name": "scalableDimension",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.ScalingTargetId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-scalingtargetid"
+          },
+          "name": "scalingTargetId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.ServiceNamespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-servicenamespace"
+          },
+          "name": "serviceNamespace",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.StepScalingPolicyConfiguration``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-stepscalingpolicyconfiguration"
+          },
+          "name": "stepScalingPolicyConfiguration",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.StepScalingPolicyConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::ApplicationAutoScaling::ScalingPolicy.TargetTrackingScalingPolicyConfiguration``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration"
+          },
+          "name": "targetTrackingScalingPolicyConfiguration",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.cloudformation.ScalingPolicyResource.TargetTrackingScalingPolicyConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "xU0nwCB42QaX1eoY7DCJT3yYEGUfDcQjoIM49x4+wqw="
+}

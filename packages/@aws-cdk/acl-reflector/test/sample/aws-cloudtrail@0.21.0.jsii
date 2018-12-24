@@ -1,0 +1,2668 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-kms": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-logs": {
+      "dependencies": {
+        "@aws-cdk/aws-cloudwatch": {
+          "dependencies": {
+            "@aws-cdk/aws-iam": {
+              "dependencies": {
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK.CXAPI",
+                          "packageId": "Amazon.CDK.CXAPI",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk-cx-api",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK",
+                      "packageId": "Amazon.CDK",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.AWS.IAM",
+                  "packageId": "Amazon.CDK.AWS.IAM",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "iam",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.services.iam"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-iam"
+                }
+              },
+              "version": "0.21.0"
+            },
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.CloudWatch",
+              "packageId": "Amazon.CDK.AWS.CloudWatch",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cloudwatch",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.cloudwatch"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-cloudwatch"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.Logs",
+          "packageId": "Amazon.CDK.AWS.Logs",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "logs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.logs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-logs"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-s3": {
+      "dependencies": {
+        "@aws-cdk/aws-codepipeline-api": {
+          "dependencies": {
+            "@aws-cdk/aws-events": {
+              "dependencies": {
+                "@aws-cdk/aws-iam": {
+                  "dependencies": {
+                    "@aws-cdk/cdk": {
+                      "dependencies": {
+                        "@aws-cdk/cx-api": {
+                          "peer": true,
+                          "targets": {
+                            "dotnet": {
+                              "assemblyOriginatorKeyFile": "../../key.snk",
+                              "namespace": "Amazon.CDK.CXAPI",
+                              "packageId": "Amazon.CDK.CXAPI",
+                              "signAssembly": true
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cdk-cx-api",
+                                "groupId": "software.amazon.awscdk"
+                              },
+                              "package": "software.amazon.awscdk.cxapi"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cx-api"
+                            }
+                          },
+                          "version": "0.21.0"
+                        }
+                      },
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK",
+                          "packageId": "Amazon.CDK",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cdk"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.AWS.IAM",
+                      "packageId": "Amazon.CDK.AWS.IAM",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "iam",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.services.iam"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/aws-iam"
+                    }
+                  },
+                  "version": "0.21.0"
+                },
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK.CXAPI",
+                          "packageId": "Amazon.CDK.CXAPI",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk-cx-api",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK",
+                      "packageId": "Amazon.CDK",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.AWS.Events",
+                  "packageId": "Amazon.CDK.AWS.Events",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "events",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.services.events"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-events"
+                }
+              },
+              "version": "0.21.0"
+            },
+            "@aws-cdk/aws-iam": {
+              "dependencies": {
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK.CXAPI",
+                          "packageId": "Amazon.CDK.CXAPI",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk-cx-api",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK",
+                      "packageId": "Amazon.CDK",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.AWS.IAM",
+                  "packageId": "Amazon.CDK.AWS.IAM",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "iam",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.services.iam"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-iam"
+                }
+              },
+              "version": "0.21.0"
+            },
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.Codepipeline.Api",
+              "packageId": "Amazon.CDK.AWS.Codepipeline.Api",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "codepipeline-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.codepipeline.api"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-codepipeline-api"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/aws-kms": {
+          "dependencies": {
+            "@aws-cdk/aws-iam": {
+              "dependencies": {
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK.CXAPI",
+                          "packageId": "Amazon.CDK.CXAPI",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk-cx-api",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK",
+                      "packageId": "Amazon.CDK",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.AWS.IAM",
+                  "packageId": "Amazon.CDK.AWS.IAM",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "iam",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.services.iam"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-iam"
+                }
+              },
+              "version": "0.21.0"
+            },
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.KMS",
+              "packageId": "Amazon.CDK.AWS.KMS",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "kms",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.kms"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-kms"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/aws-s3-notifications": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.S3.Notifications",
+              "packageId": "Amazon.CDK.AWS.S3.Notifications",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "s3-notifications",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.s3.notifications"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-s3-notifications"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.S3",
+          "packageId": "Amazon.CDK.AWS.S3",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "CDK Constructs for AWS CloudTrail",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-cloudtrail",
+  "readme": {
+    "markdown": "## AWS CloudTrail Construct Library\nAdd a CloudTrail construct - for ease of setting up CloudTrail logging in your account\n\nExample usage:\n\n```ts\nimport cloudtrail = require('@aws-cdk/aws-cloudtrail');\n\nconst trail = new cloudtrail.CloudTrail(stack, 'CloudTrail');\n```\n\nYou can instantiate the CloudTrail construct with no arguments - this will by default:\n    * Create a new S3 Bucket and associated Policy that allows CloudTrail to write to it\n    * Create a CloudTrail with the following configuration:\n        * Logging Enabled\n        * Log file validation enabled\n        * Multi Region set to true\n        * Global Service Events set to true\n        * The created S3 bucket\n        * CloudWatch Logging Disabled\n        * No SNS configuartion\n        * No tags\n        * No fixed name\n\nYou can override any of these properties using the `CloudTrailProps` configuraiton object.\n\nFor example, to log to CloudWatch Logs\n\n```ts\n\nimport cloudtrail = require('@aws-cdk/aws-cloudtrail');\n\nconst trail = new cloudtrail.CloudTrail(stack, 'CloudTrail', {\n    sendToCloudWatchLogs: true\n});\n```\n\nThis creates the same setup as above - but also logs events to a created CloudWatch Log stream. By default, the created log group has a retention period of 365 Days, but this is also configurable.\n\n\nFor using CloudTrail event selector to log specific S3 events, you can use the `CloudTrailProps` configuration object\n\nFor example - this logs all ReadWriteEvents for the `magic-bucket` bucket:\n\n```ts\nimport cloudtrail = require('@aws-cdk/aws-cloudtrail');\n\nconst trail = new cloudtrail.CloudTrail(stack, 'MyAmazingCloudTrail')\n\ntrail.addS3Filter(\"arn:aws:s3:::magic-bucket/\"); // Adds an event selector to the bucket magic-bucket. By default, this includes management events and all operations (Read + Write)\n\nconst configuration = { includeManagementEvents = false, readWriteType = ReadWriteType.All };\ntrail.addS3Filter([\"arn:aws:s3:::foo\"], configuration ); // Adds an event selector to the bucket foo, with a specific configuration\n});\n```\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.CloudTrail",
+      "packageId": "Amazon.CDK.AWS.CloudTrail",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cloudtrail",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.cloudtrail"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-cloudtrail"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-cloudtrail.CfnTrail": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::CloudTrail::Trail``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnTrail`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnTrail``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudtrail.CfnTrailProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnTrail",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudtrail.CfnTrailProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "trailArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "trailName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "SnsTopicArn"
+          },
+          "immutable": true,
+          "name": "trailSnsTopicArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudtrail.CfnTrail.DataResourceProperty": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-dataresource.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.DataResourceProperty",
+      "kind": "interface",
+      "name": "DataResourceProperty",
+      "namespace": "CfnTrail",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTrail.DataResourceProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-dataresource.html#cfn-cloudtrail-trail-dataresource-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTrail.DataResourceProperty.Values``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-dataresource.html#cfn-cloudtrail-trail-dataresource-values"
+          },
+          "name": "values",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudtrail.CfnTrail.EventSelectorProperty": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.EventSelectorProperty",
+      "kind": "interface",
+      "name": "EventSelectorProperty",
+      "namespace": "CfnTrail",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTrail.EventSelectorProperty.DataResources``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html#cfn-cloudtrail-trail-eventselector-dataresources"
+          },
+          "name": "dataResources",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.DataResourceProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTrail.EventSelectorProperty.IncludeManagementEvents``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html#cfn-cloudtrail-trail-eventselector-includemanagementevents"
+          },
+          "name": "includeManagementEvents",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnTrail.EventSelectorProperty.ReadWriteType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html#cfn-cloudtrail-trail-eventselector-readwritetype"
+          },
+          "name": "readWriteType",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudtrail.CfnTrailProps": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnTrailProps",
+      "kind": "interface",
+      "name": "CfnTrailProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.IsLogging``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-islogging"
+          },
+          "name": "isLogging",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.S3BucketName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-s3bucketname"
+          },
+          "name": "s3BucketName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.CloudWatchLogsLogGroupArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-cloudwatchlogsloggrouparn"
+          },
+          "name": "cloudWatchLogsLogGroupArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.CloudWatchLogsRoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-cloudwatchlogsrolearn"
+          },
+          "name": "cloudWatchLogsRoleArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.EnableLogFileValidation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-enablelogfilevalidation"
+          },
+          "name": "enableLogFileValidation",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.EventSelectors``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-eventselectors"
+          },
+          "name": "eventSelectors",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.EventSelectorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.IncludeGlobalServiceEvents``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-includeglobalserviceevents"
+          },
+          "name": "includeGlobalServiceEvents",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.IsMultiRegionTrail``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-ismultiregiontrail"
+          },
+          "name": "isMultiRegionTrail",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.KMSKeyId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-kmskeyid"
+          },
+          "name": "kmsKeyId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.S3KeyPrefix``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-s3keyprefix"
+          },
+          "name": "s3KeyPrefix",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.SnsTopicName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-snstopicname"
+          },
+          "name": "snsTopicName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.TrailName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-trailname"
+          },
+          "name": "trailName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudtrail.CloudTrail": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Cloud trail allows you to log events that happen in your AWS account\nFor example:\n\nimport { CloudTrail } from '@aws-cdk/aws-cloudtrail'\n\nconst cloudTrail = new CloudTrail(this, 'MyTrail');"
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CloudTrail",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudtrail.CloudTrailProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.\nOnly events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.\n\nThis method adds an S3 Data Event Selector for filtering events that match S3 operations.\n\nData events: These events provide insight into the resource operations performed on or within a resource.\nThese are also known as data plane operations."
+          },
+          "name": "addS3EventSelector",
+          "parameters": [
+            {
+              "name": "prefixes",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "string"
+                  },
+                  "kind": "array"
+                }
+              }
+            },
+            {
+              "docs": {
+                "comment": "the configuration type to log for this data event\nEg, ReadWriteType.ReadOnly will only log \"read\" events for S3 objects that match a filter)"
+              },
+              "name": "readWriteType",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudtrail.ReadWriteType"
+              }
+            }
+          ]
+        }
+      ],
+      "name": "CloudTrail",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "cloudTrailArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudtrail.CloudTrailProps": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-cloudtrail.CloudTrailProps",
+      "kind": "interface",
+      "name": "CloudTrailProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "How long to retain logs in CloudWatchLogs. Ignored if sendToCloudWatchLogs is false",
+            "default": "LogRetention.OneYear"
+          },
+          "name": "cloudWatchLogsRetentionTimeDays",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudtrail.LogRetention",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "To determine whether a log file was modified, deleted, or unchanged after CloudTrail delivered it,\nyou can use CloudTrail log file integrity validation.\nThis feature is built using industry standard algorithms: SHA-256 for hashing and SHA-256 with RSA for digital signing.\nThis makes it computationally infeasible to modify, delete or forge CloudTrail log files without detection.\nYou can use the AWS CLI to validate the files in the location where CloudTrail delivered them.",
+            "default": "true"
+          },
+          "name": "enableFileValidation",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "For most services, events are recorded in the region where the action occurred.\nFor global services such as AWS Identity and Access Management (IAM), AWS STS, Amazon CloudFront, and Route 53,\nevents are delivered to any trail that includes global services, and are logged as occurring in US East (N. Virginia) Region.",
+            "default": "true"
+          },
+          "name": "includeGlobalServiceEvents",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account.",
+            "default": "true"
+          },
+          "name": "isMultiRegionTrail",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.",
+            "default": "none"
+          },
+          "name": "kmsKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.\nOnly events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.\n\nThis method sets the management configuration for this trail.\n\nManagement events provide insight into management operations that are performed on resources in your AWS account.\nThese are also known as control plane operations.\nManagement events can also include non-API events that occur in your account.\nFor example, when a user logs in to your account, CloudTrail logs the ConsoleLogin event.\n\nIf managementEvents is undefined, we'll not log management events by default."
+          },
+          "name": "managementEvents",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudtrail.ReadWriteType",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "An Amazon S3 object key prefix that precedes the name of all log files.",
+            "default": "none"
+          },
+          "name": "s3KeyPrefix",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "If CloudTrail pushes logs to CloudWatch Logs in addition to S3.\nDisabled for cost out of the box.",
+            "default": "false"
+          },
+          "name": "sendToCloudWatchLogs",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of an Amazon SNS topic that is notified when new log files are published.",
+            "default": "none"
+          },
+          "name": "snsTopic",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the trail. We recoomend customers do not set an explicit name.",
+            "default": "the CloudFormation generated neme"
+          },
+          "name": "trailName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudtrail.LogRetention": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "fqn": "@aws-cdk/aws-cloudtrail.LogRetention",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "OneDay"
+        },
+        {
+          "name": "ThreeDays"
+        },
+        {
+          "name": "FiveDays"
+        },
+        {
+          "name": "OneWeek"
+        },
+        {
+          "name": "TwoWeeks"
+        },
+        {
+          "name": "OneMonth"
+        },
+        {
+          "name": "TwoMonths"
+        },
+        {
+          "name": "ThreeMonths"
+        },
+        {
+          "name": "FourMonths"
+        },
+        {
+          "name": "FiveMonths"
+        },
+        {
+          "name": "HalfYear"
+        },
+        {
+          "name": "OneYear"
+        },
+        {
+          "name": "FourHundredDays"
+        },
+        {
+          "name": "EighteenMonths"
+        },
+        {
+          "name": "TwoYears"
+        },
+        {
+          "name": "FiveYears"
+        },
+        {
+          "name": "TenYears"
+        }
+      ],
+      "name": "LogRetention"
+    },
+    "@aws-cdk/aws-cloudtrail.ReadWriteType": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "fqn": "@aws-cdk/aws-cloudtrail.ReadWriteType",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "ReadOnly"
+        },
+        {
+          "name": "WriteOnly"
+        },
+        {
+          "name": "All"
+        }
+      ],
+      "name": "ReadWriteType"
+    },
+    "@aws-cdk/aws-cloudtrail.cloudformation.TrailResource": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.TrailResource\" will be deprecated in a future release in favor of \"CfnTrail\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.cloudformation.TrailResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::CloudTrail::Trail``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``TrailResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``TrailResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudtrail.cloudformation.TrailResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "TrailResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudtrail.cloudformation.TrailResourceProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "trailArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "trailName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "SnsTopicArn"
+          },
+          "immutable": true,
+          "name": "trailSnsTopicArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudtrail.cloudformation.TrailResource.DataResourceProperty": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-dataresource.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.cloudformation.TrailResource.DataResourceProperty",
+      "kind": "interface",
+      "name": "DataResourceProperty",
+      "namespace": "cloudformation.TrailResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TrailResource.DataResourceProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-dataresource.html#cfn-cloudtrail-trail-dataresource-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TrailResource.DataResourceProperty.Values``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-dataresource.html#cfn-cloudtrail-trail-dataresource-values"
+          },
+          "name": "values",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudtrail.cloudformation.TrailResource.EventSelectorProperty": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.cloudformation.TrailResource.EventSelectorProperty",
+      "kind": "interface",
+      "name": "EventSelectorProperty",
+      "namespace": "cloudformation.TrailResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TrailResource.EventSelectorProperty.DataResources``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html#cfn-cloudtrail-trail-eventselector-dataresources"
+          },
+          "name": "dataResources",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.cloudformation.TrailResource.DataResourceProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TrailResource.EventSelectorProperty.IncludeManagementEvents``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html#cfn-cloudtrail-trail-eventselector-includemanagementevents"
+          },
+          "name": "includeManagementEvents",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``TrailResource.EventSelectorProperty.ReadWriteType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html#cfn-cloudtrail-trail-eventselector-readwritetype"
+          },
+          "name": "readWriteType",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudtrail.cloudformation.TrailResourceProps": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.cloudformation.TrailResourceProps",
+      "kind": "interface",
+      "name": "TrailResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.IsLogging``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-islogging"
+          },
+          "name": "isLogging",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.S3BucketName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-s3bucketname"
+          },
+          "name": "s3BucketName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.CloudWatchLogsLogGroupArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-cloudwatchlogsloggrouparn"
+          },
+          "name": "cloudWatchLogsLogGroupArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.CloudWatchLogsRoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-cloudwatchlogsrolearn"
+          },
+          "name": "cloudWatchLogsRoleArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.EnableLogFileValidation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-enablelogfilevalidation"
+          },
+          "name": "enableLogFileValidation",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.EventSelectors``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-eventselectors"
+          },
+          "name": "eventSelectors",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.cloudformation.TrailResource.EventSelectorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.IncludeGlobalServiceEvents``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-includeglobalserviceevents"
+          },
+          "name": "includeGlobalServiceEvents",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.IsMultiRegionTrail``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-ismultiregiontrail"
+          },
+          "name": "isMultiRegionTrail",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.KMSKeyId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-kmskeyid"
+          },
+          "name": "kmsKeyId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.S3KeyPrefix``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-s3keyprefix"
+          },
+          "name": "s3KeyPrefix",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.SnsTopicName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-snstopicname"
+          },
+          "name": "snsTopicName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudTrail::Trail.TrailName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-trailname"
+          },
+          "name": "trailName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "IlfDft9Hhmak9/ynPX7U63UbLrkZCOlV0SqgB0Y+6Jo="
+}

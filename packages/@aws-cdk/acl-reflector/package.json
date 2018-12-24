@@ -1,12 +1,12 @@
 {
-  "name": "aws-library-reflector",
+  "name": "acl-reflector",
   "version": "1.0.0",
   "description": "Reflects on the type system of the AWS Construct Library and produces a coverage report",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",

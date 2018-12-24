@@ -1,0 +1,1412 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "CDK Constructs for AWS KMS",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-kms",
+  "readme": {
+    "markdown": "## AWS KMS Construct Library\n\nDefines a KMS key:\n\n```js\nnew EncryptionKey(this, 'MyKey', {\n    enableKeyRotation: true\n});\n```\n\nAdd a couple of aliases:\n\n```js\nconst key = new EncryptionKey(this, 'MyKey');\nkey.addAlias('alias/foo');\nkey.addAlias('alias/bar');\n```\n\n### Importing and exporting keys\n\nTo use a KMS key that is not defined within this stack, use the\n`EncryptionKey.import(parent, name, ref)` factory method:\n\n```ts\nconst key = EncryptionKey.import(this, 'MyImportedKey', {\n    keyArn: new KeyArn('arn:aws:...')\n});\n\n// you can do stuff with this imported key.\nkey.addAlias('alias/foo');\n```\n\nTo export a key from a stack and import it in another stack, use `key.export`\nwhich returns an `EncryptionKeyRef`, which can later be used to import:\n\n```ts\n// in stackA\nconst myKey = new EncryptionKey(stackA, 'MyKey');\nconst myKeyRef = myKey.export();\n\n// meanwhile in stackB\nconst myKeyImported = EncryptionKey.import(stackB, 'MyKeyImported', myKeyRef);\n```\n\nNote that a call to `.addToPolicy(statement)` on `myKeyImported` will not have\nan affect on the key's policy because it is not owned by your stack. The call\nwill be a no-op.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.KMS",
+      "packageId": "Amazon.CDK.AWS.KMS",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "kms",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.kms"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-kms"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-kms.CfnAlias": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html"
+      },
+      "fqn": "@aws-cdk/aws-kms.CfnAlias",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::KMS::Alias``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnAlias`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnAlias``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.CfnAliasProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnAlias",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "aliasName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.CfnAliasProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.CfnAliasProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html"
+      },
+      "fqn": "@aws-cdk/aws-kms.CfnAliasProps",
+      "kind": "interface",
+      "name": "CfnAliasProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Alias.AliasName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html#cfn-kms-alias-aliasname"
+          },
+          "name": "aliasName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Alias.TargetKeyId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html#cfn-kms-alias-targetkeyid"
+          },
+          "name": "targetKeyId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.CfnKey": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html"
+      },
+      "fqn": "@aws-cdk/aws-kms.CfnKey",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::KMS::Key``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnKey`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnKey``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.CfnKeyProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnKey",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "keyArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "keyId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.CfnKeyProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.CfnKeyProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html"
+      },
+      "fqn": "@aws-cdk/aws-kms.CfnKeyProps",
+      "kind": "interface",
+      "name": "CfnKeyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.KeyPolicy``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-keypolicy"
+          },
+          "name": "keyPolicy",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.Enabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-enabled"
+          },
+          "name": "enabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.EnableKeyRotation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-enablekeyrotation"
+          },
+          "name": "enableKeyRotation",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.KeyUsage``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-keyusage"
+          },
+          "name": "keyUsage",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.PendingWindowInDays``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-pendingwindowindays"
+          },
+          "name": "pendingWindowInDays",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.EncryptionKey": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": {
+        "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef"
+      },
+      "docs": {
+        "comment": "Defines a KMS key."
+      },
+      "fqn": "@aws-cdk/aws-kms.EncryptionKey",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.EncryptionKeyProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "EncryptionKey",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The ARN of the key."
+          },
+          "immutable": true,
+          "name": "keyArn",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Optional policy document that represents the resource policy of this key.\n\nIf specified, addToResourcePolicy can be used to edit this policy.\nOtherwise this method will no-op."
+          },
+          "immutable": true,
+          "name": "policy",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef"
+          },
+          "protected": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.PolicyDocument",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.EncryptionKeyAlias": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Defines a display name for a customer master key (CMK) in AWS Key Management\nService (AWS KMS). Using an alias to refer to a key can help you simplify key\nmanagement. For example, when rotating keys, you can just update the alias\nmapping instead of tracking and changing key IDs. For more information, see\nWorking with Aliases in the AWS Key Management Service Developer Guide.\n\nYou can also add an alias for a key by calling `key.addAlias(alias)`."
+      },
+      "fqn": "@aws-cdk/aws-kms.EncryptionKeyAlias",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.EncryptionKeyAliasProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "EncryptionKeyAlias",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The name of the alias."
+          },
+          "name": "aliasName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.EncryptionKeyAliasProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-kms.EncryptionKeyAliasProps",
+      "kind": "interface",
+      "name": "EncryptionKeyAliasProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the alias. The name must start with alias followed by a\nforward slash, such as alias/. You can't specify aliases that begin with\nalias/AWS. These aliases are reserved."
+          },
+          "name": "alias",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ID of the key for which you are creating the alias. Specify the key's\nglobally unique identifier or Amazon Resource Name (ARN). You can't\nspecify another alias."
+          },
+          "name": "key",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.EncryptionKeyProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "comment": "Construction properties for a KMS Key object"
+      },
+      "fqn": "@aws-cdk/aws-kms.EncryptionKeyProps",
+      "kind": "interface",
+      "name": "EncryptionKeyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A description of the key. Use a description that helps your users decide\nwhether the key is appropriate for a particular task."
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Indicates whether the key is available for use.",
+            "default": "Key is enabled"
+          },
+          "name": "enabled",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Indicates whether AWS KMS rotates the key.",
+            "default": "false"
+          },
+          "name": "enableKeyRotation",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Custom policy document to attach to the KMS key.",
+            "default": "A policy document with permissions for the account root to\nadminister the key will be created."
+          },
+          "name": "policy",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.PolicyDocument",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.EncryptionKeyRef": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-kms",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "The local logical ID of the construct. Must be unique amongst\nsiblings. If the ID includes a path separator (`/`), then it will be\nreplaced by double dash `--`."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Defines an imported encryption key.\n\n`ref` can be obtained either via a call to `key.export()` or using\nliterals.\n\nFor example:\n\n   const keyRefProps = key.export();\n   const keyRef1 = EncryptionKeyRef.import(this, 'MyImportedKey1', keyRefProps);\n   const keyRef2 = EncryptionKeyRef.import(this, 'MyImportedKey2', {\n     keyArn: new KeyArn('arn:aws:kms:...')\n   });"
+          },
+          "name": "import",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The parent construct."
+              },
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The name of the construct."
+              },
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The key reference."
+              },
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-kms.EncryptionKeyRefProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRef"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Defines a new alias for the key."
+          },
+          "name": "addAlias",
+          "parameters": [
+            {
+              "name": "alias",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyAlias"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a statement to the KMS key resource policy."
+          },
+          "name": "addToResourcePolicy",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The policy statement to add"
+              },
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            },
+            {
+              "docs": {
+                "comment": "If this is set to `false` and there is no policy\ndefined (i.e. external key), the operation will fail. Otherwise, it will\nno-op."
+              },
+              "name": "allowNoOp",
+              "type": {
+                "optional": true,
+                "primitive": "boolean"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Exports this key from the current stack.",
+            "return": "a key ref which can be used in a call to `EncryptionKey.import(ref)`."
+          },
+          "name": "export",
+          "returns": {
+            "fqn": "@aws-cdk/aws-kms.EncryptionKeyRefProps"
+          }
+        }
+      ],
+      "name": "EncryptionKeyRef",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of the key."
+          },
+          "immutable": true,
+          "name": "keyArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Optional policy document that represents the resource policy of this key.\n\nIf specified, addToResourcePolicy can be used to edit this policy.\nOtherwise this method will no-op."
+          },
+          "immutable": true,
+          "name": "policy",
+          "protected": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.PolicyDocument",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.EncryptionKeyRefProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-kms.EncryptionKeyRefProps",
+      "kind": "interface",
+      "name": "EncryptionKeyRefProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of the external KMS key."
+          },
+          "name": "keyArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.cloudformation.AliasResource": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.AliasResource\" will be deprecated in a future release in favor of \"CfnAlias\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html"
+      },
+      "fqn": "@aws-cdk/aws-kms.cloudformation.AliasResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::KMS::Alias``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``AliasResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``AliasResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.cloudformation.AliasResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "AliasResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "aliasName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.cloudformation.AliasResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.cloudformation.AliasResourceProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html"
+      },
+      "fqn": "@aws-cdk/aws-kms.cloudformation.AliasResourceProps",
+      "kind": "interface",
+      "name": "AliasResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Alias.AliasName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html#cfn-kms-alias-aliasname"
+          },
+          "name": "aliasName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Alias.TargetKeyId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html#cfn-kms-alias-targetkeyid"
+          },
+          "name": "targetKeyId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.cloudformation.KeyResource": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.KeyResource\" will be deprecated in a future release in favor of \"CfnKey\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html"
+      },
+      "fqn": "@aws-cdk/aws-kms.cloudformation.KeyResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::KMS::Key``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``KeyResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``KeyResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.cloudformation.KeyResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "KeyResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "keyArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "keyId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.cloudformation.KeyResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-kms.cloudformation.KeyResourceProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html"
+      },
+      "fqn": "@aws-cdk/aws-kms.cloudformation.KeyResourceProps",
+      "kind": "interface",
+      "name": "KeyResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.KeyPolicy``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-keypolicy"
+          },
+          "name": "keyPolicy",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.Enabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-enabled"
+          },
+          "name": "enabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.EnableKeyRotation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-enablekeyrotation"
+          },
+          "name": "enableKeyRotation",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.KeyUsage``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-keyusage"
+          },
+          "name": "keyUsage",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.PendingWindowInDays``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-pendingwindowindays"
+          },
+          "name": "pendingWindowInDays",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::KMS::Key.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "qaJXygB4+N/c751IjeCs+rDVxqqdo2h21+AikF1ZlD4="
+}

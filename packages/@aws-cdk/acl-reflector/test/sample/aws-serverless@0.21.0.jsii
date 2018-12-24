@@ -1,0 +1,4783 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Serverless",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-serverless",
+  "readme": {
+    "markdown": "## AWS Serverless Construct Library\n\n```ts\nconst serverless = require('@aws-cdk/aws-serverless');\n```\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.Serverless",
+      "packageId": "Amazon.CDK.AWS.Serverless",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "serverless",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.serverless"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-serverless"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-serverless.CfnApi": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnApi",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Serverless::Api``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnApi`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnApi``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-serverless.CfnApiProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnApi",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The ``Transform`` a template must use in order to use this resource"
+          },
+          "immutable": true,
+          "name": "requiredTransform",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "apiName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-serverless.CfnApiProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnApi.S3LocationProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnApi.S3LocationProperty",
+      "kind": "interface",
+      "name": "S3LocationProperty",
+      "namespace": "CfnApi",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnApi.S3LocationProperty.Bucket``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "bucket",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnApi.S3LocationProperty.Key``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnApi.S3LocationProperty.Version``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "version",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnApiProps": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnApiProps",
+      "kind": "interface",
+      "name": "CfnApiProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.StageName``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "stageName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.CacheClusterEnabled``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "cacheClusterEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.CacheClusterSize``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "cacheClusterSize",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.DefinitionBody``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "definitionBody",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.DefinitionUri``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "definitionUri",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnApi.S3LocationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.MethodSettings``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "methodSettings",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.Name``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.Variables``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "variables",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Serverless::Function``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnFunction`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnFunction``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-serverless.CfnFunctionProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnFunction",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The ``Transform`` a template must use in order to use this resource"
+          },
+          "immutable": true,
+          "name": "requiredTransform",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "functionName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-serverless.CfnFunctionProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.AlexaSkillEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#alexaskill"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.AlexaSkillEventProperty",
+      "kind": "interface",
+      "name": "AlexaSkillEventProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.AlexaSkillEventProperty.Variables``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#alexaskill"
+          },
+          "name": "variables",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.ApiEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.ApiEventProperty",
+      "kind": "interface",
+      "name": "ApiEventProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.ApiEventProperty.Method``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api"
+          },
+          "name": "method",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.ApiEventProperty.Path``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api"
+          },
+          "name": "path",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.ApiEventProperty.RestApiId``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api"
+          },
+          "name": "restApiId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.CloudWatchEventEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cloudwatchevent"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.CloudWatchEventEventProperty",
+      "kind": "interface",
+      "name": "CloudWatchEventEventProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.CloudWatchEventEventProperty.Pattern``",
+            "link": "http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html"
+          },
+          "name": "pattern",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.CloudWatchEventEventProperty.Input``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cloudwatchevent"
+          },
+          "name": "input",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.CloudWatchEventEventProperty.InputPath``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cloudwatchevent"
+          },
+          "name": "inputPath",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.DeadLetterQueueProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deadletterqueue-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.DeadLetterQueueProperty",
+      "kind": "interface",
+      "name": "DeadLetterQueueProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.DeadLetterQueueProperty.TargetArn``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "targetArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.DeadLetterQueueProperty.Type``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.DeploymentPreferenceProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/docs/safe_lambda_deployments.rst"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.DeploymentPreferenceProperty",
+      "kind": "interface",
+      "name": "DeploymentPreferenceProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.DeploymentPreferenceProperty.Enabled``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object"
+          },
+          "name": "enabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.DeploymentPreferenceProperty.Type``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.DeploymentPreferenceProperty.Alarms``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object"
+          },
+          "name": "alarms",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.DeploymentPreferenceProperty.Hooks``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object"
+          },
+          "name": "hooks",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.DynamoDBEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.DynamoDBEventProperty",
+      "kind": "interface",
+      "name": "DynamoDBEventProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.DynamoDBEventProperty.BatchSize``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb"
+          },
+          "name": "batchSize",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.DynamoDBEventProperty.StartingPosition``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb"
+          },
+          "name": "startingPosition",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.DynamoDBEventProperty.Stream``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb"
+          },
+          "name": "stream",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.EventSourceProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.EventSourceProperty",
+      "kind": "interface",
+      "name": "EventSourceProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.EventSourceProperty.Properties``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-types"
+          },
+          "name": "properties",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.AlexaSkillEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.ApiEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.CloudWatchEventEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.DynamoDBEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.S3EventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.SNSEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.SQSEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.KinesisEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.ScheduleEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.IoTRuleEventProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.EventSourceProperty.Type``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-object"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.FunctionEnvironmentProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.FunctionEnvironmentProperty",
+      "kind": "interface",
+      "name": "FunctionEnvironmentProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.FunctionEnvironmentProperty.Variables``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object"
+          },
+          "name": "variables",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.IAMPolicyDocumentProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "docs": {
+        "link": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.IAMPolicyDocumentProperty",
+      "kind": "interface",
+      "name": "IAMPolicyDocumentProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.IAMPolicyDocumentProperty.Statement``",
+            "link": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html"
+          },
+          "name": "statement",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.IoTRuleEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#iotrule"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.IoTRuleEventProperty",
+      "kind": "interface",
+      "name": "IoTRuleEventProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.IoTRuleEventProperty.Sql``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#iotrule"
+          },
+          "name": "sql",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.IoTRuleEventProperty.AwsIotSqlVersion``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#iotrule"
+          },
+          "name": "awsIotSqlVersion",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.KinesisEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.KinesisEventProperty",
+      "kind": "interface",
+      "name": "KinesisEventProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.KinesisEventProperty.StartingPosition``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis"
+          },
+          "name": "startingPosition",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.KinesisEventProperty.Stream``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis"
+          },
+          "name": "stream",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.KinesisEventProperty.BatchSize``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis"
+          },
+          "name": "batchSize",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.S3EventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.S3EventProperty",
+      "kind": "interface",
+      "name": "S3EventProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.S3EventProperty.Bucket``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3"
+          },
+          "name": "bucket",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.S3EventProperty.Events``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3"
+          },
+          "name": "events",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.S3EventProperty.Filter``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3"
+          },
+          "name": "filter",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.S3NotificationFilterProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.S3LocationProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.S3LocationProperty",
+      "kind": "interface",
+      "name": "S3LocationProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.S3LocationProperty.Bucket``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "bucket",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.S3LocationProperty.Key``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.S3LocationProperty.Version``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "version",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.S3NotificationFilterProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter.html"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.S3NotificationFilterProperty",
+      "kind": "interface",
+      "name": "S3NotificationFilterProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.S3NotificationFilterProperty.S3Key``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter.html"
+          },
+          "name": "s3Key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.SNSEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sns"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.SNSEventProperty",
+      "kind": "interface",
+      "name": "SNSEventProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.SNSEventProperty.Topic``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sns"
+          },
+          "name": "topic",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.SQSEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.SQSEventProperty",
+      "kind": "interface",
+      "name": "SQSEventProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.SQSEventProperty.Queue``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs"
+          },
+          "name": "queue",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.SQSEventProperty.BatchSize``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs"
+          },
+          "name": "batchSize",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.ScheduleEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.ScheduleEventProperty",
+      "kind": "interface",
+      "name": "ScheduleEventProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.ScheduleEventProperty.Schedule``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule"
+          },
+          "name": "schedule",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.ScheduleEventProperty.Input``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule"
+          },
+          "name": "input",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunction.VpcConfigProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-vpcconfig.html"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunction.VpcConfigProperty",
+      "kind": "interface",
+      "name": "VpcConfigProperty",
+      "namespace": "CfnFunction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.VpcConfigProperty.SecurityGroupIds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-vpcconfig.html"
+          },
+          "name": "securityGroupIds",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnFunction.VpcConfigProperty.SubnetIds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-vpcconfig.html"
+          },
+          "name": "subnetIds",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnFunctionProps": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnFunctionProps",
+      "kind": "interface",
+      "name": "CfnFunctionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.CodeUri``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "codeUri",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.S3LocationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Handler``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "handler",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Runtime``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "runtime",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.DeadLetterQueue``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "deadLetterQueue",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.DeadLetterQueueProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.DeploymentPreference``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object"
+          },
+          "name": "deploymentPreference",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.DeploymentPreferenceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Description``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Environment``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "environment",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.FunctionEnvironmentProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Events``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "events",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-serverless.CfnFunction.EventSourceProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.FunctionName``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "functionName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.KmsKeyArn``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "kmsKeyArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.MemorySize``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "memorySize",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Policies``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "policies",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.IAMPolicyDocumentProperty"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-serverless.CfnFunction.IAMPolicyDocumentProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Role``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "role",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Tags``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Timeout``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "timeout",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Tracing``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "tracing",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.VpcConfig``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "vpcConfig",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnFunction.VpcConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnSimpleTable": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnSimpleTable",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Serverless::SimpleTable``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnSimpleTable`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnSimpleTable``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-serverless.CfnSimpleTableProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnSimpleTable",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The ``Transform`` a template must use in order to use this resource"
+          },
+          "immutable": true,
+          "name": "requiredTransform",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-serverless.CfnSimpleTableProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "simpleTableName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnSimpleTable.PrimaryKeyProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#primary-key-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnSimpleTable.PrimaryKeyProperty",
+      "kind": "interface",
+      "name": "PrimaryKeyProperty",
+      "namespace": "CfnSimpleTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSimpleTable.PrimaryKeyProperty.Type``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#primary-key-object"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSimpleTable.PrimaryKeyProperty.Name``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#primary-key-object"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnSimpleTable.ProvisionedThroughputProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnSimpleTable.ProvisionedThroughputProperty",
+      "kind": "interface",
+      "name": "ProvisionedThroughputProperty",
+      "namespace": "CfnSimpleTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSimpleTable.ProvisionedThroughputProperty.WriteCapacityUnits``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html"
+          },
+          "name": "writeCapacityUnits",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnSimpleTable.ProvisionedThroughputProperty.ReadCapacityUnits``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html"
+          },
+          "name": "readCapacityUnits",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.CfnSimpleTableProps": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable"
+      },
+      "fqn": "@aws-cdk/aws-serverless.CfnSimpleTableProps",
+      "kind": "interface",
+      "name": "CfnSimpleTableProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::SimpleTable.PrimaryKey``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#primary-key-object"
+          },
+          "name": "primaryKey",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnSimpleTable.PrimaryKeyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::SimpleTable.ProvisionedThroughput``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html"
+          },
+          "name": "provisionedThroughput",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.CfnSimpleTable.ProvisionedThroughputProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.ApiResource": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.ApiResource\" will be deprecated in a future release in favor of \"CfnApi\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.ApiResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Serverless::Api``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ApiResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ApiResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-serverless.cloudformation.ApiResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ApiResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The ``Transform`` a template must use in order to use this resource"
+          },
+          "immutable": true,
+          "name": "requiredTransform",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "apiName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-serverless.cloudformation.ApiResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.ApiResource.S3LocationProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.ApiResource.S3LocationProperty",
+      "kind": "interface",
+      "name": "S3LocationProperty",
+      "namespace": "cloudformation.ApiResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ApiResource.S3LocationProperty.Bucket``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "bucket",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ApiResource.S3LocationProperty.Key``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``ApiResource.S3LocationProperty.Version``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "version",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.ApiResourceProps": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.ApiResourceProps",
+      "kind": "interface",
+      "name": "ApiResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.StageName``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "stageName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.CacheClusterEnabled``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "cacheClusterEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.CacheClusterSize``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "cacheClusterSize",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.DefinitionBody``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "definitionBody",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.DefinitionUri``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "definitionUri",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.ApiResource.S3LocationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.MethodSettings``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "methodSettings",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.Name``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Api.Variables``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi"
+          },
+          "name": "variables",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.FunctionResource\" will be deprecated in a future release in favor of \"CfnFunction\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Serverless::Function``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``FunctionResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``FunctionResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "FunctionResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The ``Transform`` a template must use in order to use this resource"
+          },
+          "immutable": true,
+          "name": "requiredTransform",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "functionName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.AlexaSkillEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#alexaskill"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.AlexaSkillEventProperty",
+      "kind": "interface",
+      "name": "AlexaSkillEventProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.AlexaSkillEventProperty.Variables``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#alexaskill"
+          },
+          "name": "variables",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.ApiEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.ApiEventProperty",
+      "kind": "interface",
+      "name": "ApiEventProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.ApiEventProperty.Method``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api"
+          },
+          "name": "method",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.ApiEventProperty.Path``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api"
+          },
+          "name": "path",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.ApiEventProperty.RestApiId``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api"
+          },
+          "name": "restApiId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.CloudWatchEventEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cloudwatchevent"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.CloudWatchEventEventProperty",
+      "kind": "interface",
+      "name": "CloudWatchEventEventProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.CloudWatchEventEventProperty.Pattern``",
+            "link": "http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html"
+          },
+          "name": "pattern",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.CloudWatchEventEventProperty.Input``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cloudwatchevent"
+          },
+          "name": "input",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.CloudWatchEventEventProperty.InputPath``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#cloudwatchevent"
+          },
+          "name": "inputPath",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.DeadLetterQueueProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deadletterqueue-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.DeadLetterQueueProperty",
+      "kind": "interface",
+      "name": "DeadLetterQueueProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.DeadLetterQueueProperty.TargetArn``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "targetArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.DeadLetterQueueProperty.Type``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.DeploymentPreferenceProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/docs/safe_lambda_deployments.rst"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.DeploymentPreferenceProperty",
+      "kind": "interface",
+      "name": "DeploymentPreferenceProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.DeploymentPreferenceProperty.Enabled``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object"
+          },
+          "name": "enabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.DeploymentPreferenceProperty.Type``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.DeploymentPreferenceProperty.Alarms``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object"
+          },
+          "name": "alarms",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.DeploymentPreferenceProperty.Hooks``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object"
+          },
+          "name": "hooks",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.DynamoDBEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.DynamoDBEventProperty",
+      "kind": "interface",
+      "name": "DynamoDBEventProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.DynamoDBEventProperty.BatchSize``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb"
+          },
+          "name": "batchSize",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.DynamoDBEventProperty.StartingPosition``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb"
+          },
+          "name": "startingPosition",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.DynamoDBEventProperty.Stream``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb"
+          },
+          "name": "stream",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.EventSourceProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.EventSourceProperty",
+      "kind": "interface",
+      "name": "EventSourceProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.EventSourceProperty.Properties``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-types"
+          },
+          "name": "properties",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.AlexaSkillEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.ApiEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.CloudWatchEventEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.DynamoDBEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.S3EventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.SNSEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.SQSEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.KinesisEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.ScheduleEventProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.IoTRuleEventProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.EventSourceProperty.Type``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-object"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.FunctionEnvironmentProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.FunctionEnvironmentProperty",
+      "kind": "interface",
+      "name": "FunctionEnvironmentProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.FunctionEnvironmentProperty.Variables``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object"
+          },
+          "name": "variables",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.IAMPolicyDocumentProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "docs": {
+        "link": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.IAMPolicyDocumentProperty",
+      "kind": "interface",
+      "name": "IAMPolicyDocumentProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.IAMPolicyDocumentProperty.Statement``",
+            "link": "http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html"
+          },
+          "name": "statement",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.IoTRuleEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#iotrule"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.IoTRuleEventProperty",
+      "kind": "interface",
+      "name": "IoTRuleEventProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.IoTRuleEventProperty.Sql``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#iotrule"
+          },
+          "name": "sql",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.IoTRuleEventProperty.AwsIotSqlVersion``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#iotrule"
+          },
+          "name": "awsIotSqlVersion",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.KinesisEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.KinesisEventProperty",
+      "kind": "interface",
+      "name": "KinesisEventProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.KinesisEventProperty.StartingPosition``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis"
+          },
+          "name": "startingPosition",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.KinesisEventProperty.Stream``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis"
+          },
+          "name": "stream",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.KinesisEventProperty.BatchSize``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis"
+          },
+          "name": "batchSize",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.S3EventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.S3EventProperty",
+      "kind": "interface",
+      "name": "S3EventProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.S3EventProperty.Bucket``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3"
+          },
+          "name": "bucket",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.S3EventProperty.Events``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3"
+          },
+          "name": "events",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.S3EventProperty.Filter``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3"
+          },
+          "name": "filter",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.S3NotificationFilterProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.S3LocationProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.S3LocationProperty",
+      "kind": "interface",
+      "name": "S3LocationProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.S3LocationProperty.Bucket``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "bucket",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.S3LocationProperty.Key``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.S3LocationProperty.Version``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "version",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.S3NotificationFilterProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter.html"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.S3NotificationFilterProperty",
+      "kind": "interface",
+      "name": "S3NotificationFilterProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.S3NotificationFilterProperty.S3Key``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfiguration-config-filter.html"
+          },
+          "name": "s3Key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.SNSEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sns"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.SNSEventProperty",
+      "kind": "interface",
+      "name": "SNSEventProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.SNSEventProperty.Topic``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sns"
+          },
+          "name": "topic",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.SQSEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.SQSEventProperty",
+      "kind": "interface",
+      "name": "SQSEventProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.SQSEventProperty.Queue``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs"
+          },
+          "name": "queue",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.SQSEventProperty.BatchSize``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs"
+          },
+          "name": "batchSize",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.ScheduleEventProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.ScheduleEventProperty",
+      "kind": "interface",
+      "name": "ScheduleEventProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.ScheduleEventProperty.Schedule``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule"
+          },
+          "name": "schedule",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.ScheduleEventProperty.Input``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule"
+          },
+          "name": "input",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResource.VpcConfigProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-vpcconfig.html"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.VpcConfigProperty",
+      "kind": "interface",
+      "name": "VpcConfigProperty",
+      "namespace": "cloudformation.FunctionResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.VpcConfigProperty.SecurityGroupIds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-vpcconfig.html"
+          },
+          "name": "securityGroupIds",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``FunctionResource.VpcConfigProperty.SubnetIds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-vpcconfig.html"
+          },
+          "name": "subnetIds",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.FunctionResourceProps": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResourceProps",
+      "kind": "interface",
+      "name": "FunctionResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.CodeUri``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "codeUri",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.S3LocationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Handler``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "handler",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Runtime``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "runtime",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.DeadLetterQueue``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "deadLetterQueue",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.DeadLetterQueueProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.DeploymentPreference``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object"
+          },
+          "name": "deploymentPreference",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.DeploymentPreferenceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Description``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Environment``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "environment",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.FunctionEnvironmentProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Events``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "events",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.EventSourceProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.FunctionName``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "functionName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.KmsKeyArn``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "kmsKeyArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.MemorySize``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "memorySize",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Policies``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "policies",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.IAMPolicyDocumentProperty"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.IAMPolicyDocumentProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Role``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "role",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Tags``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Timeout``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "timeout",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.Tracing``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "tracing",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::Function.VpcConfig``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction"
+          },
+          "name": "vpcConfig",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.FunctionResource.VpcConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.SimpleTableResource": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.SimpleTableResource\" will be deprecated in a future release in favor of \"CfnSimpleTable\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.SimpleTableResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Serverless::SimpleTable``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``SimpleTableResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``SimpleTableResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-serverless.cloudformation.SimpleTableResourceProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "SimpleTableResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The ``Transform`` a template must use in order to use this resource"
+          },
+          "immutable": true,
+          "name": "requiredTransform",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-serverless.cloudformation.SimpleTableResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "simpleTableName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.SimpleTableResource.PrimaryKeyProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#primary-key-object"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.SimpleTableResource.PrimaryKeyProperty",
+      "kind": "interface",
+      "name": "PrimaryKeyProperty",
+      "namespace": "cloudformation.SimpleTableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SimpleTableResource.PrimaryKeyProperty.Type``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#primary-key-object"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SimpleTableResource.PrimaryKeyProperty.Name``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#primary-key-object"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.SimpleTableResource.ProvisionedThroughputProperty": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.SimpleTableResource.ProvisionedThroughputProperty",
+      "kind": "interface",
+      "name": "ProvisionedThroughputProperty",
+      "namespace": "cloudformation.SimpleTableResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SimpleTableResource.ProvisionedThroughputProperty.WriteCapacityUnits``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html"
+          },
+          "name": "writeCapacityUnits",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``SimpleTableResource.ProvisionedThroughputProperty.ReadCapacityUnits``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html"
+          },
+          "name": "readCapacityUnits",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-serverless.cloudformation.SimpleTableResourceProps": {
+      "assembly": "@aws-cdk/aws-serverless",
+      "datatype": true,
+      "docs": {
+        "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable"
+      },
+      "fqn": "@aws-cdk/aws-serverless.cloudformation.SimpleTableResourceProps",
+      "kind": "interface",
+      "name": "SimpleTableResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::SimpleTable.PrimaryKey``",
+            "link": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#primary-key-object"
+          },
+          "name": "primaryKey",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.SimpleTableResource.PrimaryKeyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Serverless::SimpleTable.ProvisionedThroughput``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-provisionedthroughput.html"
+          },
+          "name": "provisionedThroughput",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-serverless.cloudformation.SimpleTableResource.ProvisionedThroughputProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "EphuwoQYQppfDXMXoJKhVukfr90xQ2kfeepLKNFtKzU="
+}

@@ -1,0 +1,5219 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudwatch": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.CloudWatch",
+          "packageId": "Amazon.CDK.AWS.CloudWatch",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudwatch",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudwatch"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudwatch"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-events": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "The CDK Construct Library for AWS::StepFunctions",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-stepfunctions",
+  "readme": {
+    "markdown": "## AWS Step Functions Construct Library\n\nThe `@aws-cdk/aws-stepfunctions` package contains constructs for building\nserverless workflows. Using objects. Defining a workflow looks like this\n(for the [Step Functions Job Poller\nexample](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):\n\n### TypeScript example\n\n```ts\nconst submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });\nconst getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });\n\nconst submitJob = new stepfunctions.Task(this, 'Submit Job', {\n    resource: submitLambda,\n    // Put Lambda's result here in the execution's state object\n    resultPath: '$.guid',\n});\n\nconst waitX = new stepfunctions.Wait(this, 'Wait X Seconds', { secondsPath: '$.wait_time' });\n\nconst getStatus = new stepfunctions.Task(this, 'Get Job Status', {\n    resource: getStatusLambda,\n    // Pass just the field named \"guid\" into the Lambda, put the\n    // Lambda's result in a field called \"status\"\n    inputPath: '$.guid',\n    resultPath: '$.status',\n});\n\nconst jobFailed = new stepfunctions.Fail(this, 'Job Failed', {\n    cause: 'AWS Batch Job Failed',\n    error: 'DescribeJob returned FAILED',\n});\n\nconst finalStatus = new stepfunctions.Task(this, 'Get Final Job Status', {\n    resource: getStatusLambda,\n    // Use \"guid\" field as input, output of the Lambda becomes the\n    // entire state machine output.\n    inputPath: '$.guid',\n});\n\nconst definition = submitJob\n    .next(waitX)\n    .next(getStatus)\n    .next(new stepfunctions.Choice(this, 'Job Complete?')\n        // Look at the \"status\" field\n        .when(stepfunctions.Condition.stringEquals('$.status', 'FAILED'), jobFailed)\n        .when(stepfunctions.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)\n        .otherwise(waitX));\n\nnew stepfunctions.StateMachine(this, 'StateMachine', {\n    definition,\n    timeoutSec: 300\n});\n```\n\n### .NET Example\n\n```csharp\nvar submitLambda = new Function(this, \"SubmitLambda\", new FunctionProps\n{\n    // ...\n});\n\nvar getStatusLambda = new Function(this, \"CheckLambda\", new FunctionProps\n{\n    // ...\n});\n\nvar submitJob = new Task(this, \"Submit Job\", new TaskProps\n{\n    Resource = submitLambda,\n    ResultPath = \"$.guid\"\n});\n\nvar waitX = new Wait(this, \"Wait X Seconds\", new WaitProps\n{\n    SecondsPath = \"$.wait_time\"\n});\n\nvar getStatus = new Task(this, \"Get Job Status\", new TaskProps\n{\n    Resource = getStatusLambda,\n    InputPath = \"$.guid\",\n    ResultPath = \"$.status\"\n});\n\nvar jobFailed = new Fail(this, \"Job Failed\", new FailProps\n{\n    Cause = \"AWS Batch Job Failed\",\n    Error = \"DescribeJob returned FAILED\"\n});\n\nvar finalStatus = new Task(this, \"Get Final Job Status\", new TaskProps\n{\n    Resource = getStatusLambda,\n    // Use \"guid\" field as input, output of the Lambda becomes the\n    // entire state machine output.\n    InputPath = \"$.guid\"\n});\n\nvar definition = submitJob\n    .Next(waitX)\n    .Next(getStatus)\n    .Next(new Choice(this, \"Job Complete?\", new ChoiceProps())\n        .When(Amazon.CDK.AWS.StepFunctions.Condition.StringEquals(\"$.status\", \"FAILED\"), jobFailed)\n        .When(Amazon.CDK.AWS.StepFunctions.Condition.StringEquals(\"$.status\", \"SUCCEEDED\"), finalStatus)\n        .Otherwise(waitX));\n\nnew StateMachine(this, \"StateMachine\", new StateMachineProps\n{\n    Definition = definition,\n    TimeoutSec = 300\n});\n```\n\n## State Machine\n\nA `stepfunctions.StateMachine` is a resource that takes a state machine\ndefinition. The definition is specified by its start state, and encompasses\nall states reachable from the start state:\n\n```ts\nconst startState = new stepfunctions.Pass(this, 'StartState');\n\nnew stepfunctions.StateMachine(this, 'StateMachine', {\n    definition: startState\n});\n```\n\nState machines execute using an IAM Role, which will automatically have all\npermissions added that are required to make all state machine tasks execute\nproperly (for example, permissions to invoke any Lambda functions you add to\nyour workflow). A role will be created by default, but you can supply an\nexisting one as well.\n\n## Amazon States Language\n\nThis library comes with a set of classes that model the [Amazon States\nLanguage](https://states-language.net/spec.html). The following State classes\nare supported:\n\n* `Task`\n* `Pass`\n* `Wait`\n* `Choice`\n* `Parallel`\n* `Succeed`\n* `Fail`\n\nAn arbitrary JSON object (specified at execution start) is passed from state to\nstate and transformed during the execution of the workflow. For more\ninformation, see the States Language spec.\n\n### Task\n\nA `Task` represents some work that needs to be done. It takes a `resource`\nproperty that is either a Lambda `Function` or a Step Functions `Activity`\n(A Lambda Function runs your task's code on AWS Lambda, whereas an `Activity`\nis used to run your task's code on an arbitrary compute fleet you manage).\n\n```ts\nconst task = new stepfunctions.Task(this, 'Invoke The Lambda', {\n    resource: myLambda,\n    inputPath: '$.input',\n    timeoutSeconds: 300,\n});\n\n// Add a retry policy\ntask.addRetry({\n    intervalSeconds: 5,\n    maxAttempts: 10\n});\n\n// Add an error handler\ntask.addCatch(errorHandlerState);\n\n// Set the next state\ntask.next(nextState);\n```\n\n### Pass\n\nA `Pass` state does no work, but it can optionally transform the execution's\nJSON state.\n\n```ts\n// Makes the current JSON state { ..., \"subObject\": { \"hello\": \"world\" } }\nconst pass = new stepfunctions.Pass(this, 'Add Hello World', {\n    result: { hello: \"world\" },\n    resultPath: '$.subObject',\n});\n\n// Set the next state\npass.next(nextState);\n```\n\n### Wait\n\nA `Wait` state waits for a given number of seconds, or until the current time\nhits a particular time. The time to wait may be taken from the execution's JSON\nstate.\n\n```ts\n// Wait until it's the time mentioned in the the state object's \"triggerTime\"\n// field.\nconst wait = new stepfunctions.Wait(this, 'Wait For Trigger Time', {\n    timestampPath: '$.triggerTime',\n});\n\n// Set the next state\nwait.next(startTheWork);\n```\n\n### Choice\n\nA `Choice` state can take a differen path through the workflow based on the\nvalues in the execution's JSON state:\n\n```ts\nconst choice = new stepfunctions.Choice(this, 'Did it work?');\n\n// Add conditions with .when()\nchoice.when(stepfunctions.Condition.stringEqual('$.status', 'SUCCESS'), successState);\nchoice.when(stepfunctions.Condition.numberGreaterThan('$.attempts', 5), failureState);\n\n// Use .otherwise() to indicate what should be done if none of the conditions match\nchoice.otherwise(tryAgainState);\n```\n\nIf you want to temporarily branch your workflow based on a condition, but have\nall branches come together and continuing as one (similar to how an `if ...\nthen ... else` works in a programming language), use the `.afterwards()` method:\n\n```ts\nconst choice = new stepfunctions.Choice(this, 'What color is it?');\nchoice.when(stepfunctions.Condition.stringEqual('$.color', 'BLUE'), handleBlueItem);\nchoice.when(stepfunctions.Condition.stringEqual('$.color', 'RED'), handleRedItem);\nchoice.otherwise(handleOtherItemColor);\n\n// Use .afterwards() to join all possible paths back together and continue\nchoice.afterwards().next(shipTheItem);\n```\n\nIf your `Choice` doesn't have an `otherwise()` and none of the conditions match\nthe JSON state, a `NoChoiceMatched` error will be thrown. Wrap the state machine\nin a `Parallel` state if you want to catch and recover from this.\n\n### Parallel\n\nA `Parallel` state executes one or more subworkflows in parallel. It can also\nbe used to catch and recover from errors in subworkflows.\n\n```ts\nconst parallel = new stepfunctions.Parallel(this, 'Do the work in parallel');\n\n// Add branches to be executed in parallel\nparallel.branch(shipItem);\nparallel.branch(sendInvoice);\nparallel.branch(restock);\n\n// Retry the whole workflow if something goes wrong\nparallel.addRetry({ maxAttempts: 1 });\n\n// How to recover from errors\nparallel.addCatch(sendFailureNotification);\n\n// What to do in case everything succeeded\nparallel.next(closeOrder);\n```\n\n### Succeed\n\nReaching a `Succeed` state terminates the state machine execution with a\nsuccesful status.\n\n```ts\nconst success = new stepfunctions.Succeed(this, 'We did it!');\n```\n\n### Fail\n\nReaching a `Fail` state terminates the state machine execution with a\nfailure status. The fail state should report the reason for the failure.\nFailures can be caught by encompassing `Parallel` states.\n\n```ts\nconst success = new stepfunctions.Fail(this, 'Fail', {\n    error: 'WorkflowFailure',\n    cause: \"Something went wrong\"\n});\n```\n\n## Task Chaining\n\nTo make defining work flows as convenient (and readable in a top-to-bottom way)\nas writing regular programs, it is possible to chain most methods invocations.\nIn particular, the `.next()` method can be repeated. The result of a series of\n`.next()` calls is called a **Chain**, and can be used when defining the jump\ntargets of `Choice.on` or `Parallel.branch`:\n\n```ts\nconst definition = step1\n    .next(step2)\n    .next(choice\n        .when(condition1, step3.next(step4).next(step5))\n        .otherwise(step6)\n        .afterwards())\n    .next(parallel\n        .branch(step7.next(step8))\n        .branch(step9.next(step10)))\n    .next(finish);\n\nnew stepfunctions.StateMachine(this, 'StateMachine', {\n    definition,\n});\n```\n\nIf you don't like the visual look of starting a chain directly off the first\nstep, you can use `Chain.start`:\n\n```ts\nconst definition = stepfunctions.Chain\n    .start(step1)\n    .next(step2)\n    .next(step3)\n    // ...\n```\n\n## State Machine Fragments\n\nIt is possible to define reusable (or abstracted) mini-state machines by\ndefining a construct that implements `IChainable`, which requires you to define\ntwo fields:\n\n* `startState: State`, representing the entry point into this state machine.\n* `endStates: INextable[]`, representing the (one or more) states that outgoing\n  transitions will be added to if you chain onto the fragment.\n\nSince states will be named after their construct IDs, you may need to prefix the\nIDs of states if you plan to instantiate the same state machine fragment\nmultiples times (otherwise all states in every instantiation would have the same\nname).\n\nThe class `StateMachineFragment` contains some helper functions (like\n`prefixStates()`) to make it easier for you to do this. If you define your state\nmachine as a subclass of this, it will be convenient to use:\n\n```ts\ninterface MyJobProps {\n    jobFlavor: string;\n}\n\nclass MyJob extends stepfunctions.StateMachineFragment {\n    public readonly startState: State;\n    public readonly endStates: INextable[];\n\n    constructor(parent: cdk.Construct, id: string, props: MyJobProps) {\n        super(parent, id);\n\n        const first = new stepfunctions.Task(this, 'First', { ... });\n        // ...\n        const last = new stepfunctions.Task(this, 'Last', { ... });\n\n        this.startState = first;\n        this.endStates = [last];\n    }\n}\n\n// Do 3 different variants of MyJob in parallel\nnew stepfunctions.Parallel(this, 'All jobs')\n    .branch(new MyJob(this, 'Quick', { jobFlavor: 'quick' }).prefixStates())\n    .branch(new MyJob(this, 'Medium', { jobFlavor: 'medium' }).prefixStates())\n    .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());\n```\n\n## Activity\n\n**Activities** represent work that is done on some non-Lambda worker pool. The\nStep Functions workflow will submit work to this Activity, and a worker pool\nthat you run yourself, probably on EC2, will pull jobs from the Activity and\nsubmit the results of individual jobs back.\n\nYou need the ARN to do so, so if you use Activities be sure to pass the Activity\nARN into your worker pool:\n\n```ts\nconst activity = new stepfunctions.Activity(this, 'Activity');\n\n// Read this Output from your application and use it to poll for work on\n// the activity.\nnew cdk.Output(this, 'ActivityArn', { value: activity.activityArn });\n```\n\n## Metrics\n\n`Task` object expose various metrics on the execution of that particular task. For example,\nto create an alarm on a particular task failing:\n\n```ts\nnew cloudwatch.Alarm(this, 'TaskAlarm', {\n    metric: task.metricFailed(),\n    threshold: 1,\n    evaluationPeriods: 1,\n});\n```\n\nThere are also metrics on the complete state machine:\n\n```ts\nnew cloudwatch.Alarm(this, 'StateMachineAlarm', {\n    metric: stateMachine.metricFailed(),\n    threshold: 1,\n    evaluationPeriods: 1,\n});\n```\n\nAnd there are metrics on the capacity of all state machines in your account:\n\n```ts\nnew cloudwatch.Alarm(this, 'ThrottledAlarm', {\n    metric: StateTransitionMetrics.metricThrottledEvents(),\n    threshold: 10,\n    evaluationPeriods: 2,\n});\n```\n\n\n## Future work\n\nContributions welcome:\n\n- [ ] A single `LambdaTask` class that is both a `Lambda` and a `Task` in one\n  might make for a nice API.\n- [ ] Expression parser for Conditions.\n- [ ] Simulate state machines in unit tests.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.StepFunctions",
+      "packageId": "Amazon.CDK.AWS.StepFunctions",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "stepfunctions",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.stepfunctions"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-stepfunctions"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-stepfunctions.Activity": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Define a new StepFunctions activity"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.Activity",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.ActivityProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-stepfunctions.IStepFunctionsTaskResource"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Return the properties required for using this object as a Task resource"
+          },
+          "name": "asStepFunctionsTaskResource",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IStepFunctionsTaskResource"
+          },
+          "parameters": [
+            {
+              "name": "_callingTask",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.Task"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.StepFunctionsTaskResourceProps"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the given named metric for this Activity",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metric",
+          "parameters": [
+            {
+              "name": "metricName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times this activity fails",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricFailed",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times the heartbeat times out for this activity",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricHeartbeatTimedOut",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The interval, in milliseconds, between the time the activity starts and the time it closes.",
+            "default": "average over 5 minutes"
+          },
+          "name": "metricRunTime",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times this activity is scheduled",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricScheduled",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The interval, in milliseconds, for which the activity stays in the schedule state.",
+            "default": "average over 5 minutes"
+          },
+          "name": "metricScheduleTime",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times this activity is started",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricStarted",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times this activity succeeds",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricSucceeded",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The interval, in milliseconds, between the time the activity is scheduled and the time it closes.",
+            "default": "average over 5 minutes"
+          },
+          "name": "metricTime",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times this activity times out",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricTimedOut",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        }
+      ],
+      "name": "Activity",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "activityArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "activityName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.ActivityProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-stepfunctions.ActivityProps",
+      "kind": "interface",
+      "name": "ActivityProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name for this activity.",
+            "default": "If not supplied, a name is generated"
+          },
+          "name": "activityName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.AfterwardsOptions": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Options for selecting the choice paths"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.AfterwardsOptions",
+      "kind": "interface",
+      "name": "AfterwardsOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether to include error handling states\n\nIf this is true, all states which are error handlers (added through 'onError')\nand states reachable via error handlers will be included as well.",
+            "default": "false"
+          },
+          "name": "includeErrorHandlers",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether to include the default/otherwise transition for the current Choice state\n\nIf this is true and the current Choice does not have a default outgoing\ntransition, one will be added included when .next() is called on the chain.",
+            "default": "false"
+          },
+          "name": "includeOtherwise",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.CatchProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Error handler details"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.CatchProps",
+      "kind": "interface",
+      "name": "CatchProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Errors to recover from by going to the given state\n\nA list of error strings to retry, which can be either predefined errors\n(for example Errors.NoChoiceMatched) or a self-defined error.",
+            "default": "All errors"
+          },
+          "name": "errors",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to indicate where to inject the error data\n\nMay also be the special value DISCARD, which will cause the error\ndata to be discarded.",
+            "default": "$"
+          },
+          "name": "resultPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.CfnActivity": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-activity.html"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.CfnActivity",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::StepFunctions::Activity``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnActivity`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnActivity``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.CfnActivityProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnActivity",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "activityArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Name"
+          },
+          "immutable": true,
+          "name": "activityName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.CfnActivityProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.CfnActivityProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-activity.html"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.CfnActivityProps",
+      "kind": "interface",
+      "name": "CfnActivityProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::StepFunctions::Activity.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-activity.html#cfn-stepfunctions-activity-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.CfnStateMachine": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::StepFunctions::StateMachine``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnStateMachine`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnStateMachine``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachineProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnStateMachine",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachineProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "stateMachineArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Name"
+          },
+          "immutable": true,
+          "name": "stateMachineName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.CfnStateMachineProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachineProps",
+      "kind": "interface",
+      "name": "CfnStateMachineProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::StepFunctions::StateMachine.DefinitionString``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html#cfn-stepfunctions-statemachine-definitionstring"
+          },
+          "name": "definitionString",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::StepFunctions::StateMachine.RoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html#cfn-stepfunctions-statemachine-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::StepFunctions::StateMachine.StateMachineName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html#cfn-stepfunctions-statemachine-statemachinename"
+          },
+          "name": "stateMachineName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.Chain": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "docs": {
+        "comment": "A collection of states to chain onto\n\nA Chain has a start and zero or more chainable ends. If there are\nzero ends, calling next() on the Chain will fail."
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.Chain",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Make a Chain with specific start and end states, and a last-added Chainable"
+          },
+          "name": "custom",
+          "parameters": [
+            {
+              "name": "startState",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.State"
+              }
+            },
+            {
+              "name": "endStates",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+                  },
+                  "kind": "array"
+                }
+              }
+            },
+            {
+              "name": "lastAdded",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Chain"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Make a Chain with the start from one chain and the ends from another"
+          },
+          "name": "sequence",
+          "parameters": [
+            {
+              "name": "start",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            },
+            {
+              "name": "next",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Chain"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Begin a new Chain from one chainable"
+          },
+          "name": "start",
+          "parameters": [
+            {
+              "name": "state",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Chain"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Continue normal execution with the given state"
+          },
+          "name": "next",
+          "parameters": [
+            {
+              "name": "next",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Chain"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a single state that encompasses all states in the chain\n\nThis can be used to add error handling to a sequence of states.\n\nBe aware that this changes the result of the inner state machine\nto be an array with the result of the state machine in it. Adjust\nyour paths accordingly. For example, change 'outputPath' to\n'$[0]'."
+          },
+          "name": "toSingleState",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.ParallelProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Parallel"
+          }
+        }
+      ],
+      "name": "Chain",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The chainable end state(s) of this chain"
+          },
+          "immutable": true,
+          "name": "endStates",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+          },
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Identify this Chain"
+          },
+          "immutable": true,
+          "name": "id",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "lastAdded",
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The start state of this chain"
+          },
+          "immutable": true,
+          "name": "startState",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+          },
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.Choice": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/aws-stepfunctions.State"
+      },
+      "docs": {
+        "comment": "Define a Choice in the state machine\n\nA choice state can be used to make decisions based on the execution\nstate."
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.Choice",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.ChoiceProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Return a Chain that contains all reachable end states from this Choice\n\nUse this to combine all possible choice paths back."
+          },
+          "name": "afterwards",
+          "parameters": [
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.AfterwardsOptions",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Chain"
+          }
+        },
+        {
+          "docs": {
+            "comment": "If none of the given conditions match, continue execution with the given state\n\nIf no conditions match and no otherwise() has been given, an execution\nerror will be raised."
+          },
+          "name": "otherwise",
+          "parameters": [
+            {
+              "name": "def",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Choice"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the Amazon States Language object for this state"
+          },
+          "name": "toStateJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "returns": {
+            "primitive": "json"
+          }
+        },
+        {
+          "docs": {
+            "comment": "If the given condition matches, continue execution with the given state"
+          },
+          "name": "when",
+          "parameters": [
+            {
+              "name": "condition",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+              }
+            },
+            {
+              "name": "next",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Choice"
+          }
+        }
+      ],
+      "name": "Choice",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Continuable states of this Chainable"
+          },
+          "immutable": true,
+          "name": "endStates",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.ChoiceProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for defining a Choice state"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.ChoiceProps",
+      "kind": "interface",
+      "name": "ChoiceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "An optional description for this state",
+            "default": "No comment"
+          },
+          "name": "comment",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the input to this state.\n\nMay also be the special value DISCARD, which will cause the effective\ninput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "inputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the output to this state.\n\nMay also be the special value DISCARD, which will cause the effective\noutput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "outputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.Condition": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "docs": {
+        "comment": "A Condition for use in a Choice state branch"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.Condition",
+      "initializer": {
+        "initializer": true
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Combine two or more conditions with a logical AND"
+          },
+          "name": "and",
+          "parameters": [
+            {
+              "name": "conditions",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true,
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a boolean field has the given value"
+          },
+          "name": "booleanEquals",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "boolean"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Negate a condition"
+          },
+          "name": "not",
+          "parameters": [
+            {
+              "name": "condition",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a numeric field has the given value"
+          },
+          "name": "numberEquals",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a numeric field is greater than the given value"
+          },
+          "name": "numberGreaterThan",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a numeric field is greater than or equal to the given value"
+          },
+          "name": "numberGreaterThanEquals",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a numeric field is less than the given value"
+          },
+          "name": "numberLessThan",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a numeric field is less than or equal to the given value"
+          },
+          "name": "numberLessThanEquals",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Combine two or more conditions with a logical OR"
+          },
+          "name": "or",
+          "parameters": [
+            {
+              "name": "conditions",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true,
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a string field has the given value"
+          },
+          "name": "stringEquals",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a string field sorts after a given value"
+          },
+          "name": "stringGreaterThan",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a string field sorts after or equal to a given value"
+          },
+          "name": "stringGreaterThanEquals",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a string field sorts before a given value"
+          },
+          "name": "stringLessThan",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a string field sorts equal to or before a given value"
+          },
+          "name": "stringLessThanEquals",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a timestamp field is the same time as the given timestamp"
+          },
+          "name": "timestampEquals",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a timestamp field is after the given timestamp"
+          },
+          "name": "timestampGreaterThan",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a timestamp field is after or equal to the given timestamp"
+          },
+          "name": "timestampGreaterThanEquals",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a timestamp field is before the given timestamp"
+          },
+          "name": "timestampLessThan",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Matches if a timestamp field is before or equal to the given timestamp"
+          },
+          "name": "timestampLessThanEquals",
+          "parameters": [
+            {
+              "name": "variable",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+          },
+          "static": true
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Render Amazon States Language JSON for the condition"
+          },
+          "name": "renderCondition",
+          "returns": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "name": "Condition"
+    },
+    "@aws-cdk/aws-stepfunctions.Errors": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "docs": {
+        "comment": "Predefined error strings"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.Errors",
+      "initializer": {
+        "initializer": true
+      },
+      "kind": "class",
+      "name": "Errors",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "Matches any Error."
+          },
+          "immutable": true,
+          "name": "All",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "A branch of a Parallel state failed."
+          },
+          "immutable": true,
+          "name": "BranchFailed",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "A Choice state failed to find a match for the condition field extracted\nfrom its input."
+          },
+          "immutable": true,
+          "name": "NoChoiceMatched",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "A Task State failed because it had insufficient privileges to execute\nthe specified code."
+          },
+          "immutable": true,
+          "name": "Permissions",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "A Task State’s “ResultPath” field cannot be applied to the input the state received."
+          },
+          "immutable": true,
+          "name": "ResultPathMatchFailure",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "A Task State failed during the execution."
+          },
+          "immutable": true,
+          "name": "TaskFailed",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "A Task State either ran longer than the “TimeoutSeconds” value, or\nfailed to heartbeat for a time longer than the “HeartbeatSeconds” value."
+          },
+          "immutable": true,
+          "name": "Timeout",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.Fail": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/aws-stepfunctions.State"
+      },
+      "docs": {
+        "comment": "Define a Fail state in the state machine\n\nReaching a Fail state terminates the state execution in failure."
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.Fail",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.FailProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Return the Amazon States Language object for this state"
+          },
+          "name": "toStateJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "returns": {
+            "primitive": "json"
+          }
+        }
+      ],
+      "name": "Fail",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Continuable states of this Chainable"
+          },
+          "immutable": true,
+          "name": "endStates",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.FailProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for defining a Fail state"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.FailProps",
+      "kind": "interface",
+      "name": "FailProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Error code used to represent this failure"
+          },
+          "name": "error",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A description for the cause of the failure",
+            "default": "No description"
+          },
+          "name": "cause",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "An optional description for this state",
+            "default": "No comment"
+          },
+          "name": "comment",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.FindStateOptions": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Options for finding reachable states"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.FindStateOptions",
+      "kind": "interface",
+      "name": "FindStateOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether or not to follow error-handling transitions",
+            "default": "false"
+          },
+          "name": "includeErrorHandlers",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.IChainable": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "docs": {
+        "comment": "Interface for objects that can be used in a Chain"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.IChainable",
+      "kind": "interface",
+      "name": "IChainable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The chainable end state(s) of this chainable"
+          },
+          "immutable": true,
+          "name": "endStates",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Descriptive identifier for this chainable"
+          },
+          "immutable": true,
+          "name": "id",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The start state of this chainable"
+          },
+          "immutable": true,
+          "name": "startState",
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.INextable": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "docs": {
+        "comment": "Interface for states that can have 'next' states"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.INextable",
+      "kind": "interface",
+      "methods": [
+        {
+          "abstract": true,
+          "name": "next",
+          "parameters": [
+            {
+              "name": "state",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Chain"
+          }
+        }
+      ],
+      "name": "INextable"
+    },
+    "@aws-cdk/aws-stepfunctions.IStateMachine": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "docs": {
+        "comment": "A State Machine"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.IStateMachine",
+      "kind": "interface",
+      "name": "IStateMachine",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of the state machine"
+          },
+          "immutable": true,
+          "name": "stateMachineArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.IStepFunctionsTaskResource": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "docs": {
+        "comment": "Interface for objects that can be invoked in a Task state"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.IStepFunctionsTaskResource",
+      "kind": "interface",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Return the properties required for using this object as a Task resource"
+          },
+          "name": "asStepFunctionsTaskResource",
+          "parameters": [
+            {
+              "name": "callingTask",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.Task"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.StepFunctionsTaskResourceProps"
+          }
+        }
+      ],
+      "name": "IStepFunctionsTaskResource"
+    },
+    "@aws-cdk/aws-stepfunctions.ImportedStateMachineProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for an imported state machine"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.ImportedStateMachineProps",
+      "kind": "interface",
+      "name": "ImportedStateMachineProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of the state machine"
+          },
+          "name": "stateMachineArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.Parallel": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/aws-stepfunctions.State"
+      },
+      "docs": {
+        "comment": "Define a Parallel state in the state machine\n\nA Parallel state can be used to run one or more state machines at the same\ntime.\n\nThe Result of a Parallel state is an array of the results of its substatemachines."
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.Parallel",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.ParallelProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Add a recovery handler for this state\n\nWhen a particular error occurs, execution will continue at the error\nhandler instead of failing the state machine execution."
+          },
+          "name": "addCatch",
+          "parameters": [
+            {
+              "name": "handler",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.CatchProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Parallel"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Add retry configuration for this state\n\nThis controls if and how the execution will be retried if a particular\nerror occurs."
+          },
+          "name": "addRetry",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.RetryProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Parallel"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Define one or more branches to run in parallel"
+          },
+          "name": "branch",
+          "parameters": [
+            {
+              "name": "branches",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Parallel"
+          },
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Continue normal execution with the given state"
+          },
+          "name": "next",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+          },
+          "parameters": [
+            {
+              "name": "next",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Chain"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the Amazon States Language object for this state"
+          },
+          "name": "toStateJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "returns": {
+            "primitive": "json"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Validate this state"
+          },
+          "name": "validate",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "Parallel",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Continuable states of this Chainable"
+          },
+          "immutable": true,
+          "name": "endStates",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.ParallelProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for defining a Parallel state"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.ParallelProps",
+      "kind": "interface",
+      "name": "ParallelProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "An optional description for this state",
+            "default": "No comment"
+          },
+          "name": "comment",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the input to this state.\n\nMay also be the special value DISCARD, which will cause the effective\ninput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "inputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the output to this state.\n\nMay also be the special value DISCARD, which will cause the effective\noutput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "outputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to indicate where to inject the state's output\n\nMay also be the special value DISCARD, which will cause the state's\ninput to become its output.",
+            "default": "$"
+          },
+          "name": "resultPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.Pass": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/aws-stepfunctions.State"
+      },
+      "docs": {
+        "comment": "Define a Pass in the state machine\n\nA Pass state can be used to transform the current exeuction's state."
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.PassProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Continue normal execution with the given state"
+          },
+          "name": "next",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+          },
+          "parameters": [
+            {
+              "name": "next",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Chain"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the Amazon States Language object for this state"
+          },
+          "name": "toStateJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "returns": {
+            "primitive": "json"
+          }
+        }
+      ],
+      "name": "Pass",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Continuable states of this Chainable"
+          },
+          "immutable": true,
+          "name": "endStates",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.PassProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for defining a Pass state"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.PassProps",
+      "kind": "interface",
+      "name": "PassProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "An optional description for this state",
+            "default": "No comment"
+          },
+          "name": "comment",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the input to this state.\n\nMay also be the special value DISCARD, which will cause the effective\ninput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "inputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the output to this state.\n\nMay also be the special value DISCARD, which will cause the effective\noutput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "outputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "If given, treat as the result of this operation\n\nCan be used to inject or replace the current execution state.",
+            "default": "No injected result"
+          },
+          "name": "result",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to indicate where to inject the state's output\n\nMay also be the special value DISCARD, which will cause the state's\ninput to become its output.",
+            "default": "$"
+          },
+          "name": "resultPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.RetryProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Retry details"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.RetryProps",
+      "kind": "interface",
+      "name": "RetryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Multiplication for how much longer the wait interval gets on every retry",
+            "default": "2"
+          },
+          "name": "backoffRate",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Errors to retry\n\nA list of error strings to retry, which can be either predefined errors\n(for example Errors.NoChoiceMatched) or a self-defined error.",
+            "default": "All errors"
+          },
+          "name": "errors",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "How many seconds to wait initially before retrying",
+            "default": "1"
+          },
+          "name": "intervalSeconds",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "How many times to retry this particular error.\n\nMay be 0 to disable retry for specific errors (in case you have\na catch-all retry policy).",
+            "default": "3"
+          },
+          "name": "maxAttempts",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.SingleStateOptions": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Options for creating a single state"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.SingleStateOptions",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-stepfunctions.ParallelProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "SingleStateOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "String to prefix all stateIds in the state machine with",
+            "default": "stateId"
+          },
+          "name": "prefixStates",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "ID of newly created containing state",
+            "default": "Construct ID of the StateMachineFragment"
+          },
+          "name": "stateId",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.State": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Base class for all other state classes"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.State",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Return only the states that allow chaining from an array of states"
+          },
+          "name": "filterNextables",
+          "parameters": [
+            {
+              "name": "states",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "fqn": "@aws-cdk/aws-stepfunctions.State"
+                  },
+                  "kind": "array"
+                }
+              }
+            }
+          ],
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Find the set of end states states reachable through transitions from the given start state"
+          },
+          "name": "findReachableEndStates",
+          "parameters": [
+            {
+              "name": "start",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.State"
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.FindStateOptions",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.State"
+              },
+              "kind": "array"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Add a prefix to the stateId of all States found in a construct tree"
+          },
+          "name": "prefixStates",
+          "parameters": [
+            {
+              "name": "root",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "prefix",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Add a paralle branch to this state"
+          },
+          "name": "addBranch",
+          "parameters": [
+            {
+              "name": "branch",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.StateGraph"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Add a choice branch to this state"
+          },
+          "name": "addChoice",
+          "parameters": [
+            {
+              "name": "condition",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.Condition"
+              }
+            },
+            {
+              "name": "next",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.State"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Add a prefix to the stateId of this state"
+          },
+          "name": "addPrefix",
+          "parameters": [
+            {
+              "name": "x",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Register this state as part of the given graph\n\nDon't call this. It will be called automatically when you work\nstates normally."
+          },
+          "name": "bindToGraph",
+          "parameters": [
+            {
+              "name": "graph",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.StateGraph"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Make the indicated state the default choice transition of this state"
+          },
+          "name": "makeDefault",
+          "parameters": [
+            {
+              "name": "def",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.State"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Make the indicated state the default transition of this state"
+          },
+          "name": "makeNext",
+          "parameters": [
+            {
+              "name": "next",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.State"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Called whenever this state is bound to a graph\n\nCan be overridden by subclasses."
+          },
+          "name": "onBindToGraph",
+          "parameters": [
+            {
+              "name": "graph",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.StateGraph"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Render parallel branches in ASL JSON format"
+          },
+          "name": "renderBranches",
+          "protected": true,
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Render the choices in ASL JSON format"
+          },
+          "name": "renderChoices",
+          "protected": true,
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Render InputPath/OutputPath in ASL JSON format"
+          },
+          "name": "renderInputOutput",
+          "protected": true,
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Render the default next state in ASL JSON format"
+          },
+          "name": "renderNextEnd",
+          "protected": true,
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Render error recovery options in ASL JSON format"
+          },
+          "name": "renderRetryCatch",
+          "protected": true,
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Render the state as JSON"
+          },
+          "name": "toStateJson",
+          "returns": {
+            "primitive": "json"
+          }
+        }
+      ],
+      "name": "State",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "branches",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.StateGraph"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Continuable states of this Chainable"
+          },
+          "immutable": true,
+          "name": "endStates",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+          },
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "First state of this Chainable"
+          },
+          "immutable": true,
+          "name": "startState",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+          },
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Tokenized string that evaluates to the state's ID"
+          },
+          "immutable": true,
+          "name": "stateId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "comment",
+          "protected": true,
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "inputPath",
+          "protected": true,
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "outputPath",
+          "protected": true,
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "resultPath",
+          "protected": true,
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "name": "defaultChoice",
+          "protected": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.StateGraph": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "docs": {
+        "comment": "A collection of connected states\n\nA StateGraph is used to keep track of all states that are connected (have\ntransitions between them). It does not include the substatemachines in\na Parallel's branches: those are their own StateGraphs, but the graphs\nthemselves have a hierarchical relationship as well.\n\nBy assigning states to a definintive StateGraph, we verify that no state\nmachines are constructed. In particular:\n\n- Every state object can only ever be in 1 StateGraph, and not inadvertently\n   be used in two graphs.\n- Every stateId must be unique across all states in the entire state\n   machine.\n\nAll policy statements in all states in all substatemachines are bubbled so\nthat the top-level StateMachine instantiation can read them all and add\nthem to the IAM Role.\n\nYou do not need to instantiate this class; it is used internally."
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.StateGraph",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "startState",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.State"
+            }
+          },
+          {
+            "name": "graphDescription",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Register a Policy Statement used by states in this graph"
+          },
+          "name": "registerPolicyStatement",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Register a state as part of this graph\n\nCalled by State.bindToGraph()."
+          },
+          "name": "registerState",
+          "parameters": [
+            {
+              "name": "state",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.State"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Register this graph as a child of the given graph\n\nResource changes will be bubbled up to the given graph."
+          },
+          "name": "registerSuperGraph",
+          "parameters": [
+            {
+              "name": "graph",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.StateGraph"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Return the Amazon States Language JSON for this graph"
+          },
+          "name": "toGraphJson",
+          "returns": {
+            "primitive": "json"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a string description of this graph"
+          },
+          "name": "toString",
+          "returns": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "name": "StateGraph",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "graphDescription",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The accumulated policy statements"
+          },
+          "immutable": true,
+          "name": "policyStatements",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "immutable": true,
+          "name": "startState",
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Set a timeout to render into the graph JSON.\n\nRead/write. Only makes sense on the top-level graph, subgraphs\ndo not support this feature.",
+            "default": "No timeout"
+          },
+          "name": "timeoutSeconds",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.StateMachine": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Define a StepFunctions State Machine"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.StateMachineProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-stepfunctions.IStateMachine"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Import a state machine"
+          },
+          "name": "import",
+          "parameters": [
+            {
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.ImportedStateMachineProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IStateMachine"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Add the given statement to the role's policy"
+          },
+          "name": "addToRolePolicy",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Allows using state machines as event rule targets."
+          },
+          "name": "asEventRuleTarget",
+          "parameters": [
+            {
+              "name": "_ruleArn",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "_ruleId",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRuleTargetProps"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Export this state machine"
+          },
+          "name": "export",
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.ImportedStateMachineProps"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the given named metric for this State Machine's executions",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metric",
+          "parameters": [
+            {
+              "name": "metricName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of executions that were aborted",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricAborted",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of executions that failed",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricFailed",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of executions that were started",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricStarted",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of executions that succeeded",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricSucceeded",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of executions that were throttled",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricThrottled",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of executions that succeeded",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricTimedOut",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        }
+      ],
+      "name": "StateMachine",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Execution role of this state machine"
+          },
+          "immutable": true,
+          "name": "role",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.Role"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The ARN of the state machine"
+          },
+          "immutable": true,
+          "name": "stateMachineArn",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IStateMachine"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of the state machine"
+          },
+          "immutable": true,
+          "name": "stateMachineName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.StateMachineFragment": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Base class for reusable state machine fragments"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.StateMachineFragment",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "The local logical ID of the construct. Must be unique amongst\nsiblings. If the ID includes a path separator (`/`), then it will be\nreplaced by double dash `--`."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Continue normal execution with the given state"
+          },
+          "name": "next",
+          "parameters": [
+            {
+              "name": "next",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Chain"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Prefix the IDs of all states in this state machine fragment\n\nUse this to avoid multiple copies of the state machine all having the\nsame state IDs."
+          },
+          "name": "prefixStates",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The prefix to add. Will use construct ID by default."
+              },
+              "name": "prefix",
+              "type": {
+                "optional": true,
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.StateMachineFragment"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Wrap all states in this state machine fragment up into a single state.\n\nThis can be used to add retry or error handling onto this state\nmachine fragment.\n\nBe aware that this changes the result of the inner state machine\nto be an array with the result of the state machine in it. Adjust\nyour paths accordingly. For example, change 'outputPath' to\n'$[0]'."
+          },
+          "name": "toSingleState",
+          "parameters": [
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.SingleStateOptions",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Parallel"
+          }
+        }
+      ],
+      "name": "StateMachineFragment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The states to chain onto if this fragment is used"
+          },
+          "immutable": true,
+          "name": "endStates",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+          },
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The start state of this state machine fragment"
+          },
+          "immutable": true,
+          "name": "startState",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+          },
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.StateMachineProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for defining a State Machine"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.StateMachineProps",
+      "kind": "interface",
+      "name": "StateMachineProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Definition for this state machine"
+          },
+          "name": "definition",
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The execution role for the state machine service",
+            "default": "A role is automatically created"
+          },
+          "name": "role",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.Role",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A name for the state machine",
+            "default": "A name is automatically generated"
+          },
+          "name": "stateMachineName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Maximum run time for this state machine",
+            "default": "No timeout"
+          },
+          "name": "timeoutSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.StateProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties shared by all states"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.StateProps",
+      "kind": "interface",
+      "name": "StateProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A comment describing this state",
+            "default": "No comment"
+          },
+          "name": "comment",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the input to this state.\n\nMay also be the special value DISCARD, which will cause the effective\ninput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "inputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the output to this state.\n\nMay also be the special value DISCARD, which will cause the effective\noutput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "outputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to indicate where to inject the state's output\n\nMay also be the special value DISCARD, which will cause the state's\ninput to become its output.",
+            "default": "$"
+          },
+          "name": "resultPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.StateTransitionMetric": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "docs": {
+        "comment": "Metrics on the rate limiting performed on state machine execution.\n\nThese rate limits are shared across all state machines."
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.StateTransitionMetric",
+      "initializer": {
+        "initializer": true
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Return the given named metric for the service's state transition metrics",
+            "default": "average over 5 minutes"
+          },
+          "name": "metric",
+          "parameters": [
+            {
+              "name": "metricName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of available state transitions per second",
+            "default": "average over 5 minutes"
+          },
+          "name": "metricConsumedCapacity",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of available state transitions.",
+            "default": "average over 5 minutes"
+          },
+          "name": "metricProvisionedBucketSize",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Metric for the provisioned steady-state execution rate",
+            "default": "average over 5 minutes"
+          },
+          "name": "metricProvisionedRefillRate",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of throttled state transitions",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricThrottledEvents",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          },
+          "static": true
+        }
+      ],
+      "name": "StateTransitionMetric"
+    },
+    "@aws-cdk/aws-stepfunctions.StateType": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "docs": {
+        "comment": "State types"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.StateType",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "Pass"
+        },
+        {
+          "name": "Task"
+        },
+        {
+          "name": "Choice"
+        },
+        {
+          "name": "Wait"
+        },
+        {
+          "name": "Succeed"
+        },
+        {
+          "name": "Fail"
+        },
+        {
+          "name": "Parallel"
+        }
+      ],
+      "name": "StateType"
+    },
+    "@aws-cdk/aws-stepfunctions.StepFunctionsTaskResourceProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties that define how to refer to a TaskResource"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.StepFunctionsTaskResourceProps",
+      "kind": "interface",
+      "name": "StepFunctionsTaskResourceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of the resource"
+          },
+          "name": "resourceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The dimensions to attach to metrics",
+            "default": "No metrics"
+          },
+          "name": "metricDimensions",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Prefix for plural metric names of activity actions",
+            "default": "No such metrics"
+          },
+          "name": "metricPrefixPlural",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Prefix for singular metric names of activity actions",
+            "default": "No such metrics"
+          },
+          "name": "metricPrefixSingular",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Additional policy statements to add to the execution role",
+            "default": "No policy roles"
+          },
+          "name": "policyStatements",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.Succeed": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/aws-stepfunctions.State"
+      },
+      "docs": {
+        "comment": "Define a Succeed state in the state machine\n\nReaching a Succeed state terminates the state execution in success."
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.Succeed",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.SucceedProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Return the Amazon States Language object for this state"
+          },
+          "name": "toStateJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "returns": {
+            "primitive": "json"
+          }
+        }
+      ],
+      "name": "Succeed",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Continuable states of this Chainable"
+          },
+          "immutable": true,
+          "name": "endStates",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.SucceedProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for defining a Succeed state"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.SucceedProps",
+      "kind": "interface",
+      "name": "SucceedProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "An optional description for this state",
+            "default": "No comment"
+          },
+          "name": "comment",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the input to this state.\n\nMay also be the special value DISCARD, which will cause the effective\ninput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "inputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the output to this state.\n\nMay also be the special value DISCARD, which will cause the effective\noutput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "outputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.Task": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/aws-stepfunctions.State"
+      },
+      "docs": {
+        "comment": "Define a Task state in the state machine\n\nReaching a Task state causes some work to be executed, represented\nby the Task's resource property."
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.Task",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.TaskProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Add a recovery handler for this state\n\nWhen a particular error occurs, execution will continue at the error\nhandler instead of failing the state machine execution."
+          },
+          "name": "addCatch",
+          "parameters": [
+            {
+              "name": "handler",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.CatchProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Task"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Add retry configuration for this state\n\nThis controls if and how the execution will be retried if a particular\nerror occurs."
+          },
+          "name": "addRetry",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.RetryProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Task"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the given named metric for this Task",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metric",
+          "parameters": [
+            {
+              "name": "metricName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times this activity fails",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricFailed",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times the heartbeat times out for this activity",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricHeartbeatTimedOut",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The interval, in milliseconds, between the time the Task starts and the time it closes.",
+            "default": "average over 5 minutes"
+          },
+          "name": "metricRunTime",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times this activity is scheduled",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricScheduled",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The interval, in milliseconds, for which the activity stays in the schedule state.",
+            "default": "average over 5 minutes"
+          },
+          "name": "metricScheduleTime",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times this activity is started",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricStarted",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times this activity succeeds",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricSucceeded",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The interval, in milliseconds, between the time the activity is scheduled and the time it closes.",
+            "default": "average over 5 minutes"
+          },
+          "name": "metricTime",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Metric for the number of times this activity times out",
+            "default": "sum over 5 minutes"
+          },
+          "name": "metricTimedOut",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Continue normal execution with the given state"
+          },
+          "name": "next",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+          },
+          "parameters": [
+            {
+              "name": "next",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Chain"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Called whenever this state is bound to a graph\n\nCan be overridden by subclasses."
+          },
+          "name": "onBindToGraph",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "parameters": [
+            {
+              "name": "graph",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.StateGraph"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Return the Amazon States Language object for this state"
+          },
+          "name": "toStateJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "returns": {
+            "primitive": "json"
+          }
+        }
+      ],
+      "name": "Task",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Continuable states of this Chainable"
+          },
+          "immutable": true,
+          "name": "endStates",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.TaskProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for defining a Task state"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.TaskProps",
+      "kind": "interface",
+      "name": "TaskProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The resource that represents the work to be executed\n\nCan be either a Lambda Function or an Activity."
+          },
+          "name": "resource",
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IStepFunctionsTaskResource"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "An optional description for this state",
+            "default": "No comment"
+          },
+          "name": "comment",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Maximum time between heart beats\n\nIf the time between heart beats takes longer than this, a 'Timeout' error is raised.\n\nThis is only relevant when using an Activity type as resource.",
+            "default": "No heart beat timeout"
+          },
+          "name": "heartbeatSeconds",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the input to this state.\n\nMay also be the special value DISCARD, which will cause the effective\ninput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "inputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to select part of the state to be the output to this state.\n\nMay also be the special value DISCARD, which will cause the effective\noutput to be the empty object {}.",
+            "default": "$"
+          },
+          "name": "outputPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "JSONPath expression to indicate where to inject the state's output\n\nMay also be the special value DISCARD, which will cause the state's\ninput to become its output.",
+            "default": "$"
+          },
+          "name": "resultPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Maximum run time of this state\n\nIf the state takes longer than this amount of time to complete, a 'Timeout' error is raised.",
+            "default": "60"
+          },
+          "name": "timeoutSeconds",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.Wait": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/aws-stepfunctions.State"
+      },
+      "docs": {
+        "comment": "Define a Wait state in the state machine\n\nA Wait state can be used to delay execution of the state machine for a while."
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.Wait",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.WaitProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Continue normal execution with the given state"
+          },
+          "name": "next",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+          },
+          "parameters": [
+            {
+              "name": "next",
+              "type": {
+                "fqn": "@aws-cdk/aws-stepfunctions.IChainable"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-stepfunctions.Chain"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the Amazon States Language object for this state"
+          },
+          "name": "toStateJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "returns": {
+            "primitive": "json"
+          }
+        }
+      ],
+      "name": "Wait",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Continuable states of this Chainable"
+          },
+          "immutable": true,
+          "name": "endStates",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-stepfunctions.State"
+          },
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-stepfunctions.INextable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.WaitProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for defining a Wait state"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.WaitProps",
+      "kind": "interface",
+      "name": "WaitProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "An optional description for this state",
+            "default": "No comment"
+          },
+          "name": "comment",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Wait a fixed number of seconds\n\nExactly one of seconds, secondsPath, timestamp, timestampPath must be supplied."
+          },
+          "name": "seconds",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Wait for a number of seconds stored in the state object.\n\nExactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.",
+            "example": "$.waitSeconds"
+          },
+          "name": "secondsPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Wait until the given ISO8601 timestamp\n\nExactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.",
+            "example": "2016-03-14T01:59:00Z"
+          },
+          "name": "timestamp",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Wait until a timestamp found in the state object.\n\nExactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.",
+            "example": "$.waitTimestamp"
+          },
+          "name": "timestampPath",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.cloudformation.ActivityResource": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.ActivityResource\" will be deprecated in a future release in favor of \"CfnActivity\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-activity.html"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.cloudformation.ActivityResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::StepFunctions::Activity``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ActivityResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ActivityResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.cloudformation.ActivityResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ActivityResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "activityArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Name"
+          },
+          "immutable": true,
+          "name": "activityName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.cloudformation.ActivityResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.cloudformation.ActivityResourceProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-activity.html"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.cloudformation.ActivityResourceProps",
+      "kind": "interface",
+      "name": "ActivityResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::StepFunctions::Activity.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-activity.html#cfn-stepfunctions-activity-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.cloudformation.StateMachineResource": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.StateMachineResource\" will be deprecated in a future release in favor of \"CfnStateMachine\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.cloudformation.StateMachineResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::StepFunctions::StateMachine``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``StateMachineResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``StateMachineResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.cloudformation.StateMachineResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "StateMachineResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.cloudformation.StateMachineResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "stateMachineArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Name"
+          },
+          "immutable": true,
+          "name": "stateMachineName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-stepfunctions.cloudformation.StateMachineResourceProps": {
+      "assembly": "@aws-cdk/aws-stepfunctions",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html"
+      },
+      "fqn": "@aws-cdk/aws-stepfunctions.cloudformation.StateMachineResourceProps",
+      "kind": "interface",
+      "name": "StateMachineResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::StepFunctions::StateMachine.DefinitionString``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html#cfn-stepfunctions-statemachine-definitionstring"
+          },
+          "name": "definitionString",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::StepFunctions::StateMachine.RoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html#cfn-stepfunctions-statemachine-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::StepFunctions::StateMachine.StateMachineName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html#cfn-stepfunctions-statemachine-statemachinename"
+          },
+          "name": "stateMachineName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "BI4Ki1eyV2AzANu2E0r1FjOppWDI5wQgnY3aneYQbvE="
+}

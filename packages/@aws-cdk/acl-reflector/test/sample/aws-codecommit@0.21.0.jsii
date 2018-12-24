@@ -1,0 +1,2171 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-codepipeline-api": {
+      "dependencies": {
+        "@aws-cdk/aws-events": {
+          "dependencies": {
+            "@aws-cdk/aws-iam": {
+              "dependencies": {
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK.CXAPI",
+                          "packageId": "Amazon.CDK.CXAPI",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk-cx-api",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK",
+                      "packageId": "Amazon.CDK",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.AWS.IAM",
+                  "packageId": "Amazon.CDK.AWS.IAM",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "iam",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.services.iam"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-iam"
+                }
+              },
+              "version": "0.21.0"
+            },
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.Events",
+              "packageId": "Amazon.CDK.AWS.Events",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "events",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.events"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-events"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.Codepipeline.Api",
+          "packageId": "Amazon.CDK.AWS.Codepipeline.Api",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codepipeline-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codepipeline.api"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codepipeline-api"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-events": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "CDK Constructs for AWS CodeCommit",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-codecommit",
+  "readme": {
+    "markdown": "## AWS CodeCommit Construct Library\n\nTo add a CodeCommit Repository to your stack:\n\n```ts\nimport codecommit = require('@aws-cdk/aws-codecommit');\n\nconst repo = new codecommit.Repository(this, 'Repository' ,{\n    repositoryName: 'MyRepositoryName',\n    description: 'Some description.', // optional property\n});\n```\n\nTo add an SNS trigger to your repository:\n\n```ts\n// trigger is established for all repository actions on all branches by default.\nrepo.notify('arn:aws:sns:*:123456789012:my_topic');\n```\n\n### CodePipeline\n\nTo use a CodeCommit Repository in a CodePipeline:\n\n```ts\nimport codepipeline = require('@aws-cdk/aws-codepipeline');\n\nconst pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {\n    pipelineName: 'MyPipeline',\n});\nconst sourceStage = pipeline.addStage('Source');\nconst sourceAction = new codecommit.PipelineSourceAction(this, 'CodeCommit', {\n    stage: sourceStage,\n    repository: repo,\n});\n```\n\nYou can also add the Repository to the Pipeline directly:\n\n```ts\n// equivalent to the code above:\nconst sourceAction = repo.addToPipeline(sourceStage, 'CodeCommit');\n```\n\n### Events\n\nCodeCommit repositories emit CloudWatch events for certain activity.\nUse the `repo.onXxx` methods to define rules that trigger on these events\nand invoke targets as a result:\n\n```ts\n// starts a CodeBuild project when a commit is pushed to the \"master\" branch of the repo\nrepo.onCommit('CommitToMaster', project, 'master');\n\n// publishes a message to an SNS topic when a comment is made on a pull request\nconst rule = repo.onCommentOnPullRequest('CommentOnPullRequest');\nrule.addTarget(myTopic);\n```\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.CodeCommit",
+      "packageId": "Amazon.CDK.AWS.CodeCommit",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "codecommit",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.codecommit"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-codecommit"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-codecommit.CfnRepository": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html"
+      },
+      "fqn": "@aws-cdk/aws-codecommit.CfnRepository",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::CodeCommit::Repository``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnRepository`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnRepository``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.CfnRepositoryProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnRepository",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-codecommit.CfnRepositoryProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "repositoryArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "CloneUrlHttp"
+          },
+          "immutable": true,
+          "name": "repositoryCloneUrlHttp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "CloneUrlSsh"
+          },
+          "immutable": true,
+          "name": "repositoryCloneUrlSsh",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "repositoryId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Name"
+          },
+          "immutable": true,
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.CfnRepository.RepositoryTriggerProperty": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html"
+      },
+      "fqn": "@aws-cdk/aws-codecommit.CfnRepository.RepositoryTriggerProperty",
+      "kind": "interface",
+      "name": "RepositoryTriggerProperty",
+      "namespace": "CfnRepository",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRepository.RepositoryTriggerProperty.Branches``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-branches"
+          },
+          "name": "branches",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRepository.RepositoryTriggerProperty.CustomData``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-customdata"
+          },
+          "name": "customData",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRepository.RepositoryTriggerProperty.DestinationArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-destinationarn"
+          },
+          "name": "destinationArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRepository.RepositoryTriggerProperty.Events``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-events"
+          },
+          "name": "events",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnRepository.RepositoryTriggerProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.CfnRepositoryProps": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html"
+      },
+      "fqn": "@aws-cdk/aws-codecommit.CfnRepositoryProps",
+      "kind": "interface",
+      "name": "CfnRepositoryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CodeCommit::Repository.RepositoryName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-repositoryname"
+          },
+          "name": "repositoryName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CodeCommit::Repository.RepositoryDescription``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-repositorydescription"
+          },
+          "name": "repositoryDescription",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CodeCommit::Repository.Triggers``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-triggers"
+          },
+          "name": "triggers",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-codecommit.CfnRepository.RepositoryTriggerProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.CommonPipelineSourceActionProps": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "comment": "Common properties for creating {@link PipelineSourceAction} -\neither directly, through its constructor,\nor through {@link RepositoryRef#addToPipeline}."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.CommonPipelineSourceActionProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "CommonPipelineSourceActionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "'master'"
+          },
+          "name": "branch",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the source's output artifact.\nOutput artifacts are used by CodePipeline as inputs into other actions.",
+            "default": "a name will be auto-generated"
+          },
+          "name": "outputArtifactName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether AWS CodePipeline should poll for source changes.\nIf this is `false`, the Pipeline will use CloudWatch Events to detect source changes instead.",
+            "default": "false"
+          },
+          "name": "pollForSourceChanges",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.PipelineSourceAction": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "base": {
+        "fqn": "@aws-cdk/aws-codepipeline-api.SourceAction"
+      },
+      "docs": {
+        "comment": "CodePipeline Source that is provided by an AWS CodeCommit repository."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.PipelineSourceAction",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.PipelineSourceActionProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "PipelineSourceAction"
+    },
+    "@aws-cdk/aws-codecommit.PipelineSourceActionProps": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "comment": "Construction properties of the {@link PipelineSourceAction CodeCommit source CodePipeline Action}."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.PipelineSourceActionProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-codecommit.CommonPipelineSourceActionProps"
+        },
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionConstructProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "PipelineSourceActionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The CodeCommit repository."
+          },
+          "name": "repository",
+          "type": {
+            "fqn": "@aws-cdk/aws-codecommit.RepositoryRef"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.Repository": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "base": {
+        "fqn": "@aws-cdk/aws-codecommit.RepositoryRef"
+      },
+      "docs": {
+        "comment": "Provides a CodeCommit Repository"
+      },
+      "fqn": "@aws-cdk/aws-codecommit.Repository",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.RepositoryProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Create a trigger to notify another service to run actions on repository events."
+          },
+          "name": "notify",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Arn of the resource that repository events will notify"
+              },
+              "name": "arn",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Trigger options to run actions"
+              },
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-codecommit.RepositoryTriggerOptions",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-codecommit.Repository"
+          }
+        }
+      ],
+      "name": "Repository",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The ARN of this Repository."
+          },
+          "immutable": true,
+          "name": "repositoryArn",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-codecommit.RepositoryRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The HTTP clone URL"
+          },
+          "immutable": true,
+          "name": "repositoryCloneUrlHttp",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-codecommit.RepositoryRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The SSH clone URL"
+          },
+          "immutable": true,
+          "name": "repositoryCloneUrlSsh",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-codecommit.RepositoryRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The human-visible name of this Repository."
+          },
+          "immutable": true,
+          "name": "repositoryName",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-codecommit.RepositoryRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.RepositoryEventTrigger": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "docs": {
+        "comment": "Repository events that will cause the trigger to run actions in another service."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.RepositoryEventTrigger",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "All"
+        },
+        {
+          "name": "UpdateRef"
+        },
+        {
+          "name": "CreateRef"
+        },
+        {
+          "name": "DeleteRef"
+        }
+      ],
+      "name": "RepositoryEventTrigger"
+    },
+    "@aws-cdk/aws-codecommit.RepositoryProps": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-codecommit.RepositoryProps",
+      "kind": "interface",
+      "name": "RepositoryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of the repository. This property is required for all repositories."
+          },
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A description of the repository. Use the description to identify the\npurpose of the repository."
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.RepositoryRef": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-codecommit",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Represents a reference to a CodeCommit Repository.\n\nIf you want to create a new Repository managed alongside your CDK code,\nuse the {@link Repository} class.\n\nIf you want to reference an already existing Repository,\nuse the {@link RepositoryRef.import} method."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.RepositoryRef",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "The local logical ID of the construct. Must be unique amongst\nsiblings. If the ID includes a path separator (`/`), then it will be\nreplaced by double dash `--`."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Import a Repository defined either outside the CDK, or in a different Stack\n(exported with the {@link export} method).",
+            "return": "a reference to the existing Repository"
+          },
+          "name": "import",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "the parent Construct for the Repository"
+              },
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "docs": {
+                "comment": "the name of the Repository Construct"
+              },
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "the properties used to identify the existing Repository"
+              },
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-codecommit.RepositoryRefProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-codecommit.RepositoryRef"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Convenience method for creating a new {@link PipelineSourceAction},\nand adding it to the given Stage.",
+            "return": "the newly created {@link PipelineSourceAction}"
+          },
+          "name": "addToPipeline",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "the Pipeline Stage to add the new Action to"
+              },
+              "name": "stage",
+              "type": {
+                "fqn": "@aws-cdk/aws-codepipeline-api.IStage"
+              }
+            },
+            {
+              "docs": {
+                "comment": "the name of the newly created Action"
+              },
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "the properties of the new Action"
+              },
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-codecommit.CommonPipelineSourceActionProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-codecommit.PipelineSourceAction"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Exports this Repository. Allows the same Repository to be used in 2 different Stacks.",
+            "see": "import"
+          },
+          "name": "export",
+          "returns": {
+            "fqn": "@aws-cdk/aws-codecommit.RepositoryRefProps"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Defines a CloudWatch event rule which triggers when a comment is made on a commit."
+          },
+          "name": "onCommentOnCommit",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+                "optional": true
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.EventRuleProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRule"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Defines a CloudWatch event rule which triggers when a comment is made on a pull request."
+          },
+          "name": "onCommentOnPullRequest",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+                "optional": true
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.EventRuleProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRule"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Defines a CloudWatch event rule which triggers when a commit is pushed to a branch."
+          },
+          "name": "onCommit",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The target of the event"
+              },
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+                "optional": true
+              }
+            },
+            {
+              "docs": {
+                "comment": "The branch to monitor. Defaults to all branches."
+              },
+              "name": "branch",
+              "type": {
+                "optional": true,
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRule"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Defines a CloudWatch event rule which triggers for repository events. Use\n`rule.addEventPattern(pattern)` to specify a filter."
+          },
+          "name": "onEvent",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+                "optional": true
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.EventRuleProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRule"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Defines a CloudWatch event rule which triggers when a pull request state is changed."
+          },
+          "name": "onPullRequestStateChange",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+                "optional": true
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.EventRuleProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRule"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Defines a CloudWatch event rule which triggers when a reference is\ncreated (i.e. a new branch/tag is created) to the repository."
+          },
+          "name": "onReferenceCreated",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+                "optional": true
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.EventRuleProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRule"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Defines a CloudWatch event rule which triggers when a reference is\ndelete (i.e. a branch/tag is deleted) from the repository."
+          },
+          "name": "onReferenceDeleted",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+                "optional": true
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.EventRuleProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRule"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Defines a CloudWatch event rule which triggers when a reference is\nupdated (i.e. a commit is pushed to an existing or new branch) from the repository."
+          },
+          "name": "onReferenceUpdated",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+                "optional": true
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.EventRuleProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRule"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Defines a CloudWatch event rule which triggers when a \"CodeCommit\nRepository State Change\" event occurs."
+          },
+          "name": "onStateChange",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+                "optional": true
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.EventRuleProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRule"
+          }
+        }
+      ],
+      "name": "RepositoryRef",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of this Repository."
+          },
+          "immutable": true,
+          "name": "repositoryArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The HTTP clone URL"
+          },
+          "immutable": true,
+          "name": "repositoryCloneUrlHttp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The SSH clone URL"
+          },
+          "immutable": true,
+          "name": "repositoryCloneUrlSsh",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The human-visible name of this Repository."
+          },
+          "immutable": true,
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.RepositoryRefProps": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for the {@link RepositoryRef.import} method."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.RepositoryRefProps",
+      "kind": "interface",
+      "name": "RepositoryRefProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of an existing CodeCommit Repository that we are referencing.\nMust be in the same account and region as the root Stack."
+          },
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.RepositoryTriggerOptions": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "comment": "Creates for a repository trigger to an SNS topic or Lambda function."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.RepositoryTriggerOptions",
+      "kind": "interface",
+      "name": "RepositoryTriggerOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The names of the branches in the AWS CodeCommit repository that contain\nevents that you want to include in the trigger. If you don't specify at\nleast one branch, the trigger applies to all branches."
+          },
+          "name": "branches",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "When an event is triggered, additional information that AWS CodeCommit\nincludes when it sends information to the target."
+          },
+          "name": "customData",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The repository events for which AWS CodeCommit sends information to the\ntarget, which you specified in the DestinationArn property.If you don't\nspecify events, the trigger runs for all repository events."
+          },
+          "name": "events",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-codecommit.RepositoryEventTrigger"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A name for the trigger.Triggers on a repository must have unique names"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.cloudformation.RepositoryResource": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.RepositoryResource\" will be deprecated in a future release in favor of \"CfnRepository\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html"
+      },
+      "fqn": "@aws-cdk/aws-codecommit.cloudformation.RepositoryResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::CodeCommit::Repository``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``RepositoryResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``RepositoryResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.cloudformation.RepositoryResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "RepositoryResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-codecommit.cloudformation.RepositoryResourceProps"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "repositoryArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "CloneUrlHttp"
+          },
+          "immutable": true,
+          "name": "repositoryCloneUrlHttp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "CloneUrlSsh"
+          },
+          "immutable": true,
+          "name": "repositoryCloneUrlSsh",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "repositoryId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Name"
+          },
+          "immutable": true,
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.cloudformation.RepositoryResource.RepositoryTriggerProperty": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html"
+      },
+      "fqn": "@aws-cdk/aws-codecommit.cloudformation.RepositoryResource.RepositoryTriggerProperty",
+      "kind": "interface",
+      "name": "RepositoryTriggerProperty",
+      "namespace": "cloudformation.RepositoryResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RepositoryResource.RepositoryTriggerProperty.Branches``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-branches"
+          },
+          "name": "branches",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RepositoryResource.RepositoryTriggerProperty.CustomData``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-customdata"
+          },
+          "name": "customData",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RepositoryResource.RepositoryTriggerProperty.DestinationArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-destinationarn"
+          },
+          "name": "destinationArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RepositoryResource.RepositoryTriggerProperty.Events``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-events"
+          },
+          "name": "events",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``RepositoryResource.RepositoryTriggerProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codecommit.cloudformation.RepositoryResourceProps": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html"
+      },
+      "fqn": "@aws-cdk/aws-codecommit.cloudformation.RepositoryResourceProps",
+      "kind": "interface",
+      "name": "RepositoryResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CodeCommit::Repository.RepositoryName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-repositoryname"
+          },
+          "name": "repositoryName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CodeCommit::Repository.RepositoryDescription``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-repositorydescription"
+          },
+          "name": "repositoryDescription",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CodeCommit::Repository.Triggers``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-triggers"
+          },
+          "name": "triggers",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-codecommit.cloudformation.RepositoryResource.RepositoryTriggerProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "ttz5vxwmSwPoBBws+/d8f6XXs5CvUistrYUwFYgP6s8="
+}

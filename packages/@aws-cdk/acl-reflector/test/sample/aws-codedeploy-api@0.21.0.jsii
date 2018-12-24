@@ -1,0 +1,160 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "Load Balancer API for AWS CodeDeploy",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-codedeploy-api",
+  "readme": {
+    "markdown": "## AWS CodeDeploy Load Balancing API\n\nThis package contains the abstract API of Load Balancers\nas required by the AWS CodeDeploy Construct Library.\n\nYou should never need to depend on it directly -\ninstead, depend on the `aws-codedeploy` package.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.CodeDeploy.Api",
+      "packageId": "Amazon.CDK.AWS.CodeDeploy.Api",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "codedeploy-api",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.codedeploy.api"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-codedeploy-api"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-codedeploy-api.ILoadBalancer": {
+      "assembly": "@aws-cdk/aws-codedeploy-api",
+      "docs": {
+        "comment": "An interface of an abstract laod balancer, as needed by CodeDeploy."
+      },
+      "fqn": "@aws-cdk/aws-codedeploy-api.ILoadBalancer",
+      "kind": "interface",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Specify the CodeDeploy-required properties of this load balancer."
+          },
+          "name": "asCodeDeployLoadBalancer",
+          "returns": {
+            "fqn": "@aws-cdk/aws-codedeploy-api.ILoadBalancerProps"
+          }
+        }
+      ],
+      "name": "ILoadBalancer"
+    },
+    "@aws-cdk/aws-codedeploy-api.ILoadBalancerProps": {
+      "assembly": "@aws-cdk/aws-codedeploy-api",
+      "docs": {
+        "comment": "The properties CodeDeploy requires of a load balancer."
+      },
+      "fqn": "@aws-cdk/aws-codedeploy-api.ILoadBalancerProps",
+      "kind": "interface",
+      "name": "ILoadBalancerProps",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "generation",
+          "type": {
+            "fqn": "@aws-cdk/aws-codedeploy-api.LoadBalancerGeneration"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codedeploy-api.LoadBalancerGeneration": {
+      "assembly": "@aws-cdk/aws-codedeploy-api",
+      "docs": {
+        "comment": "The generations of AWS load balancing solutions."
+      },
+      "fqn": "@aws-cdk/aws-codedeploy-api.LoadBalancerGeneration",
+      "kind": "enum",
+      "members": [
+        {
+          "docs": {
+            "comment": "The first generation (ELB Classic)."
+          },
+          "name": "First"
+        },
+        {
+          "docs": {
+            "comment": "The second generation (ALB and NLB)."
+          },
+          "name": "Second"
+        }
+      ],
+      "name": "LoadBalancerGeneration"
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "3zyWrGhTiv/icQ4ZNahiq3wvaPqEN7U3Kinu4CbKR0E="
+}

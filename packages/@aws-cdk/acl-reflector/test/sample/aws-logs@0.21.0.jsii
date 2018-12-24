@@ -1,0 +1,4087 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudwatch": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.CloudWatch",
+          "packageId": "Amazon.CDK.AWS.CloudWatch",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudwatch",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudwatch"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudwatch"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Logs",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-logs",
+  "readme": {
+    "markdown": "## AWS CloudWatch Logs Construct Library\n\nThis library supplies constructs for working with CloudWatch Logs.\n\n### Log Groups/Streams\n\nThe basic unit of CloudWatch is a *Log Group*. Every log group typically has the\nsame kind of data logged to it, in the same format. If there are multiple\napplications or services logging into the Log Group, each of them creates a new\n*Log Stream*.\n\nEvery log operation creates a \"log event\", which can consist of a simple string\nor a single-line JSON object. JSON objects have the advantage that they afford\nmore filtering abilities (see below).\n\nThe only configurable attribute for log streams is the retention period, which\nconfigures after how much time the events in the log stream expire and are\ndeleted.\n\nThe default retention period if not supplied is 2 years, but it can be set to\nany amount of days, or `Infinity` to keep the data in the log group forever.\n\n```ts\n// Configure log group for short retention\nconst logGroup = new LogGroup(stack, 'LogGroup', {\n  retentionDays: 7\n});\n// Configure log group for infinite retention\nconst logGroup = new LogGroup(stack, 'LogGroup', {\n  retentionDays: Infinity\n});\n```\n\n### Subscriptions and Destinations\n\nLog events matching a particular filter can be sent to either a Lambda function\nor a Kinesis stream.\n\nIf the Kinesis stream lives in a different account, a `CrossAccountDestination`\nobject needs to be added in the destination account which will act as a proxy\nfor the remote Kinesis stream. This object is automatically created for you\nif you use the CDK Kinesis library.\n\nCreate a `SubscriptionFilter`, initialize it with an appropriate `Pattern` (see\nbelow) and supply the intended destination:\n\n```ts\nconst fn = new lambda.Function(this, 'Lambda', { ... });\nconst logGroup = new LogGroup(this, 'LogGroup', { ... });\n\nnew SubscriptionFilter(this, 'Subscription', {\n    logGroup,\n    destination: fn,\n    filterPattern: FilterPattern.allTerms(\"ERROR\", \"MainThread\")\n});\n```\n\n### Metric Filters\n\nCloudWatch Logs can extract and emit metrics based on a textual log stream.\nDepending on your needs, this may be a more convenient way of generating metrics\nfor you application than making calls to CloudWatch Metrics yourself.\n\nA `MetricFilter` either emits a fixed number every time it sees a log event\nmatching a particular pattern (see below), or extracts a number from the log\nevent and uses that as the metric value.\n\nExample:\n\n```ts\nnew MetricFilter(this, 'MetricFilter', {\n  logGroup,\n  metricNamespace: 'MyApp',\n  metricName: 'Latency',\n  filterPattern: FilterPattern.exists('$.latency'),\n  metricValue: '$.latency'\n});\n```\n\nRemember that if you want to use a value from the log event as the metric value,\nyou must mention it in your pattern somewhere.\n\nA very simple MetricFilter can be created by using the `logGroup.extractMetric()`\nhelper function:\n\n```ts\nlogGroup.extractMetric('$.jsonField', 'Namespace', 'MetricName');\n```\n\nWill extract the value of `jsonField` wherever it occurs in JSON-structed\nlog records in the LogGroup, and emit them to CloudWatch Metrics under\nthe name `Namespace/MetricName`.\n\n### Patterns\n\nPatterns describe which log events match a subscription or metric filter. There\nare three types of patterns:\n\n* Text patterns\n* JSON patterns\n* Space-delimited table patterns\n\nAll patterns are constructed by using static functions on the `FilterPattern`\nclass.\n\nIn addition to the patterns above, the following special patterns exist:\n\n* `FilterPattern.allEvents()`: matches all log events.\n* `FilterPattern.literal(string)`: if you already know what pattern expression to\n  use, this function takes a string and will use that as the log pattern. For\n  more information, see the [Filter and Pattern\n  Syntax](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html).\n\n#### Text Patterns\n\nText patterns match if the literal strings appear in the text form of the log\nline.\n\n* `FilterPattern.allTerms(term, term, ...)`: matches if all of the given terms\n  (substrings) appear in the log event.\n* `FilterPattern.anyTerm(term, term, ...)`: matches if all of the given terms\n  (substrings) appear in the log event.\n* `FilterPattern.anyGroup([term, term, ...], [term, term, ...], ...)`: matches if\n  all of the terms in any of the groups (specified as arrays) matches. This is\n  an OR match.\n\n\nExamples:\n\n```ts\n// Search for lines that contain both \"ERROR\" and \"MainThread\"\nconst pattern1 = FilterPattern.allTerms('ERROR', 'MainThread');\n\n// Search for lines that either contain both \"ERROR\" and \"MainThread\", or\n// both \"WARN\" and \"Deadlock\".\nconst pattern2 = FilterPattern.anyGroup(\n    ['ERROR', 'MainThread'],\n    ['WARN', 'Deadlock'],\n    );\n```\n\n### JSON Patterns\n\nJSON patterns apply if the log event is the JSON representation of an object\n(without any other characters, so it cannot include a prefix such as timestamp\nor log level). JSON patterns can make comparisons on the values inside the\nfields.\n\n* **Strings**: the comparison operators allowed for strings are `=` and `!=`.\n  String values can start or end with a `*` wildcard.\n* **Numbers**: the comparison operators allowed for numbers are `=`, `!=`,\n  `<`, `<=`, `>`, `>=`.\n\nFields in the JSON structure are identified by identifier the complete object as `$`\nand then descending into it, such as `$.field` or `$.list[0].field`.\n\n* `FilterPattern.stringValue(field, comparison, string)`: matches if the given\n  field compares as indicated with the given string value.\n* `FilterPattern.numberValue(field, comparison, number)`: matches if the given\n  field compares as indicated with the given numerical value.\n* `FilterPattern.isNull(field)`: matches if the given field exists and has the\n  value `null`.\n* `FilterPattern.notExists(field)`: matches if the given field is not in the JSON\n  structure.\n* `FilterPattern.exists(field)`: matches if the given field is in the JSON\n  structure.\n* `FilterPattern.booleanValue(field, boolean)`: matches if the given field\n  is exactly the given boolean value.\n* `FilterPattern.all(jsonPattern, jsonPattern, ...)`: matches if all of the\n  given JSON patterns match. This makes an AND combination of the given\n  patterns.\n* `FilterPattern.any(jsonPattern, jsonPattern, ...)`: matches if any of the\n  given JSON patterns match. This makes an OR combination of the given\n  patterns.\n\n\nExample:\n\n```ts\n// Search for all events where the component field is equal to\n// \"HttpServer\" and either error is true or the latency is higher\n// than 1000.\nconst pattern = FilterPattern.all(\n    FilterPattern.stringValue('$.component', '=', 'HttpServer'),\n    FilterPattern.any(\n        FilterPattern.booleanValue('$.error', true),\n        FilterPattern.numberValue('$.latency', '>', 1000)\n    ));\n```\n\n### Space-delimited table patterns\n\nIf the log events are rows of a space-delimited table, this pattern can be used\nto identify the columns in that structure and add conditions on any of them. The\ncanonical example where you would apply this type of pattern is Apache server\nlogs.\n\nText that is surrounded by `\"...\"` quotes or `[...]` square brackets will\nbe treated as one column.\n\n* `FilterPattern.spaceDelimited(column, column, ...)`: construct a\n  `SpaceDelimitedTextPattern` object with the indicated columns. The columns\n  map one-by-one the columns found in the log event. The string `\"...\"` may\n  be used to specify an arbitrary number of unnamed columns anywhere in the\n  name list (but may only be specified once).\n\nAfter constructing a `SpaceDelimitedTextPattern`, you can use the following\ntwo members to add restrictions:\n\n* `pattern.whereString(field, comparison, string)`: add a string condition.\n  The rules are the same as for JSON patterns.\n* `pattern.whereNumber(field, comparison, number)`: add a numerical condition.\n  The rules are the same as for JSON patterns.\n\nMultiple restrictions can be added on the same column; they must all apply.\n\nExample:\n\n```ts\n// Search for all events where the component is \"HttpServer\" and the\n// result code is not equal to 200.\nconst pattern = FilterPattern.spaceDelimited('time', 'component', '...', 'result_code', 'latency')\n    .whereString('component', '=', 'HttpServer')\n    .whereNumber('result_code', '!=', 200);\n```\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.Logs",
+      "packageId": "Amazon.CDK.AWS.Logs",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "logs",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.logs"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-logs"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-logs.CfnDestination": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.CfnDestination",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Logs::Destination``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnDestination`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnDestination``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.CfnDestinationProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnDestination",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "destinationArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "destinationName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.CfnDestinationProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CfnDestinationProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.CfnDestinationProps",
+      "kind": "interface",
+      "name": "CfnDestinationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::Destination.DestinationName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html#cfn-logs-destination-destinationname"
+          },
+          "name": "destinationName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::Destination.DestinationPolicy``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html#cfn-logs-destination-destinationpolicy"
+          },
+          "name": "destinationPolicy",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::Destination.RoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html#cfn-logs-destination-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::Destination.TargetArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html#cfn-logs-destination-targetarn"
+          },
+          "name": "targetArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CfnLogGroup": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Logs::LogGroup``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnLogGroup`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnLogGroup``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.CfnLogGroupProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnLogGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "logGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "logGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.CfnLogGroupProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CfnLogGroupProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.CfnLogGroupProps",
+      "kind": "interface",
+      "name": "CfnLogGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::LogGroup.LogGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-cwl-loggroup-loggroupname"
+          },
+          "name": "logGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::LogGroup.RetentionInDays``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-cwl-loggroup-retentionindays"
+          },
+          "name": "retentionInDays",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CfnLogStream": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-logstream.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.CfnLogStream",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Logs::LogStream``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnLogStream`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnLogStream``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.CfnLogStreamProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnLogStream",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "logStreamName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.CfnLogStreamProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CfnLogStreamProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-logstream.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.CfnLogStreamProps",
+      "kind": "interface",
+      "name": "CfnLogStreamProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::LogStream.LogGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-logstream.html#cfn-logs-logstream-loggroupname"
+          },
+          "name": "logGroupName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::LogStream.LogStreamName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-logstream.html#cfn-logs-logstream-logstreamname"
+          },
+          "name": "logStreamName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CfnMetricFilter": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.CfnMetricFilter",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Logs::MetricFilter``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnMetricFilter`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnMetricFilter``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.CfnMetricFilterProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnMetricFilter",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "metricFilterName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.CfnMetricFilterProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CfnMetricFilter.MetricTransformationProperty": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.CfnMetricFilter.MetricTransformationProperty",
+      "kind": "interface",
+      "name": "MetricTransformationProperty",
+      "namespace": "CfnMetricFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnMetricFilter.MetricTransformationProperty.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnMetricFilter.MetricTransformationProperty.MetricNamespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricnamespace"
+          },
+          "name": "metricNamespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnMetricFilter.MetricTransformationProperty.MetricValue``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricvalue"
+          },
+          "name": "metricValue",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnMetricFilter.MetricTransformationProperty.DefaultValue``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-defaultvalue"
+          },
+          "name": "defaultValue",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CfnMetricFilterProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.CfnMetricFilterProps",
+      "kind": "interface",
+      "name": "CfnMetricFilterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::MetricFilter.FilterPattern``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-filterpattern"
+          },
+          "name": "filterPattern",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::MetricFilter.LogGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-loggroupname"
+          },
+          "name": "logGroupName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::MetricFilter.MetricTransformations``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-metrictransformations"
+          },
+          "name": "metricTransformations",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-logs.CfnMetricFilter.MetricTransformationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CfnSubscriptionFilter": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.CfnSubscriptionFilter",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Logs::SubscriptionFilter``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnSubscriptionFilter`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnSubscriptionFilter``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.CfnSubscriptionFilterProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnSubscriptionFilter",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.CfnSubscriptionFilterProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "subscriptionFilterName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CfnSubscriptionFilterProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.CfnSubscriptionFilterProps",
+      "kind": "interface",
+      "name": "CfnSubscriptionFilterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::SubscriptionFilter.DestinationArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-destinationarn"
+          },
+          "name": "destinationArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::SubscriptionFilter.FilterPattern``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-filterpattern"
+          },
+          "name": "filterPattern",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::SubscriptionFilter.LogGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-loggroupname"
+          },
+          "name": "logGroupName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::SubscriptionFilter.RoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.ColumnRestriction": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-logs.ColumnRestriction",
+      "kind": "interface",
+      "name": "ColumnRestriction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Comparison operator to use"
+          },
+          "name": "comparison",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Number value to compare to\n\nExactly one of 'stringValue' and 'numberValue' must be set."
+          },
+          "name": "numberValue",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "String value to compare to\n\nExactly one of 'stringValue' and 'numberValue' must be set."
+          },
+          "name": "stringValue",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CrossAccountDestination": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "A new CloudWatch Logs Destination for use in cross-account scenarios\n\nLog destinations can be used to subscribe a Kinesis stream in a different\naccount to a CloudWatch Subscription. A Kinesis stream in the same account\ncan be subscribed directly.\n\nThe @aws-cdk/aws-kinesis library takes care of this automatically; you shouldn't\nneed to bother with this class."
+      },
+      "fqn": "@aws-cdk/aws-logs.CrossAccountDestination",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.CrossAccountDestinationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-logs.ILogSubscriptionDestination"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "name": "addToPolicy",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Return the properties required to send subscription events to this destination.\n\nIf necessary, the destination can use the properties of the SubscriptionFilter\nobject itself to configure its permissions to allow the subscription to write\nto it.\n\nThe destination may reconfigure its own permissions in response to this\nfunction call."
+          },
+          "name": "logSubscriptionDestination",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-logs.ILogSubscriptionDestination"
+          },
+          "parameters": [
+            {
+              "name": "_sourceLogGroup",
+              "type": {
+                "fqn": "@aws-cdk/aws-logs.LogGroupRef"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.LogSubscriptionDestination"
+          }
+        }
+      ],
+      "name": "CrossAccountDestination",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The ARN of this CrossAccountDestination object"
+          },
+          "immutable": true,
+          "name": "destinationArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of this CrossAccountDestination object"
+          },
+          "immutable": true,
+          "name": "destinationName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Policy object of this CrossAccountDestination object"
+          },
+          "immutable": true,
+          "name": "policyDocument",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.PolicyDocument"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.CrossAccountDestinationProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-logs.CrossAccountDestinationProps",
+      "kind": "interface",
+      "name": "CrossAccountDestinationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The role to assume that grants permissions to write to 'target'.\n\nThe role must be assumable by 'logs.{REGION}.amazonaws.com'."
+          },
+          "name": "role",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.Role"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The log destination target's ARN"
+          },
+          "name": "targetArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the log destination.",
+            "default": "Automatically generated"
+          },
+          "name": "destinationName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.FilterPattern": {
+      "assembly": "@aws-cdk/aws-logs",
+      "docs": {
+        "comment": "A collection of static methods to generate appropriate ILogPatterns"
+      },
+      "fqn": "@aws-cdk/aws-logs.FilterPattern",
+      "initializer": {
+        "initializer": true
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "A JSON log pattern that matches if all given JSON log patterns match"
+          },
+          "name": "all",
+          "parameters": [
+            {
+              "name": "patterns",
+              "type": {
+                "fqn": "@aws-cdk/aws-logs.JSONPattern"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.JSONPattern"
+          },
+          "static": true,
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "A log pattern that matches all events."
+          },
+          "name": "allEvents",
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "A log pattern that matches if all the strings given appear in the event."
+          },
+          "name": "allTerms",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The words to search for. All terms must match."
+              },
+              "name": "terms",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+          },
+          "static": true,
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "A JSON log pattern that matches if any of the given JSON log patterns match"
+          },
+          "name": "any",
+          "parameters": [
+            {
+              "name": "patterns",
+              "type": {
+                "fqn": "@aws-cdk/aws-logs.JSONPattern"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.JSONPattern"
+          },
+          "static": true,
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "A log pattern that matches if any of the strings given appear in the event."
+          },
+          "name": "anyTerm",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The words to search for. Any terms must match."
+              },
+              "name": "terms",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+          },
+          "static": true,
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "A log pattern that matches if any of the given term groups matches the event.\n\nA term group matches an event if all the terms in it appear in the event string."
+          },
+          "name": "anyTermGroup",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "A list of term groups to search for. Any one of the clauses must match."
+              },
+              "name": "termGroups",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "string"
+                  },
+                  "kind": "array"
+                }
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+          },
+          "static": true,
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "A JSON log pattern that matches if the field exists and equals the boolean value."
+          },
+          "name": "booleanValue",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Field inside JSON. Example: \"$.myField\""
+              },
+              "name": "jsonField",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The value to match"
+              },
+              "name": "value",
+              "type": {
+                "primitive": "boolean"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.JSONPattern"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "A JSON log patter that matches if the field exists.\n\nThis is a readable convenience wrapper over 'field = *'"
+          },
+          "name": "exists",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Field inside JSON. Example: \"$.myField\""
+              },
+              "name": "jsonField",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.JSONPattern"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "A JSON log pattern that matches if the field exists and has the special value 'null'."
+          },
+          "name": "isNull",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Field inside JSON. Example: \"$.myField\""
+              },
+              "name": "jsonField",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.JSONPattern"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Use the given string as log pattern.\n\nSee https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html\nfor information on writing log patterns."
+          },
+          "name": "literal",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The pattern string to use."
+              },
+              "name": "logPatternString",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "A JSON log pattern that matches if the field does not exist."
+          },
+          "name": "notExists",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Field inside JSON. Example: \"$.myField\""
+              },
+              "name": "jsonField",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.JSONPattern"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "A JSON log pattern that compares numerical values.\n\nThis pattern only matches if the event is a JSON event, and the indicated field inside\ncompares with the value in the indicated way.\n\nUse '$' to indicate the root of the JSON structure. The comparison operator can only\ncompare equality or inequality. The '*' wildcard may appear in the value may at the\nstart or at the end.\n\nFor more information, see:\n\nhttps://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html"
+          },
+          "name": "numberValue",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Field inside JSON. Example: \"$.myField\""
+              },
+              "name": "jsonField",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Comparison to carry out. One of =, !=, <, <=, >, >=."
+              },
+              "name": "comparison",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The numerical value to compare to"
+              },
+              "name": "value",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.JSONPattern"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "A space delimited log pattern matcher.\n\nThe log event is divided into space-delimited columns (optionally\nenclosed by \"\" or [] to capture spaces into column values), and names\nare given to each column.\n\n'...' may be specified once to match any number of columns.\n\nAfterwards, conditions may be added to individual columns."
+          },
+          "name": "spaceDelimited",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The columns in the space-delimited log stream."
+              },
+              "name": "columns",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.SpaceDelimitedTextPattern"
+          },
+          "static": true,
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "A JSON log pattern that compares string values.\n\nThis pattern only matches if the event is a JSON event, and the indicated field inside\ncompares with the string value.\n\nUse '$' to indicate the root of the JSON structure. The comparison operator can only\ncompare equality or inequality. The '*' wildcard may appear in the value may at the\nstart or at the end.\n\nFor more information, see:\n\nhttps://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html"
+          },
+          "name": "stringValue",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Field inside JSON. Example: \"$.myField\""
+              },
+              "name": "jsonField",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Comparison to carry out. Either = or !=."
+              },
+              "name": "comparison",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The string value to compare to. May use '*' as wildcard at start or end of string."
+              },
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.JSONPattern"
+          },
+          "static": true
+        }
+      ],
+      "name": "FilterPattern"
+    },
+    "@aws-cdk/aws-logs.IFilterPattern": {
+      "assembly": "@aws-cdk/aws-logs",
+      "docs": {
+        "comment": "Interface for objects that can render themselves to log patterns."
+      },
+      "fqn": "@aws-cdk/aws-logs.IFilterPattern",
+      "kind": "interface",
+      "name": "IFilterPattern",
+      "properties": [
+        {
+          "abstract": true,
+          "immutable": true,
+          "name": "logPatternString",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.ILogSubscriptionDestination": {
+      "assembly": "@aws-cdk/aws-logs",
+      "docs": {
+        "comment": "Interface for classes that can be the destination of a log Subscription"
+      },
+      "fqn": "@aws-cdk/aws-logs.ILogSubscriptionDestination",
+      "kind": "interface",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Return the properties required to send subscription events to this destination.\n\nIf necessary, the destination can use the properties of the SubscriptionFilter\nobject itself to configure its permissions to allow the subscription to write\nto it.\n\nThe destination may reconfigure its own permissions in response to this\nfunction call."
+          },
+          "name": "logSubscriptionDestination",
+          "parameters": [
+            {
+              "name": "sourceLogGroup",
+              "type": {
+                "fqn": "@aws-cdk/aws-logs.LogGroupRef"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.LogSubscriptionDestination"
+          }
+        }
+      ],
+      "name": "ILogSubscriptionDestination"
+    },
+    "@aws-cdk/aws-logs.JSONPattern": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-logs",
+      "docs": {
+        "comment": "Base class for patterns that only match JSON log events."
+      },
+      "fqn": "@aws-cdk/aws-logs.JSONPattern",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "jsonPatternString",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+        }
+      ],
+      "kind": "class",
+      "name": "JSONPattern",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "jsonPatternString",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "logPatternString",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.LogGroup": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/aws-logs.LogGroupRef"
+      },
+      "docs": {
+        "comment": "Define a CloudWatch Log Group"
+      },
+      "fqn": "@aws-cdk/aws-logs.LogGroup",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.LogGroupProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "LogGroup",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The ARN of this log group"
+          },
+          "immutable": true,
+          "name": "logGroupArn",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-logs.LogGroupRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of this log group"
+          },
+          "immutable": true,
+          "name": "logGroupName",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-logs.LogGroupRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.LogGroupProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a LogGroup"
+      },
+      "fqn": "@aws-cdk/aws-logs.LogGroupProps",
+      "kind": "interface",
+      "name": "LogGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of the log group.",
+            "default": "Automatically generated"
+          },
+          "name": "logGroupName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Retain the log group if the stack or containing construct ceases to exist\n\nNormally you want to retain the log group so you can diagnose issues\nfrom logs even after a deployment that no longer includes the log group.\nIn that case, use the normal date-based retention policy to age out your\nlogs.",
+            "default": "true"
+          },
+          "name": "retainLogGroup",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "How long, in days, the log contents will be retained.\n\nTo retain all logs, set this value to Infinity.",
+            "default": "731 days (2 years)"
+          },
+          "name": "retentionDays",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.LogGroupRef": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "An CloudWatch Log Group"
+      },
+      "fqn": "@aws-cdk/aws-logs.LogGroupRef",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "The local logical ID of the construct. Must be unique amongst\nsiblings. If the ID includes a path separator (`/`), then it will be\nreplaced by double dash `--`."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Import an existing LogGroup"
+          },
+          "name": "import",
+          "parameters": [
+            {
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-logs.LogGroupRefProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.LogGroupRef"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Export this LogGroup"
+          },
+          "name": "export",
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.LogGroupRefProps"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Extract a metric from structured log events in the LogGroup\n\nCreates a MetricFilter on this LogGroup that will extract the value\nof the indicated JSON field in all records where it occurs.\n\nThe metric will be available in CloudWatch Metrics under the\nindicated namespace and name.",
+            "return": "A Metric object representing the extracted metric"
+          },
+          "name": "extractMetric",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "JSON field to extract (example: '$.myfield')"
+              },
+              "name": "jsonField",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Namespace to emit the metric under"
+              },
+              "name": "metricNamespace",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Name to emit the metric under"
+              },
+              "name": "metricName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Give the indicated permissions on this log group and all streams"
+          },
+          "name": "grant",
+          "parameters": [
+            {
+              "name": "principal",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            },
+            {
+              "name": "actions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Give permissions to write to create and write to streams in this log group"
+          },
+          "name": "grantWrite",
+          "parameters": [
+            {
+              "name": "principal",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Create a new Metric Filter on this Log Group"
+          },
+          "name": "newMetricFilter",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Parent construct"
+              },
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Unique identifier for the construct in its parent"
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Properties for creating the MetricFilter"
+              },
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-logs.NewMetricFilterProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.MetricFilter"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Create a new Log Stream for this Log Group"
+          },
+          "name": "newStream",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Parent construct"
+              },
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Unique identifier for the construct in its parent"
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Properties for creating the LogStream"
+              },
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-logs.NewLogStreamProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.LogStream"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Create a new Subscription Filter on this Log Group"
+          },
+          "name": "newSubscriptionFilter",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Parent construct"
+              },
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Unique identifier for the construct in its parent"
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Properties for creating the SubscriptionFilter"
+              },
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-logs.NewSubscriptionFilterProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.SubscriptionFilter"
+          }
+        }
+      ],
+      "name": "LogGroupRef",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of this log group"
+          },
+          "immutable": true,
+          "name": "logGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of this log group"
+          },
+          "immutable": true,
+          "name": "logGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.LogGroupRefProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for importing a LogGroup"
+      },
+      "fqn": "@aws-cdk/aws-logs.LogGroupRefProps",
+      "kind": "interface",
+      "name": "LogGroupRefProps",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "logGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.LogStream": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/aws-logs.LogStreamRef"
+      },
+      "docs": {
+        "comment": "Define a Log Stream in a Log Group"
+      },
+      "fqn": "@aws-cdk/aws-logs.LogStream",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.LogStreamProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "LogStream",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The name of this log stream"
+          },
+          "immutable": true,
+          "name": "logStreamName",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-logs.LogStreamRef"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.LogStreamProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a LogStream"
+      },
+      "fqn": "@aws-cdk/aws-logs.LogStreamProps",
+      "kind": "interface",
+      "name": "LogStreamProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The log group to create a log stream for."
+          },
+          "name": "logGroup",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.LogGroupRef"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the log stream to create.\n\nThe name must be unique within the log group.",
+            "default": "Automatically generated"
+          },
+          "name": "logStreamName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Retain the log stream if the stack or containing construct ceases to exist\n\nNormally you want to retain the log stream so you can diagnose issues\nfrom logs even after a deployment that no longer includes the log stream.\n\nThe date-based retention policy of your log group will age out the logs\nafter a certain time.",
+            "default": "true"
+          },
+          "name": "retainLogStream",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.LogStreamRef": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "A Log Stream in a Log Group"
+      },
+      "fqn": "@aws-cdk/aws-logs.LogStreamRef",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "The local logical ID of the construct. Must be unique amongst\nsiblings. If the ID includes a path separator (`/`), then it will be\nreplaced by double dash `--`."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Import an existing LogGroup"
+          },
+          "name": "import",
+          "parameters": [
+            {
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-logs.LogStreamRefProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.LogStreamRef"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Export this LogStream"
+          },
+          "name": "export",
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.LogStreamRefProps"
+          }
+        }
+      ],
+      "name": "LogStreamRef",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of this log stream"
+          },
+          "immutable": true,
+          "name": "logStreamName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.LogStreamRefProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for importing a LogStream"
+      },
+      "fqn": "@aws-cdk/aws-logs.LogStreamRefProps",
+      "kind": "interface",
+      "name": "LogStreamRefProps",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "logStreamName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.LogSubscriptionDestination": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties returned by a Subscription destination"
+      },
+      "fqn": "@aws-cdk/aws-logs.LogSubscriptionDestination",
+      "kind": "interface",
+      "name": "LogSubscriptionDestination",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of the subscription's destination"
+          },
+          "immutable": true,
+          "name": "arn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The role to assume to write log events to the destination",
+            "default": "No role assumed"
+          },
+          "immutable": true,
+          "name": "role",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.Role",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.MetricFilter": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics"
+      },
+      "fqn": "@aws-cdk/aws-logs.MetricFilter",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.MetricFilterProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "MetricFilter"
+    },
+    "@aws-cdk/aws-logs.MetricFilterProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a MetricFilter"
+      },
+      "fqn": "@aws-cdk/aws-logs.MetricFilterProps",
+      "kind": "interface",
+      "name": "MetricFilterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Pattern to search for log events."
+          },
+          "name": "filterPattern",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The log group to create the filter on."
+          },
+          "name": "logGroup",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.LogGroupRef"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the metric to emit."
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The namespace of the metric to emit."
+          },
+          "name": "metricNamespace",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The value to emit if the pattern does not match a particular event.",
+            "default": "No metric emitted."
+          },
+          "name": "defaultValue",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The value to emit for the metric.\n\nCan either be a literal number (typically \"1\"), or the name of a field in the structure\nto take the value from the matched event. If you are using a field value, the field\nvalue must have been matched using the pattern.\n\nIf you want to specify a field from a matched JSON structure, use '$.fieldName',\nand make sure the field is in the pattern (if only as '$.fieldName = *').\n\nIf you want to specify a field from a matched space-delimited structure,\nuse '$fieldName'.",
+            "default": "\"1\""
+          },
+          "name": "metricValue",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.NewLogStreamProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a new LogStream created from a LogGroup"
+      },
+      "fqn": "@aws-cdk/aws-logs.NewLogStreamProps",
+      "kind": "interface",
+      "name": "NewLogStreamProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the log stream to create.\n\nThe name must be unique within the log group.",
+            "default": "Automatically generated"
+          },
+          "name": "logStreamName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.NewMetricFilterProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a MetricFilter created from a LogGroup"
+      },
+      "fqn": "@aws-cdk/aws-logs.NewMetricFilterProps",
+      "kind": "interface",
+      "name": "NewMetricFilterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Pattern to search for log events."
+          },
+          "name": "filterPattern",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the metric to emit."
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The namespace of the metric to emit."
+          },
+          "name": "metricNamespace",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The value to emit if the pattern does not match a particular event.",
+            "default": "No metric emitted."
+          },
+          "name": "defaultValue",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The value to emit for the metric.\n\nCan either be a literal number (typically \"1\"), or the name of a field in the structure\nto take the value from the matched event. If you are using a field value, the field\nvalue must have been matched using the pattern.\n\nIf you want to specify a field from a matched JSON structure, use '$.fieldName',\nand make sure the field is in the pattern (if only as '$.fieldName = *').\n\nIf you want to specify a field from a matched space-delimited structure,\nuse '$fieldName'.",
+            "default": "\"1\""
+          },
+          "name": "metricValue",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.NewSubscriptionFilterProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a new SubscriptionFilter created from a LogGroup"
+      },
+      "fqn": "@aws-cdk/aws-logs.NewSubscriptionFilterProps",
+      "kind": "interface",
+      "name": "NewSubscriptionFilterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The destination to send the filtered events to.\n\nFor example, a Kinesis stream or a Lambda function."
+          },
+          "name": "destination",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.ILogSubscriptionDestination"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Log events matching this pattern will be sent to the destination."
+          },
+          "name": "filterPattern",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.SpaceDelimitedTextPattern": {
+      "assembly": "@aws-cdk/aws-logs",
+      "docs": {
+        "comment": "Space delimited text pattern"
+      },
+      "fqn": "@aws-cdk/aws-logs.SpaceDelimitedTextPattern",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "columns",
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "string"
+                },
+                "kind": "array"
+              }
+            }
+          },
+          {
+            "name": "restrictions",
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "collection": {
+                    "elementtype": {
+                      "fqn": "@aws-cdk/aws-logs.ColumnRestriction"
+                    },
+                    "kind": "array"
+                  }
+                },
+                "kind": "map"
+              }
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Construct a new instance of a space delimited text pattern\n\nSince this class must be public, we can't rely on the user only creating it through\nthe `LogPattern.spaceDelimited()` factory function. We must therefore validate the\nargument in the constructor. Since we're returning a copy on every mutation, and we\ndon't want to re-validate the same things on every construction, we provide a limited\nset of mutator functions and only validate the new data every time."
+          },
+          "name": "construct",
+          "parameters": [
+            {
+              "name": "columns",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "string"
+                  },
+                  "kind": "array"
+                }
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.SpaceDelimitedTextPattern"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Restrict where the pattern applies"
+          },
+          "name": "whereNumber",
+          "parameters": [
+            {
+              "name": "columnName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "comparison",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.SpaceDelimitedTextPattern"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Restrict where the pattern applies"
+          },
+          "name": "whereString",
+          "parameters": [
+            {
+              "name": "columnName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "comparison",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-logs.SpaceDelimitedTextPattern"
+          }
+        }
+      ],
+      "name": "SpaceDelimitedTextPattern",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "columns",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "immutable": true,
+          "name": "logPatternString",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+          },
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "restrictions",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "collection": {
+                  "elementtype": {
+                    "fqn": "@aws-cdk/aws-logs.ColumnRestriction"
+                  },
+                  "kind": "array"
+                }
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.SubscriptionFilter": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "A new Subscription on a CloudWatch log group."
+      },
+      "fqn": "@aws-cdk/aws-logs.SubscriptionFilter",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.SubscriptionFilterProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "SubscriptionFilter"
+    },
+    "@aws-cdk/aws-logs.SubscriptionFilterProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a SubscriptionFilter"
+      },
+      "fqn": "@aws-cdk/aws-logs.SubscriptionFilterProps",
+      "kind": "interface",
+      "name": "SubscriptionFilterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The destination to send the filtered events to.\n\nFor example, a Kinesis stream or a Lambda function."
+          },
+          "name": "destination",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.ILogSubscriptionDestination"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Log events matching this pattern will be sent to the destination."
+          },
+          "name": "filterPattern",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.IFilterPattern"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The log group to create the subscription on."
+          },
+          "name": "logGroup",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.LogGroupRef"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.cloudformation.DestinationResource": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.DestinationResource\" will be deprecated in a future release in favor of \"CfnDestination\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.cloudformation.DestinationResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Logs::Destination``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``DestinationResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``DestinationResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.cloudformation.DestinationResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "DestinationResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "destinationArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "destinationName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.cloudformation.DestinationResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.cloudformation.DestinationResourceProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.cloudformation.DestinationResourceProps",
+      "kind": "interface",
+      "name": "DestinationResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::Destination.DestinationName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html#cfn-logs-destination-destinationname"
+          },
+          "name": "destinationName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::Destination.DestinationPolicy``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html#cfn-logs-destination-destinationpolicy"
+          },
+          "name": "destinationPolicy",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::Destination.RoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html#cfn-logs-destination-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::Destination.TargetArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-destination.html#cfn-logs-destination-targetarn"
+          },
+          "name": "targetArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.cloudformation.LogGroupResource": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.LogGroupResource\" will be deprecated in a future release in favor of \"CfnLogGroup\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.cloudformation.LogGroupResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Logs::LogGroup``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``LogGroupResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``LogGroupResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.cloudformation.LogGroupResourceProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "LogGroupResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "logGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "logGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.cloudformation.LogGroupResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.cloudformation.LogGroupResourceProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.cloudformation.LogGroupResourceProps",
+      "kind": "interface",
+      "name": "LogGroupResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::LogGroup.LogGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-cwl-loggroup-loggroupname"
+          },
+          "name": "logGroupName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::LogGroup.RetentionInDays``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-cwl-loggroup-retentionindays"
+          },
+          "name": "retentionInDays",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.cloudformation.LogStreamResource": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.LogStreamResource\" will be deprecated in a future release in favor of \"CfnLogStream\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-logstream.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.cloudformation.LogStreamResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Logs::LogStream``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``LogStreamResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``LogStreamResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.cloudformation.LogStreamResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "LogStreamResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "logStreamName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.cloudformation.LogStreamResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.cloudformation.LogStreamResourceProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-logstream.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.cloudformation.LogStreamResourceProps",
+      "kind": "interface",
+      "name": "LogStreamResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::LogStream.LogGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-logstream.html#cfn-logs-logstream-loggroupname"
+          },
+          "name": "logGroupName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::LogStream.LogStreamName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-logstream.html#cfn-logs-logstream-logstreamname"
+          },
+          "name": "logStreamName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.cloudformation.MetricFilterResource": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.MetricFilterResource\" will be deprecated in a future release in favor of \"CfnMetricFilter\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.cloudformation.MetricFilterResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Logs::MetricFilter``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``MetricFilterResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``MetricFilterResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.cloudformation.MetricFilterResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "MetricFilterResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "metricFilterName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.cloudformation.MetricFilterResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.cloudformation.MetricFilterResource.MetricTransformationProperty": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.cloudformation.MetricFilterResource.MetricTransformationProperty",
+      "kind": "interface",
+      "name": "MetricTransformationProperty",
+      "namespace": "cloudformation.MetricFilterResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``MetricFilterResource.MetricTransformationProperty.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``MetricFilterResource.MetricTransformationProperty.MetricNamespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricnamespace"
+          },
+          "name": "metricNamespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``MetricFilterResource.MetricTransformationProperty.MetricValue``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-metricvalue"
+          },
+          "name": "metricValue",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``MetricFilterResource.MetricTransformationProperty.DefaultValue``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-cwl-metricfilter-metrictransformation-defaultvalue"
+          },
+          "name": "defaultValue",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.cloudformation.MetricFilterResourceProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.cloudformation.MetricFilterResourceProps",
+      "kind": "interface",
+      "name": "MetricFilterResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::MetricFilter.FilterPattern``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-filterpattern"
+          },
+          "name": "filterPattern",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::MetricFilter.LogGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-loggroupname"
+          },
+          "name": "logGroupName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::MetricFilter.MetricTransformations``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html#cfn-cwl-metricfilter-metrictransformations"
+          },
+          "name": "metricTransformations",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-logs.cloudformation.MetricFilterResource.MetricTransformationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.cloudformation.SubscriptionFilterResource": {
+      "assembly": "@aws-cdk/aws-logs",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.SubscriptionFilterResource\" will be deprecated in a future release in favor of \"CfnSubscriptionFilter\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.cloudformation.SubscriptionFilterResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Logs::SubscriptionFilter``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``SubscriptionFilterResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``SubscriptionFilterResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.cloudformation.SubscriptionFilterResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "SubscriptionFilterResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.cloudformation.SubscriptionFilterResourceProps"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "subscriptionFilterName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-logs.cloudformation.SubscriptionFilterResourceProps": {
+      "assembly": "@aws-cdk/aws-logs",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html"
+      },
+      "fqn": "@aws-cdk/aws-logs.cloudformation.SubscriptionFilterResourceProps",
+      "kind": "interface",
+      "name": "SubscriptionFilterResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::SubscriptionFilter.DestinationArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-destinationarn"
+          },
+          "name": "destinationArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::SubscriptionFilter.FilterPattern``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-filterpattern"
+          },
+          "name": "filterPattern",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::SubscriptionFilter.LogGroupName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-loggroupname"
+          },
+          "name": "logGroupName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::Logs::SubscriptionFilter.RoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-subscriptionfilter.html#cfn-cwl-subscriptionfilter-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "BMV8dNG7GVIaUvVbIdrUVDYK7H1/A/DeI8TueL1fWPc="
+}

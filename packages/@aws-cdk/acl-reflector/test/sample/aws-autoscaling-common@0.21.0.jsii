@@ -1,0 +1,328 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "Common implementation package for @aws-cdk/aws-autoscaling and @aws-cdk/aws-applicationautoscaling",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-autoscaling-common",
+  "readme": {
+    "markdown": "## AWS AutoScaling Common Library\n\nThis is a sister package to `@aws-cdk/aws-autoscaling` and\n`@aws-cdk/aws-applicationautoscaling`. It contains shared implementation\ndetails between them.\n\nIt does not need to be used directly."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
+      "packageId": "Amazon.CDK.AWS.AutoScaling.Common",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "autoscaling-common",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.autoscaling.common"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-autoscaling-common"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-autoscaling-common.Alarms": {
+      "assembly": "@aws-cdk/aws-autoscaling-common",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-autoscaling-common.Alarms",
+      "kind": "interface",
+      "name": "Alarms",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "lowerAlarmIntervalIndex",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "upperAlarmIntervalIndex",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscaling-common.ArbitraryIntervals": {
+      "assembly": "@aws-cdk/aws-autoscaling-common",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-autoscaling-common.ArbitraryIntervals",
+      "kind": "interface",
+      "name": "ArbitraryIntervals",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "absolute",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "intervals",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-autoscaling-common.ScalingInterval"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscaling-common.CompleteScalingInterval": {
+      "assembly": "@aws-cdk/aws-autoscaling-common",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-autoscaling-common.CompleteScalingInterval",
+      "kind": "interface",
+      "name": "CompleteScalingInterval",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "lower",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "upper",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "change",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-autoscaling-common.IRandomGenerator": {
+      "assembly": "@aws-cdk/aws-autoscaling-common",
+      "fqn": "@aws-cdk/aws-autoscaling-common.IRandomGenerator",
+      "kind": "interface",
+      "methods": [
+        {
+          "abstract": true,
+          "name": "nextBoolean",
+          "returns": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "nextInt",
+          "parameters": [
+            {
+              "name": "min",
+              "type": {
+                "primitive": "number"
+              }
+            },
+            {
+              "name": "max",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "name": "IRandomGenerator"
+    },
+    "@aws-cdk/aws-autoscaling-common.ScalingInterval": {
+      "assembly": "@aws-cdk/aws-autoscaling-common",
+      "datatype": true,
+      "docs": {
+        "comment": "A range of metric values in which to apply a certain scaling operation"
+      },
+      "fqn": "@aws-cdk/aws-autoscaling-common.ScalingInterval",
+      "kind": "interface",
+      "name": "ScalingInterval",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The capacity adjustment to apply in this interval\n\nThe number is interpreted differently based on AdjustmentType:\n\n- ChangeInCapacity: add the adjustment to the current capacity.\n  The number can be positive or negative.\n- PercentChangeInCapacity: add or remove the given percentage of the current\n   capacity to itself. The number can be in the range [-100..100].\n- ExactCapacity: set the capacity to this number. The number must\n   be positive."
+          },
+          "name": "change",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The lower bound of the interval.\n\nThe scaling adjustment will be applied if the metric is higher than this value.",
+            "default": "Threshold automatically derived from neighbouring intervals"
+          },
+          "name": "lower",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The upper bound of the interval.\n\nThe scaling adjustment will be applied if the metric is lower than this value.",
+            "default": "Threshold automatically derived from neighbouring intervals"
+          },
+          "name": "upper",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "xPSA+CZR3UWFroylegFSgprlWJZ0DEX0RqximqO8Lw4="
+}

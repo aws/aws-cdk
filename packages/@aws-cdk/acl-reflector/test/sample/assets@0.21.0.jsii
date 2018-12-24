@@ -1,0 +1,1135 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-s3": {
+      "dependencies": {
+        "@aws-cdk/aws-codepipeline-api": {
+          "dependencies": {
+            "@aws-cdk/aws-events": {
+              "dependencies": {
+                "@aws-cdk/aws-iam": {
+                  "dependencies": {
+                    "@aws-cdk/cdk": {
+                      "dependencies": {
+                        "@aws-cdk/cx-api": {
+                          "peer": true,
+                          "targets": {
+                            "dotnet": {
+                              "assemblyOriginatorKeyFile": "../../key.snk",
+                              "namespace": "Amazon.CDK.CXAPI",
+                              "packageId": "Amazon.CDK.CXAPI",
+                              "signAssembly": true
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cdk-cx-api",
+                                "groupId": "software.amazon.awscdk"
+                              },
+                              "package": "software.amazon.awscdk.cxapi"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cx-api"
+                            }
+                          },
+                          "version": "0.21.0"
+                        }
+                      },
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK",
+                          "packageId": "Amazon.CDK",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cdk"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.AWS.IAM",
+                      "packageId": "Amazon.CDK.AWS.IAM",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "iam",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.services.iam"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/aws-iam"
+                    }
+                  },
+                  "version": "0.21.0"
+                },
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK.CXAPI",
+                          "packageId": "Amazon.CDK.CXAPI",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk-cx-api",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK",
+                      "packageId": "Amazon.CDK",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.AWS.Events",
+                  "packageId": "Amazon.CDK.AWS.Events",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "events",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.services.events"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-events"
+                }
+              },
+              "version": "0.21.0"
+            },
+            "@aws-cdk/aws-iam": {
+              "dependencies": {
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK.CXAPI",
+                          "packageId": "Amazon.CDK.CXAPI",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk-cx-api",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK",
+                      "packageId": "Amazon.CDK",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.AWS.IAM",
+                  "packageId": "Amazon.CDK.AWS.IAM",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "iam",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.services.iam"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-iam"
+                }
+              },
+              "version": "0.21.0"
+            },
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.Codepipeline.Api",
+              "packageId": "Amazon.CDK.AWS.Codepipeline.Api",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "codepipeline-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.codepipeline.api"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-codepipeline-api"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/aws-kms": {
+          "dependencies": {
+            "@aws-cdk/aws-iam": {
+              "dependencies": {
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "peer": true,
+                      "targets": {
+                        "dotnet": {
+                          "assemblyOriginatorKeyFile": "../../key.snk",
+                          "namespace": "Amazon.CDK.CXAPI",
+                          "packageId": "Amazon.CDK.CXAPI",
+                          "signAssembly": true
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk-cx-api",
+                            "groupId": "software.amazon.awscdk"
+                          },
+                          "package": "software.amazon.awscdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.21.0"
+                    }
+                  },
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK",
+                      "packageId": "Amazon.CDK",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.AWS.IAM",
+                  "packageId": "Amazon.CDK.AWS.IAM",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "iam",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.services.iam"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-iam"
+                }
+              },
+              "version": "0.21.0"
+            },
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.KMS",
+              "packageId": "Amazon.CDK.AWS.KMS",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "kms",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.kms"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-kms"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/aws-s3-notifications": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.S3.Notifications",
+              "packageId": "Amazon.CDK.AWS.S3.Notifications",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "s3-notifications",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.s3.notifications"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-s3-notifications"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.S3",
+          "packageId": "Amazon.CDK.AWS.S3",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "Integration of CDK apps with local assets",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/assets",
+  "readme": {
+    "markdown": "## AWS CDK Assets\n\nAssets are local files or directories which are needed by a CDK app. A common\nexample is a directory which contains the handler code for a Lambda function,\nbut assets can represent any artifact that is needed for the app's operation.\n\nWhen deploying a CDK app that includes constructs with assets, the CDK toolkit\nwill first upload all the assets to S3, and only then deploy the stacks. The S3\nlocations of the uploaded assets will be passed in as CloudFormation Parameters\nto the relevant stacks.\n\nThe following JavaScript example defines an directory asset which is archived as\na .zip file and uploaded to S3 during deployment.\n\n```ts\nconst asset = new assets.ZipDirectoryAsset(this, 'SampleAsset', {\n  path: path.join(__dirname, 'sample-asset-directory')\n});\n```\n\nThe following JavaScript example defines a file asset, which is uploaded as-is\nto an S3 bucket during deployment.\n\n```ts\nconst asset = new assets.FileAsset(this, 'SampleAsset', {\n  path: path.join(__dirname, 'file-asset.txt')\n});\n```\n\n## Attributes\n\n`Asset` constructs expose the following deploy-time attributes:\n\n * `s3BucketName` - the name of the assets S3 bucket.\n * `s3ObjectKey` - the S3 object key of the asset file (whether it's a file or a zip archive)\n * `s3Url` - the S3 URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/mybucket/mykey.zip)\n\nIn the following example, the various asset attributes are exported as stack outputs:\n\n```ts\n    const asset = new assets.ZipDirectoryAsset(this, 'SampleAsset', {\n      path: path.join(__dirname, 'sample-asset-directory')\n    });\n\n    new cdk.Output(this, 'S3BucketName', { value: asset.s3BucketName });\n    new cdk.Output(this, 'S3ObjectKey', { value: asset.s3ObjectKey });\n    new cdk.Output(this, 'S3URL', { value: asset.s3Url });\n```\n\n## Permissions\n\nIAM roles, users or groups which need to be able to read assets in runtime will should be\ngranted IAM permissions. To do that use the `asset.grantRead(principal)` method:\n\nThe following examples grants an IAM group read permissions on an asset:\n\n```ts\nconst group = new iam.Group(this, 'MyUserGroup');\nasset.grantRead(group);\n```\n\n## How does it work?\n\nWhen an asset is defined in a construct, a construct metadata entry\n`aws:cdk:asset` is emitted with instructions on where to find the asset and what\ntype of packaging to perform (`zip` or `file`). Furthermore, the synthesized\nCloudFormation template will also include two CloudFormation parameters: one for\nthe asset's bucket and one for the asset S3 key. Those parameters are used to\nreference the deploy-time values of the asset (using `{ Ref: \"Param\" }`).\n\nThen, when the stack is deployed, the toolkit will package the asset (i.e. zip\nthe directory), calculate an MD5 hash of the contents and will render an S3 key\nfor this asset within the toolkit's asset store. If the file doesn't exist in\nthe asset store, it is uploaded during deployment.\n\n> The toolkit's asset store is an S3 bucket created by the toolkit for each\n  environment the toolkit operates in (environment = account + region).\n\nNow, when the toolkit deploys the stack, it will set the relevant CloudFormation\nParameters to point to the actual bucket and key for each asset.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.Assets",
+      "packageId": "Amazon.CDK.Assets",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cdk-assets",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.assets"
+    },
+    "js": {
+      "npm": "@aws-cdk/assets"
+    }
+  },
+  "types": {
+    "@aws-cdk/assets.Asset": {
+      "assembly": "@aws-cdk/assets",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "An asset represents a local file or directory, which is automatically uploaded to S3\nand then can be referenced within a CDK application."
+      },
+      "fqn": "@aws-cdk/assets.Asset",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/assets.GenericAssetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Grants read permissions to the principal on the asset's S3 object."
+          },
+          "name": "grantRead",
+          "parameters": [
+            {
+              "name": "principal",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        }
+      ],
+      "name": "Asset",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Resolved full-path location of this asset."
+          },
+          "immutable": true,
+          "name": "assetPath",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The S3 bucket in which this asset resides."
+          },
+          "immutable": true,
+          "name": "bucket",
+          "type": {
+            "fqn": "@aws-cdk/aws-s3.BucketRef"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Indicates if this asset is a zip archive. Allows constructs to ensure that the\ncorrect file type was used."
+          },
+          "immutable": true,
+          "name": "isZipArchive",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Attribute that represents the name of the bucket this asset exists in."
+          },
+          "immutable": true,
+          "name": "s3BucketName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Attribute which represents the S3 object key of this asset."
+          },
+          "immutable": true,
+          "name": "s3ObjectKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Attribute which represents the S3 URL of this asset.",
+            "example": "https://s3.us-west-1.amazonaws.com/bucket/key"
+          },
+          "immutable": true,
+          "name": "s3Url",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/assets.AssetPackaging": {
+      "assembly": "@aws-cdk/assets",
+      "docs": {
+        "comment": "Defines the way an asset is packaged before it is uploaded to S3."
+      },
+      "fqn": "@aws-cdk/assets.AssetPackaging",
+      "kind": "enum",
+      "members": [
+        {
+          "docs": {
+            "comment": "Path refers to a directory on disk, the contents of the directory is\narchived into a .zip."
+          },
+          "name": "ZipDirectory"
+        },
+        {
+          "docs": {
+            "comment": "Path refers to a single file on disk. The file is uploaded as-is."
+          },
+          "name": "File"
+        }
+      ],
+      "name": "AssetPackaging"
+    },
+    "@aws-cdk/assets.FileAsset": {
+      "assembly": "@aws-cdk/assets",
+      "base": {
+        "fqn": "@aws-cdk/assets.Asset"
+      },
+      "docs": {
+        "comment": "An asset that represents a file on disk."
+      },
+      "fqn": "@aws-cdk/assets.FileAsset",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/assets.FileAssetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "FileAsset"
+    },
+    "@aws-cdk/assets.FileAssetProps": {
+      "assembly": "@aws-cdk/assets",
+      "datatype": true,
+      "fqn": "@aws-cdk/assets.FileAssetProps",
+      "kind": "interface",
+      "name": "FileAssetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "File path."
+          },
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A list of principals that should be able to read this file asset from S3.\nYou can use `asset.grantRead(principal)` to grant read permissions later."
+          },
+          "name": "readers",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/assets.GenericAssetProps": {
+      "assembly": "@aws-cdk/assets",
+      "datatype": true,
+      "fqn": "@aws-cdk/assets.GenericAssetProps",
+      "kind": "interface",
+      "name": "GenericAssetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The packaging type for this asset."
+          },
+          "name": "packaging",
+          "type": {
+            "fqn": "@aws-cdk/assets.AssetPackaging"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The disk location of the asset."
+          },
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A list of principals that should be able to read this asset from S3.\nYou can use `asset.grantRead(principal)` to grant read permissions later."
+          },
+          "name": "readers",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/assets.ZipDirectoryAsset": {
+      "assembly": "@aws-cdk/assets",
+      "base": {
+        "fqn": "@aws-cdk/assets.Asset"
+      },
+      "docs": {
+        "comment": "An asset that represents a ZIP archive of a directory on disk."
+      },
+      "fqn": "@aws-cdk/assets.ZipDirectoryAsset",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/assets.ZipDirectoryAssetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "ZipDirectoryAsset"
+    },
+    "@aws-cdk/assets.ZipDirectoryAssetProps": {
+      "assembly": "@aws-cdk/assets",
+      "datatype": true,
+      "fqn": "@aws-cdk/assets.ZipDirectoryAssetProps",
+      "kind": "interface",
+      "name": "ZipDirectoryAssetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Path of the directory."
+          },
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "A list of principals that should be able to read this ZIP file from S3.\nYou can use `asset.grantRead(principal)` to grant read permissions later."
+          },
+          "name": "readers",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "0MeqxXncMLsZBqANlClfbHr52YJLPsbCxFuUhrjhwg0="
+}

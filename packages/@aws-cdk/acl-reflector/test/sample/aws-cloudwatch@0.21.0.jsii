@@ -1,0 +1,3983 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "CDK Constructs for AWS CloudWatch",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-cloudwatch",
+  "readme": {
+    "markdown": "## Metrics\n\nMetric objects represent a metric that is emitted by AWS services or your own\napplication, such as `CPUUsage`, `FailureCount` or `Bandwidth`.\n\nMetric objects can be constructed directly or are exposed by resources as\nattributes. Resources that expose metrics will have functions that look\nlike `metricXxx()` which will return a Metric object, initialized with defaults\nthat make sense.\n\nFor example, `lambda.Function` objects have the `fn.metricErrors()` method, which\nrepresents the amount of errors reported by that Lambda function:\n\n```ts\nconst errors = fn.metricErrors();\n```\n\n### Aggregation\n\nTo graph or alarm on metrics you must aggregate them first, using a function\nlike `Average` or a percentile function like `P99`. By default, most Metric objects\nreturned by CDK libraries will be configured as `Average` over `300 seconds` (5 minutes).\nThe exception is if the metric represents a count of discrete events, such as\nfailures. In that case, the Metric object will be configured as `Sum` over `300\nseconds`, i.e. it represents the number of times that event occurred over the\ntime period.\n\nIf you want to change the default aggregation of the Metric object (for example,\nthe function or the period), you can do so by passing additional parameters\nto the metric function call:\n\n```ts\nconst minuteErrorRate = fn.metricErrors({\n    statistic: 'avg',\n    periodSec: 60,\n    label: 'Lambda failure rate'\n});\n```\n\nThis function also allows changing the metric label or color (which will be\nuseful when embedding them in graphs, see below).\n\n> Rates versus Sums\n>\n> The reason for using `Sum` to count discrete events is that *some* events are\n> emitted as either `0` or `1` (for example `Errors` for a Lambda) and some are\n> only emitted as `1` (for example `NumberOfMessagesPublished` for an SNS\n> topic).\n>\n> In case `0`-metrics are emitted, it makes sense to take the `Average` of this\n> metric: the result will be the fraction of errors over all executions.\n>\n> If `0`-metrics are not emitted, the `Average` will always be equal to `1`,\n> and not be very useful.\n>\n> In order to simplify the mental model of `Metric` objects, we default to\n> aggregating using `Sum`, which will be the same for both metrics types. If you\n> happen to know the Metric you want to alarm on makes sense as a rate\n> (`Average`) you can always choose to change the statistic.\n\n## Alarms\n\nAlarms can be created on metrics in one of two ways. Either create an `Alarm`\nobject, passing the `Metric` object to set the alarm on:\n\n\n```ts\nnew Alarm(this, 'Alarm', {\n    metric: fn.metricErrors(),\n    threshold: 100,\n    evaluationPeriods: 2,\n});\n```\n\nAlternatively, you can call `metric.newAlarm()`:\n\n```ts\nfn.metricErrors().newAlarm(this, 'Alarm', {\n    threshold: 100,\n    evaluationPeriods: 2,\n});\n```\n\nThe most important properties to set while creating an Alarms are:\n\n- `threshold`: the value to compare the metric against.\n- `comparisonOperator`: the comparison operation to use, defaults to `metric >= threshold`.\n- `evaluationPeriods`: how many consecutive periods the metric has to be\n  breaching the the threshold for the alarm to trigger.\n\n## Dashboards\n\nDashboards are set of Widgets stored server-side which can be accessed quickly\nfrom the AWS console. Available widgets are graphs of a metric over time, the\ncurrent value of a metric, or a static piece of Markdown which explains what the\ngraphs mean.\n\nThe following widgets are available:\n\n- `GraphWidget` -- shows any number of metrics on both the left and right\n  vertical axes.\n- `AlarmWidget` -- shows the graph and alarm line for a single alarm.\n- `SingleValueWidget` -- shows the current value of a set of metrics.\n- `TextWidget` -- shows some static Markdown.\n\n> Warning! Due to a bug in CloudFormation, you cannot update a Dashboard after\n> initially creating it if you let its name automatically be generated. You\n> must set `dashboardName` if you intend to update the dashboard after creation.\n>\n> (This note will be removed once the bug is fixed).\n\n### Graph widget\n\nA graph widget can display any number of metrics on either the `left` or\n`right` vertical axis:\n\n```ts\ndashboard.add(new GraphWidget({\n    title: \"Executions vs error rate\",\n\n    left: [executionCountMetric],\n\n    right: [errorCountMetric.with({\n        statistic: \"average\",\n        label: \"Error rate\",\n        color: \"00FF00\"\n    })]\n}));\n```\n\n### Alarm widget\n\nAn alarm widget shows the graph and the alarm line of a single alarm:\n\n```ts\ndashboard.add(new AlarmWidget({\n    title: \"Errors\",\n    alarm: errorAlarm,\n}));\n```\n\n### Single value widget\n\nA single-value widget shows the latest value of a set of metrics (as opposed\nto a graph of the value over time):\n\n```ts\ndashboard.add(new SingleValueWidget({\n    metrics: [visitorCount, purchaseCount],\n}));\n```\n\n### Text widget\n\nA text widget shows an arbitrary piece of MarkDown. Use this to add explanations\nto your dashboard:\n\n```ts\ndashboard.add(new TextWidget({\n    markdown: '# Key Performance Indicators'\n}));\n```\n\n### Dashboard Layout\n\nThe widgets on a dashboard are visually laid out in a grid that is 24 columns\nwide. Normally you specify X and Y coordinates for the widgets on a Dashboard,\nbut because this is inconvenient to do manually, the library contains a simple\nlayout system to help you lay out your dashboards the way you want them to.\n\nWidgets have a `width` and `height` property, and they will be automatically\nlaid out either horizontally or vertically stacked to fill out the available\nspace.\n\nWidgets are added to a Dashboard by calling `add(widget1, widget2, ...)`.\nWidgets given in the same call will be laid out horizontally. Widgets given\nin different calls will be laid out vertically. To make more complex layouts,\nyou can use the following widgets to pack widgets together in different ways:\n\n- `Column`: stack two or more widgets vertically.\n- `Row`: lay out two or more widgets horizontally.\n- `Spacer`: take up empty space\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.CloudWatch",
+      "packageId": "Amazon.CDK.AWS.CloudWatch",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cloudwatch",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.cloudwatch"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-cloudwatch"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-cloudwatch.Alarm": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "An alarm on a CloudWatch metric"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.AlarmProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Trigger this action if the alarm fires\n\nTypically the ARN of an SNS topic or ARN of an AutoScaling policy."
+          },
+          "name": "onAlarm",
+          "parameters": [
+            {
+              "name": "actions",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.IAlarmAction"
+              },
+              "variadic": true
+            }
+          ],
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Trigger this action if there is insufficient data to evaluate the alarm\n\nTypically the ARN of an SNS topic or ARN of an AutoScaling policy."
+          },
+          "name": "onInsufficientData",
+          "parameters": [
+            {
+              "name": "actions",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.IAlarmAction"
+              },
+              "variadic": true
+            }
+          ],
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Trigger this action if the alarm returns from breaching state into ok state\n\nTypically the ARN of an SNS topic or ARN of an AutoScaling policy."
+          },
+          "name": "onOk",
+          "parameters": [
+            {
+              "name": "actions",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.IAlarmAction"
+              },
+              "variadic": true
+            }
+          ],
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Turn this alarm into a horizontal annotation\n\nThis is useful if you want to represent an Alarm in a non-AlarmWidget.\nAn `AlarmWidget` can directly show an alarm, but it can only show a\nsingle alarm and no other metrics. Instead, you can convert the alarm to\na HorizontalAnnotation and add it as an annotation to another graph.\n\nThis might be useful if:\n\n- You want to show multiple alarms inside a single graph, for example if\n   you have both a \"small margin/long period\" alarm as well as a\n   \"large margin/short period\" alarm.\n\n- You want to show an Alarm line in a graph with multiple metrics in it."
+          },
+          "name": "toAnnotation",
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.HorizontalAnnotation"
+          }
+        }
+      ],
+      "name": "Alarm",
+      "properties": [
+        {
+          "docs": {
+            "comment": "ARN of this alarm"
+          },
+          "immutable": true,
+          "name": "alarmArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Name of this alarm."
+          },
+          "immutable": true,
+          "name": "alarmName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The metric object this alarm was based on"
+          },
+          "immutable": true,
+          "name": "metric",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.AlarmMetricJson": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties used to construct the Metric identifying part of an Alarm"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.AlarmMetricJson",
+      "kind": "interface",
+      "name": "AlarmMetricJson",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of the metric"
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Namespace of the metric"
+          },
+          "name": "namespace",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "How many seconds to aggregate over"
+          },
+          "name": "period",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The dimensions to apply to the alarm"
+          },
+          "name": "dimensions",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-cloudwatch.Dimension"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Percentile aggregation function to use"
+          },
+          "name": "extendedStatistic",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Simple aggregation function to use"
+          },
+          "name": "statistic",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Statistic",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The unit of the alarm"
+          },
+          "name": "unit",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Unit",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.AlarmProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for Alarms"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.AlarmProps",
+      "kind": "interface",
+      "name": "AlarmProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The number of periods over which data is compared to the specified threshold."
+          },
+          "name": "evaluationPeriods",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The metric to add the alarm on\n\nMetric objects can be obtained from most resources, or you can construct\ncustom Metric objects by instantiating one."
+          },
+          "name": "metric",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The value against which the specified statistic is compared."
+          },
+          "name": "threshold",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether the actions for this alarm are enabled",
+            "default": "true"
+          },
+          "name": "actionsEnabled",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Description for the alarm",
+            "default": "No description"
+          },
+          "name": "alarmDescription",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of the alarm",
+            "default": "Automatically generated name"
+          },
+          "name": "alarmName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Comparison to use to check if metric is breaching",
+            "default": "GreaterThanOrEqualToThreshold"
+          },
+          "name": "comparisonOperator",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.ComparisonOperator",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Specifies whether to evaluate the data and potentially change the alarm\nstate if there are too few data points to be statistically significant.\n\nUsed only for alarms that are based on percentiles."
+          },
+          "name": "evaluateLowSampleCountPercentile",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Sets how this alarm is to handle missing data points.",
+            "default": "TreatMissingData.Missing"
+          },
+          "name": "treatMissingData",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.TreatMissingData",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.AlarmWidget": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "base": {
+        "fqn": "@aws-cdk/aws-cloudwatch.ConcreteWidget"
+      },
+      "docs": {
+        "comment": "Display the metric associated with an alarm, including the alarm line"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.AlarmWidget",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.AlarmWidgetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Return the widget JSON for use in the dashboard"
+          },
+          "name": "toJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.ConcreteWidget"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "AlarmWidget"
+    },
+    "@aws-cdk/aws-cloudwatch.AlarmWidgetProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for an AlarmWidget"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.AlarmWidgetProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-cloudwatch.MetricWidgetProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "AlarmWidgetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The alarm to show"
+          },
+          "name": "alarm",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Alarm"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Range of left Y axis",
+            "default": "0..automatic"
+          },
+          "name": "leftAxisRange",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.YAxisRange",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.CfnAlarm": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::CloudWatch::Alarm``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnAlarm`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnAlarm``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarmProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnAlarm",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "alarmArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "alarmName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarmProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.CfnAlarm.DimensionProperty": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm.DimensionProperty",
+      "kind": "interface",
+      "name": "DimensionProperty",
+      "namespace": "CfnAlarm",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnAlarm.DimensionProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html#cfn-cloudwatch-alarm-dimension-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``CfnAlarm.DimensionProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html#cfn-cloudwatch-alarm-dimension-value"
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.CfnAlarmProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarmProps",
+      "kind": "interface",
+      "name": "CfnAlarmProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.ComparisonOperator``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-comparisonoperator"
+          },
+          "name": "comparisonOperator",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.EvaluationPeriods``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-evaluationperiods"
+          },
+          "name": "evaluationPeriods",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Threshold``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-threshold"
+          },
+          "name": "threshold",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.ActionsEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-actionsenabled"
+          },
+          "name": "actionsEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.AlarmActions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmactions"
+          },
+          "name": "alarmActions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.AlarmDescription``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmdescription"
+          },
+          "name": "alarmDescription",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.AlarmName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmname"
+          },
+          "name": "alarmName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.DatapointsToAlarm``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarm-datapointstoalarm"
+          },
+          "name": "datapointsToAlarm",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Dimensions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-dimension"
+          },
+          "name": "dimensions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm.DimensionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.EvaluateLowSampleCountPercentile``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-evaluatelowsamplecountpercentile"
+          },
+          "name": "evaluateLowSampleCountPercentile",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.ExtendedStatistic``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-extendedstatistic"
+          },
+          "name": "extendedStatistic",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.InsufficientDataActions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-insufficientdataactions"
+          },
+          "name": "insufficientDataActions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Namespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-namespace"
+          },
+          "name": "namespace",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.OKActions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-okactions"
+          },
+          "name": "okActions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Period``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-period"
+          },
+          "name": "period",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Statistic``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-statistic"
+          },
+          "name": "statistic",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.TreatMissingData``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-treatmissingdata"
+          },
+          "name": "treatMissingData",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Unit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-unit"
+          },
+          "name": "unit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.CfnDashboard": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-dashboard.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.CfnDashboard",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::CloudWatch::Dashboard``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CfnDashboard`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CfnDashboard``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.CfnDashboardProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CfnDashboard",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "dashboardName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.CfnDashboardProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.CfnDashboardProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-dashboard.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.CfnDashboardProps",
+      "kind": "interface",
+      "name": "CfnDashboardProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Dashboard.DashboardBody``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-dashboard.html#cfn-cloudwatch-dashboard-dashboardbody"
+          },
+          "name": "dashboardBody",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Dashboard.DashboardName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-dashboard.html#cfn-cloudwatch-dashboard-dashboardname"
+          },
+          "name": "dashboardName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.Column": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "docs": {
+        "comment": "A widget that contains other widgets in a vertical column\n\nWidgets will be laid out next to each other"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.Column",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "widgets",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+            },
+            "variadic": true
+          }
+        ],
+        "variadic": true
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Place the widget at a given position"
+          },
+          "name": "position",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "parameters": [
+            {
+              "name": "x",
+              "type": {
+                "primitive": "number"
+              }
+            },
+            {
+              "name": "y",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Return the widget JSON for use in the dashboard"
+          },
+          "name": "toJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "Column",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The amount of vertical grid units the widget will take up"
+          },
+          "immutable": true,
+          "name": "height",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The amount of horizontal grid units the widget will take up"
+          },
+          "immutable": true,
+          "name": "width",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.ComparisonOperator": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "docs": {
+        "comment": "Comparison operator for evaluating alarms"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.ComparisonOperator",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "GreaterThanOrEqualToThreshold"
+        },
+        {
+          "name": "GreaterThanThreshold"
+        },
+        {
+          "name": "LessThanThreshold"
+        },
+        {
+          "name": "LessThanOrEqualToThreshold"
+        }
+      ],
+      "name": "ComparisonOperator"
+    },
+    "@aws-cdk/aws-cloudwatch.ConcreteWidget": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "docs": {
+        "comment": "A real CloudWatch widget that has its own fixed size and remembers its position\n\nThis is in contrast to other widgets which exist for layout purposes."
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.ConcreteWidget",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "width",
+            "type": {
+              "primitive": "number"
+            }
+          },
+          {
+            "name": "height",
+            "type": {
+              "primitive": "number"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Place the widget at a given position"
+          },
+          "name": "position",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "parameters": [
+            {
+              "name": "x",
+              "type": {
+                "primitive": "number"
+              }
+            },
+            {
+              "name": "y",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ]
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Return the widget JSON for use in the dashboard"
+          },
+          "name": "toJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "ConcreteWidget",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The amount of vertical grid units the widget will take up"
+          },
+          "immutable": true,
+          "name": "height",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The amount of horizontal grid units the widget will take up"
+          },
+          "immutable": true,
+          "name": "width",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "name": "x",
+          "protected": true,
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "name": "y",
+          "protected": true,
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.Dashboard": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "A CloudWatch dashboard"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.Dashboard",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.DashboardProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Add a widget to the dashboard.\n\nWidgets given in multiple calls to add() will be laid out stacked on\ntop of each other.\n\nMultiple widgets added in the same call to add() will be laid out next\nto each other."
+          },
+          "name": "add",
+          "parameters": [
+            {
+              "name": "widgets",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+              },
+              "variadic": true
+            }
+          ],
+          "variadic": true
+        }
+      ],
+      "name": "Dashboard"
+    },
+    "@aws-cdk/aws-cloudwatch.DashboardProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-cloudwatch.DashboardProps",
+      "kind": "interface",
+      "name": "DashboardProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of the dashboard",
+            "default": "Automatically generated name"
+          },
+          "name": "dashboardName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.Dimension": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Metric dimension"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.Dimension",
+      "kind": "interface",
+      "name": "Dimension",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of the dimension"
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Value of the dimension"
+          },
+          "name": "value",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.GraphWidget": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "base": {
+        "fqn": "@aws-cdk/aws-cloudwatch.ConcreteWidget"
+      },
+      "docs": {
+        "comment": "A dashboard widget that displays metrics"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.GraphWidget",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.GraphWidgetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Return the widget JSON for use in the dashboard"
+          },
+          "name": "toJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.ConcreteWidget"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "GraphWidget"
+    },
+    "@aws-cdk/aws-cloudwatch.GraphWidgetProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a GraphWidget"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.GraphWidgetProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-cloudwatch.MetricWidgetProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "GraphWidgetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Metrics to display on left Y axis"
+          },
+          "name": "left",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Annotations for the left Y axis"
+          },
+          "name": "leftAnnotations",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-cloudwatch.HorizontalAnnotation"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Range of left Y axis",
+            "default": "0..automatic"
+          },
+          "name": "leftAxisRange",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.YAxisRange",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Metrics to display on right Y axis"
+          },
+          "name": "right",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Annotations for the right Y axis"
+          },
+          "name": "rightAnnotations",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-cloudwatch.HorizontalAnnotation"
+              },
+              "kind": "array"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Range of right Y axis",
+            "default": "0..automatic"
+          },
+          "name": "rightAxisRange",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.YAxisRange",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether the graph should be shown as stacked lines"
+          },
+          "name": "stacked",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.HorizontalAnnotation": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Horizontal annotation to be added to a graph"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.HorizontalAnnotation",
+      "kind": "interface",
+      "name": "HorizontalAnnotation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The value of the annotation"
+          },
+          "name": "value",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Hex color code to be used for the annotation",
+            "default": "Automatic color"
+          },
+          "name": "color",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Add shading above or below the annotation",
+            "default": "No shading"
+          },
+          "name": "fill",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Shading",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Label for the annotation",
+            "default": "No label"
+          },
+          "name": "label",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether the annotation is visible",
+            "default": "true"
+          },
+          "name": "visible",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.IAlarmAction": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "docs": {
+        "comment": "Interface for objects that can be the targets of CloudWatch alarm actions"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.IAlarmAction",
+      "kind": "interface",
+      "name": "IAlarmAction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Return the ARN that should be used for a CloudWatch Alarm action"
+          },
+          "immutable": true,
+          "name": "alarmActionArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.IWidget": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "docs": {
+        "comment": "A single dashboard widget"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.IWidget",
+      "kind": "interface",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Place the widget at a given position"
+          },
+          "name": "position",
+          "parameters": [
+            {
+              "name": "x",
+              "type": {
+                "primitive": "number"
+              }
+            },
+            {
+              "name": "y",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ]
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Return the widget JSON for use in the dashboard"
+          },
+          "name": "toJson",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "IWidget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The amount of vertical grid units the widget will take up"
+          },
+          "immutable": true,
+          "name": "height",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The amount of horizontal grid units the widget will take up"
+          },
+          "immutable": true,
+          "name": "width",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.Metric": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "docs": {
+        "comment": "A metric emitted by a service\n\nThe metric is a combination of a metric identifier (namespace, name and dimensions)\nand an aggregation function (statistic, period and unit).\n\nIt also contains metadata which is used only in graphs, such as color and label.\nIt makes sense to embed this in here, so that compound constructs can attach\nthat metadata to metrics they expose.\n\nThis class does not represent a resource, so hence is not a construct. Instead,\nMetric is an abstraction that makes it easy to specify metrics for use in both\nalarms and graphs."
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.Metric",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.MetricProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Grant permissions to the given identity to write metrics."
+          },
+          "name": "grantPutMetricData",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The IAM identity to give permissions to."
+              },
+              "name": "identity",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ],
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Return the dimensions of this Metric as a list of Dimension."
+          },
+          "name": "dimensionsAsList",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-cloudwatch.Dimension"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Make a new Alarm for this metric\n\nCombines both properties that may adjust the metric (aggregation) as well\nas alarm properties."
+          },
+          "name": "newAlarm",
+          "parameters": [
+            {
+              "name": "parent",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.NewAlarmProps"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Alarm"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a copy of Metric with properties changed.\n\nAll properties except namespace and metricName can be changed."
+          },
+          "name": "with",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The set of properties to change."
+              },
+              "name": "props",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+          }
+        }
+      ],
+      "name": "Metric",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "namespace",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "periodSec",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "statistic",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "color",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "dimensions",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            },
+            "optional": true
+          }
+        },
+        {
+          "immutable": true,
+          "name": "label",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "unit",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Unit",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.MetricCustomization": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties of a metric that can be changed"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.MetricCustomization",
+      "kind": "interface",
+      "name": "MetricCustomization",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Color for this metric when added to a Graph in a Dashboard"
+          },
+          "name": "color",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Dimensions of the metric",
+            "default": "No dimensions"
+          },
+          "name": "dimensions",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Label for this metric when added to a Graph in a Dashboard"
+          },
+          "name": "label",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The period over which the specified statistic is applied.\n\nSpecify time in seconds, in multiples of 60.",
+            "default": "300"
+          },
+          "name": "periodSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "What function to use for aggregating.\n\nCan be one of the following:\n\n- \"Minimum\" | \"min\"\n- \"Maximum\" | \"max\"\n- \"Average\" | \"avg\"\n- \"Sum\" | \"sum\"\n- \"SampleCount | \"n\"\n- \"pNN.NN\"",
+            "default": "Average"
+          },
+          "name": "statistic",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Unit for the metric that is associated with the alarm"
+          },
+          "name": "unit",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Unit",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.MetricProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a metric"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.MetricProps",
+      "kind": "interface",
+      "name": "MetricProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of the metric."
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Namespace of the metric."
+          },
+          "name": "namespace",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Color for this metric when added to a Graph in a Dashboard"
+          },
+          "name": "color",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Dimensions of the metric",
+            "default": "No dimensions"
+          },
+          "name": "dimensions",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            },
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Label for this metric when added to a Graph in a Dashboard"
+          },
+          "name": "label",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The period over which the specified statistic is applied.\n\nSpecify time in seconds, in multiples of 60.",
+            "default": "300"
+          },
+          "name": "periodSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "What function to use for aggregating.\n\nCan be one of the following (case insensitive)\n\n- \"minimum\" | \"min\"\n- \"maximum\" | \"max\"\n- \"average\" | \"avg\"\n- \"sum\"\n- \"samplecount | \"n\"\n- \"pNN.NN\"",
+            "default": "Average"
+          },
+          "name": "statistic",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Unit for the metric that is associated with the alarm"
+          },
+          "name": "unit",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.Unit",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.MetricWidgetProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Basic properties for widgets that display metrics"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.MetricWidgetProps",
+      "kind": "interface",
+      "name": "MetricWidgetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Height of the widget",
+            "default": "Depends on the type of widget"
+          },
+          "name": "height",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The region the metrics of this graph should be taken from",
+            "default": "Current region"
+          },
+          "name": "region",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Title for the graph"
+          },
+          "name": "title",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Width of the widget, in a grid of 24 units wide",
+            "default": "6"
+          },
+          "name": "width",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.NewAlarmProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties to make an alarm from a metric"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.NewAlarmProps",
+      "kind": "interface",
+      "name": "NewAlarmProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The number of periods over which data is compared to the specified threshold."
+          },
+          "name": "evaluationPeriods",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The value against which the specified statistic is compared."
+          },
+          "name": "threshold",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Whether the actions for this alarm are enabled",
+            "default": "true"
+          },
+          "name": "actionsEnabled",
+          "type": {
+            "optional": true,
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Description for the alarm",
+            "default": "No description"
+          },
+          "name": "alarmDescription",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Name of the alarm",
+            "default": "Automatically generated name"
+          },
+          "name": "alarmName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Comparison to use to check if metric is breaching",
+            "default": "GreaterThanOrEqualToThreshold"
+          },
+          "name": "comparisonOperator",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.ComparisonOperator",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Specifies whether to evaluate the data and potentially change the alarm state if there are too few data points to be statistically significant.\n\nUsed only for alarms that are based on percentiles."
+          },
+          "name": "evaluateLowSampleCountPercentile",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The period over which the specified statistic is applied.\n\nSpecify time in seconds, in multiples of 60.",
+            "default": "300"
+          },
+          "name": "periodSec",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "What function to use for aggregating.\n\nCan be one of the following:\n\n- \"Minimum\" | \"min\"\n- \"Maximum\" | \"max\"\n- \"Average\" | \"avg\"\n- \"Sum\" | \"sum\"\n- \"SampleCount | \"n\"\n- \"pNN.NN\"",
+            "default": "Average"
+          },
+          "name": "statistic",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Sets how this alarm is to handle missing data points.",
+            "default": "TreatMissingData.Missing"
+          },
+          "name": "treatMissingData",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.TreatMissingData",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.Row": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "docs": {
+        "comment": "A widget that contains other widgets in a horizontal row\n\nWidgets will be laid out next to each other"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.Row",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "widgets",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+            },
+            "variadic": true
+          }
+        ],
+        "variadic": true
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Place the widget at a given position"
+          },
+          "name": "position",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "parameters": [
+            {
+              "name": "x",
+              "type": {
+                "primitive": "number"
+              }
+            },
+            {
+              "name": "y",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Return the widget JSON for use in the dashboard"
+          },
+          "name": "toJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "Row",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The amount of vertical grid units the widget will take up"
+          },
+          "immutable": true,
+          "name": "height",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The amount of horizontal grid units the widget will take up"
+          },
+          "immutable": true,
+          "name": "width",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.Shading": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "fqn": "@aws-cdk/aws-cloudwatch.Shading",
+      "kind": "enum",
+      "members": [
+        {
+          "docs": {
+            "comment": "Don't add shading"
+          },
+          "name": "None"
+        },
+        {
+          "docs": {
+            "comment": "Add shading above the annotation"
+          },
+          "name": "Above"
+        },
+        {
+          "docs": {
+            "comment": "Add shading below the annotation"
+          },
+          "name": "Below"
+        }
+      ],
+      "name": "Shading"
+    },
+    "@aws-cdk/aws-cloudwatch.SingleValueWidget": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "base": {
+        "fqn": "@aws-cdk/aws-cloudwatch.ConcreteWidget"
+      },
+      "docs": {
+        "comment": "A dashboard widget that displays the most recent value for every metric"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.SingleValueWidget",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.SingleValueWidgetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Return the widget JSON for use in the dashboard"
+          },
+          "name": "toJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.ConcreteWidget"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "SingleValueWidget"
+    },
+    "@aws-cdk/aws-cloudwatch.SingleValueWidgetProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a SingleValueWidget"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.SingleValueWidgetProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-cloudwatch.MetricWidgetProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "SingleValueWidgetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Metrics to display"
+          },
+          "name": "metrics",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.Spacer": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "docs": {
+        "comment": "A widget that doesn't display anything but takes up space"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.Spacer",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.SpacerProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Place the widget at a given position"
+          },
+          "name": "position",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "parameters": [
+            {
+              "name": "_x",
+              "type": {
+                "primitive": "number"
+              }
+            },
+            {
+              "name": "_y",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Return the widget JSON for use in the dashboard"
+          },
+          "name": "toJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "Spacer",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The amount of vertical grid units the widget will take up"
+          },
+          "immutable": true,
+          "name": "height",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The amount of horizontal grid units the widget will take up"
+          },
+          "immutable": true,
+          "name": "width",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.IWidget"
+          },
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.SpacerProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Props of the spacer"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.SpacerProps",
+      "kind": "interface",
+      "name": "SpacerProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Height of the spacer",
+            "default": ": 1"
+          },
+          "name": "height",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Width of the spacer",
+            "default": "1"
+          },
+          "name": "width",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.Statistic": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "docs": {
+        "comment": "Statistic to use over the aggregation period"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.Statistic",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "SampleCount"
+        },
+        {
+          "name": "Average"
+        },
+        {
+          "name": "Sum"
+        },
+        {
+          "name": "Minimum"
+        },
+        {
+          "name": "Maximum"
+        }
+      ],
+      "name": "Statistic"
+    },
+    "@aws-cdk/aws-cloudwatch.TextWidget": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "base": {
+        "fqn": "@aws-cdk/aws-cloudwatch.ConcreteWidget"
+      },
+      "docs": {
+        "comment": "A dashboard widget that displays MarkDown"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.TextWidget",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.TextWidgetProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Place the widget at a given position"
+          },
+          "name": "position",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.ConcreteWidget"
+          },
+          "parameters": [
+            {
+              "name": "x",
+              "type": {
+                "primitive": "number"
+              }
+            },
+            {
+              "name": "y",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Return the widget JSON for use in the dashboard"
+          },
+          "name": "toJson",
+          "overrides": {
+            "fqn": "@aws-cdk/aws-cloudwatch.ConcreteWidget"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "TextWidget"
+    },
+    "@aws-cdk/aws-cloudwatch.TextWidgetProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "Properties for a Text widget"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.TextWidgetProps",
+      "kind": "interface",
+      "name": "TextWidgetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The text to display, in MarkDown format"
+          },
+          "name": "markdown",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Height of the widget",
+            "default": "2"
+          },
+          "name": "height",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Width of the widget, in a grid of 24 units wide",
+            "default": "6"
+          },
+          "name": "width",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.TreatMissingData": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "docs": {
+        "comment": "Specify how missing data points are treated during alarm evaluation"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.TreatMissingData",
+      "kind": "enum",
+      "members": [
+        {
+          "docs": {
+            "comment": "Missing data points are treated as breaching the threshold"
+          },
+          "name": "Breaching"
+        },
+        {
+          "docs": {
+            "comment": "Missing data points are treated as being within the threshold"
+          },
+          "name": "NotBreaching"
+        },
+        {
+          "docs": {
+            "comment": "The current alarm state is maintained"
+          },
+          "name": "Ignore"
+        },
+        {
+          "docs": {
+            "comment": "The alarm does not consider missing data points when evaluating whether to change state"
+          },
+          "name": "Missing"
+        }
+      ],
+      "name": "TreatMissingData"
+    },
+    "@aws-cdk/aws-cloudwatch.Unit": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "docs": {
+        "comment": "Unit for metric"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.Unit",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "Seconds"
+        },
+        {
+          "name": "Microseconds"
+        },
+        {
+          "name": "Milliseconds"
+        },
+        {
+          "name": "Bytes_"
+        },
+        {
+          "name": "Kilobytes"
+        },
+        {
+          "name": "Megabytes"
+        },
+        {
+          "name": "Gigabytes"
+        },
+        {
+          "name": "Terabytes"
+        },
+        {
+          "name": "Bits"
+        },
+        {
+          "name": "Kilobits"
+        },
+        {
+          "name": "Megabits"
+        },
+        {
+          "name": "Gigabits"
+        },
+        {
+          "name": "Terabits"
+        },
+        {
+          "name": "Percent"
+        },
+        {
+          "name": "Count"
+        },
+        {
+          "name": "BytesPerSecond"
+        },
+        {
+          "name": "KilobytesPerSecond"
+        },
+        {
+          "name": "MegabytesPerSecond"
+        },
+        {
+          "name": "GigabytesPerSecond"
+        },
+        {
+          "name": "TerabytesPerSecond"
+        },
+        {
+          "name": "BitsPerSecond"
+        },
+        {
+          "name": "KilobitsPerSecond"
+        },
+        {
+          "name": "MegabitsPerSecond"
+        },
+        {
+          "name": "GigabitsPerSecond"
+        },
+        {
+          "name": "TerabitsPerSecond"
+        },
+        {
+          "name": "CountPerSecond"
+        },
+        {
+          "name": "None"
+        }
+      ],
+      "name": "Unit"
+    },
+    "@aws-cdk/aws-cloudwatch.YAxisRange": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "comment": "A minimum and maximum value for either the left or right Y axis"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.YAxisRange",
+      "kind": "interface",
+      "name": "YAxisRange",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The maximum value",
+            "default": "Automatic"
+          },
+          "name": "max",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The minimum value",
+            "default": "Automatic"
+          },
+          "name": "min",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.cloudformation.AlarmResource": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.AlarmResource\" will be deprecated in a future release in favor of \"CfnAlarm\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.cloudformation.AlarmResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::CloudWatch::Alarm``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``AlarmResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``AlarmResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.cloudformation.AlarmResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "AlarmResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "Arn"
+          },
+          "immutable": true,
+          "name": "alarmArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "alarmName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.cloudformation.AlarmResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.cloudformation.AlarmResource.DimensionProperty": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.cloudformation.AlarmResource.DimensionProperty",
+      "kind": "interface",
+      "name": "DimensionProperty",
+      "namespace": "cloudformation.AlarmResource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AlarmResource.DimensionProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html#cfn-cloudwatch-alarm-dimension-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AlarmResource.DimensionProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html#cfn-cloudwatch-alarm-dimension-value"
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.cloudformation.AlarmResourceProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.cloudformation.AlarmResourceProps",
+      "kind": "interface",
+      "name": "AlarmResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.ComparisonOperator``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-comparisonoperator"
+          },
+          "name": "comparisonOperator",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.EvaluationPeriods``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-evaluationperiods"
+          },
+          "name": "evaluationPeriods",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Threshold``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-threshold"
+          },
+          "name": "threshold",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.ActionsEnabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-actionsenabled"
+          },
+          "name": "actionsEnabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.AlarmActions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmactions"
+          },
+          "name": "alarmActions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.AlarmDescription``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmdescription"
+          },
+          "name": "alarmDescription",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.AlarmName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-alarmname"
+          },
+          "name": "alarmName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.DatapointsToAlarm``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarm-datapointstoalarm"
+          },
+          "name": "datapointsToAlarm",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Dimensions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-dimension"
+          },
+          "name": "dimensions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudwatch.cloudformation.AlarmResource.DimensionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.EvaluateLowSampleCountPercentile``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-evaluatelowsamplecountpercentile"
+          },
+          "name": "evaluateLowSampleCountPercentile",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.ExtendedStatistic``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-extendedstatistic"
+          },
+          "name": "extendedStatistic",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.InsufficientDataActions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-insufficientdataactions"
+          },
+          "name": "insufficientDataActions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Namespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-namespace"
+          },
+          "name": "namespace",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.OKActions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-okactions"
+          },
+          "name": "okActions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Period``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-period"
+          },
+          "name": "period",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Statistic``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-statistic"
+          },
+          "name": "statistic",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.TreatMissingData``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-treatmissingdata"
+          },
+          "name": "treatMissingData",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Alarm.Unit``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html#cfn-cloudwatch-alarms-unit"
+          },
+          "name": "unit",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.cloudformation.DashboardResource": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "deprecated": "\"cloudformation.DashboardResource\" will be deprecated in a future release in favor of \"CfnDashboard\" (see https://github.com/awslabs/aws-cdk/issues/878)",
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-dashboard.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.cloudformation.DashboardResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::CloudWatch::Dashboard``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``DashboardResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``DashboardResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.cloudformation.DashboardResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Resource"
+          },
+          "parameters": [
+            {
+              "name": "properties",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "DashboardResource",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "dashboardName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "propertyOverrides",
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudwatch.cloudformation.DashboardResourceProps"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-cloudwatch.cloudformation.DashboardResourceProps": {
+      "assembly": "@aws-cdk/aws-cloudwatch",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-dashboard.html"
+      },
+      "fqn": "@aws-cdk/aws-cloudwatch.cloudformation.DashboardResourceProps",
+      "kind": "interface",
+      "name": "DashboardResourceProps",
+      "namespace": "cloudformation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Dashboard.DashboardBody``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-dashboard.html#cfn-cloudwatch-dashboard-dashboardbody"
+          },
+          "name": "dashboardBody",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "``AWS::CloudWatch::Dashboard.DashboardName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-dashboard.html#cfn-cloudwatch-dashboard-dashboardname"
+          },
+          "name": "dashboardName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "Ub/0OMzuGnnze1WeP8yuhrSTWqNdoQshL6QptNV+2eg="
+}

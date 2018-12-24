@@ -1,0 +1,1475 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-events": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "peer": true,
+                  "targets": {
+                    "dotnet": {
+                      "assemblyOriginatorKeyFile": "../../key.snk",
+                      "namespace": "Amazon.CDK.CXAPI",
+                      "packageId": "Amazon.CDK.CXAPI",
+                      "signAssembly": true
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk-cx-api",
+                        "groupId": "software.amazon.awscdk"
+                      },
+                      "package": "software.amazon.awscdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.21.0"
+                }
+              },
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK",
+                  "packageId": "Amazon.CDK",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.AWS.IAM",
+              "packageId": "Amazon.CDK.AWS.IAM",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "iam",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.services.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.21.0"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "peer": true,
+              "targets": {
+                "dotnet": {
+                  "assemblyOriginatorKeyFile": "../../key.snk",
+                  "namespace": "Amazon.CDK.CXAPI",
+                  "packageId": "Amazon.CDK.CXAPI",
+                  "signAssembly": true
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk-cx-api",
+                    "groupId": "software.amazon.awscdk"
+                  },
+                  "package": "software.amazon.awscdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.21.0"
+            }
+          },
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK",
+              "packageId": "Amazon.CDK",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.21.0"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "peer": true,
+          "targets": {
+            "dotnet": {
+              "assemblyOriginatorKeyFile": "../../key.snk",
+              "namespace": "Amazon.CDK.CXAPI",
+              "packageId": "Amazon.CDK.CXAPI",
+              "signAssembly": true
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk-cx-api",
+                "groupId": "software.amazon.awscdk"
+              },
+              "package": "software.amazon.awscdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.21.0"
+        }
+      },
+      "peer": true,
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.21.0"
+    }
+  },
+  "description": "Actions API for AWS Code Pipeline",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-codepipeline-api",
+  "readme": {
+    "markdown": "## AWS CodePipeline Actions API\n\nThis package contains the abstract API of Pipeline Actions.\nIt's used by the `aws-codepipeline` module,\nand the AWS service modules that integrate with AWS CodePipeline.\n\nYou should never need to depend on it directly -\ninstead, depend on `aws-codepipeline`,\nand the module you need the concrete Actions from\n(like `aws-codecommit`, `aws-codebuild`, etc.).\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.Codepipeline.Api",
+      "packageId": "Amazon.CDK.AWS.Codepipeline.Api",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "codepipeline-api",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.codepipeline.api"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-codepipeline-api"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-codepipeline-api.Action": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Low-level class for generic CodePipeline Actions.\nIt is recommended that concrete types are used instead, such as {@link codecommit.PipelineSourceAction} or\n{@link codebuild.PipelineBuildAction}."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.Action",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-codepipeline-api.ActionProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "addInputArtifact",
+          "parameters": [
+            {
+              "name": "artifact",
+              "type": {
+                "fqn": "@aws-cdk/aws-codepipeline-api.Artifact",
+                "optional": true
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.Action"
+          }
+        },
+        {
+          "name": "addOutputArtifact",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "optional": true,
+                "primitive": "string"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.Artifact"
+          }
+        },
+        {
+          "name": "onStateChange",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IEventRuleTarget",
+                "optional": true
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.EventRuleProps",
+                "optional": true
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-events.EventRule"
+          }
+        },
+        {
+          "docs": {
+            "comment": "This method can be implemented by derived constructs in order to perform\nvalidation logic. It is called on all constructs before synthesis."
+          },
+          "name": "validate",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          },
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "name": "Action",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The category of the action.\nThe category defines which action type the owner\n(the entity that performs the action) performs."
+          },
+          "immutable": true,
+          "name": "category",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.ActionCategory"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "owner",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The service provider that the action calls."
+          },
+          "immutable": true,
+          "name": "provider",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The order in which AWS CodePipeline runs this action.\nFor more information, see the AWS CodePipeline User Guide.\n\nhttps://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements"
+          },
+          "immutable": true,
+          "name": "runOrder",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "version",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The action's configuration. These are key-value pairs that specify input values for an action.\nFor more information, see the AWS CodePipeline User Guide.\n\nhttp://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements"
+          },
+          "immutable": true,
+          "name": "configuration",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The AWS region the given Action resides in.\nNote that a cross-region Pipeline requires replication buckets to function correctly.\nYou can provide their names with the {@link PipelineProps#crossRegionReplicationBuckets} property.\nIf you don't, the CodePipeline Construct will create new Stacks in your CDK app containing those buckets,\nthat you will need to `cdk deploy` before deploying the main, Pipeline-containing Stack.",
+            "default": "the Action resides in the same region as the Pipeline"
+          },
+          "immutable": true,
+          "name": "region",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.ActionArtifactBounds": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Specifies the constraints on the number of input and output\nartifacts an action can have.\n\nThe constraints for each action type are documented on the\n{@link https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html Pipeline Structure Reference} page."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.ActionArtifactBounds",
+      "kind": "interface",
+      "name": "ActionArtifactBounds",
+      "properties": [
+        {
+          "abstract": true,
+          "immutable": true,
+          "name": "maxInputs",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "immutable": true,
+          "name": "maxOutputs",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "immutable": true,
+          "name": "minInputs",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "immutable": true,
+          "name": "minOutputs",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.ActionCategory": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "fqn": "@aws-cdk/aws-codepipeline-api.ActionCategory",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "Source"
+        },
+        {
+          "name": "Build"
+        },
+        {
+          "name": "Test"
+        },
+        {
+          "name": "Approval"
+        },
+        {
+          "name": "Deploy"
+        },
+        {
+          "name": "Invoke"
+        }
+      ],
+      "name": "ActionCategory"
+    },
+    "@aws-cdk/aws-codepipeline-api.ActionProps": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Construction properties of the low-level {@link Action Action class}."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.ActionProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionProps"
+        },
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionConstructProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "ActionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "artifactBounds",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.ActionArtifactBounds"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "category",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.ActionCategory"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "provider",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "configuration",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "owner",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The region this Action resides in.",
+            "default": "the Action resides in the same region as the Pipeline"
+          },
+          "name": "region",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "version",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.Artifact": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "An output artifact of an action. Artifacts can be used as input by some actions."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.Artifact",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/aws-codepipeline-api.Action"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Returns an ArtifactPath for a file within this artifact.\nOutput is in the form \"<artifact-name>::<file-name>\""
+          },
+          "name": "atPath",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The name of the file"
+              },
+              "name": "fileName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.ArtifactPath"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns a token for a value inside a JSON file within this artifact."
+          },
+          "name": "getParam",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The JSON file name."
+              },
+              "name": "jsonFile",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The hash key."
+              },
+              "name": "keyName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns a string representation of this construct."
+          },
+          "name": "toString",
+          "overrides": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          },
+          "returns": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "name": "Artifact",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The artifact attribute for the name of the S3 bucket where the artifact is stored."
+          },
+          "immutable": true,
+          "name": "bucketName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The artifact attribute for The name of the .zip file that contains the artifact that is\ngenerated by AWS CodePipeline, such as 1ABCyZZ.zip."
+          },
+          "immutable": true,
+          "name": "objectKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The artifact attribute of the Amazon Simple Storage Service (Amazon S3) URL of the artifact,\nsuch as https://s3-us-west-2.amazonaws.com/artifactstorebucket-yivczw8jma0c/test/TemplateSo/1ABCyZZ.zip."
+          },
+          "immutable": true,
+          "name": "url",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.ArtifactPath": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "docs": {
+        "comment": "A specific file within an output artifact.\n\nThe most common use case for this is specifying the template file\nfor a CloudFormation action."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.ArtifactPath",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "artifact",
+            "type": {
+              "fqn": "@aws-cdk/aws-codepipeline-api.Artifact"
+            }
+          },
+          {
+            "name": "fileName",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "ArtifactPath",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "artifact",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.Artifact"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "fileName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "immutable": true,
+          "name": "location",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.BuildAction": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "base": {
+        "fqn": "@aws-cdk/aws-codepipeline-api.Action"
+      },
+      "docs": {
+        "comment": "Low level class for build actions.\nIt is recommended that concrete types are used instead,\nsuch as {@link codebuild.PipelineBuildAction}."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.BuildAction",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-codepipeline-api.BuildActionProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "BuildAction",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "outputArtifact",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.Artifact"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.BuildActionProps": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Construction properties of the low level {@link BuildAction build action}."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.BuildActionProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionProps"
+        },
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionConstructProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "BuildActionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The upper and lower bounds on the number of input and output artifacts for this Action."
+          },
+          "name": "artifactBounds",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.ActionArtifactBounds"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The service provider that the action calls. For example, a valid provider for Source actions is CodeBuild."
+          },
+          "name": "provider",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The action's configuration. These are key-value pairs that specify input values for an action.\nFor more information, see the AWS CodePipeline User Guide.\n\nhttp://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements"
+          },
+          "name": "configuration",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The source to use as input for this build."
+          },
+          "name": "inputArtifact",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.Artifact",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the build's output artifact."
+          },
+          "name": "outputArtifactName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The source action owner (could be 'AWS', 'ThirdParty' or 'Custom').",
+            "default": "'AWS'"
+          },
+          "name": "owner",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.CommonActionConstructProps": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Common properties shared by all Action Constructs."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionConstructProps",
+      "kind": "interface",
+      "name": "CommonActionConstructProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The Pipeline Stage to add this Action to."
+          },
+          "name": "stage",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.IStage"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.CommonActionProps": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Common properties shared by all Actions."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionProps",
+      "kind": "interface",
+      "name": "CommonActionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The runOrder property for this Action.\nRunOrder determines the relative order in which multiple Actions in the same Stage execute.",
+            "default": "1",
+            "see": "https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html"
+          },
+          "name": "runOrder",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.DeployAction": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "base": {
+        "fqn": "@aws-cdk/aws-codepipeline-api.Action"
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.DeployAction",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-codepipeline-api.DeployActionProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "DeployAction"
+    },
+    "@aws-cdk/aws-codepipeline-api.DeployActionProps": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "datatype": true,
+      "fqn": "@aws-cdk/aws-codepipeline-api.DeployActionProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionProps"
+        },
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionConstructProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "DeployActionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "name": "artifactBounds",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.ActionArtifactBounds"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "provider",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "configuration",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "name": "inputArtifact",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.Artifact",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "name": "owner",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.IInternalStage": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "docs": {
+        "comment": "The API of Stage used internally by the CodePipeline Construct.\nYou should never need to call any of the methods inside of it yourself."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.IInternalStage",
+      "kind": "interface",
+      "name": "IInternalStage"
+    },
+    "@aws-cdk/aws-codepipeline-api.IPipeline": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "docs": {
+        "comment": "The abstract view of an AWS CodePipeline as required and used by Actions.\nIt extends {@link events.IEventRuleTarget},\nso this interface can be used as a Target for CloudWatch Events."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.IPipeline",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-events.IEventRuleTarget"
+        }
+      ],
+      "kind": "interface",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Grants read permissions to the Pipeline's S3 Bucket to the given Identity."
+          },
+          "name": "grantBucketRead",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "the IAM Identity to grant the permissions to"
+              },
+              "name": "identity",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Grants read & write permissions to the Pipeline's S3 Bucket to the given Identity."
+          },
+          "name": "grantBucketReadWrite",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "the IAM Identity to grant the permissions to"
+              },
+              "name": "identity",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal",
+                "optional": true
+              }
+            }
+          ]
+        }
+      ],
+      "name": "IPipeline",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The ARN of the Pipeline."
+          },
+          "immutable": true,
+          "name": "pipelineArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the Pipeline."
+          },
+          "immutable": true,
+          "name": "pipelineName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The service Role of the Pipeline."
+          },
+          "immutable": true,
+          "name": "role",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.Role"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The unique ID of the Pipeline Construct."
+          },
+          "immutable": true,
+          "name": "uniqueId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.IStage": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "docs": {
+        "comment": "The abstract interface of a Pipeline Stage that is used by Actions."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.IStage",
+      "kind": "interface",
+      "name": "IStage",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The physical, human-readable name of this Pipeline Stage."
+          },
+          "immutable": true,
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The Pipeline this Stage belongs to."
+          },
+          "immutable": true,
+          "name": "pipeline",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.IPipeline"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.SourceAction": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "base": {
+        "fqn": "@aws-cdk/aws-codepipeline-api.Action"
+      },
+      "docs": {
+        "comment": "Low-level class for source actions.\nIt is recommended that concrete types are used instead,\nsuch as {@link s3.PipelineSourceAction} or\n{@link codecommit.PipelineSourceAction}."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.SourceAction",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-codepipeline-api.SourceActionProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "SourceAction",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "outputArtifact",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.Artifact"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.SourceActionProps": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Construction properties of the low-level {@link SourceAction source Action}."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.SourceActionProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionProps"
+        },
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionConstructProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "SourceActionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The service provider that the action calls.\nFor example, a valid provider for Source actions is \"S3\"."
+          },
+          "name": "provider",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The action's configuration. These are key-value pairs that specify input values for an action.\nFor more information, see the AWS CodePipeline User Guide.\n\nhttp://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements"
+          },
+          "name": "configuration",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The name of the source's output artifact.\nOutput artifacts are used by CodePipeline as inputs into other actions.",
+            "default": "a name will be auto-generated"
+          },
+          "name": "outputArtifactName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The source action owner (could be \"AWS\", \"ThirdParty\" or \"Custom\").",
+            "default": "\"AWS\""
+          },
+          "name": "owner",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The source action verison.",
+            "default": "\"1\""
+          },
+          "name": "version",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.TestAction": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "base": {
+        "fqn": "@aws-cdk/aws-codepipeline-api.Action"
+      },
+      "docs": {
+        "comment": "The low-level test Action.\n\nTest Actions are very similar to build Actions -\nthe difference is that test Actions don't have to have an output artifact.\n\nYou should never need to use this class directly,\ninstead preferring the concrete implementations,\nlike {@link codebuild.PipelineTestAction}."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.TestAction",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-codepipeline-api.TestActionProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "TestAction",
+      "properties": [
+        {
+          "immutable": true,
+          "name": "outputArtifact",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.Artifact",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-codepipeline-api.TestActionProps": {
+      "assembly": "@aws-cdk/aws-codepipeline-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Construction properties of the low-level {@link TestAction test Action}."
+      },
+      "fqn": "@aws-cdk/aws-codepipeline-api.TestActionProps",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionProps"
+        },
+        {
+          "fqn": "@aws-cdk/aws-codepipeline-api.CommonActionConstructProps"
+        }
+      ],
+      "kind": "interface",
+      "name": "TestActionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The upper and lower bounds on the number of input and output artifacts for this Action."
+          },
+          "name": "artifactBounds",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.ActionArtifactBounds"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The service provider that the action calls.",
+            "example": "'CodeBuild'"
+          },
+          "name": "provider",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The action's configuration. These are key-value pairs that specify input values for an action.\nFor more information, see the AWS CodePipeline User Guide.\n\nhttp://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements"
+          },
+          "name": "configuration",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The source to use as input for this test.",
+            "default": "CodePipeline will use the output of the last Action from a previous Stage as input"
+          },
+          "name": "inputArtifact",
+          "type": {
+            "fqn": "@aws-cdk/aws-codepipeline-api.Artifact",
+            "optional": true
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The optional name of the output artifact.\nIf you provide a value here,\nthen the `outputArtifact` property of your Action will be non-null.\nIf you don't, `outputArtifact` will be `null`.",
+            "default": "the Action will not have an output artifact"
+          },
+          "name": "outputArtifactName",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "The source action owner (could be 'AWS', 'ThirdParty' or 'Custom').",
+            "default": "'AWS'"
+          },
+          "name": "owner",
+          "type": {
+            "optional": true,
+            "primitive": "string"
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.21.0",
+  "fingerprint": "HYGlwiYVrtSuCOUAxQqzB8bR6EvdStg1sMSo9MPbx6k="
+}
