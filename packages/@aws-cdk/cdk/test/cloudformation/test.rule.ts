@@ -1,13 +1,13 @@
 import { Test } from 'nodeunit';
-import { FnAnd, FnContains, FnEquals, FnNot, Rule, Stack } from '../../lib';
+import { Fn, Rule, Stack } from '../../lib';
 
 export = {
   'Rule can be used to create rules'(test: Test) {
     const stack = new Stack();
 
     const rule = new Rule(stack, 'MyRule');
-    rule.addAssertion(new FnEquals('lhs', 'rhs'), 'lhs equals rhs');
-    rule.addAssertion(new FnNot(new FnAnd(new FnContains([ 'hello', 'world' ], "world"))), 'some assertion');
+    rule.addAssertion(Fn.equalsCondition('lhs', 'rhs'), 'lhs equals rhs');
+    rule.addAssertion(Fn.notCondition(Fn.andCondition(Fn.containsCondition([ 'hello', 'world' ], "world"))), 'some assertion');
 
     test.deepEqual(stack.toCloudFormation(), {
       Rules: {

@@ -171,8 +171,8 @@ Intrinsic Functions
 
 .. code-block:: js
 
-    import cdk = require('@aws-cdk/cdk');
-    cdk.Fn.join(",", [...])
+    import { Fn } from'@aws-cdk/cdk';
+    Fn.join(",", [...])
 
 .. _pseudo_parameters:
 
@@ -183,8 +183,8 @@ Pseudo Parameters
 
 .. code-block:: js
 
-    import cdk = require('@aws-cdk/cdk');
-    cdk.Aws.region
+    import { Aws } from '@aws-cdk/cdk';
+    Aws.region
 
 .. Add a new topic in "Advanced Topics" about integrating
    cdk synch > mytemplate

@@ -1700,7 +1700,7 @@ Fn.if_(Fn.equals(param.ref, 'True'), 'Encrypted', Pseudo.NO_VALUE)
 After:
 
 ```javascript
-new FnIf(new FnEquals(param.ref, 'True'), 'Encrypted', new AwsNoValue())
+new FnIf(Fn.equals(param.ref, 'True'), 'Encrypted', new AwsNoValue())
 ```
 
 - CloudFormation template options (`templateFormatVersion`, `description` and `transform`) are now grouped under `Stack.templateOptions` instead of directly under `Stack`.
