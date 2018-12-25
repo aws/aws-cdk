@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames } from '../core/util';
-import { FnCondition } from './fn';
+import { FnCondition } from './condition';
 import { Referenceable } from './stack';
 
 /**
