@@ -145,7 +145,7 @@ Construct IDs may be any string with the following caveats:
 * Path separators (``/``s) will be replaced by double-dashes ``--``. This means
   that if you are trying to look up a child construct that may have a path separator,
   you will need to manually replace it with ``--``.
-* Construct IDs may not include unresolved tokens (such as `new AwsRegion()`). This is
+* Construct IDs may not include unresolved tokens (such as `Aws.region`). This is
   because those tokens are only resolved during deployment, and therefore cannot be used
   to render a stable logical ID for any resources in this tree.
 

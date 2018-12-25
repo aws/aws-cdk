@@ -1,4 +1,4 @@
-import { AwsAccountId, AwsPartition, AwsRegion } from '..';
+import { Aws } from '..';
 import { Fn } from '../cloudformation/fn';
 import { unresolved } from '../core/tokens';
 
@@ -23,13 +23,13 @@ export class ArnUtils {
    */
   public static fromComponents(components: ArnComponents): string {
     const partition = components.partition == null
-      ? new AwsPartition()
+      ? Aws.partition
       : components.partition;
     const region = components.region == null
-      ? new AwsRegion()
+      ? Aws.region
       : components.region;
     const account = components.account == null
-      ? new AwsAccountId()
+      ? Aws.accountId
       : components.account;
 
     const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];

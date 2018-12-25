@@ -173,7 +173,7 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
     if (!path.startsWith('/')) {
       throw new Error(`Path must begin with "/": ${path}`);
     }
-    return `https://${this.restApi.restApiId}.execute-api.${new cdk.AwsRegion()}.amazonaws.com/${this.stageName}${path}`;
+    return `https://${this.restApi.restApiId}.execute-api.${cdk.Aws.region}.amazonaws.com/${this.stageName}${path}`;
   }
 
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {

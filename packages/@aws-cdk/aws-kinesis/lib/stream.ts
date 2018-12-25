@@ -170,7 +170,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
     if (!this.cloudWatchLogsRole) {
       // Create a role to be assumed by CWL that can write to this stream and pass itself.
       this.cloudWatchLogsRole = new iam.Role(this, 'CloudWatchLogsCanPutRecords', {
-        assumedBy: new iam.ServicePrincipal(`logs.${new cdk.AwsRegion()}.amazonaws.com`)
+        assumedBy: new iam.ServicePrincipal(`logs.${cdk.Aws.region}.amazonaws.com`)
       });
       this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
       this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));

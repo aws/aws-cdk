@@ -1,4 +1,4 @@
-import { AwsAccountId, AwsPartition, Token } from '@aws-cdk/cdk';
+import { Aws, Token } from '@aws-cdk/cdk';
 
 export class PolicyDocument extends Token {
   private statements = new Array<PolicyStatement>();
@@ -82,7 +82,7 @@ export class ArnPrincipal extends PolicyPrincipal {
 
 export class AccountPrincipal extends ArnPrincipal {
   constructor(public readonly accountId: any) {
-    super(`arn:${new AwsPartition()}:iam::${accountId}:root`);
+    super(`arn:${Aws.partition}:iam::${accountId}:root`);
   }
 }
 
@@ -137,7 +137,7 @@ export class FederatedPrincipal extends PolicyPrincipal {
 
 export class AccountRootPrincipal extends AccountPrincipal {
   constructor() {
-    super(new AwsAccountId());
+    super(Aws.accountId);
   }
 }
 

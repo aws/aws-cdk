@@ -78,7 +78,7 @@ export class AwsLogDriver extends LogDriver {
       options: removeEmpty({
         'awslogs-group': this.logGroup.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
-        'awslogs-region': `${new cdk.AwsRegion()}`,
+        'awslogs-region': cdk.Aws.region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
       }),

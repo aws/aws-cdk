@@ -1,60 +1,98 @@
 import { CloudFormationToken } from './cloudformation-token';
 
-export class PseudoParameter extends CloudFormationToken {
+export class Aws {
+  public static get accountId(): string {
+    return new AwsAccountId().toString();
+  }
+
+  public static get domainSuffix(): string {
+    return new AwsDomainSuffix().toString();
+  }
+
+  public static get urlSuffix(): string {
+    return new AwsURLSuffix().toString();
+  }
+
+  public static get notificationARNs(): string[] {
+    return new AwsNotificationARNs().toList();
+  }
+
+  public static get noValue(): string {
+    return new AwsNoValue().toString();
+  }
+
+  public static get partition(): string {
+    return new AwsPartition().toString();
+  }
+
+  public static get region(): string {
+    return new AwsRegion().toString();
+  }
+
+  public static get stackId(): string {
+    return new AwsStackId().toString();
+  }
+
+  public static get stackName(): string {
+    return new AwsStackName().toString();
+  }
+}
+
+class PseudoParameter extends CloudFormationToken {
   constructor(name: string) {
     super({ Ref: name }, name);
   }
 }
 
-export class AwsAccountId extends PseudoParameter {
+class AwsAccountId extends PseudoParameter {
   constructor() {
     super('AWS::AccountId');
   }
 }
 
-export class AwsDomainSuffix extends PseudoParameter {
+class AwsDomainSuffix extends PseudoParameter {
   constructor() {
     super('AWS::DomainSuffix');
   }
 }
 
-export class AwsURLSuffix extends PseudoParameter {
+class AwsURLSuffix extends PseudoParameter {
   constructor() {
     super('AWS::URLSuffix');
   }
 }
 
-export class AwsNotificationARNs extends PseudoParameter {
+class AwsNotificationARNs extends PseudoParameter {
   constructor() {
     super('AWS::NotificationARNs');
   }
 }
 
-export class AwsNoValue extends PseudoParameter {
+class AwsNoValue extends PseudoParameter {
   constructor() {
     super('AWS::NoValue');
   }
 }
 
-export class AwsPartition extends PseudoParameter {
+class AwsPartition extends PseudoParameter {
   constructor() {
     super('AWS::Partition');
   }
 }
 
-export class AwsRegion extends PseudoParameter {
+class AwsRegion extends PseudoParameter {
   constructor() {
     super('AWS::Region');
   }
 }
 
-export class AwsStackId extends PseudoParameter {
+class AwsStackId extends PseudoParameter {
   constructor() {
     super('AWS::StackId');
   }
 }
 
-export class AwsStackName extends PseudoParameter {
+class AwsStackName extends PseudoParameter {
   constructor() {
     super('AWS::StackName');
   }
