@@ -373,6 +373,6 @@ export interface LoadBalancerTargetProps {
  *     app/my-load-balancer/50dc6c495c0c9188
  */
 export function loadBalancerNameFromListenerArn(listenerArn: string) {
-    const arnParts = new cdk.FnSplit('/', listenerArn);
-    return `${new cdk.FnSelect(1, arnParts)}/${new cdk.FnSelect(2, arnParts)}/${new cdk.FnSelect(3, arnParts)}`;
+    const arnParts = cdk.Fn.split('/', listenerArn);
+    return `${cdk.Fn.select(1, arnParts)}/${cdk.Fn.select(2, arnParts)}/${cdk.Fn.select(3, arnParts)}`;
 }

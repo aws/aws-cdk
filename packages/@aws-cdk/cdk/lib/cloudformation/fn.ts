@@ -1,12 +1,122 @@
-import { resolve, Token, unresolved } from '../core/tokens';
-import { CloudFormationToken, isIntrinsic } from './cloudformation-token';
+import { CloudFormationToken, FnJoin } from './cloudformation-token';
+
 // tslint:disable:max-line-length
 
 /**
  * CloudFormation intrinsic functions.
  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
  */
-export class Fn extends CloudFormationToken {
+export class Fn {
+
+  /**
+   * The intrinsic function ``Fn::Join`` appends a set of values into a single
+   * value, separated by the specified delimiter. If a delimiter is the empty
+   * string, the set of values are concatenated with no delimiter.
+   * @param delimiter The value you want to occur between fragments. The
+   * delimiter will occur between fragments only. It will not terminate the
+   * final value.
+   * @param listOfValues The list of values you want combined.
+   */
+  public static join(delimiter: string, listOfValues: string[]): string {
+    return new FnJoin(delimiter, listOfValues).toString();
+  }
+
+  /**
+   * To split a string into a list of string values so that you can select an element from the
+   * resulting string list, use the ``Fn::Split`` intrinsic function. Specify the location of splits
+   * with a delimiter, such as , (a comma). After you split a string, use the ``Fn::Select`` function
+   * to pick a specific element.
+   * @param delimiter A string value that determines where the source string is divided.
+   * @param source The string value that you want to split.
+   */
+  public static split(delimiter: string, source: string): string[] {
+    return new FnSplit(delimiter, source).toList();
+  }
+
+  /**
+   * The intrinsic function ``Fn::Select`` returns a single object from a list of objects by index.
+   * @param index The index of the object to retrieve. This must be a value from zero to N-1, where N represents the number of elements in the array.
+   * @param array The list of objects to select from. This list must not be null, nor can it have null entries.
+   */
+  public static select(index: number, array: string[]): string {
+    return new FnSelect(index, array).toString();
+  }
+
+  /**
+   * The intrinsic function ``Fn::Sub`` substitutes variables in an input string
+   * with values that you specify. In your templates, you can use this function
+   * to construct commands or outputs that include values that aren't available
+   * until you create or update a stack.
+   * @param body A string with variables that AWS CloudFormation substitutes
+   * with their associated values at runtime. Write variables as ${MyVarName}.
+   * Variables can be template parameter names, resource logical IDs, resource
+   * attributes, or a variable in a key-value map. If you specify only template
+   * parameter names, resource logical IDs, and resource attributes, don't
+   * specify a key-value map.
+   * @param variables The name of a variable that you included in the String
+   * parameter. The value that AWS CloudFormation substitutes for the associated
+   * variable name at runtime.
+   */
+  public static sub(body: string, variables?: { [key: string]: string }): string {
+    return new FnSub(body, variables).toString();
+  }
+
+  /**
+   * The intrinsic function ``Fn::Base64`` returns the Base64 representation of the input string.
+   * This function is typically used to pass encoded data to Amazon EC2 instances by way of
+   * the UserData property.
+   * @param data The string value you want to convert to Base64.
+   */
+  public static base64(data: string): string {
+    return new FnBase64(data).toString();
+  }
+
+  /**
+   * The intrinsic function ``Fn::Cidr`` returns the specified Cidr address block.
+   * @param ipBlock  The user-specified default Cidr address block.
+   * @param count  The number of subnets' Cidr block wanted. Count can be 1 to 256.
+   * @param sizeMask The digit covered in the subnet.
+   */
+  public static cidr(ipBlock: string, count: number, sizeMask?: string): string {
+    return new FnCidr(ipBlock, count, sizeMask).toString();
+  }
+
+  /**
+   * The intrinsic function ``Fn::GetAZs`` returns an array that lists Availability Zones for a
+   * specified region. Because customers have access to different Availability Zones, the intrinsic
+   * function ``Fn::GetAZs`` enables template authors to write templates that adapt to the calling
+   * user's access. That way you don't have to hard-code a full list of Availability Zones for a
+   * specified region.
+   * @param region The name of the region for which you want to get the
+   * Availability Zones. You can use the AWS::Region pseudo parameter to specify
+   * the region in which the stack is created. Specifying an empty string is
+   * equivalent to specifying AWS::Region.
+   */
+  public static getAZs(region?: string): string[] {
+    return new FnGetAZs(region).toList();
+  }
+
+  /**
+   * The intrinsic function ``Fn::ImportValue`` returns the value of an output exported by another stack.
+   * You typically use this function to create cross-stack references. In the following example
+   * template snippets, Stack A exports VPC security group values and Stack B imports them.
+   * @param sharedValueToImport The stack output value that you want to import.
+   */
+  public static importValue(sharedValueToImport: string): string {
+    return new FnImportValue(sharedValueToImport).toString();
+  }
+
+  /**
+   * The intrinsic function ``Fn::FindInMap`` returns the value corresponding to keys in a two-level
+   * map that is declared in the Mappings section.
+   */
+  public static findInMap(mapName: string, topLevelKey: string, secondLevelKey: string): string {
+    return new FnFindInMap(mapName, topLevelKey, secondLevelKey).toString();
+  }
+
+}
+
+export class FnBase extends CloudFormationToken {
   constructor(name: string, value: any) {
     super(() => ({ [name]: value }));
   }
@@ -16,7 +126,7 @@ export class Fn extends CloudFormationToken {
  * The intrinsic function ``Fn::FindInMap`` returns the value corresponding to keys in a two-level
  * map that is declared in the Mappings section.
  */
-export class FnFindInMap extends Fn {
+class FnFindInMap extends FnBase {
   /**
    * Creates an ``Fn::FindInMap`` function.
    * @param mapName The logical name of a mapping declared in the Mappings section that contains the keys and values.
@@ -31,7 +141,7 @@ export class FnFindInMap extends Fn {
 /**
  * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute from a resource in the template.
  */
-export class FnGetAtt extends Fn {
+export class FnGetAtt extends FnBase {
   /**
    * Creates a ``Fn::GetAtt`` function.
    * @param logicalNameOfResource The logical name (also called logical ID) of the resource that contains the attribute that you want.
@@ -49,7 +159,7 @@ export class FnGetAtt extends Fn {
  * user's access. That way you don't have to hard-code a full list of Availability Zones for a
  * specified region.
  */
-export class FnGetAZs extends Fn {
+class FnGetAZs extends FnBase {
   /**
    * Creates an ``Fn::GetAZs`` function.
    * @param region The name of the region for which you want to get the Availability Zones.
@@ -67,7 +177,7 @@ export class FnGetAZs extends Fn {
  * You typically use this function to create cross-stack references. In the following example
  * template snippets, Stack A exports VPC security group values and Stack B imports them.
  */
-export class FnImportValue extends Fn {
+class FnImportValue extends FnBase {
   /**
    * Creates an ``Fn::ImportValue`` function.
    * @param sharedValueToImport The stack output value that you want to import.
@@ -78,102 +188,9 @@ export class FnImportValue extends Fn {
 }
 
 /**
- * The intrinsic function ``Fn::Join`` appends a set of values into a single value, separated by
- * the specified delimiter. If a delimiter is the empty string, the set of values are concatenated
- * with no delimiter.
- */
-export class FnJoin extends Fn {
-  private readonly delimiter: string;
-  private readonly listOfValues: any[];
-  // Cache for the result of resolveValues() - since it otherwise would be computed several times
-  private _resolvedValues?: any[];
-  private canOptimize: boolean;
-
-  /**
-   * Creates an ``Fn::Join`` function.
-   * @param delimiter The value you want to occur between fragments. The delimiter will occur between fragments only.
-   *          It will not terminate the final value.
-   * @param listOfValues The list of values you want combined.
-   */
-  constructor(delimiter: string, listOfValues: any[]) {
-    if (listOfValues.length === 0) {
-      throw new Error(`FnJoin requires at least one value to be provided`);
-    }
-    // Passing the values as a token, optimization requires resolving stringified tokens, we should be deferred until
-    // this token is itself being resolved.
-    super('Fn::Join', [ delimiter, new Token(() => this.resolveValues()) ]);
-    this.delimiter = delimiter;
-    this.listOfValues = listOfValues;
-    this.canOptimize = true;
-  }
-
-  public resolve(): any {
-    const resolved = this.resolveValues();
-    if (this.canOptimize && resolved.length === 1) {
-      return resolved[0];
-    }
-    return super.resolve();
-  }
-
-  /**
-   * Optimization: if an Fn::Join is nested in another one and they share the same delimiter, then flatten it up. Also,
-   * if two concatenated elements are literal strings (not tokens), then pre-concatenate them with the delimiter, to
-   * generate shorter output.
-   */
-  private resolveValues() {
-    if (this._resolvedValues) { return this._resolvedValues; }
-
-    if (unresolved(this.listOfValues)) {
-      // This is a list token, don't resolve and also don't optimize.
-      this.canOptimize = false;
-      return this._resolvedValues = this.listOfValues;
-    }
-
-    const resolvedValues = [...this.listOfValues.map(e => resolve(e))];
-    let i = 0;
-    while (i < resolvedValues.length) {
-      const el = resolvedValues[i];
-      if (isFnJoinIntrinsicWithSameDelimiter.call(this, el)) {
-        resolvedValues.splice(i, 1, ...el['Fn::Join'][1]);
-      } else if (i > 0 && isPlainString(resolvedValues[i - 1]) && isPlainString(resolvedValues[i])) {
-        resolvedValues[i - 1] += this.delimiter + resolvedValues[i];
-        resolvedValues.splice(i, 1);
-      } else {
-        i += 1;
-      }
-    }
-
-    return this._resolvedValues = resolvedValues;
-
-    function isFnJoinIntrinsicWithSameDelimiter(this: FnJoin, obj: any): boolean {
-      return isIntrinsic(obj)
-        && Object.keys(obj)[0] === 'Fn::Join'
-        && obj['Fn::Join'][0] === this.delimiter;
-    }
-
-    function isPlainString(obj: any): boolean {
-      return typeof obj === 'string' && !unresolved(obj);
-    }
-  }
-}
-
-/**
- * Alias for ``FnJoin('', listOfValues)``.
- */
-export class FnConcat extends FnJoin {
-  /**
-   * Creates an ``Fn::Join`` function with an empty delimiter.
-   * @param listOfValues The list of values to concatenate.
-   */
-  constructor(...listOfValues: any[]) {
-    super('', listOfValues);
-  }
-}
-
-/**
  * The intrinsic function ``Fn::Select`` returns a single object from a list of objects by index.
  */
-export class FnSelect extends Fn {
+class FnSelect extends FnBase {
   /**
    * Creates an ``Fn::Select`` function.
    * @param index The index of the object to retrieve. This must be a value from zero to N-1, where N represents the number of elements in the array.
@@ -190,7 +207,7 @@ export class FnSelect extends Fn {
  * with a delimiter, such as , (a comma). After you split a string, use the ``Fn::Select`` function
  * to pick a specific element.
  */
-export class FnSplit extends Fn {
+class FnSplit extends FnBase {
   /**
    * Create an ``Fn::Split`` function.
    * @param delimiter A string value that determines where the source string is divided.
@@ -206,7 +223,7 @@ export class FnSplit extends Fn {
  * you specify. In your templates, you can use this function to construct commands or outputs
  * that include values that aren't available until you create or update a stack.
  */
-export class FnSub extends Fn {
+class FnSub extends FnBase {
   /**
    * Creates an ``Fn::Sub`` function.
    * @param body A string with variables that AWS CloudFormation substitutes with their
@@ -227,7 +244,7 @@ export class FnSub extends Fn {
  * This function is typically used to pass encoded data to Amazon EC2 instances by way of
  * the UserData property.
  */
-export class FnBase64 extends Fn {
+class FnBase64 extends FnBase {
 
   /**
    * Creates an ``Fn::Base64`` function.
@@ -241,7 +258,7 @@ export class FnBase64 extends Fn {
 /**
  * The intrinsic function ``Fn::Cidr`` returns the specified Cidr address block.
  */
-export class FnCidr extends Fn {
+class FnCidr extends FnBase {
   /**
    * Creates an ``Fn::Cidr`` function.
    * @param ipBlock  The user-specified default Cidr address block.
@@ -275,7 +292,7 @@ export class FnCidr extends Fn {
  * conditions, you can define which resources are created and how they're configured for each
  * environment type.
  */
-export class FnCondition extends Fn {
+export class FnCondition extends FnBase {
 
 }
 
