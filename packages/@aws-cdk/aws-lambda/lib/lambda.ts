@@ -6,7 +6,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
 import { ImportedFunction } from './lambda-import';
 import { FunctionAttributes, FunctionBase, IFunction } from './lambda-ref';
-import { FunctionVersion } from './lambda-version';
+import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { Runtime } from './runtime';
 
@@ -194,12 +194,12 @@ export class Function extends FunctionBase {
    *    Lambda.import(this, 'MyImportedFunction', { lambdaArn: new LambdaArn('arn:aws:...') });
    *
    * @param parent The parent construct
-   * @param name The name of the lambda construct
-   * @param ref A reference to a Lambda function. Can be created manually (see
+   * @param id The name of the lambda construct
+   * @param attrs A reference to a Lambda function. Can be created manually (see
    * example above) or obtained through a call to `lambda.export()`.
    */
-  public static import(parent: cdk.Construct, name: string, ref: FunctionAttributes): IFunction {
-    return new ImportedFunction(parent, name, ref);
+  public static import(parent: cdk.Construct, id: string, attrs: FunctionAttributes): IFunction {
+    return new ImportedFunction(parent, id, attrs);
   }
 
   /**
@@ -304,8 +304,8 @@ export class Function extends FunctionBase {
    */
   private readonly environment?: { [key: string]: any };
 
-  constructor(parent: cdk.Construct, name: string, props: FunctionProps) {
-    super(parent, name);
+  constructor(parent: cdk.Construct, id: string, props: FunctionProps) {
+    super(parent, id);
 
     this.environment = props.environment || { };
 
@@ -396,8 +396,8 @@ export class Function extends FunctionBase {
    * @param description A description for this version.
    * @returns A new Version object.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string): FunctionVersion {
-    return new FunctionVersion(this, 'Version' + name, {
+  public addVersion(name: string, codeSha256?: string, description?: string): Version {
+    return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,

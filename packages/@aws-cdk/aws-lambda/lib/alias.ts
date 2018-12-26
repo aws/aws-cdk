@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { FunctionAttributes, FunctionBase, IFunction } from './lambda-ref';
-import { FunctionVersion } from './lambda-version';
+import { Version } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
 import { Permission } from './permission';
 
@@ -21,7 +21,7 @@ export interface AliasProps {
    *
    * Use lambda.addVersion() to obtain a new lambda version to refer to.
    */
-  version: FunctionVersion;
+  version: Version;
 
   /**
    * Name of this alias
@@ -80,8 +80,8 @@ export class Alias extends FunctionBase {
    */
   private readonly underlyingLambda: IFunction;
 
-  constructor(parent: cdk.Construct, name: string, props: AliasProps) {
-    super(parent, name);
+  constructor(parent: cdk.Construct, id: string, props: AliasProps) {
+    super(parent, id);
 
     this.underlyingLambda = props.version.lambda;
 
@@ -154,7 +154,7 @@ export interface VersionWeight {
   /**
    * The version to route traffic to
    */
-  readonly version: FunctionVersion;
+  readonly version: Version;
 
   /**
    * How much weight to assign to this version (0..1)

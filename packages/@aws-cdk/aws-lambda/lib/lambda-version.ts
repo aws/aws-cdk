@@ -5,7 +5,7 @@ import { CfnVersion } from './lambda.generated';
 /**
  * Properties for a new Lambda version
  */
-export interface FunctionVersionProps {
+export interface VersionProps {
   /**
    * SHA256 of the version of the Lambda source code
    *
@@ -44,7 +44,7 @@ export interface FunctionVersionProps {
  * the right deployment, specify the `codeSha256` property while
  * creating the `Version.
  */
-export class FunctionVersion extends Construct {
+export class Version extends Construct {
   /**
    * The most recently deployed version of this function.
    */
@@ -55,8 +55,8 @@ export class FunctionVersion extends Construct {
    */
   public readonly lambda: IFunction;
 
-  constructor(parent: Construct, name: string, props: FunctionVersionProps) {
-    super(parent, name);
+  constructor(parent: Construct, id: string, props: VersionProps) {
+    super(parent, id);
 
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
