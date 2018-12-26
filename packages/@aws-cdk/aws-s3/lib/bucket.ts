@@ -11,12 +11,174 @@ import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
+export interface IBucket {
+  /**
+   * The ARN of the bucket.
+   */
+  readonly bucketArn: string;
+
+  /**
+   * The name of the bucket.
+   */
+  readonly bucketName: string;
+
+  /**
+   * The domain of the bucket.
+   */
+  readonly domainName: string;
+
+  /**
+   * Optional KMS encryption key associated with this bucket.
+   */
+  readonly encryptionKey?: kms.IEncryptionKey;
+
+  /**
+   * The https:// URL of this bucket.
+   * @example https://s3.us-west-1.amazonaws.com/onlybucket
+   * Similar to calling `urlForObject` with no object key.
+   */
+  readonly bucketUrl: string;
+
+  /**
+   * The resource policy assoicated with this bucket.
+   *
+   * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
+   * first call to addToResourcePolicy(s).
+   */
+  policy?: BucketPolicy;
+
+  /**
+   * Exports this bucket from the stack.
+   */
+  export(): BucketAttributes;
+
+  /**
+   * Convenience method for creating a new {@link PipelineSourceAction},
+   * and adding it to the given Stage.
+   *
+   * @param stage the Pipeline Stage to add the new Action to
+   * @param name the name of the newly created Action
+   * @param props the properties of the new Action
+   * @returns the newly created {@link PipelineSourceAction}
+   */
+  addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction;
+
+  /**
+   * Adds a statement to the resource policy for a principal (i.e.
+   * account/role/service) to perform actions on this bucket and/or it's
+   * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
+   * this bucket or objects.
+   */
+  addToResourcePolicy(permission: iam.PolicyStatement): void;
+
+  /**
+   * The https URL of an S3 object. For example:
+   * @example https://s3.us-west-1.amazonaws.com/onlybucket
+   * @example https://s3.us-west-1.amazonaws.com/bucket/key
+   * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @returns an ObjectS3Url token
+   */
+  urlForObject(key?: string): string;
+
+  /**
+   * Returns an ARN that represents all objects within the bucket that match
+   * the key pattern specified. To represent all keys, specify ``"*"``.
+   *
+   * If you specify multiple components for keyPattern, they will be concatenated::
+   *
+   *   arnForObjects('home/', team, '/', user, '/*')
+   *
+   */
+  arnForObjects(...keyPattern: string[]): string;
+
+  /**
+   * Grant read permissions for this bucket and it's contents to an IAM
+   * principal (Role/Group/User).
+   *
+   * If encryption is used, permission to use the key to decrypt the contents
+   * of the bucket will also be granted to the same principal.
+   *
+   * @param identity The principal
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   */
+  grantRead(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+
+  /**
+   * Grant write permissions to this bucket to an IAM principal.
+   *
+   * If encryption is used, permission to use the key to encrypt the contents
+   * of written files will also be granted to the same principal.
+   *
+   * @param identity The principal
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   */
+  grantWrite(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+
+  /**
+   * Grants s3:PutObject* and s3:Abort* permissions for this bucket to an IAM principal.
+   *
+   * If encryption is used, permission to use the key to encrypt the contents
+   * of written files will also be granted to the same principal.
+   * @param identity The principal
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   */
+  grantPut(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+
+  /**
+   * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+   * in this bucket.
+   *
+   * @param identity The principal
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   */
+  grantDelete(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+
+  /**
+   * Grants read/write permissions for this bucket and it's contents to an IAM
+   * principal (Role/Group/User).
+   *
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted.
+   *
+   * @param identity The principal
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   */
+  grantReadWrite(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+
+  /**
+   * Allows unrestricted access to objects from this bucket.
+   *
+   * IMPORTANT: This permission allows anyone to perform actions on S3 objects
+   * in this bucket, which is useful for when you configure your bucket as a
+   * website and want everyone to be able to read objects in the bucket without
+   * needing to authenticate.
+   *
+   * Without arguments, this method will grant read ("s3:GetObject") access to
+   * all objects ("*") in the bucket.
+   *
+   * The method returns the `iam.PolicyStatement` object, which can then be modified
+   * as needed. For example, you can add a condition that will restrict access only
+   * to an IPv4 range like this:
+   *
+   *     const statement = bucket.grantPublicAccess();
+   *     statement.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+   *
+   *
+   * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
+   * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
+   * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
+   */
+  grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.PolicyStatement;
+}
+
 /**
  * A reference to a bucket. The easiest way to instantiate is to call
  * `bucket.export()`. Then, the consumer can use `Bucket.import(this, ref)` and
  * get a `Bucket`.
  */
-export interface BucketRefProps {
+export interface BucketAttributes {
   /**
    * The ARN fo the bucket. At least one of bucketArn or bucketName must be
    * defined in order to initialize a bucket ref.
@@ -48,27 +210,15 @@ export interface BucketRefProps {
  *
  * Or imported from an existing bucket:
  *
- *   BucketRef.import(this, 'MyImportedBucket', { bucketArn: ... });
+ *   Bucket.import(this, 'MyImportedBucket', { bucketArn: ... });
  *
  * You can also export a bucket and import it into another stack:
  *
  *   const ref = myBucket.export();
- *   BucketRef.import(this, 'MyImportedBucket', ref);
+ *   Bucket.import(this, 'MyImportedBucket', ref);
  *
  */
-export abstract class BucketRef extends cdk.Construct {
-  /**
-   * Creates a Bucket construct that represents an external bucket.
-   *
-   * @param parent The parent creating construct (usually `this`).
-   * @param name The construct's name.
-   * @param ref A BucketRefProps object. Can be obtained from a call to
-   * `bucket.export()`.
-   */
-  public static import(parent: cdk.Construct, name: string, props: BucketRefProps): BucketRef {
-    return new ImportedBucketRef(parent, name, props);
-  }
-
+export abstract class BucketBase extends cdk.Construct implements IBucket {
   /**
    * The ARN of the bucket.
    */
@@ -87,7 +237,7 @@ export abstract class BucketRef extends cdk.Construct {
   /**
    * Optional KMS encryption key associated with this bucket.
    */
-  public abstract readonly encryptionKey?: kms.EncryptionKeyRef;
+  public abstract readonly encryptionKey?: kms.IEncryptionKey;
 
   /**
    * The resource policy assoicated with this bucket.
@@ -95,7 +245,7 @@ export abstract class BucketRef extends cdk.Construct {
    * If `autoCreatePolicy` is true, a `BucketPolicy` will be created upon the
    * first call to addToResourcePolicy(s).
    */
-  protected abstract policy?: BucketPolicy;
+  public abstract policy?: BucketPolicy;
 
   /**
    * Indicates if a bucket resource policy should automatically created upon
@@ -106,13 +256,7 @@ export abstract class BucketRef extends cdk.Construct {
   /**
    * Exports this bucket from the stack.
    */
-  public export(): BucketRefProps {
-    return {
-      bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
-      bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
-      bucketDomainName: new cdk.Output(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
-    };
-  }
+  public abstract export(): BucketAttributes;
 
   /**
    * Convenience method for creating a new {@link PipelineSourceAction},
@@ -355,7 +499,7 @@ export interface BucketProps {
    * @default If encryption is set to "Kms" and this property is undefined, a
    * new KMS key will be created and associated with this bucket.
    */
-  encryptionKey?: kms.EncryptionKeyRef;
+  encryptionKey?: kms.IEncryptionKey;
 
   /**
    * Physical name of this bucket.
@@ -410,13 +554,25 @@ export interface BucketProps {
  * This bucket does not yet have all features that exposed by the underlying
  * BucketResource.
  */
-export class Bucket extends BucketRef {
+export class Bucket extends BucketBase {
+  /**
+   * Creates a Bucket construct that represents an external bucket.
+   *
+   * @param parent The parent creating construct (usually `this`).
+   * @param name The construct's name.
+   * @param ref A `BucketAttributes` object. Can be obtained from a call to
+   * `bucket.export()`.
+   */
+  public static import(parent: cdk.Construct, name: string, props: BucketAttributes): IBucket {
+    return new ImportedBucket(parent, name, props);
+  }
+
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly domainName: string;
   public readonly dualstackDomainName: string;
-  public readonly encryptionKey?: kms.EncryptionKeyRef;
-  protected policy?: BucketPolicy;
+  public readonly encryptionKey?: kms.IEncryptionKey;
+  public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
@@ -454,6 +610,17 @@ export class Bucket extends BucketRef {
     if (props.publicReadAccess) {
       this.grantPublicAccess();
     }
+  }
+
+  /**
+   * Exports this bucket from the stack.
+   */
+  public export(): BucketAttributes {
+    return {
+      bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
+      bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
+      bucketDomainName: new cdk.Output(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
+    };
   }
 
   /**
@@ -524,7 +691,7 @@ export class Bucket extends BucketRef {
    */
   private parseEncryption(props: BucketProps): {
     bucketEncryption?: CfnBucket.BucketEncryptionProperty,
-    encryptionKey?: kms.EncryptionKeyRef
+    encryptionKey?: kms.IEncryptionKey
   } {
 
     // default to unencrypted.
@@ -784,16 +951,16 @@ export interface NotificationKeyFilter {
   suffix?: string;
 }
 
-class ImportedBucketRef extends BucketRef {
+class ImportedBucket extends BucketBase {
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly domainName: string;
   public readonly encryptionKey?: kms.EncryptionKey;
 
-  protected policy?: BucketPolicy;
+  public policy?: BucketPolicy;
   protected autoCreatePolicy: boolean;
 
-  constructor(parent: cdk.Construct, name: string, props: BucketRefProps) {
+  constructor(parent: cdk.Construct, name: string, private readonly props: BucketAttributes) {
     super(parent, name);
 
     const bucketName = parseBucketName(props);
@@ -806,6 +973,13 @@ class ImportedBucketRef extends BucketRef {
     this.domainName = props.bucketDomainName || this.generateDomainName();
     this.autoCreatePolicy = false;
     this.policy = undefined;
+  }
+
+  /**
+   * Exports this bucket from the stack.
+   */
+  public export() {
+    return this.props;
   }
 
   private generateDomainName() {

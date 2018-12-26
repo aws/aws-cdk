@@ -1,6 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
-import { BucketRef } from './bucket';
+import { IBucket } from './bucket';
 
 /**
  * Common properties for creating {@link PipelineSourceAction} -
@@ -40,7 +40,7 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
   /**
    * The Amazon S3 bucket that stores the source code
    */
-  bucket: BucketRef;
+  bucket: IBucket;
 }
 
 /**

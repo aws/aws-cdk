@@ -1,9 +1,11 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
-import { FunctionRef } from './lambda-ref';
+import { ImportedFunction } from './lambda-import';
+import { FunctionAttributes, FunctionBase, IFunction } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -117,7 +119,7 @@ export interface FunctionProps {
    *
    * Specify this if the Lambda function needs to access resources in a VPC.
    */
-  vpc?: ec2.VpcNetworkRef;
+  vpc?: ec2.IVpcNetwork;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -138,7 +140,7 @@ export interface FunctionProps {
    * not specified, a dedicated security group will be created for this
    * function.
    */
-  securityGroup?: ec2.SecurityGroupRef;
+  securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Whether to allow the Lambda to send all network traffic
@@ -163,7 +165,7 @@ export interface FunctionProps {
    *
    * @default SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
-  deadLetterQueue?: sqs.QueueRef;
+  deadLetterQueue?: sqs.IQueue;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
@@ -184,7 +186,92 @@ export interface FunctionProps {
  * This construct does not yet reproduce all features from the underlying resource
  * library.
  */
-export class Function extends FunctionRef {
+export class Function extends FunctionBase {
+  /**
+   * Creates a Lambda function object which represents a function not defined
+   * within this stack.
+   *
+   *    Lambda.import(this, 'MyImportedFunction', { lambdaArn: new LambdaArn('arn:aws:...') });
+   *
+   * @param parent The parent construct
+   * @param name The name of the lambda construct
+   * @param ref A reference to a Lambda function. Can be created manually (see
+   * example above) or obtained through a call to `lambda.export()`.
+   */
+  public static import(parent: cdk.Construct, name: string, ref: FunctionAttributes): IFunction {
+    return new ImportedFunction(parent, name, ref);
+  }
+
+  /**
+   * Return the given named metric for this Lambda
+   */
+  public static metricAll(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Lambda',
+      metricName,
+      ...props
+    });
+  }
+  /**
+   * Metric for the number of Errors executing all Lambdas
+   *
+   * @default sum over 5 minutes
+   */
+  public static metricAllErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Errors', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the Duration executing all Lambdas
+   *
+   * @default average over 5 minutes
+   */
+  public static metricAllDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Duration', props);
+  }
+
+  /**
+   * Metric for the number of invocations of all Lambdas
+   *
+   * @default sum over 5 minutes
+   */
+  public static metricAllInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Invocations', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the number of throttled invocations of all Lambdas
+   *
+   * @default sum over 5 minutes
+   */
+  public static metricAllThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Throttles', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the number of concurrent executions across all Lambdas
+   *
+   * @default max over 5 minutes
+   */
+  public static metricAllConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    // Mini-FAQ: why max? This metric is a gauge that is emitted every
+    // minute, so either max or avg or a percentile make sense (but sum
+    // doesn't). Max is more sensitive to spiky load changes which is
+    // probably what you're interested in if you're looking at this metric
+    // (Load spikes may lead to concurrent execution errors that would
+    // otherwise not be visible in the avg)
+    return this.metricAll('ConcurrentExecutions', { statistic: 'max', ...props });
+  }
+
+  /**
+   * Metric for the number of unreserved concurrent executions across all Lambdas
+   *
+   * @default max over 5 minutes
+   */
+  public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
+  }
+
   /**
    * Name of this function
    */
@@ -265,6 +352,18 @@ export class Function extends FunctionRef {
 
     // allow code to bind to stack.
     props.code.bind(this);
+  }
+
+  /**
+   * Export this Function (without the role)
+   */
+  public export(): FunctionAttributes {
+    return {
+      functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
+      securityGroupId: this._connections && this._connections.securityGroups[0]
+          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
+          : undefined
+    };
   }
 
   /**

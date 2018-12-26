@@ -39,7 +39,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Import an existing listener
    */
-  public static import(parent: cdk.Construct, id: string, props: NetworkListenerRefProps): INetworkListener {
+  public static import(parent: cdk.Construct, id: string, props: NetworkListenerAttributes): INetworkListener {
     return new ImportedNetworkListener(parent, id, props);
   }
 
@@ -103,7 +103,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Export this listener
    */
-  public export(): NetworkListenerRefProps {
+  public export(): NetworkListenerAttributes {
     return {
       listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
     };
@@ -119,12 +119,17 @@ export interface INetworkListener extends cdk.IDependable {
    * ARN of the listener
    */
   readonly listenerArn: string;
+
+  /**
+   * Export this listener
+   */
+  export(): NetworkListenerAttributes;
 }
 
 /**
  * Properties to reference an existing listener
  */
-export interface NetworkListenerRefProps {
+export interface NetworkListenerAttributes {
   /**
    * ARN of the listener
    */
@@ -142,10 +147,14 @@ class ImportedNetworkListener extends cdk.Construct implements INetworkListener 
    */
   public readonly listenerArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkListenerRefProps) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: NetworkListenerAttributes) {
     super(parent, id);
 
     this.listenerArn = props.listenerArn;
+  }
+
+  public export() {
+    return this.props;
   }
 }
 

@@ -1,7 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { ServerDeploymentGroupRef } from './deployment-group';
+import { IServerDeploymentGroup } from './deployment-group';
 
 /**
  * Common properties for creating a {@link PipelineDeployAction},
@@ -25,7 +25,7 @@ export interface PipelineDeployActionProps extends CommonPipelineDeployActionPro
   /**
    * The CodeDeploy Deployment Group to deploy to.
    */
-  deploymentGroup: ServerDeploymentGroupRef;
+  deploymentGroup: IServerDeploymentGroup;
 }
 
 export class PipelineDeployAction extends codepipeline.DeployAction {

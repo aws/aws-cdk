@@ -75,9 +75,14 @@ export interface IRepository {
    * @param imageTag Only trigger on the specific image tag
    */
   onImagePushed(name: string, target?: events.IEventRuleTarget, imageTag?: string): events.EventRule;
+
+  /**
+   * Export this repository from the stack
+   */
+  export(): RepositoryAttributes;
 }
 
-export interface ImportRepositoryProps {
+export interface RepositoryAttributes {
   /**
    * The ARN of the repository to import.
    *
@@ -109,7 +114,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Import a repository
    */
-  public static import(parent: cdk.Construct, id: string, props: ImportRepositoryProps): IRepository {
+  public static import(parent: cdk.Construct, id: string, props: RepositoryAttributes): IRepository {
     return new ImportedRepository(parent, id, props);
   }
 
@@ -166,12 +171,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Export this repository from the stack
    */
-  public export(): ImportRepositoryProps {
-    return {
-      repositoryArn: new cdk.Output(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
-      repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
-    };
-  }
+  public abstract export(): RepositoryAttributes;
 
   public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineSourceActionProps = {}):
       PipelineSourceAction {
@@ -254,7 +254,7 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ImportRepositoryProps) {
+  constructor(parent: cdk.Construct, id: string, props: RepositoryAttributes) {
     super(parent, id);
 
     if (props.repositoryArn) {
@@ -280,6 +280,13 @@ class ImportedRepository extends RepositoryBase {
 
       this.repositoryName = this.repositoryArn.split('/').slice(1).join('/');
     }
+  }
+
+  public export(): RepositoryAttributes {
+    return {
+      repositoryArn: this.repositoryArn,
+      repositoryName: this.repositoryName
+    };
   }
 
   public addToResourcePolicy(_statement: iam.PolicyStatement) {

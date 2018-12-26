@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/cdk';
-import { FunctionRef } from './lambda-ref';
+import { IFunction } from './lambda-ref';
 import { CfnVersion } from './lambda.generated';
 
 /**
@@ -25,7 +25,7 @@ export interface FunctionVersionProps {
   /**
    * Function to get the value of
    */
-  lambda: FunctionRef;
+  lambda: IFunction;
 }
 
 /**
@@ -53,7 +53,7 @@ export class FunctionVersion extends Construct {
   /**
    * Lambda object this version is associated with
    */
-  public readonly lambda: FunctionRef;
+  public readonly lambda: IFunction;
 
   constructor(parent: Construct, name: string, props: FunctionVersionProps) {
     super(parent, name);

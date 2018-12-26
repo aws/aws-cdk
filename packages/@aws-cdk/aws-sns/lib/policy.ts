@@ -1,13 +1,13 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
 import { Construct, IDependable } from '@aws-cdk/cdk';
 import { CfnTopicPolicy } from './sns.generated';
-import { TopicRef } from './topic-ref';
+import { ITopic } from './topic-ref';
 
 export interface TopicPolicyProps {
   /**
    * The set of topics this policy applies to.
    */
-  topics: TopicRef[];
+  topics: ITopic[];
 }
 
 /**

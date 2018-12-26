@@ -98,7 +98,7 @@ export = {
 
     // WHEN
     const ref = queue.export();
-    const imports = sqs.QueueRef.import(stack, 'Imported', ref);
+    const imports = sqs.Queue.import(stack, 'Imported', ref);
 
     // THEN
 

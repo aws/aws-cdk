@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { FunctionRef } from './lambda-ref';
+import { FunctionAttributes, FunctionBase, IFunction } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
 import { Permission } from './permission';
@@ -51,7 +51,7 @@ export interface AliasProps {
 /**
  * A new alias to a particular version of a Lambda function.
  */
-export class Alias extends FunctionRef {
+export class Alias extends FunctionBase {
   /**
    * ARN of this alias
    *
@@ -78,7 +78,7 @@ export class Alias extends FunctionRef {
   /**
    * The actual Lambda function object that this Alias is pointing to
    */
-  private readonly underlyingLambda: FunctionRef;
+  private readonly underlyingLambda: IFunction;
 
   constructor(parent: cdk.Construct, name: string, props: AliasProps) {
     super(parent, name);
@@ -97,6 +97,12 @@ export class Alias extends FunctionRef {
     // where the name is expected, and an ARN can refer to an Alias.
     this.functionName = alias.ref;
     this.functionArn = alias.aliasArn;
+  }
+
+  public export(): FunctionAttributes {
+    return {
+      functionArn: new cdk.Output(this, 'AliasArn', { value: this.functionArn }).makeImportValue().toString()
+    };
   }
 
   public addPermission(name: string, permission: Permission) {

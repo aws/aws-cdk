@@ -75,7 +75,7 @@ export class NoSource extends BuildSource {
  * Construction properties for {@link CodeCommitSource}.
  */
 export interface CodeCommitSourceProps extends BuildSourceProps {
-  repository: codecommit.RepositoryRef;
+  repository: codecommit.IRepository;
 }
 
 /**
@@ -83,7 +83,7 @@ export interface CodeCommitSourceProps extends BuildSourceProps {
  */
 export class CodeCommitSource extends BuildSource {
   public readonly type: SourceType = SourceType.CodeCommit;
-  private readonly repo: codecommit.RepositoryRef;
+  private readonly repo: codecommit.IRepository;
 
   constructor(props: CodeCommitSourceProps) {
     super(props);
@@ -108,7 +108,7 @@ export class CodeCommitSource extends BuildSource {
  * Construction properties for {@link S3BucketSource}.
  */
 export interface S3BucketSourceProps extends BuildSourceProps {
-  bucket: s3.BucketRef;
+  bucket: s3.IBucket;
   path: string;
 }
 
@@ -117,7 +117,7 @@ export interface S3BucketSourceProps extends BuildSourceProps {
  */
 export class S3BucketSource extends BuildSource {
   public readonly type: SourceType = SourceType.S3;
-  private readonly bucket: s3.BucketRef;
+  private readonly bucket: s3.IBucket;
   private readonly path: string;
 
   constructor(props: S3BucketSourceProps) {

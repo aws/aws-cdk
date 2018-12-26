@@ -4,10 +4,94 @@ import cdk = require('@aws-cdk/cdk');
 import { CfnRepository } from './codecommit.generated';
 import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 
+export interface IRepository {
+  /** The ARN of this Repository. */
+  readonly repositoryArn: string;
+
+  /** The human-visible name of this Repository. */
+  readonly repositoryName: string;
+
+  /** The HTTP clone URL */
+  readonly repositoryCloneUrlHttp: string;
+
+  /** The SSH clone URL */
+  readonly repositoryCloneUrlSsh: string;
+
+  /**
+   * Convenience method for creating a new {@link PipelineSourceAction},
+   * and adding it to the given Stage.
+   *
+   * @param stage the Pipeline Stage to add the new Action to
+   * @param name the name of the newly created Action
+   * @param props the properties of the new Action
+   * @returns the newly created {@link PipelineSourceAction}
+   */
+  addToPipeline(stage: actions.IStage, name: string, props?: CommonPipelineSourceActionProps): PipelineSourceAction;
+
+  /**
+   * Defines a CloudWatch event rule which triggers for repository events. Use
+   * `rule.addEventPattern(pattern)` to specify a filter.
+   */
+  onEvent(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+
+  /**
+   * Defines a CloudWatch event rule which triggers when a "CodeCommit
+   * Repository State Change" event occurs.
+   */
+  onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+
+  /**
+   * Defines a CloudWatch event rule which triggers when a reference is
+   * created (i.e. a new branch/tag is created) to the repository.
+   */
+  onReferenceCreated(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+
+  /**
+   * Defines a CloudWatch event rule which triggers when a reference is
+   * updated (i.e. a commit is pushed to an existing or new branch) from the repository.
+   */
+  onReferenceUpdated(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+
+  /**
+   * Defines a CloudWatch event rule which triggers when a reference is
+   * delete (i.e. a branch/tag is deleted) from the repository.
+   */
+  onReferenceDeleted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+
+  /**
+   * Defines a CloudWatch event rule which triggers when a pull request state is changed.
+   */
+  onPullRequestStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+
+  /**
+   * Defines a CloudWatch event rule which triggers when a comment is made on a pull request.
+   */
+  onCommentOnPullRequest(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+
+  /**
+   * Defines a CloudWatch event rule which triggers when a comment is made on a commit.
+   */
+  onCommentOnCommit(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+
+  /**
+   * Defines a CloudWatch event rule which triggers when a commit is pushed to a branch.
+   * @param target The target of the event
+   * @param branch The branch to monitor. Defaults to all branches.
+   */
+  onCommit(name: string, target?: events.IEventRuleTarget, branch?: string): events.EventRule;
+
+  /**
+   * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
+   *
+   * @see import
+   */
+  export(): RepositoryAttributes;
+}
+
 /**
- * Properties for the {@link RepositoryRef.import} method.
+ * Properties for the {@link Repository.import} method.
  */
-export interface RepositoryRefProps {
+export interface RepositoryAttributes {
   /**
    * The name of an existing CodeCommit Repository that we are referencing.
    * Must be in the same account and region as the root Stack.
@@ -22,42 +106,22 @@ export interface RepositoryRefProps {
  * use the {@link Repository} class.
  *
  * If you want to reference an already existing Repository,
- * use the {@link RepositoryRef.import} method.
+ * use the {@link Repository.import} method.
  */
-export abstract class RepositoryRef extends cdk.Construct {
-  /**
-   * Import a Repository defined either outside the CDK, or in a different Stack
-   * (exported with the {@link export} method).
-   *
-   * @param parent the parent Construct for the Repository
-   * @param name the name of the Repository Construct
-   * @param props the properties used to identify the existing Repository
-   * @returns a reference to the existing Repository
-   */
-  public static import(parent: cdk.Construct, name: string, props: RepositoryRefProps): RepositoryRef {
-    return new ImportedRepositoryRef(parent, name, props);
-  }
-
+export abstract class RepositoryBase extends cdk.Construct implements IRepository {
   /** The ARN of this Repository. */
   public abstract readonly repositoryArn: string;
 
   /** The human-visible name of this Repository. */
   public abstract readonly repositoryName: string;
+
   /** The HTTP clone URL */
   public abstract readonly repositoryCloneUrlHttp: string;
+
   /** The SSH clone URL */
   public abstract readonly repositoryCloneUrlSsh: string;
 
-  /**
-   * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
-   *
-   * @see import
-   */
-  public export(): RepositoryRefProps {
-    return {
-      repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
-    };
-  }
+  public abstract export(): RepositoryAttributes;
 
   /**
    * Convenience method for creating a new {@link PipelineSourceAction},
@@ -173,11 +237,11 @@ export abstract class RepositoryRef extends cdk.Construct {
   }
 }
 
-class ImportedRepositoryRef extends RepositoryRef {
+class ImportedRepository extends RepositoryBase {
   public readonly repositoryArn: string;
   public readonly repositoryName: string;
 
-  constructor(parent: cdk.Construct, name: string, props: RepositoryRefProps) {
+  constructor(parent: cdk.Construct, name: string, private readonly props: RepositoryAttributes) {
     super(parent, name);
 
     this.repositoryArn = cdk.ArnUtils.fromComponents({
@@ -185,6 +249,10 @@ class ImportedRepositoryRef extends RepositoryRef {
       resource: props.repositoryName,
     });
     this.repositoryName = props.repositoryName;
+  }
+
+  public export() {
+    return this.props;
   }
 
   public get repositoryCloneUrlHttp() {
@@ -216,7 +284,20 @@ export interface RepositoryProps {
 /**
  * Provides a CodeCommit Repository
  */
-export class Repository extends RepositoryRef {
+export class Repository extends RepositoryBase {
+  /**
+   * Import a Repository defined either outside the CDK, or in a different Stack
+   * (exported with the {@link export} method).
+   *
+   * @param parent the parent Construct for the Repository
+   * @param name the name of the Repository Construct
+   * @param props the properties used to identify the existing Repository
+   * @returns a reference to the existing Repository
+   */
+  public static import(parent: cdk.Construct, name: string, props: RepositoryAttributes): IRepository {
+    return new ImportedRepository(parent, name, props);
+  }
+
   private readonly repository: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
@@ -244,6 +325,17 @@ export class Repository extends RepositoryRef {
 
   public get repositoryName() {
     return this.repository.repositoryName;
+  }
+
+  /**
+   * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
+   *
+   * @see import
+   */
+  public export(): RepositoryAttributes {
+    return {
+      repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
+    };
   }
 
   /**

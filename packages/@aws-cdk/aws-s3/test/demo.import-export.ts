@@ -7,7 +7,7 @@ import s3 = require('../lib');
 // `Bucket.import`.
 
 class Producer extends cdk.Stack {
-  public readonly myBucketRef: s3.BucketRefProps;
+  public readonly myBucketRef: s3.BucketAttributes;
 
   constructor(parent: cdk.App, name: string) {
     super(parent, name);
@@ -18,7 +18,7 @@ class Producer extends cdk.Stack {
 }
 
 interface ConsumerConstructProps {
-  bucket: s3.BucketRef;
+  bucket: s3.IBucket;
 }
 
 class ConsumerConstruct extends cdk.Construct {
@@ -35,7 +35,7 @@ class ConsumerConstruct extends cdk.Construct {
 // this bucket and contents.
 
 interface ConsumerProps {
-  userBucketRef: s3.BucketRefProps;
+  userBucketRef: s3.BucketAttributes;
 }
 
 class Consumer extends cdk.Stack {

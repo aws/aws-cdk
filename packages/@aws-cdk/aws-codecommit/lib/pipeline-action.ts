@@ -1,7 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { RepositoryRef } from './repository';
+import { IRepository } from './repository';
 
 /**
  * Common properties for creating {@link PipelineSourceAction} -
@@ -39,7 +39,7 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
   /**
    * The CodeCommit repository.
    */
-  repository: RepositoryRef;
+  repository: IRepository;
 }
 
 /**

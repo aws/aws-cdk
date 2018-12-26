@@ -1,7 +1,28 @@
 import cdk = require('@aws-cdk/cdk');
-import { ClusterParameterGroupRef } from './cluster-parameter-group-ref';
 import { Parameters } from './props';
 import { CfnDBClusterParameterGroup } from './rds.generated';
+
+/**
+ * A cluster parameter group
+ */
+export interface IClusterParameterGroup {
+  /**
+   * Name of this parameter group
+   */
+  readonly parameterGroupName: string;
+
+  /**
+   * Export this parameter group
+   */
+  export(): ClusterParameterGroupAttributes;
+}
+
+/**
+ * Properties to reference a cluster parameter group
+ */
+export interface ClusterParameterGroupAttributes {
+  parameterGroupName: string;
+}
 
 /**
  * Properties for a cluster parameter group
@@ -26,7 +47,14 @@ export interface ClusterParameterGroupProps {
 /**
  * Defina a cluster parameter group
  */
-export class ClusterParameterGroup extends ClusterParameterGroupRef {
+export class ClusterParameterGroup extends cdk.Construct implements IClusterParameterGroup {
+  /**
+   * Import a parameter group
+   */
+  public static import(parent: cdk.Construct, id: string, props: ClusterParameterGroupAttributes): IClusterParameterGroup {
+    return new ImportedClusterParameterGroup(parent, id, props);
+  }
+
   public readonly parameterGroupName: string;
   private readonly parameters: Parameters = {};
 
@@ -44,6 +72,15 @@ export class ClusterParameterGroup extends ClusterParameterGroupRef {
     }
 
     this.parameterGroupName = resource.ref;
+  }
+
+  /**
+   * Export this parameter group
+   */
+  public export(): ClusterParameterGroupAttributes {
+    return {
+      parameterGroupName: new cdk.Output(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
+    };
   }
 
   /**
@@ -73,5 +110,21 @@ export class ClusterParameterGroup extends ClusterParameterGroupRef {
       return ['At least one parameter required, call setParameter().'];
     }
     return [];
+  }
+}
+
+/**
+ * An imported cluster parameter group
+ */
+class ImportedClusterParameterGroup extends cdk.Construct implements IClusterParameterGroup {
+  public readonly parameterGroupName: string;
+
+  constructor(parent: cdk.Construct, id: string, private readonly props: ClusterParameterGroupAttributes) {
+    super(parent, id);
+    this.parameterGroupName = props.parameterGroupName;
+  }
+
+  public export() {
+    return this.props;
   }
 }

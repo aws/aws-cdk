@@ -11,7 +11,7 @@ export abstract class Code {
    * @param key The object key
    * @param objectVersion Optional S3 object version
    */
-  public static bucket(bucket: s3.BucketRef, key: string, objectVersion?: string) {
+  public static bucket(bucket: s3.IBucket, key: string, objectVersion?: string) {
     return new S3Code(bucket, key, objectVersion);
   }
 
@@ -71,7 +71,7 @@ export abstract class Code {
 export class S3Code extends Code {
   private bucketName: string;
 
-  constructor(bucket: s3.BucketRef, private key: string, private objectVersion?: string) {
+  constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
     super();
 
     if (!bucket.bucketName) {

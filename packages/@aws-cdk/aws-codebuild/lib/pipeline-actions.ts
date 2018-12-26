@@ -1,7 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { ProjectRef } from './project';
+import { IProject } from './project';
 
 /**
  * Common construction properties of all CodeBuild Pipeline Actions.
@@ -50,7 +50,7 @@ export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps
   /**
    * The build project
    */
-  project: ProjectRef;
+  project: IProject;
 }
 
 /**
@@ -139,7 +139,7 @@ export interface PipelineTestActionProps extends CommonPipelineTestActionProps,
   /**
    * The build Project.
    */
-  project: ProjectRef;
+  project: IProject;
 }
 
 export class PipelineTestAction extends codepipeline.TestAction {
@@ -192,7 +192,7 @@ export class PipelineTestAction extends codepipeline.TestAction {
   }
 }
 
-function setCodeBuildNeededPermissions(stage: codepipeline.IStage, project: ProjectRef,
+function setCodeBuildNeededPermissions(stage: codepipeline.IStage, project: IProject,
                                        needsPipelineBucketWrite: boolean) {
   // grant the Pipeline role the required permissions to this Project
   stage.pipeline.role.addToPolicy(new iam.PolicyStatement()

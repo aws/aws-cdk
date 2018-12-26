@@ -242,7 +242,7 @@ export = {
 
       // WHEN
       const props = fn.export();
-      const imported = lambda.FunctionRef.import(stack2, 'Imported', props);
+      const imported = lambda.Function.import(stack2, 'Imported', props);
 
       // Can call addPermission() but it won't do anything
       imported.addPermission('Hello', {
@@ -1076,7 +1076,7 @@ export = {
     let bindTarget;
 
     class EventSourceMock implements lambda.IEventSource {
-      public bind(target: lambda.FunctionRef) {
+      public bind(target: lambda.IFunction) {
         bindTarget = target;
       }
     }
