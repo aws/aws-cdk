@@ -22,6 +22,7 @@ new lambda.Function(this, 'MyHandler', {
   // ...
   code: lambda.Code.asset('/path/to/handler')
 });
+```
 
 The synthesized `AWS::Lambda::Function` resource will include a "Metadata" entry as follows:
 
