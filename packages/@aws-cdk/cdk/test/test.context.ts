@@ -2,8 +2,9 @@ import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, AvailabilityZoneProvider, Construct, ContextProvider,
   MetadataEntry, resolve, SSMParameterProvider, Stack } from '../lib';
+import { makeCloudformationTestSuite } from './util';
 
-export = {
+export = makeCloudformationTestSuite({
   'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const azs = new AvailabilityZoneProvider(stack).availabilityZones;
@@ -111,7 +112,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 function firstKey(obj: any): string {
   return Object.keys(obj)[0];

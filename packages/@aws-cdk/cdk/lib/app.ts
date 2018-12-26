@@ -83,7 +83,8 @@ export class App extends Root {
       environment,
       missing,
       template: stack.toCloudFormation(),
-      metadata: this.collectMetadata(stack)
+      metadata: this.collectMetadata(stack),
+      dependsOn: stack.dependencyStackIds(),
     };
   }
 

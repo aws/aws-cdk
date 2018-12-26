@@ -113,17 +113,6 @@ export class Token {
     }
     return this.tokenListification;
   }
-
-  /**
-   * Return a concated version of this Token in a string context
-   *
-   * The default implementation of this combines strings, but specialized
-   * implements of Token can return a more appropriate value.
-   */
-  public concat(left: any | undefined, right: any | undefined): Token {
-    const parts = [left, resolve(this), right].filter(x => x !== undefined);
-    return new Token(parts.map(x => `${x}`).join(''));
-  }
 }
 
 /**
@@ -150,11 +139,12 @@ export function unresolved(obj: any): boolean {
  * @param prefix Prefix key path components for diagnostics.
  */
 export function resolve(obj: any, prefix?: string[]): any {
-  const path = prefix || [ ];
-  const pathName = '/' + path.join('/');
+  prefix = prefix || [ ];
+  const pathName = '/' + prefix.join('/');
+  const recurse = RESOLVE_OPTIONS.recurse || resolve;
 
   // protect against cyclic references by limiting depth.
-  if (path.length > 200) {
+  if (prefix.length > 200) {
     throw new Error('Unable to resolve object tree with circular reference. Path: ' + pathName);
   }
 
@@ -186,7 +176,11 @@ export function resolve(obj: any, prefix?: string[]): any {
   // string - potentially replace all stringified Tokens
   //
   if (typeof(obj) === 'string') {
-    return TOKEN_MAP.resolveStringTokens(obj as string);
+    const concat = RESOLVE_OPTIONS.concatFunc;
+    if (!concat) {
+      throw new Error('Cannot resolve a string with Tokens; no concatenation function given');
+    }
+    return TOKEN_MAP.resolveStringTokens(obj as string, recurse, concat);
   }
 
   //
@@ -207,7 +201,7 @@ export function resolve(obj: any, prefix?: string[]): any {
     }
 
     const arr = obj
-      .map((x, i) => resolve(x, path.concat(i.toString())))
+      .map((x, i) => recurse(x, prefix!.concat(i.toString())))
       .filter(x => typeof(x) !== 'undefined');
 
     return arr;
@@ -219,7 +213,7 @@ export function resolve(obj: any, prefix?: string[]): any {
 
   if (unresolved(obj)) {
     const value = obj[RESOLVE_METHOD]();
-    return resolve(value, path);
+    return recurse(value, prefix);
   }
 
   //
@@ -235,12 +229,12 @@ export function resolve(obj: any, prefix?: string[]): any {
 
   const result: any = { };
   for (const key of Object.keys(obj)) {
-    const resolvedKey = resolve(key);
+    const resolvedKey = recurse(key, prefix);
     if (typeof(resolvedKey) !== 'string') {
       throw new Error(`The key "${key}" has been resolved to ${JSON.stringify(resolvedKey)} but must be resolvable to a string`);
     }
 
-    const value = resolve(obj[key], path.concat(key));
+    const value = recurse(obj[key], prefix.concat(key));
 
     // skip undefined
     if (typeof(value) === 'undefined') {
@@ -271,12 +265,7 @@ function containsListToken(xs: any[]) {
  * works even when different copies of the library are loaded.
  */
 class TokenMap {
-  private readonly tokenMap: {[key: string]: Token};
-
-  constructor() {
-    const glob = global as any;
-    this.tokenMap = glob.__cdkTokenMap = glob.__cdkTokenMap || {};
-  }
+  private readonly tokenMap: {[key: string]: Token} = {};
 
   /**
    * Generate a unique string for this Token, returning a key
@@ -319,10 +308,14 @@ class TokenMap {
   /**
    * Replace any Token markers in this string with their resolved values
    */
-  public resolveStringTokens(s: string): any {
+  public resolveStringTokens(s: string, resolver: ResolveFunc, concat: ConcatFunc): any {
     const str = this.createStringTokenString(s);
     const fragments = str.split(this.lookupToken.bind(this));
-    return fragments.join();
+    const ret = fragments.mapUnresolved(resolver).join(concat);
+    if (unresolved(ret)) {
+      return resolve(ret);
+    }
+    return ret;
   }
 
   public resolveListTokens(xs: string[]): any {
@@ -370,11 +363,6 @@ const END_TOKEN_MARKER = ']}';
 const VALID_KEY_CHARS = 'a-zA-Z0-9:._-';
 
 /**
- * Singleton instance of the token string map
- */
-const TOKEN_MAP = new TokenMap();
-
-/**
  * Interface that Token joiners implement
  */
 export interface ITokenJoiner {
@@ -409,25 +397,25 @@ class TokenString {
   /**
    * Split string on markers, substituting markers with Tokens
    */
-  public split(lookup: (id: string) => Token): TokenStringFragments {
+  public split(lookup: (id: string) => Token): TokenizedStringFragments {
     const re = new RegExp(this.pattern, 'g');
-    const ret = new TokenStringFragments();
+    const ret = new TokenizedStringFragments();
 
     let rest = 0;
     let m = re.exec(this.str);
     while (m) {
       if (m.index > rest) {
-        ret.addString(this.str.substring(rest, m.index));
+        ret.addLiteral(this.str.substring(rest, m.index));
       }
 
-      ret.addToken(lookup(m[1]));
+      ret.addUnresolved(lookup(m[1]));
 
       rest = re.lastIndex;
       m = re.exec(this.str);
     }
 
     if (rest < this.str.length) {
-      ret.addString(this.str.substring(rest));
+      ret.addLiteral(this.str.substring(rest));
     }
 
     return ret;
@@ -447,14 +435,14 @@ class TokenString {
  *
  * Either a literal part of the string, or an unresolved Token.
  */
-type StringFragment = { type: 'string'; str: string };
-type TokenFragment = { type: 'token'; token: Token };
-type Fragment =  StringFragment | TokenFragment;
+type LiteralFragment = { type: 'literal'; lit: any; };
+type UnresolvedFragment = { type: 'unresolved'; token: any; };
+type Fragment =  LiteralFragment | UnresolvedFragment;
 
 /**
  * Fragments of a string with markers
  */
-class TokenStringFragments {
+class TokenizedStringFragments {
   private readonly fragments = new Array<Fragment>();
 
   public get length() {
@@ -462,15 +450,38 @@ class TokenStringFragments {
   }
 
   public values(): any[] {
-    return this.fragments.map(f => f.type === 'token' ? resolve(f.token) : f.str);
+    return this.fragments.map(f => f.type === 'unresolved' ? resolve(f.token) : f.lit);
   }
 
-  public addString(str: string) {
-    this.fragments.push({ type: 'string', str });
+  public addLiteral(lit: any) {
+    this.fragments.push({ type: 'literal', lit });
   }
 
-  public addToken(token: Token) {
-    this.fragments.push({ type: 'token', token });
+  public addUnresolved(token: Token) {
+    this.fragments.push({ type: 'unresolved', token });
+  }
+
+  public mapUnresolved(fn: (t: any) => any): TokenizedStringFragments {
+    const ret = new TokenizedStringFragments();
+
+    for (const f of this.fragments) {
+      switch (f.type) {
+        case 'literal':
+          ret.addLiteral(f.lit);
+          break;
+        case 'unresolved':
+          const mappedToken = fn(f.token);
+
+          if (unresolved(mappedToken)) {
+            ret.addUnresolved(mappedToken);
+          } else {
+            ret.addLiteral(mappedToken);
+          }
+          break;
+      }
+    }
+
+    return ret;
   }
 
   /**
@@ -478,38 +489,25 @@ class TokenStringFragments {
    *
    * Resolves the result.
    */
-  public join(): any {
-    if (this.fragments.length === 0) { return ''; }
-    if (this.fragments.length === 1) { return resolveFragment(this.fragments[0]); }
+  public join(concat: ConcatFunc): any {
+    if (this.fragments.length === 0) { return concat(undefined, undefined); }
 
-    const first = this.fragments[0];
+    const values = this.fragments.map(fragmentValue);
 
-    let i;
-    let token: Token;
-
-    if (first.type === 'token') {
-      token = first.token;
-      i = 1;
-    } else {
-      // We never have two strings in a row
-      token = (this.fragments[1] as TokenFragment).token.concat(first.str, undefined);
-      i = 2;
+    while (values.length > 1) {
+      const prefix = values.splice(0, 2);
+      values.splice(0, 0, concat(prefix[0], prefix[1]));
     }
 
-    while (i < this.fragments.length) {
-      token = token.concat(undefined, resolveFragment(this.fragments[i]));
-      i++;
-    }
-
-    return resolve(token);
+    return values[0];
   }
 }
 
 /**
  * Resolve the value from a single fragment
  */
-function resolveFragment(fragment: Fragment): any {
-  return fragment.type === 'string' ? fragment.str : resolve(fragment.token);
+function fragmentValue(fragment: Fragment): any {
+  return fragment.type === 'literal' ? fragment.lit : fragment.token;
 }
 
 /**
@@ -518,3 +516,83 @@ function resolveFragment(fragment: Fragment): any {
 function regexQuote(s: string) {
   return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
 }
+
+/**
+ * Global options for resolve()
+ *
+ * Because there are many independent calls to resolve(), some losing context,
+ * we cannot simply pass through options at each individual call. Instead,
+ * we configure global context at the stack synthesis level.
+ */
+export class ResolveConfiguration {
+  private readonly options = new Array<ResolveOptions>();
+
+  public push(options: ResolveOptions): OptionsContext {
+    this.options.push(options);
+
+    return {
+      pop: () => {
+        if (this.options.length === 0 || this.options[this.options.length - 1] !== options) {
+          throw new Error('ResolveConfiguration push/pop mismatch');
+        }
+        this.options.pop();
+      }
+    };
+  }
+
+  public get concatFunc(): ConcatFunc | undefined {
+    for (let i = this.options.length - 1; i >= 0; i--) {
+      if (this.options[i].concat) {
+        return this.options[i].concat;
+      }
+    }
+    return undefined;
+  }
+
+  public get recurse(): ResolveFunc | undefined {
+    for (let i = this.options.length - 1; i >= 0; i--) {
+      if (this.options[i].recurse) {
+        return this.options[i].recurse;
+      }
+    }
+    return undefined;
+  }
+}
+
+export interface OptionsContext {
+  pop(): void;
+}
+
+export interface ResolveOptions {
+  /**
+   * Function to use for concatenating symbols in the target document language
+   */
+  concat?: ConcatFunc;
+
+  /**
+   * What function to use for recursing into deeper resolutions
+   */
+  recurse?: ResolveFunc;
+}
+
+/**
+ * Function used to resolve Tokens
+ */
+export type ResolveFunc = (obj: any) => any;
+
+/**
+ * Function used to concatenate symbols in the target document language
+ */
+export type ConcatFunc = (left: any | undefined, right: any | undefined) => any;
+
+const glob = global as any;
+
+/**
+ * Singleton instance of the token string map
+ */
+const TOKEN_MAP: TokenMap = glob.__cdkTokenMap = glob.__cdkTokenMap || new TokenMap();
+
+/**
+ * Singleton instance of resolver options
+ */
+export const RESOLVE_OPTIONS: ResolveConfiguration = glob.__cdkResolveOptions = glob.__cdkResolveOptions || new ResolveConfiguration();

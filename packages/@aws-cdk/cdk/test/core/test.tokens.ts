@@ -1,8 +1,9 @@
 import { Test } from 'nodeunit';
 import { CloudFormationToken, FnJoin, FnSelect, resolve, Token, unresolved } from '../../lib';
 import { evaluateCFN } from '../cloudformation/evaluate-cfn';
+import { makeCloudformationTestSuite } from '../util';
 
-export = {
+export = makeCloudformationTestSuite({
   'resolve a plain old object should just return the object'(test: Test) {
     const obj = { PlainOldObject: 123, Array: [ 1, 2, 3 ] };
     test.deepEqual(resolve(obj), obj);
@@ -351,7 +352,7 @@ export = {
       test.done();
     }
   }
-};
+});
 
 class Promise2 extends Token {
   public resolve() {

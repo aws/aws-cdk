@@ -127,7 +127,7 @@ export class Output extends StackElement {
   public substituteCrossStackReferences(sourceStack: Stack): void {
     this._value = this.deepSubCrossStackReferences(sourceStack, this._value);
   }
-  
+
   public get ref(): string {
     throw new Error('Outputs cannot be referenced');
   }

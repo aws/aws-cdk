@@ -1,7 +1,8 @@
 import { Test } from 'nodeunit';
 import { Construct, Parameter, resolve, Resource, Stack } from '../../lib';
+import { makeCloudformationTestSuite } from '../util';
 
-export = {
+export = makeCloudformationTestSuite({
   'parameters can be used and referenced using param.ref'(test: Test) {
     const stack = new Stack();
 
@@ -35,4 +36,4 @@ export = {
     test.deepEqual(resolve(param), { Ref: 'MyParam' });
     test.done();
   }
-};
+});

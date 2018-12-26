@@ -1,7 +1,8 @@
 import { Test } from 'nodeunit';
 import { ArnComponents, ArnUtils, FnConcat, resolve, Stack, Token } from '../../lib';
+import { makeCloudformationTestSuite } from '../util';
 
-export = {
+export = makeCloudformationTestSuite({
   'create from components with defaults'(test: Test) {
     const stack = new Stack();
 
@@ -214,4 +215,4 @@ export = {
     }
   },
 
-};
+});

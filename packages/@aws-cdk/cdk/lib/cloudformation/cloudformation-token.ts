@@ -1,15 +1,19 @@
 import { Construct } from "../core/construct";
-import { resolve, Token } from "../core/tokens";
+import { Token } from "../core/tokens";
 
 /**
  * Base class for CloudFormation built-ins
  */
 export class CloudFormationToken extends Token {
-  public concat(left: any | undefined, right: any | undefined): Token {
+  public static cloudFormationConcat(left: any | undefined, right: any | undefined): any {
+    if (left === undefined && right === undefined) { return ''; }
+
     const parts = new Array<any>();
     if (left !== undefined) { parts.push(left); }
-    parts.push(resolve(this));
     if (right !== undefined) { parts.push(right); }
+
+    if (parts.length === 1) { return parts[0]; }
+
     return new FnConcat(...parts);
   }
 }

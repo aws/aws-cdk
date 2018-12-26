@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App, AwsAccountId, Condition, Construct, Include, Output, Parameter, Resource, Root, Stack } from '../../lib';
+import { App, AwsAccountId, Condition, Construct, Include, Output, Parameter, Resource, Root, Stack, Token } from '../../lib';
 
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
@@ -208,23 +208,116 @@ export = {
     test.done();
   },
 
-  'references in strings work'(test: Test) {
-    test.assert(false, 'NIMPL');
+  'cross-stack references in lazy tokens work'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const account1 = new AwsAccountId(stack1);
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another stack
+    new Parameter(stack2, 'SomeParameter', { type: 'String', default: new Token(() => account1) });
+
+    app.applyCrossEnvironmentReferences();
+
+    // THEN
+    test.deepEqual(stack1.toCloudFormation(), {
+      Outputs: {
+        ExportsOutputRefAWSAccountIdAD568057: {
+          Value: { Ref: 'AWS::AccountId' },
+          Export: { Name: 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }
+        }
+      }
+    });
+
+    test.deepEqual(stack2.toCloudFormation(), {
+      Parameters: {
+        SomeParameter: {
+          Type: 'String',
+          Default: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'cross-stack references in strings work'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const account1 = new AwsAccountId(stack1);
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another stack
+    new Parameter(stack2, 'SomeParameter', { type: 'String', default: `TheAccountIs${account1}` });
+
+    app.applyCrossEnvironmentReferences();
+
+    // THEN
+    test.deepEqual(stack2.toCloudFormation(), {
+      Parameters: {
+        SomeParameter: {
+          Type: 'String',
+          Default: { 'Fn::Join': [ '', [ 'TheAccountIs', { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' } ]] }
+        }
+      }
+    });
+
     test.done();
   },
 
   'cannot create cyclic reference between stacks'(test: Test) {
-    test.assert(false, 'NIMPL');
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const account1 = new AwsAccountId(stack1);
+    const stack2 = new Stack(app, 'Stack2');
+    const account2 = new AwsAccountId(stack2);
+
+    // WHEN
+    new Parameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
+    new Parameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
+
+    test.throws(() => {
+      app.applyCrossEnvironmentReferences();
+    }, /Adding this dependency would create a cyclic reference/);
+
     test.done();
   },
 
-  'stacks with references have an order'(test: Test) {
-    test.assert(false, 'NIMPL');
+  'stacks know about their dependencies'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const account1 = new AwsAccountId(stack1);
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN
+    new Parameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
+
+    app.applyCrossEnvironmentReferences();
+
+    // THEN
+    test.deepEqual(stack2.dependencyStackIds(), ['Stack1']);
+
     test.done();
   },
 
   'cannot create references to stacks in other regions/accounts'(test: Test) {
-    test.assert(false, 'NIMPL');
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' }});
+    const account1 = new AwsAccountId(stack1);
+    const stack2 = new Stack(app, 'Stack2', { env: { account: '123456789012', region: 'es-norst-2' }});
+
+    // WHEN
+    new Parameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
+
+    test.throws(() => {
+      app.applyCrossEnvironmentReferences();
+    }, /Can only reference cross stacks in the same region and account/);
+
     test.done();
   },
 };

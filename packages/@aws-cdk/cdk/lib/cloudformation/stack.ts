@@ -1,9 +1,9 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
 import { Construct, PATH_SEP } from '../core/construct';
-import { resolve, Token, unresolved } from '../core/tokens';
+import { resolve, RESOLVE_OPTIONS, Token, unresolved } from '../core/tokens';
 import { Environment } from '../environment';
-import { StackAwareCloudFormationToken } from './cloudformation-token';
+import { CloudFormationToken, StackAwareCloudFormationToken } from './cloudformation-token';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
 
@@ -154,6 +154,7 @@ export class Stack extends Construct {
   public toCloudFormation() {
     // before we begin synthesis, we shall lock this stack, so children cannot be added
     this.lock();
+    const options = RESOLVE_OPTIONS.push({ concat: CloudFormationToken.cloudFormationConcat });
 
     try {
       const template: any = {
@@ -172,7 +173,7 @@ export class Stack extends Construct {
       }
 
       // resolve all tokens and remove all empties
-      const ret = resolve(template) || { };
+      const ret = resolve(template) || {};
 
       this.logicalIds.assertAllRenamesApplied();
 
@@ -180,6 +181,7 @@ export class Stack extends Construct {
     } finally {
       // allow mutations after synthesis is finished.
       this.unlock();
+      options.pop();
     }
   }
 
@@ -253,6 +255,10 @@ export class Stack extends Construct {
     this.dependsOnStacks.add(stack);
   }
 
+  public dependencyStackIds(): string[] {
+    return Array.from(this.dependsOnStacks.values()).map(s => s.id);
+  }
+
   /**
    * Export a Token value for use in another stack
    */
@@ -275,8 +281,13 @@ export class Stack extends Construct {
   }
 
   public applyCrossEnvironmentReferences() {
-    const elements = stackElements(this);
-    elements.forEach(e => e.substituteCrossStackReferences(this));
+    const options = RESOLVE_OPTIONS.push({ concat: CloudFormationToken.cloudFormationConcat });
+    try {
+      const elements = stackElements(this);
+      elements.forEach(e => e.substituteCrossStackReferences(this));
+    } finally {
+      options.pop();
+    }
   }
 
   /**
@@ -465,12 +476,18 @@ export abstract class StackElement extends Construct implements IDependable {
     }
 
     if (unresolved(x)) {
-      x = resolve(x);
+      const options = RESOLVE_OPTIONS.push({ recurse: (y: any) => this.deepSubCrossStackReferences(sourceStack, y) });
+      try {
+        x = resolve(x);
+      } finally {
+        options.pop();
+      }
     }
 
     if (Array.isArray(x)) {
       return x.map(e => this.deepSubCrossStackReferences(sourceStack, e));
     }
+
     if (typeof x === 'object' && x !== null) {
       for (const [key, value] of Object.entries(x)) {
         x[key] = this.deepSubCrossStackReferences(sourceStack, value);

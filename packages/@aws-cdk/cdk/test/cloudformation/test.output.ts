@@ -1,7 +1,8 @@
 import { Test } from 'nodeunit';
 import { Construct, Output, Ref, resolve, Resource, Stack } from '../../lib';
+import { makeCloudformationTestSuite } from '../util';
 
-export = {
+export = makeCloudformationTestSuite({
   'outputs can be added to the stack'(test: Test) {
     const stack = new Stack();
     const res = new Resource(stack, 'MyResource', { type: 'R' });
@@ -66,4 +67,4 @@ export = {
     test.deepEqual(resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyStack:MyOutput' });
     test.done();
   }
-};
+});

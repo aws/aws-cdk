@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { StackElement, Stack } from './stack';
+import { Stack, StackElement } from './stack';
 
 export interface IncludeProps {
   /**
@@ -36,5 +36,6 @@ export class Include extends StackElement {
   }
 
   public substituteCrossStackReferences(_sourceStack: Stack): void {
+    // Left empty on purpose
   }
 }
