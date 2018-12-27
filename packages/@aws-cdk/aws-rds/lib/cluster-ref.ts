@@ -5,11 +5,6 @@ import ec2 = require('@aws-cdk/aws-ec2');
  */
 export interface IDatabaseCluster extends ec2.IConnectable {
   /**
-   * Access to the network connections
-   */
-  readonly connections: ec2.Connections;
-
-  /**
    * Identifier of the cluster
    */
   readonly clusterIdentifier: string;
