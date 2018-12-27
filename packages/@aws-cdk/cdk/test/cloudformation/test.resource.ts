@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { applyRemovalPolicy, Condition, Construct, DeletionPolicy,
-    FnEquals, FnNot, HashedAddressingScheme, IDependable,
+    Fn, HashedAddressingScheme, IDependable,
     RemovalPolicy, resolve, Resource, Root, Stack } from '../../lib';
 
 export = {
@@ -154,7 +154,7 @@ export = {
   'conditions can be attached to a resource'(test: Test) {
     const stack = new Stack();
     const r1 = new Resource(stack, 'Resource', { type: 'Type' });
-    const cond = new Condition(stack, 'MyCondition', { expression: new FnNot(new FnEquals('a', 'b')) });
+    const cond = new Condition(stack, 'MyCondition', { expression: Fn.conditionNot(Fn.conditionEquals('a', 'b')) });
     r1.options.condition = cond;
 
     test.deepEqual(stack.toCloudFormation(), {
