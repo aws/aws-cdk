@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, ArnUtils, Aws, resolve, Token } from '../../lib';
+import { ArnComponents, ArnUtils, AwsAccountId, AwsPartition, AwsRegion, resolve, Token } from '../../lib';
 
 export = {
   'create from components with defaults'(test: Test) {
@@ -9,7 +9,7 @@ export = {
     });
 
     test.deepEqual(resolve(arn),
-                   resolve(`arn:${Aws.partition}:sqs:${Aws.region}:${Aws.accountId}:myqueuename`));
+                   resolve(`arn:${new AwsPartition()}:sqs:${new AwsRegion()}:${new AwsAccountId()}:myqueuename`));
     test.done();
   },
 
@@ -52,7 +52,7 @@ export = {
     });
 
     test.deepEqual(resolve(arn),
-                   resolve(`arn:${Aws.partition}:codedeploy:${Aws.region}:${Aws.accountId}:application:WordPress_App`));
+                   resolve(`arn:${new AwsPartition()}:codedeploy:${new AwsRegion()}:${new AwsAccountId()}:application:WordPress_App`));
     test.done();
   },
 

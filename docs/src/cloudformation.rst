@@ -183,8 +183,8 @@ Pseudo Parameters
 
 .. code-block:: js
 
-    import { Aws } from '@aws-cdk/cdk';
-    Aws.region
+    import cdk = require('@aws-cdk/cdk');
+    new cdk.AwsRegion()
 
 .. Add a new topic in "Advanced Topics" about integrating
    cdk synch > mytemplate
