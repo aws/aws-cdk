@@ -1,4 +1,5 @@
 import { CloudFormationToken, FnJoin } from './cloudformation-token';
+import { FnCondition } from './condition';
 
 // tslint:disable:max-line-length
 
@@ -147,7 +148,7 @@ export class Fn {
    * @param conditions conditions to AND
    * @returns an FnCondition token
    */
-  public static andCondition(...conditions: FnCondition[]): FnCondition {
+  public static conditionAnd(...conditions: FnCondition[]): FnCondition {
     return new FnAnd(...conditions);
   }
 
@@ -158,7 +159,7 @@ export class Fn {
    * @param rhs A value of any type that you want to compare.
    * @returns an FnCondition token
    */
-  public static equalsCondition(lhs: any, rhs: any): FnCondition {
+  public static conditionEquals(lhs: any, rhs: any): FnCondition {
     return new FnEquals(lhs, rhs);
   }
 
@@ -177,7 +178,7 @@ export class Fn {
    * evaluates to false.
    * @returns an FnCondition token
    */
-  public static ifCondition(conditionId: string, valueIfTrue: any, valueIfFalse: any): FnCondition {
+  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): FnCondition {
     return new FnIf(conditionId, valueIfTrue, valueIfFalse);
   }
 
@@ -188,7 +189,7 @@ export class Fn {
    * or false.
    * @returns an FnCondition token
    */
-  public static notCondition(condition: FnCondition): FnCondition {
+  public static conditionNot(condition: FnCondition): FnCondition {
     return new FnNot(condition);
   }
 
@@ -200,7 +201,7 @@ export class Fn {
    * @param conditions conditions that evaluates to true or false.
    * @returns an FnCondition token
    */
-  public static orCondition(...conditions: FnCondition[]): FnCondition {
+  public static conditionOr(...conditions: FnCondition[]): FnCondition {
     return new FnOr(...conditions);
   }
 
@@ -211,7 +212,7 @@ export class Fn {
    * @param value A string, such as "A", that you want to compare against a list of strings.
    * @returns an FnCondition token
    */
-  public static containsCondition(listOfStrings: string[], value: string): FnCondition {
+  public static conditionContains(listOfStrings: string[], value: string): FnCondition {
     return new FnContains(listOfStrings, value);
   }
 
@@ -222,7 +223,7 @@ export class Fn {
    * of strings.
    * @returns an FnCondition token
    */
-  public eachMemberEqualsCondition(listOfStrings: string[], value: string): FnCondition {
+  public conditionEachMemberEquals(listOfStrings: string[], value: string): FnCondition {
     return new FnEachMemberEquals(listOfStrings, value);
   }
 
@@ -237,7 +238,7 @@ export class Fn {
    * strings_to_check parameter.
    * @returns an FnCondition token
    */
-  public eachMemberInCondition(stringsToCheck: string[], stringsToMatch: string): FnCondition {
+  public conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string): FnCondition {
     return new FnEachMemberIn(stringsToCheck, stringsToMatch);
   }
 
@@ -439,29 +440,6 @@ class FnCidr extends FnBase {
     }
     super('Fn::Cidr', [ipBlock, count, sizeMask]);
   }
-}
-
-/**
- * You can use intrinsic functions, such as ``Fn::If``, ``Fn::Equals``, and ``Fn::Not``, to conditionally
- * create stack resources. These conditions are evaluated based on input parameters that you
- * declare when you create or update a stack. After you define all your conditions, you can
- * associate them with resources or resource properties in the Resources and Outputs sections
- * of a template.
- *
- * You define all conditions in the Conditions section of a template except for ``Fn::If`` conditions.
- * You can use the ``Fn::If`` condition in the metadata attribute, update policy attribute, and property
- * values in the Resources section and Outputs sections of a template.
- *
- * You might use conditions when you want to reuse a template that can create resources in different
- * contexts, such as a test environment versus a production environment. In your template, you can
- * add an EnvironmentType input parameter, which accepts either prod or test as inputs. For the
- * production environment, you might include Amazon EC2 instances with certain capabilities;
- * however, for the test environment, you want to use less capabilities to save costs. With
- * conditions, you can define which resources are created and how they're configured for each
- * environment type.
- */
-export class FnCondition extends FnBase {
-
 }
 
 /**

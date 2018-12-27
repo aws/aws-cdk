@@ -310,7 +310,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent === undefined ? true : props.installAgent;
-    const region = (cdk.Aws.region).toString();
+    const region = new cdk.AwsRegion().toString();
     this.codeDeployBucket = s3.Bucket.import(this, 'CodeDeployBucket', {
       bucketName: `aws-codedeploy-${region}`,
     });
@@ -387,7 +387,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this.codeDeployBucket.grantRead(asg.role, 'latest/*');
 
-    const region = (cdk.Aws.region).toString();
+    const region = (new cdk.AwsRegion()).toString();
     switch (asg.osType) {
       case ec2.OperatingSystemType.Linux:
         asg.addUserData(

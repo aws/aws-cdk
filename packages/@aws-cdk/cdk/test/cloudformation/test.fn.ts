@@ -1,6 +1,7 @@
 import fc = require('fast-check');
 import _ = require('lodash');
 import nodeunit = require('nodeunit');
+import { CloudFormationToken } from '../../lib';
 import { Fn } from '../../lib/cloudformation/fn';
 import { resolve } from '../../lib/core/tokens';
 
@@ -53,7 +54,7 @@ export = nodeunit.testCase({
         fc.property(
           fc.string(), fc.array(nonEmptyString, 1, 3), tokenish, fc.array(nonEmptyString, 1, 3),
           (delimiter, prefix, obj, suffix) =>
-            _.isEqual(resolve(Fn.join(delimiter, [...prefix, obj as any, ...suffix])),
+            _.isEqual(resolve(Fn.join(delimiter, [...prefix, stringToken(obj), ...suffix])),
                       { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] })
         ),
         { verbose: true, seed: 1539874645005, path: "0:0:0:0:0:0:0:0:0" }
@@ -82,7 +83,7 @@ export = nodeunit.testCase({
           fc.array(anyValue, 3),
           (delimiter1, delimiter2, prefix,  nested, suffix) => {
             fc.pre(delimiter1 !== delimiter2);
-            const join = Fn.join(delimiter1, [...prefix, Fn.join(delimiter2, nested as any), ...suffix]);
+            const join = Fn.join(delimiter1, [...prefix, Fn.join(delimiter2, stringListToken(nested)), ...suffix]);
             const resolved = resolve(join);
             return resolved['Fn::Join'][1].find((e: any) => typeof e === 'object'
                                                         && ('Fn::Join' in e)
@@ -94,3 +95,10 @@ export = nodeunit.testCase({
     }),
   },
 });
+
+function stringListToken(o: any): string[] {
+  return new CloudFormationToken(o).toList();
+}
+function stringToken(o: any): string {
+  return new CloudFormationToken(o).toString();
+}

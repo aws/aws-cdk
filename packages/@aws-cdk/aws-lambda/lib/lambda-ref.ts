@@ -335,7 +335,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
       //
       // (Wildcards in principals are unfortunately not supported.
       this.addPermission('InvokedByCloudWatchLogs', {
-        principal: new iam.ServicePrincipal(`logs.${cdk.Aws.region}.amazonaws.com`),
+        principal: new iam.ServicePrincipal(`logs.${new cdk.AwsRegion()}.amazonaws.com`),
         sourceArn: arn
       });
       this.logSubscriptionDestinationPolicyAddedFor.push(arn);
@@ -356,7 +356,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
     if (!this.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
-        sourceAccount: cdk.Aws.accountId.toString(),
+        sourceAccount: new cdk.AwsAccountId().toString(),
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
         sourceArn: bucketArn,
       });

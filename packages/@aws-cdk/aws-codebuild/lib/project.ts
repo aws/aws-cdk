@@ -629,7 +629,7 @@ export class Project extends ProjectBase {
 
     let cache: CfnProject.ProjectCacheProperty | undefined;
     if (props.cacheBucket) {
-      const cacheDir = props.cacheDir != null ? props.cacheDir : cdk.Aws.noValue;
+      const cacheDir = props.cacheDir != null ? props.cacheDir : new cdk.AwsNoValue().toString();
       cache = {
         type: 'S3',
         location: cdk.Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),

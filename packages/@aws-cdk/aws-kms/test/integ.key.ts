@@ -1,5 +1,5 @@
 import { PolicyStatement } from '@aws-cdk/aws-iam';
-import { App, Aws, Stack } from '@aws-cdk/cdk';
+import { App, AwsAccountId, Stack } from '@aws-cdk/cdk';
 import { EncryptionKey } from '../lib';
 
 const app = new App();
@@ -11,7 +11,7 @@ const key = new EncryptionKey(stack, 'MyKey');
 key.addToResourcePolicy(new PolicyStatement()
   .addAllResources()
   .addAction('kms:encrypt')
-  .addAwsPrincipal(Aws.accountId));
+  .addAwsPrincipal(new AwsAccountId().toString()));
 
 key.addAlias('alias/bar');
 

@@ -137,7 +137,7 @@ export class PrivateHostedZone extends HostedZone {
 }
 
 function toVpcProperty(vpc: ec2.IVpcNetwork): CfnHostedZone.VPCProperty {
-  return { vpcId: vpc.vpcId, vpcRegion: cdk.Aws.region };
+  return { vpcId: vpc.vpcId, vpcRegion: new cdk.AwsRegion() };
 }
 
 function determineHostedZoneProps(props: PublicHostedZoneProps) {

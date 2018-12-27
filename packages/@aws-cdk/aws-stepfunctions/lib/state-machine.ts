@@ -72,7 +72,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
         super(parent, id);
 
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new iam.ServicePrincipal(`states.${cdk.Aws.region}.amazonaws.com`)
+            assumedBy: new iam.ServicePrincipal(`states.${new cdk.AwsRegion()}.amazonaws.com`),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);

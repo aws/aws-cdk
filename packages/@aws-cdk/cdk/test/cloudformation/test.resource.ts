@@ -154,7 +154,7 @@ export = {
   'conditions can be attached to a resource'(test: Test) {
     const stack = new Stack();
     const r1 = new Resource(stack, 'Resource', { type: 'Type' });
-    const cond = new Condition(stack, 'MyCondition', { expression: Fn.notCondition(Fn.equalsCondition('a', 'b')) });
+    const cond = new Condition(stack, 'MyCondition', { expression: Fn.conditionNot(Fn.conditionEquals('a', 'b')) });
     r1.options.condition = cond;
 
     test.deepEqual(stack.toCloudFormation(), {
