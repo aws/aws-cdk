@@ -6,8 +6,8 @@ source ${scriptdir}/common.bash
 
 setup
 
-toolkit_stack_name_1="toolkit-stack-${RANDOM}"
-toolkit_stack_name_2="toolkit-stack-${RANDOM}"
+toolkit_stack_name_1="toolkit-stack-1-${RANDOM}"
+toolkit_stack_name_2="toolkit-stack-2-${RANDOM}"
 
 # deploy two toolkit stacks into the same environment (see #1416)
 cdk bootstrap --toolkit-stack-name ${toolkit_stack_name_1}
