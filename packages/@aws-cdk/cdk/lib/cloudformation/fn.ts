@@ -443,31 +443,6 @@ class FnCidr extends FnBase {
 }
 
 /**
-* You can use intrinsic functions, such as ``Fn::If``, ``Fn::Equals``, and ``Fn::Not``, to conditionally
- * create stack resources. These conditions are evaluated based on input parameters that you
- * declare when you create or update a stack. After you define all your conditions, you can
- * associate them with resources or resource properties in the Resources and Outputs sections
- * of a template.
- *
- * You define all conditions in the Conditions section of a template except for ``Fn::If`` conditions.
- * You can use the ``Fn::If`` condition in the metadata attribute, update policy attribute, and property
- * values in the Resources section and Outputs sections of a template.
- *
- * You might use conditions when you want to reuse a template that can create resources in different
- * contexts, such as a test environment versus a production environment. In your template, you can
- * add an EnvironmentType input parameter, which accepts either prod or test as inputs. For the
- * production environment, you might include Amazon EC2 instances with certain capabilities;
- * however, for the test environment, you want to use less capabilities to save costs. With
- * conditions, you can define which resources are created and how they're configured for each
- * environment type.
- */
-export class FnCondition extends CloudFormationToken {
-  constructor(key: string, value: any) {
-    super({ [key]: value });
-  }
-}
-
-/**
  * Returns true if all the specified conditions evaluate to true, or returns false if any one
  *  of the conditions evaluates to false. ``Fn::And`` acts as an AND operator. The minimum number of
  * conditions that you can include is 2, and the maximum is 10.
