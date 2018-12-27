@@ -35,11 +35,12 @@ The synthesized `AWS::Lambda::Function` resource will include a "Metadata" entry
     }
   },
   "Metadata": {
-    "aws:code:property": "Code",
-    "aws:code:path": "/path/to/handler"
+    "aws:asset:property": "Code",
+    "aws:asset:path": "/path/to/handler"
   }
 }
 ```
 
-Local debugging tools like SAM CLI will be able to traverse the template and look up the `aws:source-code` metadata
+Local debugging tools like SAM CLI will be able to traverse the template and look up the `aws:asset` metadata
 entries, and use them to process the template so it will be compatible with their inputs.
+

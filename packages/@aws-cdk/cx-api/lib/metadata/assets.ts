@@ -1,4 +1,6 @@
 export const ASSET_METADATA = 'aws:cdk:asset';
+export const ASSET_RESOURCE_PATH_METADATA = 'aws:asset:path';
+export const ASSET_RESOURCE_PROPERTY_METADATA = 'aws:asset:property';
 
 export interface FileAssetMetadataEntry {
   /**

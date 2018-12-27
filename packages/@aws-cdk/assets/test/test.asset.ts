@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -139,6 +139,26 @@ export = {
     test.equal(zipDirectoryAsset.isZipArchive, true);
     test.equal(zipFileAsset.isZipArchive, true);
     test.equal(jarFileAsset.isZipArchive, true);
+    test.done();
+  },
+
+  'addResourceMetadata can be used to add CFN metadata to resources'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const location = path.join(__dirname, 'sample-asset-directory');
+    const resource = new cdk.Resource(stack, 'MyResource', { type: 'My::Resource::Type' });
+    const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: location });
+
+    // WHEN
+    asset.addResourceMetadata(resource, 'PropName');
+
+    // THEN
+    expect(stack).to(haveResource('My::Resource::Type', {
+      Metadata: {
+        "aws:asset:path": location,
+        "aws:asset:property": "PropName"
+      }
+    }, ResourcePart.CompleteDefinition));
     test.done();
   }
 };
