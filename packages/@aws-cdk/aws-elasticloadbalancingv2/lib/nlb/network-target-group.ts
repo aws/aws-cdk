@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-         TargetGroupImportProps, TargetGroupBase } from '../shared/base-target-group';
+         TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { LazyDependable } from '../shared/util';
