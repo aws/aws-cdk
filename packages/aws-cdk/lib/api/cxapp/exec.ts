@@ -17,11 +17,20 @@ export async function execProgram(aws: SDK, config: Settings): Promise<cxapi.Syn
 
   let pathMetadata: boolean = config.get(['pathMetadata']);
   if (pathMetadata === undefined) {
-      pathMetadata = true; // default to true
+      pathMetadata = true; // defaults to true
   }
 
   if (pathMetadata) {
     context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
+  }
+
+  let assetMetadata: boolean = config.get(['assetMetadata']);
+  if (assetMetadata === undefined) {
+    assetMetadata = true; // defaults to true
+  }
+
+  if (assetMetadata) {
+    context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
   }
 
   debug('context:', context);
