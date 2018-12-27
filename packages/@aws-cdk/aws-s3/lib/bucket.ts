@@ -165,8 +165,8 @@ export abstract class BucketRef extends cdk.Construct {
    *      bucket is returned.
    * @returns an ObjectS3Url token
    */
-  public urlForObject(key?: any): string {
-    const components = [ 'https://', 's3.', new cdk.AwsRegion(), '.', new cdk.AwsURLSuffix(), '/', this.bucketName ];
+  public urlForObject(key?: string): string {
+    const components = [ `https://s3.${new cdk.AwsRegion()}.${new cdk.AwsURLSuffix()}/${this.bucketName}` ];
     if (key) {
       // trim prepending '/'
       if (typeof key === 'string' && key.startsWith('/')) {
@@ -176,7 +176,7 @@ export abstract class BucketRef extends cdk.Construct {
       components.push(key);
     }
 
-    return new cdk.FnConcat(...components).toString();
+    return components.join('');
   }
 
   /**
@@ -188,8 +188,8 @@ export abstract class BucketRef extends cdk.Construct {
    *   arnForObjects('home/', team, '/', user, '/*')
    *
    */
-  public arnForObjects(...keyPattern: any[]): string {
-    return new cdk.FnConcat(this.bucketArn, '/', ...keyPattern).toString();
+  public arnForObjects(...keyPattern: string[]): string {
+    return `${this.bucketArn}/${keyPattern.join('')}`;
   }
 
   /**
