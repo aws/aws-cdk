@@ -244,7 +244,7 @@ export class Function extends FunctionRef {
     const resource = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
-      code: new cdk.Token(() => props.code.toJSON()),
+      code: new cdk.Token(() => props.code.toJSON(resource)),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,

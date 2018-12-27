@@ -95,6 +95,7 @@ export class Settings {
       context,
       language: argv.language,
       pathMetadata: argv.pathMetadata,
+      assetMetadata: argv.assetMetadata,
       plugin: argv.plugin,
       requireApproval: argv.requireApproval,
       toolkitStackName: argv.toolkitStackName,

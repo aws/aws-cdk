@@ -141,6 +141,34 @@ export class Asset extends cdk.Construct {
   }
 
   /**
+   * Adds CloudFormation template metadata to the specified resource with
+   * information that indicates which resource property is mapped to this local
+   * asset. This can be used by tools such as SAM CLI to provide local
+   * experience such as local invocation and debugging of Lambda functions.
+   *
+   * Asset metadata will only be included if the stack is synthesized with the
+   * "aws:cdk:enable-asset-metadata" context key defined, which is the default
+   * behavior when synthesizing via the CDK Toolkit.
+   *
+   * @see https://github.com/awslabs/aws-cdk/issues/1432
+   *
+   * @param resource The CloudFormation resource which is using this asset.
+   * @param resourceProperty The property name where this asset is referenced
+   * (e.g. "Code" for AWS::Lambda::Function)
+   */
+  public addResourceMetadata(resource: cdk.Resource, resourceProperty: string) {
+    if (!this.getContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+      return; // not enabled
+    }
+
+    // tell tools such as SAM CLI that the "Code" property of this resource
+    // points to a local path in order to enable local invocation of this function.
+    resource.options.metadata = resource.options.metadata || { };
+    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
+    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
+  }
+
+  /**
    * Grants read permissions to the principal on the asset's S3 object.
    */
   public grantRead(principal?: iam.IPrincipal) {
