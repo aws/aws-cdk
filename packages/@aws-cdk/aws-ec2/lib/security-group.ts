@@ -126,7 +126,7 @@ export interface SecurityGroupProps {
 /**
  * Creates an Amazon EC2 security group within a VPC.
  *
- * This class has an additional optimization over SecurityGroupRef that it can also create
+ * This class has an additional optimization over imported security groups that it can also create
  * inline ingress and egress rule (which saves on the total number of resources inside
  * the template).
  */

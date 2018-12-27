@@ -3,7 +3,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 
 // Define a stack with an S3 bucket and export it using `bucket.export()`.
-// bucket.export returns a `BucketRef` object which can later be used in
+// bucket.export returns an `IBucket` object which can later be used in
 // `Bucket.import`.
 
 class Producer extends cdk.Stack {
@@ -18,7 +18,7 @@ class Producer extends cdk.Stack {
 }
 
 interface ConsumerConstructProps {
-  bucket: s3.BucketRef;
+  bucket: s3.IBucket;
 }
 
 class ConsumerConstruct extends cdk.Construct {
@@ -29,7 +29,7 @@ class ConsumerConstruct extends cdk.Construct {
   }
 }
 
-// Define a stack that requires a BucketRef as an input and uses `Bucket.import`
+// Define a stack that requires an IBucket as an input and uses `Bucket.import`
 // to create a `Bucket` object that represents this external bucket. Grant a
 // user principal created within this consuming stack read/write permissions to
 // this bucket and contents.

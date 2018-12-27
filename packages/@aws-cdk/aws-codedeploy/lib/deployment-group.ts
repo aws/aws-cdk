@@ -24,8 +24,8 @@ export interface IServerDeploymentGroup {
 /**
  * Properties of a reference to a CodeDeploy EC2/on-premise Deployment Group.
  *
- * @see ServerDeploymentGroupRef#import
- * @see ServerDeploymentGroupRef#export
+ * @see ServerDeploymentGroup#import
+ * @see IServerDeploymentGroup#export
  */
 export interface ServerDeploymentGroupImportProps {
   /**

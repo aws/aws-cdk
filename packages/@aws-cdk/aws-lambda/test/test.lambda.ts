@@ -234,7 +234,7 @@ export = {
   },
 
   'import/export': {
-    'lambda.export() can be used to add Outputs to the stack and returns a LambdaRef object'(test: Test) {
+    'lambda.export() can be used to add Outputs to the stack and returns an IFunction object'(test: Test) {
       // GIVEN
       const stack1 = new cdk.Stack();
       const stack2 = new cdk.Stack();

@@ -285,7 +285,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
    * Add the security group to all instances via the launch configuration
    * security groups array.
    *
-   * @param securityGroup: The SecurityGroupRef to add
+   * @param securityGroup: The security group to add
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
     this.securityGroups.push(securityGroup);

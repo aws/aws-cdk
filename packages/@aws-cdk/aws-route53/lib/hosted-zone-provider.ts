@@ -38,7 +38,7 @@ export class HostedZoneProvider {
   }
 
   /**
-   * This method calls `findHostedZone` and returns the imported `HostedZoneRef`
+   * This method calls `findHostedZone` and returns the imported hosted zone
    */
   public findAndImport(parent: cdk.Construct, id: string): IHostedZone {
     return HostedZone.import(parent, id, this.findHostedZone());

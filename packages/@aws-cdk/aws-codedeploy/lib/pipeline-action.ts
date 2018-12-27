@@ -6,7 +6,7 @@ import { IServerDeploymentGroup } from './deployment-group';
 /**
  * Common properties for creating a {@link PipelineDeployAction},
  * either directly, through its constructor,
- * or through {@link ServerDeploymentGroupRef#addToPipeline}.
+ * or through {@link IServerDeploymentGroup#addToPipeline}.
  */
 export interface CommonPipelineDeployActionProps extends codepipeline.CommonActionProps {
   /**

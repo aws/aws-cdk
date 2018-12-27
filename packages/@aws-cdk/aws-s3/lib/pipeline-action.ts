@@ -5,7 +5,7 @@ import { IBucket } from './bucket';
 /**
  * Common properties for creating {@link PipelineSourceAction} -
  * either directly, through its constructor,
- * or through {@link BucketRef#addToPipeline}.
+ * or through {@link IBucket#addToPipeline}.
  */
 export interface CommonPipelineSourceActionProps extends codepipeline.CommonActionProps {
   /**

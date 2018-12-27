@@ -69,7 +69,7 @@ class MyStack extends cdk.Stack {
 }
 
 interface ChatAppFuncProps {
-  bucket: s3.BucketRef;
+  bucket: s3.IBucket;
   zipFile: string;
 }
 

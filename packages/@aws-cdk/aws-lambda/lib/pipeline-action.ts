@@ -6,7 +6,7 @@ import { IFunction } from './lambda-ref';
 /**
  * Common properties for creating a {@link PipelineInvokeAction} -
  * either directly, through its constructor,
- * or through {@link FunctionRef#addToPipeline}.
+ * or through {@link IFunction#addToPipeline}.
  */
 export interface CommonPipelineInvokeActionProps extends codepipeline.CommonActionProps {
   // because of @see links
