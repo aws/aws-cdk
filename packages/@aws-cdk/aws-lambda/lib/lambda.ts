@@ -217,11 +217,6 @@ export class Function extends FunctionRef {
    */
   private readonly environment?: { [key: string]: any };
 
-  /**
-   * Internal CFN resource.
-   */
-  private readonly resource: CfnFunction;
-
   constructor(parent: cdk.Construct, name: string, props: FunctionProps) {
     super(parent, name);
 
@@ -246,10 +241,10 @@ export class Function extends FunctionRef {
       this.role.addToPolicy(statement);
     }
 
-    this.resource = new CfnFunction(this, 'Resource', {
+    const resource = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
-      code: new cdk.Token(() => props.code.toJSON(this.resource)),
+      code: new cdk.Token(() => props.code.toJSON(resource)),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,
@@ -261,10 +256,10 @@ export class Function extends FunctionRef {
       tracingConfig: this.buildTracingConfig(props)
     });
 
-    this.resource.addDependency(this.role);
+    resource.addDependency(this.role);
 
-    this.functionName = this.resource.ref;
-    this.functionArn = this.resource.functionArn;
+    this.functionName = resource.ref;
+    this.functionArn = resource.functionArn;
     this.handler = props.handler;
     this.runtime = props.runtime;
 
