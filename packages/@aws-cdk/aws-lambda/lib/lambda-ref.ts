@@ -421,4 +421,3 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
       'Supported: AccountPrincipal, ServicePrincipal');
   }
 }
-
