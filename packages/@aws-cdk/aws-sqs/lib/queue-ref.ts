@@ -34,7 +34,7 @@ export interface IQueue extends s3n.IBucketNotificationDestination, autoscaling_
   /**
    * Export a queue
    */
-  export(): QueueAttributes;
+  export(): QueueImportProps;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -137,7 +137,7 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
   /**
    * Export a queue
    */
-  public abstract export(): QueueAttributes;
+  public abstract export(): QueueImportProps;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -287,7 +287,7 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
 /**
  * Reference to a queue
  */
-export interface QueueAttributes {
+export interface QueueImportProps {
   /**
    * The ARN of the queue.
    */

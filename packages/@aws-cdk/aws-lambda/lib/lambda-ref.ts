@@ -109,7 +109,7 @@ export interface IFunction extends events.IEventRuleTarget, logs.ILogSubscriptio
   /**
    * Export this Function (without the role)
    */
-  export(): FunctionAttributes;
+  export(): FunctionImportProps;
 
   addEventSource(source: IEventSource): void;
 }
@@ -117,7 +117,7 @@ export interface IFunction extends events.IEventRuleTarget, logs.ILogSubscriptio
 /**
  * Represents a Lambda function defined outside of this stack.
  */
-export interface FunctionAttributes {
+export interface FunctionImportProps {
   /**
    * The ARN of the Lambda function.
    *
@@ -346,7 +346,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   /**
    * Export this Function (without the role)
    */
-  public abstract export(): FunctionAttributes;
+  public abstract export(): FunctionImportProps;
 
   /**
    * Allows this Lambda to be used as a destination for bucket notifications.

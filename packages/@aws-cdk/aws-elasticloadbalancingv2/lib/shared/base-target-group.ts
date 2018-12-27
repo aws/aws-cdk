@@ -261,7 +261,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   /**
    * Export this target group
    */
-  public export(): TargetGroupAttributes {
+  public export(): TargetGroupImportProps {
     return {
       targetGroupArn: new cdk.Output(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue().toString(),
       defaultPort: new cdk.Output(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
@@ -307,7 +307,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
 /**
  * Properties to reference an existing target group
  */
-export interface TargetGroupAttributes {
+export interface TargetGroupImportProps {
   /**
    * ARN of the target group
    */
@@ -346,7 +346,7 @@ export interface ITargetGroup {
   /**
    * Export this target group
    */
-  export(): TargetGroupAttributes;
+  export(): TargetGroupImportProps;
 
 }
 

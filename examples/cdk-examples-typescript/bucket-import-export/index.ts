@@ -7,7 +7,7 @@ import cdk = require('@aws-cdk/cdk');
 // `Bucket.import`.
 
 class Producer extends cdk.Stack {
-  public readonly myBucketRef: s3.BucketAttributes;
+  public readonly myBucketRef: s3.BucketImportProps;
 
   constructor(parent: cdk.App, name: string) {
     super(parent, name);
@@ -35,7 +35,7 @@ class ConsumerConstruct extends cdk.Construct {
 // this bucket and contents.
 
 interface ConsumerProps {
-  userBucketRef: s3.BucketAttributes;
+  userBucketRef: s3.BucketImportProps;
 }
 
 class Consumer extends cdk.Stack {

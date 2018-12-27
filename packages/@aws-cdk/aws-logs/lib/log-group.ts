@@ -48,7 +48,7 @@ export interface ILogGroup {
   /**
    * Export this LogGroup
    */
-  export(): LogGroupAttributes;
+  export(): LogGroupImportProps;
 
   /**
    * Extract a metric from structured log events in the LogGroup
@@ -80,7 +80,7 @@ export interface ILogGroup {
 /**
  * Properties for importing a LogGroup
  */
-export interface LogGroupAttributes {
+export interface LogGroupImportProps {
   logGroupArn: string;
 }
 
@@ -140,7 +140,7 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
     });
   }
 
-  public abstract export(): LogGroupAttributes;
+  public abstract export(): LogGroupImportProps;
 
   /**
    * Extract a metric from structured log events in the LogGroup
@@ -229,7 +229,7 @@ export class LogGroup extends LogGroupBase {
   /**
    * Import an existing LogGroup
    */
-  public static import(parent: cdk.Construct, id: string, props: LogGroupAttributes): ILogGroup {
+  public static import(parent: cdk.Construct, id: string, props: LogGroupImportProps): ILogGroup {
     return new ImportedLogGroup(parent, id, props);
   }
 
@@ -270,7 +270,7 @@ export class LogGroup extends LogGroupBase {
   /**
    * Export this LogGroup
    */
-  public export(): LogGroupAttributes {
+  public export(): LogGroupImportProps {
     return {
       logGroupArn: new cdk.Output(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue().toString()
     };
@@ -291,7 +291,7 @@ class ImportedLogGroup extends LogGroupBase {
    */
   public readonly logGroupName: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: LogGroupAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: LogGroupImportProps) {
     super(parent, id);
 
     this.logGroupArn = props.logGroupArn;

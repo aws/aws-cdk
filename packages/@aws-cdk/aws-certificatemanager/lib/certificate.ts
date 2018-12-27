@@ -11,13 +11,13 @@ export interface ICertificate {
   /**
    * Export this certificate from the stack
    */
-  export(): CertificateAttributes;
+  export(): CertificateImportProps;
 }
 
 /**
  * Reference to an existing Certificate
  */
-export interface CertificateAttributes {
+export interface CertificateImportProps {
   /**
    * The certificate's ARN
    */
@@ -73,7 +73,7 @@ export class Certificate extends Construct implements ICertificate {
   /**
    * Import a certificate
    */
-  public static import(parent: Construct, name: string, props: CertificateAttributes): ICertificate {
+  public static import(parent: Construct, name: string, props: CertificateImportProps): ICertificate {
     return new ImportedCertificate(parent, name, props);
   }
 
@@ -112,7 +112,7 @@ export class Certificate extends Construct implements ICertificate {
   /**
    * Export this certificate from the stack
    */
-  public export(): CertificateAttributes {
+  public export(): CertificateImportProps {
     return {
       certificateArn: new Output(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
     };
@@ -125,7 +125,7 @@ export class Certificate extends Construct implements ICertificate {
 class ImportedCertificate extends Construct implements ICertificate {
   public readonly certificateArn: string;
 
-  constructor(parent: Construct, name: string, private readonly props: CertificateAttributes) {
+  constructor(parent: Construct, name: string, private readonly props: CertificateImportProps) {
     super(parent, name);
 
     this.certificateArn = props.certificateArn;

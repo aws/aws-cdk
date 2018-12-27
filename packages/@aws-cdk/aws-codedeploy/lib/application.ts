@@ -16,7 +16,7 @@ export interface IServerApplication {
 
   readonly applicationName: string;
 
-  export(): ServerApplicationAttributes;
+  export(): ServerApplicationImportProps;
 }
 
 /**
@@ -25,7 +25,7 @@ export interface IServerApplication {
  * @see ServerApplication#import
  * @see ServerApplication#export
  */
-export interface ServerApplicationAttributes {
+export interface ServerApplicationImportProps {
   /**
    * The physical, human-readable name of the CodeDeploy EC2/on-premise Application we're referencing.
    * The Application must be in the same account and region as the root Stack.
@@ -37,7 +37,7 @@ class ImportedServerApplication extends cdk.Construct implements IServerApplicat
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ServerApplicationAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: ServerApplicationImportProps) {
     super(parent, id);
 
     this.applicationName = props.applicationName;
@@ -74,7 +74,7 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
    * @param props the properties of the referenced Application
    * @returns a Construct representing a reference to an existing Application
    */
-  public static import(parent: cdk.Construct, id: string, props: ServerApplicationAttributes): IServerApplication {
+  public static import(parent: cdk.Construct, id: string, props: ServerApplicationImportProps): IServerApplication {
     return new ImportedServerApplication(parent, id, props);
   }
 
@@ -93,7 +93,7 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
     this.applicationArn = applicationName2Arn(this.applicationName);
   }
 
-  public export(): ServerApplicationAttributes {
+  public export(): ServerApplicationImportProps {
     return {
       applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
     };

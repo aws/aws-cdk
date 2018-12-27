@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-         TargetGroupAttributes, TargetGroupBase } from '../shared/base-target-group';
+         TargetGroupImportProps, TargetGroupBase } from '../shared/base-target-group';
 import { ApplicationProtocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { determineProtocolAndPort, LazyDependable } from '../shared/util';
@@ -66,7 +66,7 @@ export class ApplicationTargetGroup extends TargetGroupBase {
   /**
    * Import an existing target group
    */
-  public static import(parent: cdk.Construct, id: string, props: TargetGroupAttributes): IApplicationTargetGroup {
+  public static import(parent: cdk.Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
     return new ImportedApplicationTargetGroup(parent, id, props);
   }
 

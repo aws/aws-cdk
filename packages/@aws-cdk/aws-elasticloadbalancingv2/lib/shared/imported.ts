@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { ITargetGroup, TargetGroupAttributes } from './base-target-group';
+import { ITargetGroup, TargetGroupImportProps } from './base-target-group';
 
 /**
  * Base internal class for existing target groups
@@ -15,7 +15,7 @@ export abstract class ImportedTargetGroupBase extends cdk.Construct implements I
    */
   public readonly loadBalancerArns: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: TargetGroupAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: TargetGroupImportProps) {
     super(parent, id);
 
     this.targetGroupArn = props.targetGroupArn;

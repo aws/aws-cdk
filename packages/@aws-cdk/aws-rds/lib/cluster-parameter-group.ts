@@ -14,13 +14,13 @@ export interface IClusterParameterGroup {
   /**
    * Export this parameter group
    */
-  export(): ClusterParameterGroupAttributes;
+  export(): ClusterParameterGroupImportProps;
 }
 
 /**
  * Properties to reference a cluster parameter group
  */
-export interface ClusterParameterGroupAttributes {
+export interface ClusterParameterGroupImportProps {
   parameterGroupName: string;
 }
 
@@ -51,7 +51,7 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
   /**
    * Import a parameter group
    */
-  public static import(parent: cdk.Construct, id: string, props: ClusterParameterGroupAttributes): IClusterParameterGroup {
+  public static import(parent: cdk.Construct, id: string, props: ClusterParameterGroupImportProps): IClusterParameterGroup {
     return new ImportedClusterParameterGroup(parent, id, props);
   }
 
@@ -77,7 +77,7 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
   /**
    * Export this parameter group
    */
-  public export(): ClusterParameterGroupAttributes {
+  public export(): ClusterParameterGroupImportProps {
     return {
       parameterGroupName: new cdk.Output(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
     };
@@ -119,7 +119,7 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
 class ImportedClusterParameterGroup extends cdk.Construct implements IClusterParameterGroup {
   public readonly parameterGroupName: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ClusterParameterGroupAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: ClusterParameterGroupImportProps) {
     super(parent, id);
     this.parameterGroupName = props.parameterGroupName;
   }

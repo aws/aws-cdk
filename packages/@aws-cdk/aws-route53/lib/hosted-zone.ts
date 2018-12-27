@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
+import { HostedZoneImportProps, IHostedZone } from './hosted-zone-ref';
 import { CfnHostedZone, HostedZoneNameServers } from './route53.generated';
 import { validateZoneName } from './util';
 
@@ -29,14 +29,14 @@ export interface PublicHostedZoneProps {
 }
 
 export abstract class HostedZone extends cdk.Construct implements IHostedZone {
-  public static import(parent: cdk.Construct, name: string, props: HostedZoneAttributes): IHostedZone {
+  public static import(parent: cdk.Construct, name: string, props: HostedZoneImportProps): IHostedZone {
     return new ImportedHostedZone(parent, name, props);
   }
 
   public abstract readonly hostedZoneId: string;
   public abstract readonly zoneName: string;
 
-  public export(): HostedZoneAttributes {
+  public export(): HostedZoneImportProps {
     return {
       hostedZoneId: new cdk.Output(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue().toString(),
       zoneName: this.zoneName,
@@ -156,7 +156,7 @@ class ImportedHostedZone extends cdk.Construct implements IHostedZone {
 
   public readonly zoneName: string;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: HostedZoneAttributes) {
+  constructor(parent: cdk.Construct, name: string, private readonly props: HostedZoneImportProps) {
     super(parent, name);
 
     this.hostedZoneId = props.hostedZoneId;

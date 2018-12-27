@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { FunctionAttributes, FunctionBase, IFunction } from './lambda-ref';
+import { FunctionImportProps, FunctionBase, IFunction } from './lambda-ref';
 import { Version } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
 import { Permission } from './permission';
@@ -99,7 +99,7 @@ export class Alias extends FunctionBase {
     this.functionArn = alias.aliasArn;
   }
 
-  public export(): FunctionAttributes {
+  public export(): FunctionImportProps {
     return {
       functionArn: new cdk.Output(this, 'AliasArn', { value: this.functionArn }).makeImportValue().toString()
     };

@@ -27,10 +27,10 @@ export interface IEncryptionKey {
    * Exports this key from the current stack.
    * @returns a key ref which can be used in a call to `EncryptionKey.import(ref)`.
    */
-  export(): EncryptionKeyAttributes;
+  export(): EncryptionKeyImportProps;
 }
 
-export interface EncryptionKeyAttributes {
+export interface EncryptionKeyImportProps {
   /**
    * The ARN of the external KMS key.
    */
@@ -74,7 +74,7 @@ export abstract class EncryptionKeyBase extends Construct {
     this.policy.addStatement(statement);
   }
 
-  public abstract export(): EncryptionKeyAttributes;
+  public abstract export(): EncryptionKeyImportProps;
 }
 
 /**
@@ -130,7 +130,7 @@ export class EncryptionKey extends EncryptionKeyBase {
    * @param name The name of the construct.
    * @param props The key reference.
    */
-  public static import(parent: Construct, name: string, props: EncryptionKeyAttributes): IEncryptionKey {
+  public static import(parent: Construct, name: string, props: EncryptionKeyImportProps): IEncryptionKey {
     return new ImportedEncryptionKey(parent, name, props);
   }
 
@@ -162,7 +162,7 @@ export class EncryptionKey extends EncryptionKeyBase {
    * Exports this key from the current stack.
    * @returns a key ref which can be used in a call to `EncryptionKey.import(ref)`.
    */
-  public export(): EncryptionKeyAttributes {
+  public export(): EncryptionKeyImportProps {
     return {
       keyArn: new Output(this, 'KeyArn', { value: this.keyArn }).makeImportValue().toString()
     };
@@ -199,7 +199,7 @@ class ImportedEncryptionKey extends EncryptionKeyBase {
   public readonly keyArn: string;
   protected readonly policy = undefined; // no policy associated with an imported key
 
-  constructor(parent: Construct, name: string, private readonly props: EncryptionKeyAttributes) {
+  constructor(parent: Construct, name: string, private readonly props: EncryptionKeyImportProps) {
     super(parent, name);
 
     this.keyArn = props.keyArn;

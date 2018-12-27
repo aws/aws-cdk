@@ -7,7 +7,7 @@ import { Method, MethodOptions } from './method';
 import { IRestApiResource, ProxyResource, Resource, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 
-export interface RestApiAttributes {
+export interface RestApiImportProps {
   /**
    * The REST API ID of an existing REST API resource.
    */
@@ -24,7 +24,7 @@ export interface IRestApi {
    * Exports a REST API resource from this stack.
    * @returns REST API props that can be imported to another stack.
    */
-  export(): RestApiAttributes;
+  export(): RestApiImportProps;
 }
 
 export interface RestApiProps extends ResourceOptions {
@@ -161,7 +161,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
    * @param id Construct ID
    * @param props Imported rest API properties
    */
-  public static import(parent: cdk.Construct, id: string, props: RestApiAttributes): IRestApi {
+  public static import(parent: cdk.Construct, id: string, props: RestApiImportProps): IRestApi {
     return new ImportedRestApi(parent, id, props);
   }
 
@@ -257,7 +257,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
    * Exports a REST API resource from this stack.
    * @returns REST API props that can be imported to another stack.
    */
-  public export(): RestApiAttributes {
+  public export(): RestApiImportProps {
     return {
       restApiId: new cdk.Output(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
     };
@@ -409,7 +409,7 @@ export class RestApiUrl extends cdk.CloudFormationToken { }
 class ImportedRestApi extends cdk.Construct implements IRestApi {
   public restApiId: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: RestApiAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: RestApiImportProps) {
     super(parent, id);
 
     this.restApiId = props.restApiId;

@@ -22,7 +22,7 @@ export interface ITopic extends
   /**
    * Export this Topic
    */
-  export(): TopicAttributes;
+  export(): TopicImportProps;
 
   /**
    * Subscribe some endpoint to this topic
@@ -145,7 +145,7 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
   /**
    * Export this Topic
    */
-  public abstract export(): TopicAttributes;
+  public abstract export(): TopicImportProps;
 
   /**
    * Subscribe some endpoint to this topic
@@ -407,7 +407,7 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
 /**
  * Reference to an external topic.
  */
-export interface TopicAttributes {
+export interface TopicImportProps {
   topicArn: string;
   topicName: string;
 }

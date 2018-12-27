@@ -4,7 +4,7 @@ import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVP
 import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
-import { IVpcNetwork, IVpcSubnet, SubnetType, VpcNetworkAttributes, VpcNetworkBase, VpcPlacementStrategy, VpcSubnetAttributes } from './vpc-ref';
+import { IVpcNetwork, IVpcSubnet, SubnetType, VpcNetworkImportProps, VpcNetworkBase, VpcPlacementStrategy, VpcSubnetImportProps } from './vpc-ref';
 /**
  * Name tag constant
  */
@@ -218,7 +218,7 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
   /**
    * Import an exported VPC
    */
-  public static import(parent: cdk.Construct, name: string, props: VpcNetworkAttributes): IVpcNetwork {
+  public static import(parent: cdk.Construct, name: string, props: VpcNetworkImportProps): IVpcNetwork {
     return new ImportedVpcNetwork(parent, name, props);
   }
 
@@ -362,7 +362,7 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
   /**
    * Export this VPC from the stack
    */
-  public export(): VpcNetworkAttributes {
+  public export(): VpcNetworkImportProps {
     const pub = new ExportSubnetGroup(this, 'PublicSubnetIDs', this.publicSubnets, SubnetType.Public, this.availabilityZones.length);
     const priv = new ExportSubnetGroup(this, 'PrivateSubnetIDs', this.privateSubnets, SubnetType.Private, this.availabilityZones.length);
     const iso = new ExportSubnetGroup(this, 'IsolatedSubnetIDs', this.isolatedSubnets, SubnetType.Isolated, this.availabilityZones.length);
@@ -519,7 +519,7 @@ export interface VpcSubnetProps {
  * Represents a new VPC subnet resource
  */
 export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggable, cdk.IDependable {
-  public static import(parent: cdk.Construct, name: string, props: VpcSubnetAttributes): IVpcSubnet {
+  public static import(parent: cdk.Construct, name: string, props: VpcSubnetImportProps): IVpcSubnet {
     return new ImportedVpcSubnet(parent, name, props);
   }
 
@@ -577,7 +577,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
     this.dependencyElements.push(subnet, table, routeAssoc);
   }
 
-  public export(): VpcSubnetAttributes {
+  public export(): VpcSubnetImportProps {
     return {
       availabilityZone: new cdk.Output(this, 'AvailabilityZone', { value: this.availabilityZone }).makeImportValue().toString(),
       subnetId: new cdk.Output(this, 'VpcSubnetId', { value: this.subnetId }).makeImportValue().toString(),
@@ -671,7 +671,7 @@ export class ImportedVpcNetwork extends VpcNetworkBase {
   public readonly isolatedSubnets: IVpcSubnet[];
   public readonly availabilityZones: string[];
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: VpcNetworkAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: VpcNetworkImportProps) {
     super(parent, id);
 
     this.vpcId = props.vpcId;
@@ -698,7 +698,7 @@ export class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
   public readonly subnetId: string;
   public readonly dependencyElements = new Array<cdk.IDependable>();
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: VpcSubnetAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: VpcSubnetImportProps) {
     super(parent, id);
 
     this.subnetId = props.subnetId;

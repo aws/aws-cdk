@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { IClusterParameterGroup } from './cluster-parameter-group';
-import { DatabaseClusterAttributes, Endpoint, IDatabaseCluster } from './cluster-ref';
+import { DatabaseClusterImportProps, Endpoint, IDatabaseCluster } from './cluster-ref';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
@@ -97,7 +97,7 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
   /**
    * Import an existing DatabaseCluster from properties
    */
-  public static import(parent: cdk.Construct, name: string, props: DatabaseClusterAttributes): IDatabaseCluster {
+  public static import(parent: cdk.Construct, name: string, props: DatabaseClusterImportProps): IDatabaseCluster {
     return new ImportedDatabaseCluster(parent, name, props);
   }
 
@@ -226,7 +226,7 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
   /**
    * Export a Database Cluster for importing in another stack
    */
-  public export(): DatabaseClusterAttributes {
+  public export(): DatabaseClusterImportProps {
     // tslint:disable:max-line-length
     return {
       port: new cdk.Output(this, 'Port', { value: this.clusterEndpoint.port, }).makeImportValue().toString(),
@@ -292,7 +292,7 @@ class ImportedDatabaseCluster extends cdk.Construct implements IDatabaseCluster 
    */
   public readonly securityGroupId: string;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: DatabaseClusterAttributes) {
+  constructor(parent: cdk.Construct, name: string, private readonly props: DatabaseClusterImportProps) {
     super(parent, name);
 
     this.securityGroupId = props.securityGroupId;

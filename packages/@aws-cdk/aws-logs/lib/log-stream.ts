@@ -11,13 +11,13 @@ export interface ILogStream {
   /**
    * Export this LogStream
    */
-  export(): LogStreamAttributes;
+  export(): LogStreamImportProps;
 }
 
 /**
  * Properties for importing a LogStream
  */
-export interface LogStreamAttributes {
+export interface LogStreamImportProps {
   logStreamName: string;
 }
 
@@ -60,7 +60,7 @@ export class LogStream extends cdk.Construct implements ILogStream {
   /**
    * Import an existing LogGroup
    */
-  public static import(parent: cdk.Construct, id: string, props: LogStreamAttributes): ILogStream {
+  public static import(parent: cdk.Construct, id: string, props: LogStreamImportProps): ILogStream {
     return new ImportedLogStream(parent, id, props);
   }
 
@@ -87,7 +87,7 @@ export class LogStream extends cdk.Construct implements ILogStream {
   /**
    * Export this LogStream
    */
-  public export(): LogStreamAttributes {
+  public export(): LogStreamImportProps {
     return {
       logStreamName: new cdk.Output(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue().toString()
     };
@@ -103,7 +103,7 @@ class ImportedLogStream extends cdk.Construct implements ILogStream {
    */
   public readonly logStreamName: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: LogStreamAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: LogStreamImportProps) {
     super(parent, id);
 
     this.logStreamName = props.logStreamName;

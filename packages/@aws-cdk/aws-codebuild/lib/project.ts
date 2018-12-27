@@ -154,7 +154,7 @@ export interface IProject extends events.IEventRuleTarget {
   /**
    * Export this Project. Allows referencing this Project in a different CDK Stack.
    */
-  export(): ProjectAttributes;
+  export(): ProjectImportProps;
 }
 
 /**
@@ -163,7 +163,7 @@ export interface IProject extends events.IEventRuleTarget {
  * @see Project.import
  * @see Project.export
  */
-export interface ProjectAttributes {
+export interface ProjectImportProps {
   /**
    * The human-readable name of the CodeBuild Project we're referencing.
    * The Project must be in the same account and region as the root Stack.
@@ -194,7 +194,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
   /** A role used by CloudWatch events to trigger a build */
   private eventsRole?: iam.Role;
 
-  public abstract export(): ProjectAttributes;
+  public abstract export(): ProjectImportProps;
 
   /**
    * Convenience method for creating a new {@link PipelineBuildAction} build Action,
@@ -433,7 +433,7 @@ class ImportedProject extends ProjectBase {
   public readonly projectName: string;
   public readonly role?: iam.Role = undefined;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: ProjectAttributes) {
+  constructor(parent: cdk.Construct, name: string, private readonly props: ProjectImportProps) {
     super(parent, name);
 
     this.projectArn = cdk.ArnUtils.fromComponents({
@@ -592,7 +592,7 @@ export class Project extends ProjectBase {
    * @param props the properties of the referenced Project
    * @returns a reference to the existing Project
    */
-  public static import(parent: cdk.Construct, name: string, props: ProjectAttributes): IProject {
+  public static import(parent: cdk.Construct, name: string, props: ProjectImportProps): IProject {
     return new ImportedProject(parent, name, props);
   }
 
@@ -726,7 +726,7 @@ export class Project extends ProjectBase {
   /**
    * Export this Project. Allows referencing this Project in a different CDK Stack.
    */
-  public export(): ProjectAttributes {
+  public export(): ProjectImportProps {
     return {
       projectName: new cdk.Output(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
     };

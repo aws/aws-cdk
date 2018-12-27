@@ -44,7 +44,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
     /**
      * Import a state machine
      */
-    public static import(parent: cdk.Construct, id: string, props: StateMachineAttributes): IStateMachine {
+    public static import(parent: cdk.Construct, id: string, props: StateMachineImportProps): IStateMachine {
         return new ImportedStateMachine(parent, id, props);
     }
 
@@ -192,7 +192,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
     /**
      * Export this state machine
      */
-    public export(): StateMachineAttributes {
+    public export(): StateMachineImportProps {
         return {
             stateMachineArn: new cdk.Output(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
         };
@@ -211,13 +211,13 @@ export interface IStateMachine {
     /**
      * Export this state machine
      */
-    export(): StateMachineAttributes;
+    export(): StateMachineImportProps;
 }
 
 /**
  * Properties for an imported state machine
  */
-export interface StateMachineAttributes {
+export interface StateMachineImportProps {
     /**
      * The ARN of the state machine
      */
@@ -226,7 +226,7 @@ export interface StateMachineAttributes {
 
 class ImportedStateMachine extends cdk.Construct implements IStateMachine {
     public readonly stateMachineArn: string;
-    constructor(parent: cdk.Construct, id: string, private readonly props: StateMachineAttributes) {
+    constructor(parent: cdk.Construct, id: string, private readonly props: StateMachineImportProps) {
         super(parent, id);
         this.stateMachineArn = props.stateMachineArn;
     }

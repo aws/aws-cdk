@@ -1,6 +1,6 @@
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
-import { IQueue, QueueAttributes, QueueBase } from './queue-ref';
+import { IQueue, QueueBase, QueueImportProps } from './queue-ref';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
 
@@ -183,7 +183,7 @@ export class Queue extends QueueBase {
   /**
    * Import an existing queue
    */
-  public static import(parent: cdk.Construct, name: string, props: QueueAttributes): IQueue {
+  public static import(parent: cdk.Construct, name: string, props: QueueImportProps): IQueue {
     return new ImportedQueue(parent, name, props);
   }
 
@@ -285,7 +285,7 @@ export class Queue extends QueueBase {
   /**
    * Export a queue
    */
-  public export(): QueueAttributes {
+  public export(): QueueImportProps {
     return {
       queueArn: new cdk.Output(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
       queueUrl: new cdk.Output(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
@@ -345,7 +345,7 @@ class ImportedQueue extends QueueBase {
 
   protected readonly autoCreatePolicy = false;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: QueueAttributes) {
+  constructor(parent: cdk.Construct, name: string, private readonly props: QueueImportProps) {
     super(parent, name);
     this.queueArn = props.queueArn;
     this.queueUrl = props.queueUrl;

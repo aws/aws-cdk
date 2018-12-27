@@ -30,7 +30,7 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * Import an existing cluster
    */
-  public static import(parent: cdk.Construct, name: string, props: ClusterAttributes): ICluster {
+  public static import(parent: cdk.Construct, name: string, props: ClusterImportProps): ICluster {
     return new ImportedCluster(parent, name, props);
   }
 
@@ -144,7 +144,7 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * Export the Cluster
    */
-  public export(): ClusterAttributes {
+  public export(): ClusterImportProps {
     return {
       clusterName: new cdk.Output(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
       vpc: this.vpc.export(),
@@ -232,13 +232,13 @@ export interface ICluster {
   /**
    * Export the Cluster
    */
-  export(): ClusterAttributes;
+  export(): ClusterImportProps;
 }
 
 /**
  * Properties to import an ECS cluster
  */
-export interface ClusterAttributes {
+export interface ClusterImportProps {
   /**
    * Name of the cluster
    */
@@ -247,12 +247,12 @@ export interface ClusterAttributes {
   /**
    * VPC that the cluster instances are running in
    */
-  vpc: ec2.VpcNetworkAttributes;
+  vpc: ec2.VpcNetworkImportProps;
 
   /**
    * Security group of the cluster instances
    */
-  securityGroups: ec2.SecurityGroupAttributes[];
+  securityGroups: ec2.SecurityGroupImportProps[];
 
   /**
    * Whether the given cluster has EC2 capacity
@@ -286,7 +286,7 @@ class ImportedCluster extends cdk.Construct implements ICluster {
    */
   public readonly hasEc2Capacity: boolean;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: ClusterAttributes) {
+  constructor(parent: cdk.Construct, name: string, private readonly props: ClusterImportProps) {
     super(parent, name);
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);

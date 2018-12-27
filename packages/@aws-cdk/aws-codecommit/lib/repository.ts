@@ -85,13 +85,13 @@ export interface IRepository {
    *
    * @see import
    */
-  export(): RepositoryAttributes;
+  export(): RepositoryImportProps;
 }
 
 /**
  * Properties for the {@link Repository.import} method.
  */
-export interface RepositoryAttributes {
+export interface RepositoryImportProps {
   /**
    * The name of an existing CodeCommit Repository that we are referencing.
    * Must be in the same account and region as the root Stack.
@@ -121,7 +121,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /** The SSH clone URL */
   public abstract readonly repositoryCloneUrlSsh: string;
 
-  public abstract export(): RepositoryAttributes;
+  public abstract export(): RepositoryImportProps;
 
   /**
    * Convenience method for creating a new {@link PipelineSourceAction},
@@ -241,7 +241,7 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryArn: string;
   public readonly repositoryName: string;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: RepositoryAttributes) {
+  constructor(parent: cdk.Construct, name: string, private readonly props: RepositoryImportProps) {
     super(parent, name);
 
     this.repositoryArn = cdk.ArnUtils.fromComponents({
@@ -294,7 +294,7 @@ export class Repository extends RepositoryBase {
    * @param props the properties used to identify the existing Repository
    * @returns a reference to the existing Repository
    */
-  public static import(parent: cdk.Construct, name: string, props: RepositoryAttributes): IRepository {
+  public static import(parent: cdk.Construct, name: string, props: RepositoryImportProps): IRepository {
     return new ImportedRepository(parent, name, props);
   }
 
@@ -332,7 +332,7 @@ export class Repository extends RepositoryBase {
    *
    * @see import
    */
-  public export(): RepositoryAttributes {
+  public export(): RepositoryImportProps {
     return {
       repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
     };

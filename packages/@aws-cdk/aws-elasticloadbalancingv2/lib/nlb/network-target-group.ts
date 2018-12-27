@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-         TargetGroupAttributes, TargetGroupBase } from '../shared/base-target-group';
+         TargetGroupImportProps, TargetGroupBase } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { LazyDependable } from '../shared/util';
@@ -39,7 +39,7 @@ export class NetworkTargetGroup extends TargetGroupBase {
   /**
    * Import an existing listener
    */
-  public static import(parent: cdk.Construct, id: string, props: TargetGroupAttributes): INetworkTargetGroup {
+  public static import(parent: cdk.Construct, id: string, props: TargetGroupImportProps): INetworkTargetGroup {
     return new ImportedNetworkTargetGroup(parent, id, props);
   }
 

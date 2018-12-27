@@ -15,7 +15,7 @@ class ConstructThatTakesAVpc extends cdk.Construct {
 
 /// !show
 class Stack1 extends cdk.Stack {
-  public readonly vpcProps: ec2.VpcNetworkAttributes;
+  public readonly vpcProps: ec2.VpcNetworkImportProps;
 
   constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
     super(parent, id, props);
@@ -28,7 +28,7 @@ class Stack1 extends cdk.Stack {
 }
 
 interface Stack2Props extends cdk.StackProps {
-  vpcProps: ec2.VpcNetworkAttributes;
+  vpcProps: ec2.VpcNetworkImportProps;
 }
 
 class Stack2 extends cdk.Stack {

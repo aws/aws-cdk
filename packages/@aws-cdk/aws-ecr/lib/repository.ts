@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
-import { RepositoryAttributes, RepositoryBase } from "./repository-ref";
+import { RepositoryImportProps, RepositoryBase } from "./repository-ref";
 
 export interface RepositoryProps {
   /**
@@ -74,7 +74,7 @@ export class Repository extends RepositoryBase {
   /**
    * Export this repository from the stack
    */
-  public export(): RepositoryAttributes {
+  public export(): RepositoryImportProps {
     return {
       repositoryArn: new cdk.Output(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
       repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()

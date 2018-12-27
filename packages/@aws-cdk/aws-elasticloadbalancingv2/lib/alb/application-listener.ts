@@ -79,7 +79,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Import an existing listener
    */
-  public static import(parent: cdk.Construct, id: string, props: ApplicationListenerAttributes): IApplicationListener {
+  public static import(parent: cdk.Construct, id: string, props: ApplicationListenerImportProps): IApplicationListener {
     return new ImportedApplicationListener(parent, id, props);
   }
 
@@ -238,7 +238,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Export this listener
    */
-  public export(): ApplicationListenerAttributes {
+  public export(): ApplicationListenerImportProps {
     return {
       listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString(),
       securityGroupId: this.connections.securityGroups[0]!.export().securityGroupId,
@@ -300,13 +300,13 @@ export interface IApplicationListener extends ec2.IConnectable, cdk.IDependable 
   /**
    * Export this listener
    */
-  export(): ApplicationListenerAttributes;
+  export(): ApplicationListenerImportProps;
 }
 
 /**
  * Properties to reference an existing listener
  */
-export interface ApplicationListenerAttributes {
+export interface ApplicationListenerImportProps {
   /**
    * ARN of the listener
    */
@@ -332,7 +332,7 @@ class ImportedApplicationListener extends cdk.Construct implements IApplicationL
    */
   public readonly listenerArn: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ApplicationListenerAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: ApplicationListenerImportProps) {
     super(parent, id);
 
     this.listenerArn = props.listenerArn;

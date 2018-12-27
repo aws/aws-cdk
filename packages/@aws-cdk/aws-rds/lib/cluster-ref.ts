@@ -42,13 +42,13 @@ export interface IDatabaseCluster extends ec2.IConnectable {
   /**
    * Export a Database Cluster for importing in another stack
    */
-  export(): DatabaseClusterAttributes;
+  export(): DatabaseClusterImportProps;
 }
 
 /**
  * Properties that describe an existing cluster instance
  */
-export interface DatabaseClusterAttributes {
+export interface DatabaseClusterImportProps {
   /**
    * The database port
    */

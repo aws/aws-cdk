@@ -4,7 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
-import { FunctionAttributes, FunctionBase, IFunction } from './lambda-ref';
+import { FunctionBase, FunctionImportProps, IFunction } from './lambda-ref';
 import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -197,7 +197,7 @@ export class Function extends FunctionBase {
    * @param attrs A reference to a Lambda function. Can be created manually (see
    * example above) or obtained through a call to `lambda.export()`.
    */
-  public static import(parent: cdk.Construct, id: string, attrs: FunctionAttributes): IFunction {
+  public static import(parent: cdk.Construct, id: string, attrs: FunctionImportProps): IFunction {
     return new ImportedFunction(parent, id, attrs);
   }
 
@@ -356,7 +356,7 @@ export class Function extends FunctionBase {
   /**
    * Export this Function (without the role)
    */
-  public export(): FunctionAttributes {
+  public export(): FunctionImportProps {
     return {
       functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
       securityGroupId: this._connections && this._connections.securityGroups[0]
@@ -497,7 +497,7 @@ export class ImportedFunction extends FunctionBase {
 
   protected readonly canCreatePermissions = false;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: FunctionAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: FunctionImportProps) {
     super(parent, id);
 
     this.functionArn = props.functionArn;

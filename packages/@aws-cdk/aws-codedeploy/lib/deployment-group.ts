@@ -18,7 +18,7 @@ export interface IServerDeploymentGroup {
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
   readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
-  export(): ServerDeploymentGroupAttributes;
+  export(): ServerDeploymentGroupImportProps;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface IServerDeploymentGroup {
  * @see ServerDeploymentGroupRef#import
  * @see ServerDeploymentGroupRef#export
  */
-export interface ServerDeploymentGroupAttributes {
+export interface ServerDeploymentGroupImportProps {
   /**
    * The reference to the CodeDeploy EC2/on-premise Application
    * that this Deployment Group belongs to.
@@ -71,7 +71,7 @@ export abstract class ServerDeploymentGroupBase extends cdk.Construct implements
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
   }
 
-  public abstract export(): ServerDeploymentGroupAttributes;
+  public abstract export(): ServerDeploymentGroupImportProps;
 
   /**
    * Convenience method for creating a new {@link PipelineDeployAction}
@@ -99,7 +99,7 @@ class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ServerDeploymentGroupAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: ServerDeploymentGroupImportProps) {
     super(parent, id, props.deploymentConfig);
 
     this.application = props.application;
@@ -284,7 +284,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    * @param props the properties of the referenced Deployment Group
    * @returns a Construct representing a reference to an existing Deployment Group
    */
-  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentGroupAttributes): IServerDeploymentGroup {
+  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentGroupImportProps): IServerDeploymentGroup {
     return new ImportedServerDeploymentGroup(parent, id, props);
   }
 
@@ -347,7 +347,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       this.deploymentGroupName);
   }
 
-  public export(): ServerDeploymentGroupAttributes {
+  public export(): ServerDeploymentGroupImportProps {
     return {
       application: this.application,
       deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', {

@@ -1,6 +1,6 @@
 import { Construct, Output } from '@aws-cdk/cdk';
 import { CfnTopic } from './sns.generated';
-import { ITopic, TopicAttributes, TopicBase } from './topic-ref';
+import { ITopic, TopicBase, TopicImportProps } from './topic-ref';
 
 /**
  * Properties for a new SNS topic
@@ -32,7 +32,7 @@ export class Topic extends TopicBase {
   /**
    * Import a Topic defined elsewhere
    */
-  public static import(parent: Construct, name: string, props: TopicAttributes): ITopic {
+  public static import(parent: Construct, name: string, props: TopicImportProps): ITopic {
     return new ImportedTopic(parent, name, props);
   }
 
@@ -56,7 +56,7 @@ export class Topic extends TopicBase {
   /**
    * Export this Topic
    */
-  public export(): TopicAttributes {
+  public export(): TopicImportProps {
     return {
       topicArn: new Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue().toString(),
       topicName: new Output(this, 'TopicName', { value: this.topicName }).makeImportValue().toString(),
@@ -73,13 +73,13 @@ class ImportedTopic extends TopicBase {
 
   protected autoCreatePolicy: boolean = false;
 
-  constructor(parent: Construct, id: string, private readonly props: TopicAttributes) {
+  constructor(parent: Construct, id: string, private readonly props: TopicImportProps) {
     super(parent, id);
     this.topicArn = props.topicArn;
     this.topicName = props.topicName;
   }
 
-  public export(): TopicAttributes {
+  public export(): TopicImportProps {
     return this.props;
   }
 }

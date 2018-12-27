@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { HostedZone, HostedZoneAttributes, HostedZoneProvider } from '../lib';
+import { HostedZone, HostedZoneImportProps, HostedZoneProvider } from '../lib';
 
 export = {
   'Hosted Zone Provider': {
@@ -24,7 +24,7 @@ export = {
 
       stack.setContext(key, fakeZone);
 
-      const cdkZoneProps: HostedZoneAttributes = {
+      const cdkZoneProps: HostedZoneImportProps = {
         hostedZoneId: fakeZone.Id,
         zoneName: 'example.com',
       };

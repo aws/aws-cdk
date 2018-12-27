@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Function as LambdaFunction, FunctionProps } from './lambda';
-import { FunctionAttributes, FunctionBase, IFunction } from './lambda-ref';
+import { FunctionBase, FunctionImportProps, IFunction } from './lambda-ref';
 import { Permission } from './permission';
 
 /**
@@ -53,7 +53,7 @@ export class SingletonFunction extends FunctionBase {
     this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
   }
 
-  public export(): FunctionAttributes {
+  public export(): FunctionImportProps {
     return this.lambdaFunction.export();
   }
 

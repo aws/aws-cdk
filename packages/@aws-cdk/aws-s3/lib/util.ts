@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
-import { BucketAttributes } from './bucket';
+import { BucketImportProps } from './bucket';
 
-export function parseBucketArn(props: BucketAttributes): string {
+export function parseBucketArn(props: BucketImportProps): string {
 
   // if we have an explicit bucket ARN, use it.
   if (props.bucketArn) {
@@ -22,7 +22,7 @@ export function parseBucketArn(props: BucketAttributes): string {
   throw new Error('Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed');
 }
 
-export function parseBucketName(props: BucketAttributes): string | undefined {
+export function parseBucketName(props: BucketImportProps): string | undefined {
 
   // if we have an explicit bucket name, use it.
   if (props.bucketName) {

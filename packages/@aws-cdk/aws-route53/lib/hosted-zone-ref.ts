@@ -15,13 +15,13 @@ export interface IHostedZone {
   /**
    * Export the hosted zone
    */
-  export(): HostedZoneAttributes;
+  export(): HostedZoneImportProps;
 }
 
 /**
  * Reference to a hosted zone
  */
-export interface HostedZoneAttributes {
+export interface HostedZoneImportProps {
   /**
    * Identifier of the hosted zone
    */

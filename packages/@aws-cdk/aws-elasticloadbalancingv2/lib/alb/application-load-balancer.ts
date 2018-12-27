@@ -49,7 +49,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Import an existing Application Load Balancer
    */
-  public static import(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerAttributes): IApplicationLoadBalancer {
+  public static import(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerImportProps): IApplicationLoadBalancer {
     return new ImportedApplicationLoadBalancer(parent, id, props);
   }
 
@@ -110,7 +110,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Export this load balancer
    */
-  public export(): ApplicationLoadBalancerAttributes {
+  public export(): ApplicationLoadBalancerImportProps {
     return {
       loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString(),
       securityGroupId: this.securityGroup.export().securityGroupId,
@@ -495,13 +495,13 @@ export interface IApplicationLoadBalancer extends ec2.IConnectable {
   /**
    * Export this load balancer
    */
-  export(): ApplicationLoadBalancerAttributes;
+  export(): ApplicationLoadBalancerImportProps;
 }
 
 /**
  * Properties to reference an existing load balancer
  */
-export interface ApplicationLoadBalancerAttributes {
+export interface ApplicationLoadBalancerImportProps {
   /**
    * ARN of the load balancer
    */
@@ -557,7 +557,7 @@ class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicat
    */
   public readonly vpc?: ec2.IVpcNetwork;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: ApplicationLoadBalancerImportProps) {
     super(parent, id);
 
     this.loadBalancerArn = props.loadBalancerArn;

@@ -23,7 +23,7 @@ export interface IStream extends logs.ILogSubscriptionDestination {
   /**
    * Exports this stream from the stack.
    */
-  export(): StreamAttributes;
+  export(): StreamImportProps;
 
   /**
    * Grant read permissions for this stream and its contents to an IAM
@@ -58,7 +58,7 @@ export interface IStream extends logs.ILogSubscriptionDestination {
  * `stream.export()`. Then, the consumer can use `Stream.import(this, ref)` and
  * get a `Stream`.
  */
-export interface StreamAttributes {
+export interface StreamImportProps {
   /**
    * The ARN of the stream.
    */
@@ -67,7 +67,7 @@ export interface StreamAttributes {
   /**
    * The KMS key securing the contents of the stream if encryption is enabled.
    */
-  encryptionKey?: kms.EncryptionKeyAttributes;
+  encryptionKey?: kms.EncryptionKeyImportProps;
 }
 
 /**
@@ -108,7 +108,7 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
    */
   private cloudWatchLogsRole?: iam.Role;
 
-  public abstract export(): StreamAttributes;
+  public abstract export(): StreamImportProps;
 
   /**
    * Grant write permissions for this stream and its contents to an IAM
@@ -317,7 +317,7 @@ export class Stream extends StreamBase {
    * @param ref A `StreamAttributes` object. Can be obtained from a call to
    * `stream.export()`.
    */
-  public static import(parent: cdk.Construct, name: string, props: StreamAttributes): IStream {
+  public static import(parent: cdk.Construct, name: string, props: StreamImportProps): IStream {
     return new ImportedStream(parent, name, props);
   }
 
@@ -354,7 +354,7 @@ export class Stream extends StreamBase {
   /**
    * Exports this stream from the stack.
    */
-  public export(): StreamAttributes {
+  public export(): StreamImportProps {
     return {
       streamArn: new cdk.Output(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
       encryptionKey: this.encryptionKey ? this.encryptionKey.export() : undefined,
@@ -419,7 +419,7 @@ class ImportedStream extends StreamBase {
   public readonly streamName: string;
   public readonly encryptionKey?: kms.IEncryptionKey;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: StreamAttributes) {
+  constructor(parent: cdk.Construct, name: string, private readonly props: StreamImportProps) {
     super(parent, name);
 
     this.streamArn = props.streamArn;

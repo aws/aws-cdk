@@ -2,7 +2,7 @@ import { Construct, Output, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { TargetInputTemplate } from './input-options';
-import { EventRuleAttributes, IEventRule } from './rule-ref';
+import { EventRuleImportProps, IEventRule } from './rule-ref';
 import { IEventRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
@@ -67,7 +67,7 @@ export class EventRule extends Construct implements IEventRule {
   /**
    * Imports a rule by ARN into this stack.
    */
-  public static import(parent: Construct, name: string, props: EventRuleAttributes): IEventRule {
+  public static import(parent: Construct, name: string, props: EventRuleImportProps): IEventRule {
     return new ImportedEventRule(parent, name, props);
   }
 
@@ -102,7 +102,7 @@ export class EventRule extends Construct implements IEventRule {
   /**
    * Exports this rule resource from this stack and returns an import token.
    */
-  public export(): EventRuleAttributes {
+  public export(): EventRuleImportProps {
     return {
       eventRuleArn: new Output(this, 'RuleArn', { value: this.ruleArn }).makeImportValue().toString()
     };
@@ -239,7 +239,7 @@ export class EventRule extends Construct implements IEventRule {
 class ImportedEventRule extends Construct implements IEventRule {
   public readonly ruleArn: string;
 
-  constructor(parent: Construct, id: string, private readonly props: EventRuleAttributes) {
+  constructor(parent: Construct, id: string, private readonly props: EventRuleImportProps) {
     super(parent, id);
 
     this.ruleArn = props.eventRuleArn;

@@ -11,7 +11,7 @@ import { CfnDeploymentConfig } from './codedeploy.generated';
 export interface IServerDeploymentConfig {
   readonly deploymentConfigName: string;
   readonly deploymentConfigArn: string;
-  export(): ServerDeploymentConfigAttributes;
+  export(): ServerDeploymentConfigImportProps;
 }
 
 /**
@@ -20,7 +20,7 @@ export interface IServerDeploymentConfig {
  * @see ServerDeploymentConfig#import
  * @see ServerDeploymentConfig#export
  */
-export interface ServerDeploymentConfigAttributes {
+export interface ServerDeploymentConfigImportProps {
   /**
    * The physical, human-readable name of the custom CodeDeploy EC2/on-premise Deployment Configuration
    * that we are referencing.
@@ -32,7 +32,7 @@ class ImportedServerDeploymentConfig extends cdk.Construct implements IServerDep
   public readonly deploymentConfigName: string;
   public readonly deploymentConfigArn: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ServerDeploymentConfigAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: ServerDeploymentConfigImportProps) {
     super(parent, id);
 
     this.deploymentConfigName = props.deploymentConfigName;
@@ -53,7 +53,7 @@ class DefaultServerDeploymentConfig implements IServerDeploymentConfig {
     this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
   }
 
-  public export(): ServerDeploymentConfigAttributes {
+  public export(): ServerDeploymentConfigImportProps {
     return {
       deploymentConfigName: this.deploymentConfigName
     };
@@ -105,7 +105,7 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
    * @param props the properties of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentConfigAttributes): IServerDeploymentConfig {
+  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentConfigImportProps): IServerDeploymentConfig {
     return new ImportedServerDeploymentConfig(parent, id, props);
   }
 
@@ -124,7 +124,7 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
     this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
   }
 
-  public export(): ServerDeploymentConfigAttributes {
+  public export(): ServerDeploymentConfigImportProps {
     return {
       deploymentConfigName: new cdk.Output(this, 'DeploymentConfigName', {
         value: this.deploymentConfigName,

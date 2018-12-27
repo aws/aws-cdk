@@ -20,7 +20,7 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
  * Define a new network load balancer
  */
 export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoadBalancer {
-  public static import(parent: cdk.Construct, id: string, props: NetworkLoadBalancerAttributes): INetworkLoadBalancer {
+  public static import(parent: cdk.Construct, id: string, props: NetworkLoadBalancerImportProps): INetworkLoadBalancer {
     return new ImportedNetworkLoadBalancer(parent, id, props);
   }
 
@@ -47,7 +47,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   /**
    * Export this load balancer
    */
-  public export(): NetworkLoadBalancerAttributes {
+  public export(): NetworkLoadBalancerImportProps {
     return {
       loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString()
     };
@@ -208,13 +208,13 @@ export interface INetworkLoadBalancer {
   /**
    * Export this load balancer
    */
-  export(): NetworkLoadBalancerAttributes;
+  export(): NetworkLoadBalancerImportProps;
 }
 
 /**
  * Properties to reference an existing load balancer
  */
-export interface NetworkLoadBalancerAttributes {
+export interface NetworkLoadBalancerImportProps {
   /**
    * ARN of the load balancer
    */
@@ -237,7 +237,7 @@ class ImportedNetworkLoadBalancer extends cdk.Construct implements INetworkLoadB
    */
   public readonly vpc?: ec2.IVpcNetwork;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: NetworkLoadBalancerAttributes) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: NetworkLoadBalancerImportProps) {
     super(parent, id);
 
     this.loadBalancerArn = props.loadBalancerArn;

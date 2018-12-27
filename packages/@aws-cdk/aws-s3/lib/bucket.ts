@@ -50,7 +50,7 @@ export interface IBucket {
   /**
    * Exports this bucket from the stack.
    */
-  export(): BucketAttributes;
+  export(): BucketImportProps;
 
   /**
    * Convenience method for creating a new {@link PipelineSourceAction},
@@ -178,7 +178,7 @@ export interface IBucket {
  * `bucket.export()`. Then, the consumer can use `Bucket.import(this, ref)` and
  * get a `Bucket`.
  */
-export interface BucketAttributes {
+export interface BucketImportProps {
   /**
    * The ARN fo the bucket. At least one of bucketArn or bucketName must be
    * defined in order to initialize a bucket ref.
@@ -256,7 +256,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
   /**
    * Exports this bucket from the stack.
    */
-  public abstract export(): BucketAttributes;
+  public abstract export(): BucketImportProps;
 
   /**
    * Convenience method for creating a new {@link PipelineSourceAction},
@@ -563,7 +563,7 @@ export class Bucket extends BucketBase {
    * @param attrs A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.
    */
-  public static import(parent: cdk.Construct, id: string, attrs: BucketAttributes): IBucket {
+  public static import(parent: cdk.Construct, id: string, attrs: BucketImportProps): IBucket {
     return new ImportedBucket(parent, id, attrs);
   }
 
@@ -615,7 +615,7 @@ export class Bucket extends BucketBase {
   /**
    * Exports this bucket from the stack.
    */
-  public export(): BucketAttributes {
+  public export(): BucketImportProps {
     return {
       bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
       bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
@@ -960,7 +960,7 @@ class ImportedBucket extends BucketBase {
   public policy?: BucketPolicy;
   protected autoCreatePolicy: boolean;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: BucketAttributes) {
+  constructor(parent: cdk.Construct, name: string, private readonly props: BucketImportProps) {
     super(parent, name);
 
     const bucketName = parseBucketName(props);

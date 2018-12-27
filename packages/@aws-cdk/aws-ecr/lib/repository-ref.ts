@@ -79,10 +79,10 @@ export interface IRepository {
   /**
    * Export this repository from the stack
    */
-  export(): RepositoryAttributes;
+  export(): RepositoryImportProps;
 }
 
-export interface RepositoryAttributes {
+export interface RepositoryImportProps {
   /**
    * The ARN of the repository to import.
    *
@@ -114,7 +114,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Import a repository
    */
-  public static import(parent: cdk.Construct, id: string, props: RepositoryAttributes): IRepository {
+  public static import(parent: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
     return new ImportedRepository(parent, id, props);
   }
 
@@ -171,7 +171,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Export this repository from the stack
    */
-  public abstract export(): RepositoryAttributes;
+  public abstract export(): RepositoryImportProps;
 
   public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineSourceActionProps = {}):
       PipelineSourceAction {
@@ -254,7 +254,7 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: RepositoryAttributes) {
+  constructor(parent: cdk.Construct, id: string, props: RepositoryImportProps) {
     super(parent, id);
 
     if (props.repositoryArn) {
@@ -282,7 +282,7 @@ class ImportedRepository extends RepositoryBase {
     }
   }
 
-  public export(): RepositoryAttributes {
+  public export(): RepositoryImportProps {
     return {
       repositoryArn: this.repositoryArn,
       repositoryName: this.repositoryName

@@ -25,7 +25,7 @@ export interface IVpcSubnet extends IDependable {
   /**
    * Exports this subnet to another stack.
    */
-  export(): VpcSubnetAttributes;
+  export(): VpcSubnetImportProps;
 }
 
 export interface IVpcNetwork extends IDependable {
@@ -82,7 +82,7 @@ export interface IVpcNetwork extends IDependable {
   /**
    * Exports this VPC so it can be consumed by another stack.
    */
-  export(): VpcNetworkAttributes;
+  export(): VpcNetworkImportProps;
 }
 
 /**
@@ -225,7 +225,7 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   /**
    * Export this VPC from the stack
    */
-  public abstract export(): VpcNetworkAttributes;
+  public abstract export(): VpcNetworkImportProps;
 
   /**
    * Return whether the given subnet is one of this VPC's public subnets.
@@ -255,7 +255,7 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
 /**
  * Properties that reference an external VpcNetwork
  */
-export interface VpcNetworkAttributes {
+export interface VpcNetworkImportProps {
   /**
    * VPC's identifier
    */
@@ -309,7 +309,7 @@ export interface VpcNetworkAttributes {
   isolatedSubnetNames?: string[];
 }
 
-export interface VpcSubnetAttributes {
+export interface VpcSubnetImportProps {
   /**
    * The Availability Zone the subnet is located in
    */

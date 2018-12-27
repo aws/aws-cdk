@@ -8,10 +8,10 @@ export interface ISecurityGroup extends ISecurityGroupRule, IConnectable {
   readonly securityGroupId: string;
   addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string): void;
   addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string): void;
-  export(): SecurityGroupAttributes;
+  export(): SecurityGroupImportProps;
 }
 
-export interface SecurityGroupAttributes {
+export interface SecurityGroupImportProps {
   /**
    * ID of security group
    */
@@ -78,7 +78,7 @@ export abstract class SecurityGroupBase extends Construct implements ISecurityGr
   /**
    * Export this SecurityGroup for use in a different Stack
    */
-  public abstract export(): SecurityGroupAttributes;
+  public abstract export(): SecurityGroupImportProps;
 }
 
 export interface SecurityGroupProps {
@@ -134,7 +134,7 @@ export class SecurityGroup extends SecurityGroupBase implements ITaggable {
   /**
    * Import an existing SecurityGroup
    */
-  public static import(parent: Construct, id: string, props: SecurityGroupAttributes): ISecurityGroup {
+  public static import(parent: Construct, id: string, props: SecurityGroupImportProps): ISecurityGroup {
     return new ImportedSecurityGroup(parent, id, props);
   }
 
@@ -191,7 +191,7 @@ export class SecurityGroup extends SecurityGroupBase implements ITaggable {
   /**
    * Export this SecurityGroup for use in a different Stack
    */
-  public export(): SecurityGroupAttributes {
+  public export(): SecurityGroupImportProps {
     return {
       securityGroupId: new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
     };
@@ -392,7 +392,7 @@ export interface ConnectionRule {
 class ImportedSecurityGroup extends SecurityGroupBase {
   public readonly securityGroupId: string;
 
-  constructor(parent: Construct, name: string, private readonly props: SecurityGroupAttributes) {
+  constructor(parent: Construct, name: string, private readonly props: SecurityGroupImportProps) {
     super(parent, name);
 
     this.securityGroupId = props.securityGroupId;
