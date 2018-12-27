@@ -254,7 +254,7 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: RepositoryImportProps) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
     super(parent, id);
 
     if (props.repositoryArn) {
@@ -283,10 +283,7 @@ class ImportedRepository extends RepositoryBase {
   }
 
   public export(): RepositoryImportProps {
-    return {
-      repositoryArn: this.repositoryArn,
-      repositoryName: this.repositoryName
-    };
+    return this.props;
   }
 
   public addToResourcePolicy(_statement: iam.PolicyStatement) {
