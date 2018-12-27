@@ -1138,7 +1138,7 @@ export = {
                   code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
-                /does not support the nodejs6.10 runtime/);
+                /nodejs6.10 is not in \[nodejs8.10\]/);
 
     test.done();
   },
@@ -1146,7 +1146,7 @@ export = {
   'using more than 5 layers'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
-    const layers = new Array(6).map(() => lambda.LayerVersion.import(stack, 'TestLayer', {
+    const layers = new Array(6).fill(lambda.LayerVersion.import(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
       compatibleRuntimes: [lambda.Runtime.NodeJS810],
     }));
@@ -1158,7 +1158,7 @@ export = {
                   code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
-                /up to 5 layers/);
+                /Unable to add layer:/);
 
     test.done();
   },

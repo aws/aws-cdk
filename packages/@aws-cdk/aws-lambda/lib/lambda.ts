@@ -222,6 +222,8 @@ export class Function extends FunctionRef {
 
   protected readonly canCreatePermissions = true;
 
+  private readonly layers: ILayerVersion[] = [];
+
   /**
    * Environment variables for this function
    */
@@ -229,17 +231,6 @@ export class Function extends FunctionRef {
 
   constructor(parent: cdk.Construct, name: string, props: FunctionProps) {
     super(parent, name);
-
-    if (props.layers) {
-      if (props.layers.length > 5) {
-        throw new Error(`A lambda function may only reference up to 5 layers at a time.`);
-      }
-      for (const layerVersion of props.layers) {
-        if (layerVersion.compatibleRuntimes && layerVersion.compatibleRuntimes.indexOf(props.runtime) === -1) {
-          throw new Error(`The layer version ${layerVersion} does not support the ${props.runtime} runtime.`);
-        }
-      }
-    }
 
     this.environment = props.environment || { };
 
@@ -266,7 +257,7 @@ export class Function extends FunctionRef {
       functionName: props.functionName,
       description: props.description,
       code: new cdk.Token(() => props.code.toJSON()),
-      layers: props.layers && props.layers.map(layer => layer.layerVersionArn),
+      layers: new cdk.Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,
@@ -287,6 +278,10 @@ export class Function extends FunctionRef {
 
     // allow code to bind to stack.
     props.code.bind(this);
+
+    for (const layer of props.layers || []) {
+      this.addLayer(layer);
+    }
   }
 
   /**
@@ -295,12 +290,32 @@ export class Function extends FunctionRef {
    * @param key The environment variable key.
    * @param value The environment variable's value.
    */
-  public addEnvironment(key: string, value: any) {
+  public addEnvironment(key: string, value: any): this {
     if (!this.environment) {
       // TODO: add metadata
-      return;
+      return this;
     }
     this.environment[key] = value;
+    return this;
+  }
+
+  /**
+   * Adds a Lambda Layer to this Lambda function.
+   *
+   * @param layer the layer to be added.
+   *
+   * @throws if there are already 5 layers on this function, or the layer is incompatible with this function's runtime.
+   */
+  public addLayer(layer: ILayerVersion): this {
+    if (this.layers.length === 5) {
+      throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
+    }
+    if (layer.compatibleRuntimes && layer.compatibleRuntimes.indexOf(this.runtime) === -1) {
+      const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
+      throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
+    }
+    this.layers.push(layer);
+    return this;
   }
 
   /**
