@@ -157,7 +157,7 @@ class CloudFormationExample extends cdk.Stack {
     // outputs are constructs the synthesize into the template's "Outputs" section
     new cdk.Output(this, 'Output', {
       description: 'This is an output of the template',
-      value: `${cdk.Aws.accountId}/${param.ref}`
+      value: `${new cdk.AwsAccountId()}/${param.ref}`
     });
 
     // stack.templateOptions can be used to specify template-level options
@@ -166,14 +166,14 @@ class CloudFormationExample extends cdk.Stack {
 
       // all CloudFormation's pseudo-parameters are supported via the `cdk.AwsXxx` classes
       PseudoParameters: [
-        cdk.Aws.accountId,
-        cdk.Aws.domainSuffix,
-        cdk.Aws.notificationARNs,
-        cdk.Aws.noValue,
-        cdk.Aws.partition,
-        cdk.Aws.region,
-        cdk.Aws.stackId,
-        cdk.Aws.stackName,
+        new cdk.AwsAccountId(),
+        new cdk.AwsDomainSuffix(),
+        new cdk.AwsNotificationARNs(),
+        new cdk.AwsNoValue(),
+        new cdk.AwsPartition(),
+        new cdk.AwsRegion(),
+        new cdk.AwsStackId(),
+        new cdk.AwsStackName(),
       ],
 
       // all CloudFormation's intrinsic functions are supported via the `cdk.Fn.xxx` static methods.

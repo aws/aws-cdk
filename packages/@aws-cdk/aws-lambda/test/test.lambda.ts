@@ -118,7 +118,7 @@ export = {
       fn.addPermission('S3Permission', {
         action: 'lambda:*',
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
-        sourceAccount: cdk.Aws.accountId,
+        sourceAccount: new cdk.AwsAccountId().toString(),
         sourceArn: 'arn:aws:s3:::my_bucket'
       });
 

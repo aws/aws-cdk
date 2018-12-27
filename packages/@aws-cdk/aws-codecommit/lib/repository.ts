@@ -196,7 +196,7 @@ class ImportedRepositoryRef extends RepositoryRef {
   }
 
   private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
-    return `${protocol}://git-codecommit.${cdk.Aws.region}.${cdk.Aws.urlSuffix}/v1/repos/${this.repositoryName}`;
+    return `${protocol}://git-codecommit.${new cdk.AwsRegion()}.${new cdk.AwsURLSuffix()}/v1/repos/${this.repositoryName}`;
   }
 }
 
