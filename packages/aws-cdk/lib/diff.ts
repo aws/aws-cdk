@@ -12,6 +12,11 @@ import { print, warning } from './logging';
  * @returns the count of differences that were rendered.
  */
 export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack, strict: boolean): number {
+  if (_hasAssets(newTemplate)) {
+    const issue = 'https://github.com/awslabs/aws-cdk/issues/395';
+    warning(`The ${newTemplate.name} stack uses assets, which are currently not accounted for in the diff output! See ${issue}`);
+  }
+
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
 
   // filter out 'AWS::CDK::Metadata' resources from the template
@@ -87,4 +92,8 @@ function buildLogicalToPathMap(template: cxapi.SynthesizedStack) {
     }
   }
   return map;
+}
+
+function _hasAssets(stack: cxapi.SynthesizedStack) {
+  return Object.values(stack.metadata).find(entries => entries.find(entry => entry.type === cxapi.ASSET_METADATA) != null) != null;
 }
