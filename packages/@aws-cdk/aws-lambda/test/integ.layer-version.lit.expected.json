@@ -58,7 +58,7 @@
         "LicenseInfo": "Apache-2.0"
       }
     },
-    "MyLayergrantusageTokenAWSAccountId0202BA27F": {
+    "MyLayerremoteaccountgrant715E5D21": {
       "Type": "AWS::Lambda::LayerVersionPermission",
       "Properties": {
         "Action": "lambda:GetLayerVersion",

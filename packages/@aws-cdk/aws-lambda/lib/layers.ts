@@ -50,8 +50,9 @@ export interface ILayerVersion {
    * ``lambda:GetLayerVersion`` permission on the layer version.
    *
    * @param grantee the identification of the grantee.
+   * @param grantId the ID of the grant in the construct tree.
    */
-  grantUsage(grantee: LayerVersionUsageGrantee): ILayerVersion
+  grantUsage(grantee: LayerVersionUsageGrantee, grantId: string): ILayerVersion
 }
 
 /**
@@ -61,12 +62,12 @@ export abstract class LayerVersionBase extends cdk.Construct implements ILayerVe
   public abstract readonly layerVersionArn: string;
   public abstract readonly compatibleRuntimes?: Runtime[];
 
-  public grantUsage(grantee: LayerVersionUsageGrantee): ILayerVersion {
+  public grantUsage(grantee: LayerVersionUsageGrantee, grantId: string): ILayerVersion {
     if (grantee.organizationId != null && grantee.accountId !== '*') {
       throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${grantee.accountId}`);
     }
 
-    new cdk.Resource(this, `grant-usage-${grantee.accountId}-${grantee.organizationId || '*'}`, {
+    new cdk.Resource(this, grantId, {
       type: 'AWS::Lambda::LayerVersionPermission',
       properties: {
         Action: 'lambda:GetLayerVersion',
@@ -219,8 +220,8 @@ export class SingletonLayerVersion extends cdk.Construct implements ILayerVersio
     return this.layerVersion.compatibleRuntimes;
   }
 
-  public grantUsage(grantee: LayerVersionUsageGrantee): ILayerVersion {
-    this.layerVersion.grantUsage(grantee);
+  public grantUsage(grantee: LayerVersionUsageGrantee, grantId: string): ILayerVersion {
+    this.layerVersion.grantUsage(grantee, grantId);
     return this;
   }
 
