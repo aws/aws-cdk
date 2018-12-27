@@ -36,13 +36,6 @@ export interface IFunction extends events.IEventRuleTarget, logs.ILogSubscriptio
   readonly role?: iam.Role;
 
   /**
-   * Access the Connections object
-   *
-   * Will fail if not a VPC-enabled Lambda Function
-   */
-  readonly connections: ec2.Connections;
-
-  /**
    * Whether or not this Lambda function was bound to a VPC
    *
    * If this is is `false`, trying to access the `connections` object will fail.
