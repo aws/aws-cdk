@@ -71,7 +71,7 @@ Here are the actions you can take on your CDK app
       --context, -c        Add contextual string parameter.                  [array]
       --plugin, -p         Name or path of a node package that extend the CDK
                            features. Can be specified multiple times         [array]
-      --rename             Rename stack name if different then the one defined in
+      --rename             Rename stack name if different from the one defined in
                            the cloud executable                             [string]
       --trace              Print trace for stack warnings                  [boolean]
       --strict             Do not construct stacks with warnings           [boolean]
