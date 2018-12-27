@@ -96,6 +96,29 @@ Here are the actions you can take on your CDK app
     If one of cdk.json or ~/.cdk.json exists, options specified there will be used
     as defaults. Settings in cdk.json take precedence.
 
+.. _config-files:
+
+Configuration
+=============
+
+The CDK toolkit resolves its configuration by reading files in the following order:
+
+1. ``~/.cdk.json``: user-level configuration file
+2. ``cdk.json``: project configuration file
+3. Command line arguments
+
+The following options are supported in **cdk.json**:
+
+* ``app`` (string): the command-line to use in order to invoke your CDK app.
+* ``browser`` (string): the command to use to open the browser, using %u as a placeholder for the path of the file to open
+* ``context`` (hash): key-value pairs of context values which can later be read by ``Construct.getContext(key)``
+* ``language`` (string): programming langauge to use for **cdk-init**
+* ``pathMetadata`` (boolean): Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)
+* ``plugin`` (array): Name or path of a node package that extend the CDK features
+* ``requireApproval`` (string): what security-sensitive changes need manual approval (choices: "never", "any-change", "broadening")
+* ``toolkitStackName`` (string): the name of the CDK toolkit stack
+* ``versionReporting`` (boolean): Include the "AWS::CDK::Metadata" resource in synthesized templates
+
 .. _security-changes:
 
 Security-related changes
