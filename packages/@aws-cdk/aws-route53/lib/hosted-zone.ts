@@ -33,8 +33,8 @@ export abstract class HostedZone extends cdk.Construct implements IHostedZone {
     return new ImportedHostedZone(parent, name, props);
   }
 
-  public abstract hostedZoneId: string;
-  public abstract zoneName: string;
+  public abstract readonly hostedZoneId: string;
+  public abstract readonly zoneName: string;
 
   public export(): HostedZoneAttributes {
     return {
