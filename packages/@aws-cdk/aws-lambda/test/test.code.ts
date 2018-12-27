@@ -1,6 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import assets = require('@aws-cdk/assets');
 import cdk = require('@aws-cdk/cdk');
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import path = require('path');
 import lambda = require('../lib');
@@ -72,6 +73,8 @@ export = {
     'adds code asset metadata'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
+      stack.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
       const location = path.join(__dirname, 'my-lambda-handler');
 
       // WHEN
@@ -84,8 +87,8 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::Lambda::Function', {
         Metadata: {
-          "aws:asset:path": location,
-          "aws:asset:property": "Code"
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: location,
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code'
         }
       }, ResourcePart.CompleteDefinition));
       test.done();
