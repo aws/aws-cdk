@@ -460,8 +460,10 @@ class FnCidr extends FnBase {
  * conditions, you can define which resources are created and how they're configured for each
  * environment type.
  */
-export class FnCondition extends FnBase {
-
+export class FnCondition extends CloudFormationToken {
+  constructor(key: string, value: any) {
+    super({ [key]: value });
+  }
 }
 
 /**
