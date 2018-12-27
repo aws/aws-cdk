@@ -148,7 +148,7 @@ export class Fn {
    * @param conditions conditions to AND
    * @returns an FnCondition token
    */
-  public static andCondition(...conditions: FnCondition[]): FnCondition {
+  public static conditionAnd(...conditions: FnCondition[]): FnCondition {
     return new FnAnd(...conditions);
   }
 
@@ -159,7 +159,7 @@ export class Fn {
    * @param rhs A value of any type that you want to compare.
    * @returns an FnCondition token
    */
-  public static equalsCondition(lhs: any, rhs: any): FnCondition {
+  public static conditionEquals(lhs: any, rhs: any): FnCondition {
     return new FnEquals(lhs, rhs);
   }
 
@@ -178,7 +178,7 @@ export class Fn {
    * evaluates to false.
    * @returns an FnCondition token
    */
-  public static ifCondition(conditionId: string, valueIfTrue: any, valueIfFalse: any): FnCondition {
+  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): FnCondition {
     return new FnIf(conditionId, valueIfTrue, valueIfFalse);
   }
 
@@ -189,7 +189,7 @@ export class Fn {
    * or false.
    * @returns an FnCondition token
    */
-  public static notCondition(condition: FnCondition): FnCondition {
+  public static conditionNot(condition: FnCondition): FnCondition {
     return new FnNot(condition);
   }
 
@@ -201,7 +201,7 @@ export class Fn {
    * @param conditions conditions that evaluates to true or false.
    * @returns an FnCondition token
    */
-  public static orCondition(...conditions: FnCondition[]): FnCondition {
+  public static conditionOr(...conditions: FnCondition[]): FnCondition {
     return new FnOr(...conditions);
   }
 
@@ -212,7 +212,7 @@ export class Fn {
    * @param value A string, such as "A", that you want to compare against a list of strings.
    * @returns an FnCondition token
    */
-  public static containsCondition(listOfStrings: string[], value: string): FnCondition {
+  public static conditionContains(listOfStrings: string[], value: string): FnCondition {
     return new FnContains(listOfStrings, value);
   }
 
@@ -223,7 +223,7 @@ export class Fn {
    * of strings.
    * @returns an FnCondition token
    */
-  public eachMemberEqualsCondition(listOfStrings: string[], value: string): FnCondition {
+  public conditionEachMemberEquals(listOfStrings: string[], value: string): FnCondition {
     return new FnEachMemberEquals(listOfStrings, value);
   }
 
@@ -238,7 +238,7 @@ export class Fn {
    * strings_to_check parameter.
    * @returns an FnCondition token
    */
-  public eachMemberInCondition(stringsToCheck: string[], stringsToMatch: string): FnCondition {
+  public conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string): FnCondition {
     return new FnEachMemberIn(stringsToCheck, stringsToMatch);
   }
 

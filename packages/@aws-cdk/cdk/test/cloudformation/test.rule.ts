@@ -6,8 +6,8 @@ export = {
     const stack = new Stack();
 
     const rule = new Rule(stack, 'MyRule');
-    rule.addAssertion(Fn.equalsCondition('lhs', 'rhs'), 'lhs equals rhs');
-    rule.addAssertion(Fn.notCondition(Fn.andCondition(Fn.containsCondition([ 'hello', 'world' ], "world"))), 'some assertion');
+    rule.addAssertion(Fn.conditionEquals('lhs', 'rhs'), 'lhs equals rhs');
+    rule.addAssertion(Fn.conditionNot(Fn.conditionAnd(Fn.conditionContains([ 'hello', 'world' ], "world"))), 'some assertion');
 
     test.deepEqual(stack.toCloudFormation(), {
       Rules: {
