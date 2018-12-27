@@ -226,8 +226,8 @@ class ImportedVpcNetwork extends VpcNetworkRef {
    */
   public readonly availabilityZones: string[];
 
-  constructor(parent: Construct, name: string, props: VpcNetworkRefProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: VpcNetworkRefProps) {
+    super(scope, scid);
 
     this.vpcId = props.vpcId;
     this.availabilityZones = props.availabilityZones;
@@ -339,8 +339,8 @@ class ImportedVpcSubnet extends VpcSubnetRef {
    */
   public readonly subnetId: string;
 
-  constructor(parent: Construct, name: string, props: VpcSubnetRefProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: VpcSubnetRefProps) {
+    super(scope, scid);
 
     this.availabilityZone = props.availabilityZone;
     this.subnetId = props.subnetId;

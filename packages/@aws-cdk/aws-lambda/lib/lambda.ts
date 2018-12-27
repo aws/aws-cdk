@@ -217,8 +217,8 @@ export class Function extends FunctionRef {
    */
   private readonly environment?: { [key: string]: any };
 
-  constructor(parent: cdk.Construct, name: string, props: FunctionProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: FunctionProps) {
+    super(scope, scid);
 
     this.environment = props.environment || { };
 
@@ -334,7 +334,7 @@ export class Function extends FunctionRef {
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
-      description: 'Automatic security group for Lambda Function ' + this.uniqueId,
+      description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
       allowAllOutbound: props.allowAllOutbound
     });
 

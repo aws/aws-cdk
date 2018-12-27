@@ -74,8 +74,8 @@ export class SecretParameter extends Construct {
    */
   public value: Secret;
 
-  constructor(parent: Construct, name: string, props: SecretProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: SecretProps) {
+    super(scope, scid);
 
     const param = new Parameter(this, 'Parameter', {
       type: 'AWS::SSM::Parameter::Value<String>',

@@ -25,7 +25,7 @@ export const DEFAULT_SUBNET_NAME = {
  * All subnet names look like NAME <> "Subnet" <> INDEX
  */
 export function subnetName(subnet: VpcSubnetRef) {
-  return subnet.id.replace(/Subnet\d+$/, '');
+  return subnet.node.scid.replace(/Subnet\d+$/, '');
 }
 
 /**

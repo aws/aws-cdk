@@ -41,8 +41,8 @@ export class SingletonFunction extends FunctionRef {
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: FunctionRef;
 
-  constructor(parent: cdk.Construct, name: string, props: SingletonFunctionProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: SingletonFunctionProps) {
+    super(scope, scid);
 
     this.lambdaFunction = this.ensureLambda(props);
 
@@ -60,7 +60,7 @@ export class SingletonFunction extends FunctionRef {
   private ensureLambda(props: SingletonFunctionProps): FunctionRef {
     const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
     const stack = cdk.Stack.find(this);
-    const existing = stack.tryFindChild(constructName);
+    const existing = stack.node.tryFindChild(constructName);
     if (existing) {
       // Just assume this is true
       return existing as FunctionRef;

@@ -129,8 +129,8 @@ export class DatabaseCluster extends DatabaseClusterRef {
    */
   protected readonly securityGroupId: string;
 
-  constructor(parent: cdk.Construct, name: string, props: DatabaseClusterProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: DatabaseClusterProps) {
+    super(scope, scid);
 
     const subnets = props.instanceProps.vpc.subnets(props.instanceProps.vpcPlacement);
 
@@ -140,7 +140,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
-      dbSubnetGroupDescription: `Subnets for ${name} database`,
+      dbSubnetGroupDescription: `Subnets for ${scid} database`,
       subnetIds: subnets.map(s => s.subnetId)
     });
 

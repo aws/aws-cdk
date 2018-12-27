@@ -34,8 +34,8 @@ export class Topic extends TopicRef {
 
   protected readonly autoCreatePolicy: boolean = true;
 
-  constructor(parent: Construct, name: string, props: TopicProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: TopicProps = {}) {
+    super(scope, scid);
 
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,

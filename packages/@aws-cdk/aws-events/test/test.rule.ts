@@ -330,7 +330,7 @@ export = {
     rule.addTarget(t1);
 
     test.deepEqual(resolve(receivedRuleArn), resolve(rule.ruleArn));
-    test.deepEqual(receivedRuleId, rule.uniqueId);
+    test.deepEqual(receivedRuleId, rule.node.uniqueId);
     test.done();
   }
 };

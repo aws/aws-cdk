@@ -18,8 +18,8 @@ export class LazyRole extends cdk.Construct implements IRole {
   private readonly policies = new Array<Policy>();
   private readonly managedPolicies = new Array<string>();
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: RoleProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, private readonly props: RoleProps) {
+    super(scope, scid);
   }
 
   /**

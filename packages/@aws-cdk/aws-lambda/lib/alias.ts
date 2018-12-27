@@ -80,8 +80,8 @@ export class Alias extends FunctionRef {
    */
   private readonly underlyingLambda: FunctionRef;
 
-  constructor(parent: cdk.Construct, name: string, props: AliasProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: AliasProps) {
+    super(scope, scid);
 
     this.underlyingLambda = props.version.lambda;
 

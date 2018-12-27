@@ -45,8 +45,8 @@ export interface ChoiceProps {
 export class Choice extends State {
     public readonly endStates: INextable[] = [];
 
-    constructor(parent: cdk.Construct, id: string, props: ChoiceProps = {}) {
-        super(parent, id, props);
+    constructor(scope: cdk.Construct, scid: string, props: ChoiceProps = {}) {
+        super(scope, scid, props);
     }
 
     /**

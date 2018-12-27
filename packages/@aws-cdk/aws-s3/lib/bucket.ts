@@ -422,8 +422,8 @@ export class Bucket extends BucketRef {
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
 
-  constructor(parent: cdk.Construct, name: string, props: BucketProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: BucketProps = {}) {
+    super(scope, scid);
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
@@ -541,7 +541,7 @@ export class Bucket extends BucketRef {
 
     if (encryptionType === BucketEncryption.Kms) {
       const encryptionKey = props.encryptionKey || new kms.EncryptionKey(this, 'Key', {
-        description: `Created by ${this.path}`
+        description: `Created by ${this.node.path}`
       });
 
       const bucketEncryption = {
@@ -793,8 +793,8 @@ class ImportedBucketRef extends BucketRef {
   protected policy?: BucketPolicy;
   protected autoCreatePolicy: boolean;
 
-  constructor(parent: cdk.Construct, name: string, props: BucketRefProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: BucketRefProps) {
+    super(scope, scid);
 
     const bucketName = parseBucketName(props);
     if (!bucketName) {

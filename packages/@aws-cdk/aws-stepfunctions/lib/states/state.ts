@@ -59,7 +59,7 @@ export abstract class State extends cdk.Construct implements IChainable {
             if (isPrefixable(el)) {
                 el.addPrefix(prefix);
             }
-            queue.push(...el.children);
+            queue.push(...el.node.children);
         }
     }
 
@@ -137,8 +137,8 @@ export abstract class State extends cdk.Construct implements IChainable {
      */
     private readonly incomingStates: State[] = [];
 
-    constructor(parent: cdk.Construct, id: string, props: StateProps) {
-        super(parent, id);
+    constructor(scope: cdk.Construct, scid: string, props: StateProps) {
+        super(scope, scid);
 
         this.startState = this;
 
@@ -146,6 +146,10 @@ export abstract class State extends cdk.Construct implements IChainable {
         this.inputPath = props.inputPath;
         this.outputPath = props.outputPath;
         this.resultPath = props.resultPath;
+    }
+
+    public get id() {
+        return this.node.scid;
     }
 
     /**

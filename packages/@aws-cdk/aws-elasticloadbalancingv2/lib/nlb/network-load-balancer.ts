@@ -24,8 +24,8 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     return new ImportedNetworkLoadBalancer(parent, id, props);
   }
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkLoadBalancerProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, scid: string, props: NetworkLoadBalancerProps) {
+    super(scope, scid, props, {
       type: "network",
     });
 
@@ -232,8 +232,8 @@ class ImportedNetworkLoadBalancer extends cdk.Construct implements INetworkLoadB
    */
   public readonly vpc?: ec2.VpcNetworkRef;
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkLoadBalancerRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: NetworkLoadBalancerRefProps) {
+    super(scope, scid);
 
     this.loadBalancerArn = props.loadBalancerArn;
   }

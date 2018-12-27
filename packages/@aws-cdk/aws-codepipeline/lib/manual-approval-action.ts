@@ -36,8 +36,8 @@ export class ManualApprovalAction extends actions.Action {
    */
   public readonly notificationTopic?: sns.TopicRef;
 
-  constructor(parent: cdk.Construct, name: string, props: ManualApprovalActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, scid: string, props: ManualApprovalActionProps) {
+    super(scope, scid, {
       category: actions.ActionCategory.Approval,
       provider: 'Manual',
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 0, maxOutputs: 0 },

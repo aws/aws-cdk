@@ -57,8 +57,8 @@ export interface ParallelProps {
 export class Parallel extends State implements INextable {
     public readonly endStates: INextable[];
 
-    constructor(parent: cdk.Construct, id: string, props: ParallelProps = {}) {
-        super(parent, id, props);
+    constructor(scope: cdk.Construct, scid: string, props: ParallelProps = {}) {
+        super(scope, scid, props);
 
         this.endStates = [this];
     }

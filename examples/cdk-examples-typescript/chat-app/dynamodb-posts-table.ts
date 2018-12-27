@@ -2,8 +2,8 @@ import dynamodb = require('@aws-cdk/aws-dynamodb');
 import cdk = require('@aws-cdk/cdk');
 
 export class DynamoPostsTable extends cdk.Construct {
-  constructor(parent: cdk.Construct, name: string) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string) {
+    super(scope, scid);
 
     const table = new dynamodb.Table(this, 'Table', {
       readCapacity: 5, writeCapacity: 5

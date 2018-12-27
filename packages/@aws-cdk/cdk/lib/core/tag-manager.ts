@@ -211,7 +211,7 @@ export class TagManager extends Token {
 
     const nonStickyTags = filterTags(this._tags, {sticky: false});
     const stickyTags = filterTags(this._tags, {sticky: true});
-    const ancestors = this.parent.ancestors();
+    const ancestors = this.parent.node.ancestors();
     const ancestorTags = propagatedTags(ancestors);
     const propagateTags = filterTags(this._tags, {propagate: true});
     return this.tagFormatResolve( {

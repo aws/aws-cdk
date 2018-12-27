@@ -2,8 +2,8 @@ import cdk = require('@aws-cdk/cdk');
 import s3 = require('../lib');
 
 class TestStack extends cdk.Stack {
-  constructor(parent: cdk.App, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.App, scid: string) {
+    super(scope, scid);
 
     /// !show
     const bucket = new s3.Bucket(this, 'MyBucket', {

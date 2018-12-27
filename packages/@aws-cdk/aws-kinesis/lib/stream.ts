@@ -205,7 +205,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
 
     // Take some effort to construct a unique ID for the destination that is unique to the
     // combination of (stream, loggroup).
-    const uniqueId =  new cdk.HashedAddressingScheme().allocateAddress([sourceLogGroup.path.replace('/', ''), sourceStack.env.account!]);
+    const uniqueId =  new cdk.HashedAddressingScheme().allocateAddress([sourceLogGroup.node.path.replace('/', ''), sourceStack.env.account!]);
 
     // The destination lives in the target account
     const dest = new logs.CrossAccountDestination(this, `CWLDestination${uniqueId}`, {
@@ -285,8 +285,8 @@ export class Stream extends StreamRef {
 
   private readonly stream: CfnStream;
 
-  constructor(parent: cdk.Construct, name: string, props: StreamProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: StreamProps = {}) {
+    super(scope, scid);
 
     const shardCount = props.shardCount || 1;
     const retentionPeriodHours = props.retentionPeriodHours || 24;
@@ -306,7 +306,7 @@ export class Stream extends StreamRef {
     this.streamName = this.stream.streamId;
     this.encryptionKey = encryptionKey;
 
-    if (props.streamName) { this.addMetadata('aws:cdk:hasPhysicalName', props.streamName); }
+    if (props.streamName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.streamName); }
   }
 
   /**
@@ -332,7 +332,7 @@ export class Stream extends StreamRef {
 
     if (encryptionType === StreamEncryption.Kms) {
       const encryptionKey = props.encryptionKey || new kms.EncryptionKey(this, 'Key', {
-        description: `Created by ${this.path}`
+        description: `Created by ${this.node.path}`
       });
 
       const streamEncryption: CfnStream.StreamEncryptionProperty = {
@@ -367,8 +367,8 @@ class ImportedStreamRef extends StreamRef {
   public readonly streamName: string;
   public readonly encryptionKey?: kms.EncryptionKeyRef;
 
-  constructor(parent: cdk.Construct, name: string, props: StreamRefProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: StreamRefProps) {
+    super(scope, scid);
 
     this.streamArn = props.streamArn;
 
@@ -376,7 +376,8 @@ class ImportedStreamRef extends StreamRef {
     this.streamName = cdk.ArnUtils.parse(props.streamArn).resourceName!;
 
     if (props.encryptionKey) {
-      this.encryptionKey = kms.EncryptionKeyRef.import(parent, 'Key', props.encryptionKey);
+      // TODO: import "scope" should be changed to "this"
+      this.encryptionKey = kms.EncryptionKeyRef.import(scope, 'Key', props.encryptionKey);
     } else {
       this.encryptionKey = undefined;
     }

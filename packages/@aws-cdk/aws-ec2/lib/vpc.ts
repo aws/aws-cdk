@@ -265,8 +265,8 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
    * Network routing for the public subnets will be configured to allow outbound access directly via an Internet Gateway.
    * Network routing for the private subnets will be configured to allow outbound access via a set of resilient NAT Gateways (one per AZ).
    */
-  constructor(parent: cdk.Construct, name: string, props: VpcNetworkProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: VpcNetworkProps = {}) {
+    super(scope, scid);
 
     // Can't have enabledDnsHostnames without enableDnsSupport
     if (props.enableDnsHostnames && !props.enableDnsSupport) {
@@ -274,7 +274,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     }
 
     this.tags = new cdk.TagManager(this, { initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.path, { overwrite: false });
+    this.tags.setTag(NAME_TAG, this.node.path, { overwrite: false });
 
     const cidrBlock = ifUndefined(props.cidr, VpcNetwork.DEFAULT_CIDR_RANGE);
     this.networkBuilder = new NetworkBuilder(cidrBlock);
@@ -507,10 +507,10 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
    */
   private readonly routeTableId: string;
 
-  constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: VpcSubnetProps) {
+    super(scope, scid);
     this.tags = new cdk.TagManager(this, {initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.path, {overwrite: false});
+    this.tags.setTag(NAME_TAG, this.node.path, {overwrite: false});
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -564,8 +564,8 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
  * Represents a public VPC subnet resource
  */
 export class VpcPublicSubnet extends VpcSubnet {
-  constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.Construct, scid: string, props: VpcSubnetProps) {
+    super(scope, scid, props);
   }
 
   /**
@@ -600,8 +600,8 @@ export class VpcPublicSubnet extends VpcSubnet {
  * Represents a private VPC subnet resource
  */
 export class VpcPrivateSubnet extends VpcSubnet {
-  constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.Construct, scid: string, props: VpcSubnetProps) {
+    super(scope, scid, props);
   }
 
   /**

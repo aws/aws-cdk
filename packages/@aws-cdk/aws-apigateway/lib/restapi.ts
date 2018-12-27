@@ -172,11 +172,11 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
 
   private readonly methods = new Array<Method>();
 
-  constructor(parent: cdk.Construct, id: string, props: RestApiProps = { }) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: RestApiProps = { }) {
+    super(scope, scid);
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: props.restApiName || id,
+      name: props.restApiName || scid,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,

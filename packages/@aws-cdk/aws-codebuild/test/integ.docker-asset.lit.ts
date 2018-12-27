@@ -3,8 +3,8 @@ import path = require('path');
 import codebuild = require('../lib');
 
 class TestStack extends cdk.Stack {
-  constructor(parent: cdk.App, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.App, scid: string) {
+    super(scope, scid);
 
     new codebuild.Project(this, 'MyProject', {
       buildSpec: {

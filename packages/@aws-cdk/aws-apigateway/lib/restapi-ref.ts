@@ -38,8 +38,8 @@ export abstract class RestApiRef extends cdk.Construct {
 class ImportedRestApi extends RestApiRef {
   public restApiId: string;
 
-  constructor(parent: cdk.Construct, id: string, props: RestApiRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: RestApiRefProps) {
+    super(scope, scid);
 
     this.restApiId = props.restApiId;
   }

@@ -56,8 +56,8 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
    */
   private readonly resource: CfnDestination;
 
-  constructor(parent: cdk.Construct, id: string, props: CrossAccountDestinationProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: CrossAccountDestinationProps) {
+    super(scope, scid);
 
     // In the underlying model, the name is not optional, but we make it so anyway.
     const destinationName = props.destinationName || new cdk.Token(() => this.generateUniqueName());

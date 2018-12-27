@@ -54,8 +54,8 @@ export class Certificate extends CertificateRef {
    */
   public readonly certificateArn: string;
 
-  constructor(parent: Construct, name: string, props: CertificateProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: CertificateProps) {
+    super(scope, scid);
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 

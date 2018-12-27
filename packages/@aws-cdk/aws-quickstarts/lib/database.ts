@@ -20,8 +20,8 @@ export class SqlServer extends cdk.Construct implements ec2.IConnectable {
   private static readonly PORT = 1433;
   public readonly connections: ec2.Connections;
 
-  constructor(parent: cdk.Construct, name: string, props: SqlServerProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: SqlServerProps) {
+    super(scope, scid);
 
     const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,

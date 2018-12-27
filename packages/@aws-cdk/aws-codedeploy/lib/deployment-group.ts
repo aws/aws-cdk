@@ -69,8 +69,8 @@ export abstract class ServerDeploymentGroupRef extends cdk.Construct {
   public readonly deploymentConfig: IServerDeploymentConfig;
   public abstract readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
 
-  constructor(parent: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, deploymentConfig?: IServerDeploymentConfig) {
+    super(scope, scid);
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
   }
 
@@ -110,8 +110,8 @@ class ImportedServerDeploymentGroupRef extends ServerDeploymentGroupRef {
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
-  constructor(parent: cdk.Construct, id: string, props: ServerDeploymentGroupRefProps) {
-    super(parent, id, props.deploymentConfig);
+  constructor(scope: cdk.Construct, scid: string, props: ServerDeploymentGroupRefProps) {
+    super(scope, scid, props.deploymentConfig);
 
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
@@ -292,8 +292,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
   private readonly codeDeployBucket: s3.BucketRef;
   private readonly alarms: cloudwatch.Alarm[];
 
-  constructor(parent: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
-    super(parent, id, props.deploymentConfig);
+  constructor(scope: cdk.Construct, scid: string, props: ServerDeploymentGroupProps = {}) {
+    super(scope, scid, props.deploymentConfig);
 
     this.application = props.application || new ServerApplication(this, 'Application');
 

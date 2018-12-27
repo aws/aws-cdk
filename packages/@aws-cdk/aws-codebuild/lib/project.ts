@@ -310,7 +310,7 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
     }
 
     return {
-      id: this.id,
+      id: this.node.scid,
       arn: this.projectArn,
       roleArn: this.eventsRole.roleArn,
     };
@@ -322,8 +322,8 @@ class ImportedProjectRef extends ProjectRef {
   public readonly projectName: string;
   public readonly role?: iam.Role = undefined;
 
-  constructor(parent: cdk.Construct, name: string, props: ProjectRefProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: ProjectRefProps) {
+    super(scope, scid);
 
     this.projectArn = cdk.ArnUtils.fromComponents({
       service: 'codebuild',
@@ -482,8 +482,8 @@ export class Project extends ProjectRef {
   private readonly _secondarySources: BuildSource[];
   private readonly _secondaryArtifacts: BuildArtifacts[];
 
-  constructor(parent: cdk.Construct, name: string, props: ProjectProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: ProjectProps) {
+    super(scope, scid);
 
     if (props.buildScriptAssetEntrypoint && !props.buildScriptAsset) {
       throw new Error('To use buildScriptAssetEntrypoint, supply buildScriptAsset as well.');

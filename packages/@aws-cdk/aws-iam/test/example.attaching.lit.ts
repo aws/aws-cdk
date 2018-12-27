@@ -2,8 +2,8 @@ import cdk = require('@aws-cdk/cdk');
 import { Group, Policy, User } from '../lib';
 
 export class ExampleConstruct extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string) {
+    super(scope, scid);
 
     /// !show
     const user = new User(this, 'MyUser', { password: '1234' });

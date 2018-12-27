@@ -40,8 +40,8 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
  * The ECR Repository source CodePipeline Action.
  */
 export class PipelineSourceAction extends codepipeline.SourceAction {
-  constructor(parent: cdk.Construct, name: string, props: PipelineSourceActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, scid: string, props: PipelineSourceActionProps) {
+    super(scope, scid, {
       provider: 'ECR',
       configuration: {
         RepositoryName: props.repository.repositoryName,

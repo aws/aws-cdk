@@ -33,14 +33,14 @@ export interface ZoneDelegationRecordProps {
  * A record to delegate further lookups to a different set of name servers
  */
 export class ZoneDelegationRecord extends Construct {
-  constructor(parent: HostedZoneRef, name: string, props: ZoneDelegationRecordProps) {
-    super(parent, name);
+  constructor(scope: HostedZoneRef, scid: string, props: ZoneDelegationRecordProps) {
+    super(scope, scid);
 
     const ttl = props.ttl === undefined ? 172_800 : props.ttl;
 
     new CfnRecordSet(this, 'Resource', {
-      hostedZoneId: parent.hostedZoneId,
-      name: determineFullyQualifiedDomainName(props.delegatedZoneName, parent),
+      hostedZoneId: scope.hostedZoneId,
+      name: determineFullyQualifiedDomainName(props.delegatedZoneName, scope),
       type: 'NS',
       ttl: ttl.toString(),
       comment: props.comment,

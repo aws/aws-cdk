@@ -93,8 +93,8 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
    */
   private readonly attributes: Attributes = {};
 
-  constructor(parent: cdk.Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
+    super(scope, scid);
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 

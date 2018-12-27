@@ -2,22 +2,18 @@ import cxapi = require('@aws-cdk/cx-api');
 import { makeUniqueId } from '../util/uniqueid';
 export const PATH_SEP = '/';
 
-/**
- * Represents the building block of the construct graph.
- * When a construct is created, it is always added as a child
- */
-export class Construct {
+export class Node {
   /**
-   * Returns the parent of this node or undefined if this is a root node.
+   * Returns the scope in which this construct is defined.
    */
-  public readonly parent?: Construct;
+  public readonly scope?: Construct;
 
   /**
-   * The local id of the construct.
-   * This id is unique amongst its siblings.
-   * To obtain a tree-global unique id for this construct, use `uniqueId`.
+   * The scoped construct ID
+   * This ID is unique amongst all constructs defined in the same scope.
+   * To obtain a global unique id for this construct, use `uniqueId`.
    */
-  public readonly id: string;
+  public readonly scid: string;
 
   /**
    * The full path of this construct in the tree.
@@ -44,51 +40,32 @@ export class Construct {
    */
   private _locked = false;
 
-  /**
-   * Creates a new construct node.
-   *
-   * @param parent The parent construct
-   * @param id The local logical ID of the construct. Must be unique amongst
-   * siblings. If the ID includes a path separator (`/`), then it will be
-   * replaced by double dash `--`.
-   */
-  constructor(parent: Construct, id: string) {
-    id = id || ''; // if undefined, convert to empty string
+  constructor(private readonly host: Construct, scope: Construct, scid: string) {
+    scid = scid || ''; // if undefined, convert to empty string
 
-    this.id = id;
-    this.parent = parent;
+    this.scid = scid;
+    this.scope = scope;
 
-    // We say that parent is required, but some root constructs bypass the type checks and
-    // actually pass in 'undefined'.
-    if (parent != null) {
-      if (id === '') {
+    // We say that scope is required, but root scopes will bypass the type
+    // checks and actually pass in 'undefined'.
+    if (scope != null) {
+      if (scid === '') {
         throw new Error('Only root constructs may have an empty name');
       }
 
       // Has side effect so must be very last thing in constructor
-      parent.addChild(this, this.id);
+      scope.node.addChild(host, this.scid);
     } else {
       // This is a root construct.
-      this.id = id;
+      this.scid = scid;
     }
 
     // escape any path separators so they don't wreck havoc
-    this.id = this._escapePathSeparator(this.id);
+    this.scid = this._escapePathSeparator(this.scid);
 
-    // allow derived classes to validate the construct id
-    this._validateId(this.id);
-
-    const components = this.rootPath().map(c => c.id);
+    const components = this.rootPath().map(c => c.node.scid);
     this.path = components.join(PATH_SEP);
     this.uniqueId = components.length > 0 ? makeUniqueId(components) : '';
-  }
-
-  /**
-   * Returns a string representation of this construct.
-   */
-  public toString() {
-    const path = this.path;
-    return this.typename + (path.length > 0 ? ` [${path}]` : '');
   }
 
   /**
@@ -99,10 +76,10 @@ export class Construct {
     for (let i = 0; i < depth; ++i) {
       out += '  ';
     }
-    const name = this.id || '';
+    const name = this.scid || '';
     out += `${this.typename}${name.length > 0 ? ' [' + name + ']' : ''}\n`;
     for (const child of this.children) {
-      out += child.toTreeString(depth + 1);
+      out += child.node.toTreeString(depth + 1);
     }
     return out;
   }
@@ -123,9 +100,9 @@ export class Construct {
     }
     const parts = path.split(PATH_SEP);
 
-    let curr: Construct|undefined = this;
+    let curr: Construct|undefined = this.host;
     while (curr != null && parts.length > 0) {
-      curr = curr._children[parts.shift()!];
+      curr = curr.node._children[parts.shift()!];
     }
     return curr;
   }
@@ -165,7 +142,7 @@ export class Construct {
    */
   public setContext(key: string, value: any) {
     if (this.children.length > 0) {
-      const names = this.children.map(c => c.id);
+      const names = this.children.map(c => c.node.scid);
       throw new Error('Cannot set context after children have been added: ' + names.join(','));
     }
     this.context[key] = value;
@@ -183,7 +160,7 @@ export class Construct {
     const value = this.context[key];
     if (value !== undefined) { return value; }
 
-    return this.parent && this.parent.getContext(key);
+    return this.scope && this.scope.node.getContext(key);
   }
 
   /**
@@ -221,11 +198,11 @@ export class Construct {
    */
   public addMetadata(type: string, data: any, from?: any): Construct {
     if (data == null) {
-      return this;
+      return this.host;
     }
     const trace = createStackTrace(from || this.addMetadata);
     this._metadata.push({ type, data, trace });
-    return this;
+    return this.host;
   }
 
   /**
@@ -257,16 +234,6 @@ export class Construct {
   }
 
   /**
-   * This method can be implemented by derived constructs in order to perform
-   * validation logic. It is called on all constructs before synthesis.
-   *
-   * @returns An array of validation error messages, or an empty array if there the construct is valid.
-   */
-  public validate(): string[] {
-    return [];
-  }
-
-  /**
    * Invokes 'validate' on all child constructs and then on this construct (depth-first).
    * @returns A list of validation errors. If the list is empty, all constructs are valid.
    */
@@ -274,11 +241,12 @@ export class Construct {
     let errors = new Array<ValidationError>();
 
     for (const child of this.children) {
-      errors = errors.concat(child.validateTree());
+      errors = errors.concat(child.node.validateTree());
     }
 
-    const localErrors = this.validate();
-    return errors.concat(localErrors.map(msg => new ValidationError(this, msg)));
+    // we use "as any" in order to allow "validate" to be "protected"
+    const localErrors: string[] = (this.host as any).validate();
+    return errors.concat(localErrors.map(msg => new ValidationError(this.host, msg)));
   }
 
   /**
@@ -290,21 +258,13 @@ export class Construct {
   public ancestors(upTo?: Construct): Construct[] {
     const ret = new Array<Construct>();
 
-    let curr: Construct | undefined = this;
+    let curr: Construct | undefined = this.host;
     while (curr && curr !== upTo) {
       ret.unshift(curr);
-      curr = curr.parent;
+      curr = curr.node.scope;
     }
 
     return ret;
-  }
-
-  /**
-   * Validate that the id of the construct legal.
-   * Construct IDs can be any characters besides the path separator.
-   */
-  protected _validateId(_id: string) {
-    // can be used by derived classes to customize ID validation.
   }
 
   /**
@@ -315,7 +275,7 @@ export class Construct {
    *
    * @deprecated use ``requireProperty`` from ``@aws-cdk/runtime`` instead.
    */
-  protected required(props: any, name: string): any {
+  public required(props: any, name: string): any {
     if (!(name in props)) {
       throw new Error(`Construct of type ${this.typename} is missing required property: ${name}`);
     }
@@ -327,7 +287,7 @@ export class Construct {
   /**
    * @returns The type name of this node.
    */
-  private get typename(): string {
+  public get typename(): string {
     const ctor: any = this.constructor;
     return ctor.name || 'Construct';
   }
@@ -339,7 +299,7 @@ export class Construct {
    * @param name The type name of the child construct.
    * @returns The resolved path part name of the child
    */
-  protected addChild(child: Construct, childName: string) {
+  public addChild(child: Construct, childName: string) {
     if (this.locked) {
 
       // special error if root is locked
@@ -361,14 +321,14 @@ export class Construct {
    * Locks this construct from allowing more children to be added. After this
    * call, no more children can be added to this construct or to any children.
    */
-  protected lock() {
+  public lock() {
     this._locked = true;
   }
 
   /**
    * Unlocks this costruct and allows mutations (adding children).
    */
-  protected unlock() {
+  public unlock() {
     this._locked = false;
   }
 
@@ -382,15 +342,15 @@ export class Construct {
   }
 
   /**
-   * Returns true if this construct or any of it's parent constructs are
+   * Returns true if this construct or the scopes in which it is defined are
    * locked.
    */
-  protected get locked() {
+  public get locked() {
     if (this._locked) {
       return true;
     }
 
-    if (this.parent && this.parent.locked) {
+    if (this.scope && this.scope.node.locked) {
       return true;
     }
 
@@ -407,8 +367,51 @@ export class Construct {
 }
 
 /**
+ * Represents the building block of the construct graph.
+ *
+ * All constructs besides the root construct must be created within the scope of
+ * another construct.
+ */
+export class Construct {
+  /**
+   * Construct node.
+   */
+  public readonly node: Node;
+
+  /**
+   * Creates a new construct node.
+   *
+   * @param scope The scope in which to define this construct
+   * @param scid The scoped construct ID. Must be unique amongst siblings. If
+   * the ID includes a path separator (`/`), then it will be replaced by double
+   * dash `--`.
+   */
+  constructor(scope: Construct, scid: string) {
+    this.node = new Node(this, scope, scid);
+  }
+
+  /**
+   * Returns a string representation of this construct.
+   */
+  public toString() {
+    const path = this.node.path;
+    return this.node.typename + (path.length > 0 ? ` [${path}]` : '');
+  }
+
+  /**
+   * This method can be implemented by derived constructs in order to perform
+   * validation logic. It is called on all constructs before synthesis.
+   *
+   * @returns An array of validation error messages, or an empty array if there the construct is valid.
+   */
+  protected validate(): string[] {
+    return [];
+  }
+}
+
+/**
  * Represents the root of a construct tree.
- * No parent and no name.
+ * No scope and no name.
  */
 export class Root extends Construct {
   constructor() {

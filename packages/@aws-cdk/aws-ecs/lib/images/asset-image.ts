@@ -14,8 +14,8 @@ export interface AssetImageProps {
  * An image that will be built at synthesis time
  */
 export class AssetImage extends DockerImageAsset implements IContainerImage {
-  constructor(parent: cdk.Construct, id: string, props: AssetImageProps) {
-    super(parent, id, { directory: props.directory });
+  constructor(scope: cdk.Construct, scid: string, props: AssetImageProps) {
+    super(scope, scid, { directory: props.directory });
   }
 
   public bind(containerDefinition: ContainerDefinition): void {

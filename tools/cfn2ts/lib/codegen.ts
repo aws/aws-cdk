@@ -262,8 +262,8 @@ export default class CodeGenerator {
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required);
     const propsArgument = propsType ? `, properties${optionalProps ? '?' : ''}: ${propsType.className}` : '';
-    this.code.openBlock(`constructor(parent: ${CONSTRUCT_CLASS}, name: string${propsArgument})`);
-    this.code.line(`super(parent, name, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties' : ''} });`);
+    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, name: string${propsArgument})`);
+    this.code.line(`super(scope, scid, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties' : ''} });`);
     // verify all required properties
     if (spec.Properties) {
       for (const propName of Object.keys(spec.Properties)) {
@@ -298,7 +298,7 @@ export default class CodeGenerator {
     }
 
     if (deprecated) {
-      this.code.line(`this.addWarning('DEPRECATION: ${deprecation}');`);
+      this.code.line(`this.node.addWarning('DEPRECATION: ${deprecation}');`);
     }
 
     this.code.closeBlock();

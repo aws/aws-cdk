@@ -39,8 +39,8 @@ export interface ClusterParameterGroupRefProps {
 class ImportedClusterParameterGroup extends ClusterParameterGroupRef {
   public readonly parameterGroupName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ClusterParameterGroupRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: ClusterParameterGroupRefProps) {
+    super(scope, scid);
     this.parameterGroupName = props.parameterGroupName;
   }
 }

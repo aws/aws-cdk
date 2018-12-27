@@ -177,8 +177,8 @@ class ImportedRepositoryRef extends RepositoryRef {
   public readonly repositoryArn: string;
   public readonly repositoryName: string;
 
-  constructor(parent: cdk.Construct, name: string, props: RepositoryRefProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: RepositoryRefProps) {
+    super(scope, scid);
 
     this.repositoryArn = cdk.ArnUtils.fromComponents({
       service: 'codecommit',
@@ -225,8 +225,8 @@ export class Repository extends RepositoryRef {
   private readonly repository: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
-  constructor(parent: cdk.Construct, name: string, props: RepositoryProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: RepositoryProps) {
+    super(scope, scid);
 
     this.repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
@@ -268,7 +268,7 @@ export class Repository extends RepositoryRef {
 
     let name = options && options.name;
     if (!name) {
-      name = this.path + '/' + arn;
+      name = this.node.path + '/' + arn;
     }
 
     if (this.triggers.find(prop => prop.name === name)) {

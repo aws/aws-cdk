@@ -14,16 +14,16 @@ export interface TXTRecordProps {
  * A DNS TXT record
  */
 export class TXTRecord extends Construct {
-  constructor(parent: HostedZoneRef, name: string, props: TXTRecordProps) {
-    super(parent, name);
+  constructor(scope: HostedZoneRef, scid: string, props: TXTRecordProps) {
+    super(scope, scid);
 
     // JSON.stringify conveniently wraps strings in " and escapes ".
     const recordValue = JSON.stringify(props.recordValue);
     const ttl = props.ttl === undefined ? 1800 : props.ttl;
 
     new CfnRecordSet(this, 'Resource', {
-      hostedZoneId: parent.hostedZoneId,
-      name: determineFullyQualifiedDomainName(props.recordName, parent),
+      hostedZoneId: scope.hostedZoneId,
+      name: determineFullyQualifiedDomainName(props.recordName, scope),
       type: 'TXT',
       resourceRecords: [recordValue],
       ttl: ttl.toString()

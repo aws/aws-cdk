@@ -47,8 +47,8 @@ export class PublicHostedZone extends HostedZoneRef {
    */
   public readonly nameServers: HostedZoneNameServers;
 
-  constructor(parent: cdk.Construct, name: string, props: PublicHostedZoneProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: PublicHostedZoneProps) {
+    super(scope, scid);
 
     validateZoneName(props.zoneName);
 
@@ -94,8 +94,8 @@ export class PrivateHostedZone extends HostedZoneRef {
    */
   private readonly vpcs: CfnHostedZone.VPCProperty[] = [];
 
-  constructor(parent: cdk.Construct, name: string, props: PrivateHostedZoneProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: PrivateHostedZoneProps) {
+    super(scope, scid);
 
     validateZoneName(props.zoneName);
 

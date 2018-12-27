@@ -2,8 +2,8 @@ import cdk = require( '@aws-cdk/cdk');
 import stepfunctions = require('../lib');
 
 class JobPollerStack extends cdk.Stack {
-    constructor(parent: cdk.App, id: string, props: cdk.StackProps = {}) {
-        super(parent, id, props);
+    constructor(scope: cdk.App, scid: string, props: cdk.StackProps = {}) {
+        super(scope, scid, props);
 
         const submitJobActivity = new stepfunctions.Activity(this, 'SubmitJob');
         const checkJobActivity = new stepfunctions.Activity(this, 'CheckJob');

@@ -73,10 +73,10 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
   private readonly connectableMembers: ConnectableMember[];
   private readonly listeners: IApplicationListener[];
 
-  constructor(parent: cdk.Construct, id: string, props: ApplicationTargetGroupProps) {
+  constructor(scope: cdk.Construct, scid: string, props: ApplicationTargetGroupProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
 
-    super(parent, id, props, {
+    super(scope, scid, props, {
       protocol,
       port,
     });

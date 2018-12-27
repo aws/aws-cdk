@@ -104,7 +104,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
    */
   public readonly scalingPolicyArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
+  constructor(scope: cdk.Construct, scid: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
     }
@@ -116,10 +116,10 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new RangeError(`scaleOutCooldown cannot be negative, got: ${props.scaleOutCooldownSec}`);
     }
 
-    super(parent, id);
+    super(scope, scid);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
-      policyName: props.policyName || this.uniqueId,
+      policyName: props.policyName || this.node.uniqueId,
       policyType: 'TargetTrackingScaling',
       scalingTargetId: props.scalingTarget.scalableTargetId,
       targetTrackingScalingPolicyConfiguration: {

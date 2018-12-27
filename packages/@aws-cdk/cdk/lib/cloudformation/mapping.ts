@@ -12,8 +12,8 @@ export interface MappingProps {
 export class Mapping extends Referenceable {
   private mapping: { [k1: string]: { [k2: string]: any } } = { };
 
-  constructor(parent: Construct, name: string, props: MappingProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: MappingProps) {
+    super(scope, scid);
     this.mapping = props.mapping || { };
   }
 

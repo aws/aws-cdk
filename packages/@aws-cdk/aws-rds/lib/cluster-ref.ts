@@ -150,8 +150,8 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
    */
   protected readonly securityGroupId: string;
 
-  constructor(parent: cdk.Construct, name: string, props: DatabaseClusterRefProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: DatabaseClusterRefProps) {
+    super(scope, scid);
 
     this.securityGroupId = props.securityGroupId;
     this.defaultPortRange = new ec2.TcpPortFromAttribute(props.port);

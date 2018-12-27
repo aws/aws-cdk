@@ -31,6 +31,10 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
    */
   public readonly defaultPortRange?: IPortRange;
 
+  public get uniqueId() {
+    return this.node.uniqueId;
+  }
+
   public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
     let id = `from ${peer.uniqueId}:${connection}`;
     if (description === undefined) {
@@ -39,7 +43,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
     id = id.replace('/', '_');
 
     // Skip duplicates
-    if (this.tryFindChild(id) === undefined) {
+    if (this.node.tryFindChild(id) === undefined) {
       new CfnSecurityGroupIngress(this, id, {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleJSON(),
@@ -57,7 +61,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
     id = id.replace('/', '_');
 
     // Skip duplicates
-    if (this.tryFindChild(id) === undefined) {
+    if (this.node.tryFindChild(id) === undefined) {
       new CfnSecurityGroupEgress(this, id, {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleJSON(),
@@ -162,11 +166,11 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
 
   private readonly allowAllOutbound: boolean;
 
-  constructor(parent: Construct, name: string, props: SecurityGroupProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: SecurityGroupProps) {
+    super(scope, scid);
 
     this.tags = new TagManager(this, { initialTags: props.tags});
-    const groupDescription = props.description || this.path;
+    const groupDescription = props.description || this.node.path;
 
     this.allowAllOutbound = props.allowAllOutbound !== false;
 
@@ -381,8 +385,8 @@ export interface ConnectionRule {
 class ImportedSecurityGroup extends SecurityGroupRef {
   public readonly securityGroupId: string;
 
-  constructor(parent: Construct, name: string, props: SecurityGroupRefProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: SecurityGroupRefProps) {
+    super(scope, scid);
 
     this.securityGroupId = props.securityGroupId;
   }

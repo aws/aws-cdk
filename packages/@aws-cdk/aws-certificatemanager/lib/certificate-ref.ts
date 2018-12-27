@@ -29,8 +29,8 @@ export abstract class CertificateRef extends Construct {
 class ImportedCertificate extends CertificateRef {
   public readonly certificateArn: string;
 
-  constructor(parent: Construct, name: string, props: CertificateRefProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: CertificateRefProps) {
+    super(scope, scid);
 
     this.certificateArn = props.certificateArn;
   }

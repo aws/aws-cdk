@@ -73,8 +73,8 @@ export class ApplicationListenerRule extends cdk.Construct implements cdk.IDepen
   private readonly actions: any[] = [];
   private readonly listener: IApplicationListener;
 
-  constructor(parent: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: ApplicationListenerRuleProps) {
+    super(scope, scid);
 
     if (!props.hostHeader && !props.pathPattern) {
       throw new Error(`At least one of 'hostHeader' or 'pathPattern' is required when defining a load balancing rule.`);

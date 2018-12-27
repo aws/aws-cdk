@@ -120,8 +120,8 @@ export class LoadBalancedFargateService extends cdk.Construct {
 
   public readonly service: FargateService;
 
-  constructor(parent: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: LoadBalancedFargateServiceProps) {
+    super(scope, scid);
 
     const taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
       memoryMiB: props.memoryMiB,
@@ -132,7 +132,7 @@ export class LoadBalancedFargateService extends cdk.Construct {
 
     const container = taskDefinition.addContainer('web', {
       image: props.image,
-      logging: optIn ? this.createAWSLogDriver(this.id) : undefined
+      logging: optIn ? this.createAWSLogDriver(this.node.scid) : undefined
     });
 
     container.addPortMappings({

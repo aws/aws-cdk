@@ -30,8 +30,8 @@ export class ClusterParameterGroup extends ClusterParameterGroupRef {
   public readonly parameterGroupName: string;
   private readonly parameters: Parameters = {};
 
-  constructor(parent: cdk.Construct, id: string, props: ClusterParameterGroupProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: ClusterParameterGroupProps) {
+    super(scope, scid);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       description: props.description,

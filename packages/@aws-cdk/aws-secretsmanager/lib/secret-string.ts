@@ -34,8 +34,8 @@ export interface SecretStringProps {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secret.html
  */
 export class SecretString extends cdk.DynamicReference {
-  constructor(parent: cdk.Construct, id: string, private readonly props: SecretStringProps) {
-    super(parent, id, {
+  constructor(scope: cdk.Construct, scid: string, private readonly props: SecretStringProps) {
+    super(scope, scid, {
       service: cdk.DynamicReferenceService.SecretsManager,
       referenceKey: '',
     });

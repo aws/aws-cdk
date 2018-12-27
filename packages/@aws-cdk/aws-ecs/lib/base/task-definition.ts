@@ -155,10 +155,10 @@ export class TaskDefinition extends cdk.Construct {
    */
   private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
 
-  constructor(parent: cdk.Construct, name: string, props: TaskDefinitionProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: TaskDefinitionProps) {
+    super(scope, scid);
 
-    this.family = props.family || this.uniqueId;
+    this.family = props.family || this.node.uniqueId;
     this.compatibility = props.compatibility;
 
     if (props.volumes) {
@@ -254,7 +254,7 @@ export class TaskDefinition extends cdk.Construct {
       // Container sizes
       for (const container of this.containers) {
         if (!container.memoryLimitSpecified) {
-          ret.push(`ECS Container ${container.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+          ret.push(`ECS Container ${container.node.scid} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
         }
       }
     }

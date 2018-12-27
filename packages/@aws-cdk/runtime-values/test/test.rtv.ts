@@ -20,8 +20,8 @@ export = {
 
 class RuntimeValueTest extends cdk.Construct {
 
-  constructor(parent: cdk.Construct, name: string) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string) {
+    super(scope, scid);
 
     const queue = new sqs.CfnQueue(this, 'Queue', {});
 

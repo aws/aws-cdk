@@ -76,8 +76,8 @@ export class LogStream extends LogStreamRef {
    */
   public readonly logStreamName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: LogStreamProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: LogStreamProps) {
+    super(scope, scid);
 
     const resource = new CfnLogStream(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
@@ -101,8 +101,8 @@ class ImportedLogStream extends LogStreamRef {
    */
   public readonly logStreamName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: LogStreamRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: LogStreamRefProps) {
+    super(scope, scid);
 
     this.logStreamName = props.logStreamName;
   }

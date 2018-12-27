@@ -362,12 +362,12 @@ export = {
       const stack = getTestStack();
       const vpc = new VpcNetwork(stack, 'TheVPC');
       for (const subnet of vpc.publicSubnets) {
-        const tag = {Key: 'Name', Value: subnet.path};
+        const tag = {Key: 'Name', Value: subnet.node.path};
         expect(stack).to(haveResource('AWS::EC2::NatGateway', hasTags([tag])));
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       for (const subnet of vpc.privateSubnets) {
-        const tag = {Key: 'Name', Value: subnet.path};
+        const tag = {Key: 'Name', Value: subnet.node.path};
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       test.done();
@@ -468,10 +468,12 @@ export = {
       test.equal(6, imported.publicSubnets.length);
 
       for (let i = 0; i < 3; i++) {
-        test.equal(true, imported.publicSubnets[i].id.startsWith('Ingress'), `${imported.publicSubnets[i].id} does not start with "Ingress"`);
+        // tslint:disable-next-line:max-line-length
+        test.equal(true, imported.publicSubnets[i].node.scid.startsWith('Ingress'), `${imported.publicSubnets[i].node.scid} does not start with "Ingress"`);
       }
       for (let i = 3; i < 6; i++) {
-        test.equal(true, imported.publicSubnets[i].id.startsWith('Egress'), `${imported.publicSubnets[i].id} does not start with "Egress"`);
+        // tslint:disable-next-line:max-line-length
+        test.equal(true, imported.publicSubnets[i].node.scid.startsWith('Egress'), `${imported.publicSubnets[i].node.scid} does not start with "Egress"`);
       }
 
       test.done();

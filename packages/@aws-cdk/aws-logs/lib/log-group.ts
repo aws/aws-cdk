@@ -180,8 +180,8 @@ export class LogGroup extends LogGroupRef {
    */
   public readonly logGroupName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: LogGroupProps = {}) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: LogGroupProps = {}) {
+    super(scope, scid);
 
     let retentionInDays = props.retentionDays;
     if (retentionInDays === undefined) { retentionInDays = 731; }
@@ -219,8 +219,8 @@ class ImportedLogGroup extends LogGroupRef {
    */
   public readonly logGroupName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: LogGroupRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: LogGroupRefProps) {
+    super(scope, scid);
 
     this.logGroupArn = props.logGroupArn;
     this.logGroupName = cdk.ArnUtils.resourceNameComponent(props.logGroupArn, ':');

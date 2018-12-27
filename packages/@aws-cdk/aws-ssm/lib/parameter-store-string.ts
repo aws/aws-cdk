@@ -21,8 +21,8 @@ export interface ParameterStoreStringProps {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html
  */
 export class ParameterStoreString extends cdk.DynamicReference {
-  constructor(parent: cdk.Construct, id: string, props: ParameterStoreStringProps) {
-    super(parent, id, {
+  constructor(scope: cdk.Construct, scid: string, props: ParameterStoreStringProps) {
+    super(scope, scid, {
       service: cdk.DynamicReferenceService.Ssm,
       referenceKey: `${props.parameterName}:${props.version}`,
     });
@@ -50,8 +50,8 @@ export interface ParameterStoreSecureStringProps {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html
  */
 export class ParameterStoreSecureString extends cdk.DynamicReference {
-  constructor(parent: cdk.Construct, id: string, props: ParameterStoreStringProps) {
-    super(parent, id, {
+  constructor(scope: cdk.Construct, scid: string, props: ParameterStoreStringProps) {
+    super(scope, scid, {
       service: cdk.DynamicReferenceService.SsmSecure,
       referenceKey: `${props.parameterName}:${props.version}`,
     });

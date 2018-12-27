@@ -2,8 +2,8 @@ import cdk = require('@aws-cdk/cdk');
 import iam = require('../lib');
 
 export class ExampleConstruct extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string) {
+    super(scope, scid);
 
     /// !show
     const role = new iam.Role(this, 'MyRole', {

@@ -118,8 +118,8 @@ export class EncryptionKey extends EncryptionKeyRef {
   public readonly keyArn: string;
   protected readonly policy?: PolicyDocument;
 
-  constructor(parent: Construct, name: string, props: EncryptionKeyProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: EncryptionKeyProps = {}) {
+    super(scope, scid);
 
     if (props.policy) {
       this.policy = props.policy;
@@ -170,8 +170,8 @@ class EncryptionKeyRefImport extends EncryptionKeyRef {
   public readonly keyArn: string;
   protected readonly policy = undefined; // no policy associated with an imported key
 
-  constructor(parent: Construct, name: string, props: EncryptionKeyRefProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: EncryptionKeyRefProps) {
+    super(scope, scid);
 
     this.keyArn = props.keyArn;
   }

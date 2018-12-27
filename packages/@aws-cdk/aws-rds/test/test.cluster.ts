@@ -126,6 +126,6 @@ export = {
 
 function testStack() {
   const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' }});
-  stack.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
+  stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

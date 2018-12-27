@@ -140,8 +140,8 @@ export class Alarm extends Construct {
    */
   private readonly annotation: HorizontalAnnotation;
 
-  constructor(parent: Construct, name: string, props: AlarmProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: AlarmProps) {
+    super(scope, scid);
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GreaterThanOrEqualToThreshold;
 

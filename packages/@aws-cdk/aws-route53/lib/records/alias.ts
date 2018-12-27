@@ -45,12 +45,12 @@ export interface AliasRecordProps {
  * A Route53 alias record
  */
 export class AliasRecord extends Construct {
-  constructor(parent: HostedZoneRef, id: string, props: AliasRecordProps) {
-    super(parent, id);
+  constructor(scope: HostedZoneRef, scid: string, props: AliasRecordProps) {
+    super(scope, scid);
 
     new CfnRecordSet(this, 'Resource', {
-      hostedZoneId: parent.hostedZoneId,
-      name: determineFullyQualifiedDomainName(props.recordName, parent),
+      hostedZoneId: scope.hostedZoneId,
+      name: determineFullyQualifiedDomainName(props.recordName, scope),
       type: 'A',  // ipv4
       aliasTarget: props.target.asAliasRecordTarget()
     });

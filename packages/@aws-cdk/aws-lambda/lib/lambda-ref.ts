@@ -238,7 +238,7 @@ export abstract class FunctionRef extends cdk.Construct
    */
   public asEventRuleTarget(ruleArn: string, ruleId: string): events.EventRuleTargetProps {
     const permissionId = `AllowEventRule${ruleId}`;
-    if (!this.tryFindChild(permissionId)) {
+    if (!this.node.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('events.amazonaws.com'),
@@ -247,7 +247,7 @@ export abstract class FunctionRef extends cdk.Construct
     }
 
     return {
-      id: this.id,
+      id: this.node.scid,
       arn: this.functionArn,
     };
   }
@@ -346,7 +346,7 @@ export abstract class FunctionRef extends cdk.Construct
    */
   public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
     const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
-    if (!this.tryFindChild(permissionId)) {
+    if (!this.node.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
         sourceAccount: new cdk.AwsAccountId().toString(),
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
@@ -356,7 +356,7 @@ export abstract class FunctionRef extends cdk.Construct
 
     // if we have a permission resource for this relationship, add it as a dependency
     // to the bucket notifications resource, so it will be created first.
-    const permission = this.tryFindChild(permissionId) as cdk.Resource;
+    const permission = this.node.tryFindChild(permissionId) as cdk.Resource;
 
     return {
       type: s3n.BucketNotificationDestinationType.Lambda,
@@ -421,8 +421,8 @@ class LambdaRefImport extends FunctionRef {
 
   protected readonly canCreatePermissions = false;
 
-  constructor(parent: cdk.Construct, name: string, props: FunctionRefProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: FunctionRefProps) {
+    super(scope, scid);
 
     this.functionArn = props.functionArn;
     this.functionName = this.extractNameFromArn(props.functionArn);

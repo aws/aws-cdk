@@ -54,8 +54,8 @@ class ImportedServerApplicationRef extends ServerApplicationRef {
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ServerApplicationRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: ServerApplicationRefProps) {
+    super(scope, scid);
 
     this.applicationName = props.applicationName;
     this.applicationArn = applicationName2Arn(this.applicationName);
@@ -81,8 +81,8 @@ export class ServerApplication extends ServerApplicationRef {
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(parent: cdk.Construct, id: string, props?: ServerApplicationProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props?: ServerApplicationProps) {
+    super(scope, scid);
 
     const resource = new CfnApplication(this, 'Resource', {
       applicationName: props && props.applicationName,

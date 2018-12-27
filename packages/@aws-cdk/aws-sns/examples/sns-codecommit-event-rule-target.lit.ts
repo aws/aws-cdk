@@ -4,8 +4,8 @@ import cdk = require('@aws-cdk/cdk');
 import { Topic } from '../lib';
 
 class IntegStack extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
+    super(scope, scid, props);
 
     const codeCommitRepo = new codecommit.Repository(this, 'Repo', {
       repositoryName: 'TestRepo'

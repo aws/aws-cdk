@@ -61,8 +61,8 @@ class ImportedServerDeploymentConfigRef extends ServerDeploymentConfigRef {
   public readonly deploymentConfigName: string;
   public readonly deploymentConfigArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ServerDeploymentConfigRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: ServerDeploymentConfigRefProps) {
+    super(scope, scid);
 
     this.deploymentConfigName = props.deploymentConfigName;
     this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
@@ -118,8 +118,8 @@ export class ServerDeploymentConfig extends ServerDeploymentConfigRef {
   public readonly deploymentConfigName: string;
   public readonly deploymentConfigArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: ServerDeploymentConfigProps) {
+    super(scope, scid);
 
     const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: props.deploymentConfigName,

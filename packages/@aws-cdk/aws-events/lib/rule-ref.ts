@@ -36,8 +36,8 @@ export abstract class EventRuleRef extends Construct {
 class ImportedEventRule extends EventRuleRef {
   public readonly ruleArn: string;
 
-  constructor(parent: Construct, name: string, props: EventRuleRefProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: EventRuleRefProps) {
+    super(scope, scid);
 
     this.ruleArn = props.eventRuleArn;
   }

@@ -81,9 +81,9 @@ export abstract class TopicRef extends cdk.Construct
    * @param queue The target queue
    */
   public subscribeQueue(queue: sqs.QueueRef) {
-    const subscriptionName = queue.id + 'Subscription';
-    if (this.tryFindChild(subscriptionName)) {
-      throw new Error(`A subscription between the topic ${this.id} and the queue ${queue.id} already exists`);
+    const subscriptionName = queue.node.scid + 'Subscription';
+    if (this.node.tryFindChild(subscriptionName)) {
+      throw new Error(`A subscription between the topic ${this.node.scid} and the queue ${queue.node.scid} already exists`);
     }
 
     // we use the queue name as the subscription's. there's no meaning to subscribing
@@ -115,10 +115,10 @@ export abstract class TopicRef extends cdk.Construct
    * @param lambdaFunction The Lambda function to invoke
    */
   public subscribeLambda(lambdaFunction: lambda.FunctionRef) {
-    const subscriptionName = lambdaFunction.id + 'Subscription';
+    const subscriptionName = lambdaFunction.node.scid + 'Subscription';
 
-    if (this.tryFindChild(subscriptionName)) {
-      throw new Error(`A subscription between the topic ${this.id} and the lambda ${lambdaFunction.id} already exists`);
+    if (this.node.tryFindChild(subscriptionName)) {
+      throw new Error(`A subscription between the topic ${this.node.scid} and the lambda ${lambdaFunction.node.scid} already exists`);
     }
 
     const sub = new Subscription(this, subscriptionName, {
@@ -127,7 +127,7 @@ export abstract class TopicRef extends cdk.Construct
       protocol: SubscriptionProtocol.Lambda
     });
 
-    lambdaFunction.addPermission(this.id, {
+    lambdaFunction.addPermission(this.node.scid, {
       sourceArn: this.topicArn,
       principal: new iam.ServicePrincipal('sns.amazonaws.com'),
     });
@@ -224,7 +224,7 @@ export abstract class TopicRef extends cdk.Construct
     }
 
     return {
-      id: this.id,
+      id: this.node.scid,
       arn: this.topicArn,
     };
   }
@@ -326,8 +326,8 @@ class ImportedTopic extends TopicRef {
 
   protected autoCreatePolicy: boolean = false;
 
-  constructor(parent: cdk.Construct, name: string, props: TopicRefProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: TopicRefProps) {
+    super(scope, scid);
     this.topicArn = props.topicArn;
     this.topicName = props.topicName;
   }

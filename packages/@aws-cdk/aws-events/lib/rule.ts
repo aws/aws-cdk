@@ -70,8 +70,8 @@ export class EventRule extends EventRuleRef {
   private readonly eventPattern: EventPattern = { };
   private scheduleExpression?: string;
 
-  constructor(parent: Construct, name: string, props: EventRuleProps = { }) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: EventRuleProps = { }) {
+    super(scope, scid);
 
     const resource = new CfnRule(this, 'Resource', {
       name: props.ruleName,
@@ -101,7 +101,7 @@ export class EventRule extends EventRuleRef {
   public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
     if (!target) { return; }
 
-    const targetProps = target.asEventRuleTarget(this.ruleArn, this.uniqueId);
+    const targetProps = target.asEventRuleTarget(this.ruleArn, this.node.uniqueId);
 
     // check if a target with this ID already exists
     if (this.targets.find(t => t.id === targetProps.id)) {

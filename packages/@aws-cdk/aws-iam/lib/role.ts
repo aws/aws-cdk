@@ -127,8 +127,8 @@ export class Role extends Construct implements IRole {
   private readonly managedPolicyArns: string[];
   private readonly attachedPolicies = new AttachedPolicies();
 
-  constructor(parent: Construct, name: string, props: RoleProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: RoleProps) {
+    super(scope, scid);
 
     this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
     this.managedPolicyArns = props.managedPolicyArns || [ ];
@@ -245,8 +245,8 @@ class ImportedRole extends Construct implements IRole {
   public readonly principal: PolicyPrincipal;
   public readonly dependencyElements: IDependable[] = [];
 
-  constructor(parent: Construct, id: string, props: ImportedRoleProps) {
-    super(parent, id);
+  constructor(scope: Construct, scid: string, props: ImportedRoleProps) {
+    super(scope, scid);
     this.roleArn = props.roleArn;
     this.principal = new ArnPrincipal(this.roleArn);
   }

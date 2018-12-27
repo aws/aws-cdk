@@ -5,8 +5,8 @@ import cdk = require('@aws-cdk/cdk');
 import assert = require('assert');
 
 class ResourceOverridesExample extends cdk.Stack {
-    constructor(parent: cdk.App, id: string) {
-        super(parent, id);
+    constructor(scope: cdk.App, scid: string) {
+        super(scope, scid);
 
         const otherBucket = new s3.Bucket(this, 'Other');
 
@@ -15,25 +15,23 @@ class ResourceOverridesExample extends cdk.Stack {
             encryption: s3.BucketEncryption.KmsManaged
         });
 
-        const bucketResource2 = bucket.findChild('Resource') as s3.CfnBucket;
+        const bucketResource2 = bucket.node.findChild('Resource') as s3.CfnBucket;
         bucketResource2.addPropertyOverride('BucketEncryption.ServerSideEncryptionConfiguration.0.EncryptEverythingAndAlways', true);
         bucketResource2.addPropertyDeletionOverride('BucketEncryption.ServerSideEncryptionConfiguration.0.ServerSideEncryptionByDefault');
-
-        return;
 
         //
         // Accessing the L1 bucket resource from an L2 bucket
         //
 
-        const bucketResource = bucket.findChild('Resource') as s3.CfnBucket;
-        const anotherWay = bucket.children.find(c => (c as cdk.Resource).resourceType === 'AWS::S3::Bucket') as s3.CfnBucket;
+        const bucketResource = bucket.node.findChild('Resource') as s3.CfnBucket;
+        const anotherWay = bucket.node.children.find(c => (c as cdk.Resource).resourceType === 'AWS::S3::Bucket') as s3.CfnBucket;
         assert.equal(bucketResource, anotherWay);
 
         //
         // This is how to specify resource options such as dependencies, metadata, update policy
         //
 
-        bucketResource.addDependency(otherBucket.findChild('Resource') as cdk.Resource);
+        bucketResource.addDependency(otherBucket.node.findChild('Resource') as cdk.Resource);
         bucketResource.options.metadata = { MetadataKey: 'MetadataValue' };
         bucketResource.options.updatePolicy = {
             autoScalingRollingUpdate: {
@@ -108,7 +106,7 @@ class ResourceOverridesExample extends cdk.Stack {
         // need to consule the codebase or use the `.map.find` method above
         //
 
-        const lc = asg.findChild('LaunchConfig') as autoscaling.CfnLaunchConfiguration;
+        const lc = asg.node.findChild('LaunchConfig') as autoscaling.CfnLaunchConfiguration;
         lc.addPropertyOverride('Foo.Bar', 'Hello');
     }
 }

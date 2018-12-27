@@ -233,8 +233,8 @@ class ImportedQueue extends QueueRef {
 
   protected readonly autoCreatePolicy = false;
 
-  constructor(parent: cdk.Construct, name: string, props: QueueRefProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: QueueRefProps) {
+    super(scope, scid);
     this.queueArn = props.queueArn;
     this.queueUrl = props.queueUrl;
 

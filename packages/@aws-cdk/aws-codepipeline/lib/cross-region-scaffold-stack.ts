@@ -28,8 +28,8 @@ export class CrossRegionScaffoldStack extends cdk.Stack {
    */
   public readonly replicationBucketName: string;
 
-  constructor(parent?: cdk.App, props: CrossRegionScaffoldStackProps = defaultCrossRegionScaffoldStackProps()) {
-    super(parent, generateStackName(props), {
+  constructor(scope?: cdk.App, props: CrossRegionScaffoldStackProps = defaultCrossRegionScaffoldStackProps()) {
+    super(scope, generateStackName(props), {
       env: {
         region: props.region,
         account: props.account,

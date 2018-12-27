@@ -202,8 +202,8 @@ export class Queue extends QueueRef {
 
   protected readonly autoCreatePolicy = true;
 
-  constructor(parent: cdk.Construct, name: string, props: QueueProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: QueueProps = {}) {
+    super(scope, scid);
 
     validateProps(props);
 
@@ -259,7 +259,7 @@ export class Queue extends QueueRef {
 
       if (encryption === QueueEncryption.Kms) {
         const masterKey = props.encryptionMasterKey || new kms.EncryptionKey(this, 'Key', {
-          description: `Created by ${this.path}`
+          description: `Created by ${this.node.path}`
         });
 
         return {

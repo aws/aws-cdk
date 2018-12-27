@@ -45,8 +45,8 @@ export class NetworkTargetGroup extends BaseTargetGroup {
 
   private readonly listeners: INetworkListener[];
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, scid: string, props: NetworkTargetGroupProps) {
+    super(scope, scid, props, {
       protocol: Protocol.Tcp,
       port: props.port,
     });

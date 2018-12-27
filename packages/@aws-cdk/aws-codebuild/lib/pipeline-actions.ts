@@ -57,11 +57,11 @@ export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps
  * CodePipeline build Action that uses AWS CodeBuild.
  */
 export class PipelineBuildAction extends codepipeline.BuildAction {
-  constructor(parent: cdk.Construct, name: string, props: PipelineBuildActionProps) {
+  constructor(scope: cdk.Construct, scid: string, props: PipelineBuildActionProps) {
     // This happened when ProjectName was accidentally set to the project's ARN:
     // https://qiita.com/ikeisuke/items/2fbc0b80b9bbd981b41f
 
-    super(parent, name, {
+    super(scope, scid, {
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
       configuration: {
@@ -143,8 +143,8 @@ export interface PipelineTestActionProps extends CommonPipelineTestActionProps,
 }
 
 export class PipelineTestAction extends codepipeline.TestAction {
-  constructor(parent: cdk.Construct, name: string, props: PipelineTestActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, scid: string, props: PipelineTestActionProps) {
+    super(scope, scid, {
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
       configuration: {

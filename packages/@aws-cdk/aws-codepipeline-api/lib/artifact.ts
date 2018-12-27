@@ -5,8 +5,8 @@ import { Action } from "./action";
  * An output artifact of an action. Artifacts can be used as input by some actions.
  */
 export class Artifact extends Construct {
-  constructor(parent: Action, readonly name: string) {
-    super(parent, name);
+  constructor(scope: Action, readonly name: string) {
+    super(scope, name);
   }
 
   /**
@@ -51,7 +51,7 @@ export class Artifact extends Construct {
   }
 
   public toString() {
-    return this.name;
+    return this.node.scid;
   }
 }
 

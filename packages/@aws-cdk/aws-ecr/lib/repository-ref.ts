@@ -254,8 +254,8 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ImportRepositoryProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: ImportRepositoryProps) {
+    super(scope, scid);
 
     if (props.repositoryArn) {
       this.repositoryArn = props.repositoryArn;

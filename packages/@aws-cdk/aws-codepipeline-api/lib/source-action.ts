@@ -52,8 +52,8 @@ export interface SourceActionProps extends CommonActionProps, CommonActionConstr
 export abstract class SourceAction extends Action {
   public readonly outputArtifact: Artifact;
 
-  constructor(parent: cdk.Construct, name: string, props: SourceActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, scid: string, props: SourceActionProps) {
+    super(scope, scid, {
       category: ActionCategory.Source,
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
       ...props,

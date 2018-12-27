@@ -68,14 +68,14 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
      */
     private eventsRole?: iam.Role;
 
-    constructor(parent: cdk.Construct, id: string, props: StateMachineProps) {
-        super(parent, id);
+    constructor(scope: cdk.Construct, scid: string, props: StateMachineProps) {
+        super(scope, scid);
 
         this.role = props.role || new iam.Role(this, 'Role', {
             assumedBy: new iam.ServicePrincipal(`states.${new cdk.AwsRegion()}.amazonaws.com`),
         });
 
-        const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
+        const graph = new StateGraph(props.definition.startState, `State Machine ${scid} definition`);
         graph.timeoutSeconds = props.timeoutSec;
 
         const resource = new CfnStateMachine(this, 'Resource', {
@@ -114,7 +114,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
         }
 
         return {
-            id: this.id,
+            id: this.node.scid,
             arn: this.stateMachineArn,
             roleArn: this.eventsRole.roleArn,
         };
@@ -221,8 +221,8 @@ export interface ImportedStateMachineProps {
 
 class ImportedStateMachine extends cdk.Construct implements IStateMachine {
     public readonly stateMachineArn: string;
-    constructor(parent: cdk.Construct, id: string, props: ImportedStateMachineProps) {
-        super(parent, id);
+    constructor(scope: cdk.Construct, scid: string, props: ImportedStateMachineProps) {
+        super(scope, scid);
         this.stateMachineArn = props.stateMachineArn;
     }
 }

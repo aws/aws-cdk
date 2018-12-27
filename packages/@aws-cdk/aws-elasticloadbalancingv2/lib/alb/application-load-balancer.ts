@@ -56,8 +56,8 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   public readonly connections: ec2.Connections;
   private readonly securityGroup: ec2.SecurityGroupRef;
 
-  constructor(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, scid: string, props: ApplicationLoadBalancerProps) {
+    super(scope, scid, props, {
       type: "application",
       securityGroups: new cdk.Token(() => [this.securityGroup.securityGroupId]),
       ipAddressType: props.ipAddressType,
@@ -65,7 +65,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
-      description: `Automatically created Security Group for ELB ${this.uniqueId}`,
+      description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
       allowAllOutbound: false
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
@@ -552,8 +552,8 @@ class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicat
    */
   public readonly vpc?: ec2.VpcNetworkRef;
 
-  constructor(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: ApplicationLoadBalancerRefProps) {
+    super(scope, scid);
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({

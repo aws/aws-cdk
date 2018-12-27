@@ -55,8 +55,8 @@ export class FunctionVersion extends Construct {
    */
   public readonly lambda: FunctionRef;
 
-  constructor(parent: Construct, name: string, props: FunctionVersionProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: FunctionVersionProps) {
+    super(scope, scid);
 
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,

@@ -65,8 +65,8 @@ export class Deployment extends cdk.Construct implements cdk.IDependable {
 
   private readonly resource: LatestDeploymentResource;
 
-  constructor(parent: cdk.Construct, id: string, props: DeploymentProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: DeploymentProps) {
+    super(scope, scid);
 
     this.resource = new LatestDeploymentResource(this, 'Resource', {
       description: props.description,
@@ -109,8 +109,8 @@ class LatestDeploymentResource extends CfnDeployment {
   private lazyLogicalId?: string;
   private hashComponents = new Array<any>();
 
-  constructor(parent: cdk.Construct, id: string, props: CfnDeploymentProps) {
-    super(parent, id, props);
+  constructor(scope: cdk.Construct, scid: string, props: CfnDeploymentProps) {
+    super(scope, scid, props);
 
     // from this point, don't allow accessing logical ID before synthesis
     this.lazyLogicalIdRequired = true;
@@ -159,7 +159,7 @@ class LatestDeploymentResource extends CfnDeployment {
   public addToLogicalId(data: unknown) {
     // if the construct is locked, it means we are already synthesizing and then
     // we can't modify the hash because we might have already calculated it.
-    if (this.locked) {
+    if (this.node.locked) {
       throw new Error('Cannot modify the logical ID when the construct is locked');
     }
 

@@ -56,8 +56,8 @@ export interface MetricFilterProps {
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
 export class MetricFilter extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string, props: MetricFilterProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, props: MetricFilterProps) {
+    super(scope, scid);
 
     // It looks odd to map this object to a singleton list, but that's how
     // we're supposed to do it according to the docs.

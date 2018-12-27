@@ -523,8 +523,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
     "vip": [SecurityPolicyProtocol.SSLv3, SecurityPolicyProtocol.TLSv1],
   };
 
-  constructor(parent: cdk.Construct, name: string, props: CloudFrontWebDistributionProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, scid: string, props: CloudFrontWebDistributionProps) {
+    super(scope, scid);
 
     const distributionConfig: CfnDistribution.DistributionConfigProperty = {
       comment: props.comment,

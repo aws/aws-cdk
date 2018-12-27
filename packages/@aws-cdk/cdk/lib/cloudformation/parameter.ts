@@ -86,8 +86,8 @@ export class Parameter extends Referenceable {
    * @param parent The parent construct.
    * @param props The parameter properties.
    */
-  constructor(parent: Construct, name: string, props: ParameterProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: ParameterProps) {
+    super(scope, scid);
     this.properties = props;
     this.value = new Ref(this);
   }

@@ -69,8 +69,8 @@ export class Rule extends Referenceable {
    * @param parent The parent construct.
    * @param props The rule props.
    */
-  constructor(parent: Construct, name: string, props?: RuleProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props?: RuleProps) {
+    super(scope, scid);
 
     this.ruleCondition = props && props.ruleCondition;
     this.assertions = props && props.assertions;

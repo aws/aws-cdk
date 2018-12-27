@@ -55,8 +55,8 @@ export class AwsLogDriver extends LogDriver {
    */
   public readonly logGroup: logs.LogGroupRef;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: AwsLogDriverProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, scid: string, private readonly props: AwsLogDriverProps) {
+    super(scope, scid);
     this.logGroup = props.logGroup || new logs.LogGroup(this, 'LogGroup', {
         retentionDays: 365,
     });

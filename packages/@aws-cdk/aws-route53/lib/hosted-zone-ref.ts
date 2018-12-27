@@ -52,8 +52,8 @@ export class ImportedHostedZone extends HostedZoneRef {
 
   public readonly zoneName: string;
 
-  constructor(parent: Construct, name: string, props: HostedZoneRefProps) {
-    super(parent, name);
+  constructor(scope: Construct, scid: string, props: HostedZoneRefProps) {
+    super(scope, scid);
 
     this.hostedZoneId = props.hostedZoneId;
     this.zoneName = props.zoneName;
