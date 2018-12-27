@@ -24,7 +24,7 @@ export class S3EventSource implements lambda.IEventSource {
 
   }
 
-  public bind(target: lambda.IFunction) {
+  public bind(target: lambda.FunctionBase) {
     const filters = this.props.filters || [];
     for (const event of this.props.events) {
       this.bucket.onEvent(event, target, ...filters);
