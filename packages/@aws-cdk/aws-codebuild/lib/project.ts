@@ -495,10 +495,10 @@ export class Project extends ProjectRef {
 
     let cache: CfnProject.ProjectCacheProperty | undefined;
     if (props.cacheBucket) {
-      const cacheDir = props.cacheDir != null ? props.cacheDir : new cdk.AwsNoValue();
+      const cacheDir = props.cacheDir != null ? props.cacheDir : new cdk.AwsNoValue().toString();
       cache = {
         type: 'S3',
-        location: new cdk.FnJoin('/', [props.cacheBucket.bucketName, cacheDir]),
+        location: cdk.Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),
       };
 
       props.cacheBucket.grantReadWrite(this.role);

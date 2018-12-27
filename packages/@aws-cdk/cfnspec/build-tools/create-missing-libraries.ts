@@ -224,7 +224,7 @@ main().catch(e => {
 });
 
 async function exec(command: string) {
-  const child = child_process.spawn(command, {
+  const child = child_process.spawn(command, [], {
     stdio: [ 'ignore', 'inherit', 'inherit' ],
     shell: true
   });

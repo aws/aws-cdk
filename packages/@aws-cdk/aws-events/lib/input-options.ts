@@ -16,13 +16,13 @@ export interface TargetInputTemplate {
    * @example
    *
    *    {
-   *    textTemplate: 'Build <buildid> started',
-   *    pathsMap: {
-   *      buildid: '$.detail.id'
-   *    }
+   *      textTemplate: 'Build <buildid> started',
+   *      pathsMap: {
+   *        buildid: '$.detail.id'
+   *      }
    *    }
    */
-  textTemplate?: any;
+  textTemplate?: string;
 
   /**
    * Input template where you can use the values of the keys from

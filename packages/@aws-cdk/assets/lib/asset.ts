@@ -110,8 +110,8 @@ export class Asset extends cdk.Construct {
     });
 
     this.s3BucketName = bucketParam.value.toString();
-    this.s3Prefix = new cdk.FnSelect(0, new cdk.FnSplit(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.value)).toString();
-    const s3Filename = new cdk.FnSelect(1, new cdk.FnSplit(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.value)).toString();
+    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
+    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
 
     this.bucket = s3.BucketRef.import(this, 'AssetBucket', {

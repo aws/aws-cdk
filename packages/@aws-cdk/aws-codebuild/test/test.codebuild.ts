@@ -855,14 +855,14 @@ export = {
     new codebuild.Project(stack, 'Project', {
       source: new codebuild.CodePipelineSource(),
       environment: {
-      environmentVariables: {
-        FOO: { value: '1234' },
-        BAR: { value: new cdk.FnConcat('111', { twotwotwo: '222' }), type: codebuild.BuildEnvironmentVariableType.ParameterStore }
-      }
+        environmentVariables: {
+          FOO: { value: '1234' },
+          BAR: { value: `111${new cdk.CloudFormationToken({ twotwotwo: '222' })}`, type: codebuild.BuildEnvironmentVariableType.ParameterStore }
+        }
       },
       environmentVariables: {
-      GOO: { value: 'ABC' },
-      FOO: { value: 'OVERRIDE!' }
+        GOO: { value: 'ABC' },
+        FOO: { value: 'OVERRIDE!' }
       }
     });
 

@@ -238,7 +238,7 @@ export = {
     // tokens are used here (FnConcat), but this is a text template so we
     // expect it to be wrapped in double quotes automatically for us.
     rule.addTarget(t1, {
-      textTemplate: new cdk.FnConcat('a', 'b')
+      textTemplate: cdk.Fn.join('', [ 'a', 'b' ]).toString()
     });
 
     // jsonTemplate can be used to format JSON documents with replacements
@@ -252,7 +252,7 @@ export = {
     // tokens can also used for JSON templates, but that means escaping is
     // the responsibility of the user.
     rule.addTarget(t4, {
-      jsonTemplate: new cdk.FnJoin(' ', ['"', 'hello', '\"world\"', '"']),
+      jsonTemplate: cdk.Fn.join(' ', ['"', 'hello', '\"world\"', '"']),
     });
 
     expect(stack).toMatch({

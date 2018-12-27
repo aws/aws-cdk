@@ -1,4 +1,4 @@
-import { FnConcat, resolve } from '@aws-cdk/cdk';
+import { resolve, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Anyone, AnyPrincipal, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
@@ -12,7 +12,7 @@ export = {
     p.addResource('yourQueue');
 
     p.addAllResources();
-    p.addAwsAccountPrincipal(new FnConcat('my', { account: 'account' }, 'name').toString());
+    p.addAwsAccountPrincipal(`my${new Token({ account: 'account' })}name`);
     p.limitToAccount('12221121221');
 
     test.deepEqual(resolve(p), { Action:

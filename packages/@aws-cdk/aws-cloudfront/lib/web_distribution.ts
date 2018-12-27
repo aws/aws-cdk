@@ -574,9 +574,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
 
       if (originConfig.s3OriginSource && originConfig.s3OriginSource.originAccessIdentity) {
         originProperty.s3OriginConfig = {
-          originAccessIdentity: new cdk.FnConcat(
-            "origin-access-identity/cloudfront/", originConfig.s3OriginSource.originAccessIdentity.ref
-          ),
+          originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.ref}`
         };
       } else if (originConfig.s3OriginSource) {
         originProperty.s3OriginConfig = {};

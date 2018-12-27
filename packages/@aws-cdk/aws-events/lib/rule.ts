@@ -1,4 +1,4 @@
-import { Construct, FnConcat, Token } from '@aws-cdk/cdk';
+import { Construct, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { TargetInputTemplate } from './input-options';
@@ -133,7 +133,7 @@ export class EventRule extends EventRuleRef {
       } else if (typeof(inputOptions.textTemplate) === 'string') {
         inputTemplate = JSON.stringify(inputOptions.textTemplate);
       } else {
-        inputTemplate = new FnConcat('"', inputOptions.textTemplate, '"');
+        inputTemplate = `"${inputOptions.textTemplate}"`;
       }
 
       return {

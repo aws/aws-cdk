@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationToken, FnJoin, FnSelect, resolve, Token, unresolved } from '../../lib';
+import { CloudFormationToken, Fn, resolve, Token, unresolved } from '../../lib';
 import { evaluateCFN } from '../cloudformation/evaluate-cfn';
 
 export = {
@@ -326,7 +326,7 @@ export = {
       const encoded: string[] = new CloudFormationToken({ Ref: 'Other' }).toList();
 
       // WHEN
-      const struct = new FnSelect(1, encoded);
+      const struct = Fn.select(1, encoded);
 
       // THEN
       test.deepEqual(resolve(struct), {
@@ -341,7 +341,7 @@ export = {
       const encoded: string[] = new CloudFormationToken({ Ref: 'Other' }).toList();
 
       // WHEN
-      const struct = new FnJoin('/', encoded);
+      const struct = Fn.join('/', encoded);
 
       // THEN
       test.deepEqual(resolve(struct), {
