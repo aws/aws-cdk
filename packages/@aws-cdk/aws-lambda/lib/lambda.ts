@@ -4,7 +4,6 @@ import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
-import { ImportedFunction } from './lambda-import';
 import { FunctionAttributes, FunctionBase, IFunction } from './lambda-ref';
 import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
@@ -489,5 +488,49 @@ export class Function extends FunctionBase {
       mode: Tracing[props.tracing]
     };
   }
+}
 
+export class ImportedFunction extends FunctionBase {
+  public readonly functionName: string;
+  public readonly functionArn: string;
+  public readonly role?: iam.Role;
+
+  protected readonly canCreatePermissions = false;
+
+  constructor(parent: cdk.Construct, id: string, private readonly props: FunctionAttributes) {
+    super(parent, id);
+
+    this.functionArn = props.functionArn;
+    this.functionName = extractNameFromArn(props.functionArn);
+    this.role = props.role;
+
+    if (props.securityGroupId) {
+      this._connections = new ec2.Connections({
+        securityGroups: [
+          ec2.SecurityGroup.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })
+        ]
+      });
+    }
+  }
+
+  public export() {
+    return this.props;
+  }
+}
+
+/**
+ * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the function
+ * name from the ARN.
+ *
+ * Function ARNs look like this:
+ *
+ *   arn:aws:lambda:region:account-id:function:function-name
+ *
+ * ..which means that in order to extract the `function-name` component from the ARN, we can
+ * split the ARN using ":" and select the component in index 6.
+ *
+ * @returns `FnSelect(6, FnSplit(':', arn))`
+ */
+function extractNameFromArn(arn: string) {
+  return cdk.Fn.select(6, cdk.Fn.split(':', arn));
 }

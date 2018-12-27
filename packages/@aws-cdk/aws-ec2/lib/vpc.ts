@@ -1,10 +1,8 @@
 import cdk = require('@aws-cdk/cdk');
-import { Output } from '@aws-cdk/cdk';
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
-import { ImportedVpcNetwork, ImportedVpcSubnet } from './imported-vpc';
 import { NetworkBuilder } from './network-util';
-import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, subnetId  } from './util';
+import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
 import { IVpcNetwork, IVpcSubnet, SubnetType, VpcNetworkAttributes, VpcNetworkBase, VpcPlacementStrategy, VpcSubnetAttributes } from './vpc-ref';
 /**
@@ -370,7 +368,7 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
     const iso = new ExportSubnetGroup(this, 'IsolatedSubnetIDs', this.isolatedSubnets, SubnetType.Isolated, this.availabilityZones.length);
 
     return {
-      vpcId: new Output(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
+      vpcId: new cdk.Output(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
       availabilityZones: this.availabilityZones,
       publicSubnetIds: pub.ids,
       publicSubnetNames: pub.names,
@@ -664,4 +662,50 @@ export class VpcPrivateSubnet extends VpcSubnet {
 
 function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
   return value !== undefined ? value : defaultValue;
+}
+
+export class ImportedVpcNetwork extends VpcNetworkBase {
+  public readonly vpcId: string;
+  public readonly publicSubnets: IVpcSubnet[];
+  public readonly privateSubnets: IVpcSubnet[];
+  public readonly isolatedSubnets: IVpcSubnet[];
+  public readonly availabilityZones: string[];
+
+  constructor(parent: cdk.Construct, id: string, private readonly props: VpcNetworkAttributes) {
+    super(parent, id);
+
+    this.vpcId = props.vpcId;
+    this.availabilityZones = props.availabilityZones;
+
+    // tslint:disable:max-line-length
+    const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, SubnetType.Public, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames');
+    const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, SubnetType.Private, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames');
+    const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, SubnetType.Isolated, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames');
+    // tslint:enable:max-line-length
+
+    this.publicSubnets = pub.import(this);
+    this.privateSubnets = priv.import(this);
+    this.isolatedSubnets = iso.import(this);
+  }
+
+  public export() {
+    return this.props;
+  }
+}
+
+export class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
+  public readonly availabilityZone: string;
+  public readonly subnetId: string;
+  public readonly dependencyElements = new Array<cdk.IDependable>();
+
+  constructor(parent: cdk.Construct, id: string, private readonly props: VpcSubnetAttributes) {
+    super(parent, id);
+
+    this.subnetId = props.subnetId;
+    this.availabilityZone = props.availabilityZone;
+  }
+
+  public export() {
+    return this.props;
+  }
 }

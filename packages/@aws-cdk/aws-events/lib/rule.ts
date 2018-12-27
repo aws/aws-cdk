@@ -2,7 +2,6 @@ import { Construct, Output, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { TargetInputTemplate } from './input-options';
-import { ImportedEventRule } from './rule-import';
 import { EventRuleAttributes, IEventRule } from './rule-ref';
 import { IEventRuleTarget } from './target';
 import { mergeEventPattern } from './util';
@@ -234,5 +233,19 @@ export class EventRule extends Construct implements IEventRule {
     }
 
     return out;
+  }
+}
+
+class ImportedEventRule extends Construct implements IEventRule {
+  public readonly ruleArn: string;
+
+  constructor(parent: Construct, id: string, private readonly props: EventRuleAttributes) {
+    super(parent, id);
+
+    this.ruleArn = props.eventRuleArn;
+  }
+
+  public export() {
+    return this.props;
   }
 }
