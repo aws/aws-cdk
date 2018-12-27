@@ -61,9 +61,9 @@ export class DockerImageAsset extends cdk.Construct {
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);
 
     // parse repository name and tag from the parameter (<REPO_NAME>:<TAG>)
-    const components = new cdk.FnSplit(':', imageNameParameter.value);
-    const repositoryName = new cdk.FnSelect(0, components).toString();
-    const imageTag = new cdk.FnSelect(1, components).toString();
+    const components = cdk.Fn.split(':', imageNameParameter.valueAsString);
+    const repositoryName = cdk.Fn.select(0, components).toString();
+    const imageTag = cdk.Fn.select(1, components).toString();
 
     // Require that repository adoption happens first, so we route the
     // input ARN into the Custom Resource and then get the URI which we use to

@@ -320,7 +320,7 @@ export abstract class FunctionRef extends cdk.Construct
       //
       // (Wildcards in principals are unfortunately not supported.
       this.addPermission('InvokedByCloudWatchLogs', {
-        principal: new iam.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
+        principal: new iam.ServicePrincipal(`logs.${new cdk.AwsRegion()}.amazonaws.com`),
         sourceArn: arn
       });
       this.logSubscriptionDestinationPolicyAddedFor.push(arn);
@@ -451,6 +451,6 @@ class LambdaRefImport extends FunctionRef {
    * @returns `FnSelect(6, FnSplit(':', arn))`
    */
   private extractNameFromArn(arn: string) {
-    return new cdk.FnSelect(6, new cdk.FnSplit(':', arn)).toString();
+    return cdk.Fn.select(6, cdk.Fn.split(':', arn)).toString();
   }
 }

@@ -171,8 +171,8 @@ Intrinsic Functions
 
 .. code-block:: js
 
-    import cdk = require('@aws-cdk/cdk');
-    new cdk.FnJoin(",", [...])
+    import { Fn } from'@aws-cdk/cdk';
+    Fn.join(",", [...])
 
 .. _pseudo_parameters:
 

@@ -157,7 +157,7 @@ class CloudFormationExample extends cdk.Stack {
     // outputs are constructs the synthesize into the template's "Outputs" section
     new cdk.Output(this, 'Output', {
       description: 'This is an output of the template',
-      value: new cdk.FnConcat(new cdk.AwsAccountId(), '/', param.ref)
+      value: `${new cdk.AwsAccountId()}/${param.ref}`
     });
 
     // stack.templateOptions can be used to specify template-level options
@@ -176,13 +176,13 @@ class CloudFormationExample extends cdk.Stack {
         new cdk.AwsStackName(),
       ],
 
-      // all CloudFormation's intrinsic functions are supported via the `cdk.FnXxx` classes
+      // all CloudFormation's intrinsic functions are supported via the `cdk.Fn.xxx` static methods.
       IntrinsicFunctions: [
-        new cdk.FnAnd(
-          new cdk.FnFindInMap('MyMap', 'K1', 'K2'),
-          new cdk.FnSub('hello ${world}', {
-            world: new cdk.FnBase64(param.ref)  // resolves to { Ref: <param-id> }
-          }))
+        cdk.Fn.join('', [
+          cdk.Fn.findInMap('MyMap', 'K1', 'K2'),
+          cdk.Fn.sub('hello ${world}', {
+            world: cdk.Fn.base64(param.ref)  // resolves to { Ref: <param-id> }
+          }) ])
       ],
     };
   }
