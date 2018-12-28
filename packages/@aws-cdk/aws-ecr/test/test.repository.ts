@@ -179,9 +179,12 @@ export = {
       repositoryArn: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo'
     });
 
+    const exportImport = repo2.export();
+
     // THEN
     test.deepEqual(cdk.resolve(repo2.repositoryArn), 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
     test.deepEqual(cdk.resolve(repo2.repositoryName), 'foo/bar/foo/fooo');
+    test.deepEqual(cdk.resolve(exportImport), { repositoryArn: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo' });
 
     test.done();
   },

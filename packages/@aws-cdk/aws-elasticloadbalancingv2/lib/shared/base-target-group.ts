@@ -23,7 +23,7 @@ export interface BaseTargetGroupProps {
   /**
    * The virtual private cloud (VPC).
    */
-  vpc: ec2.VpcNetworkRef;
+  vpc: ec2.IVpcNetwork;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
@@ -131,7 +131,7 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
-export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGroup, codedeploy.ILoadBalancer {
+export abstract class TargetGroupBase extends cdk.Construct implements ITargetGroup, codedeploy.ILoadBalancer {
   /**
    * The ARN of the target group
    */
@@ -261,7 +261,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   /**
    * Export this target group
    */
-  public export(): TargetGroupRefProps {
+  public export(): TargetGroupImportProps {
     return {
       targetGroupArn: new cdk.Output(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue().toString(),
       defaultPort: new cdk.Output(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
@@ -307,7 +307,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
 /**
  * Properties to reference an existing target group
  */
-export interface TargetGroupRefProps {
+export interface TargetGroupImportProps {
   /**
    * ARN of the target group
    */
@@ -342,6 +342,12 @@ export interface ITargetGroup {
    * Return an object to depend on the listeners added to this target group
    */
   loadBalancerDependency(): cdk.IDependable;
+
+  /**
+   * Export this target group
+   */
+  export(): TargetGroupImportProps;
+
 }
 
 /**

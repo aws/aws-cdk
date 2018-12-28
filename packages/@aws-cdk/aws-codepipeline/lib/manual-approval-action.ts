@@ -10,7 +10,7 @@ export interface ManualApprovalActionProps extends actions.CommonActionProps,
   /**
    * Optional SNS topic to send notifications to when an approval is pending.
    */
-  notificationTopic?: sns.TopicRef;
+  notificationTopic?: sns.ITopic;
 
   /**
    * A list of email addresses to subscribe to notifications when this Action is pending approval.
@@ -34,7 +34,7 @@ export class ManualApprovalAction extends actions.Action {
    * If no Topic was passed, but `notifyEmails` were provided,
    * a new Topic will be created.
    */
-  public readonly notificationTopic?: sns.TopicRef;
+  public readonly notificationTopic?: sns.ITopic;
 
   constructor(parent: cdk.Construct, name: string, props: ManualApprovalActionProps) {
     super(parent, name, {

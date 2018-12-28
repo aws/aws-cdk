@@ -1,4 +1,4 @@
-import { SecurityGroupRef } from "./security-group";
+import { ISecurityGroup } from "./security-group";
 import { AnyIPv4, IPortRange, ISecurityGroupRule } from "./security-group-rule";
 
 /**
@@ -40,7 +40,7 @@ export interface ConnectionsProps {
    *
    * @default No security groups
    */
-  securityGroups?: SecurityGroupRef[];
+  securityGroups?: ISecurityGroup[];
 
   /**
    * Default port range for initiating connections to and from this object
@@ -75,7 +75,7 @@ export class Connections implements IConnectable {
    * May be empty if this Connections object is not managing a SecurityGroup,
    * but simply representing a Connectable peer.
    */
-  private readonly _securityGroups = new ReactiveList<SecurityGroupRef>();
+  private readonly _securityGroups = new ReactiveList<ISecurityGroup>();
 
   /**
    * The rule that defines how to represent this peer in a security group
@@ -96,14 +96,14 @@ export class Connections implements IConnectable {
     this.defaultPortRange = props.defaultPortRange;
   }
 
-  public get securityGroups(): SecurityGroupRef[] {
+  public get securityGroups(): ISecurityGroup[] {
     return this._securityGroups.asArray();
   }
 
   /**
    * Add a security group to the list of security groups managed by this object
    */
-  public addSecurityGroup(...securityGroups: SecurityGroupRef[]) {
+  public addSecurityGroup(...securityGroups: ISecurityGroup[]) {
     for (const securityGroup of securityGroups) {
       this._securityGroups.push(securityGroup);
       this._securityGroupRules.push(securityGroup);

@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { CfnSubscription } from './sns.generated';
-import { TopicRef } from './topic-ref';
+import { ITopic } from './topic-ref';
 
 /**
  * Properties for creating a new subscription
@@ -21,18 +21,18 @@ export interface SubscriptionProps {
   /**
    * The topic to subscribe to.
    */
-  topic: TopicRef;
+  topic: ITopic;
 }
 
 /**
  * A new subscription.
  *
- * Prefer to use the `TopicRef.subscribeXxx()` methods to creating instances of
+ * Prefer to use the `ITopic.subscribeXxx()` methods to creating instances of
  * this class.
  */
 export class Subscription extends Construct {
-  constructor(parent: Construct, name: string, props: SubscriptionProps) {
-    super(parent, name);
+  constructor(parent: Construct, id: string, props: SubscriptionProps) {
+    super(parent, id);
 
     new CfnSubscription(this, 'Resource', {
       endpoint: props.endpoint,

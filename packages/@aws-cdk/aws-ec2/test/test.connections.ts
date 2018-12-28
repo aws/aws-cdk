@@ -6,7 +6,6 @@ import {
   Connections,
   IConnectable,
   SecurityGroup,
-  SecurityGroupRef,
   TcpAllPorts,
   TcpPort,
   VpcNetwork
@@ -38,7 +37,7 @@ export = {
     const sg1 = new SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
     const somethingConnectable = new SomethingConnectable(new Connections({ securityGroups: [sg1] }));
 
-    const securityGroup = SecurityGroupRef.import(stack, 'ImportedSG', { securityGroupId: 'sg-12345' });
+    const securityGroup = SecurityGroup.import(stack, 'ImportedSG', { securityGroupId: 'sg-12345' });
 
     // WHEN
     somethingConnectable.connections.allowTo(securityGroup, new TcpAllPorts(), 'Connect there');

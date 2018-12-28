@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { LogGroupRef } from './log-group';
+import { ILogGroup } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
 import { IFilterPattern } from './pattern';
 
@@ -10,7 +10,7 @@ export interface MetricFilterProps {
   /**
    * The log group to create the filter on.
    */
-  logGroup: LogGroupRef;
+  logGroup: ILogGroup;
 
   /**
    * Pattern to search for log events.
