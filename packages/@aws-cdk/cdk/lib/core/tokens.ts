@@ -1,5 +1,4 @@
 import { cloudFormationConcat } from "../cloudformation/cloudformation-token";
-import { Construct } from "./construct";
 
 /**
  * If objects has a function property by this name, they will be considered tokens, and this
@@ -220,7 +219,7 @@ export function resolve(obj: any, prefix?: string[]): any {
   // Must not be a Construct at this point, otherwise you probably made a type
   // mistake somewhere and resolve will get into an infinite loop recursing into
   // child.parent <---> parent.children
-  if (obj instanceof Construct) {
+  if (isConstruct(obj)) {
     throw new Error('Trying to resolve() a Construct at ' + pathName);
   }
 
@@ -579,3 +578,13 @@ const TOKEN_MAP: TokenMap = glob.__cdkTokenMap = glob.__cdkTokenMap || new Token
  * Singleton instance of resolver options
  */
 export const RESOLVE_OPTIONS: ResolveConfiguration = glob.__cdkResolveOptions = glob.__cdkResolveOptions || new ResolveConfiguration();
+
+/**
+ * Determine whether an object is a Construct
+ *
+ * Not in 'construct.ts' because that would lead to a dependency cycle via 'uniqueid.ts',
+ * and this is a best-effort protection against a common programming mistake anyway.
+ */
+function isConstruct(x: any): boolean {
+  return x._children !== undefined && x._metadata !== undefined;
+}

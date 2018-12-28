@@ -5,7 +5,6 @@ import { resolve, RESOLVE_OPTIONS, Token, unresolved } from '../core/tokens';
 import { Environment } from '../environment';
 import { StackAwareToken } from './cloudformation-token';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
-import { Aws } from './pseudo';
 import { Resource } from './resource';
 
 export interface StackProps {
@@ -639,5 +638,6 @@ export class Ref extends StackAwareToken {
   }
 }
 
-// Has to be at the end to prevent circular imports
+// These imports have to be at the end to prevent circular imports
 import { Output } from './output';
+import { Aws } from './pseudo';

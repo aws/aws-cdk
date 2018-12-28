@@ -30,6 +30,20 @@ class IamStack extends cdk.Stack {
   }
 }
 
+class ProvidingStack extends cdk.Stack {
+  constructor(parent, id) {
+    super(parent, id);
+  }
+}
+
+class ConsumingStack extends cdk.Stack {
+  constructor(parent, id, providingStack) {
+    super(parent, id);
+
+    new cdk.Output(this, 'IConsumedSomething', { value: providingStack.accountId });
+  }
+}
+
 const app = new cdk.App();
 
 // Deploy all does a wildcard cdk-toolkit-integration-test-*
@@ -37,5 +51,7 @@ new MyStack(app, 'cdk-toolkit-integration-test-1');
 new YourStack(app, 'cdk-toolkit-integration-test-2');
 // Not included in wildcard
 new IamStack(app, 'cdk-toolkit-integration-iam-test');
+const providing = new ProvidingStack(app, 'cdk-toolkit-integration-providing');
+new ConsumingStack(app, 'cdk-toolkit-integration-consuming', providing);
 
 app.run();
