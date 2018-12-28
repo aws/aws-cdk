@@ -23,6 +23,8 @@ class RuntimeValueTest extends cdk.Construct {
   constructor(parent: cdk.Construct, name: string) {
     super(parent, name);
 
+    const stack = cdk.Stack.find(this);
+
     const queue = new sqs.CfnQueue(this, 'Queue', {});
 
     const role = new iam.Role(this, 'Role', {
@@ -42,7 +44,7 @@ class RuntimeValueTest extends cdk.Construct {
       role: role.roleArn,
       environment: {
         variables: {
-          [RuntimeValue.ENV_NAME]: new cdk.AwsStackName(this)
+          [RuntimeValue.ENV_NAME]: stack.stackName,
         }
       }
     });

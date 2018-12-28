@@ -310,7 +310,8 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @returns an ObjectS3Url token
    */
   public urlForObject(key?: string): string {
-    const components = [ `https://s3.${new cdk.AwsRegion(this)}.${new cdk.AwsURLSuffix(this)}/${this.bucketName}` ];
+    const stack = cdk.Stack.find(this);
+    const components = [ `https://s3.${stack.region}.${stack.urlSuffix}/${this.bucketName}` ];
     if (key) {
       // trim prepending '/'
       if (typeof key === 'string' && key.startsWith('/')) {

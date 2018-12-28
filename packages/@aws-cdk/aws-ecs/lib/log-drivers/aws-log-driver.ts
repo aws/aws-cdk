@@ -73,12 +73,13 @@ export class AwsLogDriver extends LogDriver {
    * Return the log driver CloudFormation JSON
    */
   public renderLogDriver(): CfnTaskDefinition.LogConfigurationProperty {
+    const stack = cdk.Stack.find(this);
     return {
       logDriver: 'awslogs',
       options: removeEmpty({
         'awslogs-group': this.logGroup.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
-        'awslogs-region': `${new cdk.AwsRegion(this)}`,
+        'awslogs-region': stack.region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
       }),

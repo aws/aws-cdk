@@ -1,8 +1,6 @@
-import { Construct } from '@aws-cdk/cdk';
-import { Token } from '@aws-cdk/cdk';
-import { AwsAccountId, AwsPartition } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/cdk');
 
-export class PolicyDocument extends Token {
+export class PolicyDocument extends cdk.Token {
   private statements = new Array<PolicyStatement>();
 
   /**
@@ -83,8 +81,8 @@ export class ArnPrincipal extends PolicyPrincipal {
 }
 
 export class AccountPrincipal extends ArnPrincipal {
-  constructor(public readonly anchor: Construct, public readonly accountId: any) {
-    super(`arn:${new AwsPartition(anchor)}:iam::${accountId}:root`);
+  constructor(public readonly anchor: cdk.Construct, public readonly accountId: any) {
+    super(`arn:${new cdk.Aws(anchor).partition}:iam::${accountId}:root`);
   }
 }
 
@@ -138,8 +136,8 @@ export class FederatedPrincipal extends PolicyPrincipal {
 }
 
 export class AccountRootPrincipal extends AccountPrincipal {
-  constructor(anchor: Construct) {
-    super(anchor, new AwsAccountId(anchor));
+  constructor(anchor: cdk.Construct) {
+    super(anchor, new cdk.Aws(anchor).accountId);
   }
 }
 
@@ -203,7 +201,7 @@ export class CompositePrincipal extends PolicyPrincipal {
 /**
  * Represents a statement in an IAM policy document.
  */
-export class PolicyStatement extends Token {
+export class PolicyStatement extends cdk.Token {
   private action = new Array<any>();
   private principal: { [key: string]: any[] } = {};
   private resource = new Array<any>();
@@ -252,7 +250,7 @@ export class PolicyStatement extends Token {
     return this.addPrincipal(new ArnPrincipal(arn));
   }
 
-  public addAwsAccountPrincipal(anchor: Construct, accountId: string): this {
+  public addAwsAccountPrincipal(anchor: cdk.Construct, accountId: string): this {
     return this.addPrincipal(new AccountPrincipal(anchor, accountId));
   }
 
@@ -268,7 +266,7 @@ export class PolicyStatement extends Token {
     return this.addPrincipal(new FederatedPrincipal(federated, conditions));
   }
 
-  public addAccountRootPrincipal(anchor: Construct): this {
+  public addAccountRootPrincipal(anchor: cdk.Construct): this {
     return this.addPrincipal(new AccountRootPrincipal(anchor));
   }
 
@@ -365,7 +363,7 @@ export class PolicyStatement extends Token {
   }
 
   public limitToAccount(accountId: string): PolicyStatement {
-    return this.addCondition('StringEquals', new Token(() => {
+    return this.addCondition('StringEquals', new cdk.Token(() => {
       return { 'sts:ExternalId': accountId };
     }));
   }

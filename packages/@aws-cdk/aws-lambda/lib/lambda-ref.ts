@@ -323,12 +323,13 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     const arn = sourceLogGroup.logGroupArn;
 
     if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
+      const stack = cdk.Stack.find(this);
       // NOTE: the use of {AWS::Region} limits this to the same region, which shouldn't really be an issue,
       // since the Lambda must be in the same region as the SubscriptionFilter anyway.
       //
       // (Wildcards in principals are unfortunately not supported.
       this.addPermission('InvokedByCloudWatchLogs', {
-        principal: new iam.ServicePrincipal(`logs.${new cdk.AwsRegion(this)}.amazonaws.com`),
+        principal: new iam.ServicePrincipal(`logs.${stack.region}.amazonaws.com`),
         sourceArn: arn
       });
       this.logSubscriptionDestinationPolicyAddedFor.push(arn);
@@ -347,9 +348,10 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
    */
   public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
     const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
+    const stack = cdk.Stack.find(this);
     if (!this.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
-        sourceAccount: new cdk.AwsAccountId(this).toString(),
+        sourceAccount: stack.accountId,
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
         sourceArn: bucketArn,
       });

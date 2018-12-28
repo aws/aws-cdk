@@ -2,31 +2,65 @@ import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
 import { StackAwareToken } from './cloudformation-token';
 
-export class PseudoParameter extends StackAwareToken {
-  constructor(name: string, anchor?: Construct) {
+/**
+ * Accessor for pseudo parameters
+ *
+ * Since pseudo parameters need to be anchored to a stack somewhere in the
+ * construct tree, this class takes an anchor parameter; the pseudo parameter
+ * values can be obtained as properties from an anchored object.
+ */
+export class Aws {
+  constructor(private readonly anchor: Construct) {
+  }
+
+  public get accountId(): string {
+    return new AwsAccountId(this.anchor).toString();
+  }
+
+  public get urlSuffix(): string {
+    return new AwsURLSuffix(this.anchor).toString();
+  }
+
+  public get notificationArns(): string[] {
+    return new AwsNotificationARNs(this.anchor).toList();
+  }
+
+  public get partition(): string {
+    return new AwsPartition(this.anchor).toString();
+  }
+
+  public get region(): string {
+    return new AwsRegion(this.anchor).toString();
+  }
+
+  public get stackId(): string {
+    return new AwsStackId(this.anchor).toString();
+  }
+
+  public get stackName(): string {
+    return new AwsStackName(this.anchor).toString();
+  }
+}
+
+class PseudoParameter extends StackAwareToken {
+  constructor(name: string, anchor: Construct) {
       super({ Ref: name }, name, anchor);
   }
 }
 
-export class AwsAccountId extends PseudoParameter {
+class AwsAccountId extends PseudoParameter {
   constructor(anchor: Construct) {
     super('AWS::AccountId', anchor);
   }
 }
 
-export class AwsDomainSuffix extends PseudoParameter {
-  constructor(anchor: Construct) {
-    super('AWS::DomainSuffix', anchor);
-  }
-}
-
-export class AwsURLSuffix extends PseudoParameter {
+class AwsURLSuffix extends PseudoParameter {
   constructor(anchor: Construct) {
     super('AWS::URLSuffix', anchor);
   }
 }
 
-export class AwsNotificationARNs extends PseudoParameter {
+class AwsNotificationARNs extends PseudoParameter {
   constructor(anchor: Construct) {
     super('AWS::NotificationARNs', anchor);
   }
@@ -38,25 +72,25 @@ export class AwsNoValue extends Token {
   }
 }
 
-export class AwsPartition extends PseudoParameter {
+class AwsPartition extends PseudoParameter {
   constructor(anchor: Construct) {
     super('AWS::Partition', anchor);
   }
 }
 
-export class AwsRegion extends PseudoParameter {
-  constructor(anchor: Construct | undefined) {
+class AwsRegion extends PseudoParameter {
+  constructor(anchor: Construct) {
     super('AWS::Region', anchor);
   }
 }
 
-export class AwsStackId extends PseudoParameter {
+class AwsStackId extends PseudoParameter {
   constructor(anchor: Construct) {
     super('AWS::StackId', anchor);
   }
 }
 
-export class AwsStackName extends PseudoParameter {
+class AwsStackName extends PseudoParameter {
   constructor(anchor: Construct) {
     super('AWS::StackName', anchor);
   }

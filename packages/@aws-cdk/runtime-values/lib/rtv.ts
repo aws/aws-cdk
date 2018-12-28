@@ -28,11 +28,6 @@ export class RuntimeValue extends cdk.Construct {
   public static readonly ENV_NAME = 'RTV_STACK_NAME';
 
   /**
-   * The value to assign to the `RTV_STACK_NAME` environment variable.
-   */
-  public readonly envValue = new cdk.AwsStackName(this);
-
-  /**
    * IAM actions needed to read a value from an SSM parameter.
    */
   private static readonly SSM_READ_ACTIONS = [
@@ -40,6 +35,11 @@ export class RuntimeValue extends cdk.Construct {
     'ssm:GetParameters',
     'ssm:GetParameter'
   ];
+
+  /**
+   * The value to assign to the `RTV_STACK_NAME` environment variable.
+   */
+  public readonly envValue: string;
 
   /**
    * The name of the runtime parameter.
@@ -54,7 +54,10 @@ export class RuntimeValue extends cdk.Construct {
   constructor(parent: cdk.Construct, name: string, props: RuntimeValueProps) {
     super(parent, name);
 
-    this.parameterName = `/rtv/${new cdk.AwsStackName(this)}/${props.package}/${name}`;
+    const stack = cdk.Stack.find(this);
+
+    this.parameterName = `/rtv/${stack.stackName}/${props.package}/${name}`;
+    this.envValue = stack.stackName;
 
     new ssm.CfnParameter(this, 'Parameter', {
       name: this.parameterName,

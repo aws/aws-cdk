@@ -1,4 +1,4 @@
-import { AwsAccountId, AwsPartition, AwsRegion, Construct } from '..';
+import { Construct, Stack } from '..';
 import { Fn } from '../cloudformation/fn';
 import { unresolved } from '../core/tokens';
 
@@ -22,29 +22,9 @@ export class ArnUtils {
    *
    */
   public static fromComponents(components: ArnComponents, anchor?: Construct): string {
-    let partition = components.partition;
-    if (partition == null) {
-      if (!anchor) {
-        throw new Error('Must provide anchor when using current partition');
-      }
-      partition = new AwsPartition(anchor).toString();
-    }
-
-    let region = components.region;
-    if (region == null) {
-      if (!anchor) {
-        throw new Error('Must provide anchor when using current region');
-      }
-      region = new AwsRegion(anchor).toString();
-    }
-
-    let account = components.account;
-    if (account == null) {
-      if (!anchor) {
-        throw new Error('Must provide anchor when using current account');
-      }
-      account = new AwsAccountId(anchor).toString();
-    }
+    const partition = components.partition || theStack('partition').partition;
+    const region = components.region || theStack('region').region;
+    const account = components.account || theStack('account').accountId;
 
     const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];
 
@@ -59,6 +39,17 @@ export class ArnUtils {
     }
 
     return values.join('');
+
+    /**
+     * Return the anchored stack (so the caller can get an attribute from it), throw a descriptive error if we don't have an anchor
+     */
+    function theStack(attribute: string) {
+      if (!anchor) {
+        throw new Error(`Must provide anchor when using implicit ${attribute}`);
+      }
+      return Stack.find(anchor);
+
+    }
   }
 
   /**

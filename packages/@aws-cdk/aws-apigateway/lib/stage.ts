@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -173,7 +174,8 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
     if (!path.startsWith('/')) {
       throw new Error(`Path must begin with "/": ${path}`);
     }
-    return `https://${this.restApi.restApiId}.execute-api.${new cdk.AwsRegion(this)}.amazonaws.com/${this.stageName}${path}`;
+    const stack = Stack.find(this);
+    return `https://${this.restApi.restApiId}.execute-api.${stack.region}.${stack.urlSuffix}/${this.stageName}${path}`;
   }
 
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {

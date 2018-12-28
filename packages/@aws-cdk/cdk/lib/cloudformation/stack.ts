@@ -5,6 +5,7 @@ import { resolve, RESOLVE_OPTIONS, Token, unresolved } from '../core/tokens';
 import { Environment } from '../environment';
 import { StackAwareToken } from './cloudformation-token';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
+import { Aws } from './pseudo';
 import { Resource } from './resource';
 
 export interface StackProps {
@@ -281,6 +282,76 @@ export class Stack extends Construct {
     return new Token({ 'Fn::ImportValue': output.export });
   }
 
+  /**
+   * The account in which this stack is defined
+   *
+   * Either returns the literal account for this stack, or a symbolic value
+   * that will evaluate to the correct account at deployment time.
+   */
+  public get accountId(): string {
+    if (this.env.account) {
+      return this.env.account;
+    }
+    return new Aws(this).accountId;
+  }
+
+  /**
+   * The region in which this stack is defined
+   *
+   * Either returns the literal region for this stack, or a symbolic value
+   * that will evaluate to the correct region at deployment time.
+   */
+  public get region(): string {
+    if (this.env.region) {
+      return this.env.region;
+    }
+    return new Aws(this).region;
+  }
+
+  /**
+   * The partition in which this stack is defined
+   */
+  public get partition(): string {
+    return new Aws(this).partition;
+  }
+
+  /**
+   * The Amazon domain suffix for the region in which this stack is defined
+   */
+  public get urlSuffix(): string {
+    return new Aws(this).urlSuffix;
+  }
+
+  /**
+   * The ID of the stack
+   *
+   * @example After resolving, looks like arn:aws:cloudformation:us-west-2:123456789012:stack/teststack/51af3dc0-da77-11e4-872e-1234567db123
+   */
+  public get stackId(): string {
+    return new Aws(this).stackId;
+  }
+
+  /**
+   * The name of the stack currently being deployed
+   *
+   * Only available at deployment time.
+   */
+  public get stackName(): string {
+    return new Aws(this).stackName;
+  }
+
+  /**
+   * Returns the list of notification Amazon Resource Names (ARNs) for the current stack.
+   */
+  public get notificationArns(): string[] {
+    return new Aws(this).notificationArns;
+  }
+
+  /**
+   * Find cross-stack references embedded in the stack's content and replace them
+   *
+   * Do not call this as an app author; this is automatically called as part of synthesis.
+   */
   public applyCrossEnvironmentReferences() {
     const elements = stackElements(this);
     elements.forEach(e => e.substituteCrossStackReferences());

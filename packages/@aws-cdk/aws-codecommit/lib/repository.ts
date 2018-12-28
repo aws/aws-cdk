@@ -264,7 +264,8 @@ class ImportedRepository extends RepositoryBase {
   }
 
   private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
-    return `${protocol}://git-codecommit.${new cdk.AwsRegion(this)}.${new cdk.AwsURLSuffix(this)}/v1/repos/${this.repositoryName}`;
+    const stack = cdk.Stack.find(this);
+    return `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${this.repositoryName}`;
   }
 }
 

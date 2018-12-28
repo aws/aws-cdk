@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, ArnUtils, AwsAccountId, AwsPartition, AwsRegion, resolve, Stack, Token } from '../../lib';
+import { ArnComponents, ArnUtils, Aws, resolve, Stack, Token } from '../../lib';
 
 export = {
   'create from components with defaults'(test: Test) {
@@ -10,8 +10,10 @@ export = {
       resource: 'myqueuename'
     }, stack);
 
+    const pseudo = new Aws(stack);
+
     test.deepEqual(resolve(arn),
-                   resolve(`arn:${new AwsPartition(stack)}:sqs:${new AwsRegion(stack)}:${new AwsAccountId(stack)}:myqueuename`));
+                   resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
     test.done();
   },
 
@@ -55,8 +57,10 @@ export = {
       resourceName: 'WordPress_App'
     }, stack);
 
+    const pseudo = new Aws(stack);
+
     test.deepEqual(resolve(arn),
-                   resolve(`arn:${new AwsPartition(stack)}:codedeploy:${new AwsRegion(stack)}:${new AwsAccountId(stack)}:application:WordPress_App`));
+                   resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`));
     test.done();
   },
 
