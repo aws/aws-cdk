@@ -1,5 +1,5 @@
 import { resolve, Token } from "../core/tokens";
-import { CloudFormationToken, isIntrinsic } from "./cloudformation-token";
+import { isIntrinsic } from "./cloudformation-token";
 
 /**
  * Class for JSON routines that are framework-aware
@@ -65,7 +65,7 @@ export class CloudFormationJSON {
 /**
  * Token that also stringifies in the toJSON() operation.
  */
-class IntrinsicToken extends CloudFormationToken {
+class IntrinsicToken extends Token {
   /**
    * Special handler that gets called when JSON.stringify() is used.
    */

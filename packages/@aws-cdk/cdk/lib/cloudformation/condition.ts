@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { CloudFormationToken } from './cloudformation-token';
+import { Token } from '../core/tokens';
 import { Referenceable, Stack } from './stack';
 
 export interface ConditionProps {
@@ -57,7 +57,7 @@ export class Condition extends Referenceable {
  * conditions, you can define which resources are created and how they're configured for each
  * environment type.
  */
-export class FnCondition extends CloudFormationToken {
+export class FnCondition extends Token {
   constructor(type: string, value: any) {
     super({ [type]: value });
   }

@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationToken, Fn, resolve, Token, unresolved } from '../../lib';
+import { Fn, resolve, Token, unresolved } from '../../lib';
 import { evaluateCFN } from '../cloudformation/evaluate-cfn';
 import { makeCloudformationTestSuite } from '../util';
 
@@ -160,7 +160,7 @@ export = makeCloudformationTestSuite({
 
   'Tokens stringification and reversing of CloudFormation Tokens is implemented using Fn::Join'(test: Test) {
     // GIVEN
-    const token = new CloudFormationToken(() => ({ woof: 'woof' }));
+    const token = new Token(() => ({ woof: 'woof' }));
 
     // WHEN
     const stringified = `The dog says: ${token}`;
@@ -260,7 +260,7 @@ export = makeCloudformationTestSuite({
 
   'fails if token in a hash key resolves to a non-string'(test: Test) {
     // GIVEN
-    const token = new CloudFormationToken({ Ref: 'Other' });
+    const token = new Token({ Ref: 'Other' });
 
     // WHEN
     const s = {
@@ -275,7 +275,7 @@ export = makeCloudformationTestSuite({
   'list encoding': {
     'can encode Token to string and resolve the encoding'(test: Test) {
       // GIVEN
-      const token = new CloudFormationToken({ Ref: 'Other' });
+      const token = new Token({ Ref: 'Other' });
 
       // WHEN
       const struct = {
@@ -292,7 +292,7 @@ export = makeCloudformationTestSuite({
 
     'cannot add to encoded list'(test: Test) {
       // GIVEN
-      const token = new CloudFormationToken({ Ref: 'Other' });
+      const token = new Token({ Ref: 'Other' });
 
       // WHEN
       const encoded: string[] = token.toList();
@@ -308,7 +308,7 @@ export = makeCloudformationTestSuite({
 
     'cannot add to strings in encoded list'(test: Test) {
       // GIVEN
-      const token = new CloudFormationToken({ Ref: 'Other' });
+      const token = new Token({ Ref: 'Other' });
 
       // WHEN
       const encoded: string[] = token.toList();
@@ -324,7 +324,7 @@ export = makeCloudformationTestSuite({
 
     'can pass encoded lists to FnSelect'(test: Test) {
       // GIVEN
-      const encoded: string[] = new CloudFormationToken({ Ref: 'Other' }).toList();
+      const encoded: string[] = new Token({ Ref: 'Other' }).toList();
 
       // WHEN
       const struct = Fn.select(1, encoded);
@@ -339,7 +339,7 @@ export = makeCloudformationTestSuite({
 
     'can pass encoded lists to FnJoin'(test: Test) {
       // GIVEN
-      const encoded: string[] = new CloudFormationToken({ Ref: 'Other' }).toList();
+      const encoded: string[] = new Token({ Ref: 'Other' }).toList();
 
       // WHEN
       const struct = Fn.join('/', encoded);
@@ -402,8 +402,8 @@ function literalTokensThatResolveTo(value: any): Token[] {
  */
 function cloudFormationTokensThatResolveTo(value: any): Token[] {
   return [
-    new CloudFormationToken(value),
-    new CloudFormationToken(() => value)
+    new Token(value),
+    new Token(() => value)
   ];
 }
 

@@ -1,9 +1,8 @@
 import fc = require('fast-check');
 import _ = require('lodash');
 import nodeunit = require('nodeunit');
-import { CloudFormationToken } from '../../lib/cloudformation/cloudformation-token';
 import { Fn } from '../../lib/cloudformation/fn';
-import { resolve } from '../../lib/core/tokens';
+import { resolve, Token } from '../../lib/core/tokens';
 import { makeCloudformationTestSuite } from '../util';
 
 function asyncTest(cb: (test: nodeunit.Test) => Promise<void>): (test: nodeunit.Test) => void {
@@ -98,8 +97,8 @@ export = nodeunit.testCase(makeCloudformationTestSuite({
 }));
 
 function stringListToken(o: any): string[] {
-  return new CloudFormationToken(o).toList();
+  return new Token(o).toList();
 }
 function stringToken(o: any): string {
-  return new CloudFormationToken(o).toString();
+  return new Token(o).toString();
 }

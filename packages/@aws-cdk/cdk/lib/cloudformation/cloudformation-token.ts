@@ -2,24 +2,19 @@ import { Construct } from "../core/construct";
 import { resolve, Token, unresolved } from "../core/tokens";
 import { Stack } from "./stack";
 
-/**
- * Base class for CloudFormation built-ins
- */
-export class CloudFormationToken extends Token {
-  public static cloudFormationConcat(left: any | undefined, right: any | undefined): any {
-    if (left === undefined && right === undefined) { return ''; }
+export function cloudFormationConcat(left: any | undefined, right: any | undefined): any {
+  if (left === undefined && right === undefined) { return ''; }
 
-    const parts = new Array<any>();
-    if (left !== undefined) { parts.push(left); }
-    if (right !== undefined) { parts.push(right); }
+  const parts = new Array<any>();
+  if (left !== undefined) { parts.push(left); }
+  if (right !== undefined) { parts.push(right); }
 
-    if (parts.length === 1) { return parts[0]; }
+  if (parts.length === 1) { return parts[0]; }
 
-    return new FnJoin('', parts);
-  }
+  return new FnJoin('', parts);
 }
 
-export class StackAwareCloudFormationToken extends CloudFormationToken {
+export class StackAwareCloudFormationToken extends Token {
   public static isInstance(x: any): x is StackAwareCloudFormationToken {
     return x && x._isStackAwareCloudFormationToken;
   }
@@ -71,7 +66,7 @@ export function isIntrinsic(x: any) {
  * the specified delimiter. If a delimiter is the empty string, the set of values are concatenated
  * with no delimiter.
  */
-export class FnJoin extends CloudFormationToken {
+export class FnJoin extends Token {
   private readonly delimiter: string;
   private readonly listOfValues: any[];
   // Cache for the result of resolveValues() - since it otherwise would be computed several times

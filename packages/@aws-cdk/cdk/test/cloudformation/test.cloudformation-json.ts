@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationJSON, CloudFormationToken, Fn, resolve, Token } from '../../lib';
+import { CloudFormationJSON, Fn, resolve, Token } from '../../lib';
 import { makeCloudformationTestSuite } from '../util';
 import { evaluateCFN } from './evaluate-cfn';
 
@@ -74,7 +74,7 @@ export = makeCloudformationTestSuite({
 
   'intrinsic Tokens embed correctly in JSONification'(test: Test) {
     // GIVEN
-    const bucketName = new CloudFormationToken({ Ref: 'MyBucket' });
+    const bucketName = new Token({ Ref: 'MyBucket' });
 
     // WHEN
     const resolved = resolve(CloudFormationJSON.stringify({ theBucket: bucketName }));
@@ -105,7 +105,7 @@ export = makeCloudformationTestSuite({
 
   'Tokens in Tokens are handled correctly'(test: Test) {
     // GIVEN
-    const bucketName = new CloudFormationToken({ Ref: 'MyBucket' });
+    const bucketName = new Token({ Ref: 'MyBucket' });
     const combinedName = Fn.join('', [ 'The bucket name is ', bucketName.toString() ]);
 
     // WHEN
@@ -135,7 +135,7 @@ export = makeCloudformationTestSuite({
 
   'Doubly nested intrinsics evaluate correctly in JSON context'(test: Test) {
     // WHEN
-    const fidoSays = new CloudFormationToken(() => ({ Ref: 'Something' }));
+    const fidoSays = new Token(() => ({ Ref: 'Something' }));
 
     // WHEN
     const resolved = resolve(CloudFormationJSON.stringify({

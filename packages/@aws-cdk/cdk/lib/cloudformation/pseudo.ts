@@ -1,5 +1,6 @@
 import { Construct } from '../core/construct';
-import { CloudFormationToken, StackAwareCloudFormationToken } from './cloudformation-token';
+import { Token } from '../core/tokens';
+import { StackAwareCloudFormationToken } from './cloudformation-token';
 
 export class PseudoParameter extends StackAwareCloudFormationToken {
   constructor(anchor: Construct | undefined, name: string) {
@@ -31,7 +32,7 @@ export class AwsNotificationARNs extends PseudoParameter {
   }
 }
 
-export class AwsNoValue extends CloudFormationToken {
+export class AwsNoValue extends Token {
   constructor() {
     super({ Ref:  'AWS::NoValue' });
   }

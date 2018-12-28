@@ -3,7 +3,7 @@ import { App } from '../app';
 import { Construct, PATH_SEP } from '../core/construct';
 import { resolve, RESOLVE_OPTIONS, Token, unresolved } from '../core/tokens';
 import { Environment } from '../environment';
-import { CloudFormationToken, StackAwareCloudFormationToken } from './cloudformation-token';
+import { cloudFormationConcat, StackAwareCloudFormationToken } from './cloudformation-token';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
 
@@ -154,7 +154,7 @@ export class Stack extends Construct {
   public toCloudFormation() {
     // before we begin synthesis, we shall lock this stack, so children cannot be added
     this.lock();
-    const options = RESOLVE_OPTIONS.push({ concat: CloudFormationToken.cloudFormationConcat });
+    const options = RESOLVE_OPTIONS.push({ concat: cloudFormationConcat });
 
     try {
       const template: any = {
@@ -284,7 +284,7 @@ export class Stack extends Construct {
   }
 
   public applyCrossEnvironmentReferences() {
-    const options = RESOLVE_OPTIONS.push({ concat: CloudFormationToken.cloudFormationConcat });
+    const options = RESOLVE_OPTIONS.push({ concat: cloudFormationConcat });
     try {
       const elements = stackElements(this);
       elements.forEach(e => e.substituteCrossStackReferences(this));

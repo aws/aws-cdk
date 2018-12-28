@@ -1,4 +1,5 @@
-import { CloudFormationToken, FnJoin } from './cloudformation-token';
+import { Token } from '../core/tokens';
+import { FnJoin } from './cloudformation-token';
 import { FnCondition } from './condition';
 
 // tslint:disable:max-line-length
@@ -19,7 +20,7 @@ export class Fn {
    * attributes available for that resource type.
    * @returns a CloudFormationToken object
    */
-  public static getAtt(logicalNameOfResource: string, attributeName: string): CloudFormationToken {
+  public static getAtt(logicalNameOfResource: string, attributeName: string): Token {
     return new FnGetAtt(logicalNameOfResource, attributeName);
   }
 
@@ -285,7 +286,7 @@ export class Fn {
 /**
  * Base class for tokens that represent CloudFormation intrinsic functions.
  */
-class FnBase extends CloudFormationToken {
+class FnBase extends Token {
   constructor(name: string, value: any) {
     super({ [name]: value });
   }

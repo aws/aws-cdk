@@ -1,5 +1,5 @@
 import { ITestGroup } from 'nodeunit';
-import { CloudFormationToken, RESOLVE_OPTIONS } from "../lib";
+import { cloudFormationConcat, RESOLVE_OPTIONS } from "../lib";
 
 /**
  * Update a nodeunit test suite so that we set up and tear down the proper CloudFormation token concatenator
@@ -8,7 +8,7 @@ export function makeCloudformationTestSuite<T extends ITestGroup>(tests: T): T {
   let options: any;
 
   tests.setUp = (callback: () => void) => {
-    options = RESOLVE_OPTIONS.push({ concat: CloudFormationToken.cloudFormationConcat });
+    options = RESOLVE_OPTIONS.push({ concat: cloudFormationConcat });
     callback();
   };
 
