@@ -14,12 +14,12 @@ export function cloudFormationConcat(left: any | undefined, right: any | undefin
   return new FnJoin('', parts);
 }
 
-export class StackAwareCloudFormationToken extends Token {
-  public static isInstance(x: any): x is StackAwareCloudFormationToken {
+export class StackAwareToken extends Token {
+  public static isInstance(x: any): x is StackAwareToken {
     return x && x._isStackAwareCloudFormationToken;
   }
 
-  protected readonly _isStackAwareCloudFormationToken: boolean;
+  protected readonly _isStackAwareToken: boolean;
 
   private readonly tokenStack?: Stack;
 
@@ -28,7 +28,7 @@ export class StackAwareCloudFormationToken extends Token {
           throw new Error('StackAwareCloudFormationToken can only contain eager values');
       }
       super(value, displayName);
-      this._isStackAwareCloudFormationToken = true;
+      this._isStackAwareToken = true;
 
       if (anchor !== undefined) {
         this.tokenStack = Stack.find(anchor);

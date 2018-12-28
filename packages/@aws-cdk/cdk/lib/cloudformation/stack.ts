@@ -3,7 +3,7 @@ import { App } from '../app';
 import { Construct, PATH_SEP } from '../core/construct';
 import { resolve, RESOLVE_OPTIONS, Token, unresolved } from '../core/tokens';
 import { Environment } from '../environment';
-import { cloudFormationConcat, StackAwareCloudFormationToken } from './cloudformation-token';
+import { cloudFormationConcat, StackAwareToken } from './cloudformation-token';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
 
@@ -474,7 +474,7 @@ export abstract class StackElement extends Construct implements IDependable {
   public abstract substituteCrossStackReferences(sourceStack: Stack): void;
 
   protected deepSubCrossStackReferences(sourceStack: Stack, x: any): any {
-    if (StackAwareCloudFormationToken.isInstance(x)) {
+    if (StackAwareToken.isInstance(x)) {
       return x.substituteToken(sourceStack);
     }
 
@@ -569,7 +569,7 @@ function stackElements(node: Construct, into: StackElement[] = []): StackElement
 /**
  * A generic, untyped reference to a Stack Element
  */
-export class Ref extends StackAwareCloudFormationToken {
+export class Ref extends StackAwareToken {
   constructor(element: StackElement) {
     super(element, { Ref: element.logicalId }, `${element.logicalId}.Ref`);
   }

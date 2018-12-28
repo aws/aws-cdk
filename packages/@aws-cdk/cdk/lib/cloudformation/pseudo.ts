@@ -1,8 +1,8 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { StackAwareCloudFormationToken } from './cloudformation-token';
+import { StackAwareToken } from './cloudformation-token';
 
-export class PseudoParameter extends StackAwareCloudFormationToken {
+export class PseudoParameter extends StackAwareToken {
   constructor(anchor: Construct | undefined, name: string) {
       super(anchor, { Ref: name }, name);
   }
