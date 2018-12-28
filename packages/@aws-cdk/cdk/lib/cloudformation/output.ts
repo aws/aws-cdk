@@ -123,8 +123,8 @@ export class Output extends StackElement {
     };
   }
 
-  public substituteCrossStackReferences(sourceStack: Stack): void {
-    this._value = this.deepSubCrossStackReferences(sourceStack, this._value);
+  public substituteCrossStackReferences(): void {
+    this._value = this.deepSubCrossStackReferences(Stack.find(this), this._value);
   }
 
   public get ref(): string {

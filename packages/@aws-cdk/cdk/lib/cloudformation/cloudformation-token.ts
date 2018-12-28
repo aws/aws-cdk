@@ -41,7 +41,7 @@ export class StackAwareToken extends Token {
   public substituteToken(consumingStack: Stack): Token {
       if (this.tokenStack && this.tokenStack !== consumingStack) {
           // We're trying to resolve a cross-stack reference
-          consumingStack.addStackDependency(this.tokenStack);
+          consumingStack.addDependency(this.tokenStack);
           return this.tokenStack.exportValue(this, consumingStack);
       }
       // In case of doubt, return same Token

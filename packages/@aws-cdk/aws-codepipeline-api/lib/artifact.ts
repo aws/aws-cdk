@@ -1,4 +1,4 @@
-import { CloudFormationToken, Construct } from "@aws-cdk/cdk";
+import { Construct, Token } from "@aws-cdk/cdk";
 import { Action } from "./action";
 
 /**
@@ -72,9 +72,9 @@ export class ArtifactPath {
 }
 
 function artifactAttribute(artifact: Artifact, attributeName: string) {
-  return new CloudFormationToken(() => ({ 'Fn::GetArtifactAtt': [artifact.name, attributeName] })).toString();
+  return new Token(() => ({ 'Fn::GetArtifactAtt': [artifact.name, attributeName] })).toString();
 }
 
 function artifactGetParam(artifact: Artifact, jsonFile: string, keyName: string) {
-  return new CloudFormationToken(() => ({ 'Fn::GetParam': [artifact.name, jsonFile, keyName] })).toString();
+  return new Token(() => ({ 'Fn::GetParam': [artifact.name, jsonFile, keyName] })).toString();
 }

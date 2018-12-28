@@ -404,7 +404,7 @@ export enum EndpointType {
   Private = 'PRIVATE'
 }
 
-export class RestApiUrl extends cdk.CloudFormationToken { }
+export class RestApiUrl extends cdk.Token { }
 
 class ImportedRestApi extends cdk.Construct implements IRestApi {
   public restApiId: string;

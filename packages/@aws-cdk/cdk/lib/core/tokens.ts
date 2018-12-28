@@ -177,7 +177,7 @@ export function resolve(obj: any, prefix?: string[]): any {
   // string - potentially replace all stringified Tokens
   //
   if (typeof(obj) === 'string') {
-    return TOKEN_MAP.resolveStringTokens(obj as string, recurse);
+    return TOKEN_MAP.resolveStringTokens(obj, recurse);
   }
 
   //

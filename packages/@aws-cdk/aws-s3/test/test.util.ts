@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { CloudFormationToken } from '@aws-cdk/cdk';
+import { Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { parseBucketArn, parseBucketName } from '../lib/util';
 
@@ -42,7 +42,7 @@ export = {
     },
 
     'undefined if cannot extract name from a non-string arn'(test: Test) {
-      const bucketArn = `arn:aws:s3:::${new CloudFormationToken({ Ref: 'my-bucket' })}`;
+      const bucketArn = `arn:aws:s3:::${new Token({ Ref: 'my-bucket' })}`;
       test.deepEqual(cdk.resolve(parseBucketName({ bucketArn })), undefined);
       test.done();
     },

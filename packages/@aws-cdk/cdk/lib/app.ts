@@ -84,7 +84,7 @@ export class App extends Root {
       missing,
       template: stack.toCloudFormation(),
       metadata: this.collectMetadata(stack),
-      dependsOn: stack.dependencyStackIds(),
+      dependsOn: stack.dependencies().map(s => s.id),
     };
   }
 

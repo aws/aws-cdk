@@ -33,8 +33,8 @@ export class Condition extends Referenceable {
     };
   }
 
-  public substituteCrossStackReferences(sourceStack: Stack): void {
-    this.expression = this.deepSubCrossStackReferences(sourceStack, this.expression);
+  public substituteCrossStackReferences(): void {
+    this.expression = this.deepSubCrossStackReferences(Stack.find(this), this.expression);
   }
 }
 

@@ -124,8 +124,8 @@ export class Parameter extends Referenceable {
     };
   }
 
-  public substituteCrossStackReferences(sourceStack: Stack): void {
-    this.properties = this.deepSubCrossStackReferences(sourceStack, this.properties);
+  public substituteCrossStackReferences(): void {
+    this.properties = this.deepSubCrossStackReferences(Stack.find(this), this.properties);
   }
 
   /**

@@ -299,7 +299,7 @@ export = {
     app.applyCrossEnvironmentReferences();
 
     // THEN
-    test.deepEqual(stack2.dependencyStackIds(), ['Stack1']);
+    test.deepEqual(stack2.dependencies().map(s => s.id), ['Stack1']);
 
     test.done();
   },

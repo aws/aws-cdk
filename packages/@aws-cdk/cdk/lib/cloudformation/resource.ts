@@ -209,8 +209,8 @@ export class Resource extends Referenceable {
     }
   }
 
-  public substituteCrossStackReferences(sourceStack: Stack): void {
-    this.deepSubCrossStackReferences(sourceStack, this.properties);
+  public substituteCrossStackReferences(): void {
+    this.deepSubCrossStackReferences(Stack.find(this), this.properties);
   }
 
   protected renderProperties(properties: any): { [key: string]: any } {

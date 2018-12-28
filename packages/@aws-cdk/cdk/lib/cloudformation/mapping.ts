@@ -51,7 +51,7 @@ export class Mapping extends Referenceable {
     };
   }
 
-  public substituteCrossStackReferences(sourceStack: Stack): void {
-    this.mapping = this.deepSubCrossStackReferences(sourceStack, this.mapping);
+  public substituteCrossStackReferences(): void {
+    this.mapping = this.deepSubCrossStackReferences(Stack.find(this), this.mapping);
   }
 }

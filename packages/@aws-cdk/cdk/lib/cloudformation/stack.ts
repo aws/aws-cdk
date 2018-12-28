@@ -104,7 +104,7 @@ export class Stack extends Construct {
   /**
    * Other stacks this stack depends on
    */
-  private readonly dependsOnStacks = new Set<Stack>();
+  private readonly stackDependencies = new Set<Stack>();
 
   /**
    * A construct to hold cross-stack exports
@@ -245,16 +245,16 @@ export class Stack extends Construct {
   /**
    * Add a dependency between this stack and another stack
    */
-  public addStackDependency(stack: Stack) {
+  public addDependency(stack: Stack) {
     if (stack.dependsOnStack(this)) {
         // tslint:disable-next-line:max-line-length
         throw new Error(`Stack '${this.name}' already depends on stack '${stack.name}'. Adding this dependency would create a cyclic reference.`);
     }
-    this.dependsOnStacks.add(stack);
+    this.stackDependencies.add(stack);
   }
 
-  public dependencyStackIds(): string[] {
-    return Array.from(this.dependsOnStacks.values()).map(s => s.id);
+  public dependencies(): Stack[] {
+    return Array.from(this.stackDependencies.values());
   }
 
   /**
@@ -283,7 +283,7 @@ export class Stack extends Construct {
 
   public applyCrossEnvironmentReferences() {
     const elements = stackElements(this);
-    elements.forEach(e => e.substituteCrossStackReferences(this));
+    elements.forEach(e => e.substituteCrossStackReferences());
   }
 
   /**
@@ -323,7 +323,7 @@ export class Stack extends Construct {
    */
   private dependsOnStack(other: Stack) {
     if (this === other) { return true; }
-    for (const dep of this.dependsOnStacks) {
+    for (const dep of this.stackDependencies) {
       if (dep.dependsOnStack(other)) { return true; }
     }
     return false;
@@ -464,7 +464,7 @@ export abstract class StackElement extends Construct implements IDependable {
    */
   public abstract toCloudFormation(): object;
 
-  public abstract substituteCrossStackReferences(sourceStack: Stack): void;
+  public abstract substituteCrossStackReferences(): void;
 
   protected deepSubCrossStackReferences(sourceStack: Stack, x: any): any {
     if (StackAwareToken.isInstance(x)) {
