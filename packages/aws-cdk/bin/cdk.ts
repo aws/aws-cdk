@@ -58,7 +58,7 @@ async function parseCommandLineArguments() {
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' }))
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
-    .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file', yargs => yargs
+    .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
       .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' })
       .option('strict', { type: 'boolean', desc: 'do not filter out AWS::CDK::Metadata resources', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
