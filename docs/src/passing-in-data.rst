@@ -174,15 +174,15 @@ in the stack property.
 
     class HelloCdkStack extends cdk.Stack {
         // Property that defines the stack you are exporting from
-        public readonly myBucketRefProps: s3.BucketRefProps;
+        public readonly myBucketAttributes: s3.BucketAttributes;
 
         constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
             super(parent, name, props);
 
             const mybucket = new s3.Bucket(this, "MyFirstBucket");
 
-            // Save bucket's *BucketRefProps*
-            this.myBucketRefProps = mybucket.export();
+            // Save bucket's *BucketAttributes*
+            this.myBucketAttributes = mybucket.export();
         }
     }
 
@@ -193,7 +193,7 @@ We use this interface to pass the bucket properties between the two stacks.
 
     // Interface we'll use to pass the bucket's properties to another stack
     interface MyCdkStackProps {
-        theBucketRefProps: s3.BucketRefProps;
+        theBucketAttributes: s3.BucketAttributes;
     }
 
 Create the second stack that gets a reference to the other bucket
@@ -206,7 +206,7 @@ from the properties passed in through the constructor.
         constructor(parent: cdk.App, name: string, props: MyCdkStackProps) {
             super(parent, name);
 
-            const myOtherBucket = s3.Bucket.import(this, "MyOtherBucket", props.theBucketRefProps);
+            const myOtherBucket = s3.Bucket.import(this, "MyOtherBucket", props.theBucketAttributes);
 
 	    // Do something with myOtherBucket
         }
@@ -221,7 +221,7 @@ Finally, connect the dots in your app.
     const myStack = new HelloCdkStack(app, "HelloCdkStack");
 
     new MyCdkStack(app, "MyCdkStack", {
-        theBucketRefProps: myStack.myBucketRefProps
+        theBucketAttributes: myStack.myBucketAttributes
     });
 
     app.run();

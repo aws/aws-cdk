@@ -1,10 +1,11 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
-import { FunctionRef } from './lambda-ref';
-import { FunctionVersion } from './lambda-version';
+import { FunctionBase, FunctionImportProps, IFunction } from './lambda-ref';
+import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { Runtime } from './runtime';
 
@@ -117,7 +118,7 @@ export interface FunctionProps {
    *
    * Specify this if the Lambda function needs to access resources in a VPC.
    */
-  vpc?: ec2.VpcNetworkRef;
+  vpc?: ec2.IVpcNetwork;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -138,7 +139,7 @@ export interface FunctionProps {
    * not specified, a dedicated security group will be created for this
    * function.
    */
-  securityGroup?: ec2.SecurityGroupRef;
+  securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Whether to allow the Lambda to send all network traffic
@@ -163,7 +164,7 @@ export interface FunctionProps {
    *
    * @default SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
-  deadLetterQueue?: sqs.QueueRef;
+  deadLetterQueue?: sqs.IQueue;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
@@ -184,7 +185,92 @@ export interface FunctionProps {
  * This construct does not yet reproduce all features from the underlying resource
  * library.
  */
-export class Function extends FunctionRef {
+export class Function extends FunctionBase {
+  /**
+   * Creates a Lambda function object which represents a function not defined
+   * within this stack.
+   *
+   *    Lambda.import(this, 'MyImportedFunction', { lambdaArn: new LambdaArn('arn:aws:...') });
+   *
+   * @param parent The parent construct
+   * @param id The name of the lambda construct
+   * @param attrs A reference to a Lambda function. Can be created manually (see
+   * example above) or obtained through a call to `lambda.export()`.
+   */
+  public static import(parent: cdk.Construct, id: string, attrs: FunctionImportProps): IFunction {
+    return new ImportedFunction(parent, id, attrs);
+  }
+
+  /**
+   * Return the given named metric for this Lambda
+   */
+  public static metricAll(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Lambda',
+      metricName,
+      ...props
+    });
+  }
+  /**
+   * Metric for the number of Errors executing all Lambdas
+   *
+   * @default sum over 5 minutes
+   */
+  public static metricAllErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Errors', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the Duration executing all Lambdas
+   *
+   * @default average over 5 minutes
+   */
+  public static metricAllDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Duration', props);
+  }
+
+  /**
+   * Metric for the number of invocations of all Lambdas
+   *
+   * @default sum over 5 minutes
+   */
+  public static metricAllInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Invocations', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the number of throttled invocations of all Lambdas
+   *
+   * @default sum over 5 minutes
+   */
+  public static metricAllThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Throttles', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the number of concurrent executions across all Lambdas
+   *
+   * @default max over 5 minutes
+   */
+  public static metricAllConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    // Mini-FAQ: why max? This metric is a gauge that is emitted every
+    // minute, so either max or avg or a percentile make sense (but sum
+    // doesn't). Max is more sensitive to spiky load changes which is
+    // probably what you're interested in if you're looking at this metric
+    // (Load spikes may lead to concurrent execution errors that would
+    // otherwise not be visible in the avg)
+    return this.metricAll('ConcurrentExecutions', { statistic: 'max', ...props });
+  }
+
+  /**
+   * Metric for the number of unreserved concurrent executions across all Lambdas
+   *
+   * @default max over 5 minutes
+   */
+  public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
+  }
+
   /**
    * Name of this function
    */
@@ -217,8 +303,8 @@ export class Function extends FunctionRef {
    */
   private readonly environment?: { [key: string]: any };
 
-  constructor(parent: cdk.Construct, name: string, props: FunctionProps) {
-    super(parent, name);
+  constructor(parent: cdk.Construct, id: string, props: FunctionProps) {
+    super(parent, id);
 
     this.environment = props.environment || { };
 
@@ -268,6 +354,18 @@ export class Function extends FunctionRef {
   }
 
   /**
+   * Export this Function (without the role)
+   */
+  public export(): FunctionImportProps {
+    return {
+      functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
+      securityGroupId: this._connections && this._connections.securityGroups[0]
+          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
+          : undefined
+    };
+  }
+
+  /**
    * Adds an environment variable to this Lambda function.
    * If this is a ref to a Lambda function, this operation results in a no-op.
    * @param key The environment variable key.
@@ -297,8 +395,8 @@ export class Function extends FunctionRef {
    * @param description A description for this version.
    * @returns A new Version object.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string): FunctionVersion {
-    return new FunctionVersion(this, 'Version' + name, {
+  public addVersion(name: string, codeSha256?: string, description?: string): Version {
+    return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,
@@ -390,5 +488,49 @@ export class Function extends FunctionRef {
       mode: Tracing[props.tracing]
     };
   }
+}
 
+export class ImportedFunction extends FunctionBase {
+  public readonly functionName: string;
+  public readonly functionArn: string;
+  public readonly role?: iam.Role;
+
+  protected readonly canCreatePermissions = false;
+
+  constructor(parent: cdk.Construct, id: string, private readonly props: FunctionImportProps) {
+    super(parent, id);
+
+    this.functionArn = props.functionArn;
+    this.functionName = extractNameFromArn(props.functionArn);
+    this.role = props.role;
+
+    if (props.securityGroupId) {
+      this._connections = new ec2.Connections({
+        securityGroups: [
+          ec2.SecurityGroup.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })
+        ]
+      });
+    }
+  }
+
+  public export() {
+    return this.props;
+  }
+}
+
+/**
+ * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the function
+ * name from the ARN.
+ *
+ * Function ARNs look like this:
+ *
+ *   arn:aws:lambda:region:account-id:function:function-name
+ *
+ * ..which means that in order to extract the `function-name` component from the ARN, we can
+ * split the ARN using ":" and select the component in index 6.
+ *
+ * @returns `FnSelect(6, FnSplit(':', arn))`
+ */
+function extractNameFromArn(arn: string) {
+  return cdk.Fn.select(6, cdk.Fn.split(':', arn));
 }

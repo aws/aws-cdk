@@ -98,11 +98,11 @@ export = {
 
     // WHEN
     const ref = queue.export();
-    const imports = sqs.QueueRef.import(stack, 'Imported', ref);
+    const imports = sqs.Queue.import(stack, 'Imported', ref);
 
     // THEN
 
-    // "import" returns a a QueueRef bound to `Fn::ImportValue`s.
+    // "import" returns an IQueue bound to `Fn::ImportValue`s.
     test.deepEqual(resolve(imports.queueArn), { 'Fn::ImportValue': 'QueueQueueArn8CF496D5' });
     test.deepEqual(resolve(imports.queueUrl), { 'Fn::ImportValue': 'QueueQueueUrlC30FF916' });
 

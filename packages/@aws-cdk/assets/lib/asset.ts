@@ -68,7 +68,7 @@ export class Asset extends cdk.Construct {
   /**
    * The S3 bucket in which this asset resides.
    */
-  public readonly bucket: s3.BucketRef;
+  public readonly bucket: s3.IBucket;
 
   /**
    * Indicates if this asset is a zip archive. Allows constructs to ensure that the
@@ -114,7 +114,7 @@ export class Asset extends cdk.Construct {
     const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
 
-    this.bucket = s3.BucketRef.import(this, 'AssetBucket', {
+    this.bucket = s3.Bucket.import(this, 'AssetBucket', {
       bucketName: this.s3BucketName
     });
 

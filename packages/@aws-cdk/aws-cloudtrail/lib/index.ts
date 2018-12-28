@@ -65,7 +65,7 @@ export interface CloudTrailProps {
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    * @default none
    */
-  kmsKey?: kms.EncryptionKeyRef;
+  kmsKey?: kms.IEncryptionKey;
 
   /** The name of an Amazon SNS topic that is notified when new log files are published.
    * @default none

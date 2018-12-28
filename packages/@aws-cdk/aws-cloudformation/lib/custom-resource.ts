@@ -19,14 +19,14 @@ export interface CustomResourceProps {
    *
    * Optional, exactly one of lamdaProvider or topicProvider must be set.
    */
-  lambdaProvider?: lambda.FunctionRef;
+  lambdaProvider?: lambda.IFunction;
 
   /**
    * The SNS Topic for the provider that implements this custom resource.
    *
    * Optional, exactly one of lamdaProvider or topicProvider must be set.
    */
-  topicProvider?: sns.TopicRef;
+  topicProvider?: sns.ITopic;
 
   /**
    * Properties to pass to the Lambda

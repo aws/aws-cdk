@@ -5,16 +5,105 @@ import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { QueuePolicy } from './policy';
 
+export interface IQueue extends s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
+  /**
+   * Local logical ID.
+   */
+  readonly id: string;
+
+  /**
+   * Unique logical ID.
+   */
+  readonly uniqueId: string;
+
+  /**
+   * The ARN of this queue
+   */
+  readonly queueArn: string;
+
+  /**
+   * The URL of this queue
+   */
+  readonly queueUrl: string;
+
+  /**
+   * If this queue is server-side encrypted, this is the KMS encryption key.
+   */
+  readonly encryptionMasterKey?: kms.IEncryptionKey;
+
+  /**
+   * Export a queue
+   */
+  export(): QueueImportProps;
+
+  /**
+   * Adds a statement to the IAM resource policy associated with this queue.
+   *
+   * If this queue was created in this stack (`new Queue`), a queue policy
+   * will be automatically created upon the first call to `addToPolicy`. If
+   * the queue is improted (`Queue.import`), then this is a no-op.
+   */
+  addToResourcePolicy(statement: iam.PolicyStatement): void;
+
+  /**
+   * Grant permissions to consume messages from a queue
+   *
+   * This will grant the following permissions:
+   *
+   *   - sqs:ChangeMessageVisibility
+   *   - sqs:ChangeMessageVisibilityBatch
+   *   - sqs:DeleteMessage
+   *   - sqs:ReceiveMessage
+   *   - sqs:DeleteMessageBatch
+   *   - sqs:GetQueueAttributes
+   *   - sqs:GetQueueUrl
+   *
+   * @param identity Principal to grant consume rights to
+   */
+  grantConsumeMessages(identity?: iam.IPrincipal): void;
+
+  /**
+   * Grant access to send messages to a queue to the given identity.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sqs:SendMessage
+   *  - sqs:SendMessageBatch
+   *  - sqs:GetQueueAttributes
+   *  - sqs:GetQueueUrl
+   *
+   * @param identity Principal to grant send rights to
+   */
+  grantSendMessages(identity?: iam.IPrincipal): void;
+
+  /**
+   * Grant an IAM principal permissions to purge all messages from the queue.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sqs:PurgeQueue
+   *  - sqs:GetQueueAttributes
+   *  - sqs:GetQueueUrl
+   *
+   * @param identity Principal to grant send rights to
+   * @param queueActions additional queue actions to allow
+   */
+  grantPurge(identity?: iam.IPrincipal): void;
+
+  /**
+   * Grant the actions defined in queueActions to the identity Principal given
+   * on this SQS queue resource.
+   *
+   * @param identity Principal to grant right to
+   * @param queueActions The actions to grant
+   */
+  grant(identity?: iam.IPrincipal, ...queueActions: string[]): void;
+}
+
 /**
  * Reference to a new or existing Amazon SQS queue
  */
-export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
-  /**
-   * Import an existing queue
-   */
-  public static import(parent: cdk.Construct, name: string, props: QueueRefProps): QueueRef {
-    return new ImportedQueue(parent, name, props);
-  }
+export abstract class QueueBase extends cdk.Construct implements IQueue {
 
   /**
    * The ARN of this queue
@@ -29,7 +118,7 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
   /**
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
-  public abstract readonly encryptionMasterKey?: kms.EncryptionKeyRef;
+  public abstract readonly encryptionMasterKey?: kms.IEncryptionKey;
 
   /**
    * Controls automatic creation of policy objects.
@@ -48,15 +137,7 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
   /**
    * Export a queue
    */
-  public export(): QueueRefProps {
-    return {
-      queueArn: new cdk.Output(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
-      queueUrl: new cdk.Output(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
-      keyArn: this.encryptionMasterKey
-        ? new cdk.Output(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue().toString()
-        : undefined
-    };
-  }
+  public abstract export(): QueueImportProps;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -206,7 +287,7 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
 /**
  * Reference to a queue
  */
-export interface QueueRefProps {
+export interface QueueImportProps {
   /**
    * The ARN of the queue.
    */
@@ -218,30 +299,13 @@ export interface QueueRefProps {
   queueUrl: string;
 
   /**
+   * The name of the queue.
+   * @default if queue name is not specified, the name will be derived from the queue ARN
+   */
+  queueName?: string;
+
+  /**
    * KMS encryption key, if this queue is server-side encrypted by a KMS key.
    */
   keyArn?: string;
-}
-
-/**
- * A queue that has been imported
- */
-class ImportedQueue extends QueueRef {
-  public readonly queueArn: string;
-  public readonly queueUrl: string;
-  public readonly encryptionMasterKey?: kms.EncryptionKeyRef;
-
-  protected readonly autoCreatePolicy = false;
-
-  constructor(parent: cdk.Construct, name: string, props: QueueRefProps) {
-    super(parent, name);
-    this.queueArn = props.queueArn;
-    this.queueUrl = props.queueUrl;
-
-    if (props.keyArn) {
-      this.encryptionMasterKey = kms.EncryptionKey.import(this, 'Key', {
-        keyArn: props.keyArn
-      });
-    }
-  }
 }
