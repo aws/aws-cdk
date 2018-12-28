@@ -3,7 +3,6 @@ import _ = require('lodash');
 import nodeunit = require('nodeunit');
 import { Fn } from '../../lib/cloudformation/fn';
 import { resolve, Token } from '../../lib/core/tokens';
-import { makeCloudformationTestSuite } from '../util';
 
 function asyncTest(cb: (test: nodeunit.Test) => Promise<void>): (test: nodeunit.Test) => void {
   return async (test: nodeunit.Test) => {
@@ -25,7 +24,7 @@ const nonEmptyString = fc.string(1, 16);
 const tokenish = fc.array(nonEmptyString, 2, 2).map(arr => ({ [arr[0]]: arr[1] }));
 const anyValue = fc.oneof<any>(nonEmptyString, tokenish);
 
-export = nodeunit.testCase(makeCloudformationTestSuite({
+export = nodeunit.testCase({
   FnJoin: {
     'rejects empty list of arguments to join'(test: nodeunit.Test) {
       test.throws(() => Fn.join('.', []));
@@ -94,7 +93,7 @@ export = nodeunit.testCase(makeCloudformationTestSuite({
       );
     }),
   },
-}));
+});
 
 function stringListToken(o: any): string[] {
   return new Token(o).toList();

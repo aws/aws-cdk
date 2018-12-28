@@ -1,8 +1,7 @@
 import { Test } from 'nodeunit';
 import { DynamicReference, DynamicReferenceService, resolve, Stack } from '../../lib';
-import { makeCloudformationTestSuite } from '../util';
 
-export = makeCloudformationTestSuite({
+export = {
   'can create dynamic references with service and key with colons'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -18,4 +17,4 @@ export = makeCloudformationTestSuite({
 
     test.done();
   },
-});
+};

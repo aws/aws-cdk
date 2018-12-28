@@ -5,7 +5,6 @@ import os = require('os');
 import path = require('path');
 import { Construct, Resource, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
-import { makeCloudformationTestSuite } from './util';
 
 function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void) {
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-app-test'));
@@ -63,7 +62,7 @@ function synthStack(name: string, includeMetadata: boolean = false, context?: an
   return stack;
 }
 
-export = makeCloudformationTestSuite({
+export = {
   'synthesizes all stacks and returns synthesis result'(test: Test) {
     const response = synth();
 
@@ -318,7 +317,7 @@ export = makeCloudformationTestSuite({
 
     test.done();
   },
-});
+};
 
 class MyConstruct extends Construct {
   constructor(parent: Construct, name: string) {

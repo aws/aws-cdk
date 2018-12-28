@@ -1,8 +1,7 @@
 import { Test } from 'nodeunit';
 import { capitalizePropertyNames, ignoreEmpty } from '../../lib/core/util';
-import { makeCloudformationTestSuite } from '../util';
 
-export = makeCloudformationTestSuite({
+export = {
   'capitalizeResourceProperties capitalizes all keys of an object (recursively) from camelCase to PascalCase'(test: Test) {
 
     test.equal(capitalizePropertyNames(undefined), undefined);
@@ -65,7 +64,7 @@ export = makeCloudformationTestSuite({
       test.done();
     }
   }
-});
+};
 
 class SomeToken {
   public foo = 60;

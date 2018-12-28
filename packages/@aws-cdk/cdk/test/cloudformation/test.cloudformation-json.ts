@@ -1,9 +1,8 @@
 import { Test } from 'nodeunit';
 import { CloudFormationJSON, Fn, resolve, Token } from '../../lib';
-import { makeCloudformationTestSuite } from '../util';
 import { evaluateCFN } from './evaluate-cfn';
 
-export = makeCloudformationTestSuite({
+export = {
   'plain JSON.stringify() on a Token fails'(test: Test) {
     // GIVEN
     const token = new Token(() => 'value');
@@ -163,7 +162,7 @@ export = makeCloudformationTestSuite({
 
     test.done();
   },
-});
+};
 
 /**
  * Return two Tokens, one of which evaluates to a Token directly, one which evaluates to it lazily

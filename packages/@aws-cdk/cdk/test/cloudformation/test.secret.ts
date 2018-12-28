@@ -1,8 +1,7 @@
 import { Test } from 'nodeunit';
 import { resolve, Secret, SecretParameter, Stack } from '../../lib';
-import { makeCloudformationTestSuite } from '../util';
 
-export = makeCloudformationTestSuite({
+export = {
   'Secret is merely a token'(test: Test) {
     const foo = new Secret('Foo');
     const bar = new Secret(() => 'Bar');
@@ -48,4 +47,4 @@ export = makeCloudformationTestSuite({
 
     test.done();
   }
-});
+};

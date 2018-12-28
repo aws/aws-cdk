@@ -2,7 +2,6 @@ import { Test } from 'nodeunit';
 import { Construct, Root } from '../../lib/core/construct';
 import { ITaggable, TagManager } from '../../lib/core/tag-manager';
 import { resolve } from '../../lib/core/tokens';
-import { makeCloudformationTestSuite as testSuiteWithCloudFormationResolve } from '../util';
 
 class ChildTagger extends Construct implements ITaggable {
   public readonly tags: TagManager;
@@ -18,7 +17,7 @@ class Child extends Construct {
   }
 }
 
-export = testSuiteWithCloudFormationResolve({
+export = {
   'TagManger handles tags for a Contruct Tree': {
     'setTag by default propagates to children'(test: Test) {
       const root = new Root();
@@ -180,4 +179,4 @@ export = testSuiteWithCloudFormationResolve({
       test.done();
     },
   },
-});
+};

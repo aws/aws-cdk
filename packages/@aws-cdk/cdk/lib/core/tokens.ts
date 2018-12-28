@@ -1,3 +1,4 @@
+import { cloudFormationConcat } from "../cloudformation/cloudformation-token";
 import { Construct } from "./construct";
 
 /**
@@ -176,11 +177,7 @@ export function resolve(obj: any, prefix?: string[]): any {
   // string - potentially replace all stringified Tokens
   //
   if (typeof(obj) === 'string') {
-    const concat = RESOLVE_OPTIONS.concatFunc;
-    if (!concat) {
-      throw new Error('Cannot resolve a string with Tokens; no concatenation function given');
-    }
-    return TOKEN_MAP.resolveStringTokens(obj as string, recurse, concat);
+    return TOKEN_MAP.resolveStringTokens(obj as string, recurse);
   }
 
   //
@@ -308,10 +305,10 @@ class TokenMap {
   /**
    * Replace any Token markers in this string with their resolved values
    */
-  public resolveStringTokens(s: string, resolver: ResolveFunc, concat: ConcatFunc): any {
+  public resolveStringTokens(s: string, resolver: ResolveFunc): any {
     const str = this.createStringTokenString(s);
     const fragments = str.split(this.lookupToken.bind(this));
-    const ret = fragments.mapUnresolved(resolver).join(concat);
+    const ret = fragments.mapUnresolved(resolver).join(cloudFormationConcat);
     if (unresolved(ret)) {
       return resolve(ret);
     }
@@ -540,15 +537,6 @@ export class ResolveConfiguration {
     };
   }
 
-  public get concatFunc(): ConcatFunc | undefined {
-    for (let i = this.options.length - 1; i >= 0; i--) {
-      if (this.options[i].concat) {
-        return this.options[i].concat;
-      }
-    }
-    return undefined;
-  }
-
   public get recurse(): ResolveFunc | undefined {
     for (let i = this.options.length - 1; i >= 0; i--) {
       if (this.options[i].recurse) {
@@ -564,11 +552,6 @@ export interface OptionsContext {
 }
 
 export interface ResolveOptions {
-  /**
-   * Function to use for concatenating symbols in the target document language
-   */
-  concat?: ConcatFunc;
-
   /**
    * What function to use for recursing into deeper resolutions
    */

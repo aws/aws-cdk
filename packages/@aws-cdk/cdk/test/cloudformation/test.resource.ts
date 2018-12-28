@@ -3,9 +3,8 @@ import { Test } from 'nodeunit';
 import { applyRemovalPolicy, Condition, Construct, DeletionPolicy,
     Fn, HashedAddressingScheme, IDependable,
     RemovalPolicy, resolve, Resource, Root, Stack } from '../../lib';
-import { makeCloudformationTestSuite } from '../util';
 
-export = makeCloudformationTestSuite({
+export = {
   'all resources derive from Resource, which derives from Entity'(test: Test) {
     const stack = new Stack();
 
@@ -604,7 +603,7 @@ export = makeCloudformationTestSuite({
 
     test.done();
   }
-});
+};
 
 interface CounterProps {
   // tslint:disable-next-line:variable-name
