@@ -38,7 +38,7 @@ export interface FargateServiceProps extends BaseServiceProps {
    *
    * @default A new security group is created
    */
-  securityGroup?: ec2.SecurityGroupRef;
+  securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Fargate platform version to run this service on

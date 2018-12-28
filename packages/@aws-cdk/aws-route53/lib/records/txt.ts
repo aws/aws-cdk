@@ -1,9 +1,10 @@
 import { Construct } from '@aws-cdk/cdk';
-import { HostedZoneRef } from '../hosted-zone-ref';
+import { IHostedZone } from '../hosted-zone-ref';
 import { CfnRecordSet } from '../route53.generated';
 import { determineFullyQualifiedDomainName } from './_util';
 
 export interface TXTRecordProps {
+  zone: IHostedZone;
   recordName: string;
   recordValue: string;
   /** @default 1800 seconds */
@@ -14,7 +15,7 @@ export interface TXTRecordProps {
  * A DNS TXT record
  */
 export class TXTRecord extends Construct {
-  constructor(parent: HostedZoneRef, name: string, props: TXTRecordProps) {
+  constructor(parent: Construct, name: string, props: TXTRecordProps) {
     super(parent, name);
 
     // JSON.stringify conveniently wraps strings in " and escapes ".
@@ -22,8 +23,8 @@ export class TXTRecord extends Construct {
     const ttl = props.ttl === undefined ? 1800 : props.ttl;
 
     new CfnRecordSet(this, 'Resource', {
-      hostedZoneId: parent.hostedZoneId,
-      name: determineFullyQualifiedDomainName(props.recordName, parent),
+      hostedZoneId: props.zone.hostedZoneId,
+      name: determineFullyQualifiedDomainName(props.recordName, props.zone),
       type: 'TXT',
       resourceRecords: [recordValue],
       ttl: ttl.toString()

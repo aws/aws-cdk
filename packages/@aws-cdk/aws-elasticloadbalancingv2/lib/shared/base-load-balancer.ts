@@ -18,7 +18,7 @@ export interface BaseLoadBalancerProps {
   /**
    * The VPC network to place the load balancer in
    */
-  vpc: ec2.VpcNetworkRef;
+  vpc: ec2.IVpcNetwork;
 
   /**
    * Whether the load balancer has an internet-routable address
@@ -86,7 +86,7 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
    *
    * If the Load Balancer was imported, the VPC is not available.
    */
-  public readonly vpc?: ec2.VpcNetworkRef;
+  public readonly vpc?: ec2.IVpcNetwork;
 
   /**
    * Attributes set on this load balancer

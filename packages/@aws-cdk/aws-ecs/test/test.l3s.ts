@@ -1,5 +1,5 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import { CertificateRef } from '@aws-cdk/aws-certificatemanager';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import ec2 = require('@aws-cdk/aws-ec2');
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
@@ -120,7 +120,7 @@ export = {
       image: ecs.ContainerImage.fromDockerHub('test'),
       domainName: 'api.example.com',
       domainZone: zone,
-      certificate: CertificateRef.import(stack, 'Cert', { certificateArn: 'helloworld' })
+      certificate: Certificate.import(stack, 'Cert', { certificateArn: 'helloworld' })
     });
 
     // THEN - stack contains a load balancer and a service

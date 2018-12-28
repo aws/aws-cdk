@@ -8,7 +8,7 @@ export = {
     TXT(test: Test) {
       const app = new TestApp();
       const zone = new PublicHostedZone(app.stack, 'HostedZone', { zoneName: 'test.public' });
-      new TXTRecord(zone, 'TXT', { recordName: '_foo', recordValue: 'Bar!' });
+      new TXTRecord(zone, 'TXT', { zone, recordName: '_foo', recordValue: 'Bar!' });
       expect(app.synthesizeTemplate()).to(exactlyMatchTemplate({
         Resources: {
           HostedZoneDB99F866: {

@@ -49,7 +49,7 @@ new route53.TXTRecord(zone, 'TXTRecord', {
 If you know the ID and Name of a Hosted Zone, you can import it directly:
 
 ```ts
-const zone = HostedZoneRef.import(this, 'MyZone', {
+const zone = HostedZone.import(this, 'MyZone', {
     zoneName: 'example.com',
     hostedZoneId: 'ZOJJZC49E0EPZ',
 });

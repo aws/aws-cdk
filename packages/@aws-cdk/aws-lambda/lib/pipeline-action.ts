@@ -1,12 +1,12 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { FunctionRef } from './lambda-ref';
+import { IFunction } from './lambda-ref';
 
 /**
  * Common properties for creating a {@link PipelineInvokeAction} -
  * either directly, through its constructor,
- * or through {@link FunctionRef#addToPipeline}.
+ * or through {@link IFunction#addToPipeline}.
  */
 export interface CommonPipelineInvokeActionProps extends codepipeline.CommonActionProps {
   // because of @see links
@@ -72,7 +72,7 @@ export interface PipelineInvokeActionProps extends CommonPipelineInvokeActionPro
   /**
    * The lambda function to invoke.
    */
-  lambda: FunctionRef;
+  lambda: IFunction;
 }
 
 /**

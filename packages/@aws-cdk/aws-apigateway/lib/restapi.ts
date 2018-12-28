@@ -5,8 +5,27 @@ import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { IRestApiResource, ProxyResource, Resource, ResourceOptions } from './resource';
-import { RestApiRef } from './restapi-ref';
 import { Stage, StageOptions } from './stage';
+
+export interface RestApiImportProps {
+  /**
+   * The REST API ID of an existing REST API resource.
+   */
+  restApiId: string;
+}
+
+export interface IRestApi {
+  /**
+   * The ID of this API Gateway RestApi.
+   */
+  readonly restApiId: string;
+
+  /**
+   * Exports a REST API resource from this stack.
+   * @returns REST API props that can be imported to another stack.
+   */
+  export(): RestApiImportProps;
+}
 
 export interface RestApiProps extends ResourceOptions {
   /**
@@ -118,7 +137,7 @@ export interface RestApiProps extends ResourceOptions {
   /**
    * The ID of the API Gateway RestApi resource that you want to clone.
    */
-  cloneFrom?: RestApiRef;
+  cloneFrom?: IRestApi;
 
   /**
    * Automatically configure an AWS CloudWatch role for API Gateway.
@@ -135,7 +154,17 @@ export interface RestApiProps extends ResourceOptions {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-export class RestApi extends RestApiRef implements cdk.IDependable {
+export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi {
+  /**
+   * Imports an existing REST API resource.
+   * @param parent Parent construct
+   * @param id Construct ID
+   * @param props Imported rest API properties
+   */
+  public static import(parent: cdk.Construct, id: string, props: RestApiImportProps): IRestApi {
+    return new ImportedRestApi(parent, id, props);
+  }
+
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -221,6 +250,16 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
       resourceApi: this,
       resourceId: resource.restApiRootResourceId,
       resourcePath: '/'
+    };
+  }
+
+  /**
+   * Exports a REST API resource from this stack.
+   * @returns REST API props that can be imported to another stack.
+   */
+  public export(): RestApiImportProps {
+    return {
+      restApiId: new cdk.Output(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
     };
   }
 
@@ -366,3 +405,17 @@ export enum EndpointType {
 }
 
 export class RestApiUrl extends cdk.CloudFormationToken { }
+
+class ImportedRestApi extends cdk.Construct implements IRestApi {
+  public restApiId: string;
+
+  constructor(parent: cdk.Construct, id: string, private readonly props: RestApiImportProps) {
+    super(parent, id);
+
+    this.restApiId = props.restApiId;
+  }
+
+  public export() {
+    return this.props;
+  }
+}

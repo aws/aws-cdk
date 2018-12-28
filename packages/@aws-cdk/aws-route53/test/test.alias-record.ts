@@ -20,6 +20,7 @@ export = {
 
     // WHEN
     new AliasRecord(zone, 'Alias', {
+      zone,
       recordName: '_foo',
       target
     });

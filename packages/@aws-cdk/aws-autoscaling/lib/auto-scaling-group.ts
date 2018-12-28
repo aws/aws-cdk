@@ -60,7 +60,7 @@ export interface AutoScalingGroupProps {
   /**
    * VPC to launch these instances in.
    */
-  vpc: ec2.VpcNetworkRef;
+  vpc: ec2.IVpcNetwork;
 
   /**
    * Where to place instances within the VPC
@@ -71,7 +71,7 @@ export interface AutoScalingGroupProps {
    * SNS topic to send notifications about fleet changes
    * @default No fleet change notifications will be sent.
    */
-  notificationsTopic?: sns.TopicRef;
+  notificationsTopic?: sns.ITopic;
 
   /**
    * Whether the instances can initiate connections to anywhere by default
@@ -190,8 +190,8 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
 
   private readonly userDataLines = new Array<string>();
   private readonly autoScalingGroup: CfnAutoScalingGroup;
-  private readonly securityGroup: ec2.SecurityGroupRef;
-  private readonly securityGroups: ec2.SecurityGroupRef[] = [];
+  private readonly securityGroup: ec2.ISecurityGroup;
+  private readonly securityGroups: ec2.ISecurityGroup[] = [];
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
   private albTargetGroup?: elbv2.ApplicationTargetGroup;
@@ -285,9 +285,9 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
    * Add the security group to all instances via the launch configuration
    * security groups array.
    *
-   * @param securityGroup: The SecurityGroupRef to add
+   * @param securityGroup: The security group to add
    */
-  public addSecurityGroup(securityGroup: ec2.SecurityGroupRef): void {
+  public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
     this.securityGroups.push(securityGroup);
   }
 

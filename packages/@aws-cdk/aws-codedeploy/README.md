@@ -15,7 +15,7 @@ const application = new codedeploy.ServerApplication(this, 'CodeDeployApplicatio
 To import an already existing Application:
 
 ```ts
-const application = codedeploy.ServerApplicationRef.import(this, 'ExistingCodeDeployApplication', {
+const application = codedeploy.ServerApplication.import(this, 'ExistingCodeDeployApplication', {
     applicationName: 'MyExistingApplication',
 });
 ```
@@ -75,7 +75,7 @@ one will be automatically created.
 To import an already existing Deployment Group:
 
 ```ts
-const deploymentGroup = codedeploy.ServerDeploymentGroupRef.import(this, 'ExistingCodeDeployDeploymentGroup', {
+const deploymentGroup = codedeploy.ServerDeploymentGroup.import(this, 'ExistingCodeDeployDeploymentGroup', {
     application,
     deploymentGroupName: 'MyExistingDeploymentGroup',
 });
@@ -151,7 +151,7 @@ const deploymentConfig = new codedeploy.ServerDeploymentConfig(this, 'Deployment
 Or import an existing one:
 
 ```ts
-const deploymentConfig = codedeploy.ServerDeploymentConfigRef.import(this, 'ExistingDeploymentConfiguration', {
+const deploymentConfig = codedeploy.ServerDeploymentConfig.import(this, 'ExistingDeploymentConfiguration', {
     deploymentConfigName: 'MyExistingDeploymentConfiguration',
 });
 ```

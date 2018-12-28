@@ -1,6 +1,7 @@
 import codedeploy = require('@aws-cdk/aws-codedeploy-api');
-import { AnyIPv4, Connections, IConnectable, IPortRange, SecurityGroup, SecurityGroupRef,
-  TcpPort, VpcNetworkRef, VpcSubnetRef  } from '@aws-cdk/aws-ec2';
+import {
+  AnyIPv4, Connections, IConnectable, IPortRange, ISecurityGroup,
+  IVpcNetwork, IVpcSubnet, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
 import cdk = require('@aws-cdk/cdk');
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
@@ -11,7 +12,7 @@ export interface LoadBalancerProps {
   /**
    * VPC network of the fleet instances
    */
-  vpc: VpcNetworkRef;
+  vpc: IVpcNetwork;
 
   /**
    * Whether this is an internet-facing Load Balancer
@@ -211,7 +212,7 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
 
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
-    const subnets: VpcSubnetRef[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
+    const subnets: IVpcSubnet[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
 
     this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],
@@ -344,7 +345,7 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
 export class ListenerPort implements IConnectable {
   public readonly connections: Connections;
 
-  constructor(securityGroup: SecurityGroupRef, defaultPortRange: IPortRange) {
+  constructor(securityGroup: ISecurityGroup, defaultPortRange: IPortRange) {
     this.connections = new Connections({ securityGroups: [securityGroup] , defaultPortRange });
   }
 }

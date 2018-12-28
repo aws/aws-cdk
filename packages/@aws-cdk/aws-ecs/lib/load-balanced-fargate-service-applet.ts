@@ -1,4 +1,4 @@
-import { CertificateRef } from '@aws-cdk/aws-certificatemanager';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { VpcNetwork } from '@aws-cdk/aws-ec2';
 import { HostedZoneProvider } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
@@ -114,7 +114,7 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
     }
     let certificate;
     if (props.certificate) {
-      certificate = CertificateRef.import(this, 'Cert', { certificateArn: props.certificate });
+      certificate = Certificate.import(this, 'Cert', { certificateArn: props.certificate });
     }
 
     // Instantiate Fargate Service with just cluster and image

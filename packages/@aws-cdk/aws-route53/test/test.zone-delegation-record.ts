@@ -9,6 +9,7 @@ export = {
       const app = new TestApp();
       const zone = new PublicHostedZone(app.stack, 'HostedZone', { zoneName: 'test.public' });
       new ZoneDelegationRecord(zone, 'NS', {
+        zone,
         delegatedZoneName: 'foo',
         nameServers: ['ns-1777.awsdns-30.co.uk']
       });

@@ -1,6 +1,6 @@
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
-import { QueueRef } from './queue-ref';
+import { IQueue, QueueBase, QueueImportProps } from './queue-ref';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
 
@@ -103,7 +103,7 @@ export interface QueueProps {
    *
    * @default If encryption is set to KMS and not specified, a key will be created.
    */
-  encryptionMasterKey?: kms.EncryptionKeyRef;
+  encryptionMasterKey?: kms.IEncryptionKey;
 
   /**
    * The length of time that Amazon SQS reuses a data key before calling KMS again.
@@ -146,7 +146,7 @@ export interface DeadLetterQueue {
   /**
    * The dead-letter queue to which Amazon SQS moves messages after the value of maxReceiveCount is exceeded.
    */
-  queue: QueueRef;
+  queue: IQueue;
 
   /**
    * The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
@@ -179,7 +179,14 @@ export enum QueueEncryption {
 /**
  * A new Amazon SQS queue
  */
-export class Queue extends QueueRef {
+export class Queue extends QueueBase {
+  /**
+   * Import an existing queue
+   */
+  public static import(parent: cdk.Construct, name: string, props: QueueImportProps): IQueue {
+    return new ImportedQueue(parent, name, props);
+  }
+
   /**
    * The ARN of this queue
    */
@@ -198,7 +205,7 @@ export class Queue extends QueueRef {
   /**
    * If this queue is encrypted, this is the KMS key.
    */
-  public readonly encryptionMasterKey?: kms.EncryptionKeyRef;
+  public readonly encryptionMasterKey?: kms.IEncryptionKey;
 
   protected readonly autoCreatePolicy = true;
 
@@ -232,7 +239,7 @@ export class Queue extends QueueRef {
     this.queueName = queue.queueName;
     this.queueUrl = queue.ref;
 
-    function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.EncryptionKeyRef } {
+    function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IEncryptionKey } {
       let encryption = props.encryption || QueueEncryption.Unencrypted;
 
       if (encryption !== QueueEncryption.Kms && props.encryptionMasterKey) {
@@ -276,6 +283,19 @@ export class Queue extends QueueRef {
   }
 
   /**
+   * Export a queue
+   */
+  public export(): QueueImportProps {
+    return {
+      queueArn: new cdk.Output(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
+      queueUrl: new cdk.Output(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
+      keyArn: this.encryptionMasterKey
+        ? new cdk.Output(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue().toString()
+        : undefined
+    };
+  }
+
+  /**
    * Look at the props, see if the FIFO props agree, and return the correct subset of props
    */
   private determineFifoProps(props: QueueProps): FifoProps {
@@ -313,4 +333,34 @@ interface FifoProps {
 interface EncryptionProps {
   readonly kmsMasterKeyId?: string;
   readonly kmsDataKeyReusePeriodSeconds?: number;
+}
+
+/**
+ * A queue that has been imported
+ */
+class ImportedQueue extends QueueBase {
+  public readonly queueArn: string;
+  public readonly queueUrl: string;
+  public readonly encryptionMasterKey?: kms.IEncryptionKey;
+
+  protected readonly autoCreatePolicy = false;
+
+  constructor(parent: cdk.Construct, name: string, private readonly props: QueueImportProps) {
+    super(parent, name);
+    this.queueArn = props.queueArn;
+    this.queueUrl = props.queueUrl;
+
+    if (props.keyArn) {
+      this.encryptionMasterKey = kms.EncryptionKey.import(this, 'Key', {
+        keyArn: props.keyArn
+      });
+    }
+  }
+
+  /**
+   * Export a queue
+   */
+  public export() {
+    return this.props;
+  }
 }

@@ -79,7 +79,7 @@ export interface S3BucketBuildArtifactsProps extends BuildArtifactsProps {
   /**
    * The name of the output bucket.
    */
-  bucket: s3.BucketRef;
+  bucket: s3.IBucket;
 
   /**
    * The path inside of the bucket for the build output .zip file or folder.

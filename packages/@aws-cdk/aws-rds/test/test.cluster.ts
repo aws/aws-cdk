@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, DatabaseClusterRef } from '../lib';
+import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine } from '../lib';
 
 export = {
   'check that instantiation works'(test: Test) {
@@ -52,7 +52,7 @@ export = {
     });
 
     // WHEN
-    DatabaseClusterRef.import(stack2, 'Database', cluster.export());
+    DatabaseCluster.import(stack2, 'Database', cluster.export());
 
     // THEN: No error
 

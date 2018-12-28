@@ -34,10 +34,10 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
  *
  */
 export class LambdaIntegration extends AwsIntegration {
-  private readonly handler: lambda.FunctionRef;
+  private readonly handler: lambda.IFunction;
   private readonly enableTest: boolean;
 
-  constructor(handler: lambda.FunctionRef, options: LambdaIntegrationOptions = { }) {
+  constructor(handler: lambda.IFunction, options: LambdaIntegrationOptions = { }) {
     const proxy = options.proxy === undefined ? true : options.proxy;
 
     super({

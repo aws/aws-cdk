@@ -17,7 +17,7 @@ const exportedVpc = new ec2.VpcNetwork(vpcStack, 'VPC', {
 
 const appStack = new cdk.Stack(app, 'AppStack');
 
-const importedVpc = ec2.VpcNetworkRef.import(appStack, 'VPC', exportedVpc.export());
+const importedVpc = ec2.VpcNetwork.import(appStack, 'VPC', exportedVpc.export());
 
 const asg = new autoscaling.AutoScalingGroup(appStack, 'ASG', {
   vpc: importedVpc,

@@ -1,4 +1,4 @@
-import { HostedZoneRef } from '../hosted-zone-ref';
+import { IHostedZone } from '../hosted-zone-ref';
 
 /**
  * Route53 requires the record names are specified as fully qualified names, but this
@@ -15,7 +15,7 @@ import { HostedZoneRef } from '../hosted-zone-ref';
  *        <li>Otherwise, append +.+, +zoneName+ and a trailing +.+</li>
  *      </ul>
  */
-export function determineFullyQualifiedDomainName(providedName: string, hostedZone: HostedZoneRef): string {
+export function determineFullyQualifiedDomainName(providedName: string, hostedZone: IHostedZone): string {
   if (providedName.endsWith('.')) {
     return providedName;
   }

@@ -7,7 +7,7 @@ interface NotificationsProps {
   /**
    * The bucket to manage notifications for.
    *
-   * This cannot be a `BucketRef` because the bucket maintains the 1:1
+   * This cannot be an `IBucket` because the bucket maintains the 1:1
    * relationship with this resource.
    */
   bucket: Bucket;

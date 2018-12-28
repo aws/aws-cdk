@@ -52,7 +52,7 @@ class MyApp extends cdk.Stack {
 }
 
 class CommonInfrastructure extends cdk.Stack {
-  public vpc: ec2.VpcNetworkRefProps;
+  public vpc: ec2.VpcNetworkImportProps;
 
   constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
     super(parent, name, props);

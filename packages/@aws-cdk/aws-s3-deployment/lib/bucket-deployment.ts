@@ -16,7 +16,7 @@ export interface BucketDeploymentProps {
   /**
    * The S3 bucket to sync the contents of the zip file to.
    */
-  destinationBucket: s3.BucketRef;
+  destinationBucket: s3.IBucket;
 
   /**
    * Key prefix in the destination bucket.

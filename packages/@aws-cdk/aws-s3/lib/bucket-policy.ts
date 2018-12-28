@@ -1,13 +1,13 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/cdk';
-import { BucketRef } from './bucket';
+import { IBucket } from './bucket';
 import { CfnBucketPolicy } from './s3.generated';
 
 export interface BucketPolicyProps {
   /**
    * The Amazon S3 bucket that the policy applies to.
    */
-  bucket: BucketRef;
+  bucket: IBucket;
 }
 
 /**

@@ -10,7 +10,7 @@ export interface SqlServerProps {
   masterUsername: string;
   masterPassword: string;
   allocatedStorage?: number;
-  vpc: ec2.VpcNetworkRef;
+  vpc: ec2.IVpcNetwork;
 }
 
 /**

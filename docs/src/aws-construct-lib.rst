@@ -39,7 +39,7 @@ function.
 
 Furthermore, most AWS Constructs expose ``grant*`` methods which allow
 intent-based permission definitions. For example, the AWS S3 :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>`
-construct has a :py:meth:`grantRead(principal) <@aws-cdk/aws-s3.BucketRef.grantRead>`
+construct has a :py:meth:`grantRead(principal) <@aws-cdk/aws-s3.IBucket.grantRead>`
 method which accepts an AWS IAM :py:class:`Principal <@aws-cdk/aws-iam.IPrincipal>`
 such as a :py:class:`User <@aws-cdk/aws-iam.User>` or a :py:class:`Role <@aws-cdk/aws-iam.Role>`,
 and will modify their policy to allow the principal to read objects from the bucket.
@@ -52,7 +52,7 @@ Event-Driven APIs
 Many of the AWS constructs include ``on*`` methods which can be used to react
 to events emitted by the construct. For example, the AWS CodeCommit
 :py:mod:`Repository <@aws-cdk/aws-codecommit.Repository>` construct has an
-:py:meth:`onCommit <@aws-cdk/aws-codecommit.RepositoryRef.onCommit>` method.
+:py:meth:`onCommit <@aws-cdk/aws-codecommit.IRepository.onCommit>` method.
 
 AWS Constructs that can be used as targets for various event providers implement
 interfaces such as :py:mod:`IEventRuleTarget <@aws-cdk/aws-events.IEventRuleTarget>`
@@ -84,7 +84,7 @@ Many AWS resources emit AWS CloudWatch metrics as part of their normal operation
 be used to setup :py:mod:`Alarms <@aws-cdk/aws-cloudwatch.Alarm>` or included in :py:mod:`Dashboards <@aws-cdk/aws-cloudwatch.Dashboard>`.
 
 :py:mod:`Metric <@aws-cdk/aws-cloudwatch.Metric>` objects for AWS Constructs can be obtained
-via ``metricXxx()`` methods. For example, the :py:meth:`metricDuration() <@aws-cdk/aws-lambda.FunctionRef.metricDuration>`
+via ``metricXxx()`` methods. For example, the :py:meth:`metricDuration() <@aws-cdk/aws-lambda.IFunction.metricDuration>`
 method reports the execution time of an AWS Lambda function.
 
 For more information see the :doc:`refs/_aws-cdk_aws-cloudwatch` documentation.
@@ -95,11 +95,14 @@ Imports
 =======
 
 If you need to reference a resource which is defined outside of your CDK app (e.g. a bucket, a VPC, etc),
-you can use the ``Xxxx.import(...)`` static methods which are available on AWS Constructs. For example,
-the :py:meth:`Bucket.import() <@aws-cdk/aws-s3.BucketRef.import>` method can be used to obtain
-a :py:mod:`BucketRef <@aws-cdk/aws-s3.BucketRef>` object which can be used in most places where
+you can use the ``Xxxx.import(...)`` static methods which are available on AWS Constructs.
+
+For example, the :py:meth:`Bucket.import() <@aws-cdk/aws-s3.Bucket.import>` method can be used to obtain
+an :py:mod:`IBucket <@aws-cdk/aws-s3.IBucket>` object which can be used in most places where
 a bucket is required. This patterns allows treating resources defined outside your app as if they
 were part of your app.
+
+
 
 .. _cloudformation_layer:
 

@@ -417,7 +417,7 @@ function mockVpc(stack: cdk.Stack) {
 }
 
 function mockSecurityGroup(stack: cdk.Stack) {
-  return ec2.SecurityGroupRef.import(stack, 'MySG', {
+  return ec2.SecurityGroup.import(stack, 'MySG', {
     securityGroupId: 'most-secure',
   });
 }
