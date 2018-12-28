@@ -3,32 +3,32 @@ import { Token } from '../core/tokens';
 import { StackAwareToken } from './cloudformation-token';
 
 export class PseudoParameter extends StackAwareToken {
-  constructor(anchor: Construct | undefined, name: string) {
-      super(anchor, { Ref: name }, name);
+  constructor(name: string, anchor?: Construct) {
+      super({ Ref: name }, name, anchor);
   }
 }
 
 export class AwsAccountId extends PseudoParameter {
   constructor(anchor: Construct) {
-    super(anchor, 'AWS::AccountId');
+    super('AWS::AccountId', anchor);
   }
 }
 
 export class AwsDomainSuffix extends PseudoParameter {
   constructor(anchor: Construct) {
-    super(anchor, 'AWS::DomainSuffix');
+    super('AWS::DomainSuffix', anchor);
   }
 }
 
 export class AwsURLSuffix extends PseudoParameter {
   constructor(anchor: Construct) {
-    super(anchor, 'AWS::URLSuffix');
+    super('AWS::URLSuffix', anchor);
   }
 }
 
 export class AwsNotificationARNs extends PseudoParameter {
   constructor(anchor: Construct) {
-    super(anchor, 'AWS::NotificationARNs');
+    super('AWS::NotificationARNs', anchor);
   }
 }
 
@@ -40,24 +40,24 @@ export class AwsNoValue extends Token {
 
 export class AwsPartition extends PseudoParameter {
   constructor(anchor: Construct) {
-    super(anchor, 'AWS::Partition');
+    super('AWS::Partition', anchor);
   }
 }
 
 export class AwsRegion extends PseudoParameter {
   constructor(anchor: Construct | undefined) {
-    super(anchor, 'AWS::Region');
+    super('AWS::Region', anchor);
   }
 }
 
 export class AwsStackId extends PseudoParameter {
   constructor(anchor: Construct) {
-    super(anchor, 'AWS::StackId');
+    super('AWS::StackId', anchor);
   }
 }
 
 export class AwsStackName extends PseudoParameter {
   constructor(anchor: Construct) {
-    super(anchor, 'AWS::StackName');
+    super('AWS::StackName', anchor);
   }
 }

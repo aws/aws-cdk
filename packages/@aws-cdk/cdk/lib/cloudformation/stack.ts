@@ -564,7 +564,7 @@ function stackElements(node: Construct, into: StackElement[] = []): StackElement
  */
 export class Ref extends StackAwareToken {
   constructor(element: StackElement) {
-    super(element, { Ref: element.logicalId }, `${element.logicalId}.Ref`);
+    super({ Ref: element.logicalId }, `${element.logicalId}.Ref`, element);
   }
 }
 

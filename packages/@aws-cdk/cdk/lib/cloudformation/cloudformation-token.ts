@@ -2,6 +2,9 @@ import { Construct } from "../core/construct";
 import { resolve, Token, unresolved } from "../core/tokens";
 import { Stack } from "./stack";
 
+/**
+ * Produce a CloudFormation expression to concat two arbitrary expressions
+ */
 export function cloudFormationConcat(left: any | undefined, right: any | undefined): any {
   if (left === undefined && right === undefined) { return ''; }
 
@@ -9,8 +12,13 @@ export function cloudFormationConcat(left: any | undefined, right: any | undefin
   if (left !== undefined) { parts.push(left); }
   if (right !== undefined) { parts.push(right); }
 
+  // Some case analysis to produce minimal expressions
   if (parts.length === 1) { return parts[0]; }
+  if (parts.length === 2 && typeof parts[0] === 'string' && typeof parts[1] === 'string') {
+    return parts[0] + parts[1];
+  }
 
+  // Otherwise return a Join intrinsic
   return new FnJoin('', parts);
 }
 
@@ -23,9 +31,9 @@ export class StackAwareToken extends Token {
 
   private readonly tokenStack?: Stack;
 
-  constructor(anchor: Construct | undefined, value: any, displayName?: string) {
+  constructor(value: any, displayName?: string, anchor?: Construct) {
       if (typeof(value) === 'function') {
-          throw new Error('StackAwareCloudFormationToken can only contain eager values');
+          throw new Error('StackAwareToken can only contain eager values');
       }
       super(value, displayName);
       this._isStackAwareToken = true;

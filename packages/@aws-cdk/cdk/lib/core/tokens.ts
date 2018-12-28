@@ -521,10 +521,10 @@ function regexQuote(s: string) {
  * we cannot simply pass through options at each individual call. Instead,
  * we configure global context at the stack synthesis level.
  */
-export class ResolveConfiguration {
+class ResolveConfiguration {
   private readonly options = new Array<ResolveOptions>();
 
-  public push(options: ResolveOptions): OptionsContext {
+  public push(options: ResolveOptions): IOptionsContext {
     this.options.push(options);
 
     return {
@@ -547,11 +547,11 @@ export class ResolveConfiguration {
   }
 }
 
-export interface OptionsContext {
+interface IOptionsContext {
   pop(): void;
 }
 
-export interface ResolveOptions {
+interface ResolveOptions {
   /**
    * What function to use for recursing into deeper resolutions
    */
