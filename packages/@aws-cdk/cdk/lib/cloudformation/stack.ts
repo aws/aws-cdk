@@ -277,7 +277,10 @@ export class Stack extends Construct {
     if (!output) {
       output = new Output(this.crossStackExports, id, { value: tokenValue });
     }
-    return output.makeImportValue();
+
+    // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
+    // so construct one in-place.
+    return new Token({ 'Fn::ImportValue': output.export });
   }
 
   public applyCrossEnvironmentReferences() {

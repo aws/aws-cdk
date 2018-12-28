@@ -9,23 +9,117 @@ import cdk = require('@aws-cdk/cdk');
 import { TopicPolicy } from './policy';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
+export interface ITopic extends
+  events.IEventRuleTarget,
+  cloudwatch.IAlarmAction,
+  s3n.IBucketNotificationDestination,
+  autoscaling_api.ILifecycleHookTarget {
+
+  readonly topicArn: string;
+
+  readonly topicName: string;
+
+  /**
+   * Export this Topic
+   */
+  export(): TopicImportProps;
+
+  /**
+   * Subscribe some endpoint to this topic
+   */
+  subscribe(name: string, endpoint: string, protocol: SubscriptionProtocol): Subscription;
+
+  /**
+   * Defines a subscription from this SNS topic to an SQS queue.
+   *
+   * The queue resource policy will be updated to allow this SNS topic to send
+   * messages to the queue.
+   *
+   * @param name The subscription name
+   * @param queue The target queue
+   */
+  subscribeQueue(queue: sqs.IQueue): Subscription;
+
+  /**
+   * Defines a subscription from this SNS Topic to a Lambda function.
+   *
+   * The Lambda's resource policy will be updated to allow this topic to
+   * invoke the function.
+   *
+   * @param name A name for the subscription
+   * @param lambdaFunction The Lambda function to invoke
+   */
+  subscribeLambda(lambdaFunction: lambda.IFunction): Subscription;
+
+  /**
+   * Defines a subscription from this SNS topic to an email address.
+   *
+   * @param name A name for the subscription
+   * @param emailAddress The email address to use.
+   * @param jsonFormat True if the email content should be in JSON format (default is false).
+   */
+  subscribeEmail(name: string, emailAddress: string, options?: EmailSubscriptionOptions): Subscription;
+
+  /**
+   * Defines a subscription from this SNS topic to an http:// or https:// URL.
+   *
+   * @param name A name for the subscription
+   * @param url The URL to invoke
+   */
+  subscribeUrl(name: string, url: string): Subscription;
+
+  /**
+   * Adds a statement to the IAM resource policy associated with this topic.
+   *
+   * If this topic was created in this stack (`new Topic`), a topic policy
+   * will be automatically created upon the first call to `addToPolicy`. If
+   * the topic is improted (`Topic.import`), then this is a no-op.
+   */
+  addToResourcePolicy(statement: iam.PolicyStatement): void;
+
+  /**
+   * Grant topic publishing permissions to the given identity
+   */
+  grantPublish(identity?: iam.IPrincipal): void;
+
+  /**
+   * Construct a Metric object for the current topic for the given metric
+   */
+  metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+
+  /**
+   * Metric for the size of messages published through this topic
+   *
+   * @default average over 5 minutes
+   */
+  metricPublishSize(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of messages published through this topic
+   *
+   * @default sum over 5 minutes
+   */
+  metricNumberOfMessagesPublished(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of messages that failed to publish through this topic
+   *
+   * @default sum over 5 minutes
+   */
+  metricNumberOfMessagesFailed(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of messages that were successfully delivered through this topic
+   *
+   * @default sum over 5 minutes
+   */
+  metricNumberOfMessagesDelivered(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+}
+
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicRef extends cdk.Construct
-  implements
-    events.IEventRuleTarget,
-    cloudwatch.IAlarmAction,
-    s3n.IBucketNotificationDestination,
-    autoscaling_api.ILifecycleHookTarget {
-
-  /**
-   * Import a Topic defined elsewhere
-   */
-  public static import(parent: cdk.Construct, name: string, props: TopicRefProps): TopicRef {
-    return new ImportedTopic(parent, name, props);
-  }
-
+export abstract class TopicBase extends cdk.Construct implements ITopic {
   public abstract readonly topicArn: string;
 
   public abstract readonly topicName: string;
@@ -51,18 +145,13 @@ export abstract class TopicRef extends cdk.Construct
   /**
    * Export this Topic
    */
-  public export(): TopicRefProps {
-    return {
-      topicArn: new cdk.Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue().toString(),
-      topicName: new cdk.Output(this, 'TopicName', { value: this.topicName }).makeImportValue().toString(),
-    };
-  }
+  public abstract export(): TopicImportProps;
 
   /**
    * Subscribe some endpoint to this topic
    */
-  public subscribe(name: string, endpoint: string, protocol: SubscriptionProtocol) {
-    new Subscription(this, name, {
+  public subscribe(name: string, endpoint: string, protocol: SubscriptionProtocol): Subscription {
+    return new Subscription(this, name, {
       topic: this,
       endpoint,
       protocol
@@ -75,12 +164,10 @@ export abstract class TopicRef extends cdk.Construct
    * The queue resource policy will be updated to allow this SNS topic to send
    * messages to the queue.
    *
-   * TODO: change to QueueRef.
-   *
    * @param name The subscription name
    * @param queue The target queue
    */
-  public subscribeQueue(queue: sqs.QueueRef) {
+  public subscribeQueue(queue: sqs.IQueue): Subscription {
     const subscriptionName = queue.id + 'Subscription';
     if (this.tryFindChild(subscriptionName)) {
       throw new Error(`A subscription between the topic ${this.id} and the queue ${queue.id} already exists`);
@@ -114,7 +201,7 @@ export abstract class TopicRef extends cdk.Construct
    * @param name A name for the subscription
    * @param lambdaFunction The Lambda function to invoke
    */
-  public subscribeLambda(lambdaFunction: lambda.FunctionRef) {
+  public subscribeLambda(lambdaFunction: lambda.IFunction): Subscription {
     const subscriptionName = lambdaFunction.id + 'Subscription';
 
     if (this.tryFindChild(subscriptionName)) {
@@ -142,7 +229,7 @@ export abstract class TopicRef extends cdk.Construct
    * @param emailAddress The email address to use.
    * @param jsonFormat True if the email content should be in JSON format (default is false).
    */
-  public subscribeEmail(name: string, emailAddress: string, options?: EmailSubscriptionOptions) {
+  public subscribeEmail(name: string, emailAddress: string, options?: EmailSubscriptionOptions): Subscription {
     const protocol = (options && options.json ? SubscriptionProtocol.EmailJson : SubscriptionProtocol.Email);
 
     return new Subscription(this, name, {
@@ -158,7 +245,7 @@ export abstract class TopicRef extends cdk.Construct
    * @param name A name for the subscription
    * @param url The URL to invoke
    */
-  public subscribeUrl(name: string, url: string) {
+  public subscribeUrl(name: string, url: string): Subscription {
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       throw new Error('URL must start with either http:// or https://');
     }
@@ -318,25 +405,9 @@ export abstract class TopicRef extends cdk.Construct
 }
 
 /**
- * An imported topic
- */
-class ImportedTopic extends TopicRef {
-  public readonly topicArn: string;
-  public readonly topicName: string;
-
-  protected autoCreatePolicy: boolean = false;
-
-  constructor(parent: cdk.Construct, name: string, props: TopicRefProps) {
-    super(parent, name);
-    this.topicArn = props.topicArn;
-    this.topicName = props.topicName;
-  }
-}
-
-/**
  * Reference to an external topic.
  */
-export interface TopicRefProps {
+export interface TopicImportProps {
   topicArn: string;
   topicName: string;
 }

@@ -1,7 +1,8 @@
 import fc = require('fast-check');
 import _ = require('lodash');
 import nodeunit = require('nodeunit');
-import fn = require('../../lib/cloudformation/fn');
+import { CloudFormationToken } from '../../lib/cloudformation/cloudformation-token';
+import { Fn } from '../../lib/cloudformation/fn';
 import { resolve } from '../../lib/core/tokens';
 import { makeCloudformationTestSuite } from '../util';
 
@@ -28,14 +29,14 @@ const anyValue = fc.oneof<any>(nonEmptyString, tokenish);
 export = nodeunit.testCase(makeCloudformationTestSuite({
   FnJoin: {
     'rejects empty list of arguments to join'(test: nodeunit.Test) {
-      test.throws(() => new fn.FnJoin('.', []));
+      test.throws(() => Fn.join('.', []));
       test.done();
     },
     'resolves to the value if only one value is joined': asyncTest(async () => {
       await fc.assert(
         fc.property(
           fc.string(), anyValue,
-          (delimiter, value) => _.isEqual(resolve(new fn.FnJoin(delimiter, [value])), value)
+          (delimiter, value) => _.isEqual(resolve(Fn.join(delimiter, [value])), value)
         ),
         { verbose: true }
       );
@@ -44,7 +45,7 @@ export = nodeunit.testCase(makeCloudformationTestSuite({
       await fc.assert(
         fc.property(
           fc.string(), fc.array(nonEmptyString, 1, 15),
-          (delimiter, values) => resolve(new fn.FnJoin(delimiter, values)) === values.join(delimiter)
+          (delimiter, values) => resolve(Fn.join(delimiter, values)) === values.join(delimiter)
         ),
         { verbose: true }
       );
@@ -54,7 +55,7 @@ export = nodeunit.testCase(makeCloudformationTestSuite({
         fc.property(
           fc.string(), fc.array(nonEmptyString, 1, 3), tokenish, fc.array(nonEmptyString, 1, 3),
           (delimiter, prefix, obj, suffix) =>
-            _.isEqual(resolve(new fn.FnJoin(delimiter, [...prefix, obj, ...suffix])),
+            _.isEqual(resolve(Fn.join(delimiter, [...prefix, stringToken(obj), ...suffix])),
                       { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] })
         ),
         { verbose: true, seed: 1539874645005, path: "0:0:0:0:0:0:0:0:0" }
@@ -68,8 +69,8 @@ export = nodeunit.testCase(makeCloudformationTestSuite({
                       fc.array(anyValue),
           (delimiter, prefix, nested, suffix) =>
             // Gonna test
-            _.isEqual(resolve(new fn.FnJoin(delimiter, [...prefix, new fn.FnJoin(delimiter, nested), ...suffix])),
-                      resolve(new fn.FnJoin(delimiter, [...prefix, ...nested, ...suffix])))
+            _.isEqual(resolve(Fn.join(delimiter, [...prefix, Fn.join(delimiter, nested), ...suffix])),
+                      resolve(Fn.join(delimiter, [...prefix, ...nested, ...suffix])))
         ),
         { verbose: true }
       );
@@ -81,9 +82,9 @@ export = nodeunit.testCase(makeCloudformationTestSuite({
           fc.array(anyValue, 1, 3),
           fc.array(tokenish, 2, 3),
           fc.array(anyValue, 3),
-          (delimiter1, delimiter2, prefix, nested, suffix) => {
+          (delimiter1, delimiter2, prefix,  nested, suffix) => {
             fc.pre(delimiter1 !== delimiter2);
-            const join = new fn.FnJoin(delimiter1, [...prefix, new fn.FnJoin(delimiter2, nested), ...suffix]);
+            const join = Fn.join(delimiter1, [...prefix, Fn.join(delimiter2, stringListToken(nested)), ...suffix]);
             const resolved = resolve(join);
             return resolved['Fn::Join'][1].find((e: any) => typeof e === 'object'
                                                         && ('Fn::Join' in e)
@@ -95,3 +96,10 @@ export = nodeunit.testCase(makeCloudformationTestSuite({
     }),
   },
 }));
+
+function stringListToken(o: any): string[] {
+  return new CloudFormationToken(o).toList();
+}
+function stringToken(o: any): string {
+  return new CloudFormationToken(o).toString();
+}

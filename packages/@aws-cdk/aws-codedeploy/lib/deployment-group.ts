@@ -6,23 +6,33 @@ import ec2 = require("@aws-cdk/aws-ec2");
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require("@aws-cdk/aws-s3");
 import cdk = require("@aws-cdk/cdk");
-import { ServerApplication, ServerApplicationRef } from "./application";
+import { IServerApplication, ServerApplication } from "./application";
 import { CfnDeploymentGroup } from './codedeploy.generated';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from "./deployment-config";
 import { CommonPipelineDeployActionProps, PipelineDeployAction } from "./pipeline-action";
 
+export interface IServerDeploymentGroup {
+  readonly application: IServerApplication;
+  readonly role?: iam.Role;
+  readonly deploymentGroupName: string;
+  readonly deploymentGroupArn: string;
+  readonly deploymentConfig: IServerDeploymentConfig;
+  readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
+  export(): ServerDeploymentGroupImportProps;
+}
+
 /**
  * Properties of a reference to a CodeDeploy EC2/on-premise Deployment Group.
  *
- * @see ServerDeploymentGroupRef#import
- * @see ServerDeploymentGroupRef#export
+ * @see ServerDeploymentGroup#import
+ * @see IServerDeploymentGroup#export
  */
-export interface ServerDeploymentGroupRefProps {
+export interface ServerDeploymentGroupImportProps {
   /**
    * The reference to the CodeDeploy EC2/on-premise Application
    * that this Deployment Group belongs to.
    */
-  application: ServerApplicationRef;
+  application: IServerApplication;
 
   /**
    * The physical, human-readable name of the CodeDeploy EC2/on-premise Deployment Group
@@ -48,21 +58,8 @@ export interface ServerDeploymentGroupRefProps {
  * or one defined in a different CDK Stack,
  * use the {@link #import} method.
  */
-export abstract class ServerDeploymentGroupRef extends cdk.Construct {
-  /**
-   * Import an EC2/on-premise Deployment Group defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
-   *
-   * @param parent the parent Construct for this new Construct
-   * @param id the logical ID of this new Construct
-   * @param props the properties of the referenced Deployment Group
-   * @returns a Construct representing a reference to an existing Deployment Group
-   */
-  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentGroupRefProps): ServerDeploymentGroupRef {
-    return new ImportedServerDeploymentGroupRef(parent, id, props);
-  }
-
-  public abstract readonly application: ServerApplicationRef;
+export abstract class ServerDeploymentGroupBase extends cdk.Construct implements IServerDeploymentGroup {
+  public abstract readonly application: IServerApplication;
   public abstract readonly role?: iam.Role;
   public abstract readonly deploymentGroupName: string;
   public abstract readonly deploymentGroupArn: string;
@@ -74,15 +71,7 @@ export abstract class ServerDeploymentGroupRef extends cdk.Construct {
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
   }
 
-  public export(): ServerDeploymentGroupRefProps {
-    return {
-      application: this.application,
-      deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', {
-        value: this.deploymentGroupName
-      }).makeImportValue().toString(),
-      deploymentConfig: this.deploymentConfig,
-    };
-  }
+  public abstract export(): ServerDeploymentGroupImportProps;
 
   /**
    * Convenience method for creating a new {@link PipelineDeployAction}
@@ -103,20 +92,24 @@ export abstract class ServerDeploymentGroupRef extends cdk.Construct {
   }
 }
 
-class ImportedServerDeploymentGroupRef extends ServerDeploymentGroupRef {
-  public readonly application: ServerApplicationRef;
+class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
+  public readonly application: IServerApplication;
   public readonly role?: iam.Role = undefined;
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
-  constructor(parent: cdk.Construct, id: string, props: ServerDeploymentGroupRefProps) {
+  constructor(parent: cdk.Construct, id: string, private readonly props: ServerDeploymentGroupImportProps) {
     super(parent, id, props.deploymentConfig);
 
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
     this.deploymentGroupArn = deploymentGroupName2Arn(props.application.applicationName,
       props.deploymentGroupName);
+  }
+
+  public export() {
+    return this.props;
   }
 }
 
@@ -190,7 +183,7 @@ export interface ServerDeploymentGroupProps {
    * The CodeDeploy EC2/on-premise Application this Deployment Group belongs to.
    * If you don't provide one, a new Application will be created.
    */
-  application?: ServerApplicationRef;
+  application?: IServerApplication;
 
   /**
    * The service Role of this Deployment Group.
@@ -281,15 +274,28 @@ export interface ServerDeploymentGroupProps {
 /**
  * A CodeDeploy Deployment Group that deploys to EC2/on-premise instances.
  */
-export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
-  public readonly application: ServerApplicationRef;
+export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
+  /**
+   * Import an EC2/on-premise Deployment Group defined either outside the CDK,
+   * or in a different CDK Stack and exported using the {@link #export} method.
+   *
+   * @param parent the parent Construct for this new Construct
+   * @param id the logical ID of this new Construct
+   * @param props the properties of the referenced Deployment Group
+   * @returns a Construct representing a reference to an existing Deployment Group
+   */
+  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentGroupImportProps): IServerDeploymentGroup {
+    return new ImportedServerDeploymentGroup(parent, id, props);
+  }
+
+  public readonly application: IServerApplication;
   public readonly role?: iam.Role;
   public readonly deploymentGroupArn: string;
   public readonly deploymentGroupName: string;
 
   private readonly _autoScalingGroups: autoscaling.AutoScalingGroup[];
   private readonly installAgent: boolean;
-  private readonly codeDeployBucket: s3.BucketRef;
+  private readonly codeDeployBucket: s3.IBucket;
   private readonly alarms: cloudwatch.Alarm[];
 
   constructor(parent: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
@@ -304,8 +310,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
 
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent === undefined ? true : props.installAgent;
-    const region = (new cdk.AwsRegion(this)).toString();
-    this.codeDeployBucket = s3.BucketRef.import(this, 'CodeDeployBucket', {
+    const region = new cdk.AwsRegion(this).toString();
+    this.codeDeployBucket = s3.Bucket.import(this, 'CodeDeployBucket', {
       bucketName: `aws-codedeploy-${region}`,
     });
     for (const asg of this._autoScalingGroups) {
@@ -339,6 +345,16 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
     this.deploymentGroupName = resource.deploymentGroupName;
     this.deploymentGroupArn = deploymentGroupName2Arn(this.application.applicationName,
       this.deploymentGroupName);
+  }
+
+  public export(): ServerDeploymentGroupImportProps {
+    return {
+      application: this.application,
+      deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', {
+        value: this.deploymentGroupName
+      }).makeImportValue().toString(),
+      deploymentConfig: this.deploymentConfig,
+    };
   }
 
   /**

@@ -65,7 +65,7 @@ export interface CloudTrailProps {
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    * @default none
    */
-  kmsKey?: kms.EncryptionKeyRef;
+  kmsKey?: kms.IEncryptionKey;
 
   /** The name of an Amazon SNS topic that is notified when new log files are published.
    * @default none
@@ -138,7 +138,7 @@ export class CloudTrail extends cdk.Construct {
       .addServicePrincipal(cloudTrailPrincipal));
 
     s3bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addResource(s3bucket.arnForObjects(new cdk.FnConcat('AWSLogs/', new cdk.AwsAccountId(this), "/*")))
+      .addResource(s3bucket.arnForObjects(`AWSLogs/${new cdk.AwsAccountId(this)}/*`))
       .addActions("s3:PutObject")
       .addServicePrincipal(cloudTrailPrincipal)
       .setCondition("StringEquals", {'s3:x-amz-acl': "bucket-owner-full-control"}));

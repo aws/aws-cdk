@@ -25,7 +25,7 @@ export interface AwsLogDriverProps {
    *
    * @default A log group is automatically created
    */
-  logGroup?: logs.LogGroupRef;
+  logGroup?: logs.ILogGroup;
 
   /**
    * This option defines a multiline start pattern in Python strftime format.
@@ -53,7 +53,7 @@ export class AwsLogDriver extends LogDriver {
   /**
    * The log group that the logs will be sent to
    */
-  public readonly logGroup: logs.LogGroupRef;
+  public readonly logGroup: logs.ILogGroup;
 
   constructor(parent: cdk.Construct, id: string, private readonly props: AwsLogDriverProps) {
     super(parent, id);

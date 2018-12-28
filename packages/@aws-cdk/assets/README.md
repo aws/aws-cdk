@@ -59,3 +59,25 @@ the asset store, it is uploaded during deployment.
 
 Now, when the toolkit deploys the stack, it will set the relevant CloudFormation
 Parameters to point to the actual bucket and key for each asset.
+
+## CloudFormation Resource Metadata
+
+> NOTE: This section is relevant for authors of AWS Resource Constructs.
+
+In certain situations, it is desirable for tools to be able to know that a certain CloudFormation
+resource is using a local asset. For example, SAM CLI can be used to invoke AWS Lambda functions
+locally for debugging purposes.
+
+To enable such use cases, external tools will consult a set of metadata entries on AWS CloudFormation
+resources:
+
+- `aws:asset:path` points to the local path of the asset.
+- `aws:asset:property` is the name of the resource property where the asset is used
+
+Using these two metadata entries, tools will be able to identify that assets are used
+by a certain resource, and enable advanced local experiences.
+
+To add these metadata entries to a resource, use the
+`asset.addResourceMetadata(resource, property)` method.
+
+See https://github.com/awslabs/aws-cdk/issues/1432 for more details

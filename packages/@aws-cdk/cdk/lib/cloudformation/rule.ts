@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames } from '../core/util';
-import { FnCondition } from './fn';
+import { FnCondition } from './condition';
 import { Referenceable, Stack } from './stack';
 
 /**
@@ -104,6 +104,7 @@ export class Rule extends Referenceable {
   }
 
   public substituteCrossStackReferences(_sourceStack: Stack): void {
+    // Empty on purpose
   }
 }
 

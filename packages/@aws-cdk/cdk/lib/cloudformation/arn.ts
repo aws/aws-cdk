@@ -1,7 +1,6 @@
-import { AwsAccountId, AwsPartition, AwsRegion, Construct, FnConcat, Token } from '..';
-import { FnSelect, FnSplit } from '../cloudformation/fn';
+import { AwsAccountId, AwsPartition, AwsRegion, Construct } from '..';
+import { Fn } from '../cloudformation/fn';
 import { unresolved } from '../core/tokens';
-import { CloudFormationToken } from './cloudformation-token';
 
 /**
  * An Amazon Resource Name (ARN).
@@ -59,7 +58,7 @@ export class ArnUtils {
       values.push(components.resourceName);
     }
 
-    return new FnConcat(...values).toString();
+    return values.join('');
   }
 
   /**
@@ -101,7 +100,7 @@ export class ArnUtils {
    */
   public static parse(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
     if (unresolved(arn)) {
-      return ArnUtils.parseToken(new CloudFormationToken(arn), sepIfToken, hasName);
+      return ArnUtils.parseToken(arn, sepIfToken, hasName);
     }
 
     const components = arn.split(':') as Array<string | undefined>;
@@ -198,7 +197,7 @@ export class ArnUtils {
    * but simply 'path'. This is a limitation because there is no slicing
    * functionality in CloudFormation templates.
    *
-   * @param arn The input token that contains an ARN
+   * @param arnToken The input token that contains an ARN
    * @param sep The separator used to separate resource from resourceName
    * @param hasName Whether there is a name component in the ARN at all.
    * For example, SNS Topics ARNs have the 'resource' component contain the
@@ -206,7 +205,7 @@ export class ArnUtils {
    * @returns an ArnComponents object which allows access to the various
    * components of the ARN.
    */
-  public static parseToken(arn: Token, sep: string = '/', hasName: boolean = true): ArnComponents {
+  public static parseToken(arnToken: string, sep: string = '/', hasName: boolean = true): ArnComponents {
     // Arn ARN looks like:
     // arn:partition:service:region:account-id:resource
     // arn:partition:service:region:account-id:resourcetype/resource
@@ -215,23 +214,23 @@ export class ArnUtils {
     // We need the 'hasName' argument because {Fn::Select}ing a nonexistent field
     // throws an error.
 
-    const components = new FnSplit(':', arn);
+    const components = Fn.split(':', arnToken);
 
-    const partition = new FnSelect(1, components).toString();
-    const service = new FnSelect(2, components).toString();
-    const region = new FnSelect(3, components).toString();
-    const account = new FnSelect(4, components).toString();
+    const partition = Fn.select(1, components).toString();
+    const service = Fn.select(2, components).toString();
+    const region = Fn.select(3, components).toString();
+    const account = Fn.select(4, components).toString();
 
     if (sep === ':') {
-      const resource = new FnSelect(5, components).toString();
-      const resourceName = hasName ? new FnSelect(6, components).toString() : undefined;
+      const resource = Fn.select(5, components).toString();
+      const resourceName = hasName ? Fn.select(6, components).toString() : undefined;
 
       return { partition, service, region, account, resource, resourceName, sep };
     } else {
-      const lastComponents = new FnSplit(sep, new FnSelect(5, components));
+      const lastComponents = Fn.split(sep, Fn.select(5, components));
 
-      const resource = new FnSelect(0, lastComponents).toString();
-      const resourceName = hasName ? new FnSelect(1, lastComponents).toString() : undefined;
+      const resource = Fn.select(0, lastComponents).toString();
+      const resourceName = hasName ? Fn.select(1, lastComponents).toString() : undefined;
 
       return { partition, service, region, account, resource, resourceName, sep };
     }
@@ -241,14 +240,14 @@ export class ArnUtils {
    * Return a Token that represents the resource component of the ARN
    */
   public static resourceComponent(arn: string, sep: string = '/'): string {
-    return ArnUtils.parseToken(new Token(arn), sep).resource;
+    return ArnUtils.parseToken(arn, sep).resource;
   }
 
   /**
    * Return a Token that represents the resource Name component of the ARN
    */
   public static resourceNameComponent(arn: string, sep: string = '/'): string {
-    return ArnUtils.parseToken(new Token(arn), sep, true).resourceName!;
+    return ArnUtils.parseToken(arn, sep, true).resourceName!;
   }
 }
 

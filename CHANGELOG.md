@@ -1,3 +1,45 @@
+# Change Log
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+# [0.21.0](https://github.com/awslabs/aws-cdk/compare/v0.20.0...v0.21.0) (2018-12-20)
+
+
+### Bug Fixes
+
+* **aws-cloudformation:** change the type of Role in CodePipeline Actions to IRole. ([#1364](https://github.com/awslabs/aws-cdk/issues/1364)) ([3d07e48](https://github.com/awslabs/aws-cdk/commit/3d07e48)), closes [#1361](https://github.com/awslabs/aws-cdk/issues/1361)
+* **codebuild:** Rename includeBuildID property of S3BucketBuildArtifacts ([#1354](https://github.com/awslabs/aws-cdk/issues/1354)) ([84eb7ad](https://github.com/awslabs/aws-cdk/commit/84eb7ad)), closes [#1347](https://github.com/awslabs/aws-cdk/issues/1347)
+* **toolkit:** scrutiny dialog should fail with no tty ([#1382](https://github.com/awslabs/aws-cdk/issues/1382)) ([478a714](https://github.com/awslabs/aws-cdk/commit/478a714)), closes [#1380](https://github.com/awslabs/aws-cdk/issues/1380)
+
+
+### Features
+
+* **aws-codebuild:** change the API of GitHub and BitBucket Sources. ([#1345](https://github.com/awslabs/aws-cdk/issues/1345)) ([9cebf0d](https://github.com/awslabs/aws-cdk/commit/9cebf0d))
+* add "engines.node" key to all packages ([#1358](https://github.com/awslabs/aws-cdk/issues/1358)) ([b595cf0](https://github.com/awslabs/aws-cdk/commit/b595cf0)), closes [#1337](https://github.com/awslabs/aws-cdk/issues/1337)
+* deprecate "cloudformation" namespace in favor of "CfnXxx" ([#1311](https://github.com/awslabs/aws-cdk/issues/1311)) ([d20938c](https://github.com/awslabs/aws-cdk/commit/d20938c)), closes [#878](https://github.com/awslabs/aws-cdk/issues/878) [awslabs/jsii#283](https://github.com/awslabs/jsii/issues/283) [awslabs/jsii#270](https://github.com/awslabs/jsii/issues/270)
+* update CloudFormation resources v2.18.0 ([#1407](https://github.com/awslabs/aws-cdk/issues/1407)) ([0f80b56](https://github.com/awslabs/aws-cdk/commit/0f80b56)), closes [#1409](https://github.com/awslabs/aws-cdk/issues/1409)
+* **aws-codebuild:** allow setting Webhook for GitHub Sources. ([#1387](https://github.com/awslabs/aws-cdk/issues/1387)) ([d5cae61](https://github.com/awslabs/aws-cdk/commit/d5cae61))
+* **aws-ec2:** can now use PrefixList in ingress rules ([#1360](https://github.com/awslabs/aws-cdk/issues/1360)) ([c3cfcd5](https://github.com/awslabs/aws-cdk/commit/c3cfcd5))
+* **aws-iam:** configure ExternalId for Role ([#1359](https://github.com/awslabs/aws-cdk/issues/1359)) ([3d200c9](https://github.com/awslabs/aws-cdk/commit/3d200c9)), closes [#235](https://github.com/awslabs/aws-cdk/issues/235)
+* **aws-lambda:** Add python 3.7 runtime ([#1379](https://github.com/awslabs/aws-cdk/issues/1379)) ([8c733ef](https://github.com/awslabs/aws-cdk/commit/8c733ef))
+* **cdk:** add the CodeDeployLambdaAlias Update Policy. ([#1346](https://github.com/awslabs/aws-cdk/issues/1346)) ([d648b58](https://github.com/awslabs/aws-cdk/commit/d648b58)), closes [#1177](https://github.com/awslabs/aws-cdk/issues/1177)
+* **core:** convert "/" in construct id to "--" and disallow tokens ([#1375](https://github.com/awslabs/aws-cdk/issues/1375)) ([011aac0](https://github.com/awslabs/aws-cdk/commit/011aac0)), closes [#1351](https://github.com/awslabs/aws-cdk/issues/1351) [#1374](https://github.com/awslabs/aws-cdk/issues/1374)
+* **iam:** CompositePrincipal and allow multiple principal types ([#1377](https://github.com/awslabs/aws-cdk/issues/1377)) ([b942ae5](https://github.com/awslabs/aws-cdk/commit/b942ae5)), closes [#1201](https://github.com/awslabs/aws-cdk/issues/1201)
+
+
+### BREAKING CHANGES
+
+* **aws-cloudformation:** this changes the type of the `role` property in CFN CodePipeline Actions
+from `Role` to `IRole`. This is needed to use imported Roles when creating Actions.
+* **aws-codebuild:** this changes the API of CodeBuild's GitHub and BitBucket Sources
+to take an owner/repo pair instead of an entire cloneUrl,
+to make it consistent with the GitHubSourceAction in the CodePipeline package. Also adds handling the reportBuildStatus and insecureSsl Source properties.
+* **codebuild:** the `includeBuildID` property of
+`S3BucketBuildArtifacts` was renamed to `includeBuildId` (note the
+lower-case trailing `d`).
+
+
+
 ## [0.20.0](https://github.com/awslabs/aws-cdk/compare/v0.19.0...v0.20.0) (2018-12-13)
 
 
@@ -1658,7 +1700,7 @@ Fn.if_(Fn.equals(param.ref, 'True'), 'Encrypted', Pseudo.NO_VALUE)
 After:
 
 ```javascript
-new FnIf(new FnEquals(param.ref, 'True'), 'Encrypted', new AwsNoValue())
+new FnIf(Fn.equals(param.ref, 'True'), 'Encrypted', new AwsNoValue())
 ```
 
 - CloudFormation template options (`templateFormatVersion`, `description` and `transform`) are now grouped under `Stack.templateOptions` instead of directly under `Stack`.

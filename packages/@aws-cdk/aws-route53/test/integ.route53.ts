@@ -17,6 +17,7 @@ const publicZone = new PublicHostedZone(stack, 'PublicZone', {
 });
 
 new TXTRecord(privateZone, 'TXT', {
+  zone: privateZone,
   recordName: '_foo',
   recordValue: 'Bar!',
   ttl: 60

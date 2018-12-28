@@ -21,6 +21,7 @@ function cleanup_stack() {
 function cleanup() {
   cleanup_stack cdk-toolkit-integration-test-1
   cleanup_stack cdk-toolkit-integration-test-2
+  cleanup_stack cdk-toolkit-integration-iam-test
 }
 
 function setup() {

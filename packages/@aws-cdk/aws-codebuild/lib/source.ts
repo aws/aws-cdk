@@ -46,6 +46,10 @@ export abstract class BuildSource {
     };
   }
 
+  public buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
+    return undefined;
+  }
+
   protected toSourceProperty(): any {
     return {
     };
@@ -71,7 +75,7 @@ export class NoSource extends BuildSource {
  * Construction properties for {@link CodeCommitSource}.
  */
 export interface CodeCommitSourceProps extends BuildSourceProps {
-  repository: codecommit.RepositoryRef;
+  repository: codecommit.IRepository;
 }
 
 /**
@@ -79,7 +83,7 @@ export interface CodeCommitSourceProps extends BuildSourceProps {
  */
 export class CodeCommitSource extends BuildSource {
   public readonly type: SourceType = SourceType.CodeCommit;
-  private readonly repo: codecommit.RepositoryRef;
+  private readonly repo: codecommit.IRepository;
 
   constructor(props: CodeCommitSourceProps) {
     super(props);
@@ -104,7 +108,7 @@ export class CodeCommitSource extends BuildSource {
  * Construction properties for {@link S3BucketSource}.
  */
 export interface S3BucketSourceProps extends BuildSourceProps {
-  bucket: s3.BucketRef;
+  bucket: s3.IBucket;
   path: string;
 }
 
@@ -113,7 +117,7 @@ export interface S3BucketSourceProps extends BuildSourceProps {
  */
 export class S3BucketSource extends BuildSource {
   public readonly type: SourceType = SourceType.S3;
-  private readonly bucket: s3.BucketRef;
+  private readonly bucket: s3.IBucket;
   private readonly path: string;
 
   constructor(props: S3BucketSourceProps) {
@@ -172,6 +176,13 @@ export interface GitHubSourceProps extends BuildSourceProps {
   oauthToken: cdk.Secret;
 
   /**
+   * Whether to create a webhook that will trigger a build every time a commit is pushed to the GitHub repository.
+   *
+   * @default false
+   */
+  webhook?: boolean;
+
+  /**
    * Whether to send GitHub notifications on your build's start and end.
    *
    * @default true
@@ -187,12 +198,22 @@ export class GitHubSource extends BuildSource {
   private readonly httpsCloneUrl: string;
   private readonly oauthToken: cdk.Secret;
   private readonly reportBuildStatus: boolean;
+  private readonly webhook?: boolean;
 
   constructor(props: GitHubSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
     this.oauthToken = props.oauthToken;
+    this.webhook = props.webhook;
     this.reportBuildStatus = props.reportBuildStatus === undefined ? true : props.reportBuildStatus;
+  }
+
+  public buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
+    return this.webhook === undefined
+      ? undefined
+      : {
+        webhook: this.webhook,
+      };
   }
 
   protected toSourceProperty(): any {

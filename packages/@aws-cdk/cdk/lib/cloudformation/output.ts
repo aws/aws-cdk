@@ -1,7 +1,6 @@
 import { Construct } from '../core/construct';
-import { Token } from '../core/tokens';
 import { Condition } from './condition';
-import { FnImportValue, FnJoin, FnSelect, FnSplit } from './fn';
+import { Fn } from './fn';
 import { Stack, StackElement } from './stack';
 
 export interface OutputProps {
@@ -108,7 +107,7 @@ export class Output extends StackElement {
     if (!this.export) {
       throw new Error('Cannot create an ImportValue without an export name');
     }
-    return new FnImportValue(this.export);
+    return Fn.importValue(this.export);
   }
 
   public toCloudFormation(): object {
@@ -215,19 +214,19 @@ export class StringListOutput extends Construct {
       condition: props.condition,
       disableExport: props.disableExport,
       export: props.export,
-      value: new FnJoin(this.separator, props.values)
+      value: Fn.join(this.separator, props.values)
     });
   }
 
   /**
    * Return an array of imported values for this Output
    */
-  public makeImportValues(): Token[] {
+  public makeImportValues(): string[] {
     const combined = this.output.makeImportValue();
 
     const ret = [];
     for (let i = 0; i < this.length; i++) {
-      ret.push(new FnSelect(i, new FnSplit(this.separator, combined)));
+      ret.push(Fn.select(i, Fn.split(this.separator, combined)));
     }
 
     return ret;

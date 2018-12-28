@@ -677,7 +677,7 @@ export = {
 
     // WHEN
     const ref = topic.export();
-    const imported = sns.TopicRef.import(stack2, 'Imported', ref);
+    const imported = sns.Topic.import(stack2, 'Imported', ref);
     imported.subscribeQueue(queue);
 
     // THEN
