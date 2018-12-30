@@ -9,7 +9,7 @@ export interface IConstruct {
   /**
    * The construct node in the scope tree.
    */
-  node: ConstructNode;
+  readonly node: ConstructNode;
 }
 
 /**
