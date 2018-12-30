@@ -79,7 +79,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Import an existing listener
    */
-  public static import(parent: cdk.Construct, id: string, props: ApplicationListenerRefProps): IApplicationListener {
+  public static import(parent: cdk.Construct, id: string, props: ApplicationListenerImportProps): IApplicationListener {
     return new ImportedApplicationListener(parent, id, props);
   }
 
@@ -238,7 +238,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Export this listener
    */
-  public export(): ApplicationListenerRefProps {
+  public export(): ApplicationListenerImportProps {
     return {
       listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString(),
       securityGroupId: this.connections.securityGroups[0]!.export().securityGroupId,
@@ -296,12 +296,17 @@ export interface IApplicationListener extends ec2.IConnectable, cdk.IDependable 
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
   registerConnectable(connectable: ec2.IConnectable, portRange: ec2.IPortRange): void;
+
+  /**
+   * Export this listener
+   */
+  export(): ApplicationListenerImportProps;
 }
 
 /**
  * Properties to reference an existing listener
  */
-export interface ApplicationListenerRefProps {
+export interface ApplicationListenerImportProps {
   /**
    * ARN of the listener
    */
@@ -327,7 +332,7 @@ class ImportedApplicationListener extends cdk.Construct implements IApplicationL
    */
   public readonly listenerArn: string;
 
-  constructor(scope: cdk.Construct, scid: string, props: ApplicationListenerRefProps) {
+  constructor(scope: cdk.Construct, scid: string, private readonly props: ApplicationListenerImportProps) {
     super(scope, scid);
 
     this.listenerArn = props.listenerArn;
@@ -335,9 +340,13 @@ class ImportedApplicationListener extends cdk.Construct implements IApplicationL
     const defaultPortRange = props.defaultPort !== undefined ? new ec2.TcpPortFromAttribute(props.defaultPort) : undefined;
 
     this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroupRef.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })],
+      securityGroups: [ec2.SecurityGroup.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })],
       defaultPortRange,
     });
+  }
+
+  public export() {
+    return this.props;
   }
 
   /**

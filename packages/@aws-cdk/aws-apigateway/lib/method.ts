@@ -23,7 +23,7 @@ export interface MethodOptions {
    * If `authorizationType` is `Custom`, this specifies the ID of the method
    * authorizer resource.
    *
-   * NOTE: in the future this will be replaced with an `AuthorizerRef`
+   * NOTE: in the future this will be replaced with an `IAuthorizer`
    * construct.
    */
   authorizerId?: string;

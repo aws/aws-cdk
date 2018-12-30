@@ -52,7 +52,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     /**
      * Add a prefix to the stateId of all States found in a construct tree
      */
-    public static prefixStates(root: cdk.Construct, prefix: string) {
+    public static prefixStates(root: cdk.IConstruct, prefix: string) {
         const queue = [root];
         while (queue.length > 0) {
             const el = queue.splice(0, 1)[0]!;

@@ -2,7 +2,7 @@ import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { LogGroup, LogGroupRef } from '../lib';
+import { LogGroup } from '../lib';
 
 export = {
   'fixed retention'(test: Test) {
@@ -86,7 +86,7 @@ export = {
     const stack2 = new Stack();
 
     // WHEN
-    const imported = LogGroupRef.import(stack2, 'Import', lg.export());
+    const imported = LogGroup.import(stack2, 'Import', lg.export());
     imported.newStream(stack2, 'MakeMeAStream');
 
     // THEN

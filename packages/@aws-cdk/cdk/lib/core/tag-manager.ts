@@ -1,4 +1,4 @@
-import { Construct } from './construct';
+import { Construct, IConstruct } from './construct';
 import { Token } from './tokens';
 
 /**
@@ -197,7 +197,7 @@ export class TagManager extends Token {
       return filteredTags;
     }
 
-    function propagatedTags(tagProviders: Construct[]): Tags {
+    function propagatedTags(tagProviders: IConstruct[]): Tags {
       const parentTags: Tags = {};
       for (const ancestor of tagProviders) {
         if (TagManager.isTaggable(ancestor)) {

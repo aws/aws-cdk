@@ -2,11 +2,24 @@ import cxapi = require('@aws-cdk/cx-api');
 import { makeUniqueId } from '../util/uniqueid';
 export const PATH_SEP = '/';
 
-export class Node {
+/**
+ * Represents a construct.
+ */
+export interface IConstruct {
+  /**
+   * The construct node in the scope tree.
+   */
+  node: ConstructNode;
+}
+
+/**
+ * Represents the construct node in the scope tree.
+ */
+export class ConstructNode {
   /**
    * Returns the scope in which this construct is defined.
    */
-  public readonly scope?: Construct;
+  public readonly scope?: IConstruct;
 
   /**
    * The scoped construct ID
@@ -30,7 +43,7 @@ export class Node {
   /**
    * List of children and their names
    */
-  private readonly _children: { [name: string]: Construct } = { };
+  private readonly _children: { [name: string]: IConstruct } = { };
   private readonly context: { [key: string]: any } = { };
   private readonly _metadata = new Array<MetadataEntry>();
 
@@ -40,7 +53,7 @@ export class Node {
    */
   private _locked = false;
 
-  constructor(private readonly host: Construct, scope: Construct, scid: string) {
+  constructor(private readonly host: IConstruct, scope: IConstruct, scid: string) {
     scid = scid || ''; // if undefined, convert to empty string
 
     this.scid = scid;
@@ -93,14 +106,14 @@ export class Node {
    * @param name Relative name of a direct or indirect child
    * @returns a child by path or undefined if not found.
    */
-  public tryFindChild(path: string): Construct | undefined {
+  public tryFindChild(path: string): IConstruct | undefined {
     // tslint:disable-next-line:no-console
     if (path.startsWith(PATH_SEP)) {
       throw new Error('Path must be relative');
     }
     const parts = path.split(PATH_SEP);
 
-    let curr: Construct|undefined = this.host;
+    let curr: IConstruct|undefined = this.host;
     while (curr != null && parts.length > 0) {
       curr = curr.node._children[parts.shift()!];
     }
@@ -118,7 +131,7 @@ export class Node {
    * @param name Relative name of a direct or indirect child
    * @returns Child with the given path.
    */
-  public findChild(path: string): Construct {
+  public findChild(path: string): IConstruct {
     const ret = this.tryFindChild(path);
     if (!ret) {
       throw new Error(`No child with path: '${path}'`);
@@ -196,13 +209,12 @@ export class Node {
    * @param data the value of the metadata (can be a Token). If null/undefined, metadata will not be added.
    * @param from a function under which to restrict the metadata entry's stack trace (defaults to this.addMetadata)
    */
-  public addMetadata(type: string, data: any, from?: any): Construct {
+  public addMetadata(type: string, data: any, from?: any): void {
     if (data == null) {
-      return this.host;
+      return;
     }
     const trace = createStackTrace(from || this.addMetadata);
     this._metadata.push({ type, data, trace });
-    return this.host;
   }
 
   /**
@@ -210,8 +222,8 @@ export class Node {
    * The toolkit will display the info message when apps are synthesized.
    * @param message The info message.
    */
-  public addInfo(message: string): Construct {
-    return this.addMetadata(cxapi.INFO_METADATA_KEY, message);
+  public addInfo(message: string): void {
+    this.addMetadata(cxapi.INFO_METADATA_KEY, message);
   }
 
   /**
@@ -220,8 +232,8 @@ export class Node {
    * if run in --strict mode.
    * @param message The warning message.
    */
-  public addWarning(message: string): Construct {
-    return this.addMetadata(cxapi.WARNING_METADATA_KEY, message);
+  public addWarning(message: string): void {
+    this.addMetadata(cxapi.WARNING_METADATA_KEY, message);
   }
 
   /**
@@ -229,8 +241,8 @@ export class Node {
    * The toolkit will fail synthesis when errors are reported.
    * @param message The error message.
    */
-  public addError(message: string): Construct {
-    return this.addMetadata(cxapi.ERROR_METADATA_KEY, message);
+  public addError(message: string) {
+    this.addMetadata(cxapi.ERROR_METADATA_KEY, message);
   }
 
   /**
@@ -255,10 +267,10 @@ export class Node {
    * @param to The construct to return the path components relative to, or
    * the entire list of ancestors (including root) if omitted.
    */
-  public ancestors(upTo?: Construct): Construct[] {
-    const ret = new Array<Construct>();
+  public ancestors(upTo?: Construct): IConstruct[] {
+    const ret = new Array<IConstruct>();
 
-    let curr: Construct | undefined = this.host;
+    let curr: IConstruct | undefined = this.host;
     while (curr && curr !== upTo) {
       ret.unshift(curr);
       curr = curr.node.scope;
@@ -299,7 +311,7 @@ export class Node {
    * @param name The type name of the child construct.
    * @returns The resolved path part name of the child
    */
-  public addChild(child: Construct, childName: string) {
+  public addChild(child: IConstruct, childName: string) {
     if (this.locked) {
 
       // special error if root is locked
@@ -335,7 +347,7 @@ export class Node {
   /**
    * Return the path of components up to but excluding the root
    */
-  private rootPath(): Construct[] {
+  private rootPath(): IConstruct[] {
     const ancestors = this.ancestors();
     ancestors.shift();
     return ancestors;
@@ -372,11 +384,11 @@ export class Node {
  * All constructs besides the root construct must be created within the scope of
  * another construct.
  */
-export class Construct {
+export class Construct implements IConstruct {
   /**
    * Construct node.
    */
-  public readonly node: Node;
+  public readonly node: ConstructNode;
 
   /**
    * Creates a new construct node.
@@ -387,7 +399,7 @@ export class Construct {
    * dash `--`.
    */
   constructor(scope: Construct, scid: string) {
-    this.node = new Node(this, scope, scid);
+    this.node = new ConstructNode(this, scope, scid);
   }
 
   /**
@@ -441,7 +453,7 @@ export interface MetadataEntry {
 }
 
 export class ValidationError {
-  constructor(public readonly source: Construct, public readonly message: string) {
+  constructor(public readonly source: IConstruct, public readonly message: string) {
 
   }
 }

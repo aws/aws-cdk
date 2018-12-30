@@ -1,13 +1,13 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
 import { Construct, IDependable } from '@aws-cdk/cdk';
-import { QueueRef } from './queue-ref';
+import { IQueue } from './queue-ref';
 import { CfnQueuePolicy } from './sqs.generated';
 
 export interface QueuePolicyProps {
   /**
    * The set of queues this policy applies to.
    */
-  queues: QueueRef[];
+  queues: IQueue[];
 }
 
 /**

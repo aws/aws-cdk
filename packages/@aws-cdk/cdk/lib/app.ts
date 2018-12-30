@@ -2,7 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
 import { Stack } from './cloudformation/stack';
-import { Construct, MetadataEntry, PATH_SEP, Root } from './core/construct';
+import { IConstruct, MetadataEntry, PATH_SEP, Root } from './core/construct';
 import { resolve } from './core/tokens';
 
 /**
@@ -111,7 +111,7 @@ export class App extends Root {
 
     return output;
 
-    function visit(node: Construct) {
+    function visit(node: IConstruct) {
       if (node.node.metadata.length > 0) {
         // Make the path absolute
         output[PATH_SEP + node.node.path] = node.node.metadata.map(md => resolve(md) as MetadataEntry);

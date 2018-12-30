@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
-import { resolve } from '@aws-cdk/cdk';
+import { resolve, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { IEventRuleTarget } from '../lib';
 import { EventRule } from '../lib/rule';
@@ -331,6 +331,25 @@ export = {
 
     test.deepEqual(resolve(receivedRuleArn), resolve(rule.ruleArn));
     test.deepEqual(receivedRuleId, rule.node.uniqueId);
+    test.done();
+  },
+
+  'import/export rule'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const myRule = new EventRule(stack, 'MyRule');
+
+    // WHEN
+    const exportedRule = myRule.export();
+
+    const importedRule = EventRule.import(stack, 'ImportedRule', {
+      eventRuleArn: 'arn:of:rule'
+    });
+
+    // THEN
+    test.deepEqual(cdk.resolve(exportedRule), { eventRuleArn: { 'Fn::ImportValue': 'MyRuleRuleArnDB13ADB1' } });
+    test.deepEqual(importedRule.ruleArn, 'arn:of:rule');
+
     test.done();
   }
 };

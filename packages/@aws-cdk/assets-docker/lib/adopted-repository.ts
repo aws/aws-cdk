@@ -29,7 +29,7 @@ export class AdoptedRepository extends ecr.RepositoryBase {
 
   private readonly policyDocument = new iam.PolicyDocument();
 
-  constructor(scope: cdk.Construct, scid: string, props: AdoptedRepositoryProps) {
+  constructor(scope: cdk.Construct, scid: string, private readonly props: AdoptedRepositoryProps) {
     super(scope, scid);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
@@ -68,6 +68,13 @@ export class AdoptedRepository extends ecr.RepositoryBase {
     // this this repository is "local" to the stack (in the same region/account)
     // we can render it's ARN from it's name.
     this.repositoryArn = ecr.Repository.arnForLocalRepository(this.repositoryName);
+  }
+
+  /**
+   * Export this repository from the stack
+   */
+  public export() {
+    return this.props;
   }
 
   /**

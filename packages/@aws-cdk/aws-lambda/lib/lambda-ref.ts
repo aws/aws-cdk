@@ -12,10 +12,105 @@ import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
 
+export interface IFunction extends events.IEventRuleTarget, logs.ILogSubscriptionDestination,
+  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource {
+
+  /**
+   * Logical ID of this Function.
+   */
+  readonly id: string;
+
+  /**
+   * The name of the function.
+   */
+  readonly functionName: string;
+
+  /**
+   * The ARN fo the function.
+   */
+  readonly functionArn: string;
+
+  /**
+   * The IAM role associated with this function.
+   */
+  readonly role?: iam.Role;
+
+  /**
+   * Whether or not this Lambda function was bound to a VPC
+   *
+   * If this is is `false`, trying to access the `connections` object will fail.
+   */
+  readonly isBoundToVpc: boolean;
+
+  /**
+   * Adds a permission to the Lambda resource policy.
+   * @param id The id ƒor the permission construct
+   */
+  addPermission(id: string, permission: Permission): void;
+
+  /**
+   * Convenience method for creating a new {@link PipelineInvokeAction},
+   * and adding it to the given Stage.
+   *
+   * @param stage the Pipeline Stage to add the new Action to
+   * @param name the name of the newly created Action
+   * @param props the properties of the new Action
+   * @returns the newly created {@link PipelineInvokeAction}
+   */
+  addToPipeline(stage: codepipeline.IStage, name: string, props?: CommonPipelineInvokeActionProps): PipelineInvokeAction;
+
+  addToRolePolicy(statement: iam.PolicyStatement): void;
+
+  /**
+   * Grant the given identity permissions to invoke this Lambda
+   */
+  grantInvoke(identity?: iam.IPrincipal): void;
+
+  /**
+   * Return the given named metric for this Lambda
+   */
+  metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+
+  /**
+   * Metric for the Errors executing this Lambda
+   *
+   * @default sum over 5 minutes
+   */
+  metricErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+
+  /**
+   * Metric for the Duration of this Lambda
+   *
+   * @default average over 5 minutes
+   */
+  metricDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of invocations of this Lambda
+   *
+   * @default sum over 5 minutes
+   */
+  metricInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+
+  /**
+   * Metric for the number of throttled invocations of this Lambda
+   *
+   * @default sum over 5 minutes
+   */
+  metricThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+
+  /**
+   * Export this Function (without the role)
+   */
+  export(): FunctionImportProps;
+
+  addEventSource(source: IEventSource): void;
+}
+
 /**
  * Represents a Lambda function defined outside of this stack.
  */
-export interface FunctionRefProps {
+export interface FunctionImportProps {
   /**
    * The ARN of the Lambda function.
    *
@@ -39,94 +134,7 @@ export interface FunctionRefProps {
   securityGroupId?: string;
 }
 
-export abstract class FunctionRef extends cdk.Construct
-  implements events.IEventRuleTarget, logs.ILogSubscriptionDestination, s3n.IBucketNotificationDestination,
-         ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource  {
-
-  /**
-   * Creates a Lambda function object which represents a function not defined
-   * within this stack.
-   *
-   *    Lambda.import(this, 'MyImportedFunction', { lambdaArn: new LambdaArn('arn:aws:...') });
-   *
-   * @param parent The parent construct
-   * @param name The name of the lambda construct
-   * @param ref A reference to a Lambda function. Can be created manually (see
-   * example above) or obtained through a call to `lambda.export()`.
-   */
-  public static import(parent: cdk.Construct, name: string, ref: FunctionRefProps): FunctionRef {
-    return new LambdaRefImport(parent, name, ref);
-  }
-
-  /**
-   * Return the given named metric for this Lambda
-   */
-  public static metricAll(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/Lambda',
-      metricName,
-      ...props
-    });
-  }
-  /**
-   * Metric for the number of Errors executing all Lambdas
-   *
-   * @default sum over 5 minutes
-   */
-  public static metricAllErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return FunctionRef.metricAll('Errors', { statistic: 'sum', ...props });
-  }
-
-  /**
-   * Metric for the Duration executing all Lambdas
-   *
-   * @default average over 5 minutes
-   */
-  public static metricAllDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return FunctionRef.metricAll('Duration', props);
-  }
-
-  /**
-   * Metric for the number of invocations of all Lambdas
-   *
-   * @default sum over 5 minutes
-   */
-  public static metricAllInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return FunctionRef.metricAll('Invocations', { statistic: 'sum', ...props });
-  }
-
-  /**
-   * Metric for the number of throttled invocations of all Lambdas
-   *
-   * @default sum over 5 minutes
-   */
-  public static metricAllThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return FunctionRef.metricAll('Throttles', { statistic: 'sum', ...props });
-  }
-
-  /**
-   * Metric for the number of concurrent executions across all Lambdas
-   *
-   * @default max over 5 minutes
-   */
-  public static metricAllConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    // Mini-FAQ: why max? This metric is a gauge that is emitted every
-    // minute, so either max or avg or a percentile make sense (but sum
-    // doesn't). Max is more sensitive to spiky load changes which is
-    // probably what you're interested in if you're looking at this metric
-    // (Load spikes may lead to concurrent execution errors that would
-    // otherwise not be visible in the avg)
-    return FunctionRef.metricAll('ConcurrentExecutions', { statistic: 'max', ...props });
-  }
-
-  /**
-   * Metric for the number of unreserved concurrent executions across all Lambdas
-   *
-   * @default max over 5 minutes
-   */
-  public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return FunctionRef.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
-  }
+export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
   /**
    * The name of the function.
@@ -183,6 +191,10 @@ export abstract class FunctionRef extends cdk.Construct
       sourceAccount: permission.sourceAccount,
       sourceArn: permission.sourceArn,
     });
+  }
+
+  public get id() {
+    return this.node.scid;
   }
 
   /**
@@ -311,7 +323,7 @@ export abstract class FunctionRef extends cdk.Construct
     return this.metric('Throttles', { statistic: 'sum', ...props });
   }
 
-  public logSubscriptionDestination(sourceLogGroup: logs.LogGroupRef): logs.LogSubscriptionDestination {
+  public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
     const arn = sourceLogGroup.logGroupArn;
 
     if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
@@ -331,14 +343,7 @@ export abstract class FunctionRef extends cdk.Construct
   /**
    * Export this Function (without the role)
    */
-  public export(): FunctionRefProps {
-    return {
-      functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
-      securityGroupId: this._connections && this._connections.securityGroups[0]
-          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
-          : undefined
-    };
-  }
+  public abstract export(): FunctionImportProps;
 
   /**
    * Allows this Lambda to be used as a destination for bucket notifications.
@@ -411,46 +416,5 @@ export abstract class FunctionRef extends cdk.Construct
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(cdk.resolve(principal))}. ` +
       'Supported: AccountPrincipal, ServicePrincipal');
-  }
-}
-
-class LambdaRefImport extends FunctionRef {
-  public readonly functionName: string;
-  public readonly functionArn: string;
-  public readonly role?: iam.Role;
-
-  protected readonly canCreatePermissions = false;
-
-  constructor(scope: cdk.Construct, scid: string, props: FunctionRefProps) {
-    super(scope, scid);
-
-    this.functionArn = props.functionArn;
-    this.functionName = this.extractNameFromArn(props.functionArn);
-    this.role = props.role;
-
-    if (props.securityGroupId) {
-      this._connections = new ec2.Connections({
-        securityGroups: [ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
-          securityGroupId: props.securityGroupId
-        })]
-      });
-    }
-  }
-
-  /**
-   * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the function
-   * name from the ARN.
-   *
-   * Function ARNs look like this:
-   *
-   *   arn:aws:lambda:region:account-id:function:function-name
-   *
-   * ..which means that in order to extract the `function-name` component from the ARN, we can
-   * split the ARN using ":" and select the component in index 6.
-   *
-   * @returns `FnSelect(6, FnSplit(':', arn))`
-   */
-  private extractNameFromArn(arn: string) {
-    return cdk.Fn.select(6, cdk.Fn.split(':', arn)).toString();
   }
 }

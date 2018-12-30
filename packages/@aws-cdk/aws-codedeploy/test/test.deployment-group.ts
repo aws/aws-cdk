@@ -31,10 +31,10 @@ export = {
     'can be imported'(test: Test) {
       const stack = new cdk.Stack();
 
-      const application = codedeploy.ServerApplicationRef.import(stack, 'MyApp', {
+      const application = codedeploy.ServerApplication.import(stack, 'MyApp', {
         applicationName: 'MyApp',
       });
-      const deploymentGroup = codedeploy.ServerDeploymentGroupRef.import(stack, 'MyDG', {
+      const deploymentGroup = codedeploy.ServerDeploymentGroup.import(stack, 'MyDG', {
         application,
         deploymentGroupName: 'MyDG',
       });

@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
 import { AvailabilityZoneProvider, Construct, resolve, Stack, Tags } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { DefaultInstanceTenancy, SubnetType, VpcNetwork, VpcNetworkRef } from '../lib';
+import { DefaultInstanceTenancy, IVpcNetwork, SubnetType, VpcNetwork } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -533,7 +533,7 @@ function getTestStack(): Stack {
 /**
  * Do a complete import/export test, return the imported VPC
  */
-function doImportExportTest(constructFn: (parent: Construct) => VpcNetwork): VpcNetworkRef {
+function doImportExportTest(constructFn: (parent: Construct) => VpcNetwork): IVpcNetwork {
   // GIVEN
   const stack1 = getTestStack();
   const stack2 = getTestStack();

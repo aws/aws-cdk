@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
-import { RestApiRef } from './restapi-ref';
+import { IRestApi } from './restapi';
 import { parseMethodOptionsPath } from './util';
 
 export interface StageOptions extends MethodDeploymentOptions {
@@ -130,7 +130,7 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
   public readonly stageName: string;
   public readonly dependencyElements = new Array<cdk.IDependable>();
 
-  private readonly restApi: RestApiRef;
+  private readonly restApi: IRestApi;
 
   constructor(scope: cdk.Construct, scid: string, props: StageProps) {
     super(scope, scid);

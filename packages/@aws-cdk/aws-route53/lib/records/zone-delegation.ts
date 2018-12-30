@@ -1,9 +1,13 @@
 import { Construct } from '@aws-cdk/cdk';
-import { HostedZoneRef } from '../hosted-zone-ref';
+import { IHostedZone } from '../hosted-zone-ref';
 import { CfnRecordSet } from '../route53.generated';
 import { determineFullyQualifiedDomainName } from './_util';
 
 export interface ZoneDelegationRecordProps {
+  /**
+   * The zone in which this delegate is defined.
+   */
+  zone: IHostedZone;
   /**
    * The name of the zone that delegation is made to.
    */
@@ -33,14 +37,14 @@ export interface ZoneDelegationRecordProps {
  * A record to delegate further lookups to a different set of name servers
  */
 export class ZoneDelegationRecord extends Construct {
-  constructor(scope: HostedZoneRef, scid: string, props: ZoneDelegationRecordProps) {
+  constructor(scope: Construct, scid: string, props: ZoneDelegationRecordProps) {
     super(scope, scid);
 
     const ttl = props.ttl === undefined ? 172_800 : props.ttl;
 
     new CfnRecordSet(this, 'Resource', {
-      hostedZoneId: scope.hostedZoneId,
-      name: determineFullyQualifiedDomainName(props.delegatedZoneName, scope),
+      hostedZoneId: props.zone.hostedZoneId,
+      name: determineFullyQualifiedDomainName(props.delegatedZoneName, props.zone),
       type: 'NS',
       ttl: ttl.toString(),
       comment: props.comment,

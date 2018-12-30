@@ -1,11 +1,11 @@
 import { Construct } from '@aws-cdk/cdk';
-import { FunctionRef } from './lambda-ref';
+import { IFunction } from './lambda-ref';
 import { CfnVersion } from './lambda.generated';
 
 /**
  * Properties for a new Lambda version
  */
-export interface FunctionVersionProps {
+export interface VersionProps {
   /**
    * SHA256 of the version of the Lambda source code
    *
@@ -25,7 +25,7 @@ export interface FunctionVersionProps {
   /**
    * Function to get the value of
    */
-  lambda: FunctionRef;
+  lambda: IFunction;
 }
 
 /**
@@ -44,7 +44,7 @@ export interface FunctionVersionProps {
  * the right deployment, specify the `codeSha256` property while
  * creating the `Version.
  */
-export class FunctionVersion extends Construct {
+export class Version extends Construct {
   /**
    * The most recently deployed version of this function.
    */
@@ -53,9 +53,9 @@ export class FunctionVersion extends Construct {
   /**
    * Lambda object this version is associated with
    */
-  public readonly lambda: FunctionRef;
+  public readonly lambda: IFunction;
 
-  constructor(scope: Construct, scid: string, props: FunctionVersionProps) {
+  constructor(scope: Construct, scid: string, props: VersionProps) {
     super(scope, scid);
 
     const version = new CfnVersion(this, 'Resource', {

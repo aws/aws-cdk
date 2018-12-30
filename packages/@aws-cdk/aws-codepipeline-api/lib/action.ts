@@ -253,7 +253,7 @@ export abstract class Action extends cdk.Construct {
   }
 
   public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this.node.scope!!, name, options);
+    const rule = new events.EventRule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
       detailType: [ 'CodePipeline Stage Execution State Change' ],

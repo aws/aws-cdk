@@ -20,7 +20,7 @@ export interface ClusterProps {
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
    */
-  vpc: ec2.VpcNetworkRef;
+  vpc: ec2.IVpcNetwork;
 }
 
 /**
@@ -30,7 +30,7 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * Import an existing cluster
    */
-  public static import(parent: cdk.Construct, name: string, props: ImportedClusterProps): ICluster {
+  public static import(parent: cdk.Construct, name: string, props: ClusterImportProps): ICluster {
     return new ImportedCluster(parent, name, props);
   }
 
@@ -42,7 +42,7 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * The VPC this cluster was created in.
    */
-  public readonly vpc: ec2.VpcNetworkRef;
+  public readonly vpc: ec2.IVpcNetwork;
 
   /**
    * The ARN of this cluster
@@ -144,7 +144,7 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * Export the Cluster
    */
-  public export(): ImportedClusterProps {
+  public export(): ClusterImportProps {
     return {
       clusterName: new cdk.Output(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
       vpc: this.vpc.export(),
@@ -217,7 +217,7 @@ export interface ICluster {
   /**
    * VPC that the cluster instances are running in
    */
-  readonly vpc: ec2.VpcNetworkRef;
+  readonly vpc: ec2.IVpcNetwork;
 
   /**
    * Connections manager of the cluster instances
@@ -228,12 +228,17 @@ export interface ICluster {
    * Whether the cluster has EC2 capacity associated with it
    */
   readonly hasEc2Capacity: boolean;
+
+  /**
+   * Export the Cluster
+   */
+  export(): ClusterImportProps;
 }
 
 /**
  * Properties to import an ECS cluster
  */
-export interface ImportedClusterProps {
+export interface ClusterImportProps {
   /**
    * Name of the cluster
    */
@@ -242,12 +247,12 @@ export interface ImportedClusterProps {
   /**
    * VPC that the cluster instances are running in
    */
-  vpc: ec2.VpcNetworkRefProps;
+  vpc: ec2.VpcNetworkImportProps;
 
   /**
    * Security group of the cluster instances
    */
-  securityGroups: ec2.SecurityGroupRefProps[];
+  securityGroups: ec2.SecurityGroupImportProps[];
 
   /**
    * Whether the given cluster has EC2 capacity
@@ -269,7 +274,7 @@ class ImportedCluster extends cdk.Construct implements ICluster {
   /**
    * VPC that the cluster instances are running in
    */
-  public readonly vpc: ec2.VpcNetworkRef;
+  public readonly vpc: ec2.IVpcNetwork;
 
   /**
    * Security group of the cluster instances
@@ -281,17 +286,21 @@ class ImportedCluster extends cdk.Construct implements ICluster {
    */
   public readonly hasEc2Capacity: boolean;
 
-  constructor(scope: cdk.Construct, scid: string, props: ImportedClusterProps) {
+  constructor(scope: cdk.Construct, scid: string, private readonly props: ClusterImportProps) {
     super(scope, scid);
     this.clusterName = props.clusterName;
-    this.vpc = ec2.VpcNetworkRef.import(this, "vpc", props.vpc);
+    this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroupRef.import(this, `SecurityGroup${i}`, sgProps));
+      this.connections.addSecurityGroup(ec2.SecurityGroup.import(this, `SecurityGroup${i}`, sgProps));
       i++;
     }
+  }
+
+  public export() {
+    return this.props;
   }
 }
 

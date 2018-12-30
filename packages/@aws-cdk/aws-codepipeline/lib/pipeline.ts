@@ -12,7 +12,7 @@ export interface PipelineProps {
    * The S3 bucket used by this Pipeline to store artifacts.
    * If not specified, a new S3 bucket will be created.
    */
-  artifactBucket?: s3.BucketRef;
+  artifactBucket?: s3.IBucket;
 
   /**
    * Indicates whether to rerun the AWS CodePipeline pipeline after you update it.
@@ -79,7 +79,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
   /**
    * Bucket used to store output artifacts
    */
-  public readonly artifactBucket: s3.BucketRef;
+  public readonly artifactBucket: s3.IBucket;
 
   private readonly stages = new Array<Stage>();
   private eventsRole?: iam.Role;
@@ -318,7 +318,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
       replicationBucketName = crossRegionScaffoldStack.replicationBucketName;
     }
 
-    const replicationBucket = s3.BucketRef.import(this, 'CrossRegionCodePipelineReplicationBucket-' + action.region, {
+    const replicationBucket = s3.Bucket.import(this, 'CrossRegionCodePipelineReplicationBucket-' + action.region, {
       bucketName: replicationBucketName,
     });
     replicationBucket.grantReadWrite(this.role);

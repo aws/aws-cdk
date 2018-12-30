@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Function as LambdaFunction, FunctionProps } from './lambda';
-import { FunctionRef } from './lambda-ref';
+import { FunctionBase, FunctionImportProps, IFunction } from './lambda-ref';
 import { Permission } from './permission';
 
 /**
@@ -34,12 +34,12 @@ export interface SingletonFunctionProps extends FunctionProps {
  * The lambda is identified using the value of 'uuid'. Run 'uuidgen'
  * for every SingletonLambda you create.
  */
-export class SingletonFunction extends FunctionRef {
+export class SingletonFunction extends FunctionBase {
   public readonly functionName: string;
   public readonly functionArn: string;
   public readonly role?: iam.Role | undefined;
   protected readonly canCreatePermissions: boolean;
-  private lambdaFunction: FunctionRef;
+  private lambdaFunction: IFunction;
 
   constructor(scope: cdk.Construct, scid: string, props: SingletonFunctionProps) {
     super(scope, scid);
@@ -53,17 +53,21 @@ export class SingletonFunction extends FunctionRef {
     this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
   }
 
+  public export(): FunctionImportProps {
+    return this.lambdaFunction.export();
+  }
+
   public addPermission(name: string, permission: Permission) {
     return this.lambdaFunction.addPermission(name, permission);
   }
 
-  private ensureLambda(props: SingletonFunctionProps): FunctionRef {
+  private ensureLambda(props: SingletonFunctionProps): IFunction {
     const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
     const stack = cdk.Stack.find(this);
     const existing = stack.node.tryFindChild(constructName);
     if (existing) {
       // Just assume this is true
-      return existing as FunctionRef;
+      return existing as FunctionBase;
     }
 
     return new LambdaFunction(stack, constructName, props);

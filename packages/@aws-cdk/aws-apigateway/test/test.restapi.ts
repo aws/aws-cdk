@@ -379,20 +379,20 @@ export = {
     const imported = apigateway.RestApi.import(stack, 'imported-api', {
       restApiId: 'api-rxt4498f'
     });
-    const exported = imported.export();
+
+    const api = new apigateway.RestApi(stack, 'MyRestApi');
+    api.root.addMethod('GET');
+
+    const exported = api.export();
 
     // THEN
-    expect(stack).toMatch({
-      Outputs: {
-      importedapiRestApiIdC00F155A: {
-        Value: "api-rxt4498f",
-        Export: {
-        Name: "importedapiRestApiIdC00F155A"
-        }
-      }
-      }
+    stack.node.validateTree();
+    test.deepEqual(stack.toCloudFormation().Outputs.MyRestApiRestApiIdB93C5C2D, {
+      Value: { Ref: 'MyRestApi2D1F47A9' },
+      Export: { Name: 'MyRestApiRestApiIdB93C5C2D' }
     });
-    test.deepEqual(cdk.resolve(exported), { restApiId: { 'Fn::ImportValue': 'importedapiRestApiIdC00F155A' } });
+    test.deepEqual(cdk.resolve(imported.restApiId), 'api-rxt4498f');
+    test.deepEqual(cdk.resolve(exported), { restApiId: { 'Fn::ImportValue': 'MyRestApiRestApiIdB93C5C2D' } });
     test.done();
   },
 

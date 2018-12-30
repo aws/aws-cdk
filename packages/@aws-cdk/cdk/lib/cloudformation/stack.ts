@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
-import { Construct, PATH_SEP } from '../core/construct';
+import { Construct, IConstruct, PATH_SEP } from '../core/construct';
 import { resolve, Token } from '../core/tokens';
 import { Environment } from '../environment';
 import { CloudFormationToken } from './cloudformation-token';
@@ -34,7 +34,7 @@ export class Stack extends Construct {
    * @returns The Stack object (throws if the node is not part of a Stack-rooted tree)
    */
   public static find(node: Construct): Stack {
-    let curr: Construct | undefined = node;
+    let curr: IConstruct | undefined = node;
     while (curr != null && !Stack.isStack(curr)) {
       curr = curr.node.scope;
     }
@@ -63,7 +63,7 @@ export class Stack extends Construct {
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
-  public static isStack(construct: Construct): construct is Stack {
+  public static isStack(construct: IConstruct): construct is Stack {
     return (construct as any)._isStack;
   }
 
@@ -301,7 +301,7 @@ export abstract class StackElement extends Construct implements IDependable {
    *
    * @returns The construct as a stack element or undefined if it is not a stack element.
    */
-  public static _asStackElement(construct: Construct): StackElement | undefined {
+  public static _asStackElement(construct: IConstruct): StackElement | undefined {
     if ('logicalId' in construct && 'toCloudFormation' in construct) {
       return construct as StackElement;
     } else {
@@ -442,7 +442,7 @@ export abstract class Referenceable extends StackElement {
  * @param into Array to append StackElements to
  * @returns The same array as is being collected into
  */
-function stackElements(node: Construct, into: StackElement[] = []): StackElement[] {
+function stackElements(node: IConstruct, into: StackElement[] = []): StackElement[] {
   const element = StackElement._asStackElement(node);
   if (element) {
     into.push(element);

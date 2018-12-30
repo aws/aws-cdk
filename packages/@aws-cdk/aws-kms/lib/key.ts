@@ -3,36 +3,41 @@ import { Construct, DeletionPolicy, Output, resolve } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
 import { CfnKey } from './kms.generated';
 
-export interface EncryptionKeyRefProps {
+export interface IEncryptionKey {
+  /**
+   * The ARN of the key.
+   */
+  readonly keyArn: string;
+
+  /**
+   * Defines a new alias for the key.
+   */
+  addAlias(alias: string): EncryptionKeyAlias;
+
+  /**
+   * Adds a statement to the KMS key resource policy.
+   * @param statement The policy statement to add
+   * @param allowNoOp If this is set to `false` and there is no policy
+   * defined (i.e. external key), the operation will fail. Otherwise, it will
+   * no-op.
+   */
+  addToResourcePolicy(statement: PolicyStatement, allowNoOp?: boolean): void;
+
+  /**
+   * Exports this key from the current stack.
+   * @returns a key ref which can be used in a call to `EncryptionKey.import(ref)`.
+   */
+  export(): EncryptionKeyImportProps;
+}
+
+export interface EncryptionKeyImportProps {
   /**
    * The ARN of the external KMS key.
    */
   keyArn: string;
 }
 
-export abstract class EncryptionKeyRef extends Construct {
-  /**
-   * Defines an imported encryption key.
-   *
-   * `ref` can be obtained either via a call to `key.export()` or using
-   * literals.
-   *
-   * For example:
-   *
-   *   const keyRefProps = key.export();
-   *   const keyRef1 = EncryptionKeyRef.import(this, 'MyImportedKey1', keyRefProps);
-   *   const keyRef2 = EncryptionKeyRef.import(this, 'MyImportedKey2', {
-   *     keyArn: new KeyArn('arn:aws:kms:...')
-   *   });
-   *
-   * @param parent The parent construct.
-   * @param name The name of the construct.
-   * @param props The key reference.
-   */
-  public static import(parent: Construct, name: string, props: EncryptionKeyRefProps): EncryptionKeyRef {
-    return new EncryptionKeyRefImport(parent, name, props);
-  }
-
+export abstract class EncryptionKeyBase extends Construct {
   /**
    * The ARN of the key.
    */
@@ -69,15 +74,7 @@ export abstract class EncryptionKeyRef extends Construct {
     this.policy.addStatement(statement);
   }
 
-  /**
-   * Exports this key from the current stack.
-   * @returns a key ref which can be used in a call to `EncryptionKey.import(ref)`.
-   */
-  public export(): EncryptionKeyRefProps {
-    return {
-      keyArn: new Output(this, 'KeyArn', { value: this.keyArn }).makeImportValue().toString()
-    };
-  }
+  public abstract export(): EncryptionKeyImportProps;
 }
 
 /**
@@ -114,7 +111,29 @@ export interface EncryptionKeyProps {
 /**
  * Defines a KMS key.
  */
-export class EncryptionKey extends EncryptionKeyRef {
+export class EncryptionKey extends EncryptionKeyBase {
+  /**
+   * Defines an imported encryption key.
+   *
+   * `ref` can be obtained either via a call to `key.export()` or using
+   * literals.
+   *
+   * For example:
+   *
+   *   const keyAttr = key.export();
+   *   const keyRef1 = EncryptionKey.import(this, 'MyImportedKey1', keyAttr);
+   *   const keyRef2 = EncryptionKey.import(this, 'MyImportedKey2', {
+   *     keyArn: new KeyArn('arn:aws:kms:...')
+   *   });
+   *
+   * @param parent The parent construct.
+   * @param name The name of the construct.
+   * @param props The key reference.
+   */
+  public static import(parent: Construct, name: string, props: EncryptionKeyImportProps): IEncryptionKey {
+    return new ImportedEncryptionKey(parent, name, props);
+  }
+
   public readonly keyArn: string;
   protected readonly policy?: PolicyDocument;
 
@@ -137,6 +156,16 @@ export class EncryptionKey extends EncryptionKeyRef {
 
     this.keyArn = resource.keyArn;
     resource.options.deletionPolicy = DeletionPolicy.Retain;
+  }
+
+  /**
+   * Exports this key from the current stack.
+   * @returns a key ref which can be used in a call to `EncryptionKey.import(ref)`.
+   */
+  public export(): EncryptionKeyImportProps {
+    return {
+      keyArn: new Output(this, 'KeyArn', { value: this.keyArn }).makeImportValue().toString()
+    };
   }
 
   /**
@@ -166,13 +195,17 @@ export class EncryptionKey extends EncryptionKeyRef {
   }
 }
 
-class EncryptionKeyRefImport extends EncryptionKeyRef {
+class ImportedEncryptionKey extends EncryptionKeyBase {
   public readonly keyArn: string;
   protected readonly policy = undefined; // no policy associated with an imported key
 
-  constructor(scope: Construct, scid: string, props: EncryptionKeyRefProps) {
+  constructor(scope: Construct, scid: string, private readonly props: EncryptionKeyImportProps) {
     super(scope, scid);
 
     this.keyArn = props.keyArn;
+  }
+
+  public export() {
+    return this.props;
   }
 }

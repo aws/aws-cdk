@@ -1,8 +1,8 @@
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Construct, Output, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { TargetInputTemplate } from './input-options';
-import { EventRuleRef } from './rule-ref';
+import { EventRuleImportProps, IEventRule } from './rule-ref';
 import { IEventRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
@@ -63,7 +63,14 @@ export interface EventRuleProps {
 /**
  * Defines a CloudWatch Event Rule in this stack.
  */
-export class EventRule extends EventRuleRef {
+export class EventRule extends Construct implements IEventRule {
+  /**
+   * Imports a rule by ARN into this stack.
+   */
+  public static import(parent: Construct, name: string, props: EventRuleImportProps): IEventRule {
+    return new ImportedEventRule(parent, name, props);
+  }
+
   public readonly ruleArn: string;
 
   private readonly targets = new Array<CfnRule.TargetProperty>();
@@ -90,6 +97,15 @@ export class EventRule extends EventRuleRef {
     for (const target of props.targets || []) {
       this.addTarget(target);
     }
+  }
+
+  /**
+   * Exports this rule resource from this stack and returns an import token.
+   */
+  public export(): EventRuleImportProps {
+    return {
+      eventRuleArn: new Output(this, 'RuleArn', { value: this.ruleArn }).makeImportValue().toString()
+    };
   }
 
   /**
@@ -217,5 +233,19 @@ export class EventRule extends EventRuleRef {
     }
 
     return out;
+  }
+}
+
+class ImportedEventRule extends Construct implements IEventRule {
+  public readonly ruleArn: string;
+
+  constructor(parent: Construct, id: string, private readonly props: EventRuleImportProps) {
+    super(parent, id);
+
+    this.ruleArn = props.eventRuleArn;
+  }
+
+  public export() {
+    return this.props;
   }
 }

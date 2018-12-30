@@ -1,13 +1,13 @@
 import cdk = require('@aws-cdk/cdk');
 import crypto = require('crypto');
 import { CfnDeployment, CfnDeploymentProps } from './apigateway.generated';
-import { RestApiRef } from './restapi-ref';
+import { IRestApi } from './restapi';
 
 export interface DeploymentProps  {
   /**
    * The Rest API to deploy.
    */
-  api: RestApiRef;
+  api: IRestApi;
 
   /**
    * A description of the purpose of the API Gateway deployment.
@@ -56,7 +56,7 @@ export interface DeploymentProps  {
  */
 export class Deployment extends cdk.Construct implements cdk.IDependable {
   public readonly deploymentId: string;
-  public readonly api: RestApiRef;
+  public readonly api: IRestApi;
 
   /**
    * Allows taking a dependency on this construct.

@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { ClusterParameterGroupRef } from './cluster-parameter-group-ref';
-import { DatabaseClusterRef, Endpoint } from './cluster-ref';
+import { IClusterParameterGroup } from './cluster-parameter-group';
+import { DatabaseClusterImportProps, Endpoint, IDatabaseCluster } from './cluster-ref';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
@@ -87,13 +87,20 @@ export interface DatabaseClusterProps {
    *
    * @default No parameter group
    */
-  parameterGroup?: ClusterParameterGroupRef;
+  parameterGroup?: IClusterParameterGroup;
 }
 
 /**
  * Create a clustered database with a given number of instances.
  */
-export class DatabaseCluster extends DatabaseClusterRef {
+export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
+  /**
+   * Import an existing DatabaseCluster from properties
+   */
+  public static import(parent: cdk.Construct, name: string, props: DatabaseClusterImportProps): IDatabaseCluster {
+    return new ImportedDatabaseCluster(parent, name, props);
+  }
+
   /**
    * Identifier of the cluster
    */
@@ -127,7 +134,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
   /**
    * Security group identifier of this database
    */
-  protected readonly securityGroupId: string;
+  public readonly securityGroupId: string;
 
   constructor(scope: cdk.Construct, scid: string, props: DatabaseClusterProps) {
     super(scope, scid);
@@ -215,6 +222,23 @@ export class DatabaseCluster extends DatabaseClusterRef {
     const defaultPortRange = new ec2.TcpPortFromAttribute(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
   }
+
+  /**
+   * Export a Database Cluster for importing in another stack
+   */
+  public export(): DatabaseClusterImportProps {
+    // tslint:disable:max-line-length
+    return {
+      port: new cdk.Output(this, 'Port', { value: this.clusterEndpoint.port, }).makeImportValue().toString(),
+      securityGroupId: new cdk.Output(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue().toString(),
+      clusterIdentifier: new cdk.Output(this, 'ClusterIdentifier', { value: this.clusterIdentifier, }).makeImportValue().toString(),
+      instanceIdentifiers: new cdk.StringListOutput(this, 'InstanceIdentifiers', { values: this.instanceIdentifiers }).makeImportValues().map(x => x.toString()),
+      clusterEndpointAddress: new cdk.Output(this, 'ClusterEndpointAddress', { value: this.clusterEndpoint.hostname, }).makeImportValue().toString(),
+      readerEndpointAddress: new cdk.Output(this, 'ReaderEndpointAddress', { value: this.readerEndpoint.hostname, }).makeImportValue().toString(),
+      instanceEndpointAddresses: new cdk.StringListOutput(this, 'InstanceEndpointAddresses', { values: this.instanceEndpoints.map(e => e.hostname) }).makeImportValues().map(x => x.toString()),
+    };
+    // tslint:enable:max-line-length
+  }
 }
 
 /**
@@ -222,4 +246,68 @@ export class DatabaseCluster extends DatabaseClusterRef {
  */
 function databaseInstanceType(instanceType: ec2.InstanceType) {
   return 'db.' + instanceType.toString();
+}
+
+/**
+ * An imported Database Cluster
+ */
+class ImportedDatabaseCluster extends cdk.Construct implements IDatabaseCluster {
+  /**
+   * Default port to connect to this database
+   */
+  public readonly defaultPortRange: ec2.IPortRange;
+
+  /**
+   * Access to the network connections
+   */
+  public readonly connections: ec2.Connections;
+
+  /**
+   * Identifier of the cluster
+   */
+  public readonly clusterIdentifier: string;
+
+  /**
+   * Identifiers of the replicas
+   */
+  public readonly instanceIdentifiers: string[] = [];
+
+  /**
+   * The endpoint to use for read/write operations
+   */
+  public readonly clusterEndpoint: Endpoint;
+
+  /**
+   * Endpoint to use for load-balanced read-only operations.
+   */
+  public readonly readerEndpoint: Endpoint;
+
+  /**
+   * Endpoints which address each individual replica.
+   */
+  public readonly instanceEndpoints: Endpoint[] = [];
+
+  /**
+   * Security group identifier of this database
+   */
+  public readonly securityGroupId: string;
+
+  constructor(parent: cdk.Construct, name: string, private readonly props: DatabaseClusterImportProps) {
+    super(parent, name);
+
+    this.securityGroupId = props.securityGroupId;
+    this.defaultPortRange = new ec2.TcpPortFromAttribute(props.port);
+    this.connections = new ec2.Connections({
+      securityGroups: [ec2.SecurityGroup.import(this, 'SecurityGroup', props)],
+      defaultPortRange: this.defaultPortRange
+    });
+    this.clusterIdentifier = props.clusterIdentifier;
+    this.clusterEndpoint = new Endpoint(props.clusterEndpointAddress, props.port);
+    this.readerEndpoint = new Endpoint(props.readerEndpointAddress, props.port);
+    this.instanceEndpoints = props.instanceEndpointAddresses.map(a => new Endpoint(a, props.port));
+  }
+
+  public export() {
+    return this.props;
+  }
 }

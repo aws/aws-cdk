@@ -183,7 +183,7 @@ export abstract class BaseService extends cdk.Construct
    * Set up AWSVPC networking for this construct
    */
   // tslint:disable-next-line:max-line-length
-  protected configureAwsVpcNetworking(vpc: ec2.VpcNetworkRef, assignPublicIp?: boolean, vpcPlacement?: ec2.VpcPlacementStrategy, securityGroup?: ec2.SecurityGroupRef) {
+  protected configureAwsVpcNetworking(vpc: ec2.IVpcNetwork, assignPublicIp?: boolean, vpcPlacement?: ec2.VpcPlacementStrategy, securityGroup?: ec2.ISecurityGroup) {
     if (vpcPlacement === undefined) {
       vpcPlacement = { subnetsToUse: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
     }

@@ -6,7 +6,7 @@ import { IRepository } from './repository-ref';
 /**
  * Common properties for the {@link PipelineSourceAction CodePipeline source Action},
  * whether creating it directly,
- * or through the {@link RepositoryRef#addToPipeline} method.
+ * or through the {@link IRepository#addToPipeline} method.
  */
 export interface CommonPipelineSourceActionProps extends codepipeline.CommonActionProps {
   /**
