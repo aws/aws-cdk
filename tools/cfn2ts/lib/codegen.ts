@@ -262,7 +262,7 @@ export default class CodeGenerator {
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required);
     const propsArgument = propsType ? `, properties${optionalProps ? '?' : ''}: ${propsType.className}` : '';
-    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, name: string${propsArgument})`);
+    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, scid: string${propsArgument})`);
     this.code.line(`super(scope, scid, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties' : ''} });`);
     // verify all required properties
     if (spec.Properties) {
