@@ -138,8 +138,8 @@ export class SecurityGroup extends SecurityGroupBase implements ITaggable {
   /**
    * Import an existing SecurityGroup
    */
-  public static import(parent: Construct, id: string, props: SecurityGroupImportProps): ISecurityGroup {
-    return new ImportedSecurityGroup(parent, id, props);
+  public static import(scope: Construct, scid: string, props: SecurityGroupImportProps): ISecurityGroup {
+    return new ImportedSecurityGroup(scope, scid, props);
   }
 
   /**

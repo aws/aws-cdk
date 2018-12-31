@@ -560,11 +560,11 @@ export class Bucket extends BucketBase {
    *
    * @param parent The parent creating construct (usually `this`).
    * @param id The construct's name.
-   * @param attrs A `BucketAttributes` object. Can be obtained from a call to
+   * @param props A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.
    */
-  public static import(scope: cdk.Construct, scid: string, attrs: BucketImportProps): IBucket {
-    return new ImportedBucket(scope, scid, attrs);
+  public static import(scope: cdk.Construct, scid: string, props: BucketImportProps): IBucket {
+    return new ImportedBucket(scope, scid, props);
   }
 
   public readonly bucketArn: string;

@@ -67,8 +67,8 @@ export class EventRule extends Construct implements IEventRule {
   /**
    * Imports a rule by ARN into this stack.
    */
-  public static import(parent: Construct, name: string, props: EventRuleImportProps): IEventRule {
-    return new ImportedEventRule(parent, name, props);
+  public static import(scope: Construct, scid: string, props: EventRuleImportProps): IEventRule {
+    return new ImportedEventRule(scope, scid, props);
   }
 
   public readonly ruleArn: string;

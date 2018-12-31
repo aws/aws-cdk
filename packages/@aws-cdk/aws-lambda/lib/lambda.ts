@@ -194,11 +194,11 @@ export class Function extends FunctionBase {
    *
    * @param parent The parent construct
    * @param id The name of the lambda construct
-   * @param attrs A reference to a Lambda function. Can be created manually (see
+   * @param props A reference to a Lambda function. Can be created manually (see
    * example above) or obtained through a call to `lambda.export()`.
    */
-  public static import(scope: cdk.Construct, scid: string, attrs: FunctionImportProps): IFunction {
-    return new ImportedFunction(scope, scid, attrs);
+  public static import(scope: cdk.Construct, scid: string, props: FunctionImportProps): IFunction {
+    return new ImportedFunction(scope, scid, props);
   }
 
   /**

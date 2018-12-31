@@ -32,8 +32,8 @@ export class Topic extends TopicBase {
   /**
    * Import a Topic defined elsewhere
    */
-  public static import(parent: Construct, name: string, props: TopicImportProps): ITopic {
-    return new ImportedTopic(parent, name, props);
+  public static import(scope: Construct, scid: string, props: TopicImportProps): ITopic {
+    return new ImportedTopic(scope, scid, props);
   }
 
   public readonly topicArn: string;

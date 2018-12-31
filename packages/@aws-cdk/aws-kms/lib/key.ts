@@ -126,12 +126,12 @@ export class EncryptionKey extends EncryptionKeyBase {
    *     keyArn: new KeyArn('arn:aws:kms:...')
    *   });
    *
-   * @param parent The parent construct.
-   * @param name The name of the construct.
+   * @param scope The parent construct.
+   * @param scid The name of the construct.
    * @param props The key reference.
    */
-  public static import(parent: Construct, name: string, props: EncryptionKeyImportProps): IEncryptionKey {
-    return new ImportedEncryptionKey(parent, name, props);
+  public static import(scope: Construct, scid: string, props: EncryptionKeyImportProps): IEncryptionKey {
+    return new ImportedEncryptionKey(scope, scid, props);
   }
 
   public readonly keyArn: string;

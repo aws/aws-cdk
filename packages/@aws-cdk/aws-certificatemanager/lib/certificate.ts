@@ -73,8 +73,8 @@ export class Certificate extends Construct implements ICertificate {
   /**
    * Import a certificate
    */
-  public static import(parent: Construct, name: string, props: CertificateImportProps): ICertificate {
-    return new ImportedCertificate(parent, name, props);
+  public static import(scope: Construct, scid: string, props: CertificateImportProps): ICertificate {
+    return new ImportedCertificate(scope, scid, props);
   }
 
   /**

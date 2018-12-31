@@ -94,8 +94,8 @@ export class Role extends Construct implements IRole {
   /**
    * Import a role that already exists
    */
-  public static import(parent: Construct, id: string, props: ImportedRoleProps): IRole {
-    return new ImportedRole(parent, id, props);
+  public static import(scope: Construct, scid: string, props: ImportedRoleProps): IRole {
+    return new ImportedRole(scope, scid, props);
   }
 
   /**
