@@ -218,8 +218,8 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
   /**
    * Import an exported VPC
    */
-  public static import(parent: cdk.Construct, name: string, props: VpcNetworkImportProps): IVpcNetwork {
-    return new ImportedVpcNetwork(parent, name, props);
+  public static import(scope: cdk.Construct, scid: string, props: VpcNetworkImportProps): IVpcNetwork {
+    return new ImportedVpcNetwork(scope, scid, props);
   }
 
   /**
@@ -519,8 +519,8 @@ export interface VpcSubnetProps {
  * Represents a new VPC subnet resource
  */
 export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggable, cdk.IDependable {
-  public static import(parent: cdk.Construct, name: string, props: VpcSubnetImportProps): IVpcSubnet {
-    return new ImportedVpcSubnet(parent, name, props);
+  public static import(scope: cdk.Construct, scid: string, props: VpcSubnetImportProps): IVpcSubnet {
+    return new ImportedVpcSubnet(scope, scid, props);
   }
 
   /**

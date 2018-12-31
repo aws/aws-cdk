@@ -289,13 +289,13 @@ export class Repository extends RepositoryBase {
    * Import a Repository defined either outside the CDK, or in a different Stack
    * (exported with the {@link export} method).
    *
-   * @param parent the parent Construct for the Repository
-   * @param name the name of the Repository Construct
+   * @param scope the parent Construct for the Repository
+   * @param scid the name of the Repository Construct
    * @param props the properties used to identify the existing Repository
    * @returns a reference to the existing Repository
    */
-  public static import(parent: cdk.Construct, name: string, props: RepositoryImportProps): IRepository {
-    return new ImportedRepository(parent, name, props);
+  public static import(scope: cdk.Construct, scid: string, props: RepositoryImportProps): IRepository {
+    return new ImportedRepository(scope, scid, props);
   }
 
   private readonly repository: CfnRepository;

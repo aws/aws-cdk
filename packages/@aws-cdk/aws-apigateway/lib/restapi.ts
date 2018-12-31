@@ -161,8 +161,8 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
    * @param id Construct ID
    * @param props Imported rest API properties
    */
-  public static import(parent: cdk.Construct, id: string, props: RestApiImportProps): IRestApi {
-    return new ImportedRestApi(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: RestApiImportProps): IRestApi {
+    return new ImportedRestApi(scope, scid, props);
   }
 
   /**

@@ -40,8 +40,8 @@ export class HostedZoneProvider {
   /**
    * This method calls `findHostedZone` and returns the imported hosted zone
    */
-  public findAndImport(parent: cdk.Construct, id: string): IHostedZone {
-    return HostedZone.import(parent, id, this.findHostedZone());
+  public findAndImport(scope: cdk.Construct, scid: string): IHostedZone {
+    return HostedZone.import(scope, scid, this.findHostedZone());
   }
   /**
    * Return the hosted zone meeting the filter

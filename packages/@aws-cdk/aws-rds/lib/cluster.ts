@@ -97,8 +97,8 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
   /**
    * Import an existing DatabaseCluster from properties
    */
-  public static import(parent: cdk.Construct, name: string, props: DatabaseClusterImportProps): IDatabaseCluster {
-    return new ImportedDatabaseCluster(parent, name, props);
+  public static import(scope: cdk.Construct, scid: string, props: DatabaseClusterImportProps): IDatabaseCluster {
+    return new ImportedDatabaseCluster(scope, scid, props);
   }
 
   /**

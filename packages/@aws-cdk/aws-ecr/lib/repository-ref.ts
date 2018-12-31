@@ -114,8 +114,8 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Import a repository
    */
-  public static import(parent: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
-    return new ImportedRepository(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: RepositoryImportProps): IRepository {
+    return new ImportedRepository(scope, scid, props);
   }
 
   /**

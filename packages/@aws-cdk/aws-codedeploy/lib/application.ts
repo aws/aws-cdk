@@ -74,8 +74,8 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
    * @param props the properties of the referenced Application
    * @returns a Construct representing a reference to an existing Application
    */
-  public static import(parent: cdk.Construct, id: string, props: ServerApplicationImportProps): IServerApplication {
-    return new ImportedServerApplication(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: ServerApplicationImportProps): IServerApplication {
+    return new ImportedServerApplication(scope, scid, props);
   }
 
   public readonly applicationArn: string;

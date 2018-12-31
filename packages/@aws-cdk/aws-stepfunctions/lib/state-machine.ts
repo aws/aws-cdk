@@ -44,8 +44,8 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
     /**
      * Import a state machine
      */
-    public static import(parent: cdk.Construct, id: string, props: StateMachineImportProps): IStateMachine {
-        return new ImportedStateMachine(parent, id, props);
+    public static import(scope: cdk.Construct, scid: string, props: StateMachineImportProps): IStateMachine {
+        return new ImportedStateMachine(scope, scid, props);
     }
 
     /**

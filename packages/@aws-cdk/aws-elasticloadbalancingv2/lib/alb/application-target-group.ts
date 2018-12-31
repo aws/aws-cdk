@@ -66,8 +66,8 @@ export class ApplicationTargetGroup extends TargetGroupBase {
   /**
    * Import an existing target group
    */
-  public static import(parent: cdk.Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
-    return new ImportedApplicationTargetGroup(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: TargetGroupImportProps): IApplicationTargetGroup {
+    return new ImportedApplicationTargetGroup(scope, scid, props);
   }
 
   private readonly connectableMembers: ConnectableMember[];

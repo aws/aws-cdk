@@ -229,8 +229,8 @@ export class LogGroup extends LogGroupBase {
   /**
    * Import an existing LogGroup
    */
-  public static import(parent: cdk.Construct, id: string, props: LogGroupImportProps): ILogGroup {
-    return new ImportedLogGroup(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: LogGroupImportProps): ILogGroup {
+    return new ImportedLogGroup(scope, scid, props);
   }
 
   /**

@@ -592,8 +592,8 @@ export class Project extends ProjectBase {
    * @param props the properties of the referenced Project
    * @returns a reference to the existing Project
    */
-  public static import(parent: cdk.Construct, name: string, props: ProjectImportProps): IProject {
-    return new ImportedProject(parent, name, props);
+  public static import(scope: cdk.Construct, scid: string, props: ProjectImportProps): IProject {
+    return new ImportedProject(scope, scid, props);
   }
 
   /**

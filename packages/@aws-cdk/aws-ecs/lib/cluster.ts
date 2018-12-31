@@ -30,8 +30,8 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * Import an existing cluster
    */
-  public static import(parent: cdk.Construct, name: string, props: ClusterImportProps): ICluster {
-    return new ImportedCluster(parent, name, props);
+  public static import(scope: cdk.Construct, scid: string, props: ClusterImportProps): ICluster {
+    return new ImportedCluster(scope, scid, props);
   }
 
   /**

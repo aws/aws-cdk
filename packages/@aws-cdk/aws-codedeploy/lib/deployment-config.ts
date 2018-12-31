@@ -105,8 +105,8 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
    * @param props the properties of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentConfigImportProps): IServerDeploymentConfig {
-    return new ImportedServerDeploymentConfig(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: ServerDeploymentConfigImportProps): IServerDeploymentConfig {
+    return new ImportedServerDeploymentConfig(scope, scid, props);
   }
 
   public readonly deploymentConfigName: string;

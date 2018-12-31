@@ -79,8 +79,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Import an existing listener
    */
-  public static import(parent: cdk.Construct, id: string, props: ApplicationListenerImportProps): IApplicationListener {
-    return new ImportedApplicationListener(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: ApplicationListenerImportProps): IApplicationListener {
+    return new ImportedApplicationListener(scope, scid, props);
   }
 
   /**

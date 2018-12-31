@@ -183,8 +183,8 @@ export class Queue extends QueueBase {
   /**
    * Import an existing queue
    */
-  public static import(parent: cdk.Construct, name: string, props: QueueImportProps): IQueue {
-    return new ImportedQueue(parent, name, props);
+  public static import(scope: cdk.Construct, scid: string, props: QueueImportProps): IQueue {
+    return new ImportedQueue(scope, scid, props);
   }
 
   /**

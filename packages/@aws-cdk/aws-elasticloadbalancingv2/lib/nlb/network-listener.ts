@@ -39,8 +39,8 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Import an existing listener
    */
-  public static import(parent: cdk.Construct, id: string, props: NetworkListenerImportProps): INetworkListener {
-    return new ImportedNetworkListener(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: NetworkListenerImportProps): INetworkListener {
+    return new ImportedNetworkListener(scope, scid, props);
   }
 
   /**

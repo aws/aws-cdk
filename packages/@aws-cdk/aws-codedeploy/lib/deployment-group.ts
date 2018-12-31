@@ -284,8 +284,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    * @param props the properties of the referenced Deployment Group
    * @returns a Construct representing a reference to an existing Deployment Group
    */
-  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentGroupImportProps): IServerDeploymentGroup {
-    return new ImportedServerDeploymentGroup(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: ServerDeploymentGroupImportProps): IServerDeploymentGroup {
+    return new ImportedServerDeploymentGroup(scope, scid, props);
   }
 
   public readonly application: IServerApplication;

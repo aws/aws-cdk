@@ -563,8 +563,8 @@ export class Bucket extends BucketBase {
    * @param attrs A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.
    */
-  public static import(parent: cdk.Construct, id: string, attrs: BucketImportProps): IBucket {
-    return new ImportedBucket(parent, id, attrs);
+  public static import(scope: cdk.Construct, scid: string, attrs: BucketImportProps): IBucket {
+    return new ImportedBucket(scope, scid, attrs);
   }
 
   public readonly bucketArn: string;

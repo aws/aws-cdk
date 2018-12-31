@@ -29,8 +29,8 @@ export interface PublicHostedZoneProps {
 }
 
 export abstract class HostedZone extends cdk.Construct implements IHostedZone {
-  public static import(parent: cdk.Construct, name: string, props: HostedZoneImportProps): IHostedZone {
-    return new ImportedHostedZone(parent, name, props);
+  public static import(scope: cdk.Construct, scid: string, props: HostedZoneImportProps): IHostedZone {
+    return new ImportedHostedZone(scope, scid, props);
   }
 
   public abstract readonly hostedZoneId: string;

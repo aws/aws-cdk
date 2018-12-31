@@ -315,13 +315,13 @@ export class Stream extends StreamBase {
   /**
    * Creates a Stream construct that represents an external stream.
    *
-   * @param parent The parent creating construct (usually `this`).
-   * @param name The construct's name.
+   * @param scope The parent creating construct (usually `this`).
+   * @param scid The construct's name.
    * @param ref A `StreamAttributes` object. Can be obtained from a call to
    * `stream.export()`.
    */
-  public static import(parent: cdk.Construct, name: string, props: StreamImportProps): IStream {
-    return new ImportedStream(parent, name, props);
+  public static import(scope: cdk.Construct, scid: string, props: StreamImportProps): IStream {
+    return new ImportedStream(scope, scid, props);
   }
 
   public readonly streamArn: string;

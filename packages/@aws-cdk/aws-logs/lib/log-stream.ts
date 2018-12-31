@@ -60,8 +60,8 @@ export class LogStream extends cdk.Construct implements ILogStream {
   /**
    * Import an existing LogGroup
    */
-  public static import(parent: cdk.Construct, id: string, props: LogStreamImportProps): ILogStream {
-    return new ImportedLogStream(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: LogStreamImportProps): ILogStream {
+    return new ImportedLogStream(scope, scid, props);
   }
 
   /**

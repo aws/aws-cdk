@@ -49,8 +49,8 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Import an existing Application Load Balancer
    */
-  public static import(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerImportProps): IApplicationLoadBalancer {
-    return new ImportedApplicationLoadBalancer(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: ApplicationLoadBalancerImportProps): IApplicationLoadBalancer {
+    return new ImportedApplicationLoadBalancer(scope, scid, props);
   }
 
   public readonly connections: ec2.Connections;

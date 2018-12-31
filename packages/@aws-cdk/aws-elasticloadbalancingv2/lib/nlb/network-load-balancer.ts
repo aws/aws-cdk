@@ -20,8 +20,8 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
  * Define a new network load balancer
  */
 export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoadBalancer {
-  public static import(parent: cdk.Construct, id: string, props: NetworkLoadBalancerImportProps): INetworkLoadBalancer {
-    return new ImportedNetworkLoadBalancer(parent, id, props);
+  public static import(scope: cdk.Construct, scid: string, props: NetworkLoadBalancerImportProps): INetworkLoadBalancer {
+    return new ImportedNetworkLoadBalancer(scope, scid, props);
   }
 
   constructor(scope: cdk.Construct, scid: string, props: NetworkLoadBalancerProps) {
