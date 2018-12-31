@@ -469,11 +469,11 @@ export = {
 
       for (let i = 0; i < 3; i++) {
         // tslint:disable-next-line:max-line-length
-        test.equal(true, imported.publicSubnets[i].node.scid.startsWith('Ingress'), `${imported.publicSubnets[i].node.scid} does not start with "Ingress"`);
+        test.equal(true, imported.publicSubnets[i].node.id.startsWith('Ingress'), `${imported.publicSubnets[i].node.id} does not start with "Ingress"`);
       }
       for (let i = 3; i < 6; i++) {
         // tslint:disable-next-line:max-line-length
-        test.equal(true, imported.publicSubnets[i].node.scid.startsWith('Egress'), `${imported.publicSubnets[i].node.scid} does not start with "Egress"`);
+        test.equal(true, imported.publicSubnets[i].node.id.startsWith('Egress'), `${imported.publicSubnets[i].node.id} does not start with "Egress"`);
       }
 
       test.done();

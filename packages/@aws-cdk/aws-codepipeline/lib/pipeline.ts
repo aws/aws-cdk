@@ -88,8 +88,8 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
   private readonly artifactStores: { [region: string]: any };
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
 
-  constructor(scope: cdk.Construct, scid: string, props?: PipelineProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props?: PipelineProps) {
+    super(scope, id);
     props = props || {};
 
     cpapi.validateName('Pipeline', props.pipelineName);
@@ -185,7 +185,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     }
 
     return {
-      id: this.node.scid,
+      id: this.node.id,
       arn: this.pipelineArn,
       roleArn: this.eventsRole.roleArn,
     };
@@ -366,7 +366,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
         }
       }
     }
-    throw new Error(`Could not determine the input artifact for Action with name '${action.node.scid}'. ` +
+    throw new Error(`Could not determine the input artifact for Action with name '${action.node.id}'. ` +
       'Please provide it explicitly with the inputArtifact property.');
   }
 
@@ -421,7 +421,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     for (const stage of this.stages) {
       const onlySourceActionsPermitted = firstStage;
       for (const action of stage.actions) {
-        errors.push(...cpapi.validateSourceAction(onlySourceActionsPermitted, action.category, action.node.scid, stage.node.scid));
+        errors.push(...cpapi.validateSourceAction(onlySourceActionsPermitted, action.category, action.node.id, stage.node.id));
       }
       firstStage = false;
     }

@@ -15,8 +15,8 @@ export interface DeployActionProps extends CommonActionProps, CommonActionConstr
 }
 
 export abstract class DeployAction extends Action {
-  constructor(scope: cdk.Construct, scid: string, props: DeployActionProps) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props: DeployActionProps) {
+    super(scope, id, {
       category: ActionCategory.Deploy,
       ...props,
     });

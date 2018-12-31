@@ -510,8 +510,8 @@ export = {
       test.notEqual(usEast1ScaffoldStack, undefined);
       test.equal(usEast1ScaffoldStack.env.region, 'us-east-1');
       test.equal(usEast1ScaffoldStack.env.account, pipelineAccount);
-      test.ok(usEast1ScaffoldStack.node.scid.indexOf('us-east-1') !== -1,
-        `expected '${usEast1ScaffoldStack.node.scid}' to contain 'us-east-1'`);
+      test.ok(usEast1ScaffoldStack.node.id.indexOf('us-east-1') !== -1,
+        `expected '${usEast1ScaffoldStack.node.id}' to contain 'us-east-1'`);
 
       test.done();
     },

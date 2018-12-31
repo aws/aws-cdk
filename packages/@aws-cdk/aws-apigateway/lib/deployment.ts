@@ -65,8 +65,8 @@ export class Deployment extends cdk.Construct implements cdk.IDependable {
 
   private readonly resource: LatestDeploymentResource;
 
-  constructor(scope: cdk.Construct, scid: string, props: DeploymentProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: DeploymentProps) {
+    super(scope, id);
 
     this.resource = new LatestDeploymentResource(this, 'Resource', {
       description: props.description,
@@ -109,8 +109,8 @@ class LatestDeploymentResource extends CfnDeployment {
   private lazyLogicalId?: string;
   private hashComponents = new Array<any>();
 
-  constructor(scope: cdk.Construct, scid: string, props: CfnDeploymentProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.Construct, id: string, props: CfnDeploymentProps) {
+    super(scope, id, props);
 
     // from this point, don't allow accessing logical ID before synthesis
     this.lazyLogicalIdRequired = true;

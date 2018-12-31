@@ -37,8 +37,8 @@ class ImportedServerApplication extends cdk.Construct implements IServerApplicat
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: ServerApplicationImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ServerApplicationImportProps) {
+    super(scope, id);
 
     this.applicationName = props.applicationName;
     this.applicationArn = applicationName2Arn(this.applicationName);
@@ -74,15 +74,15 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
    * @param props the properties of the referenced Application
    * @returns a Construct representing a reference to an existing Application
    */
-  public static import(scope: cdk.Construct, scid: string, props: ServerApplicationImportProps): IServerApplication {
-    return new ImportedServerApplication(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: ServerApplicationImportProps): IServerApplication {
+    return new ImportedServerApplication(scope, id, props);
   }
 
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(scope: cdk.Construct, scid: string, props?: ServerApplicationProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props?: ServerApplicationProps) {
+    super(scope, id);
 
     const resource = new CfnApplication(this, 'Resource', {
       applicationName: props && props.applicationName,

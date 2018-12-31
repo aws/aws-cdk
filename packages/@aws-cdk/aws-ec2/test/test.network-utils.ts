@@ -88,16 +88,16 @@ export = {
       }
       test.done();
     },
-    "containsCidr returns true if fully contained"(test: Test) {
+    "containidr returns true if fully contained"(test: Test) {
       const block = new CidrBlock('10.0.3.0/24');
       const contained = new CidrBlock('10.0.3.0/26');
-      test.strictEqual(block.containsCidr(contained), true);
+      test.strictEqual(block.containidr(contained), true);
       test.done();
     },
-    "containsCidr returns false if not fully contained"(test: Test) {
+    "containidr returns false if not fully contained"(test: Test) {
       const block = new CidrBlock('10.0.3.0/26');
       const notContained = new CidrBlock('10.0.3.0/25');
-      test.strictEqual(block.containsCidr(notContained), false);
+      test.strictEqual(block.containidr(notContained), false);
       test.done();
     },
     "calculateNetmask returns the ip string mask"(test: Test) {

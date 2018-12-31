@@ -126,8 +126,8 @@ export class CloudTrail extends cdk.Construct {
   private readonly cloudWatchLogsGroupArn?: string;
   private eventSelectors: EventSelector[] = [];
 
-  constructor(scope: cdk.Construct, scid: string, props: CloudTrailProps = {}) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: CloudTrailProps = {}) {
+    super(scope, id);
 
     const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
     const cloudTrailPrincipal = "cloudtrail.amazonaws.com";

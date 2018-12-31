@@ -36,8 +36,8 @@ export class EncryptionKeyAlias extends Construct {
    */
   public aliasName: string;
 
-  constructor(scope: Construct, scid: string, props: EncryptionKeyAliasProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: EncryptionKeyAliasProps) {
+    super(scope, id);
 
     if (!props.alias.startsWith(REQUIRED_ALIAS_PREFIX)) {
       throw new Error(`Alias must start with the prefix "${REQUIRED_ALIAS_PREFIX}": ${props.alias}`);

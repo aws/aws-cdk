@@ -241,8 +241,8 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryArn: string;
   public readonly repositoryName: string;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: RepositoryImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
+    super(scope, id);
 
     this.repositoryArn = cdk.ArnUtils.fromComponents({
       service: 'codecommit',
@@ -290,19 +290,19 @@ export class Repository extends RepositoryBase {
    * (exported with the {@link export} method).
    *
    * @param scope the parent Construct for the Repository
-   * @param scid the name of the Repository Construct
+   * @param id the name of the Repository Construct
    * @param props the properties used to identify the existing Repository
    * @returns a reference to the existing Repository
    */
-  public static import(scope: cdk.Construct, scid: string, props: RepositoryImportProps): IRepository {
-    return new ImportedRepository(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
+    return new ImportedRepository(scope, id, props);
   }
 
   private readonly repository: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
-  constructor(scope: cdk.Construct, scid: string, props: RepositoryProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: RepositoryProps) {
+    super(scope, id);
 
     this.repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,

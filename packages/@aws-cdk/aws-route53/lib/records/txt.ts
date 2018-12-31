@@ -15,8 +15,8 @@ export interface TXTRecordProps {
  * A DNS TXT record
  */
 export class TXTRecord extends Construct {
-  constructor(scope: Construct, scid: string, props: TXTRecordProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: TXTRecordProps) {
+    super(scope, id);
 
     // JSON.stringify conveniently wraps strings in " and escapes ".
     const recordValue = JSON.stringify(props.recordValue);

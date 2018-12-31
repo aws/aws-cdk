@@ -8,8 +8,8 @@ function runtimeCode(_event: any, _context: any, callback: any) {
 }
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string) {
-    super(scope, scid);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const queue = new sqs.Queue(this, 'MyQueue');
     const fn = new lambda.Function(this, 'MyFunction', {

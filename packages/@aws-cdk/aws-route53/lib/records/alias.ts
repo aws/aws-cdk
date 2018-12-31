@@ -49,8 +49,8 @@ export interface AliasRecordProps {
  * A Route53 alias record
  */
 export class AliasRecord extends Construct {
-  constructor(scope: Construct, scid: string, props: AliasRecordProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: AliasRecordProps) {
+    super(scope, id);
 
     new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,

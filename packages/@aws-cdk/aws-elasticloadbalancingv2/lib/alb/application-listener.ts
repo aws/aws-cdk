@@ -79,8 +79,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Import an existing listener
    */
-  public static import(scope: cdk.Construct, scid: string, props: ApplicationListenerImportProps): IApplicationListener {
-    return new ImportedApplicationListener(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: ApplicationListenerImportProps): IApplicationListener {
+    return new ImportedApplicationListener(scope, id, props);
   }
 
   /**
@@ -108,10 +108,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   private readonly defaultPort: number;
 
-  constructor(scope: cdk.Construct, scid: string, props: ApplicationListenerProps) {
+  constructor(scope: cdk.Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
 
-    super(scope, scid, {
+    super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       certificates: new cdk.Token(() => this.certificateArns.map(certificateArn => ({ certificateArn }))),
       protocol,
@@ -332,8 +332,8 @@ class ImportedApplicationListener extends cdk.Construct implements IApplicationL
    */
   public readonly listenerArn: string;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: ApplicationListenerImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ApplicationListenerImportProps) {
+    super(scope, id);
 
     this.listenerArn = props.listenerArn;
 

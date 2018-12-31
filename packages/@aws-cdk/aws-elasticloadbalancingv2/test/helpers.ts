@@ -7,8 +7,8 @@ export class FakeSelfRegisteringTarget extends cdk.Construct implements elbv2.IA
   public readonly securityGroup: ec2.SecurityGroup;
   public readonly connections: ec2.Connections;
 
-  constructor(scope: cdk.Construct, scid: string, vpc: ec2.VpcNetwork) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, vpc: ec2.VpcNetwork) {
+    super(scope, id);
     this.securityGroup = new ec2.SecurityGroup(this, 'SG', { vpc });
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup]

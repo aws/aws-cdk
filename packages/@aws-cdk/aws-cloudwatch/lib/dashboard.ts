@@ -19,8 +19,8 @@ export class Dashboard extends Construct {
   private readonly rows: IWidget[] = [];
   private readonly dashboard: CfnDashboard;
 
-  constructor(scope: Construct, scid: string, props?: DashboardProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props?: DashboardProps) {
+    super(scope, id);
 
     // WORKAROUND -- Dashboard cannot be updated if the DashboardName is missing.
     // This is a bug in CloudFormation, but we don't want CDK users to have a bad

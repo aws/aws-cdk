@@ -286,8 +286,8 @@ export = nodeunit.testCase({
 class FakeAction extends api.Action {
   public readonly outputArtifact: api.Artifact;
 
-  constructor(scope: cdk.Construct, scid: string, pipeline: code.Pipeline) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, pipeline: code.Pipeline) {
+    super(scope, id, {
       artifactBounds: api.defaultBounds(),
       category: api.ActionCategory.Test,
       provider: 'Test',

@@ -194,7 +194,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   }
 
   public get id() {
-    return this.node.scid;
+    return this.node.id;
   }
 
   /**
@@ -259,7 +259,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     }
 
     return {
-      id: this.node.scid,
+      id: this.node.id,
       arn: this.functionArn,
     };
   }

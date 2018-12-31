@@ -132,8 +132,8 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
 
   private readonly restApi: IRestApi;
 
-  constructor(scope: cdk.Construct, scid: string, props: StageProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: StageProps) {
+    super(scope, id);
 
     const methodSettings = this.renderMethodSettings(props);
 

@@ -54,8 +54,8 @@ export class Group extends Construct implements IPrincipal {
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
 
-  constructor(scope: Construct, scid: string, props: GroupProps = {}) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: GroupProps = {}) {
+    super(scope, id);
 
     this.managedPolicies = props.managedPolicyArns || [];
 

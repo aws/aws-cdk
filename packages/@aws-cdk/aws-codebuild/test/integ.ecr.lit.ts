@@ -3,8 +3,8 @@ import cdk = require('@aws-cdk/cdk');
 import codebuild = require('../lib');
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string) {
-    super(scope, scid);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const ecrRepository = new ecr.Repository(this, 'MyRepo');
 

@@ -80,8 +80,8 @@ export class StepScalingAction extends cdk.Construct implements cloudwatch.IAlar
 
   private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
 
-  constructor(scope: cdk.Construct, scid: string, props: StepScalingActionProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
+    super(scope, id);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyName: props.policyName || this.node.uniqueId,

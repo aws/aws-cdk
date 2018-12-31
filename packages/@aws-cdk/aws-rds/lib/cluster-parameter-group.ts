@@ -51,15 +51,15 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
   /**
    * Import a parameter group
    */
-  public static import(scope: cdk.Construct, scid: string, props: ClusterParameterGroupImportProps): IClusterParameterGroup {
-    return new ImportedClusterParameterGroup(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: ClusterParameterGroupImportProps): IClusterParameterGroup {
+    return new ImportedClusterParameterGroup(scope, id, props);
   }
 
   public readonly parameterGroupName: string;
   private readonly parameters: Parameters = {};
 
-  constructor(scope: cdk.Construct, scid: string, props: ClusterParameterGroupProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: ClusterParameterGroupProps) {
+    super(scope, id);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       description: props.description,

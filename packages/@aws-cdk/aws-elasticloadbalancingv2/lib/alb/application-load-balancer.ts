@@ -49,15 +49,15 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Import an existing Application Load Balancer
    */
-  public static import(scope: cdk.Construct, scid: string, props: ApplicationLoadBalancerImportProps): IApplicationLoadBalancer {
-    return new ImportedApplicationLoadBalancer(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: ApplicationLoadBalancerImportProps): IApplicationLoadBalancer {
+    return new ImportedApplicationLoadBalancer(scope, id, props);
   }
 
   public readonly connections: ec2.Connections;
   private readonly securityGroup: ec2.ISecurityGroup;
 
-  constructor(scope: cdk.Construct, scid: string, props: ApplicationLoadBalancerProps) {
-    super(scope, scid, props, {
+  constructor(scope: cdk.Construct, id: string, props: ApplicationLoadBalancerProps) {
+    super(scope, id, props, {
       type: "application",
       securityGroups: new cdk.Token(() => [this.securityGroup.securityGroupId]),
       ipAddressType: props.ipAddressType,
@@ -557,8 +557,8 @@ class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicat
    */
   public readonly vpc?: ec2.IVpcNetwork;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: ApplicationLoadBalancerImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ApplicationLoadBalancerImportProps) {
+    super(scope, id);
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({

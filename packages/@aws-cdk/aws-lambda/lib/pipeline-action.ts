@@ -81,8 +81,8 @@ export interface PipelineInvokeActionProps extends CommonPipelineInvokeActionPro
  * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html
  */
 export class PipelineInvokeAction extends codepipeline.Action {
-  constructor(scope: cdk.Construct, scid: string, props: PipelineInvokeActionProps) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineInvokeActionProps) {
+    super(scope, id, {
       stage: props.stage,
       runOrder: props.runOrder,
       category: codepipeline.ActionCategory.Invoke,

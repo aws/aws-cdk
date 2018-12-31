@@ -3,8 +3,8 @@ import path = require('path');
 import assets = require('../lib');
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     // Check that the same asset added multiple times is
     // uploaded and copied.

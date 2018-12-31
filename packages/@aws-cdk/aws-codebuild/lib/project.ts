@@ -421,7 +421,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     }
 
     return {
-      id: this.node.scid,
+      id: this.node.id,
       arn: this.projectArn,
       roleArn: this.eventsRole.roleArn,
     };
@@ -433,8 +433,8 @@ class ImportedProject extends ProjectBase {
   public readonly projectName: string;
   public readonly role?: iam.Role = undefined;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: ProjectImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ProjectImportProps) {
+    super(scope, id);
 
     this.projectArn = cdk.ArnUtils.fromComponents({
       service: 'codebuild',
@@ -592,8 +592,8 @@ export class Project extends ProjectBase {
    * @param props the properties of the referenced Project
    * @returns a reference to the existing Project
    */
-  public static import(scope: cdk.Construct, scid: string, props: ProjectImportProps): IProject {
-    return new ImportedProject(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: ProjectImportProps): IProject {
+    return new ImportedProject(scope, id, props);
   }
 
   /**
@@ -616,8 +616,8 @@ export class Project extends ProjectBase {
   private readonly _secondarySources: BuildSource[];
   private readonly _secondaryArtifacts: BuildArtifacts[];
 
-  constructor(scope: cdk.Construct, scid: string, props: ProjectProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: ProjectProps) {
+    super(scope, id);
 
     if (props.buildScriptAssetEntrypoint && !props.buildScriptAsset) {
       throw new Error('To use buildScriptAssetEntrypoint, supply buildScriptAsset as well.');

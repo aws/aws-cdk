@@ -30,8 +30,8 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * Import an existing cluster
    */
-  public static import(scope: cdk.Construct, scid: string, props: ClusterImportProps): ICluster {
-    return new ImportedCluster(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: ClusterImportProps): ICluster {
+    return new ImportedCluster(scope, id, props);
   }
 
   /**
@@ -59,8 +59,8 @@ export class Cluster extends cdk.Construct implements ICluster {
    */
   private _hasEc2Capacity: boolean = false;
 
-  constructor(scope: cdk.Construct, scid: string, props: ClusterProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: ClusterProps) {
+    super(scope, id);
 
     const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
 
@@ -286,8 +286,8 @@ class ImportedCluster extends cdk.Construct implements ICluster {
    */
   public readonly hasEc2Capacity: boolean;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: ClusterImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ClusterImportProps) {
+    super(scope, id);
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);
     this.hasEc2Capacity = props.hasEc2Capacity !== false;

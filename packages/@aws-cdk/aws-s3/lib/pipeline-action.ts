@@ -47,8 +47,8 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
  * Source that is provided by a specific Amazon S3 object.
  */
 export class PipelineSourceAction extends codepipeline.SourceAction {
-  constructor(scope: cdk.Construct, scid: string, props: PipelineSourceActionProps) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineSourceActionProps) {
+    super(scope, id, {
       provider: 'S3',
       configuration: {
         S3Bucket: props.bucket.bucketName,

@@ -563,8 +563,8 @@ export class Bucket extends BucketBase {
    * @param props A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.
    */
-  public static import(scope: cdk.Construct, scid: string, props: BucketImportProps): IBucket {
-    return new ImportedBucket(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: BucketImportProps): IBucket {
+    return new ImportedBucket(scope, id, props);
   }
 
   public readonly bucketArn: string;
@@ -578,8 +578,8 @@ export class Bucket extends BucketBase {
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
 
-  constructor(scope: cdk.Construct, scid: string, props: BucketProps = {}) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: BucketProps = {}) {
+    super(scope, id);
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
@@ -960,8 +960,8 @@ class ImportedBucket extends BucketBase {
   public policy?: BucketPolicy;
   protected autoCreatePolicy: boolean;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: BucketImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: BucketImportProps) {
+    super(scope, id);
 
     const bucketName = parseBucketName(props);
     if (!bucketName) {

@@ -66,8 +66,8 @@ export abstract class ServerDeploymentGroupBase extends cdk.Construct implements
   public readonly deploymentConfig: IServerDeploymentConfig;
   public abstract readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
 
-  constructor(scope: cdk.Construct, scid: string, deploymentConfig?: IServerDeploymentConfig) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig) {
+    super(scope, id);
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
   }
 
@@ -99,8 +99,8 @@ class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: ServerDeploymentGroupImportProps) {
-    super(scope, scid, props.deploymentConfig);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ServerDeploymentGroupImportProps) {
+    super(scope, id, props.deploymentConfig);
 
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
@@ -284,8 +284,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    * @param props the properties of the referenced Deployment Group
    * @returns a Construct representing a reference to an existing Deployment Group
    */
-  public static import(scope: cdk.Construct, scid: string, props: ServerDeploymentGroupImportProps): IServerDeploymentGroup {
-    return new ImportedServerDeploymentGroup(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: ServerDeploymentGroupImportProps): IServerDeploymentGroup {
+    return new ImportedServerDeploymentGroup(scope, id, props);
   }
 
   public readonly application: IServerApplication;
@@ -298,8 +298,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   private readonly codeDeployBucket: s3.IBucket;
   private readonly alarms: cloudwatch.Alarm[];
 
-  constructor(scope: cdk.Construct, scid: string, props: ServerDeploymentGroupProps = {}) {
-    super(scope, scid, props.deploymentConfig);
+  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
+    super(scope, id, props.deploymentConfig);
 
     this.application = props.application || new ServerApplication(this, 'Application');
 

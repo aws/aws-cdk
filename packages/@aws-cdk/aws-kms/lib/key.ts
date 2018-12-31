@@ -127,18 +127,18 @@ export class EncryptionKey extends EncryptionKeyBase {
    *   });
    *
    * @param scope The parent construct.
-   * @param scid The name of the construct.
+   * @param id The name of the construct.
    * @param props The key reference.
    */
-  public static import(scope: Construct, scid: string, props: EncryptionKeyImportProps): IEncryptionKey {
-    return new ImportedEncryptionKey(scope, scid, props);
+  public static import(scope: Construct, id: string, props: EncryptionKeyImportProps): IEncryptionKey {
+    return new ImportedEncryptionKey(scope, id, props);
   }
 
   public readonly keyArn: string;
   protected readonly policy?: PolicyDocument;
 
-  constructor(scope: Construct, scid: string, props: EncryptionKeyProps = {}) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: EncryptionKeyProps = {}) {
+    super(scope, id);
 
     if (props.policy) {
       this.policy = props.policy;
@@ -199,8 +199,8 @@ class ImportedEncryptionKey extends EncryptionKeyBase {
   public readonly keyArn: string;
   protected readonly policy = undefined; // no policy associated with an imported key
 
-  constructor(scope: Construct, scid: string, private readonly props: EncryptionKeyImportProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, private readonly props: EncryptionKeyImportProps) {
+    super(scope, id);
 
     this.keyArn = props.keyArn;
   }

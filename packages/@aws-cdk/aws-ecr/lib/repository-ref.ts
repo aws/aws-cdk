@@ -114,8 +114,8 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Import a repository
    */
-  public static import(scope: cdk.Construct, scid: string, props: RepositoryImportProps): IRepository {
-    return new ImportedRepository(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
+    return new ImportedRepository(scope, id, props);
   }
 
   /**
@@ -254,8 +254,8 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: RepositoryImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
+    super(scope, id);
 
     if (props.repositoryArn) {
       this.repositoryArn = props.repositoryArn;

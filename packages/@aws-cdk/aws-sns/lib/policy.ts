@@ -24,8 +24,8 @@ export class TopicPolicy extends Construct implements IDependable {
    */
   public readonly dependencyElements = new Array<IDependable>();
 
-  constructor(scope: Construct, scid: string, props: TopicPolicyProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: TopicPolicyProps) {
+    super(scope, id);
 
     const resource = new CfnTopicPolicy(this, 'Resource', {
       policyDocument: this.document,

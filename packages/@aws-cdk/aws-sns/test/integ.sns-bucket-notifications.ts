@@ -3,8 +3,8 @@ import cdk = require('@aws-cdk/cdk');
 import sns = require('../lib');
 
 class MyStack extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string) {
-    super(scope, scid);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const objectCreateTopic = new sns.Topic(this, 'ObjectCreatedTopic');
     const objectRemovedTopic = new sns.Topic(this, 'ObjectDeletedTopic');

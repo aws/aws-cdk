@@ -168,9 +168,9 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    * @param queue The target queue
    */
   public subscribeQueue(queue: sqs.IQueue): Subscription {
-    const subscriptionName = queue.node.scid + 'Subscription';
+    const subscriptionName = queue.node.id + 'Subscription';
     if (this.node.tryFindChild(subscriptionName)) {
-      throw new Error(`A subscription between the topic ${this.node.scid} and the queue ${queue.node.scid} already exists`);
+      throw new Error(`A subscription between the topic ${this.node.id} and the queue ${queue.node.id} already exists`);
     }
 
     // we use the queue name as the subscription's. there's no meaning to subscribing
@@ -205,7 +205,7 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
     const subscriptionName = lambdaFunction.id + 'Subscription';
 
     if (this.node.tryFindChild(subscriptionName)) {
-      throw new Error(`A subscription between the topic ${this.node.scid} and the lambda ${lambdaFunction.id} already exists`);
+      throw new Error(`A subscription between the topic ${this.node.id} and the lambda ${lambdaFunction.id} already exists`);
     }
 
     const sub = new Subscription(this, subscriptionName, {
@@ -214,7 +214,7 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
       protocol: SubscriptionProtocol.Lambda
     });
 
-    lambdaFunction.addPermission(this.node.scid, {
+    lambdaFunction.addPermission(this.node.id, {
       sourceArn: this.topicArn,
       principal: new iam.ServicePrincipal('sns.amazonaws.com'),
     });
@@ -311,7 +311,7 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
     }
 
     return {
-      id: this.node.scid,
+      id: this.node.id,
       arn: this.topicArn,
     };
   }

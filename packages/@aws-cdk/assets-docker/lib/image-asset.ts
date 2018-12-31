@@ -34,8 +34,8 @@ export class DockerImageAsset extends cdk.Construct {
    */
   private readonly directory: string;
 
-  constructor(scope: cdk.Construct, scid: string, props: DockerImageAssetProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: DockerImageAssetProps) {
+    super(scope, id);
 
     // resolve full path
     this.directory = path.resolve(props.directory);

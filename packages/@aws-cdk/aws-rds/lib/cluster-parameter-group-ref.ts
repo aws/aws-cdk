@@ -7,8 +7,8 @@ export abstract class ClusterParameterGroupRef extends cdk.Construct {
   /**
    * Import a parameter group
    */
-  public static import(scope: cdk.Construct, scid: string, props: ClusterParameterGroupRefProps): ClusterParameterGroupRef {
-    return new ImportedClusterParameterGroup(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: ClusterParameterGroupRefProps): ClusterParameterGroupRef {
+    return new ImportedClusterParameterGroup(scope, id, props);
   }
 
   /**
@@ -39,8 +39,8 @@ export interface ClusterParameterGroupRefProps {
 class ImportedClusterParameterGroup extends ClusterParameterGroupRef {
   public readonly parameterGroupName: string;
 
-  constructor(scope: cdk.Construct, scid: string, props: ClusterParameterGroupRefProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: ClusterParameterGroupRefProps) {
+    super(scope, id);
     this.parameterGroupName = props.parameterGroupName;
   }
 }

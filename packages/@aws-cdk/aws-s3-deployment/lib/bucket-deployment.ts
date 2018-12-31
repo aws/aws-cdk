@@ -40,8 +40,8 @@ export interface BucketDeploymentProps {
 }
 
 export class BucketDeployment extends cdk.Construct {
-  constructor(scope: cdk.Construct, scid: string, props: BucketDeploymentProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: BucketDeploymentProps) {
+    super(scope, id);
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8756C',

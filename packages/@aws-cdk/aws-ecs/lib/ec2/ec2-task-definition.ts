@@ -28,8 +28,8 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
  * Define Tasks to run on an ECS cluster
  */
 export class Ec2TaskDefinition extends TaskDefinition {
-  constructor(scope: cdk.Construct, scid: string, props: Ec2TaskDefinitionProps = {}) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
+    super(scope, id, {
       ...props,
       compatibility: Compatibility.Ec2,
       placementConstraints: props.placementConstraints,

@@ -205,8 +205,8 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
 
-  constructor(scope: cdk.Construct, scid: string, props: LoadBalancerProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: LoadBalancerProps) {
+    super(scope, id);
 
     this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
     this.connections = new Connections({ securityGroups: [this.securityGroup] });

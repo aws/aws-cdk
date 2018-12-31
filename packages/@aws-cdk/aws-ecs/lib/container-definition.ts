@@ -222,8 +222,8 @@ export class ContainerDefinition extends cdk.Construct {
    */
   private readonly links = new Array<string>();
 
-  constructor(scope: cdk.Construct, scid: string, taskDefinition: TaskDefinition, private readonly props: ContainerDefinitionProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, taskDefinition: TaskDefinition, private readonly props: ContainerDefinitionProps) {
+    super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
     this.taskDefinition = taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
@@ -243,9 +243,9 @@ export class ContainerDefinition extends cdk.Construct {
       throw new Error(`You must use network mode Bridge to add container links.`);
     }
     if (alias !== undefined) {
-      this.links.push(`${container.node.scid}:${alias}`);
+      this.links.push(`${container.node.id}:${alias}`);
     } else {
-      this.links.push(`${container.node.scid}`);
+      this.links.push(`${container.node.id}`);
     }
   }
 
@@ -323,7 +323,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.node.scid} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(`Container ${this.node.id} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
 
@@ -342,7 +342,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public get containerPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.node.scid} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(`Container ${this.node.id} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
     return defaultPortMapping.containerPort;
@@ -367,7 +367,7 @@ export class ContainerDefinition extends cdk.Construct {
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
       mountPoints: this.mountPoints.map(renderMountPoint),
-      name: this.node.scid,
+      name: this.node.id,
       portMappings: this.portMappings.map(renderPortMapping),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,

@@ -80,8 +80,8 @@ export class Alias extends FunctionBase {
    */
   private readonly underlyingLambda: IFunction;
 
-  constructor(scope: cdk.Construct, scid: string, props: AliasProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: AliasProps) {
+    super(scope, id);
 
     this.underlyingLambda = props.version.lambda;
 

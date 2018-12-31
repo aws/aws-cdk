@@ -97,8 +97,8 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
   /**
    * Import an existing DatabaseCluster from properties
    */
-  public static import(scope: cdk.Construct, scid: string, props: DatabaseClusterImportProps): IDatabaseCluster {
-    return new ImportedDatabaseCluster(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: DatabaseClusterImportProps): IDatabaseCluster {
+    return new ImportedDatabaseCluster(scope, id, props);
   }
 
   /**
@@ -136,8 +136,8 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
    */
   public readonly securityGroupId: string;
 
-  constructor(scope: cdk.Construct, scid: string, props: DatabaseClusterProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: DatabaseClusterProps) {
+    super(scope, id);
 
     const subnets = props.instanceProps.vpc.subnets(props.instanceProps.vpcPlacement);
 
@@ -147,7 +147,7 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
-      dbSubnetGroupDescription: `Subnets for ${scid} database`,
+      dbSubnetGroupDescription: `Subnets for ${id} database`,
       subnetIds: subnets.map(s => s.subnetId)
     });
 

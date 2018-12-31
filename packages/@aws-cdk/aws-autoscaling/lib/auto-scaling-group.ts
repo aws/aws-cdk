@@ -196,8 +196,8 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   private readonly targetGroupArns: string[] = [];
   private albTargetGroup?: elbv2.ApplicationTargetGroup;
 
-  constructor(scope: cdk.Construct, scid: string, props: AutoScalingGroupProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: AutoScalingGroupProps) {
+    super(scope, id);
 
     if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
       throw new RangeError(`cooldownSeconds cannot be negative, got: ${props.cooldownSeconds}`);

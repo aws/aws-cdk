@@ -196,8 +196,8 @@ export class Table extends Construct {
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
 
-  constructor(scope: Construct, scid: string, props: TableProps = {}) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: TableProps = {}) {
+    super(scope, id);
 
     this.billingMode = props.billingMode || BillingMode.Provisioned;
     this.validateProvisioning(props);

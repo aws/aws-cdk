@@ -37,8 +37,8 @@ export interface ZoneDelegationRecordProps {
  * A record to delegate further lookups to a different set of name servers
  */
 export class ZoneDelegationRecord extends Construct {
-  constructor(scope: Construct, scid: string, props: ZoneDelegationRecordProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: ZoneDelegationRecordProps) {
+    super(scope, id);
 
     const ttl = props.ttl === undefined ? 172_800 : props.ttl;
 

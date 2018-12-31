@@ -29,8 +29,8 @@ export interface PipelineDeployActionProps extends CommonPipelineDeployActionPro
 }
 
 export class PipelineDeployAction extends codepipeline.DeployAction {
-  constructor(scope: cdk.Construct, scid: string, props: PipelineDeployActionProps) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineDeployActionProps) {
+    super(scope, id, {
       stage: props.stage,
       runOrder: props.runOrder,
       artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 },

@@ -51,10 +51,10 @@ export class RuntimeValue extends cdk.Construct {
    */
   public readonly parameterArn: string;
 
-  constructor(scope: cdk.Construct, scid: string, props: RuntimeValueProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: RuntimeValueProps) {
+    super(scope, id);
 
-    this.parameterName = `/rtv/${new cdk.AwsStackName()}/${props.package}/${scid}`;
+    this.parameterName = `/rtv/${new cdk.AwsStackName()}/${props.package}/${id}`;
 
     new ssm.CfnParameter(this, 'Parameter', {
       name: this.parameterName,

@@ -10,8 +10,8 @@ export abstract class BaseListener extends cdk.Construct implements cdk.IDependa
   public readonly listenerArn: string;
   private readonly defaultActions: any[] = [];
 
-  constructor(scope: cdk.Construct, scid: string, additionalProps: any) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, additionalProps: any) {
+    super(scope, id);
 
     const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,

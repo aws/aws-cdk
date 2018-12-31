@@ -94,8 +94,8 @@ export class Role extends Construct implements IRole {
   /**
    * Import a role that already exists
    */
-  public static import(scope: Construct, scid: string, props: ImportedRoleProps): IRole {
-    return new ImportedRole(scope, scid, props);
+  public static import(scope: Construct, id: string, props: ImportedRoleProps): IRole {
+    return new ImportedRole(scope, id, props);
   }
 
   /**
@@ -127,8 +127,8 @@ export class Role extends Construct implements IRole {
   private readonly managedPolicyArns: string[];
   private readonly attachedPolicies = new AttachedPolicies();
 
-  constructor(scope: Construct, scid: string, props: RoleProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: RoleProps) {
+    super(scope, id);
 
     this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
     this.managedPolicyArns = props.managedPolicyArns || [ ];
@@ -245,8 +245,8 @@ class ImportedRole extends Construct implements IRole {
   public readonly principal: PolicyPrincipal;
   public readonly dependencyElements: IDependable[] = [];
 
-  constructor(scope: Construct, scid: string, props: ImportedRoleProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: ImportedRoleProps) {
+    super(scope, id);
     this.roleArn = props.roleArn;
     this.principal = new ArnPrincipal(this.roleArn);
   }

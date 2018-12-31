@@ -101,8 +101,8 @@ export class PipelineDeployStackAction extends cdk.Construct {
 
   private readonly stack: cdk.Stack;
 
-  constructor(scope: cdk.Construct, scid: string, props: PipelineDeployStackActionProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: PipelineDeployStackActionProps) {
+    super(scope, id);
 
     if (!cdk.environmentEquals(props.stack.env, cdk.Stack.find(this).env)) {
       // FIXME: Add the necessary to extend to stacks in a different account

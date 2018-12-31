@@ -39,8 +39,8 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Import an existing listener
    */
-  public static import(scope: cdk.Construct, scid: string, props: NetworkListenerImportProps): INetworkListener {
-    return new ImportedNetworkListener(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: NetworkListenerImportProps): INetworkListener {
+    return new ImportedNetworkListener(scope, id, props);
   }
 
   /**
@@ -48,8 +48,8 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   private readonly loadBalancer: INetworkLoadBalancer;
 
-  constructor(scope: cdk.Construct, scid: string, props: NetworkListenerProps) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props: NetworkListenerProps) {
+    super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       protocol: Protocol.Tcp,
       port: props.port,
@@ -147,8 +147,8 @@ class ImportedNetworkListener extends cdk.Construct implements INetworkListener 
    */
   public readonly listenerArn: string;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: NetworkListenerImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: NetworkListenerImportProps) {
+    super(scope, id);
 
     this.listenerArn = props.listenerArn;
   }

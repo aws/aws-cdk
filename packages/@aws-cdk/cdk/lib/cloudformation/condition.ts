@@ -20,8 +20,8 @@ export class Condition extends Referenceable {
    * Build a new condition. The condition must be constructed with a condition token,
    * that the condition is based on.
    */
-  constructor(scope: Construct, scid: string, props?: ConditionProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props?: ConditionProps) {
+    super(scope, id);
     this.expression = props && props.expression;
   }
 

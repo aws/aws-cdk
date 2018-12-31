@@ -72,8 +72,8 @@ export class LoadBalancedEc2Service extends cdk.Construct {
    */
   public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
 
-  constructor(scope: cdk.Construct, scid: string, props: LoadBalancedEc2ServiceProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: LoadBalancedEc2ServiceProps) {
+    super(scope, id);
 
     const taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {});
 

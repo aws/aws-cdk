@@ -28,8 +28,8 @@ export class ApplicationListenerCertificate extends cdk.Construct implements cdk
    */
   public readonly dependencyElements: cdk.IDependable[] = [];
 
-  constructor(scope: cdk.Construct, scid: string, props: ApplicationListenerCertificateProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: ApplicationListenerCertificateProps) {
+    super(scope, id);
 
     const resource = new CfnListenerCertificate(this, 'Resource', {
       listenerArn: props.listener.listenerArn,

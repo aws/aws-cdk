@@ -46,8 +46,8 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
  * CodePipeline Source that is provided by an AWS CodeCommit repository.
  */
 export class PipelineSourceAction extends codepipeline.SourceAction {
-  constructor(scope: cdk.Construct, scid: string, props: PipelineSourceActionProps) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineSourceActionProps) {
+    super(scope, id, {
       stage: props.stage,
       runOrder: props.runOrder,
       provider: 'CodeCommit',

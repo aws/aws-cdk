@@ -29,8 +29,8 @@ export class AdoptedRepository extends ecr.RepositoryBase {
 
   private readonly policyDocument = new iam.PolicyDocument();
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: AdoptedRepositoryProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: AdoptedRepositoryProps) {
+    super(scope, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
       runtime: lambda.Runtime.NodeJS810,

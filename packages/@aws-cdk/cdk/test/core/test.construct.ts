@@ -8,7 +8,7 @@ import { Construct, Root, Token } from '../../lib';
 export = {
   'the "Root" construct is a special construct which can be used as the root of the tree'(test: Test) {
     const root = new Root();
-    test.equal(root.node.scid, '', 'if not specified, name of a root construct is an empty string');
+    test.equal(root.node.id, '', 'if not specified, name of a root construct is an empty string');
     test.ok(!root.node.scope, 'no parent');
     test.equal(root.node.children.length, 0, 'a construct is created without children'); // no children
     test.done();
@@ -23,12 +23,12 @@ export = {
   'construct.name returns the name of the construct'(test: Test) {
     const t = createTree();
 
-    test.equal(t.child1.node.scid, 'Child1');
-    test.equal(t.child2.node.scid, 'Child2');
-    test.equal(t.child1_1.node.scid, 'Child11');
-    test.equal(t.child1_2.node.scid, 'Child12');
-    test.equal(t.child1_1_1.node.scid, 'Child111');
-    test.equal(t.child2_1.node.scid, 'Child21');
+    test.equal(t.child1.node.id, 'Child1');
+    test.equal(t.child2.node.id, 'Child2');
+    test.equal(t.child1_1.node.id, 'Child11');
+    test.equal(t.child1_2.node.id, 'Child12');
+    test.equal(t.child1_1_1.node.id, 'Child111');
+    test.equal(t.child2_1.node.id, 'Child21');
 
     test.done();
   },
@@ -53,13 +53,13 @@ export = {
   'if construct id contains path seperators, they will be replaced by double-dash'(test: Test) {
     const root = new Root();
     const c = new Construct(root, 'Boom/Boom/Bam');
-    test.deepEqual(c.node.scid, 'Boom--Boom--Bam');
+    test.deepEqual(c.node.id, 'Boom--Boom--Bam');
     test.done();
   },
 
   'if "undefined" is forcefully used as an "id", it will be treated as an empty string'(test: Test) {
     const c = new Construct(undefined as any, undefined as any);
-    test.deepEqual(c.node.scid, '');
+    test.deepEqual(c.node.id, '');
     test.done();
   },
 
@@ -106,7 +106,7 @@ export = {
   'construct.findChild(name) can be used to retrieve a child from a parent'(test: Test) {
     const root = new Root();
     const child = new Construct(root, 'Contruct');
-    test.strictEqual(root.node.tryFindChild(child.node.scid), child, 'findChild(name) can be used to retrieve the child from a parent');
+    test.strictEqual(root.node.tryFindChild(child.node.id), child, 'findChild(name) can be used to retrieve the child from a parent');
     test.ok(!root.node.tryFindChild('NotFound'), 'findChild(name) returns undefined if the child is not found');
     test.done();
   },
@@ -114,7 +114,7 @@ export = {
   'construct.getChild(name) can be used to retrieve a child from a parent'(test: Test) {
     const root = new Root();
     const child = new Construct(root, 'Contruct');
-    test.strictEqual(root.node.findChild(child.node.scid), child, 'getChild(name) can be used to retrieve the child from a parent');
+    test.strictEqual(root.node.findChild(child.node.id), child, 'getChild(name) can be used to retrieve the child from a parent');
     test.throws(() => {
       root.node.findChild('NotFound');
     }, '', 'getChild(name) returns undefined if the child is not found');
@@ -318,8 +318,8 @@ export = {
     }
 
     class TheirConstruct extends Construct {
-      constructor(scope: Construct, scid: string) {
-        super(scope, scid);
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
 
         new YourConstruct(this, 'YourConstruct');
       }
@@ -415,8 +415,8 @@ function createTree(context?: any) {
 }
 
 class MyBeautifulConstruct extends Construct {
-  constructor(scope: Construct, scid: string) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
   }
 }
 
@@ -430,8 +430,8 @@ class ConstructWithRequired extends Construct {
   public readonly requiredProp: string;
   public readonly anotherRequiredProp: boolean;
 
-  constructor(scope: Construct, scid: string, props: ConstructWithRequiredProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: ConstructWithRequiredProps) {
+    super(scope, id);
 
     this.requiredProp = this.node.required(props, 'requiredProp');
     this.anotherRequiredProp = this.node.required(props, 'anotherRequiredProp');

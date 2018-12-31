@@ -3,8 +3,8 @@ import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 
 export class %name.PascalCased%Stack extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const queue = new sqs.Queue(this, '%name.PascalCased%Queue', {
       visibilityTimeoutSec: 300

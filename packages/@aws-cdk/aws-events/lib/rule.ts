@@ -67,8 +67,8 @@ export class EventRule extends Construct implements IEventRule {
   /**
    * Imports a rule by ARN into this stack.
    */
-  public static import(scope: Construct, scid: string, props: EventRuleImportProps): IEventRule {
-    return new ImportedEventRule(scope, scid, props);
+  public static import(scope: Construct, id: string, props: EventRuleImportProps): IEventRule {
+    return new ImportedEventRule(scope, id, props);
   }
 
   public readonly ruleArn: string;
@@ -77,8 +77,8 @@ export class EventRule extends Construct implements IEventRule {
   private readonly eventPattern: EventPattern = { };
   private scheduleExpression?: string;
 
-  constructor(scope: Construct, scid: string, props: EventRuleProps = { }) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: EventRuleProps = { }) {
+    super(scope, id);
 
     const resource = new CfnRule(this, 'Resource', {
       name: props.ruleName,

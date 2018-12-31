@@ -11,8 +11,8 @@ export interface PipelineProjectProps extends CommonProjectProps {
  * A convenience class for CodeBuild Projects that are used in CodePipeline.
  */
 export class PipelineProject extends Project {
-  constructor(scope: cdk.Construct, scid: string, props?: PipelineProjectProps) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props?: PipelineProjectProps) {
+    super(scope, id, {
       source: new CodePipelineSource(),
       artifacts: new CodePipelineBuildArtifacts(),
       ...props

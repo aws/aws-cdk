@@ -26,7 +26,7 @@ export class ConstructNode {
    * This ID is unique amongst all constructs defined in the same scope.
    * To obtain a global unique id for this construct, use `uniqueId`.
    */
-  public readonly scid: string;
+  public readonly id: string;
 
   /**
    * The full path of this construct in the tree.
@@ -53,30 +53,30 @@ export class ConstructNode {
    */
   private _locked = false;
 
-  constructor(private readonly host: IConstruct, scope: IConstruct, scid: string) {
-    scid = scid || ''; // if undefined, convert to empty string
+  constructor(private readonly host: IConstruct, scope: IConstruct, id: string) {
+    id = id || ''; // if undefined, convert to empty string
 
-    this.scid = scid;
+    this.id = id;
     this.scope = scope;
 
     // We say that scope is required, but root scopes will bypass the type
     // checks and actually pass in 'undefined'.
     if (scope != null) {
-      if (scid === '') {
+      if (id === '') {
         throw new Error('Only root constructs may have an empty name');
       }
 
       // Has side effect so must be very last thing in constructor
-      scope.node.addChild(host, this.scid);
+      scope.node.addChild(host, this.id);
     } else {
       // This is a root construct.
-      this.scid = scid;
+      this.id = id;
     }
 
     // escape any path separators so they don't wreck havoc
-    this.scid = this._escapePathSeparator(this.scid);
+    this.id = this._escapePathSeparator(this.id);
 
-    const components = this.rootPath().map(c => c.node.scid);
+    const components = this.rootPath().map(c => c.node.id);
     this.path = components.join(PATH_SEP);
     this.uniqueId = components.length > 0 ? makeUniqueId(components) : '';
   }
@@ -89,7 +89,7 @@ export class ConstructNode {
     for (let i = 0; i < depth; ++i) {
       out += '  ';
     }
-    const name = this.scid || '';
+    const name = this.id || '';
     out += `${this.typename}${name.length > 0 ? ' [' + name + ']' : ''}\n`;
     for (const child of this.children) {
       out += child.node.toTreeString(depth + 1);
@@ -155,7 +155,7 @@ export class ConstructNode {
    */
   public setContext(key: string, value: any) {
     if (this.children.length > 0) {
-      const names = this.children.map(c => c.node.scid);
+      const names = this.children.map(c => c.node.id);
       throw new Error('Cannot set context after children have been added: ' + names.join(','));
     }
     this.context[key] = value;
@@ -394,12 +394,12 @@ export class Construct implements IConstruct {
    * Creates a new construct node.
    *
    * @param scope The scope in which to define this construct
-   * @param scid The scoped construct ID. Must be unique amongst siblings. If
+   * @param id The scoped construct ID. Must be unique amongst siblings. If
    * the ID includes a path separator (`/`), then it will be replaced by double
    * dash `--`.
    */
-  constructor(scope: Construct, scid: string) {
-    this.node = new ConstructNode(this, scope, scid);
+  constructor(scope: Construct, id: string) {
+    this.node = new ConstructNode(this, scope, id);
   }
 
   /**

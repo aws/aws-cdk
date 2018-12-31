@@ -19,8 +19,8 @@ export class Activity extends cdk.Construct implements IStepFunctionsTaskResourc
     public readonly activityArn: string;
     public readonly activityName: string;
 
-    constructor(scope: cdk.Construct, scid: string, props: ActivityProps = {}) {
-        super(scope, scid);
+    constructor(scope: cdk.Construct, id: string, props: ActivityProps = {}) {
+        super(scope, id);
 
         const resource = new CfnActivity(this, 'Resource', {
             name: props.activityName || this.generateName()

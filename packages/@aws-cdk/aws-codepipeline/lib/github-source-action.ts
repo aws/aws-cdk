@@ -56,8 +56,8 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps,
  * Source that is provided by a GitHub repository.
  */
 export class GitHubSourceAction extends actions.SourceAction {
-  constructor(scope: cdk.Construct, scid: string, props: GitHubSourceActionProps) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props: GitHubSourceActionProps) {
+    super(scope, id, {
       stage: props.stage,
       runOrder: props.runOrder,
       owner: 'ThirdParty',
@@ -84,7 +84,7 @@ export class GitHubSourceAction extends actions.SourceAction {
             matchEquals: 'refs/heads/{Branch}',
           },
         ],
-        targetAction: this.node.scid,
+        targetAction: this.node.id,
         targetPipeline: props.stage.pipeline.pipelineName,
         targetPipelineVersion: 1,
         registerWithThirdParty: true,

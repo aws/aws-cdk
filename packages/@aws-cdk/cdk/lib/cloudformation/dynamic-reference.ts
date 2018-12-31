@@ -27,8 +27,8 @@ export interface DynamicReferenceProps {
 export class DynamicReference extends Construct {
   private readonly _value: string;
 
-  constructor(scope: Construct, scid: string, props: DynamicReferenceProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: DynamicReferenceProps) {
+    super(scope, id);
 
     this._value = this.makeResolveValue(props.service, props.referenceKey);
   }

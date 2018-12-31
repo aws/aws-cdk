@@ -2,8 +2,8 @@ import cdk = require('@aws-cdk/cdk');
 import iam = require('../lib');
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string) {
-    super(scope, scid);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     new iam.Role(this, 'RoleWithCompositePrincipal', {
       assumedBy: new iam.CompositePrincipal(

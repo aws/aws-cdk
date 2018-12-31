@@ -226,10 +226,10 @@ export abstract class Action extends cdk.Construct {
   private readonly artifactBounds: ActionArtifactBounds;
   private readonly stage: IStage;
 
-  constructor(scope: cdk.Construct, scid: string, props: ActionProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: ActionProps) {
+    super(scope, id);
 
-    validation.validateName('Action', scid);
+    validation.validateName('Action', id);
 
     this.owner = props.owner || 'AWS';
     this.version = props.version || '1';
@@ -261,7 +261,7 @@ export abstract class Action extends cdk.Construct {
       resources: [ this.stage.pipeline.pipelineArn ],
       detail: {
         stage: [ this.stage.name ],
-        action: [ this.node.scid ],
+        action: [ this.node.id ],
       },
     });
     return rule;
@@ -288,8 +288,8 @@ export abstract class Action extends cdk.Construct {
 }
 
 // export class ElasticBeanstalkDeploy extends DeployAction {
-//   constructor(scope: Stage, scid: string, applicationName: string, environmentName: string) {
-//     super(scope, scid, 'ElasticBeanstalk', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
+//   constructor(scope: Stage, id: string, applicationName: string, environmentName: string) {
+//     super(scope, id, 'ElasticBeanstalk', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
 //       ApplicationName: applicationName,
 //       EnvironmentName: environmentName
 //     });
@@ -297,8 +297,8 @@ export abstract class Action extends cdk.Construct {
 // }
 
 // export class OpsWorksDeploy extends DeployAction {
-//   constructor(scope: Stage, scid: string, app: string, stack: string, layer?: string) {
-//     super(scope, scid, 'OpsWorks', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
+//   constructor(scope: Stage, id: string, app: string, stack: string, layer?: string) {
+//     super(scope, id, 'OpsWorks', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
 //       Stack: stack,
 //       App: app,
 //       Layer: layer,
@@ -307,8 +307,8 @@ export abstract class Action extends cdk.Construct {
 // }
 
 // export class ECSDeploy extends DeployAction {
-//   constructor(scope: Stage, scid: string, clusterName: string, serviceName: string, fileName?: string) {
-//     super(scope, scid, 'ECS', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
+//   constructor(scope: Stage, id: string, clusterName: string, serviceName: string, fileName?: string) {
+//     super(scope, id, 'ECS', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
 //       ClusterName: clusterName,
 //       ServiceName: serviceName,
 //       FileName: fileName,
@@ -353,16 +353,16 @@ export abstract class Action extends cdk.Construct {
 */
 
 // export class JenkinsBuild extends BuildAction {
-//   constructor(scope: Stage, scid: string, jenkinsProvider: string, project: string) {
-//     super(scope, scid, jenkinsProvider, DefaultBounds(), {
+//   constructor(scope: Stage, id: string, jenkinsProvider: string, project: string) {
+//     super(scope, id, jenkinsProvider, DefaultBounds(), {
 //       ProjectName: project
 //     });
 //   }
 // }
 
 // export class JenkinsTest extends TestAction {
-//   constructor(scope: Stage, scid: string, jenkinsProvider: string, project: string) {
-//     super(scope, scid, jenkinsProvider, DefaultBounds(), {
+//   constructor(scope: Stage, id: string, jenkinsProvider: string, project: string) {
+//     super(scope, id, jenkinsProvider, DefaultBounds(), {
 //       ProjectName: project
 //     });
 //   }

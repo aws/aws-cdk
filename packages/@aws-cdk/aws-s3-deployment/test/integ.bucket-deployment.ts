@@ -4,8 +4,8 @@ import path = require('path');
 import s3deploy = require('../lib');
 
 class TestBucketDeployment extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string) {
-    super(scope, scid);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const destinationBucket = new s3.Bucket(this, 'Destination', {
       websiteIndexDocument: 'index.html',

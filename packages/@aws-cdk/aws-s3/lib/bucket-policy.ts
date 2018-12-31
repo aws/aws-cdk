@@ -22,8 +22,8 @@ export class BucketPolicy extends Construct {
    */
   public readonly document = new PolicyDocument();
 
-  constructor(scope: Construct, scid: string, props: BucketPolicyProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: BucketPolicyProps) {
+    super(scope, id);
 
     if (!props.bucket.bucketName) {
       throw new Error('Bucket doesn\'t have a bucketName defined');

@@ -183,8 +183,8 @@ export class Queue extends QueueBase {
   /**
    * Import an existing queue
    */
-  public static import(scope: cdk.Construct, scid: string, props: QueueImportProps): IQueue {
-    return new ImportedQueue(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: QueueImportProps): IQueue {
+    return new ImportedQueue(scope, id, props);
   }
 
   /**
@@ -209,8 +209,8 @@ export class Queue extends QueueBase {
 
   protected readonly autoCreatePolicy = true;
 
-  constructor(scope: cdk.Construct, scid: string, props: QueueProps = {}) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: QueueProps = {}) {
+    super(scope, id);
 
     validateProps(props);
 

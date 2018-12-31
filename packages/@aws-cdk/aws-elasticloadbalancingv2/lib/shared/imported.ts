@@ -15,8 +15,8 @@ export abstract class ImportedTargetGroupBase extends cdk.Construct implements I
    */
   public readonly loadBalancerArns: string;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: TargetGroupImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: TargetGroupImportProps) {
+    super(scope, id);
 
     this.targetGroupArn = props.targetGroupArn;
     this.loadBalancerArns = props.loadBalancerArns || new cdk.AwsNoValue().toString();

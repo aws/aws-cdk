@@ -24,8 +24,8 @@ export class RemoteDesktopGateway extends cdk.Construct implements ec2.IConnecta
   private static readonly PORT = 3389;
   public readonly connections: ec2.Connections;
 
-  constructor(scope: cdk.Construct, scid: string, props: RemoteDesktopGatewayProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: RemoteDesktopGatewayProps) {
+    super(scope, id);
 
     const params: any = {
       RDGWCIDR: props.rdgwCIDR,

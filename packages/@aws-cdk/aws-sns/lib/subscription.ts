@@ -31,8 +31,8 @@ export interface SubscriptionProps {
  * this class.
  */
 export class Subscription extends Construct {
-  constructor(scope: Construct, scid: string, props: SubscriptionProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: SubscriptionProps) {
+    super(scope, id);
 
     new CfnSubscription(this, 'Resource', {
       endpoint: props.endpoint,

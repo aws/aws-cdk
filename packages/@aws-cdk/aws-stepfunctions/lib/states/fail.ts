@@ -37,8 +37,8 @@ export class Fail extends State {
     private readonly error: string;
     private readonly cause?: string;
 
-    constructor(scope: cdk.Construct, scid: string, props: FailProps) {
-        super(scope, scid, props);
+    constructor(scope: cdk.Construct, id: string, props: FailProps) {
+        super(scope, id, props);
 
         this.error = props.error;
         this.cause = props.cause;

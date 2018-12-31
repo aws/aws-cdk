@@ -229,8 +229,8 @@ export class LogGroup extends LogGroupBase {
   /**
    * Import an existing LogGroup
    */
-  public static import(scope: cdk.Construct, scid: string, props: LogGroupImportProps): ILogGroup {
-    return new ImportedLogGroup(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: LogGroupImportProps): ILogGroup {
+    return new ImportedLogGroup(scope, id, props);
   }
 
   /**
@@ -243,8 +243,8 @@ export class LogGroup extends LogGroupBase {
    */
   public readonly logGroupName: string;
 
-  constructor(scope: cdk.Construct, scid: string, props: LogGroupProps = {}) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: LogGroupProps = {}) {
+    super(scope, id);
 
     let retentionInDays = props.retentionDays;
     if (retentionInDays === undefined) { retentionInDays = 731; }
@@ -291,8 +291,8 @@ class ImportedLogGroup extends LogGroupBase {
    */
   public readonly logGroupName: string;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: LogGroupImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: LogGroupImportProps) {
+    super(scope, id);
 
     this.logGroupArn = props.logGroupArn;
     this.logGroupName = cdk.ArnUtils.resourceNameComponent(props.logGroupArn, ':');

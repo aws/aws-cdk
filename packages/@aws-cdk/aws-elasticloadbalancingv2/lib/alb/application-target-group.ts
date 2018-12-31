@@ -66,17 +66,17 @@ export class ApplicationTargetGroup extends TargetGroupBase {
   /**
    * Import an existing target group
    */
-  public static import(scope: cdk.Construct, scid: string, props: TargetGroupImportProps): IApplicationTargetGroup {
-    return new ImportedApplicationTargetGroup(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
+    return new ImportedApplicationTargetGroup(scope, id, props);
   }
 
   private readonly connectableMembers: ConnectableMember[];
   private readonly listeners: IApplicationListener[];
 
-  constructor(scope: cdk.Construct, scid: string, props: ApplicationTargetGroupProps) {
+  constructor(scope: cdk.Construct, id: string, props: ApplicationTargetGroupProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
 
-    super(scope, scid, props, {
+    super(scope, id, props, {
       protocol,
       port,
     });

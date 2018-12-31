@@ -137,8 +137,8 @@ export abstract class State extends cdk.Construct implements IChainable {
      */
     private readonly incomingStates: State[] = [];
 
-    constructor(scope: cdk.Construct, scid: string, props: StateProps) {
-        super(scope, scid);
+    constructor(scope: cdk.Construct, id: string, props: StateProps) {
+        super(scope, id);
 
         this.startState = this;
 
@@ -149,7 +149,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     }
 
     public get id() {
-        return this.node.scid;
+        return this.node.id;
     }
 
     /**

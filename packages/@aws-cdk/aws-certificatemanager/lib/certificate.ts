@@ -73,8 +73,8 @@ export class Certificate extends Construct implements ICertificate {
   /**
    * Import a certificate
    */
-  public static import(scope: Construct, scid: string, props: CertificateImportProps): ICertificate {
-    return new ImportedCertificate(scope, scid, props);
+  public static import(scope: Construct, id: string, props: CertificateImportProps): ICertificate {
+    return new ImportedCertificate(scope, id, props);
   }
 
   /**
@@ -82,8 +82,8 @@ export class Certificate extends Construct implements ICertificate {
    */
   public readonly certificateArn: string;
 
-  constructor(scope: Construct, scid: string, props: CertificateProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: CertificateProps) {
+    super(scope, id);
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 

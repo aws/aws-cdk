@@ -43,8 +43,8 @@ export interface SucceedProps {
 export class Succeed extends State {
     public readonly endStates: INextable[] = [];
 
-    constructor(scope: cdk.Construct, scid: string, props: SucceedProps = {}) {
-        super(scope, scid, props);
+    constructor(scope: cdk.Construct, id: string, props: SucceedProps = {}) {
+        super(scope, id, props);
     }
 
     /**

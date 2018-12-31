@@ -196,7 +196,7 @@ export = {
 
     class Child extends Construct {
       public validate() {
-        return [ `Error from ${this.node.scid}` ];
+        return [ `Error from ${this.node.id}` ];
       }
     }
 
@@ -219,8 +219,8 @@ export = {
 
   'app.synthesizeStack(stack) will return a list of missing contextual information'(test: Test) {
     class MyStack extends Stack {
-      constructor(scope: App, scid: string, props?: StackProps) {
-        super(scope, scid, props);
+      constructor(scope: App, id: string, props?: StackProps) {
+        super(scope, id, props);
 
         this.reportMissingContext('missing-context-key', {
           provider: 'fake',
@@ -318,8 +318,8 @@ export = {
 };
 
 class MyConstruct extends Construct {
-  constructor(scope: Construct, scid: string) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
 
     new Resource(this, 'r1', { type: 'ResourceType1' });
     new Resource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.getContext('ctx1') } });

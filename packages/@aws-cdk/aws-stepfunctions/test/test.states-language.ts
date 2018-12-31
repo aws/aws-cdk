@@ -685,8 +685,8 @@ export = {
 class ReusableStateMachine extends stepfunctions.StateMachineFragment {
     public readonly startState: stepfunctions.State;
     public readonly endStates: stepfunctions.INextable[];
-    constructor(scope: cdk.Construct, scid: string) {
-        super(scope, scid);
+    constructor(scope: cdk.Construct, id: string) {
+        super(scope, id);
 
         const choice = new stepfunctions.Choice(this, 'Choice')
             .when(stepfunctions.Condition.stringEquals('$.branch', 'left'), new stepfunctions.Pass(this, 'Left Branch'))
@@ -702,8 +702,8 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
     public readonly endStates: stepfunctions.INextable[];
 
     private readonly task2: stepfunctions.Task;
-    constructor(scope: cdk.Construct, scid: string) {
-        super(scope, scid);
+    constructor(scope: cdk.Construct, id: string) {
+        super(scope, id);
 
         const task1 = new stepfunctions.Task(this, 'Task1', { resource: new FakeResource() });
         this.task2 = new stepfunctions.Task(this, 'Task2', { resource: new FakeResource() });

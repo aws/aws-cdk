@@ -62,8 +62,8 @@ export class Wait extends State implements INextable {
     private readonly secondsPath?: string;
     private readonly timestampPath?: string;
 
-    constructor(scope: cdk.Construct, scid: string, props: WaitProps) {
-        super(scope, scid, props);
+    constructor(scope: cdk.Construct, id: string, props: WaitProps) {
+        super(scope, id, props);
 
         this.seconds = props.seconds;
         this.timestamp = props.timestamp;

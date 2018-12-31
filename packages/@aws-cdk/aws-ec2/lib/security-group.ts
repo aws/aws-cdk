@@ -138,8 +138,8 @@ export class SecurityGroup extends SecurityGroupBase implements ITaggable {
   /**
    * Import an existing SecurityGroup
    */
-  public static import(scope: Construct, scid: string, props: SecurityGroupImportProps): ISecurityGroup {
-    return new ImportedSecurityGroup(scope, scid, props);
+  public static import(scope: Construct, id: string, props: SecurityGroupImportProps): ISecurityGroup {
+    return new ImportedSecurityGroup(scope, id, props);
   }
 
   /**
@@ -168,8 +168,8 @@ export class SecurityGroup extends SecurityGroupBase implements ITaggable {
 
   private readonly allowAllOutbound: boolean;
 
-  constructor(scope: Construct, scid: string, props: SecurityGroupProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: SecurityGroupProps) {
+    super(scope, id);
 
     this.tags = new TagManager(this, { initialTags: props.tags});
     const groupDescription = props.description || this.node.path;
@@ -396,8 +396,8 @@ export interface ConnectionRule {
 class ImportedSecurityGroup extends SecurityGroupBase {
   public readonly securityGroupId: string;
 
-  constructor(scope: Construct, scid: string, private readonly props: SecurityGroupImportProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, private readonly props: SecurityGroupImportProps) {
+    super(scope, id);
 
     this.securityGroupId = props.securityGroupId;
   }

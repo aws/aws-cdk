@@ -197,8 +197,8 @@ export class Function extends FunctionBase {
    * @param props A reference to a Lambda function. Can be created manually (see
    * example above) or obtained through a call to `lambda.export()`.
    */
-  public static import(scope: cdk.Construct, scid: string, props: FunctionImportProps): IFunction {
-    return new ImportedFunction(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: FunctionImportProps): IFunction {
+    return new ImportedFunction(scope, id, props);
   }
 
   /**
@@ -303,8 +303,8 @@ export class Function extends FunctionBase {
    */
   private readonly environment?: { [key: string]: any };
 
-  constructor(scope: cdk.Construct, scid: string, props: FunctionProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: FunctionProps) {
+    super(scope, id);
 
     this.environment = props.environment || { };
 

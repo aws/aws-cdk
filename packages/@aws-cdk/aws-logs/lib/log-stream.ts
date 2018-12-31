@@ -60,8 +60,8 @@ export class LogStream extends cdk.Construct implements ILogStream {
   /**
    * Import an existing LogGroup
    */
-  public static import(scope: cdk.Construct, scid: string, props: LogStreamImportProps): ILogStream {
-    return new ImportedLogStream(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: LogStreamImportProps): ILogStream {
+    return new ImportedLogStream(scope, id, props);
   }
 
   /**
@@ -69,8 +69,8 @@ export class LogStream extends cdk.Construct implements ILogStream {
    */
   public readonly logStreamName: string;
 
-  constructor(scope: cdk.Construct, scid: string, props: LogStreamProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: LogStreamProps) {
+    super(scope, id);
 
     const resource = new CfnLogStream(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
@@ -103,8 +103,8 @@ class ImportedLogStream extends cdk.Construct implements ILogStream {
    */
   public readonly logStreamName: string;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: LogStreamImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: LogStreamImportProps) {
+    super(scope, id);
 
     this.logStreamName = props.logStreamName;
   }

@@ -161,8 +161,8 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
    * @param id Construct ID
    * @param props Imported rest API properties
    */
-  public static import(scope: cdk.Construct, scid: string, props: RestApiImportProps): IRestApi {
-    return new ImportedRestApi(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: RestApiImportProps): IRestApi {
+    return new ImportedRestApi(scope, id, props);
   }
 
   /**
@@ -201,11 +201,11 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
 
   private readonly methods = new Array<Method>();
 
-  constructor(scope: cdk.Construct, scid: string, props: RestApiProps = { }) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: RestApiProps = { }) {
+    super(scope, id);
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: props.restApiName || scid,
+      name: props.restApiName || id,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,

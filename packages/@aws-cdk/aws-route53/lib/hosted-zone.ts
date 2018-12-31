@@ -29,8 +29,8 @@ export interface PublicHostedZoneProps {
 }
 
 export abstract class HostedZone extends cdk.Construct implements IHostedZone {
-  public static import(scope: cdk.Construct, scid: string, props: HostedZoneImportProps): IHostedZone {
-    return new ImportedHostedZone(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: HostedZoneImportProps): IHostedZone {
+    return new ImportedHostedZone(scope, id, props);
   }
 
   public abstract readonly hostedZoneId: string;
@@ -63,8 +63,8 @@ export class PublicHostedZone extends HostedZone {
    */
   public readonly nameServers: HostedZoneNameServers;
 
-  constructor(scope: cdk.Construct, scid: string, props: PublicHostedZoneProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: PublicHostedZoneProps) {
+    super(scope, id);
 
     validateZoneName(props.zoneName);
 
@@ -110,8 +110,8 @@ export class PrivateHostedZone extends HostedZone {
    */
   private readonly vpcs: CfnHostedZone.VPCProperty[] = [];
 
-  constructor(scope: cdk.Construct, scid: string, props: PrivateHostedZoneProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: PrivateHostedZoneProps) {
+    super(scope, id);
 
     validateZoneName(props.zoneName);
 

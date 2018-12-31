@@ -35,8 +35,8 @@ export class BucketNotifications extends cdk.Construct {
   private resource?: cdk.Resource;
   private readonly bucket: Bucket;
 
-  constructor(scope: cdk.Construct, scid: string, props: NotificationsProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: NotificationsProps) {
+    super(scope, id);
     this.bucket = props.bucket;
   }
 

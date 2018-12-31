@@ -4,15 +4,15 @@ import { ITaggable, TagManager } from '../../lib/core/tag-manager';
 
 class ChildTagger extends Construct implements ITaggable {
   public readonly tags: TagManager;
-  constructor(scope: Construct, scid: string) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
     this.tags = new TagManager(scope);
   }
 }
 
 class Child extends Construct {
-  constructor(scope: Construct, scid: string) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
   }
 }
 

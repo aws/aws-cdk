@@ -141,8 +141,8 @@ export = {
 };
 
 class TestCustomResource extends cdk.Construct {
-  constructor(scope: cdk.Construct, scid: string) {
-  super(scope, scid);
+  constructor(scope: cdk.Construct, id: string) {
+  super(scope, id);
 
   const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {
     uuid: 'TestCustomResourceProvider',

@@ -64,8 +64,8 @@ export interface TestActionProps extends CommonActionProps, CommonActionConstruc
 export abstract class TestAction extends Action {
   public readonly outputArtifact?: Artifact;
 
-  constructor(scope: cdk.Construct, scid: string, props: TestActionProps) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props: TestActionProps) {
+    super(scope, id, {
       category: ActionCategory.Test,
       ...props,
     });

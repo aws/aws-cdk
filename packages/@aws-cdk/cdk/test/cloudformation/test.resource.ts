@@ -279,8 +279,8 @@ export = {
       public readonly r2: Resource;
       public readonly r3: Resource;
 
-      constructor(scope: Construct, scid: string) {
-        super(scope, scid);
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
 
         this.r1 = new Resource(this, 'R1', { type: 'T1' });
         this.r2 = new Resource(this, 'R2', { type: 'T2' });
@@ -297,8 +297,8 @@ export = {
       public readonly r2: Resource;
       public readonly r3: Resource;
 
-      constructor(scope: Construct, scid: string) {
-        super(scope, scid);
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
 
         this.r1 = new Resource(this, 'R1', { type: 'T1' });
         this.r2 = new Resource(this, 'R2', { type: 'T2' });
@@ -315,8 +315,8 @@ export = {
     class C3 extends Construct implements IDependable {
       private readonly c2: C2;
 
-      constructor(scope: Construct, scid: string) {
-        super(scope, scid);
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
 
         this.c2 = new C2(this, 'C2');
       }
@@ -614,8 +614,8 @@ class Counter extends Resource {
   public readonly arn: string;
   public readonly url: string;
 
-  constructor(scope: Construct, scid: string, props: CounterProps) {
-    super(scope, scid, { type: 'My::Counter', properties: { Count: props.Count } });
+  constructor(scope: Construct, id: string, props: CounterProps) {
+    super(scope, id, { type: 'My::Counter', properties: { Count: props.Count } });
     this.arn = this.getAtt('Arn').toString();
     this.url = this.getAtt('URL').toString();
   }
@@ -630,8 +630,8 @@ function withoutHash(logId: string) {
 }
 
 class CustomizableResource extends Resource {
-  constructor(scope: Construct, scid: string, props?: any) {
-    super(scope, scid, { type: 'MyResourceType', properties: props });
+  constructor(scope: Construct, id: string, props?: any) {
+    super(scope, id, { type: 'MyResourceType', properties: props });
   }
 
   public setProperty(key: string, value: any) {

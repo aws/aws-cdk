@@ -51,7 +51,7 @@ export class Artifact extends Construct {
   }
 
   public toString() {
-    return this.node.scid;
+    return this.node.id;
   }
 }
 

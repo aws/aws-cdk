@@ -84,8 +84,8 @@ export class User extends Construct implements IPrincipal {
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
 
-  constructor(scope: Construct, scid: string, props: UserProps = {}) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: UserProps = {}) {
+    super(scope, id);
 
     const user = new CfnUser(this, 'Resource', {
       userName: props.userName,

@@ -4,8 +4,8 @@ import path = require('path');
 import assets = require('../lib');
 
 class TestStack extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     /// !show
     const asset = new assets.FileAsset(this, 'SampleAsset', {

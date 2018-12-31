@@ -44,8 +44,8 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
     /**
      * Import a state machine
      */
-    public static import(scope: cdk.Construct, scid: string, props: StateMachineImportProps): IStateMachine {
-        return new ImportedStateMachine(scope, scid, props);
+    public static import(scope: cdk.Construct, id: string, props: StateMachineImportProps): IStateMachine {
+        return new ImportedStateMachine(scope, id, props);
     }
 
     /**
@@ -68,14 +68,14 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
      */
     private eventsRole?: iam.Role;
 
-    constructor(scope: cdk.Construct, scid: string, props: StateMachineProps) {
-        super(scope, scid);
+    constructor(scope: cdk.Construct, id: string, props: StateMachineProps) {
+        super(scope, id);
 
         this.role = props.role || new iam.Role(this, 'Role', {
             assumedBy: new iam.ServicePrincipal(`states.${new cdk.AwsRegion()}.amazonaws.com`),
         });
 
-        const graph = new StateGraph(props.definition.startState, `State Machine ${scid} definition`);
+        const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
         graph.timeoutSeconds = props.timeoutSec;
 
         const resource = new CfnStateMachine(this, 'Resource', {
@@ -114,7 +114,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
         }
 
         return {
-            id: this.node.scid,
+            id: this.node.id,
             arn: this.stateMachineArn,
             roleArn: this.eventsRole.roleArn,
         };
@@ -226,8 +226,8 @@ export interface StateMachineImportProps {
 
 class ImportedStateMachine extends cdk.Construct implements IStateMachine {
     public readonly stateMachineArn: string;
-    constructor(scope: cdk.Construct, scid: string, private readonly props: StateMachineImportProps) {
-        super(scope, scid);
+    constructor(scope: cdk.Construct, id: string, private readonly props: StateMachineImportProps) {
+        super(scope, id);
         this.stateMachineArn = props.stateMachineArn;
     }
 

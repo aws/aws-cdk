@@ -68,12 +68,12 @@ export class CustomResource extends CfnCustomResource {
 
   private readonly userProperties?: Properties;
 
-  constructor(scope: cdk.Construct, scid: string, props: CustomResourceProps) {
+  constructor(scope: cdk.Construct, id: string, props: CustomResourceProps) {
     if (!!props.lambdaProvider === !!props.topicProvider) {
       throw new Error('Exactly one of "lambdaProvider" or "topicProvider" must be set.');
     }
 
-    super(scope, scid, {
+    super(scope, id, {
       serviceToken: props.lambdaProvider ? props.lambdaProvider.functionArn : props.topicProvider!.topicArn
     });
 

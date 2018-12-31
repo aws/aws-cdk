@@ -119,7 +119,7 @@ export class Stack extends Construct {
     this.env = this.parseEnvironment(props);
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
-    this.name = this.node.scid;
+    this.name = this.node.id;
   }
 
   /**
@@ -326,8 +326,8 @@ export abstract class StackElement extends Construct implements IDependable {
    * @param parent The parent construct
    * @param props Construct properties
    */
-  constructor(scope: Construct, scid: string) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
     const s = Stack.find(this);
     if (!s) {
       throw new Error('The tree root must be derived from "Stack"');
@@ -365,7 +365,7 @@ export abstract class StackElement extends Construct implements IDependable {
    * Return the path with respect to the stack
    */
   public get stackPath(): string {
-    return this.node.ancestors(this.stack).map(c => c.node.scid).join(PATH_SEP);
+    return this.node.ancestors(this.stack).map(c => c.node.id).join(PATH_SEP);
   }
 
   public get dependencyElements(): IDependable[] {

@@ -78,8 +78,8 @@ export class Resource extends Referenceable {
    * Creates a resource construct.
    * @param resourceType The CloudFormation type of this resource (e.g. AWS::DynamoDB::Table)
    */
-  constructor(scope: Construct, scid: string, props: ResourceProps) {
-    super(scope, scid);
+  constructor(scope: Construct, id: string, props: ResourceProps) {
+    super(scope, id);
 
     if (!props.type) {
       throw new Error('The `type` property is required');

@@ -94,12 +94,12 @@ export abstract class BaseService extends cdk.Construct
   private scalableTaskCount?: ScalableTaskCount;
 
   constructor(scope: cdk.Construct,
-              scid: string,
+              id: string,
               props: BaseServiceProps,
               additionalProps: any,
               clusterName: string,
               taskDefinition: TaskDefinition) {
-    super(scope, scid);
+    super(scope, id);
 
     this.taskDefinition = taskDefinition;
 
@@ -212,7 +212,7 @@ export abstract class BaseService extends cdk.Construct
 
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
-      containerName: this.taskDefinition.defaultContainer!.node.scid,
+      containerName: this.taskDefinition.defaultContainer!.node.id,
       containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
 

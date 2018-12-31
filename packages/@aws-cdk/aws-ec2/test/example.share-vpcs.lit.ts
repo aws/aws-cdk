@@ -8,8 +8,8 @@ interface ConstructThatTakesAVpcProps {
 }
 
 class ConstructThatTakesAVpc extends cdk.Construct {
-  constructor(scope: cdk.Construct, scid: string, _props: ConstructThatTakesAVpcProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, _props: ConstructThatTakesAVpcProps) {
+    super(scope, id);
   }
 }
 
@@ -17,8 +17,8 @@ class ConstructThatTakesAVpc extends cdk.Construct {
 class Stack1 extends cdk.Stack {
   public readonly vpcProps: ec2.VpcNetworkImportProps;
 
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const vpc = new ec2.VpcNetwork(this, 'VPC');
 
@@ -32,8 +32,8 @@ interface Stack2Props extends cdk.StackProps {
 }
 
 class Stack2 extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props: Stack2Props) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props: Stack2Props) {
+    super(scope, id, props);
 
     // Import the VPC from a set of properties
     const vpc = ec2.VpcNetwork.import(this, 'VPC', props.vpcProps);

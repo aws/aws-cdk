@@ -81,8 +81,8 @@ export class Asset extends cdk.Construct {
    */
   private readonly s3Prefix: string;
 
-  constructor(scope: cdk.Construct, scid: string, props: GenericAssetProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: GenericAssetProps) {
+    super(scope, id);
 
     // resolve full path
     this.assetPath = path.resolve(props.path);
@@ -197,8 +197,8 @@ export interface FileAssetProps {
  * An asset that represents a file on disk.
  */
 export class FileAsset extends Asset {
-  constructor(scope: cdk.Construct, scid: string, props: FileAssetProps) {
-    super(scope, scid, { packaging: AssetPackaging.File, ...props });
+  constructor(scope: cdk.Construct, id: string, props: FileAssetProps) {
+    super(scope, id, { packaging: AssetPackaging.File, ...props });
   }
 }
 
@@ -219,8 +219,8 @@ export interface ZipDirectoryAssetProps {
  * An asset that represents a ZIP archive of a directory on disk.
  */
 export class ZipDirectoryAsset extends Asset {
-  constructor(scope: cdk.Construct, scid: string, props: ZipDirectoryAssetProps) {
-    super(scope, scid, { packaging: AssetPackaging.ZipDirectory, ...props });
+  constructor(scope: cdk.Construct, id: string, props: ZipDirectoryAssetProps) {
+    super(scope, id, { packaging: AssetPackaging.ZipDirectory, ...props });
   }
 }
 

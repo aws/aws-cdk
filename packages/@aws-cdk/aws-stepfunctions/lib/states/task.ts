@@ -87,8 +87,8 @@ export class Task extends State implements INextable {
     private readonly timeoutSeconds?: number;
     private readonly heartbeatSeconds?: number;
 
-    constructor(scope: cdk.Construct, scid: string, props: TaskProps) {
-        super(scope, scid, props);
+    constructor(scope: cdk.Construct, id: string, props: TaskProps) {
+        super(scope, id, props);
 
         this.timeoutSeconds = props.timeoutSeconds;
         this.heartbeatSeconds = props.heartbeatSeconds;

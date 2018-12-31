@@ -96,8 +96,8 @@ export class Resource extends cdk.Construct implements IRestApiResource {
   public readonly defaultIntegration?: Integration;
   public readonly defaultMethodOptions?: MethodOptions;
 
-  constructor(scope: cdk.Construct, scid: string, props: ResourceProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: ResourceProps) {
+    super(scope, id);
 
     validateResourcePathPart(props.pathPart);
 
@@ -173,8 +173,8 @@ export class ProxyResource extends Resource {
 
   private readonly parentResource: IRestApiResource;
 
-  constructor(scope: cdk.Construct, scid: string, props: ProxyResourceProps) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props: ProxyResourceProps) {
+    super(scope, id, {
       parent: props.parent,
       pathPart: '{proxy+}',
       defaultIntegration: props.defaultIntegration,

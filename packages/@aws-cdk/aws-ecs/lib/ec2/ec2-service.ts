@@ -72,7 +72,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   private readonly daemon: boolean;
   private readonly cluster: ICluster;
 
-  constructor(scope: cdk.Construct, scid: string, props: Ec2ServiceProps) {
+  constructor(scope: cdk.Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
     }
@@ -81,7 +81,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
-    super(scope, scid, {
+    super(scope, id, {
       ...props,
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
@@ -193,7 +193,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
 
     this.loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
-      containerName: this.taskDefinition.defaultContainer!.node.scid,
+      containerName: this.taskDefinition.defaultContainer!.node.id,
       containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
   }

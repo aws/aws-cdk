@@ -89,11 +89,11 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
   /**
    * Create a new Stage.
    */
-  constructor(scope: cdk.Construct, scid: string, props: StageProps) {
-    super(scope, scid);
-    this.name = scid;
+  constructor(scope: cdk.Construct, id: string, props: StageProps) {
+    super(scope, id);
+    this.name = id;
     this.pipeline = props.pipeline;
-    cpapi.validateName('Stage', scid);
+    cpapi.validateName('Stage', id);
 
     (this.pipeline as any)._attachStage(this, props.placement);
   }
@@ -115,7 +115,7 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
 
   public render(): CfnPipeline.StageDeclarationProperty {
     return {
-      name: this.node.scid,
+      name: this.node.id,
       actions: this._actions.map(action => this.renderAction(action)),
     };
   }
@@ -128,7 +128,7 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
       source: [ 'aws.codepipeline' ],
       resources: [ this.pipeline.pipelineArn ],
       detail: {
-        stage: [ this.node.scid ],
+        stage: [ this.node.id ],
       },
     });
     return rule;
@@ -155,7 +155,7 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
 
   private renderAction(action: cpapi.Action): CfnPipeline.ActionDeclarationProperty {
     return {
-      name: action.node.scid,
+      name: action.node.id,
       inputArtifacts: action._inputArtifacts.map(a => ({ name: a.name })),
       actionTypeId: {
         category: action.category.toString(),
@@ -171,7 +171,7 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
 
   private validateHasActions(): string[] {
     if (this._actions.length === 0) {
-      return [`Stage '${this.node.scid}' must have at least one action`];
+      return [`Stage '${this.node.id}' must have at least one action`];
     }
     return [];
   }

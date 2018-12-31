@@ -316,12 +316,12 @@ export class Stream extends StreamBase {
    * Creates a Stream construct that represents an external stream.
    *
    * @param scope The parent creating construct (usually `this`).
-   * @param scid The construct's name.
+   * @param id The construct's name.
    * @param ref A `StreamAttributes` object. Can be obtained from a call to
    * `stream.export()`.
    */
-  public static import(scope: cdk.Construct, scid: string, props: StreamImportProps): IStream {
-    return new ImportedStream(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: StreamImportProps): IStream {
+    return new ImportedStream(scope, id, props);
   }
 
   public readonly streamArn: string;
@@ -330,8 +330,8 @@ export class Stream extends StreamBase {
 
   private readonly stream: CfnStream;
 
-  constructor(scope: cdk.Construct, scid: string, props: StreamProps = {}) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, props: StreamProps = {}) {
+    super(scope, id);
 
     const shardCount = props.shardCount || 1;
     const retentionPeriodHours = props.retentionPeriodHours || 24;
@@ -422,8 +422,8 @@ class ImportedStream extends StreamBase {
   public readonly streamName: string;
   public readonly encryptionKey?: kms.IEncryptionKey;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: StreamImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: StreamImportProps) {
+    super(scope, id);
 
     this.streamArn = props.streamArn;
 

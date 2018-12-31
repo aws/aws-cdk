@@ -20,12 +20,12 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
  * Define a new network load balancer
  */
 export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoadBalancer {
-  public static import(scope: cdk.Construct, scid: string, props: NetworkLoadBalancerImportProps): INetworkLoadBalancer {
-    return new ImportedNetworkLoadBalancer(scope, scid, props);
+  public static import(scope: cdk.Construct, id: string, props: NetworkLoadBalancerImportProps): INetworkLoadBalancer {
+    return new ImportedNetworkLoadBalancer(scope, id, props);
   }
 
-  constructor(scope: cdk.Construct, scid: string, props: NetworkLoadBalancerProps) {
-    super(scope, scid, props, {
+  constructor(scope: cdk.Construct, id: string, props: NetworkLoadBalancerProps) {
+    super(scope, id, props, {
       type: "network",
     });
 
@@ -237,8 +237,8 @@ class ImportedNetworkLoadBalancer extends cdk.Construct implements INetworkLoadB
    */
   public readonly vpc?: ec2.IVpcNetwork;
 
-  constructor(scope: cdk.Construct, scid: string, private readonly props: NetworkLoadBalancerImportProps) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string, private readonly props: NetworkLoadBalancerImportProps) {
+    super(scope, id);
 
     this.loadBalancerArn = props.loadBalancerArn;
   }
