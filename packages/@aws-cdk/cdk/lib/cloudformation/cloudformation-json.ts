@@ -1,5 +1,5 @@
 import { resolve, Token } from "../core/tokens";
-import { isIntrinsic } from "./cloudformation-token";
+import { isIntrinsic } from "./tokens";
 
 /**
  * Class for JSON routines that are framework-aware

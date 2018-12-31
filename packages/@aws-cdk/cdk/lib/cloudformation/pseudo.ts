@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { StackAwareToken } from './cloudformation-token';
+import { StackAwareToken } from './tokens';
 
 /**
  * Accessor for pseudo parameters

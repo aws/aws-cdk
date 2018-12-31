@@ -40,7 +40,7 @@ class ConsumingStack extends cdk.Stack {
   constructor(parent, id, providingStack) {
     super(parent, id);
 
-    new cdk.Output(this, 'IConsumedSomething', { value: providingStack.accountId });
+    new cdk.Output(this, 'IConsumedSomething', { value: providingStack.stackName });
   }
 }
 
@@ -51,7 +51,7 @@ new MyStack(app, 'cdk-toolkit-integration-test-1');
 new YourStack(app, 'cdk-toolkit-integration-test-2');
 // Not included in wildcard
 new IamStack(app, 'cdk-toolkit-integration-iam-test');
-const providing = new ProvidingStack(app, 'cdk-toolkit-integration-providing');
-new ConsumingStack(app, 'cdk-toolkit-integration-consuming', providing);
+const providing = new ProvidingStack(app, 'cdk-toolkit-integration-order-providing');
+new ConsumingStack(app, 'cdk-toolkit-integration-order-consuming', providing);
 
 app.run();

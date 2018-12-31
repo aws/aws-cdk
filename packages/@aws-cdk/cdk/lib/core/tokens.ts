@@ -1,4 +1,4 @@
-import { cloudFormationConcat } from "../cloudformation/cloudformation-token";
+import { cloudFormationConcat } from "../cloudformation/resolve-concat";
 
 /**
  * If objects has a function property by this name, they will be considered tokens, and this

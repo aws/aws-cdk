@@ -3,9 +3,9 @@ import { App } from '../app';
 import { Construct, PATH_SEP } from '../core/construct';
 import { resolve, RESOLVE_OPTIONS, Token, unresolved } from '../core/tokens';
 import { Environment } from '../environment';
-import { StackAwareToken } from './cloudformation-token';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
+import { StackAwareToken } from './tokens';
 
 export interface StackProps {
   /**

@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
-import { StackAwareToken } from './cloudformation-token';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { IDependable, Referenceable, Stack, StackElement } from './stack';
+import { StackAwareToken } from './tokens';
 
 export interface ResourceProps {
   /**
