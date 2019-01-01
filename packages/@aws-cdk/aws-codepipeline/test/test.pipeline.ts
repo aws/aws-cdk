@@ -416,7 +416,9 @@ export = {
       const pipelineRegion = 'us-west-2';
       const pipelineAccount = '123';
 
-      const stack = new cdk.Stack(undefined, undefined, {
+      const app = new cdk.App();
+
+      const stack = new cdk.Stack(app, 'TestStack', {
         env: {
           region: pipelineRegion,
           account: pipelineAccount,

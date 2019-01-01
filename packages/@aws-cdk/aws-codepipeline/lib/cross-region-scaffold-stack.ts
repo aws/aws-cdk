@@ -28,7 +28,7 @@ export class CrossRegionScaffoldStack extends cdk.Stack {
    */
   public readonly replicationBucketName: string;
 
-  constructor(scope?: cdk.App, props: CrossRegionScaffoldStackProps = defaultCrossRegionScaffoldStackProps()) {
+  constructor(scope: cdk.App, props: CrossRegionScaffoldStackProps) {
     super(scope, generateStackName(props), {
       env: {
         region: props.region,
@@ -60,9 +60,4 @@ function generateUniqueName(baseName: string, region: string, account: string,
   const hash = sha256.digest('hex').slice(0, hashPartLen);
 
   return baseName + (toUpperCase ? hash.toUpperCase() : hash.toLowerCase());
-}
-
-// purely to defeat the limitation that a required argument cannot follow an optional one
-function defaultCrossRegionScaffoldStackProps(): CrossRegionScaffoldStackProps {
-  throw new Error('The props argument when creating a CrossRegionScaffoldStack is required');
 }
