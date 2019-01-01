@@ -8,7 +8,7 @@ import { CfnDeploymentConfig } from './codedeploy.generated';
  * To create a custom Deployment Configuration,
  * instantiate the {@link ServerDeploymentConfig} Construct.
  */
-export interface IServerDeploymentConfig {
+export interface IServerDeploymentConfig extends cdk.IConstruct {
   readonly deploymentConfigName: string;
   readonly deploymentConfigArn: string;
   export(): ServerDeploymentConfigImportProps;

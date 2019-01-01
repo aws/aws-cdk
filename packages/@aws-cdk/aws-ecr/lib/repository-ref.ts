@@ -7,7 +7,7 @@ import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipelin
 /**
  * Represents an ECR repository.
  */
-export interface IRepository {
+export interface IRepository extends cdk.IConstruct {
   /**
    * The name of the repository
    */

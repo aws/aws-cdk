@@ -187,7 +187,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 /**
  * A network load balancer
  */
-export interface INetworkLoadBalancer {
+export interface INetworkLoadBalancer extends cdk.IConstruct {
   /**
    * The ARN of this load balancer
    */

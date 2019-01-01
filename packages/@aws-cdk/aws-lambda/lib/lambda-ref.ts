@@ -12,7 +12,7 @@ import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
 
-export interface IFunction extends events.IEventRuleTarget, logs.ILogSubscriptionDestination,
+export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
   s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource {
 
   /**

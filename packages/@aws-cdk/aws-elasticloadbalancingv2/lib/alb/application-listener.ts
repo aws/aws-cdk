@@ -258,7 +258,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 /**
  * Properties to reference an existing listener
  */
-export interface IApplicationListener extends ec2.IConnectable, cdk.IDependable {
+export interface IApplicationListener extends cdk.IConstruct, ec2.IConnectable, cdk.IDependable {
   /**
    * ARN of the listener
    */

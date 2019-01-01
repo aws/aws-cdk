@@ -14,7 +14,7 @@ export interface RestApiImportProps {
   restApiId: string;
 }
 
-export interface IRestApi {
+export interface IRestApi extends cdk.IConstruct {
   /**
    * The ID of this API Gateway RestApi.
    */

@@ -11,7 +11,7 @@ import { CfnDeploymentGroup } from './codedeploy.generated';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from "./deployment-config";
 import { CommonPipelineDeployActionProps, PipelineDeployAction } from "./pipeline-action";
 
-export interface IServerDeploymentGroup {
+export interface IServerDeploymentGroup extends cdk.IConstruct {
   readonly application: IServerApplication;
   readonly role?: iam.Role;
   readonly deploymentGroupName: string;

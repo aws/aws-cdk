@@ -20,7 +20,7 @@ const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
-export interface IProject extends events.IEventRuleTarget {
+export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
   /** The ARN of this Project. */
   readonly projectArn: string;
 

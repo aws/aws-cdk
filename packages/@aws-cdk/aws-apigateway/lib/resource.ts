@@ -4,7 +4,7 @@ import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { RestApi } from './restapi';
 
-export interface IRestApiResource {
+export interface IRestApiResource extends cdk.IConstruct {
   /**
    * The rest API that this resource is part of.
    *

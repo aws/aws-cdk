@@ -2,7 +2,7 @@ import cdk = require('@aws-cdk/cdk');
 import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 
-export interface ILogStream {
+export interface ILogStream extends cdk.IConstruct {
   /**
    * The name of this log stream
    */

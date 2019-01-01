@@ -202,7 +202,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
 /**
  * A State Machine
  */
-export interface IStateMachine {
+export interface IStateMachine extends cdk.IConstruct {
     /**
      * The ARN of the state machine
      */

@@ -208,7 +208,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
 /**
  * An ECS cluster
  */
-export interface ICluster {
+export interface ICluster extends cdk.IConstruct {
   /**
    * Name of the cluster
    */

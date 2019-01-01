@@ -4,7 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 import { CfnRepository } from './codecommit.generated';
 import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 
-export interface IRepository {
+export interface IRepository extends cdk.IConstruct {
   /** The ARN of this Repository. */
   readonly repositoryArn: string;
 

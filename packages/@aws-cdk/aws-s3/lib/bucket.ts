@@ -11,7 +11,7 @@ import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
-export interface IBucket {
+export interface IBucket extends cdk.IConstruct {
   /**
    * The ARN of the bucket.
    */

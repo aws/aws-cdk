@@ -1,10 +1,10 @@
-import { Construct, ITaggable, Output, TagManager, Tags, Token } from '@aws-cdk/cdk';
+import { Construct, IConstruct, ITaggable, Output, TagManager, Tags, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
 import { IVpcNetwork } from './vpc-ref';
 
-export interface ISecurityGroup extends ISecurityGroupRule, IConnectable {
+export interface ISecurityGroup extends IConstruct, ISecurityGroupRule, IConnectable {
   readonly securityGroupId: string;
   addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string): void;
   addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string): void;

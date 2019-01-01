@@ -476,7 +476,7 @@ export enum HttpCodeTarget {
 /**
  * An application load balancer
  */
-export interface IApplicationLoadBalancer extends ec2.IConnectable {
+export interface IApplicationLoadBalancer extends cdk.IConstruct, ec2.IConnectable {
   /**
    * The ARN of this load balancer
    */

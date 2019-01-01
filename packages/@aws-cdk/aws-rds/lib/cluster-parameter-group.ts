@@ -5,7 +5,7 @@ import { CfnDBClusterParameterGroup } from './rds.generated';
 /**
  * A cluster parameter group
  */
-export interface IClusterParameterGroup {
+export interface IClusterParameterGroup extends cdk.IConstruct {
   /**
    * Name of this parameter group
    */

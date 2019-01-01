@@ -42,7 +42,7 @@ export class ConstructNode {
    */
   private _locked = false;
 
-  constructor(private readonly host: IConstruct, scope: IConstruct, id: string) {
+  constructor(private readonly host: Construct, scope: IConstruct, id: string) {
     id = id || ''; // if undefined, convert to empty string
 
     this.id = id;
@@ -263,8 +263,7 @@ export class ConstructNode {
       errors = errors.concat(child.node.validateTree());
     }
 
-    // we use "as any" in order to allow "validate" to be "protected"
-    const localErrors: string[] = (this.host as any).validate();
+    const localErrors: string[] = this.host.validate();
     return errors.concat(localErrors.map(msg => new ValidationError(this.host, msg)));
   }
 
@@ -423,7 +422,7 @@ export class Construct implements IConstruct {
    *
    * @returns An array of validation error messages, or an empty array if there the construct is valid.
    */
-  protected validate(): string[] {
+  public validate(): string[] {
     return [];
   }
 }

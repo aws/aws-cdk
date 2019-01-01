@@ -1,9 +1,9 @@
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, Output, resolve } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IConstruct, Output, resolve } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
 import { CfnKey } from './kms.generated';
 
-export interface IEncryptionKey {
+export interface IEncryptionKey extends IConstruct {
   /**
    * The ARN of the key.
    */

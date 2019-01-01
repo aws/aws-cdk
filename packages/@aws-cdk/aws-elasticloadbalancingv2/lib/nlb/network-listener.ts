@@ -114,7 +114,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 /**
  * Properties to reference an existing listener
  */
-export interface INetworkListener extends cdk.IDependable {
+export interface INetworkListener extends cdk.IConstruct, cdk.IDependable {
   /**
    * ARN of the listener
    */

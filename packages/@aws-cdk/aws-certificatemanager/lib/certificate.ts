@@ -1,8 +1,8 @@
-import { Construct, Output } from '@aws-cdk/cdk';
+import { Construct, IConstruct, Output } from '@aws-cdk/cdk';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
-export interface ICertificate {
+export interface ICertificate extends IConstruct {
   /**
    * The certificate's ARN
    */

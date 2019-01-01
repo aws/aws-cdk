@@ -327,7 +327,7 @@ export interface TargetGroupImportProps {
 /**
  * A target group
  */
-export interface ITargetGroup {
+export interface ITargetGroup extends cdk.IConstruct {
   /**
    * ARN of the target group
    */

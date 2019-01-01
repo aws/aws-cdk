@@ -18,7 +18,7 @@ export interface IVpcSubnet extends IConstruct, IDependable {
   export(): VpcSubnetImportProps;
 }
 
-export interface IVpcNetwork extends IDependable {
+export interface IVpcNetwork extends IConstruct, IDependable {
   /**
    * Identifier for this VPC
    */

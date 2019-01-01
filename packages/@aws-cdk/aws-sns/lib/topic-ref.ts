@@ -10,6 +10,7 @@ import { TopicPolicy } from './policy';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
 export interface ITopic extends
+  cdk.IConstruct,
   events.IEventRuleTarget,
   cloudwatch.IAlarmAction,
   s3n.IBucketNotificationDestination,

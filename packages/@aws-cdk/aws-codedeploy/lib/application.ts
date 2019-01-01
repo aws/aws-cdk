@@ -11,7 +11,7 @@ import { CfnApplication } from './codedeploy.generated';
  * or one defined in a different CDK Stack,
  * use the {@link #import} method.
  */
-export interface IServerApplication {
+export interface IServerApplication extends cdk.IConstruct {
   readonly applicationArn: string;
 
   readonly applicationName: string;

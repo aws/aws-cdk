@@ -4,7 +4,7 @@ import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
 import { CfnStream } from './kinesis.generated';
 
-export interface IStream extends logs.ILogSubscriptionDestination {
+export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestination {
   /**
    * The ARN of the stream.
    */
