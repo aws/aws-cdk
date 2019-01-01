@@ -69,7 +69,7 @@ export = {
     const token = new Token(() => 'lazy');
 
     // WHEN + THEN
-    test.throws(() => new Construct(root, `MyID: ${token}`), /ID components may not include unresolved tokens: MyID: \${Token/);
+    test.throws(() => new Construct(root, `MyID: ${token}`), /Cannot use tokens in construct ID: MyID: \${Token/);
     test.done();
   },
 
@@ -90,7 +90,8 @@ export = {
 
   'cannot calculate uniqueId if the construct path is ["Default"]'(test: Test) {
     const root = new Root();
-    test.throws(() => new Construct(root, 'Default'), /Unable to calculate a unique id for an empty set of components/);
+    const c = new Construct(root, 'Default');
+    test.throws(() => c.node.uniqueId, /Unable to calculate a unique id for an empty set of components/);
     test.done();
   },
 

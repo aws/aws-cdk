@@ -1,5 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { makeUniqueId } from '../util/uniqueid';
+import { unresolved } from './tokens';
 export const PATH_SEP = '/';
 
 /**
@@ -27,18 +28,6 @@ export class ConstructNode {
    * To obtain a global unique id for this construct, use `uniqueId`.
    */
   public readonly id: string;
-
-  /**
-   * The full path of this construct in the tree.
-   * Components are separated by '/'.
-   */
-  public readonly path: string;
-
-  /**
-   * A tree-global unique alphanumeric identifier for this construct.
-   * Includes all components of the tree.
-   */
-  public readonly uniqueId: string;
 
   /**
    * List of children and their names
@@ -76,9 +65,27 @@ export class ConstructNode {
     // escape any path separators so they don't wreck havoc
     this.id = this._escapePathSeparator(this.id);
 
+    if (unresolved(id)) {
+      throw new Error(`Cannot use tokens in construct ID: ${id}`);
+    }
+  }
+
+  /**
+   * The full path of this construct in the tree.
+   * Components are separated by '/'.
+   */
+  public get path(): string {
     const components = this.rootPath().map(c => c.node.id);
-    this.path = components.join(PATH_SEP);
-    this.uniqueId = components.length > 0 ? makeUniqueId(components) : '';
+    return components.join(PATH_SEP);
+  }
+
+  /**
+   * A tree-global unique alphanumeric identifier for this construct.
+   * Includes all components of the tree.
+   */
+  public get uniqueId(): string {
+    const components = this.rootPath().map(c => c.node.id);
+    return components.length > 0 ? makeUniqueId(components) : '';
   }
 
   /**
@@ -273,7 +280,7 @@ export class ConstructNode {
     let curr: IConstruct | undefined = this.host;
     while (curr && curr !== upTo) {
       ret.unshift(curr);
-      curr = curr.node.scope;
+      curr = curr.node && curr.node.scope;
     }
 
     return ret;
@@ -300,7 +307,7 @@ export class ConstructNode {
    * @returns The type name of this node.
    */
   public get typename(): string {
-    const ctor: any = this.constructor;
+    const ctor: any = this.host.constructor;
     return ctor.name || 'Construct';
   }
 
