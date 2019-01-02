@@ -34,7 +34,8 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
   },
   "cdk-build": {
     "cloudformation": "AWS::ElasticLoadBalancingV2"
@@ -78,5 +79,12 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseListener.<initializer>.params[2]",
+      "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseLoadBalancer.<initializer>",
+      "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupBase.<initializer>"
+    ]
   }
 }

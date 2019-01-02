@@ -1,0 +1,48 @@
+{
+  "name": "awslint",
+  "private": true,
+  "version": "0.21.0",
+  "description": "Enforces the AWS Construct Library guidelines",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && chmod +x bin/awslint",
+    "lint": "tslint && pkglint",
+    "test": "echo ok",
+    "watch": "tsc -e"
+  },
+  "bin": {
+    "awslint": "bin/awslint"
+  },
+  "dependencies": {
+    "colors": "^1.3.3",
+    "fs-extra": "^7.0.1",
+    "jsii-reflect": "^0.7.12",
+    "yargs": "^12.0.5"
+  },
+  "devDependencies": {
+    "tslint": "^5.12.0",
+    "typescript": "^3.2.2",
+    "@types/fs-extra": "^5.0.4",
+    "@types/jest": "^23.3.10",
+    "@types/colors": "^1.2.1",
+    "@types/yargs": "^12.0.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "engines": {
+    "node": ">= 8.10.0"
+  }
+}
