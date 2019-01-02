@@ -98,10 +98,6 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
     (this.pipeline as any)._attachStage(this, props.placement);
   }
 
-  public get uniqueId() {
-    return this.node.uniqueId;
-  }
-
   /**
    * Get a duplicate of this stage's list of actions.
    */

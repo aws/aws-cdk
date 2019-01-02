@@ -72,7 +72,7 @@ export interface IInternalStage {
  * It extends {@link events.IEventRuleTarget},
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends events.IEventRuleTarget {
+export interface IPipeline extends cdk.IConstruct, events.IEventRuleTarget {
   /**
    * The name of the Pipeline.
    */
@@ -82,11 +82,6 @@ export interface IPipeline extends events.IEventRuleTarget {
    * The ARN of the Pipeline.
    */
   readonly pipelineArn: string;
-
-  /**
-   * The unique ID of the Pipeline Construct.
-   */
-  readonly uniqueId: string;
 
   /**
    * The service Role of the Pipeline.
@@ -111,7 +106,7 @@ export interface IPipeline extends events.IEventRuleTarget {
 /**
  * The abstract interface of a Pipeline Stage that is used by Actions.
  */
-export interface IStage {
+export interface IStage extends cdk.IConstruct {
   /**
    * The physical, human-readable name of this Pipeline Stage.
    */
