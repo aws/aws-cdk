@@ -20,6 +20,8 @@
         "inlineSources": true,
         "experimentalDecorators": true
     },
+    "include": ["**/*.ts" ],
+    "exclude": ["node_modules"],
     "references": [
         { "path": "../cfnspec" },
         { "path": "../cx-api" }

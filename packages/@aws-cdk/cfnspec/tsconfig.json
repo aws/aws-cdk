@@ -18,5 +18,7 @@
         "inlineSources": true,
         "experimentalDecorators": true,
         "strictPropertyInitialization":false
-    }
+    },
+    "include": ["**/*.ts" ],
+    "exclude": ["node_modules"]
 }
