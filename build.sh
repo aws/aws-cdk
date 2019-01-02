@@ -36,6 +36,7 @@ fail() {
 }
 
 /bin/bash ./git-secrets-scan.sh
+/bin/bash scripts/generate-aggregate-tsconfig.sh > tsconfig.json
 
 BUILD_INDICATOR=".BUILD_COMPLETED"
 rm -rf $BUILD_INDICATOR
