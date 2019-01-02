@@ -193,8 +193,8 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
   /**
    * Return the correct image
    */
-  public getImage(parent: cdk.Construct): ec2.MachineImage {
-    const ssmProvider = new cdk.SSMParameterProvider(parent, {
+  public getImage(scope: cdk.Construct): ec2.MachineImage {
+    const ssmProvider = new cdk.SSMParameterProvider(scope, {
         parameterName: EcsOptimizedAmi.AmiParameterName
     });
 

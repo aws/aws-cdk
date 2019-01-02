@@ -256,20 +256,20 @@ export default class CodeGenerator {
     this.code.line('/**');
     this.code.line(` * Creates a new ${quoteCode(resourceName.specName!.fqn)}.`);
     this.code.line(' *');
-    this.code.line(` * @param parent   the ${quoteCode(CONSTRUCT_CLASS)} this ${quoteCode(resourceName.className)} is a part of`);
-    this.code.line(` * @param name     the name of the resource in the ${quoteCode(CONSTRUCT_CLASS)} tree`);
-    this.code.line(` * @param properties the properties of this ${quoteCode(resourceName.className)}`);
+    this.code.line(` * @param scope scope in which this resource is defined`);
+    this.code.line(` * @param id    scoped id of the resource`);
+    this.code.line(` * @param props resource properties`);
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required);
-    const propsArgument = propsType ? `, properties${optionalProps ? '?' : ''}: ${propsType.className}` : '';
-    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, scid: string${propsArgument})`);
-    this.code.line(`super(scope, scid, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties' : ''} });`);
+    const propsArgument = propsType ? `, props${optionalProps ? '?' : ''}: ${propsType.className}` : '';
+    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string${propsArgument})`);
+    this.code.line(`super(scope, id, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties: props' : ''} });`);
     // verify all required properties
     if (spec.Properties) {
       for (const propName of Object.keys(spec.Properties)) {
         const prop = spec.Properties[propName];
         if (prop.Required) {
-          this.code.line(`${CORE}.requireProperty(properties, '${genspec.cloudFormationToScriptName(propName)}', this);`);
+          this.code.line(`${CORE}.requireProperty(props, '${genspec.cloudFormationToScriptName(propName)}', this);`);
         }
       }
     }

@@ -21,29 +21,29 @@ export interface ILogGroup extends cdk.IConstruct {
   /**
    * Create a new Log Stream for this Log Group
    *
-   * @param parent Parent construct
+   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the LogStream
    */
-  newStream(parent: cdk.Construct, id: string, props?: NewLogStreamProps): LogStream;
+  newStream(scope: cdk.Construct, id: string, props?: NewLogStreamProps): LogStream;
 
   /**
    * Create a new Subscription Filter on this Log Group
    *
-   * @param parent Parent construct
+   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the SubscriptionFilter
    */
-  newSubscriptionFilter(parent: cdk.Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter;
+  newSubscriptionFilter(scope: cdk.Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter;
 
   /**
    * Create a new Metric Filter on this Log Group
    *
-   * @param parent Parent construct
+   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the MetricFilter
    */
-  newMetricFilter(parent: cdk.Construct, id: string, props: NewMetricFilterProps): MetricFilter;
+  newMetricFilter(scope: cdk.Construct, id: string, props: NewMetricFilterProps): MetricFilter;
 
   /**
    * Export this LogGroup
@@ -101,12 +101,12 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
   /**
    * Create a new Log Stream for this Log Group
    *
-   * @param parent Parent construct
+   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the LogStream
    */
-  public newStream(parent: cdk.Construct, id: string, props: NewLogStreamProps = {}): LogStream {
-    return new LogStream(parent, id, {
+  public newStream(scope: cdk.Construct, id: string, props: NewLogStreamProps = {}): LogStream {
+    return new LogStream(scope, id, {
       logGroup: this,
       ...props
     });
@@ -115,12 +115,12 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
   /**
    * Create a new Subscription Filter on this Log Group
    *
-   * @param parent Parent construct
+   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the SubscriptionFilter
    */
-  public newSubscriptionFilter(parent: cdk.Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter {
-    return new SubscriptionFilter(parent, id, {
+  public newSubscriptionFilter(scope: cdk.Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter {
+    return new SubscriptionFilter(scope, id, {
       logGroup: this,
       ...props
     });
@@ -129,12 +129,12 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
   /**
    * Create a new Metric Filter on this Log Group
    *
-   * @param parent Parent construct
+   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the MetricFilter
    */
-  public newMetricFilter(parent: cdk.Construct, id: string, props: NewMetricFilterProps): MetricFilter {
-    return new MetricFilter(parent, id, {
+  public newMetricFilter(scope: cdk.Construct, id: string, props: NewMetricFilterProps): MetricFilter {
+    return new MetricFilter(scope, id, {
       logGroup: this,
       ...props
     });

@@ -239,8 +239,8 @@ export class EventRule extends Construct implements IEventRule {
 class ImportedEventRule extends Construct implements IEventRule {
   public readonly ruleArn: string;
 
-  constructor(parent: Construct, id: string, private readonly props: EventRuleImportProps) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, private readonly props: EventRuleImportProps) {
+    super(scope, id);
 
     this.ruleArn = props.eventRuleArn;
   }

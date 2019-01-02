@@ -1007,8 +1007,8 @@ export class LinuxBuildImage implements IBuildImage {
   /**
    * Uses an Docker image asset as a Linux build image.
    */
-  public static fromAsset(parent: cdk.Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
-    const asset = new DockerImageAsset(parent, id, props);
+  public static fromAsset(scope: cdk.Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
+    const asset = new DockerImageAsset(scope, id, props);
     const image = new LinuxBuildImage(asset.imageUri);
 
     // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
@@ -1100,8 +1100,8 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Uses an Docker image asset as a Windows build image.
    */
-  public static fromAsset(parent: cdk.Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
-    const asset = new DockerImageAsset(parent, id, props);
+  public static fromAsset(scope: cdk.Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
+    const asset = new DockerImageAsset(scope, id, props);
     const image = new WindowsBuildImage(asset.imageUri);
 
     // allow this codebuild to pull this image (CodeBuild doesn't use a role, so

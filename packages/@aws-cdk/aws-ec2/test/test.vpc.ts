@@ -533,7 +533,7 @@ function getTestStack(): Stack {
 /**
  * Do a complete import/export test, return the imported VPC
  */
-function doImportExportTest(constructFn: (parent: Construct) => VpcNetwork): IVpcNetwork {
+function doImportExportTest(constructFn: (scope: Construct) => VpcNetwork): IVpcNetwork {
   // GIVEN
   const stack1 = getTestStack();
   const stack2 = getTestStack();

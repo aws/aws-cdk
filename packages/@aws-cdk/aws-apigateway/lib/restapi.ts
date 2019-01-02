@@ -410,8 +410,8 @@ export class RestApiUrl extends cdk.CloudFormationToken { }
 class ImportedRestApi extends cdk.Construct implements IRestApi {
   public restApiId: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: RestApiImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: RestApiImportProps) {
+    super(scope, id);
 
     this.restApiId = props.restApiId;
   }

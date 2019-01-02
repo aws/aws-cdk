@@ -156,8 +156,8 @@ class ImportedHostedZone extends cdk.Construct implements IHostedZone {
 
   public readonly zoneName: string;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: HostedZoneImportProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, name: string, private readonly props: HostedZoneImportProps) {
+    super(scope, name);
 
     this.hostedZoneId = props.hostedZoneId;
     this.zoneName = props.zoneName;

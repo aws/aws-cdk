@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Resource, Stack } from '@aws-cdk/cdk';
+import { Resource, Stack, resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal } from '../lib';
 
@@ -235,6 +235,27 @@ export = {
     }));
 
     test.done();
-  }
+  },
 
+  'import/export'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const myRole = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('boom.boom.boom')
+    });
+
+    // WHEN
+    const exportedRole = myRole.export();
+    const importedRole = Role.import(stack, 'ImportedRole', exportedRole);
+
+    // THEN
+    test.deepEqual(resolve(exportedRole), {
+      roleArn: { 'Fn::ImportValue': 'MyRoleRoleArn3388B7E2' },
+      roleId: { 'Fn::ImportValue': 'MyRoleRoleIdF7B258D8' }
+    });
+
+    test.deepEqual(resolve(importedRole.roleArn), { 'Fn::ImportValue': 'MyRoleRoleArn3388B7E2' });
+    test.deepEqual(resolve(importedRole.roleId), { 'Fn::ImportValue': 'MyRoleRoleIdF7B258D8' });
+    test.done();
+  }
 };

@@ -125,8 +125,8 @@ export class Certificate extends Construct implements ICertificate {
 class ImportedCertificate extends Construct implements ICertificate {
   public readonly certificateArn: string;
 
-  constructor(parent: Construct, name: string, private readonly props: CertificateImportProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, private readonly props: CertificateImportProps) {
+    super(scope, id);
 
     this.certificateArn = props.certificateArn;
   }

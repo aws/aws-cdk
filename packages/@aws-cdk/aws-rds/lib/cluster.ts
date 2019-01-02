@@ -292,8 +292,8 @@ class ImportedDatabaseCluster extends cdk.Construct implements IDatabaseCluster 
    */
   public readonly securityGroupId: string;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: DatabaseClusterImportProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, name: string, private readonly props: DatabaseClusterImportProps) {
+    super(scope, name);
 
     this.securityGroupId = props.securityGroupId;
     this.defaultPortRange = new ec2.TcpPortFromAttribute(props.port);

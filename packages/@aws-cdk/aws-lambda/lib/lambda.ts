@@ -497,8 +497,8 @@ export class ImportedFunction extends FunctionBase {
 
   protected readonly canCreatePermissions = false;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: FunctionImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: FunctionImportProps) {
+    super(scope, id);
 
     this.functionArn = props.functionArn;
     this.functionName = extractNameFromArn(props.functionArn);

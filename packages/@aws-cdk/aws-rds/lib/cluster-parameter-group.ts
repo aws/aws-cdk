@@ -119,8 +119,8 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
 class ImportedClusterParameterGroup extends cdk.Construct implements IClusterParameterGroup {
   public readonly parameterGroupName: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ClusterParameterGroupImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ClusterParameterGroupImportProps) {
+    super(scope, id);
     this.parameterGroupName = props.parameterGroupName;
   }
 

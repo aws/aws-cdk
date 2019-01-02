@@ -73,8 +73,8 @@ class ImportedTopic extends TopicBase {
 
   protected autoCreatePolicy: boolean = false;
 
-  constructor(parent: Construct, id: string, private readonly props: TopicImportProps) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, private readonly props: TopicImportProps) {
+    super(scope, id);
     this.topicArn = props.topicArn;
     this.topicName = props.topicName;
   }

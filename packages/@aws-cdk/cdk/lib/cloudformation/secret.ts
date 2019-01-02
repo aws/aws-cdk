@@ -14,7 +14,7 @@ import { Parameter } from './parameter';
  */
 export class Secret extends Token { }
 
-export interface SecretProps {
+export interface SecretParameterProps {
   /**
    * The name of the SSM parameter where the secret value is stored.
    */
@@ -74,7 +74,7 @@ export class SecretParameter extends Construct {
    */
   public value: Secret;
 
-  constructor(scope: Construct, id: string, props: SecretProps) {
+  constructor(scope: Construct, id: string, props: SecretParameterProps) {
     super(scope, id);
 
     const param = new Parameter(this, 'Parameter', {

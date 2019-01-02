@@ -1,4 +1,4 @@
-import { Construct, IDependable } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IDependable, Output } from '@aws-cdk/cdk';
 import { CfnRole } from './iam.generated';
 import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
@@ -94,7 +94,7 @@ export class Role extends Construct implements IRole {
   /**
    * Import a role that already exists
    */
-  public static import(scope: Construct, id: string, props: ImportedRoleProps): IRole {
+  public static import(scope: Construct, id: string, props: RoleImportProps): IRole {
     return new ImportedRole(scope, id, props);
   }
 
@@ -107,6 +107,12 @@ export class Role extends Construct implements IRole {
    * Returns the ARN of this role.
    */
   public readonly roleArn: string;
+
+  /**
+   * Returns the stable and unique string identifying the role. For example,
+   * AIDAJQABLZS4A3QDU576Q.
+   */
+  public readonly roleId: string;
 
   /**
    * Returns the name of the role.
@@ -144,6 +150,7 @@ export class Role extends Construct implements IRole {
       maxSessionDuration: props.maxSessionDurationSec,
     });
 
+    this.roleId = role.roleId;
     this.roleArn = role.roleArn;
     this.principal = new ArnPrincipal(this.roleArn);
     this.roleName = role.roleName;
@@ -160,6 +167,13 @@ export class Role extends Construct implements IRole {
       }
       return result;
     }
+  }
+
+  public export(): RoleImportProps {
+    return {
+      roleArn: new Output(this, 'RoleArn', { value: this.roleArn }).makeImportValue(),
+      roleId: new Output(this, 'RoleId', { value: this.roleId }).makeImportValue()
+    };
   }
 
   /**
@@ -197,11 +211,22 @@ export class Role extends Construct implements IRole {
 /**
  * A Role object
  */
-export interface IRole extends IPrincipal, IDependable {
+export interface IRole extends IConstruct, IPrincipal, IDependable {
   /**
    * Returns the ARN of this role.
    */
   readonly roleArn: string;
+
+  /**
+   * Returns the stable and unique string identifying the role. For example,
+   * AIDAJQABLZS4A3QDU576Q.
+   */
+  readonly roleId: string;
+
+  /**
+   * Export this role to another stack.
+   */
+  export(): RoleImportProps;
 }
 
 function createAssumeRolePolicy(principal: PolicyPrincipal, externalId?: string) {
@@ -230,11 +255,20 @@ function validateMaxSessionDuration(duration?: number) {
 /**
  * Properties to import a Role
  */
-export interface ImportedRoleProps {
+export interface RoleImportProps {
   /**
    * The role's ARN
    */
   roleArn: string;
+
+  /**
+   * The stable and unique string identifying the role. For example,
+   * AIDAJQABLZS4A3QDU576Q.
+   *
+   * @default If "roleId" is not specified for an imported role, then
+   * `role.roleId` will throw an exception. In most cases, role ID is not really needed.
+   */
+  roleId?: string;
 }
 
 /**
@@ -245,10 +279,24 @@ class ImportedRole extends Construct implements IRole {
   public readonly principal: PolicyPrincipal;
   public readonly dependencyElements: IDependable[] = [];
 
-  constructor(scope: Construct, id: string, props: ImportedRoleProps) {
+  private readonly _roleId?: string;
+
+  constructor(scope: Construct, id: string, private readonly props: RoleImportProps) {
     super(scope, id);
     this.roleArn = props.roleArn;
+    this._roleId = props.roleId;
     this.principal = new ArnPrincipal(this.roleArn);
+  }
+
+  public get roleId() {
+    if (!this._roleId) {
+      throw new Error(`No roleId specified for imported role`);
+    }
+    return this._roleId;
+  }
+
+  public export() {
+    return this.props;
   }
 
   public addToPolicy(_statement: PolicyStatement): void {
