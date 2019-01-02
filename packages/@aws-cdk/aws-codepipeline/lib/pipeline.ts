@@ -133,10 +133,6 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     });
   }
 
-  public get uniqueId() {
-    return this.node.uniqueId;
-  }
-
   /**
    * Convenience method for creating a new {@link Stage},
    * and adding it to this Pipeline.

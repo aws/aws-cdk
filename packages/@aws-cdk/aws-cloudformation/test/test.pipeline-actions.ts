@@ -284,6 +284,10 @@ class PipelineDouble implements cpapi.IPipeline {
   public readonly pipelineArn: string;
   public readonly role: iam.Role;
 
+  public get node(): cdk.ConstructNode {
+    throw new Error('this is not a real construct');
+  }
+
   constructor({ pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     this.pipelineName = pipelineName || 'TestPipeline';
     this.pipelineArn = cdk.ArnUtils.fromComponents({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
@@ -313,6 +317,10 @@ class StageDouble implements cpapi.IStage, cpapi.IInternalStage {
   public readonly _internal = this;
 
   public readonly actions = new Array<cpapi.Action>();
+
+  public get node(): cdk.ConstructNode {
+    throw new Error('this is not a real construct');
+  }
 
   constructor({ name, pipeline }: { name?: string, pipeline: cpapi.IPipeline }) {
     this.name = name || 'TestStage';
