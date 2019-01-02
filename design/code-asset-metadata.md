@@ -81,4 +81,3 @@ const resource = new serverless.CfnFunction(this, 'Func', {
 
 resource.addResourceMetadata(resource, 'CodeUri');
 ```
-
