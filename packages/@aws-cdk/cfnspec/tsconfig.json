@@ -4,6 +4,7 @@
         "module": "commonjs",
         "lib": ["es2016", "es2017.object", "es2017.string"],
         "declaration": true,
+        "composite": true,
         "strict": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
@@ -19,4 +20,3 @@
         "strictPropertyInitialization":false
     }
 }
-
