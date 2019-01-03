@@ -34,7 +34,8 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
   },
   "cdk-build": {
     "cloudformation": "AWS::S3"
@@ -75,5 +76,14 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "resource-attribute:@aws-cdk/aws-s3.IBucket.bucketDomainName",
+      "resource-attribute:@aws-cdk/aws-s3.IBucket.bucketDualStackDomainName",
+      "resource-attribute:@aws-cdk/aws-s3.IBucket.bucketRegionalDomainName",
+      "resource-attribute:@aws-cdk/aws-s3.IBucket.bucketWebsiteUrl",
+      "resource-interface:@aws-cdk/aws-s3.IBucketPolicy"
+    ]
   }
 }

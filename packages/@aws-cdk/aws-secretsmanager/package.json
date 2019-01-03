@@ -35,7 +35,8 @@
     "package": "cdk-package",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "watch": "cdk-watch"
+    "watch": "cdk-watch",
+    "awslint": "cdk-awslint"
   },
   "cdk-build": {
     "cloudformation": "AWS::SecretsManager"
