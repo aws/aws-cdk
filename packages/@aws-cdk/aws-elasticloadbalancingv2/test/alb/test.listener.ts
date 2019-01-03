@@ -88,7 +88,7 @@ export = {
     });
 
     // THEN
-    const errors = stack.validateTree();
+    const errors = stack.node.validateTree();
     test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificateArns)']);
 
     test.done();

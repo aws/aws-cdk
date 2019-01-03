@@ -194,11 +194,11 @@ export class Function extends FunctionBase {
    *
    * @param parent The parent construct
    * @param id The name of the lambda construct
-   * @param attrs A reference to a Lambda function. Can be created manually (see
+   * @param props A reference to a Lambda function. Can be created manually (see
    * example above) or obtained through a call to `lambda.export()`.
    */
-  public static import(parent: cdk.Construct, id: string, attrs: FunctionImportProps): IFunction {
-    return new ImportedFunction(parent, id, attrs);
+  public static import(scope: cdk.Construct, id: string, props: FunctionImportProps): IFunction {
+    return new ImportedFunction(scope, id, props);
   }
 
   /**
@@ -303,8 +303,8 @@ export class Function extends FunctionBase {
    */
   private readonly environment?: { [key: string]: any };
 
-  constructor(parent: cdk.Construct, id: string, props: FunctionProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: FunctionProps) {
+    super(scope, id);
 
     this.environment = props.environment || { };
 
@@ -432,7 +432,7 @@ export class Function extends FunctionBase {
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
-      description: 'Automatic security group for Lambda Function ' + this.uniqueId,
+      description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
       allowAllOutbound: props.allowAllOutbound
     });
 
@@ -497,8 +497,8 @@ export class ImportedFunction extends FunctionBase {
 
   protected readonly canCreatePermissions = false;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: FunctionImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: FunctionImportProps) {
+    super(scope, id);
 
     this.functionArn = props.functionArn;
     this.functionName = extractNameFromArn(props.functionArn);

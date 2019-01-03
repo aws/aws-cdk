@@ -9,8 +9,8 @@ import s3 = require('../lib');
 class Producer extends cdk.Stack {
   public readonly myBucketRef: s3.BucketImportProps;
 
-  constructor(parent: cdk.App, name: string) {
-    super(parent, name);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const bucket = new s3.Bucket(this, 'MyBucket');
     this.myBucketRef = bucket.export();
@@ -22,8 +22,8 @@ interface ConsumerConstructProps {
 }
 
 class ConsumerConstruct extends cdk.Construct {
-  constructor(parent: cdk.Construct, name: string, props: ConsumerConstructProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: ConsumerConstructProps) {
+    super(scope, id);
 
     props.bucket.addToResourcePolicy(new iam.PolicyStatement().addAction('*'));
   }
@@ -39,8 +39,8 @@ interface ConsumerProps {
 }
 
 class Consumer extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props: ConsumerProps) {
-    super(parent, name);
+  constructor(scope: cdk.App, id: string, props: ConsumerProps) {
+    super(scope, id);
 
     const user = new iam.User(this, 'MyUser');
     const userBucket = s3.Bucket.import(this, 'ImportBucket', props.userBucketRef);

@@ -48,8 +48,8 @@ export class Repository extends RepositoryBase {
   private readonly registryId?: string;
   private policyDocument?: iam.PolicyDocument;
 
-  constructor(parent: cdk.Construct, id: string, props: RepositoryProps = {}) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: RepositoryProps = {}) {
+    super(scope, id);
 
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,

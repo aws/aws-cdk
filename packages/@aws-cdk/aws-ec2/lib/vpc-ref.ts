@@ -1,17 +1,7 @@
-import { Construct, IDependable } from "@aws-cdk/cdk";
+import { Construct, IConstruct, IDependable } from "@aws-cdk/cdk";
 import { subnetName } from './util';
 
-export interface IVpcSubnet extends IDependable {
-  /**
-   * Logical ID of the subnet.
-   */
-  readonly id: string;
-
-  /**
-   * Construct path of this subnet.
-   */
-  readonly path: string;
-
+export interface IVpcSubnet extends IConstruct, IDependable {
   /**
    * The Availability Zone the subnet is located in
    */
@@ -28,7 +18,7 @@ export interface IVpcSubnet extends IDependable {
   export(): VpcSubnetImportProps;
 }
 
-export interface IVpcNetwork extends IDependable {
+export interface IVpcNetwork extends IConstruct, IDependable {
   /**
    * Identifier for this VPC
    */

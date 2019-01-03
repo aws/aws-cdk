@@ -64,8 +64,8 @@ export interface SubscriptionFilterProps {
  * A new Subscription on a CloudWatch log group.
  */
 export class SubscriptionFilter extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string, props: SubscriptionFilterProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: SubscriptionFilterProps) {
+    super(scope, id);
 
     const destProps = props.destination.logSubscriptionDestination(props.logGroup);
 

@@ -81,8 +81,8 @@ export class Asset extends cdk.Construct {
    */
   private readonly s3Prefix: string;
 
-  constructor(parent: cdk.Construct, id: string, props: GenericAssetProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: GenericAssetProps) {
+    super(scope, id);
 
     // resolve full path
     this.assetPath = path.resolve(props.path);
@@ -101,12 +101,12 @@ export class Asset extends cdk.Construct {
 
     const bucketParam = new cdk.Parameter(this, 'S3Bucket', {
       type: 'String',
-      description: `S3 bucket for asset "${this.path}"`,
+      description: `S3 bucket for asset "${this.node.path}"`,
     });
 
     const keyParam = new cdk.Parameter(this, 'S3VersionKey', {
       type: 'String',
-      description: `S3 key for asset version "${this.path}"`
+      description: `S3 key for asset version "${this.node.path}"`
     });
 
     this.s3BucketName = bucketParam.value.toString();
@@ -127,13 +127,13 @@ export class Asset extends cdk.Construct {
     // parameters.
     const asset: cxapi.FileAssetMetadataEntry = {
       path: this.assetPath,
-      id: this.uniqueId,
+      id: this.node.uniqueId,
       packaging: props.packaging,
       s3BucketParameter: bucketParam.logicalId,
       s3KeyParameter: keyParam.logicalId,
     };
 
-    this.addMetadata(cxapi.ASSET_METADATA, asset);
+    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
 
     for (const reader of (props.readers || [])) {
       this.grantRead(reader);
@@ -157,7 +157,7 @@ export class Asset extends cdk.Construct {
    * (e.g. "Code" for AWS::Lambda::Function)
    */
   public addResourceMetadata(resource: cdk.Resource, resourceProperty: string) {
-    if (!this.getContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+    if (!this.node.getContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       return; // not enabled
     }
 
@@ -197,8 +197,8 @@ export interface FileAssetProps {
  * An asset that represents a file on disk.
  */
 export class FileAsset extends Asset {
-  constructor(parent: cdk.Construct, id: string, props: FileAssetProps) {
-    super(parent, id, { packaging: AssetPackaging.File, ...props });
+  constructor(scope: cdk.Construct, id: string, props: FileAssetProps) {
+    super(scope, id, { packaging: AssetPackaging.File, ...props });
   }
 }
 
@@ -219,8 +219,8 @@ export interface ZipDirectoryAssetProps {
  * An asset that represents a ZIP archive of a directory on disk.
  */
 export class ZipDirectoryAsset extends Asset {
-  constructor(parent: cdk.Construct, id: string, props: ZipDirectoryAssetProps) {
-    super(parent, id, { packaging: AssetPackaging.ZipDirectory, ...props });
+  constructor(scope: cdk.Construct, id: string, props: ZipDirectoryAssetProps) {
+    super(scope, id, { packaging: AssetPackaging.ZipDirectory, ...props });
   }
 }
 

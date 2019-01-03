@@ -4,8 +4,8 @@ import fc = require('fast-check');
 import appscaling = require('../lib');
 import { ServiceNamespace } from '../lib';
 
-export function createScalableTarget(parent: cdk.Construct) {
-  return new appscaling.ScalableTarget(parent, 'Target', {
+export function createScalableTarget(scope: cdk.Construct) {
+  return new appscaling.ScalableTarget(scope, 'Target', {
     serviceNamespace: ServiceNamespace.DynamoDb,
     scalableDimension: 'test:TestCount',
     resourceId: 'test:this/test',

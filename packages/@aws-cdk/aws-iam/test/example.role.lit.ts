@@ -2,8 +2,8 @@ import cdk = require('@aws-cdk/cdk');
 import { PolicyStatement, Role, ServicePrincipal } from '../lib';
 
 export class ExampleConstruct extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
 
     /// !show
     const role = new Role(this, 'MyRole', {

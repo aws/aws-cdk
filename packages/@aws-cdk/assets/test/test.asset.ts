@@ -16,7 +16,7 @@ export = {
 
     // verify that metadata contains an "aws:cdk:asset" entry with
     // the correct information
-    const entry = asset.metadata.find(m => m.type === 'aws:cdk:asset');
+    const entry = asset.node.metadata.find(m => m.type === 'aws:cdk:asset');
     test.ok(entry, 'found metadata entry');
     test.deepEqual(entry!.data, {
       path: dirPath,
@@ -38,7 +38,7 @@ export = {
     const stack = new cdk.Stack();
     const filePath = path.join(__dirname, 'file-asset.txt');
     const asset = new FileAsset(stack, 'MyAsset', { path: filePath });
-    const entry = asset.metadata.find(m => m.type === 'aws:cdk:asset');
+    const entry = asset.node.metadata.find(m => m.type === 'aws:cdk:asset');
     test.ok(entry, 'found metadata entry');
     test.deepEqual(entry!.data, {
       path: filePath,
@@ -146,7 +146,7 @@ export = {
   'addResourceMetadata can be used to add CFN metadata to resources'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    stack.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+    stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
     const location = path.join(__dirname, 'sample-asset-directory');
     const resource = new cdk.Resource(stack, 'MyResource', { type: 'My::Resource::Type' });
