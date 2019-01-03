@@ -34,7 +34,8 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
   },
   "keywords": [
     "aws",
@@ -70,5 +71,11 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/aws-codepipeline-api.Artifact.<initializer>.params[0]",
+      "construct-ctor:@aws-cdk/aws-codepipeline-api.Artifact.<initializer>.params[1]"
+    ]
   }
 }

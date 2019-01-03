@@ -134,6 +134,28 @@ You can also do that per package:
 $ lr pkglint
 ```
 
+### awslint
+
+**awslint** is a linter for the AWS Construct Library APIs. It is executed as a
+part of the build of all AWS modules in the project and enforces the [AWS
+Construct Library Design Guidelines](./design/aws-guidelines.md).
+
+For more information about this tool, see the [awslint
+README](./tools/awslint/README.md).
+
+Generally speaking, if you make any changes which violate an awslint rule, build
+will fail with appropriate messages. All rules are documented and explained in
+the [guidelines](./design/aws-guidelines.md).
+
+Here are a few useful commands:
+
+ * `npm run awslint` in every module will run __awslint__ for that module.
+ * `npm run awslint list` prints all rules (details and rationale in the guidelines doc)
+ * `lerna run awslint` will run __awslint__ in all modules.
+ * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
+   evaluate only the rule specified [awslint README](./tools/awslint/README.md)
+   for details on include/exclude rule patterns.
+
 ## Development Workflows
 
 ### Full clean build

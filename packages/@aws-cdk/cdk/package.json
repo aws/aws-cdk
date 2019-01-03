@@ -27,13 +27,21 @@
     "type": "git",
     "url": "https://github.com/awslabs/aws-cdk.git"
   },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/cdk.App.<initializer>",
+      "construct-ctor:@aws-cdk/cdk.Root.<initializer>",
+      "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params*"
+    ]
+  },
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
   },
   "nyc": {
     "lines": 55,

@@ -33,7 +33,8 @@
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
   },
   "keywords": [
     "aws",
