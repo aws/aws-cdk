@@ -5,7 +5,6 @@ import { cdkBuildOptions } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 interface Arguments extends yargs.Arguments {
-  force?: boolean;
   jsii?: string;
   tsc?: string;
 }
@@ -14,7 +13,6 @@ async function main() {
   const args: Arguments = yargs
     .env('CDK_BUILD')
     .usage('Usage: cdk-build')
-    .option('force', { type: 'boolean', alias: 'f', desc: 'Force a rebuild' })
     .option('jsii', {
       type: 'string',
       desc: 'Specify a different jsii executable',
@@ -38,7 +36,7 @@ async function main() {
     await shell(['cfn2ts', `--scope=${options.cloudformation}`], timers);
   }
 
-  await compileCurrentPackage(timers, { jsii: args.jsii, tsc: args.tsc }, args.force);
+  await compileCurrentPackage(timers, { jsii: args.jsii, tsc: args.tsc });
 }
 
 const timers = new Timers();
