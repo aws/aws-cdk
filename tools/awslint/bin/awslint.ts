@@ -1,4 +1,5 @@
 // tslint:disable:max-line-length
+import child_process = require('child_process');
 import colors = require('colors');
 import fs = require('fs-extra');
 import reflect = require('jsii-reflect');
@@ -22,6 +23,7 @@ async function main() {
     .option('force', { type: 'boolean', desc: 'succeed silently if this is not a jsii module', default: true })
     .option('config', { type: 'boolean', desc: 'reads options from the "awslint" section in package.json', default: true })
     .option('debug', { type: 'boolean', desc: 'debug output', default: false })
+    .option('compile', { alias: 'c', type: 'boolean',  desc: 'always run the jsii compiler (use "--no-compile" to never run the compiler, even if .jsii doesn\'t exist)' })
     .group('include', 'Filtering')
     .group('exclude', 'Filtering')
     .group('config', 'Configuration')
@@ -29,6 +31,7 @@ async function main() {
     .group('verbose', 'Output')
     .group('quiet', 'Output')
     .group('debug', 'Output')
+    .group('compile', 'Build')
     .example('awslint', 'lints the current module against all rules')
     .example('awslint -v -i "resource*" -i "import*"', 'lints against all rules that start with "resource" or "import" and print successes')
     .example('awslint -x "*:@aws-cdk/aws-s3*"', 'evaluate all rules in all scopes besides ones that begin with "@aws-cdk/aws-s3"')
@@ -57,6 +60,21 @@ async function main() {
 
   const pkg = await fs.readJSON(config);
 
+  // if this is not a jsii module we have nothing to look for
+  if (!pkg.jsii) {
+    if (args.force) {
+      return; // just silently succeed
+    }
+
+    throw new Error(`Module in ${workdir} is not a jsii module (no "jsii" section in package.json)`);
+  }
+
+  // if package.json contains a `jsii` section but there is no .jsii file
+  // it means we haven't compiled the module.
+  if (await shouldCompile()) {
+    await shell('jsii');
+  }
+
   // read "awslint" from package.json
   if (args.config) {
     mergeOptions(args, pkg.awslint);
@@ -77,7 +95,7 @@ async function main() {
   }
 
   if (command === 'lint') {
-    const assembly = await loadModule(workdir, { force: args.force });
+    const assembly = await loadModule(workdir);
     if (!assembly) {
       return;
     }
@@ -157,6 +175,28 @@ async function main() {
 
   argv.showHelp();
   throw new Error(`Invalid command: ${command}`);
+
+  async function shouldCompile() {
+
+    // if --compile is explicitly enabled then just compile always
+    if (args.compile === true) {
+      return true;
+    }
+
+    // if we have a .jsii file and we are not forced to compile, then don't compile
+    if (await fs.pathExists(path.join(workdir, '.jsii'))) {
+      return false;
+    }
+
+    // we don't have a .jsii file, and --no-compile is explicily set, then it's an error
+    if (args.compile === false) {
+      throw new Error(`No .jsii file and --no-compile is set`);
+    }
+
+    // compile!
+    return true;
+  }
+
 }
 
 main().catch(e => {
@@ -164,24 +204,14 @@ main().catch(e => {
   process.exit(1);
 });
 
-async function loadModule(dir: string, options: { force?: boolean }) {
-  try {
-    const ts = new reflect.TypeSystem();
-    await ts.load(dir);
-    if (ts.roots.length !== 1) {
-      throw new Error(`Expecting only a single root assembly`);
-    }
-
-    return ts.roots[0];
-  } catch (e) {
-    if (options.force) {
-      return undefined;
-    } else {
-      console.error(colors.red(e.message));
-      process.exit(1);
-      return undefined;
-    }
+async function loadModule(dir: string) {
+  const ts = new reflect.TypeSystem();
+  await ts.load(dir);
+  if (ts.roots.length !== 1) {
+    throw new Error(`Expecting only a single root assembly`);
   }
+
+  return ts.roots[0];
 }
 
 function mergeOptions(dest: any, pkg?: any) {
@@ -207,4 +237,18 @@ function mergeOptions(dest: any, pkg?: any) {
   }
 
   return dest;
+}
+
+async function shell(command: string) {
+  const child = child_process.spawn(command, { stdio: [ 'inherit', 'inherit', 'inherit' ]});
+  return new Promise((ok, ko) => {
+    child.once('exit', status => {
+      if (status === 0) {
+        return ok();
+      } else {
+        return ko(new Error(`${command} exited with status ${status}`));
+      }
+    });
+    child.once('error', ko);
+  });
 }

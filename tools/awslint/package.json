@@ -8,7 +8,7 @@
     "build": "tsc && chmod +x bin/awslint",
     "lint": "tslint && pkglint",
     "test": "echo ok",
-    "watch": "tsc -e"
+    "watch": "tsc -w"
   },
   "bin": {
     "awslint": "bin/awslint"
