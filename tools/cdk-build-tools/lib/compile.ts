@@ -1,4 +1,5 @@
 import { ChangeDetector } from "merkle-build";
+import path = require('path');
 import ignoreList = require('./ignore-list');
 import { makeExecutable, shell } from "./os";
 import { CompilerOverrides, currentPackageJson, packageCompiler } from "./package-info";
@@ -36,6 +37,7 @@ export async function compileCurrentPackage(timers: Timers, compilers: CompilerO
   // Always call linters
   await shell(['tslint', '--project', '.'], timers);
   await shell(['pkglint'], timers);
+  await shell([ path.join(__dirname, '..', 'bin', 'cdk-awslint') ], timers);
 
   await timers.recordAsync('markBuilt', () => detector.markClean());
 }
