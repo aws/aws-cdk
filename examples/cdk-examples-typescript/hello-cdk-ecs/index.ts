@@ -4,8 +4,8 @@ import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
 
 class BonjourECS extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     // For better iteration speed, it might make sense to put this VPC into
     // a separate stack and import it here. We then have two stacks to

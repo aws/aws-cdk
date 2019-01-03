@@ -10,8 +10,8 @@ import cdk = require('@aws-cdk/cdk');
  * This stack demonstrates the use of the IAM policy library shipped with the CDK.
  */
 class PolicyExample extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     // here's how to create an IAM Role with an assume policy for the Lambda
     // service principal.
@@ -38,8 +38,8 @@ class PolicyExample extends cdk.Stack {
  * the AZ list and the AMI IDs are different.
  */
 class EnvContextExample extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     // get the list of AZs for the current region/account
     const azs = new cdk.AvailabilityZoneProvider(this).availabilityZones;
@@ -68,8 +68,8 @@ class EnvContextExample extends cdk.Stack {
  * into your CDK stack and then add constructs and resources programmatically to it.
  */
 class IncludeExample extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     // so you have an existing template...
     // you can also load it from a file:
@@ -95,8 +95,8 @@ class IncludeExample extends cdk.Stack {
 }
 
 class NestedStackExample extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     // pick up to 3 AZs from environment.
     const azs = new cdk.AvailabilityZoneProvider(this).availabilityZones.slice(0, 3);
@@ -122,8 +122,8 @@ class NestedStackExample extends cdk.Stack {
  * It also demonstrates how to modify resource options such as metadata
  */
 class ResourceReferencesExample extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const topic = new sns.CfnTopic(this, 'Topic', {});
     const queue = new sqs.CfnQueue(this, 'Queue', {});
@@ -145,8 +145,8 @@ class ResourceReferencesExample extends cdk.Stack {
  * Demonstrates how to use CloudFormation parameters, outputs, pseudo parameters and intrinsic functions.
  */
 class CloudFormationExample extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     // parameters are constructs that synthesize into the template's "Parameters" section
     const param = new cdk.Parameter(this, 'MyTemplateParameter', {

@@ -4,8 +4,8 @@ import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 
 class ACL extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string) {
-    super(scope, scid);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const topic = new sns.Topic(this, 'MyTopic');
     const queue = new sqs.Queue(this, 'MyQueue', {
@@ -17,8 +17,8 @@ class ACL extends cdk.Stack {
 }
 
 class CFN extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string) {
-    super(scope, scid);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const topic = new sns.CfnTopic(this, 'MyTopic');
     const queue = new sqs.CfnQueue(this, 'MyQueue');

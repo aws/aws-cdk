@@ -5,8 +5,8 @@ import cdk = require('@aws-cdk/cdk');
 import assert = require('assert');
 
 class ResourceOverridesExample extends cdk.Stack {
-    constructor(scope: cdk.App, scid: string) {
-        super(scope, scid);
+    constructor(scope: cdk.App, id: string) {
+        super(scope, id);
 
         const otherBucket = new s3.Bucket(this, 'Other');
 

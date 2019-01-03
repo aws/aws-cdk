@@ -56,7 +56,7 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
       )
       .addResource(props.repository.repositoryArn));
 
-    props.repository.onImagePushed(props.stage.pipeline.uniqueId + 'SourceEventRule',
+    props.repository.onImagePushed(props.stage.pipeline.node.uniqueId + 'SourceEventRule',
         props.stage.pipeline, props.imageTag);
   }
 }

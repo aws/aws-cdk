@@ -60,7 +60,7 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
     });
 
     if (!props.pollForSourceChanges) {
-      props.repository.onCommit(props.stage.pipeline.uniqueId + 'EventRule', props.stage.pipeline, props.branch || 'master');
+      props.repository.onCommit(props.stage.pipeline.node.uniqueId + 'EventRule', props.stage.pipeline, props.branch || 'master');
     }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
