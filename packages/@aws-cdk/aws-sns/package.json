@@ -21,7 +21,8 @@
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
-    }
+    },
+    "excludeTypescript": ["examples"]
   },
   "repository": {
     "type": "git",
