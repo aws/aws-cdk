@@ -1,3 +1,4 @@
+import path = require('path');
 import { makeExecutable, shell } from "./os";
 import { CompilerOverrides, currentPackageJson, packageCompiler } from "./package-info";
 import { Timers } from "./timer";
@@ -17,4 +18,5 @@ export async function compileCurrentPackage(timers: Timers, compilers: CompilerO
   // Always call linters
   await shell(['tslint', '--project', '.'], timers);
   await shell(['pkglint'], timers);
+  await shell([ path.join(__dirname, '..', 'bin', 'cdk-awslint') ], timers);
 }
