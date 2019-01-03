@@ -2,7 +2,7 @@ import cdk = require('@aws-cdk/cdk');
 import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 
-export interface ILogStream {
+export interface ILogStream extends cdk.IConstruct {
   /**
    * The name of this log stream
    */
@@ -60,8 +60,8 @@ export class LogStream extends cdk.Construct implements ILogStream {
   /**
    * Import an existing LogGroup
    */
-  public static import(parent: cdk.Construct, id: string, props: LogStreamImportProps): ILogStream {
-    return new ImportedLogStream(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: LogStreamImportProps): ILogStream {
+    return new ImportedLogStream(scope, id, props);
   }
 
   /**
@@ -69,8 +69,8 @@ export class LogStream extends cdk.Construct implements ILogStream {
    */
   public readonly logStreamName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: LogStreamProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: LogStreamProps) {
+    super(scope, id);
 
     const resource = new CfnLogStream(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
@@ -103,8 +103,8 @@ class ImportedLogStream extends cdk.Construct implements ILogStream {
    */
   public readonly logStreamName: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: LogStreamImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: LogStreamImportProps) {
+    super(scope, id);
 
     this.logStreamName = props.logStreamName;
   }

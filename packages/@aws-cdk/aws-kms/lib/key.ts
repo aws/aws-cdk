@@ -1,9 +1,9 @@
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, Output, resolve } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IConstruct, Output, resolve } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
 import { CfnKey } from './kms.generated';
 
-export interface IEncryptionKey {
+export interface IEncryptionKey extends IConstruct {
   /**
    * The ARN of the key.
    */
@@ -126,19 +126,19 @@ export class EncryptionKey extends EncryptionKeyBase {
    *     keyArn: new KeyArn('arn:aws:kms:...')
    *   });
    *
-   * @param parent The parent construct.
-   * @param name The name of the construct.
+   * @param scope The parent construct.
+   * @param id The name of the construct.
    * @param props The key reference.
    */
-  public static import(parent: Construct, name: string, props: EncryptionKeyImportProps): IEncryptionKey {
-    return new ImportedEncryptionKey(parent, name, props);
+  public static import(scope: Construct, id: string, props: EncryptionKeyImportProps): IEncryptionKey {
+    return new ImportedEncryptionKey(scope, id, props);
   }
 
   public readonly keyArn: string;
   protected readonly policy?: PolicyDocument;
 
-  constructor(parent: Construct, name: string, props: EncryptionKeyProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: EncryptionKeyProps = {}) {
+    super(scope, id);
 
     if (props.policy) {
       this.policy = props.policy;
@@ -199,8 +199,8 @@ class ImportedEncryptionKey extends EncryptionKeyBase {
   public readonly keyArn: string;
   protected readonly policy = undefined; // no policy associated with an imported key
 
-  constructor(parent: Construct, name: string, private readonly props: EncryptionKeyImportProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, private readonly props: EncryptionKeyImportProps) {
+    super(scope, id);
 
     this.keyArn = props.keyArn;
   }

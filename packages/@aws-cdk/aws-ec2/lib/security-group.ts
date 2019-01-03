@@ -1,10 +1,10 @@
-import { Construct, ITaggable, Output, TagManager, Tags, Token } from '@aws-cdk/cdk';
+import { Construct, IConstruct, ITaggable, Output, TagManager, Tags, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
 import { IVpcNetwork } from './vpc-ref';
 
-export interface ISecurityGroup extends ISecurityGroupRule, IConnectable {
+export interface ISecurityGroup extends IConstruct, ISecurityGroupRule, IConnectable {
   readonly securityGroupId: string;
   addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string): void;
   addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string): void;
@@ -31,6 +31,10 @@ export abstract class SecurityGroupBase extends Construct implements ISecurityGr
    */
   public readonly defaultPortRange?: IPortRange;
 
+  public get uniqueId() {
+    return this.node.uniqueId;
+  }
+
   public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
     let id = `from ${peer.uniqueId}:${connection}`;
     if (description === undefined) {
@@ -39,7 +43,7 @@ export abstract class SecurityGroupBase extends Construct implements ISecurityGr
     id = id.replace('/', '_');
 
     // Skip duplicates
-    if (this.tryFindChild(id) === undefined) {
+    if (this.node.tryFindChild(id) === undefined) {
       new CfnSecurityGroupIngress(this, id, {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleJSON(),
@@ -57,7 +61,7 @@ export abstract class SecurityGroupBase extends Construct implements ISecurityGr
     id = id.replace('/', '_');
 
     // Skip duplicates
-    if (this.tryFindChild(id) === undefined) {
+    if (this.node.tryFindChild(id) === undefined) {
       new CfnSecurityGroupEgress(this, id, {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleJSON(),
@@ -134,8 +138,8 @@ export class SecurityGroup extends SecurityGroupBase implements ITaggable {
   /**
    * Import an existing SecurityGroup
    */
-  public static import(parent: Construct, id: string, props: SecurityGroupImportProps): ISecurityGroup {
-    return new ImportedSecurityGroup(parent, id, props);
+  public static import(scope: Construct, id: string, props: SecurityGroupImportProps): ISecurityGroup {
+    return new ImportedSecurityGroup(scope, id, props);
   }
 
   /**
@@ -164,11 +168,11 @@ export class SecurityGroup extends SecurityGroupBase implements ITaggable {
 
   private readonly allowAllOutbound: boolean;
 
-  constructor(parent: Construct, name: string, props: SecurityGroupProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: SecurityGroupProps) {
+    super(scope, id);
 
     this.tags = new TagManager(this, { initialTags: props.tags});
-    const groupDescription = props.description || this.path;
+    const groupDescription = props.description || this.node.path;
 
     this.allowAllOutbound = props.allowAllOutbound !== false;
 
@@ -392,8 +396,8 @@ export interface ConnectionRule {
 class ImportedSecurityGroup extends SecurityGroupBase {
   public readonly securityGroupId: string;
 
-  constructor(parent: Construct, name: string, private readonly props: SecurityGroupImportProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, private readonly props: SecurityGroupImportProps) {
+    super(scope, id);
 
     this.securityGroupId = props.securityGroupId;
   }

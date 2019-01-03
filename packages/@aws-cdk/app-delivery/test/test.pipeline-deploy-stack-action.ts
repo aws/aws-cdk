@@ -272,7 +272,7 @@ export = nodeunit.testCase({
             adminPermissions: false,
           });
           for (let i = 0 ; i < assetCount ; i++) {
-            deployedStack.addMetadata(cxapi.ASSET_METADATA, {});
+            deployedStack.node.addMetadata(cxapi.ASSET_METADATA, {});
           }
           test.deepEqual(action.validate(),
             [`Cannot deploy the stack DeployedStack because it references ${assetCount} asset(s)`]);
@@ -286,8 +286,8 @@ export = nodeunit.testCase({
 class FakeAction extends api.Action {
   public readonly outputArtifact: api.Artifact;
 
-  constructor(parent: cdk.Construct, id: string, pipeline: code.Pipeline) {
-    super(parent, id, {
+  constructor(scope: cdk.Construct, id: string, pipeline: code.Pipeline) {
+    super(scope, id, {
       artifactBounds: api.defaultBounds(),
       category: api.ActionCategory.Test,
       provider: 'Test',

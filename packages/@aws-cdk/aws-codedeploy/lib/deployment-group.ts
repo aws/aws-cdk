@@ -11,7 +11,7 @@ import { CfnDeploymentGroup } from './codedeploy.generated';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from "./deployment-config";
 import { CommonPipelineDeployActionProps, PipelineDeployAction } from "./pipeline-action";
 
-export interface IServerDeploymentGroup {
+export interface IServerDeploymentGroup extends cdk.IConstruct {
   readonly application: IServerApplication;
   readonly role?: iam.Role;
   readonly deploymentGroupName: string;
@@ -66,8 +66,8 @@ export abstract class ServerDeploymentGroupBase extends cdk.Construct implements
   public readonly deploymentConfig: IServerDeploymentConfig;
   public abstract readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
 
-  constructor(parent: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig) {
+    super(scope, id);
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
   }
 
@@ -99,8 +99,8 @@ class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ServerDeploymentGroupImportProps) {
-    super(parent, id, props.deploymentConfig);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ServerDeploymentGroupImportProps) {
+    super(scope, id, props.deploymentConfig);
 
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
@@ -284,8 +284,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    * @param props the properties of the referenced Deployment Group
    * @returns a Construct representing a reference to an existing Deployment Group
    */
-  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentGroupImportProps): IServerDeploymentGroup {
-    return new ImportedServerDeploymentGroup(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: ServerDeploymentGroupImportProps): IServerDeploymentGroup {
+    return new ImportedServerDeploymentGroup(scope, id, props);
   }
 
   public readonly application: IServerApplication;
@@ -298,8 +298,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   private readonly codeDeployBucket: s3.IBucket;
   private readonly alarms: cloudwatch.Alarm[];
 
-  constructor(parent: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
-    super(parent, id, props.deploymentConfig);
+  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
+    super(scope, id, props.deploymentConfig);
 
     this.application = props.application || new ServerApplication(this, 'Application');
 

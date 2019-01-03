@@ -20,7 +20,7 @@ const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
-export interface IProject extends events.IEventRuleTarget {
+export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
   /** The ARN of this Project. */
   readonly projectArn: string;
 
@@ -421,7 +421,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     }
 
     return {
-      id: this.id,
+      id: this.node.id,
       arn: this.projectArn,
       roleArn: this.eventsRole.roleArn,
     };
@@ -433,8 +433,8 @@ class ImportedProject extends ProjectBase {
   public readonly projectName: string;
   public readonly role?: iam.Role = undefined;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: ProjectImportProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ProjectImportProps) {
+    super(scope, id);
 
     this.projectArn = cdk.ArnUtils.fromComponents({
       service: 'codebuild',
@@ -592,8 +592,8 @@ export class Project extends ProjectBase {
    * @param props the properties of the referenced Project
    * @returns a reference to the existing Project
    */
-  public static import(parent: cdk.Construct, name: string, props: ProjectImportProps): IProject {
-    return new ImportedProject(parent, name, props);
+  public static import(scope: cdk.Construct, id: string, props: ProjectImportProps): IProject {
+    return new ImportedProject(scope, id, props);
   }
 
   /**
@@ -616,8 +616,8 @@ export class Project extends ProjectBase {
   private readonly _secondarySources: BuildSource[];
   private readonly _secondaryArtifacts: BuildArtifacts[];
 
-  constructor(parent: cdk.Construct, name: string, props: ProjectProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: ProjectProps) {
+    super(scope, id);
 
     if (props.buildScriptAssetEntrypoint && !props.buildScriptAsset) {
       throw new Error('To use buildScriptAssetEntrypoint, supply buildScriptAsset as well.');
@@ -1007,8 +1007,8 @@ export class LinuxBuildImage implements IBuildImage {
   /**
    * Uses an Docker image asset as a Linux build image.
    */
-  public static fromAsset(parent: cdk.Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
-    const asset = new DockerImageAsset(parent, id, props);
+  public static fromAsset(scope: cdk.Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
+    const asset = new DockerImageAsset(scope, id, props);
     const image = new LinuxBuildImage(asset.imageUri);
 
     // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
@@ -1100,8 +1100,8 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Uses an Docker image asset as a Windows build image.
    */
-  public static fromAsset(parent: cdk.Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
-    const asset = new DockerImageAsset(parent, id, props);
+  public static fromAsset(scope: cdk.Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
+    const asset = new DockerImageAsset(scope, id, props);
     const image = new WindowsBuildImage(asset.imageUri);
 
     // allow this codebuild to pull this image (CodeBuild doesn't use a role, so

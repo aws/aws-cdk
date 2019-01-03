@@ -4,8 +4,8 @@ import { SqsEventSource } from '../lib';
 import { TestFunction } from './test-function';
 
 class SqsEventSourceTest extends cdk.Stack {
-  constructor(parent: cdk.App, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const fn = new TestFunction(this, 'F');
     const queue = new sqs.Queue(this, 'Q');

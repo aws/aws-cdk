@@ -11,7 +11,7 @@ import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
-export interface IBucket {
+export interface IBucket extends cdk.IConstruct {
   /**
    * The ARN of the bucket.
    */
@@ -560,11 +560,11 @@ export class Bucket extends BucketBase {
    *
    * @param parent The parent creating construct (usually `this`).
    * @param id The construct's name.
-   * @param attrs A `BucketAttributes` object. Can be obtained from a call to
+   * @param props A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.
    */
-  public static import(parent: cdk.Construct, id: string, attrs: BucketImportProps): IBucket {
-    return new ImportedBucket(parent, id, attrs);
+  public static import(scope: cdk.Construct, id: string, props: BucketImportProps): IBucket {
+    return new ImportedBucket(scope, id, props);
   }
 
   public readonly bucketArn: string;
@@ -578,8 +578,8 @@ export class Bucket extends BucketBase {
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
 
-  constructor(parent: cdk.Construct, name: string, props: BucketProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: BucketProps = {}) {
+    super(scope, id);
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
@@ -708,7 +708,7 @@ export class Bucket extends BucketBase {
 
     if (encryptionType === BucketEncryption.Kms) {
       const encryptionKey = props.encryptionKey || new kms.EncryptionKey(this, 'Key', {
-        description: `Created by ${this.path}`
+        description: `Created by ${this.node.path}`
       });
 
       const bucketEncryption = {
@@ -960,8 +960,8 @@ class ImportedBucket extends BucketBase {
   public policy?: BucketPolicy;
   protected autoCreatePolicy: boolean;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: BucketImportProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, private readonly props: BucketImportProps) {
+    super(scope, id);
 
     const bucketName = parseBucketName(props);
     if (!bucketName) {
