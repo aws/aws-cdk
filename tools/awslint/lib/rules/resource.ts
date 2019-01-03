@@ -68,7 +68,7 @@ resourceLinter.add({
   eval: e => {
     if (!e.ctx.resourceClass) { return; }
 
-    // first, let's look up the IXxx interface
+    // first, let's look up the IFoo interface
     const interfaceFqn = `${e.ctx.assembly.name}.I${e.ctx.resource.basename}`;
     const resourceInterface = e.ctx.ts.interfaces.find(i => i.fqn === interfaceFqn);
     if (!e.assert(resourceInterface, interfaceFqn)) {
@@ -81,7 +81,7 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'import-props-interface',
-  message: 'every resource must have an "XxxImportProps" interface',
+  message: 'every resource must have an "FooImportProps" interface',
   eval: e => {
     if (!e.ctx.resourceInterface) {
       return;
