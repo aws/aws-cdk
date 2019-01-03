@@ -25,7 +25,7 @@ export async function compileCurrentPackage(timers: Timers, compilers: CompilerO
     return;
   }
 
-  await shell([packageCompiler(compilers)], timers);
+  await shell(packageCompiler(compilers), timers);
 
   // Find files in bin/ that look like they should be executable, and make them so.
   const scripts = currentPackageJson().bin || {};
