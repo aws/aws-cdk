@@ -20,7 +20,8 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "excludeTypescript": ["examples"]
     }
   },
   "repository": {
