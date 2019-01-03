@@ -20,9 +20,9 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
-      "excludeTypescript": ["examples"]
-    }
+      "sphinx": {}
+    },
+    "excludeTypescript": ["examples"]
   },
   "repository": {
     "type": "git",
