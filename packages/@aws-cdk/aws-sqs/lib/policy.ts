@@ -24,8 +24,8 @@ export class QueuePolicy extends Construct implements IDependable {
    */
   public readonly dependencyElements = new Array<IDependable>();
 
-  constructor(parent: Construct, name: string, props: QueuePolicyProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: QueuePolicyProps) {
+    super(scope, id);
 
     const resource = new CfnQueuePolicy(this, 'Resource', {
       policyDocument: this.document,

@@ -2,8 +2,8 @@ import { App, Stack, StackProps } from '@aws-cdk/cdk';
 import { Topic } from '../lib';
 
 class SNSInteg extends Stack {
-  constructor(parent: App, name: string, props?: StackProps) {
-    super(parent, name, props);
+  constructor(scope: App, id: string, props?: StackProps) {
+    super(scope, id, props);
 
     new Topic(this, 'MyTopic', {
       topicName: 'fooTopic',

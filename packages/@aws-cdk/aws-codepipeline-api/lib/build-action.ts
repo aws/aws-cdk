@@ -50,8 +50,8 @@ export interface BuildActionProps extends CommonActionProps, CommonActionConstru
 export abstract class BuildAction extends Action {
   public readonly outputArtifact: Artifact;
 
-  constructor(parent: cdk.Construct, name: string, props: BuildActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, id: string, props: BuildActionProps) {
+    super(scope, id, {
       category: ActionCategory.Build,
       ...props,
     });

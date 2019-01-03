@@ -227,8 +227,8 @@ class ASGFixture extends cdk.Construct {
   public readonly vpc: ec2.VpcNetwork;
   public readonly asg: autoscaling.AutoScalingGroup;
 
-  constructor(parent: cdk.Construct, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
 
     this.vpc = new ec2.VpcNetwork(this, 'VPC');
     this.asg = new autoscaling.AutoScalingGroup(this, 'ASG', {

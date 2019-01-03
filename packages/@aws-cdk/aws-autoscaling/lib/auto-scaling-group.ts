@@ -196,8 +196,8 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   private readonly targetGroupArns: string[] = [];
   private albTargetGroup?: elbv2.ApplicationTargetGroup;
 
-  constructor(parent: cdk.Construct, name: string, props: AutoScalingGroupProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: AutoScalingGroupProps) {
+    super(scope, id);
 
     if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
       throw new RangeError(`cooldownSeconds cannot be negative, got: ${props.cooldownSeconds}`);
@@ -210,7 +210,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
     this.tags = new TagManager(this, {initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.path, { overwrite: false });
+    this.tags.setTag(NAME_TAG, this.node.path, { overwrite: false });
 
     this.role = new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')

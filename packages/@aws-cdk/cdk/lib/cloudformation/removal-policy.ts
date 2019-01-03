@@ -29,6 +29,6 @@ export function applyRemovalPolicy(resource: Resource, removalPolicy: RemovalPol
   // attach metadata that will tell the toolkit to protect this resource by
   // applying an appropriate stack update policy.
   if (removalPolicy === RemovalPolicy.Forbid) {
-    resource.addMetadata('aws:cdk:protected', true);
+    resource.node.addMetadata('aws:cdk:protected', true);
   }
 }

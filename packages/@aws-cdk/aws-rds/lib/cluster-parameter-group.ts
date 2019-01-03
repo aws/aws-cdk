@@ -5,7 +5,7 @@ import { CfnDBClusterParameterGroup } from './rds.generated';
 /**
  * A cluster parameter group
  */
-export interface IClusterParameterGroup {
+export interface IClusterParameterGroup extends cdk.IConstruct {
   /**
    * Name of this parameter group
    */
@@ -51,15 +51,15 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
   /**
    * Import a parameter group
    */
-  public static import(parent: cdk.Construct, id: string, props: ClusterParameterGroupImportProps): IClusterParameterGroup {
-    return new ImportedClusterParameterGroup(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: ClusterParameterGroupImportProps): IClusterParameterGroup {
+    return new ImportedClusterParameterGroup(scope, id, props);
   }
 
   public readonly parameterGroupName: string;
   private readonly parameters: Parameters = {};
 
-  constructor(parent: cdk.Construct, id: string, props: ClusterParameterGroupProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: ClusterParameterGroupProps) {
+    super(scope, id);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       description: props.description,
@@ -119,8 +119,8 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
 class ImportedClusterParameterGroup extends cdk.Construct implements IClusterParameterGroup {
   public readonly parameterGroupName: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ClusterParameterGroupImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ClusterParameterGroupImportProps) {
+    super(scope, id);
     this.parameterGroupName = props.parameterGroupName;
   }
 

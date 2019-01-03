@@ -386,7 +386,7 @@ export = {
     const exported = api.export();
 
     // THEN
-    stack.validateTree();
+    stack.node.validateTree();
     test.deepEqual(stack.toCloudFormation().Outputs.MyRestApiRestApiIdB93C5C2D, {
       Value: { Ref: 'MyRestApi2D1F47A9' },
       Export: { Name: 'MyRestApiRestApiIdB93C5C2D' }

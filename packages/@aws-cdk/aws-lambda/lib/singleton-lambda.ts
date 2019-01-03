@@ -41,8 +41,8 @@ export class SingletonFunction extends FunctionBase {
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: IFunction;
 
-  constructor(parent: cdk.Construct, name: string, props: SingletonFunctionProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: SingletonFunctionProps) {
+    super(scope, id);
 
     this.lambdaFunction = this.ensureLambda(props);
 
@@ -64,7 +64,7 @@ export class SingletonFunction extends FunctionBase {
   private ensureLambda(props: SingletonFunctionProps): IFunction {
     const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
     const stack = cdk.Stack.find(this);
-    const existing = stack.tryFindChild(constructName);
+    const existing = stack.node.tryFindChild(constructName);
     if (existing) {
       // Just assume this is true
       return existing as FunctionBase;

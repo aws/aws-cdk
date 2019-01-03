@@ -51,8 +51,8 @@ export class FargateTaskDefinition extends TaskDefinition {
   // we need to explicitly write the type here, as type deduction for enums won't lead to
   // the import being generated in the .d.ts file.
 
-  constructor(parent: cdk.Construct, name: string, props: FargateTaskDefinitionProps = {}) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, id: string, props: FargateTaskDefinitionProps = {}) {
+    super(scope, id, {
       ...props,
       cpu: props.cpu || '256',
       memoryMiB: props.memoryMiB || '512',

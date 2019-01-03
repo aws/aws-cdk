@@ -69,8 +69,8 @@ export class StepScalingPolicy extends cdk.Construct {
   public readonly upperAlarm?: cloudwatch.Alarm;
   public readonly upperAction?: StepScalingAction;
 
-  constructor(parent: cdk.Construct, id: string, props: StepScalingPolicyProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: StepScalingPolicyProps) {
+    super(scope, id);
 
     if (props.scalingSteps.length < 2) {
       throw new Error('You must supply at least 2 intervals for autoscaling');
