@@ -47,10 +47,19 @@ Construct initializer (constructor) signature should always be:
 constructor(scope: cdk.Construct, id: string, props: FooProps)
 ```
 
-> __TODO__: <a id="resource-class">awslint: construct-ctor-optional-props</a>
+> __TODO__: <a id="construct-ctor-optional-props">awslint: construct-ctor-optional-props</a>
 
 If all initialization properties are optional, the `props` argument must also be
 optional.
+
+> NOTE: This rule breaks down for the case where there are two (or more)
+> potential arguments, and exactly one (or at least one) of them is required.
+> Then the props will be marked as optional, but the whole object is not
+> optional since there is no valid use of not specifying anything.
+>
+> Ideally we rather not design APIs such as this, but there might be cases where
+> this is the best approach. In those cases, it is okay to "exclude" this role:scope
+> in `package.json`.
 
 ```ts
 constructor(scope: cdk.Construct, id: string, props: FooProps = { })
@@ -118,10 +127,11 @@ Since attribute values can either be late-bound ("a promise to a string") or
 concrete ("a string"), the AWS CDK has a mechanism called "tokens" which allows
 codifying late-bound values into strings or string arrays. This approach was
 chosen in order to dramatically simplify the type-system and ergonomics of CDK
-code. As long as users treat these attributes as _opaque values_ (e.g. not try
+code. As long as users treat these attributes as **opaque values** (e.g. not try
 to parse them or manipulate them), they can be used interchangeably.
 
-For example, users can concatenate strings with tokens idiomatically:
+As long as attribute values are not manipulated, they can still be concatenated
+idiomatically. For example:
 
 ```ts
 `This is my bucket name: ${bucket.bucketName} and bucket ARN: ${bucket.bucketArn}`
@@ -132,8 +142,16 @@ deployment, the CDK will identify those as tokens and will convert this string
 into an `{ "Fn::Join" }` expression which includes the relevant intrinsic
 functions.
 
+If needed, you can query whether an object includes unresolved tokens by using
+the `cdk.unresolved(x)` function.
+
 Resource attributes should use a type that corresponds to the __resolved__ AWS
 CloudFormation type (e.g. `string`, `string[]`).
+
+At the moment, attributes that represent strings, are represented as `string` in
+the `CfnFoo` resource. However, other types of tokens (string arrays, numbers)
+are still represented as `Token`. You can use `token.toList()` to represent a token as a
+string array, and soon we will also have `toNumber()`.
 
 ## Resource Class
 
@@ -422,4 +440,5 @@ class ImportedFoo extends FooBase {
 - [ ] Security Groups (`connections`)
 - [ ] Pipeline Actions (`addToPipline`)
 - [ ] SNS Targets
+- [ ] `_asFooTarget`
 - [ ] TODO: other cross AWS patterns

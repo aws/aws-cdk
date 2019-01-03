@@ -53,6 +53,15 @@ async function main() {
 
   const config = path.join(workdir, 'package.json');
 
+  if (command === 'list') {
+    for (const linter of LINTERS) {
+      for (const rule of linter.rules) {
+        console.info(`${colors.cyan(rule.code)}: ${rule.message}`);
+      }
+    }
+    return;
+  }
+
   // if no package.json and force is true (default), just don't do anything
   if (!await fs.pathExists(config) && args.force) {
     return;
@@ -83,15 +92,6 @@ async function main() {
   if (args.debug) {
     console.error('command: ' + command);
     console.error('options: ' + JSON.stringify(args, undefined, 2));
-  }
-
-  if (command === 'list') {
-    for (const linter of LINTERS) {
-      for (const rule of linter.rules) {
-        console.info(`${colors.cyan(rule.code)}: ${rule.message}`);
-      }
-    }
-    return;
   }
 
   if (command === 'lint') {

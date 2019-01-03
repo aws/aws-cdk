@@ -48,7 +48,7 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'resource-props',
-  message: 'an interface for resource props must be define',
+  message: 'an interface for resource props must be defined',
   eval: e => {
     if (!e.ctx.resourceClass) { return; }
     const fqn = `${e.ctx.assembly.name}.${e.ctx.resource.basename}Props`;

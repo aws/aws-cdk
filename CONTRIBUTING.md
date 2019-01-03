@@ -150,6 +150,7 @@ the [guidelines](./design/aws-guidelines.md).
 Here are a few useful commands:
 
  * `npm run awslint` in every module will run __awslint__ for that module.
+ * `npm run awslint list` prints all rules (details and rationale in the guidelines doc)
  * `lerna run awslint` will run __awslint__ in all modules.
  * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
    evaluate only the rule specified [awslint README](./tools/awslint/README.md)

@@ -14,6 +14,11 @@ constructLinter.add({
   code: 'construct-ctor',
   message: 'signature of all construct constructors should be "scope, id, props"',
   eval: e => {
+    // only applies to non abstract classes
+    if (e.ctx.construct.abstract) {
+      return;
+    }
+
     const initializer = e.ctx.construct.initializer;
     if (!e.assert(initializer, e.ctx.construct.fqn)) {
       return;
@@ -34,7 +39,7 @@ constructLinter.add({
     // it's okay for a construct not to have a "props" argument so we only
     // assert the "props" argument if there are more than two parameters
     if (initializer.parameters.length > 2) {
-      expectedParams.push(            {
+      expectedParams.push({
         name: 'props',
       });
     }
