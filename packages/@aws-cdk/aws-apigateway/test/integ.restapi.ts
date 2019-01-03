@@ -3,8 +3,8 @@ import cdk = require('@aws-cdk/cdk');
 import apigateway = require('../lib');
 
 class Test extends cdk.Stack {
-  constructor(parent: cdk.App, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const api = new apigateway.RestApi(this, 'my-api', {
       retainDeployments: true,

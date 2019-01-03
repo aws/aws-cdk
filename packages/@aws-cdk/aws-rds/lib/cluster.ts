@@ -97,8 +97,8 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
   /**
    * Import an existing DatabaseCluster from properties
    */
-  public static import(parent: cdk.Construct, name: string, props: DatabaseClusterImportProps): IDatabaseCluster {
-    return new ImportedDatabaseCluster(parent, name, props);
+  public static import(scope: cdk.Construct, id: string, props: DatabaseClusterImportProps): IDatabaseCluster {
+    return new ImportedDatabaseCluster(scope, id, props);
   }
 
   /**
@@ -136,8 +136,8 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
    */
   public readonly securityGroupId: string;
 
-  constructor(parent: cdk.Construct, name: string, props: DatabaseClusterProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: DatabaseClusterProps) {
+    super(scope, id);
 
     const subnets = props.instanceProps.vpc.subnets(props.instanceProps.vpcPlacement);
 
@@ -147,7 +147,7 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
-      dbSubnetGroupDescription: `Subnets for ${name} database`,
+      dbSubnetGroupDescription: `Subnets for ${id} database`,
       subnetIds: subnets.map(s => s.subnetId)
     });
 
@@ -292,8 +292,8 @@ class ImportedDatabaseCluster extends cdk.Construct implements IDatabaseCluster 
    */
   public readonly securityGroupId: string;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: DatabaseClusterImportProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, name: string, private readonly props: DatabaseClusterImportProps) {
+    super(scope, name);
 
     this.securityGroupId = props.securityGroupId;
     this.defaultPortRange = new ec2.TcpPortFromAttribute(props.port);

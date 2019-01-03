@@ -9,9 +9,9 @@ export function expect(stack: api.SynthesizedStack | cdk.Stack, skipValidation =
 
   if (isStackClassInstance(stack)) {
     if (!skipValidation) {
-      const errors = stack.validateTree();
+      const errors = stack.node.validateTree();
       if (errors.length > 0) {
-        throw new Error(`Stack validation failed:\n${errors.map(e => `${e.message} at: ${e.source.parent}`).join('\n')}`);
+        throw new Error(`Stack validation failed:\n${errors.map(e => `${e.message} at: ${e.source.node.scope}`).join('\n')}`);
       }
     }
 

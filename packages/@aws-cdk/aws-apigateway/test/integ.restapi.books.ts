@@ -3,8 +3,8 @@ import cdk = require('@aws-cdk/cdk');
 import apigw = require('../lib');
 
 class BookStack extends cdk.Stack {
-  constructor(parent: cdk.App, name: string) {
-    super(parent, name);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const booksHandler = new apigw.LambdaIntegration(new lambda.Function(this, 'BooksHandler', {
       runtime: lambda.Runtime.NodeJS610,

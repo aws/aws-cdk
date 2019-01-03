@@ -78,8 +78,8 @@ export class Resource extends Referenceable {
    * Creates a resource construct.
    * @param resourceType The CloudFormation type of this resource (e.g. AWS::DynamoDB::Table)
    */
-  constructor(parent: Construct, name: string, props: ResourceProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: ResourceProps) {
+    super(scope, id);
 
     if (!props.type) {
       throw new Error('The `type` property is required');
@@ -91,9 +91,9 @@ export class Resource extends Referenceable {
     // if aws:cdk:enable-path-metadata is set, embed the current construct's
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
-    if (this.getContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+    if (this.node.getContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
       this.options.metadata = {
-        [cxapi.PATH_METADATA_KEY]: this.path
+        [cxapi.PATH_METADATA_KEY]: this.node.path
       };
     }
   }
@@ -199,7 +199,7 @@ export class Resource extends Referenceable {
       };
     } catch (e) {
       // Change message
-      e.message = `While synthesizing ${this.path}: ${e.message}`;
+      e.message = `While synthesizing ${this.node.path}: ${e.message}`;
       // Adjust stack trace (make it look like node built it, too...)
       const creationStack = ['--- resource created at ---', ...this.creationStackTrace].join('\n  at ');
       const problemTrace = e.stack.substr(e.stack.indexOf(e.message) + e.message.length);

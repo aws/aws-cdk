@@ -32,8 +32,8 @@ export class Topic extends TopicBase {
   /**
    * Import a Topic defined elsewhere
    */
-  public static import(parent: Construct, name: string, props: TopicImportProps): ITopic {
-    return new ImportedTopic(parent, name, props);
+  public static import(scope: Construct, id: string, props: TopicImportProps): ITopic {
+    return new ImportedTopic(scope, id, props);
   }
 
   public readonly topicArn: string;
@@ -41,8 +41,8 @@ export class Topic extends TopicBase {
 
   protected readonly autoCreatePolicy: boolean = true;
 
-  constructor(parent: Construct, name: string, props: TopicProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: TopicProps = {}) {
+    super(scope, id);
 
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
@@ -73,8 +73,8 @@ class ImportedTopic extends TopicBase {
 
   protected autoCreatePolicy: boolean = false;
 
-  constructor(parent: Construct, id: string, private readonly props: TopicImportProps) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, private readonly props: TopicImportProps) {
+    super(scope, id);
     this.topicArn = props.topicArn;
     this.topicName = props.topicName;
   }

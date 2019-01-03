@@ -70,8 +70,8 @@ export class Method extends cdk.Construct {
   public readonly resource: IRestApiResource;
   public readonly restApi: RestApi;
 
-  constructor(parent: cdk.Construct, id: string, props: MethodProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: MethodProps) {
+    super(scope, id);
 
     this.resource = props.resource;
     this.restApi = props.resource.resourceApi;
@@ -118,7 +118,7 @@ export class Method extends cdk.Construct {
   public get methodArn(): string {
     if (!this.restApi.deploymentStage) {
       throw new Error(
-        `Unable to determine ARN for method "${this.id}" since there is no stage associated with this API.\n` +
+        `Unable to determine ARN for method "${this.node.id}" since there is no stage associated with this API.\n` +
         'Either use the `deploy` prop or explicitly assign `deploymentStage` on the RestApi');
     }
 

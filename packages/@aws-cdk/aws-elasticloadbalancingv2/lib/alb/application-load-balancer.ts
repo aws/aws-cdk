@@ -49,15 +49,15 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Import an existing Application Load Balancer
    */
-  public static import(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerImportProps): IApplicationLoadBalancer {
-    return new ImportedApplicationLoadBalancer(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: ApplicationLoadBalancerImportProps): IApplicationLoadBalancer {
+    return new ImportedApplicationLoadBalancer(scope, id, props);
   }
 
   public readonly connections: ec2.Connections;
   private readonly securityGroup: ec2.ISecurityGroup;
 
-  constructor(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, id: string, props: ApplicationLoadBalancerProps) {
+    super(scope, id, props, {
       type: "application",
       securityGroups: new cdk.Token(() => [this.securityGroup.securityGroupId]),
       ipAddressType: props.ipAddressType,
@@ -65,7 +65,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
-      description: `Automatically created Security Group for ELB ${this.uniqueId}`,
+      description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
       allowAllOutbound: false
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
@@ -476,7 +476,7 @@ export enum HttpCodeTarget {
 /**
  * An application load balancer
  */
-export interface IApplicationLoadBalancer extends ec2.IConnectable {
+export interface IApplicationLoadBalancer extends cdk.IConstruct, ec2.IConnectable {
   /**
    * The ARN of this load balancer
    */
@@ -557,8 +557,8 @@ class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicat
    */
   public readonly vpc?: ec2.IVpcNetwork;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ApplicationLoadBalancerImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ApplicationLoadBalancerImportProps) {
+    super(scope, id);
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({

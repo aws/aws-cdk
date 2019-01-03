@@ -1,7 +1,9 @@
+import cdk = require('@aws-cdk/cdk');
+
 /**
  * Imported or created hosted zone
  */
-export interface IHostedZone {
+export interface IHostedZone extends cdk.IConstruct {
   /**
    * ID of this hosted zone
    */

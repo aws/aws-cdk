@@ -3,8 +3,8 @@ import path = require('path');
 import lambda = require('../lib');
 
 class TestStack extends cdk.Stack {
-  constructor(parent: cdk.App, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     /// !show
     new lambda.Function(this, 'MyLambda', {

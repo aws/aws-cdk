@@ -22,7 +22,7 @@ export = {
         ResourceRecordSetCount: 3
       };
 
-      stack.setContext(key, fakeZone);
+      stack.node.setContext(key, fakeZone);
 
       const cdkZoneProps: HostedZoneImportProps = {
         hostedZoneId: fakeZone.Id,

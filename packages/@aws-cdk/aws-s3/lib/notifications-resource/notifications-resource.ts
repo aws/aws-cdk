@@ -35,8 +35,8 @@ export class BucketNotifications extends cdk.Construct {
   private resource?: cdk.Resource;
   private readonly bucket: Bucket;
 
-  constructor(parent: cdk.Construct, id: string, props: NotificationsProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: NotificationsProps) {
+    super(scope, id);
     this.bucket = props.bucket;
   }
 
@@ -53,7 +53,7 @@ export class BucketNotifications extends cdk.Construct {
 
     // resolve target. this also provides an opportunity for the target to e.g. update
     // policies to allow this notification to happen.
-    const targetProps = target.asBucketNotificationDestination(this.bucket.bucketArn, this.bucket.uniqueId);
+    const targetProps = target.asBucketNotificationDestination(this.bucket.bucketArn, this.bucket.node.uniqueId);
     const commonConfig: CommonConfiguration = {
       Events: [ event ],
       Filter: renderFilters(filters),

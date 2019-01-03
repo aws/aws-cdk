@@ -11,7 +11,7 @@ import { CfnApplication } from './codedeploy.generated';
  * or one defined in a different CDK Stack,
  * use the {@link #import} method.
  */
-export interface IServerApplication {
+export interface IServerApplication extends cdk.IConstruct {
   readonly applicationArn: string;
 
   readonly applicationName: string;
@@ -37,8 +37,8 @@ class ImportedServerApplication extends cdk.Construct implements IServerApplicat
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ServerApplicationImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ServerApplicationImportProps) {
+    super(scope, id);
 
     this.applicationName = props.applicationName;
     this.applicationArn = applicationName2Arn(this.applicationName);
@@ -74,15 +74,15 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
    * @param props the properties of the referenced Application
    * @returns a Construct representing a reference to an existing Application
    */
-  public static import(parent: cdk.Construct, id: string, props: ServerApplicationImportProps): IServerApplication {
-    return new ImportedServerApplication(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: ServerApplicationImportProps): IServerApplication {
+    return new ImportedServerApplication(scope, id, props);
   }
 
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(parent: cdk.Construct, id: string, props?: ServerApplicationProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props?: ServerApplicationProps) {
+    super(scope, id);
 
     const resource = new CfnApplication(this, 'Resource', {
       applicationName: props && props.applicationName,

@@ -34,8 +34,8 @@ export class DockerImageAsset extends cdk.Construct {
    */
   private readonly directory: string;
 
-  constructor(parent: cdk.Construct, id: string, props: DockerImageAssetProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: DockerImageAssetProps) {
+    super(scope, id);
 
     // resolve full path
     this.directory = path.resolve(props.directory);
@@ -48,17 +48,17 @@ export class DockerImageAsset extends cdk.Construct {
 
     const imageNameParameter = new cdk.Parameter(this, 'ImageName', {
       type: 'String',
-      description: `ECR repository name and tag asset "${this.path}"`,
+      description: `ECR repository name and tag asset "${this.node.path}"`,
     });
 
     const asset: cxapi.ContainerImageAssetMetadataEntry = {
       packaging: 'container-image',
       path: this.directory,
-      id: this.uniqueId,
+      id: this.node.uniqueId,
       imageNameParameter: imageNameParameter.logicalId
     };
 
-    this.addMetadata(cxapi.ASSET_METADATA, asset);
+    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
 
     // parse repository name and tag from the parameter (<REPO_NAME>:<TAG>)
     const components = cdk.Fn.split(':', imageNameParameter.valueAsString);

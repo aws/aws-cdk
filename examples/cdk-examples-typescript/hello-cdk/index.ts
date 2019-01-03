@@ -2,8 +2,8 @@ import dynamodb = require('@aws-cdk/aws-dynamodb');
 import cdk = require('@aws-cdk/cdk');
 
 class HelloCDK extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const table = new dynamodb.Table(this, 'Table', {
       readCapacity: 1,

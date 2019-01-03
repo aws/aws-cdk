@@ -103,8 +103,8 @@ export class Policy extends Construct implements IDependable {
   private readonly users = new Array<User>();
   private readonly groups = new Array<Group>();
 
-  constructor(parent: Construct, name: string, props: PolicyProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: PolicyProps = {}) {
+    super(scope, id);
 
     const resource = new CfnPolicy(this, 'Resource', {
       policyDocument: this.document,

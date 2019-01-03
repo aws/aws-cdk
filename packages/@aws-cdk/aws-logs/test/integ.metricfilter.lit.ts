@@ -2,8 +2,8 @@ import { App, Stack, StackProps } from '@aws-cdk/cdk';
 import { FilterPattern, LogGroup, MetricFilter } from '../lib';
 
 class MetricFilterIntegStack extends Stack {
-  constructor(parent: App, name: string, props?: StackProps) {
-    super(parent, name, props);
+  constructor(scope: App, id: string, props?: StackProps) {
+    super(scope, id, props);
 
     const logGroup = new LogGroup(this, 'LogGroup', {
       retainLogGroup: false

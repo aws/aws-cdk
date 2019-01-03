@@ -88,8 +88,8 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
   private readonly artifactStores: { [region: string]: any };
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
 
-  constructor(parent: cdk.Construct, name: string, props?: PipelineProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props?: PipelineProps) {
+    super(scope, id);
     props = props || {};
 
     cpapi.validateName('Pipeline', props.pipelineName);
@@ -181,7 +181,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     }
 
     return {
-      id: this.id,
+      id: this.node.id,
       arn: this.pipelineArn,
       roleArn: this.eventsRole.roleArn,
     };
@@ -285,7 +285,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
 
   // ignore unused private method (it's actually used in Stage)
   // @ts-ignore
-  private _attachActionToRegion(stage: Stage, action: actions.Action): void {
+  private _attachActionToRegion(stage: Stage, action: cpapi.Action): void {
     // handle cross-region Actions here
     if (!action.region) {
       return;
@@ -306,6 +306,9 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
       const pipelineAccount = pipelineStack.requireAccountId(
         "You need to specify an explicit account when using CodePipeline's cross-region support");
       const app = pipelineStack.parentApp();
+      if (!app) {
+        throw new Error(`Pipeline stack which uses cross region actions must be part of an application`);
+      }
       const crossRegionScaffoldStack = new CrossRegionScaffoldStack(app, {
         region: action.region,
         account: pipelineAccount,
@@ -327,10 +330,10 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
 
   // ignore unused private method (it's actually used in Stage)
   // @ts-ignore
-  private _generateOutputArtifactName(stage: actions.IStage, action: actions.Action): string {
+  private _generateOutputArtifactName(stage: cpapi.IStage, action: cpapi.Action): string {
     // generate the artifact name based on the Action's full logical ID,
     // thus guaranteeing uniqueness
-    return 'Artifact_' + action.uniqueId;
+    return 'Artifact_' + action.node.uniqueId;
   }
 
   /**
@@ -362,7 +365,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
         }
       }
     }
-    throw new Error(`Could not determine the input artifact for Action with name '${action.id}'. ` +
+    throw new Error(`Could not determine the input artifact for Action with name '${action.node.id}'. ` +
       'Please provide it explicitly with the inputArtifact property.');
   }
 
@@ -417,7 +420,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     for (const stage of this.stages) {
       const onlySourceActionsPermitted = firstStage;
       for (const action of stage.actions) {
-        errors.push(...cpapi.validateSourceAction(onlySourceActionsPermitted, action.category, action.id, stage.id));
+        errors.push(...cpapi.validateSourceAction(onlySourceActionsPermitted, action.category, action.node.id, stage.node.id));
       }
       firstStage = false;
     }

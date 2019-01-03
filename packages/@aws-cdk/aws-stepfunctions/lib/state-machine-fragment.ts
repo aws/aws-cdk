@@ -18,6 +18,10 @@ export abstract class StateMachineFragment extends cdk.Construct implements ICha
      */
     public abstract readonly endStates: INextable[];
 
+    public get id() {
+        return this.node.id;
+    }
+
     /**
      * Prefix the IDs of all states in this state machine fragment
      *

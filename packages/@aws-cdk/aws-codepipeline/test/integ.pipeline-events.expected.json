@@ -290,7 +290,7 @@
         ]
       }
     },
-    "MyPipelineOnActionStateChange3B9E6332": {
+    "MyPipelineCodeCommitSourceOnActionStateChange39DCCFC1": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {

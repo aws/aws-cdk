@@ -202,8 +202,8 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
    */
   private readonly resource: CfnTargetGroup;
 
-  constructor(parent: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
+    super(scope, id);
 
     if (baseProps.deregistrationDelaySec !== undefined) {
       this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelaySec.toString());
@@ -327,7 +327,7 @@ export interface TargetGroupImportProps {
 /**
  * A target group
  */
-export interface ITargetGroup {
+export interface ITargetGroup extends cdk.IConstruct {
   /**
    * ARN of the target group
    */

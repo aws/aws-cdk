@@ -26,8 +26,8 @@ export class Include extends StackElement {
    * @param id The ID of this construct
    * @param template The template to adopt.
    */
-  constructor(parent: Construct, name: string, props: IncludeProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: IncludeProps) {
+    super(scope, id);
     this.template = props.template;
   }
 

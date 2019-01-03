@@ -1124,8 +1124,8 @@ export = {
   }
 };
 
-function newTestLambda(parent: cdk.Construct) {
-  return new lambda.Function(parent, 'MyLambda', {
+function newTestLambda(scope: cdk.Construct) {
+  return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
     runtime: lambda.Runtime.Python27

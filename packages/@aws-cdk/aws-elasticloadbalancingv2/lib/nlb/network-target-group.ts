@@ -39,14 +39,14 @@ export class NetworkTargetGroup extends TargetGroupBase {
   /**
    * Import an existing listener
    */
-  public static import(parent: cdk.Construct, id: string, props: TargetGroupImportProps): INetworkTargetGroup {
-    return new ImportedNetworkTargetGroup(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: TargetGroupImportProps): INetworkTargetGroup {
+    return new ImportedNetworkTargetGroup(scope, id, props);
   }
 
   private readonly listeners: INetworkListener[];
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
+    super(scope, id, props, {
       protocol: Protocol.Tcp,
       port: props.port,
     });

@@ -218,15 +218,15 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
   /**
    * Import an exported VPC
    */
-  public static import(parent: cdk.Construct, name: string, props: VpcNetworkImportProps): IVpcNetwork {
-    return new ImportedVpcNetwork(parent, name, props);
+  public static import(scope: cdk.Construct, id: string, props: VpcNetworkImportProps): IVpcNetwork {
+    return new ImportedVpcNetwork(scope, id, props);
   }
 
   /**
    * Import an existing VPC from context
    */
-  public static importFromContext(parent: cdk.Construct, name: string, props: VpcNetworkProviderProps): IVpcNetwork {
-    return VpcNetwork.import(parent, name, new VpcNetworkProvider(parent, props).vpcProps);
+  public static importFromContext(scope: cdk.Construct, id: string, props: VpcNetworkProviderProps): IVpcNetwork {
+    return VpcNetwork.import(scope, id, new VpcNetworkProvider(scope, props).vpcProps);
   }
 
   /**
@@ -285,8 +285,8 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
    * Network routing for the public subnets will be configured to allow outbound access directly via an Internet Gateway.
    * Network routing for the private subnets will be configured to allow outbound access via a set of resilient NAT Gateways (one per AZ).
    */
-  constructor(parent: cdk.Construct, name: string, props: VpcNetworkProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: VpcNetworkProps = {}) {
+    super(scope, id);
 
     // Can't have enabledDnsHostnames without enableDnsSupport
     if (props.enableDnsHostnames && !props.enableDnsSupport) {
@@ -294,7 +294,7 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
     }
 
     this.tags = new cdk.TagManager(this, { initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.path, { overwrite: false });
+    this.tags.setTag(NAME_TAG, this.node.path, { overwrite: false });
 
     const cidrBlock = ifUndefined(props.cidr, VpcNetwork.DEFAULT_CIDR_RANGE);
     this.networkBuilder = new NetworkBuilder(cidrBlock);
@@ -519,8 +519,8 @@ export interface VpcSubnetProps {
  * Represents a new VPC subnet resource
  */
 export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggable, cdk.IDependable {
-  public static import(parent: cdk.Construct, name: string, props: VpcSubnetImportProps): IVpcSubnet {
-    return new ImportedVpcSubnet(parent, name, props);
+  public static import(scope: cdk.Construct, id: string, props: VpcSubnetImportProps): IVpcSubnet {
+    return new ImportedVpcSubnet(scope, id, props);
   }
 
   /**
@@ -548,10 +548,10 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
    */
   private readonly routeTableId: string;
 
-  constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
+    super(scope, id);
     this.tags = new cdk.TagManager(this, {initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.path, {overwrite: false});
+    this.tags.setTag(NAME_TAG, this.node.path, {overwrite: false});
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -612,8 +612,8 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
  * Represents a public VPC subnet resource
  */
 export class VpcPublicSubnet extends VpcSubnet {
-  constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
+    super(scope, id, props);
   }
 
   /**
@@ -648,8 +648,8 @@ export class VpcPublicSubnet extends VpcSubnet {
  * Represents a private VPC subnet resource
  */
 export class VpcPrivateSubnet extends VpcSubnet {
-  constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
+    super(scope, id, props);
   }
 
   /**
@@ -664,15 +664,15 @@ function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
   return value !== undefined ? value : defaultValue;
 }
 
-export class ImportedVpcNetwork extends VpcNetworkBase {
+class ImportedVpcNetwork extends VpcNetworkBase {
   public readonly vpcId: string;
   public readonly publicSubnets: IVpcSubnet[];
   public readonly privateSubnets: IVpcSubnet[];
   public readonly isolatedSubnets: IVpcSubnet[];
   public readonly availabilityZones: string[];
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: VpcNetworkImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: VpcNetworkImportProps) {
+    super(scope, id);
 
     this.vpcId = props.vpcId;
     this.availabilityZones = props.availabilityZones;
@@ -693,13 +693,13 @@ export class ImportedVpcNetwork extends VpcNetworkBase {
   }
 }
 
-export class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
+class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
   public readonly availabilityZone: string;
   public readonly subnetId: string;
   public readonly dependencyElements = new Array<cdk.IDependable>();
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: VpcSubnetImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: VpcSubnetImportProps) {
+    super(scope, id);
 
     this.subnetId = props.subnetId;
     this.availabilityZone = props.availabilityZone;

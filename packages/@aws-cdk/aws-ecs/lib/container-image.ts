@@ -42,7 +42,7 @@ export class ContainerImage {
   /**
    * Reference an image that's constructed directly from sources on disk
    */
-  public static fromAsset(parent: cdk.Construct, id: string, props: AssetImageProps) {
-    return new AssetImage(parent, id, props);
+  public static fromAsset(scope: cdk.Construct, id: string, props: AssetImageProps) {
+    return new AssetImage(scope, id, props);
   }
 }

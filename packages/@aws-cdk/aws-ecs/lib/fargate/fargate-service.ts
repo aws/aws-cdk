@@ -55,12 +55,12 @@ export interface FargateServiceProps extends BaseServiceProps {
  * Start a service on an ECS cluster
  */
 export class FargateService extends BaseService {
-  constructor(parent: cdk.Construct, name: string, props: FargateServiceProps) {
+  constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
     if (!isFargateCompatible(props.taskDefinition.compatibility)) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
 
-    super(parent, name, {
+    super(scope, id, {
       ...props,
       desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
     }, {

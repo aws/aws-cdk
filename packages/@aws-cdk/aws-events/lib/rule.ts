@@ -67,8 +67,8 @@ export class EventRule extends Construct implements IEventRule {
   /**
    * Imports a rule by ARN into this stack.
    */
-  public static import(parent: Construct, name: string, props: EventRuleImportProps): IEventRule {
-    return new ImportedEventRule(parent, name, props);
+  public static import(scope: Construct, id: string, props: EventRuleImportProps): IEventRule {
+    return new ImportedEventRule(scope, id, props);
   }
 
   public readonly ruleArn: string;
@@ -77,8 +77,8 @@ export class EventRule extends Construct implements IEventRule {
   private readonly eventPattern: EventPattern = { };
   private scheduleExpression?: string;
 
-  constructor(parent: Construct, name: string, props: EventRuleProps = { }) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: EventRuleProps = { }) {
+    super(scope, id);
 
     const resource = new CfnRule(this, 'Resource', {
       name: props.ruleName,
@@ -117,7 +117,7 @@ export class EventRule extends Construct implements IEventRule {
   public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
     if (!target) { return; }
 
-    const targetProps = target.asEventRuleTarget(this.ruleArn, this.uniqueId);
+    const targetProps = target.asEventRuleTarget(this.ruleArn, this.node.uniqueId);
 
     // check if a target with this ID already exists
     if (this.targets.find(t => t.id === targetProps.id)) {
@@ -239,8 +239,8 @@ export class EventRule extends Construct implements IEventRule {
 class ImportedEventRule extends Construct implements IEventRule {
   public readonly ruleArn: string;
 
-  constructor(parent: Construct, id: string, private readonly props: EventRuleImportProps) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, private readonly props: EventRuleImportProps) {
+    super(scope, id);
 
     this.ruleArn = props.eventRuleArn;
   }

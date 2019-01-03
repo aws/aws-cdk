@@ -7,11 +7,11 @@ export interface TestAppletProps extends StackProps {
 }
 
 export class TestApplet extends Stack {
-  constructor(parent: App, name: string, props: TestAppletProps) {
-    super(parent, name, props);
+  constructor(scope: App, id: string, props: TestAppletProps) {
+    super(scope, id, props);
 
-    new Parameter(this, 'P1', { default: this.required(props, 'prop1'), type: 'String' });
-    new Parameter(this, 'P2', { default: this.required(props, 'prop2'), type: 'Number' });
+    new Parameter(this, 'P1', { default: this.node.required(props, 'prop1'), type: 'String' });
+    new Parameter(this, 'P2', { default: this.node.required(props, 'prop2'), type: 'Number' });
 
     if (props.prop3) {
       new Parameter(this, 'P3', { default: props.prop3.join(','), type: 'StringList' });
@@ -24,8 +24,8 @@ export interface AppletProps extends StackProps {
 }
 
 export class Applet extends Stack {
-  constructor(parent: App, name: string, props: AppletProps) {
-    super(parent, name);
+  constructor(scope: App, id: string, props: AppletProps) {
+    super(scope, id);
 
     this.templateOptions.description = props.desc;
   }
@@ -36,8 +36,8 @@ interface NoStackAppletProps {
 }
 
 export class NoStackApplet extends Construct {
-  constructor(parent: Construct, id: string, props: NoStackAppletProps) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, props: NoStackAppletProps) {
+    super(scope, id);
 
     new Parameter(this, 'P1', { default: props.argument, type: 'String' });
   }

@@ -32,8 +32,8 @@ class ImportedServerDeploymentConfig extends cdk.Construct implements IServerDep
   public readonly deploymentConfigName: string;
   public readonly deploymentConfigArn: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ServerDeploymentConfigImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ServerDeploymentConfigImportProps) {
+    super(scope, id);
 
     this.deploymentConfigName = props.deploymentConfigName;
     this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
@@ -105,15 +105,15 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
    * @param props the properties of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentConfigImportProps): IServerDeploymentConfig {
-    return new ImportedServerDeploymentConfig(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: ServerDeploymentConfigImportProps): IServerDeploymentConfig {
+    return new ImportedServerDeploymentConfig(scope, id, props);
   }
 
   public readonly deploymentConfigName: string;
   public readonly deploymentConfigArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
+    super(scope, id);
 
     const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: props.deploymentConfigName,

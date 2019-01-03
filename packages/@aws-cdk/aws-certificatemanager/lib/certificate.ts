@@ -1,8 +1,8 @@
-import { Construct, Output } from '@aws-cdk/cdk';
+import { Construct, IConstruct, Output } from '@aws-cdk/cdk';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
-export interface ICertificate {
+export interface ICertificate extends IConstruct {
   /**
    * The certificate's ARN
    */
@@ -73,8 +73,8 @@ export class Certificate extends Construct implements ICertificate {
   /**
    * Import a certificate
    */
-  public static import(parent: Construct, name: string, props: CertificateImportProps): ICertificate {
-    return new ImportedCertificate(parent, name, props);
+  public static import(scope: Construct, id: string, props: CertificateImportProps): ICertificate {
+    return new ImportedCertificate(scope, id, props);
   }
 
   /**
@@ -82,8 +82,8 @@ export class Certificate extends Construct implements ICertificate {
    */
   public readonly certificateArn: string;
 
-  constructor(parent: Construct, name: string, props: CertificateProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: CertificateProps) {
+    super(scope, id);
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
@@ -125,8 +125,8 @@ export class Certificate extends Construct implements ICertificate {
 class ImportedCertificate extends Construct implements ICertificate {
   public readonly certificateArn: string;
 
-  constructor(parent: Construct, name: string, private readonly props: CertificateImportProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, private readonly props: CertificateImportProps) {
+    super(scope, id);
 
     this.certificateArn = props.certificateArn;
   }

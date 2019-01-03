@@ -40,11 +40,11 @@ function synth(context?: { [key: string]: any }): cxapi.SynthesizeResponse {
     const c1 = new MyConstruct(stack2, 's1c2');
 
     // add some metadata
-    stack1.addMetadata('meta', 111);
-    r2.addWarning('warning1');
-    r2.addWarning('warning2');
-    c1.addMetadata('meta', { key: 'value' });
-    app.addMetadata('applevel', 123); // apps can also have metadata
+    stack1.node.addMetadata('meta', 111);
+    r2.node.addWarning('warning1');
+    r2.node.addWarning('warning2');
+    c1.node.addMetadata('meta', { key: 'value' });
+    app.node.addMetadata('applevel', 123); // apps can also have metadata
   });
 }
 
@@ -148,8 +148,8 @@ export = {
       key2: 'val2'
     });
     const prog = new App();
-    test.deepEqual(prog.getContext('key1'), 'val1');
-    test.deepEqual(prog.getContext('key2'), 'val2');
+    test.deepEqual(prog.node.getContext('key1'), 'val1');
+    test.deepEqual(prog.node.getContext('key2'), 'val2');
     test.done();
   },
 
@@ -180,15 +180,15 @@ export = {
 
   'setContext(k,v) can be used to set context programmatically'(test: Test) {
     const prog = new App();
-    prog.setContext('foo', 'bar');
-    test.deepEqual(prog.getContext('foo'), 'bar');
+    prog.node.setContext('foo', 'bar');
+    test.deepEqual(prog.node.getContext('foo'), 'bar');
     test.done();
   },
 
   'setContext(k,v) cannot be called after stacks have been added because stacks may use the context'(test: Test) {
     const prog = new App();
     new Stack(prog, 's1');
-    test.throws(() => prog.setContext('foo', 'bar'));
+    test.throws(() => prog.node.setContext('foo', 'bar'));
     test.done();
   },
 
@@ -196,7 +196,7 @@ export = {
 
     class Child extends Construct {
       public validate() {
-        return [ `Error from ${this.id}` ];
+        return [ `Error from ${this.node.id}` ];
       }
     }
 
@@ -219,8 +219,8 @@ export = {
 
   'app.synthesizeStack(stack) will return a list of missing contextual information'(test: Test) {
     class MyStack extends Stack {
-      constructor(parent: App, name: string, props?: StackProps) {
-        super(parent, name, props);
+      constructor(scope: App, id: string, props?: StackProps) {
+        super(scope, id, props);
 
         this.reportMissingContext('missing-context-key', {
           provider: 'fake',
@@ -318,11 +318,11 @@ export = {
 };
 
 class MyConstruct extends Construct {
-  constructor(parent: Construct, name: string) {
-    super(parent, name);
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
 
     new Resource(this, 'r1', { type: 'ResourceType1' });
-    new Resource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.getContext('ctx1') } });
+    new Resource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.getContext('ctx1') } });
   }
 }
 

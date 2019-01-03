@@ -196,8 +196,8 @@ export class Table extends Construct {
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
 
-  constructor(parent: Construct, name: string, props: TableProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: TableProps = {}) {
+    super(scope, id);
 
     this.billingMode = props.billingMode || BillingMode.Provisioned;
     this.validateProvisioning(props);
@@ -220,7 +220,7 @@ export class Table extends Construct {
       timeToLiveSpecification: props.ttlAttributeName ? { attributeName: props.ttlAttributeName, enabled: true } : undefined
     });
 
-    if (props.tableName) { this.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
+    if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
     this.tableArn = this.table.tableArn;
     this.tableName = this.table.tableName;

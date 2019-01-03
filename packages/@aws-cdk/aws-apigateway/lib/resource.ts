@@ -4,7 +4,7 @@ import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { RestApi } from './restapi';
 
-export interface IRestApiResource {
+export interface IRestApiResource extends cdk.IConstruct {
   /**
    * The rest API that this resource is part of.
    *
@@ -96,8 +96,8 @@ export class Resource extends cdk.Construct implements IRestApiResource {
   public readonly defaultIntegration?: Integration;
   public readonly defaultMethodOptions?: MethodOptions;
 
-  constructor(parent: cdk.Construct, id: string, props: ResourceProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: ResourceProps) {
+    super(scope, id);
 
     validateResourcePathPart(props.pathPart);
 
@@ -173,8 +173,8 @@ export class ProxyResource extends Resource {
 
   private readonly parentResource: IRestApiResource;
 
-  constructor(parent: cdk.Construct, id: string, props: ProxyResourceProps) {
-    super(parent, id, {
+  constructor(scope: cdk.Construct, id: string, props: ProxyResourceProps) {
+    super(scope, id, {
       parent: props.parent,
       pathPart: '{proxy+}',
       defaultIntegration: props.defaultIntegration,

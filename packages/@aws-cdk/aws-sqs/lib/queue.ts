@@ -183,8 +183,8 @@ export class Queue extends QueueBase {
   /**
    * Import an existing queue
    */
-  public static import(parent: cdk.Construct, name: string, props: QueueImportProps): IQueue {
-    return new ImportedQueue(parent, name, props);
+  public static import(scope: cdk.Construct, id: string, props: QueueImportProps): IQueue {
+    return new ImportedQueue(scope, id, props);
   }
 
   /**
@@ -209,8 +209,8 @@ export class Queue extends QueueBase {
 
   protected readonly autoCreatePolicy = true;
 
-  constructor(parent: cdk.Construct, name: string, props: QueueProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: QueueProps = {}) {
+    super(scope, id);
 
     validateProps(props);
 
@@ -266,7 +266,7 @@ export class Queue extends QueueBase {
 
       if (encryption === QueueEncryption.Kms) {
         const masterKey = props.encryptionMasterKey || new kms.EncryptionKey(this, 'Key', {
-          description: `Created by ${this.path}`
+          description: `Created by ${this.node.path}`
         });
 
         return {
@@ -345,8 +345,8 @@ class ImportedQueue extends QueueBase {
 
   protected readonly autoCreatePolicy = false;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: QueueImportProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, private readonly props: QueueImportProps) {
+    super(scope, id);
     this.queueArn = props.queueArn;
     this.queueUrl = props.queueUrl;
 

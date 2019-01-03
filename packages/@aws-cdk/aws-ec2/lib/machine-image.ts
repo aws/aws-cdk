@@ -7,7 +7,7 @@ export interface IMachineImageSource {
   /**
    * Return the image to use in the given context
    */
-  getImage(parent: Construct): MachineImage;
+  getImage(scope: Construct): MachineImage;
 }
 
 /**
@@ -24,8 +24,8 @@ export class WindowsImage implements IMachineImageSource  {
   /**
    * Return the image to use in the given context
    */
-  public getImage(parent: Construct): MachineImage {
-    const ssmProvider = new SSMParameterProvider(parent, {
+  public getImage(scope: Construct): MachineImage {
+    const ssmProvider = new SSMParameterProvider(scope, {
       parameterName: this.imageParameterName(this.version),
     });
 
@@ -95,7 +95,7 @@ export class AmazonLinuxImage implements IMachineImageSource {
   /**
    * Return the image to use in the given context
    */
-  public getImage(parent: Construct): MachineImage {
+  public getImage(scope: Construct): MachineImage {
     const parts: Array<string|undefined> = [
       this.generation,
       'ami',
@@ -107,7 +107,7 @@ export class AmazonLinuxImage implements IMachineImageSource {
 
     const parameterName = '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
 
-    const ssmProvider = new SSMParameterProvider(parent, {
+    const ssmProvider = new SSMParameterProvider(scope, {
       parameterName,
     });
     const ami = ssmProvider.parameterValue();
@@ -187,8 +187,8 @@ export class GenericLinuxImage implements IMachineImageSource  {
   constructor(private readonly amiMap: {[region: string]: string}) {
   }
 
-  public getImage(parent: Construct): MachineImage {
-    const stack = Stack.find(parent);
+  public getImage(scope: Construct): MachineImage {
+    const stack = Stack.find(scope);
     const region = stack.requireRegion('AMI cannot be determined');
     const ami = this.amiMap[region];
     if (!ami) {

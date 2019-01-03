@@ -10,6 +10,7 @@ import { TopicPolicy } from './policy';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
 export interface ITopic extends
+  cdk.IConstruct,
   events.IEventRuleTarget,
   cloudwatch.IAlarmAction,
   s3n.IBucketNotificationDestination,
@@ -168,9 +169,9 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    * @param queue The target queue
    */
   public subscribeQueue(queue: sqs.IQueue): Subscription {
-    const subscriptionName = queue.id + 'Subscription';
-    if (this.tryFindChild(subscriptionName)) {
-      throw new Error(`A subscription between the topic ${this.id} and the queue ${queue.id} already exists`);
+    const subscriptionName = queue.node.id + 'Subscription';
+    if (this.node.tryFindChild(subscriptionName)) {
+      throw new Error(`A subscription between the topic ${this.node.id} and the queue ${queue.node.id} already exists`);
     }
 
     // we use the queue name as the subscription's. there's no meaning to subscribing
@@ -204,8 +205,8 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
   public subscribeLambda(lambdaFunction: lambda.IFunction): Subscription {
     const subscriptionName = lambdaFunction.id + 'Subscription';
 
-    if (this.tryFindChild(subscriptionName)) {
-      throw new Error(`A subscription between the topic ${this.id} and the lambda ${lambdaFunction.id} already exists`);
+    if (this.node.tryFindChild(subscriptionName)) {
+      throw new Error(`A subscription between the topic ${this.node.id} and the lambda ${lambdaFunction.id} already exists`);
     }
 
     const sub = new Subscription(this, subscriptionName, {
@@ -214,7 +215,7 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
       protocol: SubscriptionProtocol.Lambda
     });
 
-    lambdaFunction.addPermission(this.id, {
+    lambdaFunction.addPermission(this.node.id, {
       sourceArn: this.topicArn,
       principal: new iam.ServicePrincipal('sns.amazonaws.com'),
     });
@@ -311,7 +312,7 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
     }
 
     return {
-      id: this.id,
+      id: this.node.id,
       arn: this.topicArn,
     };
   }

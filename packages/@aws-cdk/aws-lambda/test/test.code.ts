@@ -73,7 +73,7 @@ export = {
     'adds code asset metadata'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      stack.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
       const location = path.join(__dirname, 'my-lambda-handler');
 

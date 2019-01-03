@@ -7,7 +7,7 @@ import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipelin
 /**
  * Represents an ECR repository.
  */
-export interface IRepository {
+export interface IRepository extends cdk.IConstruct {
   /**
    * The name of the repository
    */
@@ -114,8 +114,8 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Import a repository
    */
-  public static import(parent: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
-    return new ImportedRepository(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
+    return new ImportedRepository(scope, id, props);
   }
 
   /**
@@ -254,8 +254,8 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
+    super(scope, id);
 
     if (props.repositoryArn) {
       this.repositoryArn = props.repositoryArn;

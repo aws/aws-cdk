@@ -30,8 +30,8 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * Import an existing cluster
    */
-  public static import(parent: cdk.Construct, name: string, props: ClusterImportProps): ICluster {
-    return new ImportedCluster(parent, name, props);
+  public static import(scope: cdk.Construct, id: string, props: ClusterImportProps): ICluster {
+    return new ImportedCluster(scope, id, props);
   }
 
   /**
@@ -59,8 +59,8 @@ export class Cluster extends cdk.Construct implements ICluster {
    */
   private _hasEc2Capacity: boolean = false;
 
-  constructor(parent: cdk.Construct, name: string, props: ClusterProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: ClusterProps) {
+    super(scope, id);
 
     const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
 
@@ -193,8 +193,8 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
   /**
    * Return the correct image
    */
-  public getImage(parent: cdk.Construct): ec2.MachineImage {
-    const ssmProvider = new cdk.SSMParameterProvider(parent, {
+  public getImage(scope: cdk.Construct): ec2.MachineImage {
+    const ssmProvider = new cdk.SSMParameterProvider(scope, {
         parameterName: EcsOptimizedAmi.AmiParameterName
     });
 
@@ -208,7 +208,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
 /**
  * An ECS cluster
  */
-export interface ICluster {
+export interface ICluster extends cdk.IConstruct {
   /**
    * Name of the cluster
    */
@@ -286,8 +286,8 @@ class ImportedCluster extends cdk.Construct implements ICluster {
    */
   public readonly hasEc2Capacity: boolean;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: ClusterImportProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ClusterImportProps) {
+    super(scope, id);
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);
     this.hasEc2Capacity = props.hasEc2Capacity !== false;

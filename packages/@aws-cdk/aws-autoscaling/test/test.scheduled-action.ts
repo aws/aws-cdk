@@ -103,9 +103,9 @@ export = {
   },
 };
 
-function makeAutoScalingGroup(parent: cdk.Construct) {
-  const vpc = new ec2.VpcNetwork(parent, 'VPC');
-  return new autoscaling.AutoScalingGroup(parent, 'ASG', {
+function makeAutoScalingGroup(scope: cdk.Construct) {
+  const vpc = new ec2.VpcNetwork(scope, 'VPC');
+  return new autoscaling.AutoScalingGroup(scope, 'ASG', {
     vpc,
     instanceType: new ec2.InstanceType('t2.micro'),
     machineImage: new ec2.AmazonLinuxImage(),
