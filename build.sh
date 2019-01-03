@@ -36,6 +36,8 @@ fail() {
 }
 
 /bin/bash ./git-secrets-scan.sh
+
+# Prepare for build with references
 /bin/bash scripts/generate-aggregate-tsconfig.sh > tsconfig.json
 
 BUILD_INDICATOR=".BUILD_COMPLETED"
