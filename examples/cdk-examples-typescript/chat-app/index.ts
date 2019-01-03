@@ -5,8 +5,8 @@ import { CognitoChatRoomPool } from './cognito-chat-room-pool';
 import { DynamoPostsTable } from './dynamodb-posts-table';
 
 class MyStack extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     new DynamoPostsTable(this, 'Posts');
 
@@ -77,8 +77,8 @@ interface ChatAppFuncProps {
  * Extend Function as all of the Chat app functions have these common props.
  */
 class ChatAppFunction extends lambda.Function {
-  constructor(scope: cdk.Construct, scid: string, props: ChatAppFuncProps) {
-    super(scope, scid, {
+  constructor(scope: cdk.Construct, id: string, props: ChatAppFuncProps) {
+    super(scope, id, {
       code: new lambda.S3Code(props.bucket, props.zipFile),
       runtime: lambda.Runtime.NodeJS610,
       handler: 'index.handler'

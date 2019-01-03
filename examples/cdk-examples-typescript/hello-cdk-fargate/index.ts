@@ -3,8 +3,8 @@ import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
 
 class BonjourFargate extends cdk.Stack {
-  constructor(scope: cdk.App, scid: string, props?: cdk.StackProps) {
-    super(scope, scid, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     // Create VPC and Fargate Cluster
     // NOTE: Limit AZs to avoid reaching resource quotas

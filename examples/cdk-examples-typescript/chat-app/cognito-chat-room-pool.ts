@@ -2,8 +2,8 @@ import cognito = require('@aws-cdk/aws-cognito');
 import cdk = require('@aws-cdk/cdk');
 
 export class CognitoChatRoomPool extends cdk.Construct {
-  constructor(scope: cdk.Construct, scid: string) {
-    super(scope, scid);
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
 
     // Create chat room user pool
     const chatPool = new cognito.CfnUserPool(this, 'UserPool', {
