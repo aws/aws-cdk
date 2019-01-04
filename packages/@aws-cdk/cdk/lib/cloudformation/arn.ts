@@ -23,9 +23,9 @@ export class ArnUtils {
    *
    */
   public static fromComponents(components: ArnComponents, anchor?: Construct): string {
-    const partition = components.partition || theStack('partition').partition;
-    const region = components.region || theStack('region').region;
-    const account = components.account || theStack('account').accountId;
+    const partition = components.partition !== undefined ? components.partition : theStack('partition').partition;
+    const region = components.region !== undefined ? components.region : theStack('region').region;
+    const account = components.account !== undefined ? components.account : theStack('account').accountId;
 
     const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];
 

@@ -31,7 +31,7 @@ export class ResolveConfiguration {
   public get preProcess(): PreProcessFunc {
     for (let i = this.options.length - 1; i >= 0; i--) {
       const ret = this.options[i].preProcess;
-      if (ret) { return ret; }
+      if (ret !== undefined) { return ret; }
     }
     return noPreprocessFunction;
   }
@@ -54,7 +54,6 @@ const glob = global as any;
  * Singleton instance of resolver options
  */
 export const RESOLVE_OPTIONS: ResolveConfiguration = glob.__cdkResolveOptions = glob.__cdkResolveOptions || new ResolveConfiguration();
-
 
 function noPreprocessFunction(x: Token, _: ResolveContext) {
   return x;

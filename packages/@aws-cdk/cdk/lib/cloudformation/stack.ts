@@ -551,7 +551,7 @@ export abstract class StackElement extends Construct implements IDependable {
     const options = RESOLVE_OPTIONS.push({ preProcess: (token, _) => { this.node.recordReference(token); return token; } });
     try {
       // Execute for side effect of calling 'preProcess'
-      this.toCloudFormation();
+      this.node.resolve(this.toCloudFormation());
     } finally {
       options.pop();
     }

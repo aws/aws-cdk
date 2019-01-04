@@ -78,7 +78,7 @@ export class TokenMap {
     if (fragments.length !== 1) {
       throw new Error(`Cannot concatenate strings in a tokenized string array, got: ${xs[0]}`);
     }
-    return fragments.mapUnresolved(x => resolve(x, context)).join(cloudFormationConcat).values()[0];
+    return fragments.mapUnresolved(x => resolve(x, context)).values[0];
   }
 
   /**
@@ -198,7 +198,7 @@ class TokenizedStringFragments {
     return this.fragments.length;
   }
 
-  public values(): any[] {
+  public get values(): any[] {
     return this.fragments.map(f => f.type === 'unresolved' ? f.token : f.lit);
   }
 
