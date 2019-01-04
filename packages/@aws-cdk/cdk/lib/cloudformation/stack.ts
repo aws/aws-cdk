@@ -5,7 +5,7 @@ import { resolve, RESOLVE_OPTIONS, Token, unresolved } from '../core/tokens';
 import { Environment } from '../environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
-import { StackAwareToken } from './tokens';
+import { CfnReference } from './tokens';
 
 export interface StackProps {
   /**
@@ -545,7 +545,7 @@ export abstract class StackElement extends Construct implements IDependable {
   public abstract substituteCrossStackReferences(): void;
 
   protected deepSubCrossStackReferences(sourceStack: Stack, x: any): any {
-    if (StackAwareToken.isInstance(x)) {
+    if (CfnReference.isInstance(x)) {
       return x.substituteToken(sourceStack);
     }
 
@@ -640,7 +640,7 @@ function stackElements(node: IConstruct, into: StackElement[] = []): StackElemen
 /**
  * A generic, untyped reference to a Stack Element
  */
-export class Ref extends StackAwareToken {
+export class Ref extends CfnReference {
   constructor(element: StackElement) {
     super({ Ref: element.logicalId }, `${element.logicalId}.Ref`, element);
   }

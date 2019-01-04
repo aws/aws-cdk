@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { StackAwareToken } from './tokens';
+import { CfnReference } from './tokens';
 
 /**
  * Accessor for pseudo parameters
@@ -42,7 +42,7 @@ export class Aws {
   }
 }
 
-class PseudoParameter extends StackAwareToken {
+class PseudoParameter extends CfnReference {
   constructor(name: string, anchor: Construct) {
       super({ Ref: name }, name, anchor);
   }

@@ -4,7 +4,7 @@ import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { IDependable, Referenceable, Stack, StackElement } from './stack';
-import { StackAwareToken } from './tokens';
+import { CfnReference } from './tokens';
 
 export interface ResourceProps {
   /**
@@ -105,7 +105,7 @@ export class Resource extends Referenceable {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new StackAwareToken({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`, this);
+    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`, this);
   }
 
   /**

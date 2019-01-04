@@ -1,21 +1,24 @@
 import { Construct } from "../core/construct";
 import { Token } from "../core/tokens";
 
-export class StackAwareToken extends Token {
-  public static isInstance(x: any): x is StackAwareToken {
-    return x && x._isStackAwareToken;
+/**
+ * A Token that represents a CloudFormation reference to another resource
+ */
+export class CfnReference extends Token {
+  public static isInstance(x: any): x is CfnReference {
+    return x && x._isCfnReference;
   }
 
-  protected readonly _isStackAwareToken: boolean;
+  protected readonly _isCfnReference: boolean;
 
   private readonly tokenStack?: Stack;
 
   constructor(value: any, displayName?: string, anchor?: Construct) {
       if (typeof(value) === 'function') {
-          throw new Error('StackAwareToken can only contain eager values');
+          throw new Error('CfnReference can only contain eager values');
       }
       super(value, displayName);
-      this._isStackAwareToken = true;
+      this._isCfnReference = true;
 
       if (anchor !== undefined) {
         this.tokenStack = Stack.find(anchor);
