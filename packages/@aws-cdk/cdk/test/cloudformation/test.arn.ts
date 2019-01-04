@@ -27,7 +27,7 @@ export = {
       region: 'us-east-1',
       partition: 'aws-cn',
       resourceName: 'mytable/stream/label'
-    });
+    }, undefined);
 
     test.deepEqual(stack.node.resolve(arn),
                    'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
@@ -43,7 +43,7 @@ export = {
       account: '',
       region: '',
       partition: 'aws-cn',
-    });
+    }, undefined);
 
     test.deepEqual(stack.node.resolve(arn),
                    'arn:aws-cn:s3:::my-bucket');
@@ -72,7 +72,7 @@ export = {
     test.throws(() => ArnUtils.fromComponents({
       service: 'foo',
       resource: 'bar',
-      sep: 'x' }));
+      sep: 'x' }, undefined));
     test.done();
   },
 

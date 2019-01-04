@@ -41,7 +41,7 @@ class ImportedServerApplication extends cdk.Construct implements IServerApplicat
     super(scope, id);
 
     this.applicationName = props.applicationName;
-    this.applicationArn = applicationName2Arn(this.applicationName);
+    this.applicationArn = applicationNameToArn(this.applicationName, this);
   }
 
   public export() {
@@ -90,7 +90,7 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
     });
 
     this.applicationName = resource.ref;
-    this.applicationArn = applicationName2Arn(this.applicationName);
+    this.applicationArn = applicationNameToArn(this.applicationName, this);
   }
 
   public export(): ServerApplicationImportProps {
@@ -100,11 +100,11 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
   }
 }
 
-function applicationName2Arn(applicationName: string): string {
+function applicationNameToArn(applicationName: string, anchor: cdk.IConstruct): string {
   return cdk.ArnUtils.fromComponents({
     service: 'codedeploy',
     resource: 'application',
     resourceName: applicationName,
     sep: ':',
-  });
+  }, anchor);
 }

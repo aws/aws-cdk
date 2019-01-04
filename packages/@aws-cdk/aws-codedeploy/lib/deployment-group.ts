@@ -104,8 +104,8 @@ class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
-    this.deploymentGroupArn = deploymentGroupName2Arn(props.application.applicationName,
-      props.deploymentGroupName);
+    this.deploymentGroupArn = deploymentGroupNameToArn(props.application.applicationName,
+      props.deploymentGroupName, this);
   }
 
   public export() {
@@ -343,8 +343,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     });
 
     this.deploymentGroupName = resource.deploymentGroupName;
-    this.deploymentGroupArn = deploymentGroupName2Arn(this.application.applicationName,
-      this.deploymentGroupName);
+    this.deploymentGroupArn = deploymentGroupNameToArn(this.application.applicationName,
+      this.deploymentGroupName, this);
   }
 
   public export(): ServerDeploymentGroupImportProps {
@@ -560,11 +560,11 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   }
 }
 
-function deploymentGroupName2Arn(applicationName: string, deploymentGroupName: string): string {
+function deploymentGroupNameToArn(applicationName: string, deploymentGroupName: string, anchor: cdk.IConstruct): string {
   return cdk.ArnUtils.fromComponents({
     service: 'codedeploy',
     resource: 'deploymentgroup',
     resourceName: `${applicationName}/${deploymentGroupName}`,
     sep: ':',
-  });
+  }, anchor);
 }

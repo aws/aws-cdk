@@ -69,7 +69,7 @@ export class RuntimeValue extends cdk.Construct {
       service: 'ssm',
       resource: 'parameter',
       resourceName: this.parameterName
-    });
+    }, this);
   }
 
   /**

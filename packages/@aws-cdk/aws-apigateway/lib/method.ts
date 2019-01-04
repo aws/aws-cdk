@@ -158,7 +158,7 @@ export class Method extends cdk.Construct {
       credentials = options.credentialsRole.roleArn;
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
-      credentials = cdk.ArnUtils.fromComponents({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
+      credentials = cdk.ArnUtils.fromComponents({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' }, this);
     }
 
     return {

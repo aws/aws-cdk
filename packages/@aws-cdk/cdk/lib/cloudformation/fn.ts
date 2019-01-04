@@ -1,7 +1,7 @@
 import { ResolveContext, Token, unresolved } from '../core/tokens';
-import { isIntrinsic } from '../core/tokens/cfn-tokens';
 import { resolve } from '../core/tokens/resolve';
 import { FnCondition } from './condition';
+import { minimalCloudFormationJoin } from './instrinsics';
 
 // tslint:disable:max-line-length
 
@@ -614,7 +614,6 @@ class FnJoin extends Token {
   private readonly listOfValues: any[];
   // Cache for the result of resolveValues() - since it otherwise would be computed several times
   private _resolvedValues?: any[];
-  private canOptimize: boolean;
 
   /**
    * Creates an ``Fn::Join`` function.
@@ -630,12 +629,15 @@ class FnJoin extends Token {
 
     this.delimiter = delimiter;
     this.listOfValues = listOfValues;
-    this.canOptimize = true;
   }
 
   public resolve(context: ResolveContext): any {
+    if (unresolved(this.listOfValues)) {
+      // This is a list token, don't try to do smart things with it.
+      return this.listOfValues;
+    }
     const resolved = this.resolveValues(context);
-    if (this.canOptimize && resolved.length === 1) {
+    if (resolved.length === 1) {
       return resolved[0];
     }
     return { 'Fn::Join': [ this.delimiter, resolved ] };
@@ -649,36 +651,7 @@ class FnJoin extends Token {
   private resolveValues(context: ResolveContext) {
     if (this._resolvedValues) { return this._resolvedValues; }
 
-    if (unresolved(this.listOfValues)) {
-      // This is a list token, don't resolve and also don't optimize.
-      this.canOptimize = false;
-      return this._resolvedValues = this.listOfValues;
-    }
-
-    const resolvedValues = [...this.listOfValues.map(e => resolve(e, context))];
-    let i = 0;
-    while (i < resolvedValues.length) {
-      const el = resolvedValues[i];
-      if (isFnJoinIntrinsicWithSameDelimiter.call(this, el)) {
-        resolvedValues.splice(i, 1, ...el['Fn::Join'][1]);
-      } else if (i > 0 && isPlainString(resolvedValues[i - 1]) && isPlainString(resolvedValues[i])) {
-        resolvedValues[i - 1] += this.delimiter + resolvedValues[i];
-        resolvedValues.splice(i, 1);
-      } else {
-        i += 1;
-      }
-    }
-
-    return this._resolvedValues = resolvedValues;
-
-    function isFnJoinIntrinsicWithSameDelimiter(this: FnJoin, obj: any): boolean {
-      return isIntrinsic(obj)
-        && Object.keys(obj)[0] === 'Fn::Join'
-        && obj['Fn::Join'][0] === this.delimiter;
-    }
-
-    function isPlainString(obj: any): boolean {
-      return typeof obj === 'string' && !unresolved(obj);
-    }
+    const resolvedValues = this.listOfValues.map(e => resolve(e, context));
+    return this._resolvedValues = minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }

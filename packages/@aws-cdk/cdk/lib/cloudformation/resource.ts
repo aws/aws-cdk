@@ -4,7 +4,7 @@ import { CfnReference } from '../core/tokens/cfn-tokens';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { IDependable, Referenceable, StackElement } from './stack';
+import { IDependable, Referenceable, StackElement } from './stack-element';
 
 export interface ResourceProps {
   /**

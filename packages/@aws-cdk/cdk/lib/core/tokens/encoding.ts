@@ -1,6 +1,7 @@
 import { cloudFormationConcat } from "./cfn-concat";
 import { resolve } from "./resolve";
-import { ResolveContext, Token, unresolved } from "./token";
+import { ResolveContext, Token } from "./token";
+import { unresolved } from "./unresolved";
 
 // Encoding Tokens into native types; should not be exported
 

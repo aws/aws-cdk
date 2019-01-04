@@ -1,7 +1,7 @@
 import { IConstruct } from "../core/construct";
 import { Token } from "../core/tokens";
-import { isIntrinsic } from "../core/tokens/cfn-tokens";
 import { resolve } from "../core/tokens/resolve";
+import { isIntrinsic } from "./instrinsics";
 
 /**
  * Class for JSON routines that are framework-aware

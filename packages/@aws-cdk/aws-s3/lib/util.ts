@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { BucketImportProps } from './bucket';
 
-export function parseBucketArn(props: BucketImportProps): string {
+export function parseBucketArn(construct: cdk.IConstruct, props: BucketImportProps): string {
 
   // if we have an explicit bucket ARN, use it.
   if (props.bucketArn) {
@@ -16,7 +16,7 @@ export function parseBucketArn(props: BucketImportProps): string {
       account: '',
       service: 's3',
       resource: props.bucketName
-    });
+    }, construct);
   }
 
   throw new Error('Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed');

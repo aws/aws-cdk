@@ -1,5 +1,5 @@
 import { Fn } from '../cloudformation/fn';
-import { Construct } from '../core/construct';
+import { IConstruct } from '../core/construct';
 import { unresolved } from '../core/tokens';
 import { Stack } from './stack';
 
@@ -21,8 +21,11 @@ export class ArnUtils {
    *
    *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
    *
+   * The required ARN pieces that are omitted will be taken from the stack that
+   * the 'anchor' is attached to. If all ARN pieces are supplied, the supplied anchor
+   * can be 'undefined'.
    */
-  public static fromComponents(components: ArnComponents, anchor?: Construct): string {
+  public static fromComponents(components: ArnComponents, anchor: IConstruct | undefined): string {
     const partition = components.partition !== undefined ? components.partition : theStack('partition').partition;
     const region = components.region !== undefined ? components.region : theStack('region').region;
     const account = components.account !== undefined ? components.account : theStack('account').accountId;

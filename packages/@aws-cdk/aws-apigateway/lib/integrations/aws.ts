@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { Integration, IntegrationOptions, IntegrationType } from '../integration';
+import { Method } from '../method';
 import { parseAwsApiCall } from '../util';
 
 export interface AwsIntegrationProps {
@@ -61,6 +62,8 @@ export interface AwsIntegrationProps {
  * technology.
  */
 export class AwsIntegration extends Integration {
+  private _anchor?: cdk.IConstruct;
+
   constructor(props: AwsIntegrationProps) {
     const backend = props.subdomain ? `${props.subdomain}.${props.service}` : props.service;
     const type = props.proxy ? IntegrationType.AwsProxy : IntegrationType.Aws;
@@ -68,14 +71,18 @@ export class AwsIntegration extends Integration {
     super({
       type,
       integrationHttpMethod: 'POST',
-      uri: cdk.ArnUtils.fromComponents({
+      uri: new cdk.Token(() => cdk.ArnUtils.fromComponents({
         service: 'apigateway',
         account: backend,
         resource: apiType,
         sep: '/',
         resourceName: apiValue,
-      }),
+      }, this._anchor)),
       options: props.options,
     });
+  }
+
+  public bind(_method: Method) {
+    this._anchor = _method;
   }
 }

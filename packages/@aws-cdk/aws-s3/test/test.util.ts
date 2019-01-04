@@ -5,15 +5,16 @@ import { parseBucketArn, parseBucketName } from '../lib/util';
 export = {
   parseBucketArn: {
     'explicit arn'(test: Test) {
+      const stack = new cdk.Stack();
       const bucketArn = 'my:bucket:arn';
-      test.deepEqual(parseBucketArn({ bucketArn }), bucketArn);
+      test.deepEqual(parseBucketArn(stack, { bucketArn }), bucketArn);
       test.done();
     },
 
     'produce arn from bucket name'(test: Test) {
       const stack = new cdk.Stack();
       const bucketName = 'hello';
-      test.deepEqual(stack.node.resolve(parseBucketArn({ bucketName })), { 'Fn::Join':
+      test.deepEqual(stack.node.resolve(parseBucketArn(stack, { bucketName })), { 'Fn::Join':
       [ '',
         [ 'arn:',
         { Ref: 'AWS::Partition' },
@@ -22,7 +23,8 @@ export = {
     },
 
     'fails if neither arn nor name are provided'(test: Test) {
-      test.throws(() => parseBucketArn({}), /Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed/);
+      const stack = new cdk.Stack();
+      test.throws(() => parseBucketArn(stack, {}), /Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed/);
       test.done();
     }
   },

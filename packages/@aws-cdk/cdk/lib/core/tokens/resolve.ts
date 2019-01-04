@@ -1,6 +1,7 @@
 import { containsListToken, TOKEN_MAP } from "./encoding";
 import { RESOLVE_OPTIONS } from "./options";
-import { RESOLVE_METHOD, ResolveContext, Token, unresolved } from "./token";
+import { RESOLVE_METHOD, ResolveContext } from "./token";
+import { unresolved } from "./unresolved";
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 
@@ -80,7 +81,7 @@ export function resolve(obj: any, context: ResolveContext): any {
 
   if (unresolved(obj)) {
     const preProcess = RESOLVE_OPTIONS.preProcess;
-    const value = preProcess(obj as Token, context)[RESOLVE_METHOD](context);
+    const value = preProcess(obj, context)[RESOLVE_METHOD](context);
     return resolve(value, context);
   }
 

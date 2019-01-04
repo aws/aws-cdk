@@ -410,7 +410,7 @@ class SingletonPolicy extends cdk.Construct {
     this.statementFor({
       actions: ['cloudformation:ExecuteChangeSet'],
       conditions: { StringEquals: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResource(stackArnFromProps(props));
+    }).addResource(stackArnFromProps(props, this));
   }
 
   public grantCreateReplaceChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
@@ -422,7 +422,7 @@ class SingletonPolicy extends cdk.Construct {
         'cloudformation:DescribeStacks',
       ],
       conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResource(stackArnFromProps(props));
+    }).addResource(stackArnFromProps(props, this));
   }
 
   public grantCreateUpdateStack(props: { stackName: string, replaceOnFailure?: boolean, region?: string }): void {
@@ -438,7 +438,7 @@ class SingletonPolicy extends cdk.Construct {
     if (props.replaceOnFailure) {
       actions.push('cloudformation:DeleteStack');
     }
-    this.statementFor({ actions }).addResource(stackArnFromProps(props));
+    this.statementFor({ actions }).addResource(stackArnFromProps(props, this));
   }
 
   public grantDeleteStack(props: { stackName: string, region?: string }): void {
@@ -447,7 +447,7 @@ class SingletonPolicy extends cdk.Construct {
         'cloudformation:DescribeStack*',
         'cloudformation:DeleteStack',
       ]
-    }).addResource(stackArnFromProps(props));
+    }).addResource(stackArnFromProps(props, this));
   }
 
   public grantPassRole(role: iam.IRole): void {
@@ -494,11 +494,11 @@ interface StatementTemplate {
 
 type StatementCondition = { [op: string]: { [attribute: string]: string } };
 
-function stackArnFromProps(props: { stackName: string, region?: string }): string {
+function stackArnFromProps(props: { stackName: string, region?: string }, anchor: cdk.IConstruct): string {
   return cdk.ArnUtils.fromComponents({
     region: props.region,
     service: 'cloudformation',
     resource: 'stack',
     resourceName: `${props.stackName}/*`
-  });
+  }, anchor);
 }

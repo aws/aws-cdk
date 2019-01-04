@@ -969,7 +969,7 @@ class ImportedBucket extends BucketBase {
       throw new Error('Bucket name is required');
     }
 
-    this.bucketArn = parseBucketArn(props);
+    this.bucketArn = parseBucketArn(this, props);
     this.bucketName = bucketName;
     this.domainName = props.bucketDomainName || this.generateDomainName();
     this.autoCreatePolicy = false;

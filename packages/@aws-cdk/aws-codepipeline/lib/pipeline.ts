@@ -130,7 +130,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     this.pipelineArn = cdk.ArnUtils.fromComponents({
       service: 'codepipeline',
       resource: this.pipelineName
-    });
+    }, this);
   }
 
   /**

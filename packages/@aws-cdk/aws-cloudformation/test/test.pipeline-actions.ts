@@ -23,7 +23,7 @@ export = nodeunit.testCase({
 
       _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
 
-      const stackArn = _stackArn('MyStack');
+      const stackArn = _stackArn('MyStack', stack);
       const changeSetCondition = { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStacks', stackArn, changeSetCondition);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeChangeSet', stackArn, changeSetCondition);
@@ -108,7 +108,7 @@ export = nodeunit.testCase({
         stackName: 'MyStack',
       });
 
-      const stackArn = _stackArn('MyStack');
+      const stackArn = _stackArn('MyStack', stack);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn,
                                { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
 
@@ -168,7 +168,7 @@ export = nodeunit.testCase({
         adminPermissions: false,
       replaceOnFailure: true,
     });
-    const stackArn = _stackArn('MyStack');
+    const stackArn = _stackArn('MyStack', stack);
 
     _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStack*', stackArn);
     _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:CreateStack', stackArn);
@@ -188,7 +188,7 @@ export = nodeunit.testCase({
         adminPermissions: false,
       stackName: 'MyStack',
     });
-    const stackArn = _stackArn('MyStack');
+    const stackArn = _stackArn('MyStack', stack);
 
     _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStack*', stackArn);
     _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteStack', stackArn);
@@ -271,12 +271,12 @@ function _isOrContains(entity: string | string[], value: string): boolean {
   return false;
 }
 
-function _stackArn(stackName: string): string {
+function _stackArn(stackName: string, anchor: cdk.IConstruct): string {
   return cdk.ArnUtils.fromComponents({
     service: 'cloudformation',
     resource: 'stack',
     resourceName: `${stackName}/*`,
-  });
+  }, anchor);
 }
 
 class PipelineDouble implements cpapi.IPipeline {
@@ -290,7 +290,7 @@ class PipelineDouble implements cpapi.IPipeline {
 
   constructor({ pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     this.pipelineName = pipelineName || 'TestPipeline';
-    this.pipelineArn = cdk.ArnUtils.fromComponents({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
+    this.pipelineArn = cdk.ArnUtils.fromComponents({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName }, this);
     this.role = role;
   }
 

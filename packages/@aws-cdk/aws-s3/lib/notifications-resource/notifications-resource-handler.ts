@@ -56,7 +56,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
           account: 'aws', // the account for a managed policy is 'aws'
           resource: 'policy',
           resourceName: 'service-role/AWSLambdaBasicExecutionRole',
-        })
+        }, this)
       ]
     });
 

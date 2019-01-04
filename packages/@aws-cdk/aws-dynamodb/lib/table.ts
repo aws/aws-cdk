@@ -619,7 +619,7 @@ export class Table extends Construct {
         service: 'iam',
         resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
         resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
-      })
+      }, this)
     });
   }
 }

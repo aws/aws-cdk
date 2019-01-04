@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { makeUniqueId } from '../util/uniqueid';
+import { Token, unresolved } from './tokens';
 import { resolve } from './tokens/resolve';
-import { Token, unresolved } from './tokens/token';
 export const PATH_SEP = '/';
 
 /**

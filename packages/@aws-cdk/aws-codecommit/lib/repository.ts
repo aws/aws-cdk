@@ -247,7 +247,7 @@ class ImportedRepository extends RepositoryBase {
     this.repositoryArn = cdk.ArnUtils.fromComponents({
       service: 'codecommit',
       resource: props.repositoryName,
-    });
+    }, this);
     this.repositoryName = props.repositoryName;
   }
 

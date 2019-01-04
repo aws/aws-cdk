@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
-import { Token } from '../core/tokens';
-import { Referenceable } from './stack';
+import { Token } from '../core/tokens/token';
+import { Referenceable } from './stack-element';
 
 export interface ConditionProps {
   expression?: FnCondition;

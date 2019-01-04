@@ -232,7 +232,7 @@ export abstract class BaseService extends cdk.Construct
         service: 'iam',
         resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
         resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',
-      })
+      }, this)
     });
   }
 }

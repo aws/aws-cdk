@@ -249,7 +249,7 @@ export = {
 
     // WHEN
     const repo = ecr.Repository.import(stack, 'Repo', {
-      repositoryArn: ecr.Repository.arnForLocalRepository(repoName),
+      repositoryArn: ecr.Repository.arnForLocalRepository(repoName, stack),
       repositoryName: repoName
     });
 

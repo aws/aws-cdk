@@ -1,5 +1,5 @@
 import { IConstruct } from "../construct";
-import { isListToken, TOKEN_MAP } from "./encoding";
+import { TOKEN_MAP } from "./encoding";
 
 /**
  * If objects has a function property by this name, they will be considered tokens, and this
@@ -93,7 +93,7 @@ export class Token {
    */
   public toJSON(): any {
     // tslint:disable-next-line:max-line-length
-    throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use a document-specific stringification method instead.');
+    throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use CloudFormationJSON.stringify() instead.');
   }
 
   /**
@@ -111,7 +111,7 @@ export class Token {
   public toList(): string[] {
     const valueType = typeof this.valueOrFunction;
     if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
-      throw new Error('Got a literal Token value; cannot be encoded as a list.');
+      throw new Error('Got a literal Token value; only intrinsics can ever evaluate to lists.');
     }
 
     if (this.tokenListification === undefined) {
@@ -127,20 +127,4 @@ export class Token {
 export interface ResolveContext {
   construct: IConstruct;
   prefix: string[];
-}
-
-/**
- * Returns true if obj is a token (i.e. has the resolve() method or is a string
- * that includes token markers), or it's a listifictaion of a Token string.
- *
- * @param obj The object to test.
- */
-export function unresolved(obj: any): boolean {
-  if (typeof(obj) === 'string') {
-    return TOKEN_MAP.createStringTokenString(obj).test();
-  } else if (Array.isArray(obj) && obj.length === 1) {
-    return isListToken(obj[0]);
-  } else {
-    return obj && typeof(obj[RESOLVE_METHOD]) === 'function';
-  }
 }

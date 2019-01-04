@@ -48,16 +48,5 @@ export class CfnReference extends Token {
     }
   }
 }
-/**
- * Return whether the given value represents a CloudFormation intrinsic
- */
-export function isIntrinsic(x: any) {
-  if (Array.isArray(x) || x === null || typeof x !== 'object') { return false; }
-
-  const keys = Object.keys(x);
-  if (keys.length !== 1) { return false; }
-
-  return keys[0] === 'Ref' || keys[0].startsWith('Fn::');
-}
 
 import { Stack } from "../../cloudformation/stack";

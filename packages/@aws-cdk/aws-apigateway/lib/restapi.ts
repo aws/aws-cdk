@@ -306,7 +306,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
       resource: this.restApiId,
       sep: '/',
       resourceName: `${stage}/${method}${path}`
-    });
+    }, this);
   }
 
   /**
@@ -365,7 +365,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
         resource: 'policy',
         sep: '/',
         resourceName: 'service-role/AmazonAPIGatewayPushToCloudWatchLogs'
-      }) ]
+      }, this) ]
     });
 
     const resource = new CfnAccount(this, 'Account', {

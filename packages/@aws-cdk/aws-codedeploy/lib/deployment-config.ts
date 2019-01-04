@@ -10,7 +10,7 @@ import { CfnDeploymentConfig } from './codedeploy.generated';
  */
 export interface IServerDeploymentConfig {
   readonly deploymentConfigName: string;
-  readonly deploymentConfigArn: string;
+  deploymentConfigArn(anchor: cdk.IConstruct): string;
   export(): ServerDeploymentConfigImportProps;
 }
 
@@ -30,13 +30,15 @@ export interface ServerDeploymentConfigImportProps {
 
 class ImportedServerDeploymentConfig extends cdk.Construct implements IServerDeploymentConfig {
   public readonly deploymentConfigName: string;
-  public readonly deploymentConfigArn: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: ServerDeploymentConfigImportProps) {
     super(scope, id);
 
     this.deploymentConfigName = props.deploymentConfigName;
-    this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
+  }
+
+  public deploymentConfigArn(anchor: cdk.IConstruct): string {
+    return arnForDeploymentConfigName(this.deploymentConfigName, anchor);
   }
 
   public export() {
@@ -46,11 +48,13 @@ class ImportedServerDeploymentConfig extends cdk.Construct implements IServerDep
 
 class DefaultServerDeploymentConfig implements IServerDeploymentConfig {
   public readonly deploymentConfigName: string;
-  public readonly deploymentConfigArn: string;
 
   constructor(deploymentConfigName: string) {
     this.deploymentConfigName = deploymentConfigName;
-    this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
+  }
+
+  public deploymentConfigArn(anchor: cdk.IConstruct): string {
+    return arnForDeploymentConfigName(this.deploymentConfigName, anchor);
   }
 
   public export(): ServerDeploymentConfigImportProps {
@@ -110,7 +114,6 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
   }
 
   public readonly deploymentConfigName: string;
-  public readonly deploymentConfigArn: string;
 
   constructor(scope: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
     super(scope, id);
@@ -121,7 +124,10 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
     });
 
     this.deploymentConfigName = resource.ref.toString();
-    this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
+  }
+
+  public deploymentConfigArn(anchor: cdk.IConstruct): string {
+    return arnForDeploymentConfigName(this.deploymentConfigName, anchor);
   }
 
   public export(): ServerDeploymentConfigImportProps {
@@ -150,11 +156,11 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
   }
 }
 
-function arnForDeploymentConfigName(name: string): string {
+function arnForDeploymentConfigName(name: string, anchor: cdk.IConstruct): string {
   return cdk.ArnUtils.fromComponents({
     service: 'codedeploy',
     resource: 'deploymentconfig',
     resourceName: name,
     sep: ':',
-  });
+  }, anchor);
 }

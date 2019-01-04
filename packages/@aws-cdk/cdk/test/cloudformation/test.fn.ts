@@ -29,6 +29,25 @@ export = nodeunit.testCase({
       test.throws(() => Fn.join('.', []));
       test.done();
     },
+    'collapse nested FnJoins even if they contain tokens'(test: nodeunit.Test) {
+      const stack = new Stack();
+
+      const obj = Fn.join('', [
+        'a',
+        Fn.join('', [Fn.getAtt('a', 'bc').toString(), 'c']),
+        'd'
+      ]);
+
+      test.deepEqual(stack.node.resolve(obj), { 'Fn::Join': [ "",
+        [
+          "a",
+          { 'Fn::GetAtt': ['a', 'bc'] },
+          'cd',
+        ]
+      ]});
+
+      test.done();
+    },
     'resolves to the value if only one value is joined': asyncTest(async () => {
       const stack = new Stack();
       await fc.assert(

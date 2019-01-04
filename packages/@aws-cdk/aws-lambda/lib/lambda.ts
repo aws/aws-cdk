@@ -311,11 +311,11 @@ export class Function extends FunctionBase {
     const managedPolicyArns = new Array<string>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaBasicExecutionRole").policyArn);
+    managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaBasicExecutionRole").policyArn(this));
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaVPCAccessExecutionRole").policyArn);
+      managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaVPCAccessExecutionRole").policyArn(this));
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {

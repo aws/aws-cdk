@@ -1,7 +1,5 @@
 import { Construct } from '../core/construct';
-import { Condition } from './condition';
-import { Fn } from './fn';
-import { Stack, StackElement } from './stack';
+import { StackElement } from './stack-element';
 
 export interface OutputProps {
   /**
@@ -85,7 +83,7 @@ export class Output extends StackElement {
       this.export = props.export;
     } else if (!props.disableExport) {
       // prefix export name with stack name since exports are global within account + region.
-      const stackName = Stack.find(this).node.id;
+      const stackName = require('./stack').Stack.find(this).node.id;
       this.export = stackName ? stackName + ':' : '';
       this.export += this.logicalId;
     }
@@ -107,7 +105,7 @@ export class Output extends StackElement {
     if (!this.export) {
       throw new Error('Cannot create an ImportValue without an export name');
     }
-    return Fn.importValue(this.export);
+    return fn().importValue(this.export);
   }
 
   public toCloudFormation(): object {
@@ -210,7 +208,7 @@ export class StringListOutput extends Construct {
       condition: props.condition,
       disableExport: props.disableExport,
       export: props.export,
-      value: Fn.join(this.separator, props.values)
+      value: fn().join(this.separator, props.values)
     });
   }
 
@@ -222,9 +220,16 @@ export class StringListOutput extends Construct {
 
     const ret = [];
     for (let i = 0; i < this.length; i++) {
-      ret.push(Fn.select(i, Fn.split(this.separator, combined)));
+      ret.push(fn().select(i, fn().split(this.separator, combined)));
     }
 
     return ret;
   }
 }
+
+function fn() {
+  // Lazy loading of "Fn" module to break dependency cycles on startup
+  return require('./fn').Fn;
+}
+
+import { Condition } from './condition';

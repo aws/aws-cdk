@@ -440,7 +440,7 @@ class ImportedProject extends ProjectBase {
       service: 'codebuild',
       resource: 'project',
       resourceName: props.projectName,
-    });
+    }, this);
 
     this.projectName = props.projectName;
   }
@@ -776,7 +776,7 @@ export class Project extends ProjectBase {
       resource: 'log-group',
       sep: ':',
       resourceName: `/aws/codebuild/${this.projectName}`,
-    });
+    }, this);
 
     const logGroupStarArn = `${logGroupArn}:*`;
 

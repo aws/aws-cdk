@@ -16,5 +16,7 @@ export function cloudFormationConcat(left: any | undefined, right: any | undefin
 
   // Otherwise return a Join intrinsic (already in the target document language to avoid taking
   // circular dependencies on FnJoin & friends)
-  return { 'Fn::Join': ['', parts] };
+  return { 'Fn::Join': ['', minimalCloudFormationJoin('', parts)] };
 }
+
+import { minimalCloudFormationJoin } from "../../cloudformation/instrinsics";
