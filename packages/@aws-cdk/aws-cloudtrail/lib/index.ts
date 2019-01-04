@@ -126,8 +126,8 @@ export class CloudTrail extends cdk.Construct {
   private readonly cloudWatchLogsGroupArn?: string;
   private eventSelectors: EventSelector[] = [];
 
-  constructor(parent: cdk.Construct, name: string, props: CloudTrailProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: CloudTrailProps = {}) {
+    super(scope, id);
 
     const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
     const cloudTrailPrincipal = "cloudtrail.amazonaws.com";
@@ -184,7 +184,7 @@ export class CloudTrail extends cdk.Construct {
       eventSelectors: this.eventSelectors
     });
     this.cloudTrailArn = trail.trailArn;
-    const s3BucketPolicy = s3bucket.findChild("Policy").findChild("Resource") as s3.CfnBucketPolicy;
+    const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
     trail.addDependency(s3BucketPolicy);
   }
 

@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
-import { Construct, PATH_SEP } from '../core/construct';
+import { Construct, IConstruct, PATH_SEP } from '../core/construct';
 import { resolve, RESOLVE_OPTIONS, Token, unresolved } from '../core/tokens';
 import { Environment } from '../environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
@@ -34,9 +34,9 @@ export class Stack extends Construct {
    * @returns The Stack object (throws if the node is not part of a Stack-rooted tree)
    */
   public static find(node: Construct): Stack {
-    let curr: Construct | undefined = node;
+    let curr: IConstruct | undefined = node;
     while (curr != null && !Stack.isStack(curr)) {
-      curr = curr.parent;
+      curr = curr.node.scope;
     }
 
     if (curr == null) {
@@ -55,7 +55,7 @@ export class Stack extends Construct {
       return;
     }
 
-    construct.addMetadata('aws:cdk:physical-name', physicalName);
+    construct.node.addMetadata('aws:cdk:physical-name', physicalName);
   }
 
   /**
@@ -63,7 +63,7 @@ export class Stack extends Construct {
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
-  public static isStack(construct: Construct): construct is Stack {
+  public static isStack(construct: IConstruct): construct is Stack {
     return (construct as any)._isStack;
   }
 
@@ -117,17 +117,22 @@ export class Stack extends Construct {
   /**
    * Creates a new stack.
    *
-   * @param parent Parent of this stack, usually a Program instance.
+   * @param scope Parent of this stack, usually a Program instance.
    * @param name The name of the CloudFormation stack. Defaults to "Stack".
    * @param props Stack properties.
    */
-  public constructor(parent?: App, name?: string, props?: StackProps) {
+  public constructor(scope?: App, name?: string, props?: StackProps) {
     // For unit test convenience parents are optional, so bypass the type check when calling the parent.
-    super(parent!, name!);
+    super(scope!, name!);
+
+    if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
+      throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
+    }
+
     this.env = this.parseEnvironment(props);
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
-    this.name = this.id;
+    this.name = this.node.id;
   }
 
   /**
@@ -136,7 +141,7 @@ export class Stack extends Construct {
    * @returns The Resource or undefined if not found
    */
   public findResource(path: string): Resource | undefined {
-    const r = this.findChild(path);
+    const r = this.node.findChild(path);
     if (!r) { return undefined; }
 
     // found an element, check if it's a resource (duck-type)
@@ -153,7 +158,7 @@ export class Stack extends Construct {
    */
   public toCloudFormation() {
     // before we begin synthesis, we shall lock this stack, so children cannot be added
-    this.lock();
+    this.node.lock();
 
     try {
       const template: any = {
@@ -179,7 +184,7 @@ export class Stack extends Construct {
       return ret;
     } finally {
       // allow mutations after synthesis is finished.
-      this.unlock();
+      this.node.unlock();
     }
   }
 
@@ -213,7 +218,7 @@ export class Stack extends Construct {
   }
 
   public parentApp(): App | undefined {
-    const parent = this.parent;
+    const parent = this.node.scope;
     return parent instanceof App
       ? parent
       : undefined;
@@ -235,7 +240,7 @@ export class Stack extends Construct {
    */
   public renameLogical(oldId: string, newId: string) {
     // tslint:disable-next-line:no-console
-    if (this.children.length > 0) {
+    if (this.node.children.length > 0) {
       throw new Error("All renames must be set up before adding elements to the stack");
     }
 
@@ -253,6 +258,9 @@ export class Stack extends Construct {
     this.stackDependencies.add(stack);
   }
 
+  /**
+   * Return the stacks this stack depends on
+   */
   public dependencies(): Stack[] {
     return Array.from(this.stackDependencies.values());
   }
@@ -271,7 +279,7 @@ export class Stack extends Construct {
     if (this.crossStackExports === undefined) {
       this.crossStackExports = new Construct(this, 'Exports');
     }
-    let output = this.crossStackExports.tryFindChild(id) as Output;
+    let output = this.crossStackExports.node.tryFindChild(id) as Output;
     if (!output) {
       output = new Output(this.crossStackExports, id, { value: tokenValue });
     }
@@ -377,12 +385,12 @@ export class Stack extends Construct {
 
     // if account is not specified, attempt to read from context.
     if (!env.account) {
-      env.account = this.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY);
+      env.account = this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY);
     }
 
     // if region is not specified, attempt to read from context.
     if (!env.region) {
-      env.region = this.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY);
+      env.region = this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY);
     }
 
     return env;
@@ -446,7 +454,7 @@ export abstract class StackElement extends Construct implements IDependable {
    *
    * @returns The construct as a stack element or undefined if it is not a stack element.
    */
-  public static _asStackElement(construct: Construct): StackElement | undefined {
+  public static _asStackElement(construct: IConstruct): StackElement | undefined {
     if ('logicalId' in construct && 'toCloudFormation' in construct) {
       return construct as StackElement;
     } else {
@@ -471,15 +479,15 @@ export abstract class StackElement extends Construct implements IDependable {
    * @param parent The parent construct
    * @param props Construct properties
    */
-  constructor(parent: Construct, name: string) {
-    super(parent, name);
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
     const s = Stack.find(this);
     if (!s) {
       throw new Error('The tree root must be derived from "Stack"');
     }
     this.stack = s;
 
-    this.addMetadata(LOGICAL_ID_MD, new Token(() => this.logicalId), this.constructor);
+    this.node.addMetadata(LOGICAL_ID_MD, new Token(() => this.logicalId), this.constructor);
 
     this.logicalId = this.stack.logicalIds.getLogicalId(this);
   }
@@ -490,7 +498,7 @@ export abstract class StackElement extends Construct implements IDependable {
    *      node +internal+ entries filtered.
    */
   public get creationStackTrace(): string[] {
-    return filterStackTrace(this.metadata.find(md => md.type === LOGICAL_ID_MD)!.trace);
+    return filterStackTrace(this.node.metadata.find(md => md.type === LOGICAL_ID_MD)!.trace);
 
     function filterStackTrace(stack: string[]): string[] {
       const result = Array.of(...stack);
@@ -510,7 +518,7 @@ export abstract class StackElement extends Construct implements IDependable {
    * Return the path with respect to the stack
    */
   public get stackPath(): string {
-    return this.ancestors(this.stack).map(c => c.id).join(PATH_SEP);
+    return this.node.ancestors(this.stack).map(c => c.node.id).join(PATH_SEP);
   }
 
   public get dependencyElements(): IDependable[] {
@@ -616,13 +624,13 @@ export abstract class Referenceable extends StackElement {
  * @param into Array to append StackElements to
  * @returns The same array as is being collected into
  */
-function stackElements(node: Construct, into: StackElement[] = []): StackElement[] {
+function stackElements(node: IConstruct, into: StackElement[] = []): StackElement[] {
   const element = StackElement._asStackElement(node);
   if (element) {
     into.push(element);
   }
 
-  for (const child of node.children) {
+  for (const child of node.node.children) {
     stackElements(child, into);
   }
 

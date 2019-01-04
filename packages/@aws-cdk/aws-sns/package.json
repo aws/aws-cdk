@@ -21,7 +21,8 @@
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
-    }
+    },
+    "excludeTypescript": ["examples"]
   },
   "repository": {
     "type": "git",
@@ -34,7 +35,8 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
   },
   "cdk-build": {
     "cloudformation": "AWS::SNS"

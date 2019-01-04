@@ -20,8 +20,8 @@ export = {
 
 class RuntimeValueTest extends cdk.Construct {
 
-  constructor(parent: cdk.Construct, name: string) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
 
     const stack = cdk.Stack.find(this);
 

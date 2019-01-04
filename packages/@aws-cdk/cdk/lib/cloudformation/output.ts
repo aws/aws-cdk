@@ -71,8 +71,8 @@ export class Output extends StackElement {
    * @param parent The parent construct.
    * @param props Output properties.
    */
-  constructor(parent: Construct, name: string, props: OutputProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: OutputProps = {}) {
+    super(scope, id);
 
     this.description = props.description;
     this._value = props.value;
@@ -85,7 +85,7 @@ export class Output extends StackElement {
       this.export = props.export;
     } else if (!props.disableExport) {
       // prefix export name with stack name since exports are global within account + region.
-      const stackName = Stack.find(this).id;
+      const stackName = Stack.find(this).node.id;
       this.export = stackName ? stackName + ':' : '';
       this.export += this.logicalId;
     }
@@ -203,8 +203,8 @@ export class StringListOutput extends Construct {
    */
   private readonly output: Output;
 
-  constructor(parent: Construct, name: string, props: StringListOutputProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: StringListOutputProps) {
+    super(scope, id);
 
     this.separator = props.separator || ',';
     this.length = props.values.length;

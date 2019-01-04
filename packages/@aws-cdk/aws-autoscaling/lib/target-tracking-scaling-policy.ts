@@ -109,7 +109,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct implements cdk.ID
    */
   private resource: CfnScalingPolicy;
 
-  constructor(parent: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
+  constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
     }
@@ -126,7 +126,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct implements cdk.ID
       throw new Error('When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel');
     }
 
-    super(parent, id);
+    super(scope, id);
 
     this.resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'TargetTrackingScaling',

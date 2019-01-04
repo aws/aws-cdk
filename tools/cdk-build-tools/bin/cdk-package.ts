@@ -1,8 +1,6 @@
 import fs = require('fs-extra');
-import { ChangeDetector } from 'merkle-build';
 import path = require('path');
 import yargs = require('yargs');
-import ignoreList = require('../lib/ignore-list');
 import { shell } from '../lib/os';
 import { Timers } from '../lib/timer';
 
@@ -27,16 +25,6 @@ async function main() {
     })
     .argv as any;
 
-  const detector = new ChangeDetector('.', {
-    ignore: ignoreList,
-    markerFile: '.LAST_PACKAGE'
-  });
-
-  if (!await detector.isChanged()) {
-    process.stdout.write('Sources and dependencies unchanged since last package; skipping.\n');
-    return;
-  }
-
   // if this is a jsii package, use jsii-packmak
   const outdir = 'dist';
   const pkg = await fs.readJson('package.json');
@@ -57,8 +45,6 @@ async function main() {
     await fs.mkdirp(target);
     await fs.move(tarball, path.join(target, path.basename(tarball)));
   }
-
-  await detector.markClean();
 }
 
 main().then(() => {

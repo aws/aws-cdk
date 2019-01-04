@@ -122,10 +122,28 @@ export = {
 
     test.done();
   },
+
+  'import/export cluster parameter group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const group = new ClusterParameterGroup(stack, 'Params', {
+      family: 'hello',
+      description: 'desc'
+    });
+
+    // WHEN
+    const exported = group.export();
+    const imported = ClusterParameterGroup.import(stack, 'ImportParams', exported);
+
+    // THEN
+    test.deepEqual(cdk.resolve(exported), { parameterGroupName: { 'Fn::ImportValue': 'ParamsParameterGroupNameA6B808D7' } });
+    test.deepEqual(cdk.resolve(imported.parameterGroupName), { 'Fn::ImportValue': 'ParamsParameterGroupNameA6B808D7' });
+    test.done();
+  }
 };
 
 function testStack() {
   const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' }});
-  stack.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
+  stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

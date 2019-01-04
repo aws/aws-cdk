@@ -18,7 +18,7 @@ export = {
     test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
     const key = expectedContextKey(stack);
 
-    stack.setContext(key, ['us-east-1a', 'us-east-1b']);
+    stack.node.setContext(key, ['us-east-1a', 'us-east-1b']);
 
     const azs = new AvailabilityZoneProvider(stack).availabilityZones;
     test.deepEqual(azs, ['us-east-1a', 'us-east-1b']);
@@ -32,7 +32,7 @@ export = {
     test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
     const key = expectedContextKey(stack);
 
-    stack.setContext(key, 'not-a-list');
+    stack.node.setContext(key, 'not-a-list');
 
     test.throws(
       () => new AvailabilityZoneProvider(stack).availabilityZones
@@ -83,7 +83,7 @@ export = {
     new SSMParameterProvider(stack,  {parameterName: 'test'}).parameterValue();
     const key = expectedContextKey(stack);
 
-    stack.setContext(key, 'abc');
+    stack.node.setContext(key, 'abc');
 
     const ssmp = new SSMParameterProvider(stack,  {parameterName: 'test'});
     const azs = resolve(ssmp.parameterValue());
@@ -101,7 +101,7 @@ export = {
     test.deepEqual(new AvailabilityZoneProvider(stack).availabilityZones, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
     test.deepEqual(new SSMParameterProvider(child, {parameterName: 'foo'}).parameterValue(), 'dummy');
 
-    const output = app.synthesizeStack(stack.id);
+    const output = app.synthesizeStack(stack.node.id);
 
     const azError: MetadataEntry | undefined = output.metadata['/test-stack'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
     const ssmError: MetadataEntry | undefined = output.metadata['/test-stack/ChildConstruct'].find(x => x.type === cxapi.ERROR_METADATA_KEY);

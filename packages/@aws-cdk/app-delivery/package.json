@@ -29,7 +29,8 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "watch": "cdk-watch",
-    "integ": "cdk-integ"
+    "integ": "cdk-integ",
+    "awslint": "cdk-awslint"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "^0.21.0",

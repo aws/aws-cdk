@@ -4,7 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 import { CfnRepository } from './codecommit.generated';
 import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 
-export interface IRepository {
+export interface IRepository extends cdk.IConstruct {
   /** The ARN of this Repository. */
   readonly repositoryArn: string;
 
@@ -241,8 +241,8 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryArn: string;
   public readonly repositoryName: string;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: RepositoryImportProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
+    super(scope, id);
 
     this.repositoryArn = cdk.ArnUtils.fromComponents({
       service: 'codecommit',
@@ -290,20 +290,20 @@ export class Repository extends RepositoryBase {
    * Import a Repository defined either outside the CDK, or in a different Stack
    * (exported with the {@link export} method).
    *
-   * @param parent the parent Construct for the Repository
-   * @param name the name of the Repository Construct
+   * @param scope the parent Construct for the Repository
+   * @param id the name of the Repository Construct
    * @param props the properties used to identify the existing Repository
    * @returns a reference to the existing Repository
    */
-  public static import(parent: cdk.Construct, name: string, props: RepositoryImportProps): IRepository {
-    return new ImportedRepository(parent, name, props);
+  public static import(scope: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
+    return new ImportedRepository(scope, id, props);
   }
 
   private readonly repository: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
-  constructor(parent: cdk.Construct, name: string, props: RepositoryProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: RepositoryProps) {
+    super(scope, id);
 
     this.repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
@@ -356,7 +356,7 @@ export class Repository extends RepositoryBase {
 
     let name = options && options.name;
     if (!name) {
-      name = this.path + '/' + arn;
+      name = this.node.path + '/' + arn;
     }
 
     if (this.triggers.find(prop => prop.name === name)) {

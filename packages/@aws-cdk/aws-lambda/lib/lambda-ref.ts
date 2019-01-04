@@ -12,7 +12,7 @@ import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
 
-export interface IFunction extends events.IEventRuleTarget, logs.ILogSubscriptionDestination,
+export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
   s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource {
 
   /**
@@ -193,6 +193,10 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     });
   }
 
+  public get id() {
+    return this.node.id;
+  }
+
   /**
    * Convenience method for creating a new {@link PipelineInvokeAction},
    * and adding it to the given Stage.
@@ -246,7 +250,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
    */
   public asEventRuleTarget(ruleArn: string, ruleId: string): events.EventRuleTargetProps {
     const permissionId = `AllowEventRule${ruleId}`;
-    if (!this.tryFindChild(permissionId)) {
+    if (!this.node.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('events.amazonaws.com'),
@@ -255,7 +259,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     }
 
     return {
-      id: this.id,
+      id: this.node.id,
       arn: this.functionArn,
     };
   }
@@ -349,7 +353,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
     const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
     const stack = cdk.Stack.find(this);
-    if (!this.tryFindChild(permissionId)) {
+    if (!this.node.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
         sourceAccount: stack.accountId,
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
@@ -359,7 +363,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
     // if we have a permission resource for this relationship, add it as a dependency
     // to the bucket notifications resource, so it will be created first.
-    const permission = this.tryFindChild(permissionId) as cdk.Resource;
+    const permission = this.node.tryFindChild(permissionId) as cdk.Resource;
 
     return {
       type: s3n.BucketNotificationDestinationType.Lambda,

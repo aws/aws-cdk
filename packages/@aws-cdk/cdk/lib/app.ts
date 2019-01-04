@@ -2,7 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
 import { Stack } from './cloudformation/stack';
-import { Construct, MetadataEntry, PATH_SEP, Root } from './core/construct';
+import { IConstruct, MetadataEntry, PATH_SEP, Root } from './core/construct';
 import { resolve } from './core/tokens';
 
 /**
@@ -20,12 +20,12 @@ export class App extends Root {
 
   private get stacks() {
     const out: { [name: string]: Stack } = { };
-    for (const child of this.children) {
+    for (const child of this.node.children) {
       if (!Stack.isStack(child)) {
         throw new Error(`The child ${child.toString()} of App must be a Stack`);
       }
 
-      out[child.id] = child as Stack;
+      out[child.node.id] = child as Stack;
     }
     return out;
   }
@@ -62,9 +62,9 @@ export class App extends Root {
     const stack = this.getStack(stackName);
 
     // first, validate this stack and stop if there are errors.
-    const errors = stack.validateTree();
+    const errors = stack.node.validateTree();
     if (errors.length > 0) {
-      const errorList = errors.map(e => `[${e.source.path}] ${e.message}`).join('\n  ');
+      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
       throw new Error(`Stack validation failed with the following errors:\n  ${errorList}`);
     }
 
@@ -79,12 +79,12 @@ export class App extends Root {
 
     const missing = Object.keys(stack.missingContext).length ? stack.missingContext : undefined;
     return {
-      name: stack.id,
+      name: stack.node.id,
       environment,
       missing,
       template: stack.toCloudFormation(),
       metadata: this.collectMetadata(stack),
-      dependsOn: stack.dependencies().map(s => s.id),
+      dependsOn: stack.dependencies().map(s => s.node.id),
     };
   }
 
@@ -108,19 +108,19 @@ export class App extends Root {
     visit(stack);
 
     // add app-level metadata under "."
-    if (this.metadata.length > 0) {
-      output[PATH_SEP] = this.metadata;
+    if (this.node.metadata.length > 0) {
+      output[PATH_SEP] = this.node.metadata;
     }
 
     return output;
 
-    function visit(node: Construct) {
-      if (node.metadata.length > 0) {
+    function visit(node: IConstruct) {
+      if (node.node.metadata.length > 0) {
         // Make the path absolute
-        output[PATH_SEP + node.path] = node.metadata.map(md => resolve(md) as MetadataEntry);
+        output[PATH_SEP + node.node.path] = node.node.metadata.map(md => resolve(md) as MetadataEntry);
       }
 
-      for (const child of node.children) {
+      for (const child of node.node.children) {
         visit(child);
       }
     }
@@ -171,7 +171,7 @@ export class App extends Root {
     const contextJson = process.env[cxapi.CONTEXT_ENV];
     const context = !contextJson ? { } : JSON.parse(contextJson);
     for (const key of Object.keys(context)) {
-      this.setContext(key, context[key]);
+      this.node.setContext(key, context[key]);
     }
   }
 }

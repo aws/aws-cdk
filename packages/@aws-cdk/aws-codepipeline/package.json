@@ -34,7 +34,8 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
   },
   "cdk-build": {
     "cloudformation": "AWS::CodePipeline"
@@ -89,5 +90,11 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[0]",
+      "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[1]"
+    ]
   }
 }

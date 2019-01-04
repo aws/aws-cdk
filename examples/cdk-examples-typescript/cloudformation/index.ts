@@ -2,8 +2,8 @@ import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 
 class CloudFormationExample extends cdk.Stack {
-  constructor(parent: cdk.App) {
-    super(parent);
+  constructor(scope: cdk.App) {
+    super(scope);
 
     new sqs.CfnQueue(this, 'MyQueue', {
       visibilityTimeout: 300

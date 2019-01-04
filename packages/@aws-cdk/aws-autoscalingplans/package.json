@@ -34,7 +34,8 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
   },
   "cdk-build": {
     "cloudformation": "AWS::AutoScalingPlans"

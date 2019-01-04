@@ -111,7 +111,7 @@ export = {
   'Construct.findResource(logicalId) can be used to retrieve a resource by its path'(test: Test) {
     const stack = new Stack();
 
-    test.ok(!stack.tryFindChild('foo'), 'empty stack');
+    test.ok(!stack.node.tryFindChild('foo'), 'empty stack');
 
     const r1 = new Resource(stack, 'Hello', { type: 'MyResource' });
     test.equal(stack.findResource(r1.stackPath), r1, 'look up top-level');
@@ -129,7 +129,7 @@ export = {
 
     const p = new Parameter(stack, 'MyParam', { type: 'String' });
 
-    test.throws(() => stack.findResource(p.path));
+    test.throws(() => stack.findResource(p.node.path));
     test.done();
   },
 
@@ -141,9 +141,9 @@ export = {
     const o = new Output(stack, 'MyOutput');
     const c = new Condition(stack, 'MyCondition');
 
-    test.equal(stack.findChild(p.path), p);
-    test.equal(stack.findChild(o.path), o);
-    test.equal(stack.findChild(c.path), c);
+    test.equal(stack.node.findChild(p.node.path), p);
+    test.equal(stack.node.findChild(o.node.path), o);
+    test.equal(stack.node.findChild(c.node.path), c);
 
     test.done();
   },
@@ -299,7 +299,7 @@ export = {
     app.applyCrossEnvironmentReferences();
 
     // THEN
-    test.deepEqual(stack2.dependencies().map(s => s.id), ['Stack1']);
+    test.deepEqual(stack2.dependencies().map(s => s.node.id), ['Stack1']);
 
     test.done();
   },

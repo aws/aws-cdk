@@ -210,7 +210,7 @@ interface TestResourceProps extends cdk.ResourceProps {
 }
 
 class TestResource extends cdk.Resource {
-  constructor(parent: cdk.Construct, name: string, props: TestResourceProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.Construct, id: string, props: TestResourceProps) {
+    super(scope, id, props);
   }
 }

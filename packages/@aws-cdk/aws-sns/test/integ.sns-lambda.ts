@@ -3,8 +3,8 @@ import cdk = require('@aws-cdk/cdk');
 import sns = require('../lib');
 
 class SnsToSqs extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const topic = new sns.Topic(this, 'MyTopic');
 

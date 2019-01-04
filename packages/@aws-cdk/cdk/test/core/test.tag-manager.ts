@@ -5,15 +5,15 @@ import { resolve } from '../../lib/core/tokens';
 
 class ChildTagger extends Construct implements ITaggable {
   public readonly tags: TagManager;
-  constructor(parent: Construct, name: string) {
-    super(parent, name);
-    this.tags = new TagManager(parent);
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    this.tags = new TagManager(scope);
   }
 }
 
 class Child extends Construct {
-  constructor(parent: Construct, name: string) {
-    super(parent, name);
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
   }
 }
 
