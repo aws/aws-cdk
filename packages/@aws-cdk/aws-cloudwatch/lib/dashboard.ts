@@ -33,7 +33,7 @@ export class Dashboard extends Construct {
       dashboardBody: new Token(() => {
         const column = new Column(...this.rows);
         column.position(0, 0);
-        return CloudFormationJSON.stringify({ widgets: column.toJson() });
+        return CloudFormationJSON.stringify({ widgets: column.toJson() }, this);
       })
     });
   }

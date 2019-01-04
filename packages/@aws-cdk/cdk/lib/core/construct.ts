@@ -1,6 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { makeUniqueId } from '../util/uniqueid';
-import { unresolved } from './tokens';
+import { resolve } from './tokens/resolve';
+import { unresolved } from './tokens/token';
 export const PATH_SEP = '/';
 
 /**
@@ -351,15 +352,6 @@ export class ConstructNode {
   }
 
   /**
-   * Return the path of components up to but excluding the root
-   */
-  private rootPath(): IConstruct[] {
-    const ancestors = this.ancestors();
-    ancestors.shift();
-    return ancestors;
-  }
-
-  /**
    * Returns true if this construct or the scopes in which it is defined are
    * locked.
    */
@@ -373,6 +365,25 @@ export class ConstructNode {
     }
 
     return false;
+  }
+
+  /**
+   * Resolve a tokenized value in the context of the current Construct
+   */
+  public resolve(obj: any): any {
+    return resolve(obj, {
+      construct: this.host,
+      prefix: []
+    });
+  }
+
+  /**
+   * Return the path of components up to but excluding the root
+   */
+  private rootPath(): IConstruct[] {
+    const ancestors = this.ancestors();
+    ancestors.shift();
+    return ancestors;
   }
 
   /**

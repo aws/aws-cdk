@@ -3,7 +3,6 @@ export * from './core/tokens';
 export * from './core/tag-manager';
 
 export * from './cloudformation/cloudformation-json';
-export * from './cloudformation/tokens';
 export * from './cloudformation/condition';
 export * from './cloudformation/fn';
 export * from './cloudformation/include';

@@ -178,7 +178,7 @@ class LatestDeploymentResource extends CfnDeployment {
     } else {
       const md5 = crypto.createHash('md5');
       this.hashComponents
-        .map(c => cdk.resolve(c))
+        .map(c => this.node.resolve(c))
         .forEach(c => md5.update(JSON.stringify(c)));
 
       this.lazyLogicalId = this.originalLogicalId + md5.digest("hex");

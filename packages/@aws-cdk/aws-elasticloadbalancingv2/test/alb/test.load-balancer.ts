@@ -179,7 +179,7 @@ export = {
 
     for (const metric of metrics) {
       test.equal('AWS/ApplicationELB', metric.namespace);
-      test.deepEqual(cdk.resolve(metric.dimensions), {
+      test.deepEqual(stack.node.resolve(metric.dimensions), {
         LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] }
       });
     }

@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct } from '../core/construct';
+import { CfnReference } from '../core/tokens/cfn-tokens';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { IDependable, Referenceable, Stack, StackElement } from './stack';
-import { CfnReference } from './tokens';
 
 export interface ResourceProps {
   /**
@@ -187,12 +187,12 @@ export class Resource extends Referenceable {
         Resources: {
           [this.logicalId]: deepMerge({
             Type: this.resourceType,
-            Properties: ignoreEmpty(properties),
-            DependsOn: ignoreEmpty(this.renderDependsOn()),
-            CreationPolicy:  capitalizePropertyNames(this.options.creationPolicy),
-            UpdatePolicy: capitalizePropertyNames(this.options.updatePolicy),
-            DeletionPolicy: capitalizePropertyNames(this.options.deletionPolicy),
-            Metadata: ignoreEmpty(this.options.metadata),
+            Properties: ignoreEmpty(this, properties),
+            DependsOn: ignoreEmpty(this, this.renderDependsOn()),
+            CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
+            UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
+            DeletionPolicy: capitalizePropertyNames(this, this.options.deletionPolicy),
+            Metadata: ignoreEmpty(this, this.options.metadata),
             Condition: this.options.condition && this.options.condition.logicalId
           }, this.rawOverrides)
         }

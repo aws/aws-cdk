@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationJSON, Fn, resolve, Token } from '../../lib';
+import { CloudFormationJSON, Fn, Stack, Token } from '../../lib';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {
@@ -16,12 +16,14 @@ export = {
   },
 
   'string tokens can be JSONified and JSONification can be reversed'(test: Test) {
+    const stack = new Stack();
+
     for (const token of tokensThatResolveTo('woof woof')) {
       // GIVEN
       const fido = { name: 'Fido', speaks: token };
 
       // WHEN
-      const resolved = resolve(CloudFormationJSON.stringify(fido));
+      const resolved = stack.node.resolve(CloudFormationJSON.stringify(fido, stack));
 
       // THEN
       test.deepEqual(evaluateCFN(resolved), '{"name":"Fido","speaks":"woof woof"}');
@@ -31,12 +33,14 @@ export = {
   },
 
   'string tokens can be embedded while being JSONified'(test: Test) {
+    const stack = new Stack();
+
     for (const token of tokensThatResolveTo('woof woof')) {
       // GIVEN
       const fido = { name: 'Fido', speaks: `deep ${token}` };
 
       // WHEN
-      const resolved = resolve(CloudFormationJSON.stringify(fido));
+      const resolved = stack.node.resolve(CloudFormationJSON.stringify(fido, stack));
 
       // THEN
       test.deepEqual(evaluateCFN(resolved), '{"name":"Fido","speaks":"deep woof woof"}');
@@ -47,25 +51,27 @@ export = {
 
   'integer Tokens behave correctly in stringification and JSONification'(test: Test) {
     // GIVEN
+    const stack = new Stack();
     const num = new Token(() => 1);
     const embedded = `the number is ${num}`;
 
     // WHEN
-    test.equal(evaluateCFN(resolve(embedded)), "the number is 1");
-    test.equal(evaluateCFN(resolve(CloudFormationJSON.stringify({ embedded }))), "{\"embedded\":\"the number is 1\"}");
-    test.equal(evaluateCFN(resolve(CloudFormationJSON.stringify({ num }))), "{\"num\":1}");
+    test.equal(evaluateCFN(stack.node.resolve(embedded)), "the number is 1");
+    test.equal(evaluateCFN(stack.node.resolve(CloudFormationJSON.stringify({ embedded }, stack))), "{\"embedded\":\"the number is 1\"}");
+    test.equal(evaluateCFN(stack.node.resolve(CloudFormationJSON.stringify({ num }, stack))), "{\"num\":1}");
 
     test.done();
   },
 
   'tokens in strings survive additional TokenJSON.stringification()'(test: Test) {
     // GIVEN
+    const stack = new Stack();
     for (const token of tokensThatResolveTo('pong!')) {
       // WHEN
-      const stringified = CloudFormationJSON.stringify(`ping? ${token}`);
+      const stringified = CloudFormationJSON.stringify(`ping? ${token}`, stack);
 
       // THEN
-      test.equal(evaluateCFN(resolve(stringified)), '"ping? pong!"');
+      test.equal(evaluateCFN(stack.node.resolve(stringified)), '"ping? pong!"');
     }
 
     test.done();
@@ -73,10 +79,11 @@ export = {
 
   'intrinsic Tokens embed correctly in JSONification'(test: Test) {
     // GIVEN
+    const stack = new Stack();
     const bucketName = new Token({ Ref: 'MyBucket' });
 
     // WHEN
-    const resolved = resolve(CloudFormationJSON.stringify({ theBucket: bucketName }));
+    const resolved = stack.node.resolve(CloudFormationJSON.stringify({ theBucket: bucketName }, stack));
 
     // THEN
     const context = {MyBucket: 'TheName'};
@@ -86,14 +93,15 @@ export = {
   },
 
   'embedded string literals in intrinsics are escaped when calling TokenJSON.stringify()'(test: Test) {
-    // WHEN
+    // GIVEN
+    const stack = new Stack();
     const token = Fn.join('', [ 'Hello', 'This\nIs', 'Very "cool"' ]);
 
     // WHEN
-    const resolved = resolve(CloudFormationJSON.stringify({
+    const resolved = stack.node.resolve(CloudFormationJSON.stringify({
       literal: 'I can also "contain" quotes',
       token
-    }));
+    }, stack));
 
     // THEN
     const expected = '{"literal":"I can also \\"contain\\" quotes","token":"HelloThis\\nIsVery \\"cool\\""}';
@@ -104,11 +112,12 @@ export = {
 
   'Tokens in Tokens are handled correctly'(test: Test) {
     // GIVEN
+    const stack = new Stack();
     const bucketName = new Token({ Ref: 'MyBucket' });
     const combinedName = Fn.join('', [ 'The bucket name is ', bucketName.toString() ]);
 
     // WHEN
-    const resolved = resolve(CloudFormationJSON.stringify({ theBucket: combinedName }));
+    const resolved = stack.node.resolve(CloudFormationJSON.stringify({ theBucket: combinedName }, stack));
 
     // THEN
     const context = {MyBucket: 'TheName'};
@@ -119,12 +128,13 @@ export = {
 
   'Doubly nested strings evaluate correctly in JSON context'(test: Test) {
     // WHEN
+    const stack = new Stack();
     const fidoSays = new Token(() => 'woof');
 
     // WHEN
-    const resolved = resolve(CloudFormationJSON.stringify({
+    const resolved = stack.node.resolve(CloudFormationJSON.stringify({
       information: `Did you know that Fido says: ${fidoSays}`
-    }));
+    }, stack));
 
     // THEN
     test.deepEqual(evaluateCFN(resolved), '{"information":"Did you know that Fido says: woof"}');
@@ -133,13 +143,14 @@ export = {
   },
 
   'Doubly nested intrinsics evaluate correctly in JSON context'(test: Test) {
-    // WHEN
+    // GIVEN
+    const stack = new Stack();
     const fidoSays = new Token(() => ({ Ref: 'Something' }));
 
     // WHEN
-    const resolved = resolve(CloudFormationJSON.stringify({
+    const resolved = stack.node.resolve(CloudFormationJSON.stringify({
       information: `Did you know that Fido says: ${fidoSays}`
-    }));
+    }, stack));
 
     // THEN
     const context = {Something: 'woof woof'};
@@ -149,13 +160,14 @@ export = {
   },
 
   'Quoted strings in embedded JSON context are escaped'(test: Test) {
-    // WHEN
+    // GIVEN
+    const stack = new Stack();
     const fidoSays = new Token(() => '"woof"');
 
     // WHEN
-    const resolved = resolve(CloudFormationJSON.stringify({
+    const resolved = stack.node.resolve(CloudFormationJSON.stringify({
       information: `Did you know that Fido says: ${fidoSays}`
-    }));
+    }, stack));
 
     // THEN
     test.deepEqual(evaluateCFN(resolved), '{"information":"Did you know that Fido says: \\"woof\\""}');

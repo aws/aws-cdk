@@ -203,7 +203,7 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
       // None evaluates to empty string which is falsey and results in undefined
       Capabilities: (capabilities && capabilities.toString()) || undefined,
       RoleArn: new cdk.Token(() => this.role.roleArn),
-      ParameterOverrides: cdk.CloudFormationJSON.stringify(props.parameterOverrides),
+      ParameterOverrides: new cdk.Token(() => cdk.CloudFormationJSON.stringify(props.parameterOverrides, this)),
       TemplateConfiguration: props.templateConfiguration ? props.templateConfiguration.location : undefined,
       StackName: props.stackName,
     });

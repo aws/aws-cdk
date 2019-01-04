@@ -1,5 +1,7 @@
-import { resolve, Token } from "../core/tokens";
-import { isIntrinsic } from "./tokens";
+import { IConstruct } from "../core/construct";
+import { Token } from "../core/tokens";
+import { isIntrinsic } from "../core/tokens/cfn-tokens";
+import { resolve } from "../core/tokens/resolve";
 
 /**
  * Class for JSON routines that are framework-aware
@@ -14,8 +16,11 @@ export class CloudFormationJSON {
    *
    * All Tokens substituted in this way must return strings, or the evaluation
    * in CloudFormation will fail.
+   *
+   * @param obj The object to stringify
+   * @param context The Construct from which to resolve any Tokens found in the object
    */
-  public static stringify(obj: any): Token {
+  public static stringify(obj: any, context: IConstruct): Token {
     return new Token(() => {
       // Resolve inner value first so that if they evaluate to literals, we
       // maintain the type (and discard 'undefined's).
@@ -26,7 +31,10 @@ export class CloudFormationJSON {
       // deep-escapes any strings inside the intrinsic, so that if literal
       // strings are used in {Fn::Join} or something, they will end up
       // escaped in the final JSON output.
-      const resolved = resolve(obj);
+      const resolved = resolve(obj, {
+        construct: context,
+        prefix: []
+      });
 
       // We can just directly return this value, since resolve() will be called
       // on our return value anyway.

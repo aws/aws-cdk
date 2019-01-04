@@ -22,7 +22,7 @@ export function parseBucketArn(props: BucketImportProps): string {
   throw new Error('Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed');
 }
 
-export function parseBucketName(props: BucketImportProps): string | undefined {
+export function parseBucketName(construct: cdk.IConstruct, props: BucketImportProps): string | undefined {
 
   // if we have an explicit bucket name, use it.
   if (props.bucketName) {
@@ -32,7 +32,7 @@ export function parseBucketName(props: BucketImportProps): string | undefined {
   // if we have a string arn, we can extract the bucket name from it.
   if (props.bucketArn) {
 
-    const resolved = cdk.resolve(props.bucketArn);
+    const resolved = construct.node.resolve(props.bucketArn);
     if (typeof(resolved) === 'string') {
       const components = cdk.ArnUtils.parse(resolved);
       if (components.service !== 's3') {

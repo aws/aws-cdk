@@ -416,7 +416,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(cdk.resolve(principal))}. ` +
+    throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(this.node.resolve(principal))}. ` +
       'Supported: AccountPrincipal, ServicePrincipal');
   }
 }

@@ -64,7 +64,7 @@ export = nodeunit.testCase({
       });
 
       test.deepEqual(
-        cdk.resolve(pipelineRole.statements),
+        stack.node.resolve(pipelineRole.statements),
         [
           {
             Action: 'iam:PassRole',
@@ -138,7 +138,7 @@ export = nodeunit.testCase({
       });
 
       test.deepEqual(
-        cdk.resolve(pipelineRole.statements),
+        stack.node.resolve(pipelineRole.statements),
         [
           {
             Action: 'cloudformation:ExecuteChangeSet',
@@ -213,10 +213,10 @@ function _assertActionMatches(test: nodeunit.Test,
                               category: string,
                               configuration?: { [key: string]: any }) {
   const configurationStr = configuration
-                         ? `configuration including ${JSON.stringify(cdk.resolve(configuration), null, 2)}`
+                         ? `configuration including ${JSON.stringify(resolve(configuration), null, 2)}`
                          : '';
   const actionsStr = JSON.stringify(actions.map(a =>
-    ({ owner: a.owner, provider: a.provider, category: a.category, configuration: cdk.resolve(a.configuration) })
+    ({ owner: a.owner, provider: a.provider, category: a.category, configuration: resolve(a.configuration) })
   ), null, 2);
   test.ok(_hasAction(actions, owner, provider, category, configuration),
           `Expected to find an action with owner ${owner}, provider ${provider}, category ${category}${configurationStr}, but found ${actionsStr}`);
@@ -230,7 +230,7 @@ function _hasAction(actions: cpapi.Action[], owner: string, provider: string, ca
     if (configuration && !action.configuration) { continue; }
     if (configuration) {
       for (const key of Object.keys(configuration)) {
-        if (!_.isEqual(cdk.resolve(action.configuration[key]), cdk.resolve(configuration[key]))) {
+        if (!_.isEqual(resolve(action.configuration[key]), resolve(configuration[key]))) {
           continue;
         }
       }
@@ -242,12 +242,12 @@ function _hasAction(actions: cpapi.Action[], owner: string, provider: string, ca
 
 function _assertPermissionGranted(test: nodeunit.Test, statements: iam.PolicyStatement[], action: string, resource: string, conditions?: any) {
   const conditionStr = conditions
-                     ? ` with condition(s) ${JSON.stringify(cdk.resolve(conditions))}`
+                     ? ` with condition(s) ${JSON.stringify(resolve(conditions))}`
                      : '';
-  const resolvedStatements = cdk.resolve(statements);
+  const resolvedStatements = resolve(statements);
   const statementsStr = JSON.stringify(resolvedStatements, null, 2);
   test.ok(_grantsPermission(resolvedStatements, action, resource, conditions),
-          `Expected to find a statement granting ${action} on ${JSON.stringify(cdk.resolve(resource))}${conditionStr}, found:\n${statementsStr}`);
+          `Expected to find a statement granting ${action} on ${JSON.stringify(resolve(resource))}${conditionStr}, found:\n${statementsStr}`);
 }
 
 function _grantsPermission(statements: PolicyStatementJson[], action: string, resource: string, conditions?: any) {
@@ -261,8 +261,8 @@ function _grantsPermission(statements: PolicyStatementJson[], action: string, re
 }
 
 function _isOrContains(entity: string | string[], value: string): boolean {
-  const resolvedValue = cdk.resolve(value);
-  const resolvedEntity = cdk.resolve(entity);
+  const resolvedValue = resolve(value);
+  const resolvedEntity = resolve(entity);
   if (_.isEqual(resolvedEntity, resolvedValue)) { return true; }
   if (!Array.isArray(resolvedEntity)) { return false; }
   for (const tested of entity) {
@@ -351,4 +351,8 @@ class RoleDouble extends iam.Role {
     super.addToPolicy(statement);
     this.statements.push(statement);
   }
+}
+
+function resolve(x: any): any {
+  return new cdk.Root().node.resolve(x);
 }

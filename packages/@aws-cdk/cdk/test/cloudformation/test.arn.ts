@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, ArnUtils, Aws, resolve, Stack, Token } from '../../lib';
+import { ArnComponents, ArnUtils, Aws, Stack, Token } from '../../lib';
 
 export = {
   'create from components with defaults'(test: Test) {
@@ -12,12 +12,14 @@ export = {
 
     const pseudo = new Aws(stack);
 
-    test.deepEqual(resolve(arn),
-                   resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
+    test.deepEqual(stack.node.resolve(arn),
+                   stack.node.resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
     test.done();
   },
 
   'create from components with specific values for the various components'(test: Test) {
+    const stack = new Stack();
+
     const arn = ArnUtils.fromComponents({
       service: 'dynamodb',
       resource: 'table',
@@ -27,12 +29,14 @@ export = {
       resourceName: 'mytable/stream/label'
     });
 
-    test.deepEqual(resolve(arn),
+    test.deepEqual(stack.node.resolve(arn),
                    'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
     test.done();
   },
 
   'allow empty string in components'(test: Test) {
+    const stack = new Stack();
+
     const arn = ArnUtils.fromComponents({
       service: 's3',
       resource: 'my-bucket',
@@ -41,7 +45,7 @@ export = {
       partition: 'aws-cn',
     });
 
-    test.deepEqual(resolve(arn),
+    test.deepEqual(stack.node.resolve(arn),
                    'arn:aws-cn:s3:::my-bucket');
 
     test.done();
@@ -59,8 +63,8 @@ export = {
 
     const pseudo = new Aws(stack);
 
-    test.deepEqual(resolve(arn),
-                   resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`));
+    test.deepEqual(stack.node.resolve(arn),
+                   stack.node.resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`));
     test.done();
   },
 
@@ -145,30 +149,32 @@ export = {
     },
 
     'a Token with : separator'(test: Test) {
+      const stack = new Stack();
       const theToken = { Ref: 'SomeParameter' };
       const parsed = ArnUtils.parseToken(new Token(() => theToken).toString(), ':');
 
-      test.deepEqual(resolve(parsed.partition), { 'Fn::Select': [ 1, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(resolve(parsed.service), { 'Fn::Select': [ 2, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(resolve(parsed.region), { 'Fn::Select': [ 3, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(resolve(parsed.account), { 'Fn::Select': [ 4, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(resolve(parsed.resource), { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]});
-      test.deepEqual(resolve(parsed.resourceName), { 'Fn::Select': [ 6, { 'Fn::Split': [ ':', theToken ]} ]});
+      test.deepEqual(stack.node.resolve(parsed.partition), { 'Fn::Select': [ 1, { 'Fn::Split': [ ':', theToken ]} ]});
+      test.deepEqual(stack.node.resolve(parsed.service), { 'Fn::Select': [ 2, { 'Fn::Split': [ ':', theToken ]} ]});
+      test.deepEqual(stack.node.resolve(parsed.region), { 'Fn::Select': [ 3, { 'Fn::Split': [ ':', theToken ]} ]});
+      test.deepEqual(stack.node.resolve(parsed.account), { 'Fn::Select': [ 4, { 'Fn::Split': [ ':', theToken ]} ]});
+      test.deepEqual(stack.node.resolve(parsed.resource), { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]});
+      test.deepEqual(stack.node.resolve(parsed.resourceName), { 'Fn::Select': [ 6, { 'Fn::Split': [ ':', theToken ]} ]});
       test.equal(parsed.sep, ':');
 
       test.done();
     },
 
     'a Token with / separator'(test: Test) {
+      const stack = new Stack();
       const theToken = { Ref: 'SomeParameter' };
       const parsed = ArnUtils.parseToken(new Token(() => theToken).toString());
 
       test.equal(parsed.sep, '/');
 
       // tslint:disable-next-line:max-line-length
-      test.deepEqual(resolve(parsed.resource), { 'Fn::Select': [ 0, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
+      test.deepEqual(stack.node.resolve(parsed.resource), { 'Fn::Select': [ 0, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
       // tslint:disable-next-line:max-line-length
-      test.deepEqual(resolve(parsed.resourceName), { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
+      test.deepEqual(stack.node.resolve(parsed.resourceName), { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
 
       test.done();
     }

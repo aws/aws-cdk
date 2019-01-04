@@ -97,7 +97,7 @@ export class Rule extends Referenceable {
       Rules: {
         [this.logicalId]: {
           RuleCondition: this.ruleCondition,
-          Assertions: capitalizePropertyNames(this.assertions)
+          Assertions: capitalizePropertyNames(this, this.assertions)
         }
       }
     };

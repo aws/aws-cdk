@@ -1,6 +1,7 @@
-import { resolve, Token, unresolved } from '../core/tokens';
+import { ResolveContext, Token, unresolved } from '../core/tokens';
+import { isIntrinsic } from '../core/tokens/cfn-tokens';
+import { resolve } from '../core/tokens/resolve';
 import { FnCondition } from './condition';
-import { isIntrinsic } from './tokens';
 
 // tslint:disable:max-line-length
 
@@ -625,20 +626,19 @@ class FnJoin extends Token {
     if (listOfValues.length === 0) {
       throw new Error(`FnJoin requires at least one value to be provided`);
     }
-    // Passing the values as a token, optimization requires resolving stringified tokens, we should be deferred until
-    // this token is itself being resolved.
-    super({ 'Fn::Join': [ delimiter, new Token(() => this.resolveValues()) ] });
+    super();
+
     this.delimiter = delimiter;
     this.listOfValues = listOfValues;
     this.canOptimize = true;
   }
 
-  public resolve(): any {
-    const resolved = this.resolveValues();
+  public resolve(context: ResolveContext): any {
+    const resolved = this.resolveValues(context);
     if (this.canOptimize && resolved.length === 1) {
       return resolved[0];
     }
-    return super.resolve();
+    return { 'Fn::Join': [ this.delimiter, resolved ] };
   }
 
   /**
@@ -646,7 +646,7 @@ class FnJoin extends Token {
    * if two concatenated elements are literal strings (not tokens), then pre-concatenate them with the delimiter, to
    * generate shorter output.
    */
-  private resolveValues() {
+  private resolveValues(context: ResolveContext) {
     if (this._resolvedValues) { return this._resolvedValues; }
 
     if (unresolved(this.listOfValues)) {
@@ -655,7 +655,7 @@ class FnJoin extends Token {
       return this._resolvedValues = this.listOfValues;
     }
 
-    const resolvedValues = [...this.listOfValues.map(e => resolve(e))];
+    const resolvedValues = [...this.listOfValues.map(e => resolve(e, context))];
     let i = 0;
     while (i < resolvedValues.length) {
       const el = resolvedValues[i];

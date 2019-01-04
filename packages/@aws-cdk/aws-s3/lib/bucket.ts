@@ -964,7 +964,7 @@ class ImportedBucket extends BucketBase {
   constructor(scope: cdk.Construct, id: string, private readonly props: BucketImportProps) {
     super(scope, id);
 
-    const bucketName = parseBucketName(props);
+    const bucketName = parseBucketName(this, props);
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }

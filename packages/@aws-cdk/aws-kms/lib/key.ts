@@ -1,5 +1,5 @@
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, IConstruct, Output, resolve } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IConstruct, Output } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -68,7 +68,7 @@ export abstract class EncryptionKeyBase extends Construct {
   public addToResourcePolicy(statement: PolicyStatement, allowNoOp = true) {
     if (!this.policy) {
       if (allowNoOp) { return; }
-      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(resolve(this.keyArn))}`);
+      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(this.node.resolve(this.keyArn))}`);
     }
 
     this.policy.addStatement(statement);

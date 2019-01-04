@@ -1,11 +1,11 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
 import { Construct, IConstruct, PATH_SEP } from '../core/construct';
-import { resolve, RESOLVE_OPTIONS, Token, unresolved } from '../core/tokens';
+import { Token } from '../core/tokens';
+import { CfnReference } from '../core/tokens/cfn-tokens';
 import { Environment } from '../environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
-import { CfnReference } from './tokens';
 
 export interface StackProps {
   /**
@@ -177,7 +177,7 @@ export class Stack extends Construct {
       }
 
       // resolve all tokens and remove all empties
-      const ret = resolve(template) || {};
+      const ret = this.node.resolve(template) || {};
 
       this.logicalIds.assertAllRenamesApplied();
 
@@ -274,7 +274,7 @@ export class Stack extends Construct {
     }
 
     // Ensure a singleton Output for this value
-    const resolved = resolve(tokenValue);
+    const resolved = this.node.resolve(tokenValue);
     const id = 'Output' + JSON.stringify(resolved);
     if (this.crossStackExports === undefined) {
       this.crossStackExports = new Construct(this, 'Exports');
@@ -545,29 +545,7 @@ export abstract class StackElement extends Construct implements IDependable {
   public abstract substituteCrossStackReferences(): void;
 
   protected deepSubCrossStackReferences(sourceStack: Stack, x: any): any {
-    if (CfnReference.isInstance(x)) {
-      return x.substituteToken(sourceStack);
-    }
-
-    if (unresolved(x)) {
-      const options = RESOLVE_OPTIONS.push({ recurse: (y: any) => this.deepSubCrossStackReferences(sourceStack, y) });
-      try {
-        x = resolve(x);
-      } finally {
-        options.pop();
-      }
-    }
-
-    if (Array.isArray(x)) {
-      return x.map(e => this.deepSubCrossStackReferences(sourceStack, e));
-    }
-
-    if (typeof x === 'object' && x !== null) {
-      for (const [key, value] of Object.entries(x)) {
-        x[key] = this.deepSubCrossStackReferences(sourceStack, value);
-      }
-      return x;
-    }
+    Array.isArray(sourceStack);
     return x;
   }
 }

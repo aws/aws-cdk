@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Fn, resolve, Token, unresolved } from '../../lib';
+import { Fn, Root, Token, unresolved } from '../../lib';
 import { evaluateCFN } from '../cloudformation/evaluate-cfn';
 
 export = {
@@ -411,4 +411,13 @@ function cloudFormationTokensThatResolveTo(value: any): Token[] {
  */
 function tokensThatResolveTo(value: string): Token[] {
   return literalTokensThatResolveTo(value).concat(cloudFormationTokensThatResolveTo(value));
+}
+
+/**
+ * Wrapper for resolve that creates an throwaway Construct to call it on
+ *
+ * So I don't have to change all call sites in this file.
+ */
+function resolve(x: any) {
+  return new Root().node.resolve(x);
 }
