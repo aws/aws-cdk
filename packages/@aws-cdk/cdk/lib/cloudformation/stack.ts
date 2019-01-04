@@ -3,6 +3,7 @@ import { App } from '../app';
 import { Construct, IConstruct, PATH_SEP } from '../core/construct';
 import { Token } from '../core/tokens';
 import { CfnReference } from '../core/tokens/cfn-tokens';
+import { RESOLVE_OPTIONS } from '../core/tokens/options';
 import { Environment } from '../environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
@@ -33,7 +34,7 @@ export class Stack extends Construct {
    * @param node A construct in the tree
    * @returns The Stack object (throws if the node is not part of a Stack-rooted tree)
    */
-  public static find(node: Construct): Stack {
+  public static find(node: IConstruct): Stack {
     let curr: IConstruct | undefined = node;
     while (curr != null && !Stack.isStack(curr)) {
       curr = curr.node.scope;
@@ -355,16 +356,6 @@ export class Stack extends Construct {
   }
 
   /**
-   * Find cross-stack references embedded in the stack's content and replace them
-   *
-   * Do not call this as an app author; this is automatically called as part of synthesis.
-   */
-  public applyCrossEnvironmentReferences() {
-    const elements = stackElements(this);
-    elements.forEach(e => e.substituteCrossStackReferences());
-  }
-
-  /**
    * Validate stack name
    *
    * CloudFormation stack names can include dashes in addition to the regular identifier
@@ -373,6 +364,17 @@ export class Stack extends Construct {
   protected _validateId(name: string) {
     if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
       throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
+    }
+  }
+
+  /**
+   * Prepare stack
+   *
+   * Find all CloudFormation references and tell them we're consuming them.
+   */
+  protected prepare() {
+    for (const cfnRef of this.node.findReferences(CfnReference.ReferenceType)) {
+      (cfnRef as CfnReference).consumeFromStack(this);
     }
   }
 
@@ -542,11 +544,17 @@ export abstract class StackElement extends Construct implements IDependable {
    */
   public abstract toCloudFormation(): object;
 
-  public abstract substituteCrossStackReferences(): void;
-
-  protected deepSubCrossStackReferences(sourceStack: Stack, x: any): any {
-    Array.isArray(sourceStack);
-    return x;
+  /**
+   * Automatically detect references in this StackElement
+   */
+  protected prepare() {
+    const options = RESOLVE_OPTIONS.push({ preProcess: (token, _) => { this.node.recordReference(token); return token; } });
+    try {
+      // Execute for side effect of calling 'preProcess'
+      this.toCloudFormation();
+    } finally {
+      options.pop();
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-import { cloudFormationConcat } from "./cfn-tokens";
+import { cloudFormationConcat } from "./cfn-concat";
 import { resolve } from "./resolve";
 import { ResolveContext, Token, unresolved } from "./token";
 

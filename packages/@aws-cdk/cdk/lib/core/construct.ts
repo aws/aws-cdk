@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { makeUniqueId } from '../util/uniqueid';
 import { resolve } from './tokens/resolve';
-import { unresolved } from './tokens/token';
+import { Token, unresolved } from './tokens/token';
 export const PATH_SEP = '/';
 
 /**
@@ -36,6 +36,7 @@ export class ConstructNode {
   private readonly _children: { [name: string]: IConstruct } = { };
   private readonly context: { [key: string]: any } = { };
   private readonly _metadata = new Array<MetadataEntry>();
+  private readonly references = new Set<Token>();
 
   /**
    * If this is set to 'true'. addChild() calls for this construct and any child
@@ -378,6 +379,38 @@ export class ConstructNode {
   }
 
   /**
+   * Record a reference originating from this construct node
+   */
+  public recordReference(ref: Token) {
+    if (ref.referenceType !== undefined && ref.referenceType !== '') {
+      this.references.add(ref);
+    }
+  }
+
+  /**
+   * Return all references of the given type originating from this node or any of its children
+   */
+  public findReferences(type: string): Token[] {
+    const ret = new Set<Token>();
+
+    function recurse(node: ConstructNode) {
+      for (const ref of node.references) {
+        if (ref.referenceType === type) {
+          ret.add(ref);
+        }
+      }
+
+      for (const child of node.children) {
+        recurse(child.node);
+      }
+    }
+
+    recurse(this);
+
+    return Array.from(ret);
+  }
+
+  /**
    * Return the path of components up to but excluding the root
    */
   private rootPath(): IConstruct[] {
@@ -402,6 +435,18 @@ export class ConstructNode {
  * another construct.
  */
 export class Construct implements IConstruct {
+  /**
+   * Run the prepare phase on the given construct
+   */
+  public static doPrepare(construct: IConstruct) {
+    // Static method to make it possible to run 'prepare' from outside the
+    // object while not polluting the IDE autocomplete of instances with the
+    // presence of this method.
+    if (isConstruct(construct)) {
+      construct.prepare();
+    }
+  }
+
   /**
    * Construct node.
    */
@@ -428,6 +473,8 @@ export class Construct implements IConstruct {
   }
 
   /**
+   * Validate the current construct.
+   *
    * This method can be implemented by derived constructs in order to perform
    * validation logic. It is called on all constructs before synthesis.
    *
@@ -435,6 +482,17 @@ export class Construct implements IConstruct {
    */
   public validate(): string[] {
     return [];
+  }
+
+  /**
+   * Perform final modifications before synthesis
+   *
+   * This method can be implemented by derived constructs in order to perform
+   * final changes before synthesis. Prepare() will be called on a construct's
+   * children first.
+   */
+  protected prepare(): void {
+    // Empty on purpose
   }
 }
 
@@ -446,6 +504,16 @@ export class Root extends Construct {
   constructor() {
     // Bypass type checks
     super(undefined as any, '');
+  }
+
+  /**
+   * Run 'prepare()' on all constructs in the tree
+   */
+  public prepareConstructTree() {
+    // Use .reverse() to achieve post-order traversal
+    for (const construct of allConstructs(this, CrawlStyle.BreadthFirst).reverse()) {
+      Construct.doPrepare(construct);
+    }
   }
 }
 
@@ -489,4 +557,29 @@ function createStackTrace(below: Function): string[] {
     return [];
   }
   return object.stack.split('\n').slice(1).map(s => s.replace(/^\s*at\s+/, ''));
+}
+
+/**
+ * Return all constructs from the given root
+ */
+export function allConstructs(root: IConstruct, style: CrawlStyle): IConstruct[] {
+  const ret = new Array<IConstruct>();
+  const queue = [root];
+
+  while (queue.length > 0) {
+    const next = style === CrawlStyle.BreadthFirst ? queue.splice(0, 1)[0] : queue.pop()!;
+    ret.push(next);
+    queue.push(...next.node.children);
+  }
+
+  return ret;
+}
+
+export enum CrawlStyle {
+  BreadthFirst,
+  DepthFirst
+}
+
+export function isConstruct(x: IConstruct): x is Construct {
+  return (x as any).prepare !== undefined && (x as any).validate !== undefined;
 }

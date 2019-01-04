@@ -185,7 +185,7 @@ export = {
     // THEN
     // Need to do this manually now, since we're in testing mode. In a normal CDK app,
     // this happens as part of app.run().
-    app.applyCrossEnvironmentReferences();
+    app.prepareConstructTree();
 
     test.deepEqual(stack1.toCloudFormation(), {
       Outputs: {
@@ -218,7 +218,7 @@ export = {
     // WHEN - used in another stack
     new Parameter(stack2, 'SomeParameter', { type: 'String', default: new Token(() => account1) });
 
-    app.applyCrossEnvironmentReferences();
+    app.prepareConstructTree();
 
     // THEN
     test.deepEqual(stack1.toCloudFormation(), {
@@ -252,7 +252,7 @@ export = {
     // WHEN - used in another stack
     new Parameter(stack2, 'SomeParameter', { type: 'String', default: `TheAccountIs${account1}` });
 
-    app.applyCrossEnvironmentReferences();
+    app.prepareConstructTree();
 
     // THEN
     test.deepEqual(stack2.toCloudFormation(), {
@@ -280,7 +280,7 @@ export = {
     new Parameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
 
     test.throws(() => {
-      app.applyCrossEnvironmentReferences();
+      app.prepareConstructTree();
     }, /Adding this dependency would create a cyclic reference/);
 
     test.done();
@@ -296,7 +296,7 @@ export = {
     // WHEN
     new Parameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    app.applyCrossEnvironmentReferences();
+    app.prepareConstructTree();
 
     // THEN
     test.deepEqual(stack2.dependencies().map(s => s.node.id), ['Stack1']);
@@ -315,7 +315,7 @@ export = {
     new Parameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     test.throws(() => {
-      app.applyCrossEnvironmentReferences();
+      app.prepareConstructTree();
     }, /Can only reference cross stacks in the same region and account/);
 
     test.done();

@@ -1,3 +1,10 @@
+import { ResolveContext, Token } from "./token";
+
+/**
+ * Function used to preprocess Tokens before resolving
+ */
+export type PreProcessFunc = (token: Token, context: ResolveContext) => Token;
+
 /**
  * Global options for resolve()
  *
@@ -21,13 +28,12 @@ export class ResolveConfiguration {
     };
   }
 
-  public get recurse(): ResolveFunc | undefined {
+  public get preProcess(): PreProcessFunc {
     for (let i = this.options.length - 1; i >= 0; i--) {
-      if (this.options[i].recurse) {
-        return this.options[i].recurse;
-      }
+      const ret = this.options[i].preProcess;
+      if (ret) { return ret; }
     }
-    return undefined;
+    return noPreprocessFunction;
   }
 }
 
@@ -37,9 +43,9 @@ interface IOptionsContext {
 
 interface ResolveOptions {
   /**
-   * What function to use for recursing into deeper resolutions
+   * What function to use to preprocess Tokens before resolving them
    */
-  recurse?: ResolveFunc;
+  preProcess?: PreProcessFunc;
 }
 
 const glob = global as any;
@@ -49,7 +55,7 @@ const glob = global as any;
  */
 export const RESOLVE_OPTIONS: ResolveConfiguration = glob.__cdkResolveOptions = glob.__cdkResolveOptions || new ResolveConfiguration();
 
-/**
- * Function used to resolve Tokens
- */
-export type ResolveFunc = (obj: any, prefix?: string[]) => any;
+
+function noPreprocessFunction(x: Token, _: ResolveContext) {
+  return x;
+}

@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { Ref, Referenceable, Stack } from './stack';
+import { Ref, Referenceable } from './stack';
 
 export interface ParameterProps {
   /**
@@ -122,10 +122,6 @@ export class Parameter extends Referenceable {
         }
       }
     };
-  }
-
-  public substituteCrossStackReferences(): void {
-    this.properties = this.deepSubCrossStackReferences(Stack.find(this), this.properties);
   }
 
   /**

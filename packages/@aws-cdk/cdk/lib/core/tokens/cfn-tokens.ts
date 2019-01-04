@@ -1,65 +1,53 @@
 import { Construct } from "../construct";
-import { Token } from "./token";
+import { ResolveContext, Token } from "./token";
 
 /**
  * A Token that represents a CloudFormation reference to another resource
  */
 export class CfnReference extends Token {
-  public static isInstance(x: any): x is CfnReference {
-    return x && x._isCfnReference;
-  }
+  /**
+   * The reference type for instances of this class
+   */
+  public static ReferenceType = 'cfn-reference';
 
-  protected readonly _isCfnReference: boolean;
-
+  public readonly referenceType?: string;
   private readonly tokenStack?: Stack;
+  private readonly replacementTokens: Map<Stack, Token>;
 
   constructor(value: any, displayName?: string, anchor?: Construct) {
-      if (typeof(value) === 'function') {
-          throw new Error('CfnReference can only contain eager values');
-      }
-      super(value, displayName);
-      this._isCfnReference = true;
+    if (typeof(value) === 'function') {
+        throw new Error('CfnReference can only contain eager values');
+    }
+    super(value, displayName);
+    this.referenceType = CfnReference.ReferenceType;
+    this.replacementTokens = new Map<Stack, Token>();
 
-      if (anchor !== undefined) {
-        this.tokenStack = Stack.find(anchor);
-      }
+    if (anchor !== undefined) {
+      this.tokenStack = Stack.find(anchor);
+    }
+  }
+
+  public resolve(context: ResolveContext): any {
+    // If we have a special token for this stack, resolve that instead, otherwise resolve the original
+    const token = this.replacementTokens.get(Stack.find(context.construct));
+    if (token) {
+      return token.resolve(context);
+    } else {
+      return super.resolve(context);
+    }
   }
 
   /**
    * In a consuming context, potentially substitute this Token with a different one
    */
-  public substituteToken(consumingStack: Stack): Token {
-      if (this.tokenStack && this.tokenStack !== consumingStack) {
-          // We're trying to resolve a cross-stack reference
-          consumingStack.addDependency(this.tokenStack);
-          return this.tokenStack.exportValue(this, consumingStack);
-      }
-      // In case of doubt, return same Token
-      return this;
+  public consumeFromStack(consumingStack: Stack) {
+    if (this.tokenStack && this.tokenStack !== consumingStack && !this.replacementTokens.has(consumingStack)) {
+        // We're trying to resolve a cross-stack reference
+        consumingStack.addDependency(this.tokenStack);
+        this.replacementTokens.set(consumingStack, this.tokenStack.exportValue(this, consumingStack));
+    }
   }
 }
-
-/**
- * Produce a CloudFormation expression to concat two arbitrary expressions when resolving
- */
-export function cloudFormationConcat(left: any | undefined, right: any | undefined): any {
-  if (left === undefined && right === undefined) { return ''; }
-
-  const parts = new Array<any>();
-  if (left !== undefined) { parts.push(left); }
-  if (right !== undefined) { parts.push(right); }
-
-  // Some case analysis to produce minimal expressions
-  if (parts.length === 1) { return parts[0]; }
-  if (parts.length === 2 && typeof parts[0] === 'string' && typeof parts[1] === 'string') {
-    return parts[0] + parts[1];
-  }
-
-  // Otherwise return a Join intrinsic (already in the target document language to avoid taking
-  // circular dependencies on FnJoin & friends)
-  return { 'Fn::Join': ['', parts] };
-}
-
 /**
  * Return whether the given value represents a CloudFormation intrinsic
  */

@@ -34,8 +34,4 @@ export class Include extends StackElement {
   public toCloudFormation() {
     return this.template;
   }
-
-  public substituteCrossStackReferences(): void {
-    // Left empty on purpose
-  }
 }

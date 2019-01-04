@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Fn } from './fn';
-import { Referenceable, Stack } from './stack';
+import { Referenceable } from './stack';
 
 export interface MappingProps {
   mapping?: { [k1: string]: { [k2: string]: any } };
@@ -49,9 +49,5 @@ export class Mapping extends Referenceable {
         [this.logicalId]: this.mapping
       }
     };
-  }
-
-  public substituteCrossStackReferences(): void {
-    this.mapping = this.deepSubCrossStackReferences(Stack.find(this), this.mapping);
   }
 }

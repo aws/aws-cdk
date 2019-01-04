@@ -123,10 +123,6 @@ export class Output extends StackElement {
     };
   }
 
-  public substituteCrossStackReferences(): void {
-    this._value = this.deepSubCrossStackReferences(Stack.find(this), this._value);
-  }
-
   public get ref(): string {
     throw new Error('Outputs cannot be referenced');
   }

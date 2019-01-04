@@ -4,7 +4,7 @@ import { CfnReference } from '../core/tokens/cfn-tokens';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { IDependable, Referenceable, Stack, StackElement } from './stack';
+import { IDependable, Referenceable, StackElement } from './stack';
 
 export interface ResourceProps {
   /**
@@ -207,10 +207,6 @@ export class Resource extends Referenceable {
       // Re-throw
       throw e;
     }
-  }
-
-  public substituteCrossStackReferences(): void {
-    this.deepSubCrossStackReferences(Stack.find(this), this.properties);
   }
 
   protected renderProperties(properties: any): { [key: string]: any } {

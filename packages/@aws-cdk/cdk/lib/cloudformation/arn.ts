@@ -1,6 +1,7 @@
-import { Construct, Stack } from '..';
 import { Fn } from '../cloudformation/fn';
+import { Construct } from '../core/construct';
 import { unresolved } from '../core/tokens';
+import { Stack } from './stack';
 
 /**
  * An Amazon Resource Name (ARN).

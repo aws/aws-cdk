@@ -18,6 +18,11 @@ export const RESOLVE_METHOD = 'resolve';
  * semantics.
  */
 export class Token {
+  /**
+   * If this Token represents a reference, an identifier for the reference Type
+   */
+  public readonly referenceType?: string;
+
   private tokenStringification?: string;
   private tokenListification?: string[];
 

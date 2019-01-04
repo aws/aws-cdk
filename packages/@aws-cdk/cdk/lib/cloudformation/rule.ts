@@ -102,10 +102,6 @@ export class Rule extends Referenceable {
       }
     };
   }
-
-  public substituteCrossStackReferences(): void {
-    // Empty on purpose
-  }
 }
 
 /**
