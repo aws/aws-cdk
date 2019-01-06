@@ -36,7 +36,7 @@ new cfn.PipelineCreateReplaceChangeSetAction(stack, 'DeployCFN', {
   stage: cfnStage,
   changeSetName,
   stackName,
-  role,
+  deploymentRole: role,
   templatePath: source.outputArtifact.atPath('test.yaml'),
   adminPermissions: false,
 });

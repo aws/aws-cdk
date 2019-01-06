@@ -122,7 +122,7 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    *
    * @default A fresh role with full or no permissions (depending on the value of `adminPermissions`).
    */
-  role?: iam.IRole;
+  deploymentRole?: iam.IRole;
 
   /**
    * Acknowledge certain changes made as part of deployment
@@ -193,7 +193,7 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
  * Base class for all CloudFormation actions that execute or stage deployments.
  */
 export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFormationAction {
-  public readonly role: iam.IRole;
+  public readonly deploymentRole: iam.IRole;
 
   constructor(scope: cdk.Construct, id: string, props: PipelineCloudFormationDeployActionProps, configuration: any) {
     const capabilities = props.adminPermissions && props.capabilities === undefined ? CloudFormationCapabilities.NamedIAM : props.capabilities;
@@ -201,32 +201,32 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
       ...configuration,
       // None evaluates to empty string which is falsey and results in undefined
       Capabilities: (capabilities && capabilities.toString()) || undefined,
-      RoleArn: new cdk.Token(() => this.role.roleArn),
+      RoleArn: new cdk.Token(() => this.deploymentRole.roleArn),
       ParameterOverrides: new cdk.Token(() => this.node.stringifyJson(props.parameterOverrides)),
       TemplateConfiguration: props.templateConfiguration ? props.templateConfiguration.location : undefined,
       StackName: props.stackName,
     });
 
-    if (props.role) {
-      this.role = props.role;
+    if (props.deploymentRole) {
+      this.deploymentRole = props.deploymentRole;
     } else {
-      this.role = new iam.Role(this, 'Role', {
+      this.deploymentRole = new iam.Role(this, 'Role', {
         assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com')
       });
 
       if (props.adminPermissions) {
-        this.role.addToPolicy(new iam.PolicyStatement().addAction('*').addAllResources());
+        this.deploymentRole.addToPolicy(new iam.PolicyStatement().addAction('*').addAllResources());
       }
     }
 
-    SingletonPolicy.forRole(props.stage.pipeline.role).grantPassRole(this.role);
+    SingletonPolicy.forRole(props.stage.pipeline.role).grantPassRole(this.deploymentRole);
   }
 
   /**
    * Add statement to the service role assumed by CloudFormation while executing this action.
    */
-  public addToRolePolicy(statement: iam.PolicyStatement) {
-    return this.role.addToPolicy(statement);
+  public addToDeploymentRolePolicy(statement: iam.PolicyStatement) {
+    return this.deploymentRole.addToPolicy(statement);
   }
 }
 

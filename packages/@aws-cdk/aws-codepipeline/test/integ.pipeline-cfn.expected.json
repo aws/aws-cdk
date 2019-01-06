@@ -147,12 +147,6 @@
     "PipelineC660917D": {
       "Type": "AWS::CodePipeline::Pipeline",
       "Properties": {
-        "ArtifactStore": {
-          "Location": {
-            "Ref": "PipelineArtifactsBucket22248F97"
-          },
-          "Type": "S3"
-        },
         "RoleArn": {
           "Fn::GetAtt": [
             "PipelineRoleD68726F7",
@@ -221,7 +215,13 @@
             ],
             "Name": "CFN"
           }
-        ]
+        ],
+        "ArtifactStore": {
+          "Location": {
+            "Ref": "PipelineArtifactsBucket22248F97"
+          },
+          "Type": "S3"
+        }
       },
       "DependsOn": [
         "PipelineRoleD68726F7",

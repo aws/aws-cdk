@@ -63,7 +63,6 @@ export = {
     stackName,
     changeSetName,
     runOrder: 321,
-    role: changeSetExecRole,
     deploymentRole: changeSetExecRole,
     templatePath: new ArtifactPath(buildAction.outputArtifact, 'template.yaml'),
     templateConfiguration: new ArtifactPath(buildAction.outputArtifact, 'templateConfig.json'),
