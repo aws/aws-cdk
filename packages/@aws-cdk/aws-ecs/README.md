@@ -88,6 +88,8 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.xlarge'),
   machineImage: new EcsOptimizedAmi(),
+  // Or use ECS-Optimized Amazon Linux 2 AMI
+  // machineImage: new EcsOptimizedAmi({ generation: ec2.AmazonLinuxGeneration.AmazonLinux2 }),
   desiredCapacity: 3,
   // ... other options here ...
 });
