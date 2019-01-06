@@ -184,18 +184,37 @@ export class Cluster extends cdk.Construct implements ICluster {
   }
 }
 
+export interface EcsOptimizedAmiProps {
+  /**
+   * What generation of Amazon Linux to use
+   *
+   * @default AmazonLinux
+   */
+  generation?: ec2.AmazonLinuxGeneration;
+}
+
 /**
  * Construct a Linux machine image from the latest ECS Optimized AMI published in SSM
  */
-export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
-  private static AmiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
+export class EcsOptimizedAmi implements ec2.IMachineImageSource {
+  private readonly generation: ec2.AmazonLinuxGeneration;
+  private readonly amiParameterName: string;
+
+  constructor(props?: EcsOptimizedAmiProps) {
+    this.generation = (props && props.generation) || ec2.AmazonLinuxGeneration.AmazonLinux;
+    if (this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2) {
+      this.amiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended";
+    } else {
+      this.amiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
+    }
+  }
 
   /**
    * Return the correct image
    */
   public getImage(scope: cdk.Construct): ec2.MachineImage {
     const ssmProvider = new cdk.SSMParameterProvider(scope, {
-        parameterName: EcsOptimizedAmi.AmiParameterName
+      parameterName: this.amiParameterName
     });
 
     const json = ssmProvider.parameterValue("{\"image_id\": \"\"}");
