@@ -8,15 +8,23 @@ import { deepEqual } from './diff/util';
 import { IamChanges } from './iam/iam-changes';
 import { SecurityGroupChanges } from './network/security-group-changes';
 
+// tslint:disable-next-line:no-var-requires
+const { structuredPatch } = require('diff');
+
 /**
  * Renders template differences to the process' console.
  *
- * @param templateDiff TemplateDiff to be rendered to the console.
+ * @param stream           The IO stream where to output the rendered diff.
+ * @param templateDiff     TemplateDiff to be rendered to the console.
  * @param logicalToPathMap A map from logical ID to construct path. Useful in
  *                         case there is no aws:cdk:path metadata in the template.
+ * @param context          the number of context lines to use in arbitrary JSON diff (defaults to 3).
  */
-export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: TemplateDiff, logicalToPathMap: { [logicalId: string]: string } = { }) {
-  const formatter = new Formatter(stream, logicalToPathMap, templateDiff);
+export function formatDifferences(stream: NodeJS.WriteStream,
+                                  templateDiff: TemplateDiff,
+                                  logicalToPathMap: { [logicalId: string]: string } = { },
+                                  context: number = 3) {
+  const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
   if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
     formatter.printSectionHeader('Template');
@@ -40,8 +48,11 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
 /**
  * Renders a diff of security changes to the given stream
  */
-export function formatSecurityChanges(stream: NodeJS.WriteStream, templateDiff: TemplateDiff, logicalToPathMap: {[logicalId: string]: string} = {}) {
-  const formatter = new Formatter(stream, logicalToPathMap, templateDiff);
+export function formatSecurityChanges(stream: NodeJS.WriteStream,
+                                      templateDiff: TemplateDiff,
+                                      logicalToPathMap: {[logicalId: string]: string} = {},
+                                      context?: number) {
+  const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
   formatSecurityChangesWithBanner(formatter, templateDiff);
 }
@@ -56,11 +67,15 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
 }
 
 const ADDITION = colors.green('[+]');
+const CONTEXT  = colors.grey('[ ]');
 const UPDATE   = colors.yellow('[~]');
 const REMOVAL  = colors.red('[-]');
 
 class Formatter {
-  constructor(private readonly stream: NodeJS.WriteStream, private readonly logicalToPathMap: { [logicalId: string]: string }, diff?: TemplateDiff) {
+  constructor(private readonly stream: NodeJS.WriteStream,
+              private readonly logicalToPathMap: { [logicalId: string]: string },
+              diff?: TemplateDiff,
+              private readonly context: number = 3) {
     // Read additional construct paths from the diff if it is supplied
     if (diff) {
       this.readConstructPathsFrom(diff);
@@ -126,7 +141,7 @@ class Formatter {
    * Print a resource difference for a given logical ID.
    *
    * @param logicalId the logical ID of the resource that changed.
-   * @param diff    the change to be rendered.
+   * @param diff      the change to be rendered.
    */
   public formatResourceDifference(_type: string, logicalId: string, diff: ResourceDifference) {
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
@@ -184,9 +199,9 @@ class Formatter {
 
   /**
    * Renders a tree of differences under a particular name.
-   * @param name the name of the root of the tree.
-   * @param diff the difference on the tree.
-   * @param last whether this is the last node of a parent tree.
+   * @param name    the name of the root of the tree.
+   * @param diff    the difference on the tree.
+   * @param last    whether this is the last node of a parent tree.
    */
   public formatTreeDiff(name: string, diff: Difference<any>, last: boolean) {
     let additionalInfo = '';
@@ -210,10 +225,19 @@ class Formatter {
    * @param linePrefix a prefix (indent-like) to be used on every line.
    */
   public formatObjectDiff(oldObject: any, newObject: any, linePrefix: string) {
-    if ((typeof oldObject !== typeof newObject) || Array.isArray(oldObject) || typeof oldObject === 'string' || typeof oldObject === 'number') {
+    if ((typeof oldObject !== typeof newObject) || Array.isArray(oldObject) || typeof oldObject === 'string' || typeof oldObject === 'number') {
       if (oldObject !== undefined && newObject !== undefined) {
-        this.print('%s   ├─ %s %s', linePrefix, REMOVAL, this.formatValue(oldObject, colors.red));
-        this.print('%s   └─ %s %s', linePrefix, ADDITION, this.formatValue(newObject, colors.green));
+        if (typeof oldObject === 'object' || typeof newObject === 'object') {
+          const oldStr = JSON.stringify(oldObject, null, 2);
+          const newStr = JSON.stringify(newObject, null, 2);
+          const diff = _diffStrings(oldStr, newStr, this.context);
+          for (let i = 0 ; i < diff.length ; i++) {
+            this.print('%s   %s %s', linePrefix, i === 0 ? '└─' : '  ', diff[i]);
+          }
+        } else {
+          this.print('%s   ├─ %s %s', linePrefix, REMOVAL, this.formatValue(oldObject, colors.red));
+          this.print('%s   └─ %s %s', linePrefix, ADDITION, this.formatValue(newObject, colors.green));
+        }
       } else if (oldObject !== undefined /* && newObject === undefined */) {
         this.print('%s   └─ %s', linePrefix, this.formatValue(oldObject, colors.red));
       } else /* if (oldObject === undefined && newObject !== undefined) */ {
@@ -396,5 +420,77 @@ function stripHorizontalLines(tableRendering: string) {
   function secondColumnValue(line: string) {
     const cols = colors.stripColors(line).split('│').filter(x => x !== '');
     return cols[1];
+  }
+}
+
+/**
+ * A patch as returned by ``diff.structuredPatch``.
+ */
+interface Patch {
+  /**
+   * Hunks in the patch.
+   */
+  hunks: ReadonlyArray<PatchHunk>;
+}
+
+/**
+ * A hunk in a patch produced by ``diff.structuredPatch``.
+ */
+interface PatchHunk {
+  oldStart: number;
+  oldLines: number;
+  newStart: number;
+  newLines: number;
+  lines: string[];
+}
+
+/**
+ * Creates a unified diff of two strings.
+ *
+ * @param oldStr  the "old" version of the string.
+ * @param newStr  the "new" version of the string.
+ * @param context the number of context lines to use in arbitrary JSON diff.
+ *
+ * @returns an array of diff lines.
+ */
+function _diffStrings(oldStr: string, newStr: string, context: number): string[] {
+  const patch: Patch = structuredPatch(null, null, oldStr, newStr, null, null, { context });
+  const result = new Array<string>();
+  for (const hunk of patch.hunks) {
+    result.push(colors.magenta(`@@ -${hunk.oldStart},${hunk.oldLines} +${hunk.newStart},${hunk.newLines} @@`));
+    const baseIndent = _findIndent(hunk.lines);
+    for (const line of hunk.lines) {
+      // Don't care about termination newline.
+      if (line === '\\ No newline at end of file') { continue; }
+      const marker = line.charAt(0);
+      const text = line.slice(1 + baseIndent);
+      switch (marker) {
+      case ' ':
+        result.push(`${CONTEXT} ${text}`);
+        break;
+      case '+':
+        result.push(colors.bold(`${ADDITION} ${colors.green(text)}`));
+        break;
+      case '-':
+        result.push(colors.bold(`${REMOVAL} ${colors.red(text)}`));
+        break;
+      default:
+        throw new Error(`Unexpected diff marker: ${marker} (full line: ${line})`);
+      }
+    }
+  }
+  return result;
+
+  function _findIndent(lines: string[]): number {
+    let indent = Number.MAX_SAFE_INTEGER;
+    for (const line of lines) {
+      for (let i = 1 ; i < line.length ; i++) {
+        if (line.charAt(i) !== ' ') {
+          indent = indent > i - 1 ? i - 1 : indent;
+          break;
+        }
+      }
+    }
+    return indent;
   }
 }

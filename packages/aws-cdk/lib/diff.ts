@@ -8,10 +8,12 @@ import { print, warning } from './logging';
  *
  * @param oldTemplate the old/current state of the stack.
  * @param newTemplate the new/target state of the stack.
+ * @param strict      do not filter out AWS::CDK::Metadata
+ * @param context     lines of context to use in arbitrary JSON diff
  *
  * @returns the count of differences that were rendered.
  */
-export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack, strict: boolean): number {
+export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack, strict: boolean, context: number): number {
   if (_hasAssets(newTemplate)) {
     const issue = 'https://github.com/awslabs/aws-cdk/issues/395';
     warning(`The ${newTemplate.name} stack uses assets, which are currently not accounted for in the diff output! See ${issue}`);
@@ -30,7 +32,7 @@ export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedS
   }
 
   if (!diff.isEmpty) {
-    cfnDiff.formatDifferences(process.stderr, diff, buildLogicalToPathMap(newTemplate));
+    cfnDiff.formatDifferences(process.stderr, diff, buildLogicalToPathMap(newTemplate), context);
   } else {
     print(colors.green('There were no differences'));
   }
