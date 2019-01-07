@@ -143,7 +143,12 @@ export = {
 
     const key = new EncryptionKey(stack, 'MyKey', {
       enableKeyRotation: true,
-      enabled: false
+      enabled: false,
+      tags: {
+        tag1: 'value1',
+        tag2: 'value2',
+        tag3: ''
+      }
     });
     const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
     p.addAwsPrincipal('arn');
@@ -204,7 +209,21 @@ export = {
             }
           ],
           Version: "2012-10-17"
-          }
+          },
+          Tags: [
+            {
+              Key: "tag1",
+              Value: "value1"
+            },
+            {
+              Key: "tag2",
+              Value: "value2"
+            },
+            {
+              Key: "tag3",
+              Value: ""
+            }
+          ]
         },
         DeletionPolicy: "Retain"
         }
