@@ -2,9 +2,9 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
-import { Stack } from '@aws-cdk/cdk';
 
 export = {
   'Trivial construction: internet facing'(test: Test) {
