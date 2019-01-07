@@ -60,7 +60,7 @@ async function parseCommandLineArguments() {
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
     .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
-      .option('context-lines', { type: 'number', desc: 'number of context lines to include in arbitrary JSON diff rendering', default: 5 })
+      .option('context-lines', { type: 'number', desc: 'number of context lines to include in arbitrary JSON diff rendering', default: 3 })
       .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' })
       .option('strict', { type: 'boolean', desc: 'do not filter out AWS::CDK::Metadata resources', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')

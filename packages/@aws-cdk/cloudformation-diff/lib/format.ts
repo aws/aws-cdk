@@ -18,12 +18,12 @@ const { structuredPatch } = require('diff');
  * @param templateDiff     TemplateDiff to be rendered to the console.
  * @param logicalToPathMap A map from logical ID to construct path. Useful in
  *                         case there is no aws:cdk:path metadata in the template.
- * @param context          the number of context lines to use in arbitrary JSON diff.
+ * @param context          the number of context lines to use in arbitrary JSON diff (defaults to 3).
  */
 export function formatDifferences(stream: NodeJS.WriteStream,
                                   templateDiff: TemplateDiff,
                                   logicalToPathMap: { [logicalId: string]: string } = { },
-                                  context: number = 5) {
+                                  context: number = 3) {
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
   if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
@@ -75,7 +75,7 @@ class Formatter {
   constructor(private readonly stream: NodeJS.WriteStream,
               private readonly logicalToPathMap: { [logicalId: string]: string },
               diff?: TemplateDiff,
-              private readonly context: number = 5) {
+              private readonly context: number = 3) {
     // Read additional construct paths from the diff if it is supplied
     if (diff) {
       this.readConstructPathsFrom(diff);
