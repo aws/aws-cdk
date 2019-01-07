@@ -27,6 +27,7 @@
     "@aws-cdk/cx-api": "^0.21.0",
     "cli-table": "^0.3.1",
     "colors": "^1.2.1",
+    "diff": "^4.0.1",
     "fast-deep-equal": "^2.0.1",
     "source-map-support": "^0.5.6"
   },
