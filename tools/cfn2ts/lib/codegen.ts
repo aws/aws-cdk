@@ -173,7 +173,7 @@ export default class CodeGenerator {
     }
   }
 
-  private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType, deprecated?: genspec.CodeName) {
+  private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType, deprecated?: genspec.CodeName): void {
     this.beginNamespace(resourceName);
 
     //
