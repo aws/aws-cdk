@@ -104,7 +104,7 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
     this.vpc = baseProps.vpc;
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
-      loadBalancerName: baseProps.loadBalancerName,
+      name: baseProps.loadBalancerName,
       subnets: subnets.map(s => s.subnetId),
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: new cdk.Token(() => renderAttributes(this.attributes)),
