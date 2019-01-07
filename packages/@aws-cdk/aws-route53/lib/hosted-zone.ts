@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { HostedZoneImportProps, IHostedZone } from './hosted-zone-ref';
-import { CfnHostedZone, HostedZoneNameServers } from './route53.generated';
+import { CfnHostedZone } from './route53.generated';
 import { validateZoneName } from './util';
 
 /**
@@ -61,7 +61,7 @@ export class PublicHostedZone extends HostedZone {
   /**
    * Nameservers for this public hosted zone
    */
-  public readonly nameServers: HostedZoneNameServers;
+  public readonly nameServers: string[];
 
   constructor(scope: cdk.Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id);

@@ -35,7 +35,8 @@
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
-    "awslint": "cdk-awslint"
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::RDS"
