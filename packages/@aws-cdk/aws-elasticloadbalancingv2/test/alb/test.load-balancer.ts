@@ -4,6 +4,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
+import { Stack } from '@aws-cdk/cdk';
 
 export = {
   'Trivial construction: internet facing'(test: Test) {
@@ -184,6 +185,24 @@ export = {
       });
     }
 
+    test.done();
+  },
+
+  'loadBalancerName'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
+      loadBalancerName: 'myLoadBalancer',
+      vpc
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Name: 'myLoadBalancer'
+    }));
     test.done();
   },
 };
