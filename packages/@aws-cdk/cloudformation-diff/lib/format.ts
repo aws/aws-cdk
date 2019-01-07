@@ -14,7 +14,7 @@ const { structuredPatch } = require('diff');
 /**
  * Renders template differences to the process' console.
  *
- * @param string           The IO stream where to output the rendered diff.
+ * @param stream           The IO stream where to output the rendered diff.
  * @param templateDiff     TemplateDiff to be rendered to the console.
  * @param logicalToPathMap A map from logical ID to construct path. Useful in
  *                         case there is no aws:cdk:path metadata in the template.
@@ -23,7 +23,7 @@ const { structuredPatch } = require('diff');
 export function formatDifferences(stream: NodeJS.WriteStream,
                                   templateDiff: TemplateDiff,
                                   logicalToPathMap: { [logicalId: string]: string } = { },
-                                  context?: number) {
+                                  context: number = 5) {
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
   if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
