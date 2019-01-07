@@ -349,6 +349,21 @@ export = {
       });
 
       test.done();
+    },
+
+    'can pass encoded lists to FnJoin, even if join is stringified'(test: Test) {
+      // GIVEN
+      const encoded: string[] = new Token({ Ref: 'Other' }).toList();
+
+      // WHEN
+      const struct = Fn.join('/', encoded).toString();
+
+      // THEN
+      test.deepEqual(resolve(struct), {
+        'Fn::Join': ['/', { Ref: 'Other'}]
+      });
+
+      test.done();
     }
   }
 };

@@ -270,6 +270,17 @@ export class ConstructNode {
   }
 
   /**
+   * Run 'prepare()' on all constructs in the tree
+   */
+  public prepareTree() {
+    // Use .reverse() to achieve post-order traversal
+    const constructs = allConstructs(this.host, CrawlStyle.BreadthFirst);
+    for (const construct of constructs.reverse()) {
+      Construct.doPrepare(construct);
+    }
+  }
+
+  /**
    * Return the ancestors (including self) of this Construct up until and excluding the indicated component
    *
    * @param to The construct to return the path components relative to, or
@@ -488,11 +499,12 @@ export class Construct implements IConstruct {
    * Perform final modifications before synthesis
    *
    * This method can be implemented by derived constructs in order to perform
-   * final changes before synthesis. Prepare() will be called on a construct's
-   * children first.
+   * final changes before synthesis. prepare() will be called after child
+   * constructs have been prepared.
+   *
    */
   protected prepare(): void {
-    // Empty on purpose
+    // Intentionally left blank
   }
 }
 
@@ -504,16 +516,6 @@ export class Root extends Construct {
   constructor() {
     // Bypass type checks
     super(undefined as any, '');
-  }
-
-  /**
-   * Run 'prepare()' on all constructs in the tree
-   */
-  public prepareConstructTree() {
-    // Use .reverse() to achieve post-order traversal
-    for (const construct of allConstructs(this, CrawlStyle.BreadthFirst).reverse()) {
-      Construct.doPrepare(construct);
-    }
   }
 }
 

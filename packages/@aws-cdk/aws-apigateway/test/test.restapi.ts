@@ -125,7 +125,9 @@ export = {
             {
             Ref: "AWS::Region"
             },
-            ".amazonaws.com/",
+            ".",
+            { Ref: "AWS::URLSuffix" },
+            "/",
             {
             Ref: "myapiDeploymentStageprod298F01AF"
             },
@@ -386,7 +388,7 @@ export = {
     const exported = api.export();
 
     // THEN
-    stack.node.validateTree();
+    stack.node.prepareTree();
     test.deepEqual(stack.toCloudFormation().Outputs.MyRestApiRestApiIdB93C5C2D, {
       Value: { Ref: 'MyRestApi2D1F47A9' },
       Export: { Name: 'MyRestApiRestApiIdB93C5C2D' }
@@ -409,7 +411,9 @@ export = {
       { Ref: 'apiC8550315' },
       '.execute-api.',
       { Ref: 'AWS::Region' },
-      '.amazonaws.com/',
+      ".",
+      { Ref: "AWS::URLSuffix" },
+      "/",
       { Ref: 'apiDeploymentStageprod896C8101' },
       '/' ] ] });
     test.deepEqual(api.node.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
@@ -418,7 +422,9 @@ export = {
       { Ref: 'apiC8550315' },
       '.execute-api.',
       { Ref: 'AWS::Region' },
-      '.amazonaws.com/',
+      ".",
+      { Ref: "AWS::URLSuffix" },
+      "/",
       { Ref: 'apiDeploymentStageprod896C8101' },
       '/foo/bar' ] ] });
     test.done();

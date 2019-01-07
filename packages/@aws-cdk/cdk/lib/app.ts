@@ -58,7 +58,7 @@ export class App extends Root {
   public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
     const stack = this.getStack(stackName);
 
-    this.prepareConstructTree();
+    this.node.prepareTree();
 
     // first, validate this stack and stop if there are errors.
     const errors = stack.node.validateTree();
@@ -83,7 +83,7 @@ export class App extends Root {
       missing,
       template: stack.toCloudFormation(),
       metadata: this.collectMetadata(stack),
-      dependsOn: stack.dependencies().map(s => s.node.id),
+      dependsOn: noEmptyArray(stack.dependencies().map(s => s.node.id)),
     };
   }
 
@@ -228,4 +228,8 @@ function getJsiiAgentVersion() {
   }
 
   return jsiiAgent;
+}
+
+function noEmptyArray<T>(xs: T[]): T[] | undefined {
+  return xs.length > 0 ? xs : undefined;
 }

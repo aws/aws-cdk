@@ -7,7 +7,7 @@ export = {
     const stack = new cdk.Stack();
     const mp = new AwsManagedPolicy("service-role/SomePolicy");
 
-    test.deepEqual(stack.node.resolve(mp.policyArn), {
+    test.deepEqual(stack.node.resolve(mp.policyArn(stack)), {
       "Fn::Join": ['', [
         'arn:',
         { Ref: 'AWS::Partition' },

@@ -836,7 +836,9 @@
             {
               "Ref": "AWS::Region"
             },
-            ".amazonaws.com/",
+            ".",
+            { "Ref": "AWS::URLSuffix" },
+            "/",
             {
               "Ref": "booksapiDeploymentStageprod55D8E03E"
             },

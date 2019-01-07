@@ -33,7 +33,7 @@ export = {
               Name: "test.private.",
               VPCs: [{
                 VPCId: { Ref: 'VPCB9E5F0B4' },
-                VPCRegion: { Ref: 'AWS::Region' }
+                VPCRegion: 'bermuda-triangle'
               }]
             }
           }
@@ -55,11 +55,11 @@ export = {
               Name: "test.private.",
               VPCs: [{
                 VPCId: { Ref: 'VPC17DE2CF87' },
-                VPCRegion: { Ref: 'AWS::Region' }
+                VPCRegion: 'bermuda-triangle'
               },
               {
                 VPCId: { Ref: 'VPC2C1F0E711' },
-                VPCRegion: { Ref: 'AWS::Region' }
+                VPCRegion: 'bermuda-triangle'
               }]
             }
           }

@@ -11,7 +11,7 @@ export = nodeunit.testCase({
     'works'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
-      const stage = new StageDouble({ pipeline: new PipelineDouble({ role: pipelineRole }) });
+      const stage = new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) });
       const artifact = new cpapi.Artifact(stack as any, 'TestArtifact');
       const action = new cloudformation.PipelineCreateReplaceChangeSetAction(stack, 'Action', {
         stage,
@@ -45,7 +45,7 @@ export = nodeunit.testCase({
     'uses a single permission statement if the same ChangeSet name is used'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
-      const stage = new StageDouble({ pipeline: new PipelineDouble({ role: pipelineRole }) });
+      const stage = new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) });
       const artifact = new cpapi.Artifact(stack as any, 'TestArtifact');
       new cloudformation.PipelineCreateReplaceChangeSetAction(stack, 'ActionA', {
         stage,
@@ -101,7 +101,7 @@ export = nodeunit.testCase({
     'works'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
-      const stage = new StageDouble({ pipeline: new PipelineDouble({ role: pipelineRole }) });
+      const stage = new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) });
       new cloudformation.PipelineExecuteChangeSetAction(stack, 'Action', {
         stage,
         changeSetName: 'MyChangeSet',
@@ -124,7 +124,7 @@ export = nodeunit.testCase({
     'uses a single permission statement if the same ChangeSet name is used'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
-      const stage = new StageDouble({ pipeline: new PipelineDouble({ role: pipelineRole }) });
+      const stage = new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) });
       new cloudformation.PipelineExecuteChangeSetAction(stack, 'ActionA', {
         stage,
         changeSetName: 'MyChangeSet',
@@ -162,7 +162,7 @@ export = nodeunit.testCase({
     const stack = new cdk.Stack();
     const pipelineRole = new RoleDouble(stack, 'PipelineRole');
     const action = new cloudformation.PipelineCreateUpdateStackAction(stack, 'Action', {
-      stage: new StageDouble({ pipeline: new PipelineDouble({ role: pipelineRole }) }),
+      stage: new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) }),
       templatePath: new cpapi.Artifact(stack as any, 'TestArtifact').atPath('some/file'),
       stackName: 'MyStack',
         adminPermissions: false,
@@ -184,7 +184,7 @@ export = nodeunit.testCase({
     const stack = new cdk.Stack();
     const pipelineRole = new RoleDouble(stack, 'PipelineRole');
     const action = new cloudformation.PipelineDeleteStackAction(stack, 'Action', {
-      stage: new StageDouble({ pipeline: new PipelineDouble({ role: pipelineRole }) }),
+      stage: new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) }),
         adminPermissions: false,
       stackName: 'MyStack',
     });
@@ -279,16 +279,13 @@ function _stackArn(stackName: string, anchor: cdk.IConstruct): string {
   }, anchor);
 }
 
-class PipelineDouble implements cpapi.IPipeline {
+class PipelineDouble extends cdk.Construct implements cpapi.IPipeline {
   public readonly pipelineName: string;
   public readonly pipelineArn: string;
   public readonly role: iam.Role;
 
-  public get node(): cdk.ConstructNode {
-    throw new Error('this is not a real construct');
-  }
-
-  constructor({ pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
+  constructor(scope: cdk.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
+    super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
     this.pipelineArn = cdk.ArnUtils.fromComponents({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName }, this);
     this.role = role;
@@ -354,5 +351,5 @@ class RoleDouble extends iam.Role {
 }
 
 function resolve(x: any): any {
-  return new cdk.Root().node.resolve(x);
+  return new cdk.Stack().node.resolve(x);
 }

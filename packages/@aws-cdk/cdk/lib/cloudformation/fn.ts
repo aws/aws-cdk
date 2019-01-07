@@ -634,7 +634,7 @@ class FnJoin extends Token {
   public resolve(context: ResolveContext): any {
     if (unresolved(this.listOfValues)) {
       // This is a list token, don't try to do smart things with it.
-      return this.listOfValues;
+      return { 'Fn::Join': [ this.delimiter, this.listOfValues ] };
     }
     const resolved = this.resolveValues(context);
     if (resolved.length === 1) {

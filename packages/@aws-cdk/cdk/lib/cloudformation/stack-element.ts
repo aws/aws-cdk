@@ -1,5 +1,4 @@
 import { Construct, IConstruct, PATH_SEP } from "../core/construct";
-import { CfnReference } from "../core/tokens/cfn-tokens";
 import { RESOLVE_OPTIONS } from "../core/tokens/options";
 
 const LOGICAL_ID_MD = 'aws:cdk:logicalId';
@@ -122,13 +121,20 @@ export abstract class StackElement extends Construct implements IDependable {
   protected prepare() {
     const options = RESOLVE_OPTIONS.push({ preProcess: (token, _) => { this.node.recordReference(token); return token; } });
     try {
-      // Execute for side effect of calling 'preProcess'
+      // Execute for side effect of calling 'preProcess'.
+      // Note: it might be that the properties of the CFN object aren't valid. This will usually be preventatively
+      // caught in a construct's validate() and turned into a nicely descriptive error, but we're running prepare()
+      // before validate(). Swallow errors that occur because the CFN layer doesn't validate completely.
       this.node.resolve(this.toCloudFormation());
+    } catch (e) {
+      if (e.type !== 'CloudFormationSynthesisError') { throw e; }
     } finally {
       options.pop();
     }
   }
 }
+
+import { CfnReference } from "../core/tokens/cfn-tokens";
 
 /**
  * A generic, untyped reference to a Stack Element

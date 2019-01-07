@@ -78,7 +78,6 @@ export = {
            { name: '12345/us-east-1',
              account: '12345',
              region: 'us-east-1' },
-          dependsOn: [],
           template:
            { Resources:
               { s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
@@ -88,7 +87,6 @@ export = {
            { name: 'unknown-account/unknown-region',
              account: 'unknown-account',
              region: 'unknown-region' },
-          dependsOn: [],
           template:
            { Resources:
               { s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },

@@ -1,4 +1,3 @@
-import { Construct } from "../construct";
 import { ResolveContext, Token } from "./token";
 
 /**
@@ -42,11 +41,12 @@ export class CfnReference extends Token {
    */
   public consumeFromStack(consumingStack: Stack) {
     if (this.tokenStack && this.tokenStack !== consumingStack && !this.replacementTokens.has(consumingStack)) {
-        // We're trying to resolve a cross-stack reference
-        consumingStack.addDependency(this.tokenStack);
-        this.replacementTokens.set(consumingStack, this.tokenStack.exportValue(this, consumingStack));
+      // We're trying to resolve a cross-stack reference
+      consumingStack.addDependency(this.tokenStack);
+      this.replacementTokens.set(consumingStack, this.tokenStack.exportValue(this, consumingStack));
     }
   }
 }
 
 import { Stack } from "../../cloudformation/stack";
+import { Construct } from "../construct";

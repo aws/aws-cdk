@@ -258,18 +258,6 @@ export = {
     test.done();
   },
 
-  'addPrincipal prohibits mixing principal types'(test: Test) {
-    const stack = new Stack();
-
-    const s = new PolicyStatement().addAccountRootPrincipal(stack);
-    test.throws(() => { s.addServicePrincipal('rds.amazonaws.com'); },
-                /Attempted to add principal key Service/);
-    test.throws(() => { s.addFederatedPrincipal('federation', { ConditionOp: { ConditionKey: 'ConditionValue' } }); },
-                /Attempted to add principal key Federated/);
-
-    test.done();
-  },
-
   'addCanonicalUserPrincipal can be used to add cannonical user principals'(test: Test) {
     const stack = new Stack();
     const p = new PolicyDocument();

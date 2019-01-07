@@ -138,7 +138,7 @@ export class ValidationResult {
       let message = this.errorTree();
       // The first letter will be lowercase, so uppercase it for a nicer error message
       message = message.substr(0, 1).toUpperCase() + message.substr(1);
-      throw new TypeError(message);
+      throw new CloudFormationSynthesisError(message);
     }
   }
 
@@ -383,4 +383,8 @@ function isCloudFormationIntrinsic(x: any) {
   if (keys.length !== 1) { return false; }
 
   return keys[0] === 'Ref' || keys[0].substr(0, 4) === 'Fn::';
+}
+
+export class CloudFormationSynthesisError extends Error {
+  public readonly type = 'CloudFormationSynthesisError';
 }

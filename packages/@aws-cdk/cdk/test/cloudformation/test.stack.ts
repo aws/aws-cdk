@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, Aws, Condition, Construct, Include, Output, Parameter, Resource, Root, Stack, Token } from '../../lib';
 
@@ -185,7 +186,7 @@ export = {
     // THEN
     // Need to do this manually now, since we're in testing mode. In a normal CDK app,
     // this happens as part of app.run().
-    app.prepareConstructTree();
+    app.node.prepareTree();
 
     test.deepEqual(stack1.toCloudFormation(), {
       Outputs: {
@@ -218,7 +219,7 @@ export = {
     // WHEN - used in another stack
     new Parameter(stack2, 'SomeParameter', { type: 'String', default: new Token(() => account1) });
 
-    app.prepareConstructTree();
+    app.node.prepareTree();
 
     // THEN
     test.deepEqual(stack1.toCloudFormation(), {
@@ -252,7 +253,7 @@ export = {
     // WHEN - used in another stack
     new Parameter(stack2, 'SomeParameter', { type: 'String', default: `TheAccountIs${account1}` });
 
-    app.prepareConstructTree();
+    app.node.prepareTree();
 
     // THEN
     test.deepEqual(stack2.toCloudFormation(), {
@@ -280,7 +281,7 @@ export = {
     new Parameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
 
     test.throws(() => {
-      app.prepareConstructTree();
+      app.node.prepareTree();
     }, /Adding this dependency would create a cyclic reference/);
 
     test.done();
@@ -296,7 +297,7 @@ export = {
     // WHEN
     new Parameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    app.prepareConstructTree();
+    app.node.prepareTree();
 
     // THEN
     test.deepEqual(stack2.dependencies().map(s => s.node.id), ['Stack1']);
@@ -315,8 +316,32 @@ export = {
     new Parameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     test.throws(() => {
-      app.prepareConstructTree();
+      app.node.prepareTree();
     }, /Can only reference cross stacks in the same region and account/);
+
+    test.done();
+  },
+
+  'stack with region supplied via props returns literal value'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' }});
+
+    // THEN
+    test.equal(stack.node.resolve(stack.region), 'es-norst-1');
+
+    test.done();
+  },
+
+  'stack with region supplied via context returns symbolic value'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    app.node.setContext(cxapi.DEFAULT_REGION_CONTEXT_KEY, 'es-norst-1');
+    const stack = new Stack(app, 'Stack1');
+
+    // THEN
+    test.deepEqual(stack.node.resolve(stack.region), { Ref: 'AWS::Region' });
 
     test.done();
   },

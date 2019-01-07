@@ -121,7 +121,7 @@ export class Stack extends Construct {
    * @param name The name of the CloudFormation stack. Defaults to "Stack".
    * @param props Stack properties.
    */
-  public constructor(scope?: App, name?: string, props?: StackProps) {
+  public constructor(scope?: App, name?: string, private readonly props?: StackProps) {
     // For unit test convenience parents are optional, so bypass the type check when calling the parent.
     super(scope!, name!);
 
@@ -292,12 +292,13 @@ export class Stack extends Construct {
   /**
    * The account in which this stack is defined
    *
-   * Either returns the literal account for this stack, or a symbolic value
-   * that will evaluate to the correct account at deployment time.
+   * Either returns the literal account for this stack if it was specified
+   * literally upon Stack construction, or a symbolic value that will evaluate
+   * to the correct account at deployment time.
    */
   public get accountId(): string {
-    if (this.env.account) {
-      return this.env.account;
+    if (this.props && this.props.env && this.props.env.account) {
+      return this.props.env.account;
     }
     return new Aws(this).accountId;
   }
@@ -305,12 +306,13 @@ export class Stack extends Construct {
   /**
    * The region in which this stack is defined
    *
-   * Either returns the literal region for this stack, or a symbolic value
-   * that will evaluate to the correct region at deployment time.
+   * Either returns the literal region for this stack if it was specified
+   * literally upon Stack construction, or a symbolic value that will evaluate
+   * to the correct region at deployment time.
    */
   public get region(): string {
-    if (this.env.region) {
-      return this.env.region;
+    if (this.props && this.props.env && this.props.env.region) {
+      return this.props.env.region;
     }
     return new Aws(this).region;
   }

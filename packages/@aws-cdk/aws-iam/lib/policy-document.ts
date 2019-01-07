@@ -12,7 +12,7 @@ export class PolicyDocument extends cdk.Token {
     super();
   }
 
-  public resolve(): any {
+  public resolve(_context: cdk.ResolveContext): any {
     if (this.isEmpty) {
       return undefined;
     }
@@ -372,7 +372,7 @@ export class PolicyStatement extends cdk.Token {
   // Serialization
   //
 
-  public resolve(): any {
+  public resolve(_context: cdk.ResolveContext): any {
     return this.toJson();
   }
 

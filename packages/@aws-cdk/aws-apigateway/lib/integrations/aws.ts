@@ -71,13 +71,16 @@ export class AwsIntegration extends Integration {
     super({
       type,
       integrationHttpMethod: 'POST',
-      uri: new cdk.Token(() => cdk.ArnUtils.fromComponents({
-        service: 'apigateway',
-        account: backend,
-        resource: apiType,
-        sep: '/',
-        resourceName: apiValue,
-      }, this._anchor)),
+      uri: new cdk.Token(() => {
+        if (!this._anchor) { throw new Error('AwsIntegration must be used in API'); }
+        return cdk.ArnUtils.fromComponents({
+          service: 'apigateway',
+          account: backend,
+          resource: apiType,
+          sep: '/',
+          resourceName: apiValue,
+        }, this._anchor);
+      }),
       options: props.options,
     });
   }

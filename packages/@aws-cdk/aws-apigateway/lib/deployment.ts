@@ -107,6 +107,7 @@ class LatestDeploymentResource extends CfnDeployment {
   private originalLogicalId?: string;
   private lazyLogicalIdRequired: boolean;
   private lazyLogicalId?: string;
+  private logicalIdToken: cdk.Token;
   private hashComponents = new Array<any>();
 
   constructor(scope: cdk.Construct, id: string, props: CfnDeploymentProps) {
@@ -114,6 +115,8 @@ class LatestDeploymentResource extends CfnDeployment {
 
     // from this point, don't allow accessing logical ID before synthesis
     this.lazyLogicalIdRequired = true;
+
+    this.logicalIdToken = new cdk.Token(() => this.lazyLogicalId);
   }
 
   /**
@@ -124,11 +127,15 @@ class LatestDeploymentResource extends CfnDeployment {
       return this.originalLogicalId!;
     }
 
+    return this.logicalIdToken.toString();
+
+    /*
     if (!this.lazyLogicalId) {
       throw new Error('This resource has a lazy logical ID which is calculated just before synthesis. Use a cdk.Token to evaluate');
     }
 
     return this.lazyLogicalId;
+    */
   }
 
   /**
@@ -170,7 +177,7 @@ class LatestDeploymentResource extends CfnDeployment {
    * Hooks into synthesis to calculate a logical ID that hashes all the components
    * add via `addToLogicalId`.
    */
-  public validate() {
+  protected prepare() {
     // if hash components were added to the deployment, we use them to calculate
     // a logical ID for the deployment resource.
     if (this.hashComponents.length === 0) {
@@ -183,7 +190,5 @@ class LatestDeploymentResource extends CfnDeployment {
 
       this.lazyLogicalId = this.originalLogicalId + md5.digest("hex");
     }
-
-    return [];
   }
 }

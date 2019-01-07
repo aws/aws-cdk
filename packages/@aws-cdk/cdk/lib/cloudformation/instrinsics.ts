@@ -40,4 +40,11 @@ export function isIntrinsic(x: any) {
   return keys[0] === 'Ref' || keys[0].startsWith('Fn::');
 }
 
+/**
+ * Return whether this is an intrinsic that could potentially (or definitely) evaluate to a list
+ */
+export function canEvaluateToList(x: any) {
+  return isIntrinsic(x) && ['Ref', 'Fn::GetAtt', 'Fn::GetAZs', 'Fn::Split', 'Fn::FindInMap', 'Fn::ImportValue'].includes(Object.keys(x)[0]);
+}
+
 import { unresolved } from "../core/tokens/unresolved";
