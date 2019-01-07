@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { PrivateHostedZone, PublicHostedZone, TXTRecord } from '../lib';
+import { PrivateHostedZone, PublicHostedZone, TXTRecord, CnameRecord } from '../lib';
 
 const app = new cdk.App();
 
@@ -21,6 +21,12 @@ new TXTRecord(privateZone, 'TXT', {
   recordName: '_foo',
   recordValue: 'Bar!',
   ttl: 60
+});
+
+new CnameRecord(stack, 'CNAME', {
+  zone: privateZone,
+  recordName: 'www',
+  recordValue: 'server'
 });
 
 new cdk.Output(stack, 'PrivateZoneId', { value: privateZone.hostedZoneId });

@@ -3,7 +3,7 @@ import { IHostedZone } from '../hosted-zone-ref';
 import { CfnRecordSet } from '../route53.generated';
 import { determineFullyQualifiedDomainName } from './_util';
 
-export interface TXTRecordProps {
+export interface TxtRecordProps {
   zone: IHostedZone;
   recordName: string;
   recordValue: string;
@@ -14,7 +14,7 @@ export interface TXTRecordProps {
 /**
  * A DNS TXT record
  */
-export class TXTRecord extends Construct {
+export class TxtRecord extends Construct {
   constructor(scope: Construct, id: string, props: TXTRecordProps) {
     super(scope, id);
 
@@ -31,3 +31,16 @@ export class TXTRecord extends Construct {
     });
   }
 }
+
+// backwards compat.
+
+/**
+ * @deprecated use `TxtRecordProps`.
+ */
+// tslint:disable-next-line:no-empty-interface
+export interface TXTRecordProps extends TxtRecordProps { }
+
+/**
+ * @deprecated Use `TxtRecord`.
+ */
+export class TXTRecord extends TxtRecord { }

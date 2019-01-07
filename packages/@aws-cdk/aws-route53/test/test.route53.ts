@@ -110,6 +110,88 @@ export = {
     }));
 
     test.done();
+  },
+
+  'adds period to name if not provided'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new HostedZone(stack, 'MyHostedZone', {
+      zoneName: 'zonename'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::HostedZone', {
+      Name: 'zonename.'
+    }));
+    test.done();
+  },
+
+  'fails if zone name ends with a trailing dot'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => new HostedZone(stack, 'MyHostedZone', { zoneName: 'zonename.' }), /zone name must not end with a trailing dot/);
+    test.done();
+  },
+
+  'a hosted zone can be assiciated with a VPC either upon creation or using "addVpc"'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc1 = new ec2.VpcNetwork(stack, 'VPC1');
+    const vpc2 = new ec2.VpcNetwork(stack, 'VPC2');
+    const vpc3 = new ec2.VpcNetwork(stack, 'VPC3');
+
+    // WHEN
+    const zone = new HostedZone(stack, 'MyHostedZone', {
+      zoneName: 'zonename',
+      vpcs: [ vpc1, vpc2 ]
+    });
+    zone.addVpc(vpc3);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::HostedZone', {
+      VPCs: [
+        {
+          VPCId: {
+            Ref: "VPC17DE2CF87"
+          },
+          VPCRegion: {
+            Ref: "AWS::Region"
+          }
+        },
+        {
+          VPCId: {
+            Ref: "VPC2C1F0E711"
+          },
+          VPCRegion: {
+            Ref: "AWS::Region"
+          }
+        },
+        {
+          VPCId: {
+            Ref: "VPC3CB5FCDA8"
+          },
+          VPCRegion: {
+            Ref: "AWS::Region"
+          }
+        }
+      ]
+    }));
+    test.done();
+  },
+
+  'public zone cannot be associated with a vpc (runtime error)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const zone = new PublicHostedZone(stack, 'MyHostedZone', { zoneName: 'zonename' });
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+
+    // THEN
+    test.throws(() => zone.addVpc(vpc), /Cannot associate public hosted zones with a VPC/);
+    test.done();
   }
 };
 
