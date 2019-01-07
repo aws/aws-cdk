@@ -222,7 +222,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
 
     // use delayed evaluation
     const machineImage = props.machineImage.getImage(this);
-    const userDataToken = new cdk.Token(() => cdk.Fn.base64((machineImage.os.createUserData(this.userDataLines))));
+    const userDataToken = new cdk.Token(() => cdk.Fn.base64((machineImage.os.createUserData(this.userDataLines)))).toString();
     const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {

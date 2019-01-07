@@ -565,8 +565,14 @@ export default class CodeGenerator {
       alternatives.push(this.renderTypeUnion(resourceContext, types));
     }
 
-    // Always
-    alternatives.push(genspec.TOKEN_NAME.fqn);
+    // Only if this property is not of a "tokenizable type" (string, string[],
+    // number in the future) we add a type union for `cdk.Token`. We rather
+    // everything to be tokenizable because there are languages that do not
+    // support union types (i.e. Java, .NET), so we lose type safety if we have
+    // a union.
+    if (!tokenizableType(alternatives)) {
+      alternatives.push(genspec.TOKEN_NAME.fqn);
+    }
 
     return alternatives.join(' | ');
   }
@@ -617,4 +623,23 @@ function mapperNames(types: genspec.CodeName[]): string {
  */
 function quoteCode(code: string): string {
   return '``' + code + '``';
+}
+
+function tokenizableType(alternatives: string[]) {
+  if (alternatives.length > 1) {
+    return false;
+  }
+
+  const type = alternatives[0];
+  if (type === 'string') {
+    return true;
+  }
+
+  if (type === 'string[]') {
+    return true;
+  }
+
+  // TODO: number
+
+  return false;
 }
