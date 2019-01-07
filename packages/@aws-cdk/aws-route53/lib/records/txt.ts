@@ -31,7 +31,7 @@ export interface TxtRecordProps {
  * A DNS TXT record
  */
 export class TxtRecord extends Construct {
-  constructor(scope: Construct, id: string, props: TXTRecordProps) {
+  constructor(scope: Construct, id: string, props: TxtRecordProps) {
     super(scope, id);
 
     // JSON.stringify conveniently wraps strings in " and escapes ".
@@ -47,16 +47,3 @@ export class TxtRecord extends Construct {
     });
   }
 }
-
-// backwards compat.
-
-/**
- * @deprecated use `TxtRecordProps`.
- */
-// tslint:disable-next-line:no-empty-interface
-export interface TXTRecordProps extends TxtRecordProps { }
-
-/**
- * @deprecated Use `TxtRecord`.
- */
-export class TXTRecord extends TxtRecord { }

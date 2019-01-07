@@ -2,7 +2,7 @@ import { beASupersetOfTemplate, exactlyMatchTemplate, expect, haveResource } fro
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { HostedZone, PrivateHostedZone, PublicHostedZone, TXTRecord } from '../lib';
+import { HostedZone, PrivateHostedZone, PublicHostedZone, TxtRecord } from '../lib';
 
 export = {
   'default properties': {
@@ -79,7 +79,7 @@ export = {
 
     const zoneRef = zone.export();
     const importedZone = HostedZone.import(stack2, 'Imported', zoneRef);
-    new TXTRecord(importedZone as any, 'Record', {
+    new TxtRecord(importedZone as any, 'Record', {
       zone: importedZone,
       recordName: 'lookHere',
       recordValue: 'SeeThere'
