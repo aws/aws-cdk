@@ -14,7 +14,7 @@ export interface SourceActionProps extends CommonActionProps, CommonActionConstr
   owner?: string;
 
   /**
-   * The source action verison.
+   * The source Action version.
    *
    * @default "1"
    */
