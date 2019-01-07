@@ -60,6 +60,7 @@ async function parseCommandLineArguments() {
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
     .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
+      .option('context-lines', { type: 'number', desc: 'number of context lines to include in arbitrary JSON diff rendering', default: 3 })
       .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' })
       .option('strict', { type: 'boolean', desc: 'do not filter out AWS::CDK::Metadata resources', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
@@ -142,7 +143,7 @@ async function initCommandLine() {
     return returnValue;
   }
 
-  async function main(command: string, args: any): Promise<number | string | {} | void> {
+  async function main(command: string, args: any): Promise<number | string | {} | void> {
     const toolkitStackName: string = configuration.combined.get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
 
     if (toolkitStackName !== DEFAULT_TOOLKIT_STACK_NAME) {
@@ -158,7 +159,7 @@ async function initCommandLine() {
         return await cliList({ long: args.long });
 
       case 'diff':
-        return await diffStack(await findStack(args.STACK), args.template, args.strict);
+        return await diffStack(await findStack(args.STACK), args.template, args.strict, args.contextLines);
 
       case 'bootstrap':
         return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
@@ -383,10 +384,10 @@ async function initCommandLine() {
     }
   }
 
-  async function diffStack(stackName: string, templatePath: string | undefined, strict: boolean): Promise<number> {
+  async function diffStack(stackName: string, templatePath: string | undefined, strict: boolean, context: number): Promise<number> {
     const stack = await appStacks.synthesizeStack(stackName);
     const currentTemplate = await readCurrentTemplate(stack, templatePath);
-    if (printStackDiff(currentTemplate, stack, strict) === 0) {
+    if (printStackDiff(currentTemplate, stack, strict, context) === 0) {
       return 0;
     } else {
       return 1;
