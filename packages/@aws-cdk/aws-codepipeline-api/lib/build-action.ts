@@ -22,11 +22,18 @@ export interface BuildActionProps extends CommonActionProps, CommonActionConstru
   artifactBounds: ActionArtifactBounds;
 
   /**
-   * The source action owner (could be 'AWS', 'ThirdParty' or 'Custom').
+   * The build Action owner (could be 'AWS', 'ThirdParty' or 'Custom').
    *
    * @default 'AWS'
    */
   owner?: string;
+
+  /**
+   * The build Action version.
+   *
+   * @default '1'
+   */
+  version?: string;
 
   /**
    * The name of the build's output artifact.

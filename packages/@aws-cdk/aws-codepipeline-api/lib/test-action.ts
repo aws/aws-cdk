@@ -36,11 +36,18 @@ export interface TestActionProps extends CommonActionProps, CommonActionConstruc
   artifactBounds: ActionArtifactBounds;
 
   /**
-   * The source action owner (could be 'AWS', 'ThirdParty' or 'Custom').
+   * The test Action owner (could be 'AWS', 'ThirdParty' or 'Custom').
    *
    * @default 'AWS'
    */
   owner?: string;
+
+  /**
+   * The test Action version.
+   *
+   * @default '1'
+   */
+  version?: string;
 
   /**
    * The action's configuration. These are key-value pairs that specify input values for an action.
