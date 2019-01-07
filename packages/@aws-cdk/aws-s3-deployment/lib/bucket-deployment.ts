@@ -16,7 +16,7 @@ export interface BucketDeploymentProps {
   /**
    * The S3 bucket to sync the contents of the zip file to.
    */
-  destinationBucket: s3.BucketRef;
+  destinationBucket: s3.IBucket;
 
   /**
    * Key prefix in the destination bucket.
@@ -40,8 +40,8 @@ export interface BucketDeploymentProps {
 }
 
 export class BucketDeployment extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string, props: BucketDeploymentProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: BucketDeploymentProps) {
+    super(scope, id);
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8756C',

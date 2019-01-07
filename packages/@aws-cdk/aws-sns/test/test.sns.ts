@@ -677,7 +677,7 @@ export = {
 
     // WHEN
     const ref = topic.export();
-    const imported = sns.TopicRef.import(stack2, 'Imported', ref);
+    const imported = sns.Topic.import(stack2, 'Imported', ref);
     imported.subscribeQueue(queue);
 
     // THEN
@@ -719,7 +719,7 @@ export = {
     test.deepEqual(dest1.type, s3n.BucketNotificationDestinationType.Topic);
 
     const dep: cdk.Construct = dest1.dependencies![0] as any;
-    test.deepEqual((dep.children[0] as any).logicalId, 'MyTopicPolicy12A5EC17', 'verify topic policy is added as dependency');
+    test.deepEqual((dep.node.children[0] as any).logicalId, 'MyTopicPolicy12A5EC17', 'verify topic policy is added as dependency');
 
     // calling again on the same bucket yields is idempotent
     const dest2 = topic.asBucketNotificationDestination(bucketArn, bucketId);

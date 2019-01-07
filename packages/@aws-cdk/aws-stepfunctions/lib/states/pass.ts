@@ -64,8 +64,8 @@ export class Pass extends State implements INextable {
 
     private readonly result?: any;
 
-    constructor(parent: cdk.Construct, id: string, props: PassProps = {}) {
-        super(parent, id, props);
+    constructor(scope: cdk.Construct, id: string, props: PassProps = {}) {
+        super(scope, id, props);
 
         this.result = props.result;
         this.endStates = [this];

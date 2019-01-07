@@ -23,7 +23,7 @@ export interface BaseTargetGroupProps {
   /**
    * The virtual private cloud (VPC).
    */
-  vpc: ec2.VpcNetworkRef;
+  vpc: ec2.IVpcNetwork;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
@@ -131,7 +131,7 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
-export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGroup, codedeploy.ILoadBalancer {
+export abstract class TargetGroupBase extends cdk.Construct implements ITargetGroup, codedeploy.ILoadBalancer {
   /**
    * The ARN of the target group
    */
@@ -202,8 +202,8 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
    */
   private readonly resource: CfnTargetGroup;
 
-  constructor(parent: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
+    super(scope, id);
 
     if (baseProps.deregistrationDelaySec !== undefined) {
       this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelaySec.toString());
@@ -261,7 +261,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   /**
    * Export this target group
    */
-  public export(): TargetGroupRefProps {
+  public export(): TargetGroupImportProps {
     return {
       targetGroupArn: new cdk.Output(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue().toString(),
       defaultPort: new cdk.Output(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
@@ -307,7 +307,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
 /**
  * Properties to reference an existing target group
  */
-export interface TargetGroupRefProps {
+export interface TargetGroupImportProps {
   /**
    * ARN of the target group
    */
@@ -327,7 +327,7 @@ export interface TargetGroupRefProps {
 /**
  * A target group
  */
-export interface ITargetGroup {
+export interface ITargetGroup extends cdk.IConstruct {
   /**
    * ARN of the target group
    */
@@ -342,6 +342,12 @@ export interface ITargetGroup {
    * Return an object to depend on the listeners added to this target group
    */
   loadBalancerDependency(): cdk.IDependable;
+
+  /**
+   * Export this target group
+   */
+  export(): TargetGroupImportProps;
+
 }
 
 /**
@@ -373,6 +379,6 @@ export interface LoadBalancerTargetProps {
  *     app/my-load-balancer/50dc6c495c0c9188
  */
 export function loadBalancerNameFromListenerArn(listenerArn: string) {
-    const arnParts = new cdk.FnSplit('/', listenerArn);
-    return `${new cdk.FnSelect(1, arnParts)}/${new cdk.FnSelect(2, arnParts)}/${new cdk.FnSelect(3, arnParts)}`;
+    const arnParts = cdk.Fn.split('/', listenerArn);
+    return `${cdk.Fn.select(1, arnParts)}/${cdk.Fn.select(2, arnParts)}/${cdk.Fn.select(3, arnParts)}`;
 }

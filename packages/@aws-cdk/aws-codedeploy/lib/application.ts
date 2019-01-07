@@ -2,20 +2,6 @@ import cdk = require('@aws-cdk/cdk');
 import { CfnApplication } from './codedeploy.generated';
 
 /**
- * Properties of a reference to a CodeDeploy EC2/on-premise Application.
- *
- * @see ServerApplicationRef#import
- * @see ServerApplicationRef#export
- */
-export interface ServerApplicationRefProps {
-  /**
-   * The physical, human-readable name of the CodeDeploy EC2/on-premise Application we're referencing.
-   * The Application must be in the same account and region as the root Stack.
-   */
-  applicationName: string;
-}
-
-/**
  * Represents a reference to a CodeDeploy Application deploying to EC2/on-premise instances.
  *
  * If you're managing the Application alongside the rest of your CDK resources,
@@ -25,40 +11,41 @@ export interface ServerApplicationRefProps {
  * or one defined in a different CDK Stack,
  * use the {@link #import} method.
  */
-export abstract class ServerApplicationRef extends cdk.Construct {
-  /**
-   * Import an Application defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
-   *
-   * @param parent the parent Construct for this new Construct
-   * @param id the logical ID of this new Construct
-   * @param props the properties of the referenced Application
-   * @returns a Construct representing a reference to an existing Application
-   */
-  public static import(parent: cdk.Construct, id: string, props: ServerApplicationRefProps): ServerApplicationRef {
-    return new ImportedServerApplicationRef(parent, id, props);
-  }
+export interface IServerApplication extends cdk.IConstruct {
+  readonly applicationArn: string;
 
-  public abstract readonly applicationArn: string;
+  readonly applicationName: string;
 
-  public abstract readonly applicationName: string;
-
-  public export(): ServerApplicationRefProps {
-    return {
-      applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
-    };
-  }
+  export(): ServerApplicationImportProps;
 }
 
-class ImportedServerApplicationRef extends ServerApplicationRef {
+/**
+ * Properties of a reference to a CodeDeploy EC2/on-premise Application.
+ *
+ * @see ServerApplication#import
+ * @see ServerApplication#export
+ */
+export interface ServerApplicationImportProps {
+  /**
+   * The physical, human-readable name of the CodeDeploy EC2/on-premise Application we're referencing.
+   * The Application must be in the same account and region as the root Stack.
+   */
+  applicationName: string;
+}
+
+class ImportedServerApplication extends cdk.Construct implements IServerApplication {
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ServerApplicationRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ServerApplicationImportProps) {
+    super(scope, id);
 
     this.applicationName = props.applicationName;
     this.applicationArn = applicationName2Arn(this.applicationName);
+  }
+
+  public export() {
+    return this.props;
   }
 }
 
@@ -77,12 +64,25 @@ export interface ServerApplicationProps {
 /**
  * A CodeDeploy Application that deploys to EC2/on-premise instances.
  */
-export class ServerApplication extends ServerApplicationRef {
+export class ServerApplication extends cdk.Construct implements IServerApplication {
+  /**
+   * Import an Application defined either outside the CDK,
+   * or in a different CDK Stack and exported using the {@link #export} method.
+   *
+   * @param parent the parent Construct for this new Construct
+   * @param id the logical ID of this new Construct
+   * @param props the properties of the referenced Application
+   * @returns a Construct representing a reference to an existing Application
+   */
+  public static import(scope: cdk.Construct, id: string, props: ServerApplicationImportProps): IServerApplication {
+    return new ImportedServerApplication(scope, id, props);
+  }
+
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(parent: cdk.Construct, id: string, props?: ServerApplicationProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props?: ServerApplicationProps) {
+    super(scope, id);
 
     const resource = new CfnApplication(this, 'Resource', {
       applicationName: props && props.applicationName,
@@ -91,6 +91,12 @@ export class ServerApplication extends ServerApplicationRef {
 
     this.applicationName = resource.ref;
     this.applicationArn = applicationName2Arn(this.applicationName);
+  }
+
+  public export(): ServerApplicationImportProps {
+    return {
+      applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
+    };
   }
 }
 

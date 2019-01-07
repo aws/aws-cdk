@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { LogGroupRef } from './log-group';
+import { ILogGroup } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
 import { IFilterPattern } from './pattern';
 
@@ -18,7 +18,7 @@ export interface ILogSubscriptionDestination {
    * The destination may reconfigure its own permissions in response to this
    * function call.
    */
-  logSubscriptionDestination(sourceLogGroup: LogGroupRef): LogSubscriptionDestination;
+  logSubscriptionDestination(sourceLogGroup: ILogGroup): LogSubscriptionDestination;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface SubscriptionFilterProps {
   /**
    * The log group to create the subscription on.
    */
-  logGroup: LogGroupRef;
+  logGroup: ILogGroup;
 
   /**
    * The destination to send the filtered events to.
@@ -64,8 +64,8 @@ export interface SubscriptionFilterProps {
  * A new Subscription on a CloudWatch log group.
  */
 export class SubscriptionFilter extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string, props: SubscriptionFilterProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: SubscriptionFilterProps) {
+    super(scope, id);
 
     const destProps = props.destination.logSubscriptionDestination(props.logGroup);
 

@@ -74,6 +74,27 @@ new codepipeline.JenkinsBuildAction(this, 'Jenkins_Build', {
 });
 ```
 
+#### Manual approval Action
+
+This package contains an Action that stops the Pipeline until someone manually clicks the approve button:
+
+```typescript
+const manualApprovalAction = new codepipeline.ManualApprovalAction(this, 'Approve', {
+  stage: approveStage,
+  notificationTopic: new sns.Topic(this, 'Topic'), // optional
+  notifyEmails: [
+    'some_email@example.com',
+  ], // optional
+  additionalInformation: 'additional info', // optional
+});
+// `manualApprovalAction.notificationTopic` can be used to access the Topic
+```
+
+If the `notificationTopic` has not been provided,
+but `notifyEmails` were,
+a new SNS Topic will be created
+(and accessible through the `notificationTopic` property of the Action).
+
 ### Cross-region CodePipelines
 
 You can also use the cross-region feature to deploy resources

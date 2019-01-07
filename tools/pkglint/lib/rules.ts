@@ -611,10 +611,6 @@ export class AllVersionsTheSame extends ValidationRule {
   private readonly ourPackages: {[pkg: string]: string} = {};
   private readonly usedDeps: {[pkg: string]: VersionCount[]} = {};
 
-  constructor() {
-    super();
-  }
-
   public prepare(pkg: PackageJson): void {
     this.ourPackages[pkg.json.name] = "^" + pkg.json.version;
     this.recordDeps(pkg.json.dependencies);
@@ -673,6 +669,18 @@ export class AllVersionsTheSame extends ValidationRule {
     const versions = this.usedDeps[dep];
     versions.sort((a, b) => b.count - a.count);
     expectJSON(this.name, pkg, depField + '.' + dep, versions[0].version);
+  }
+}
+
+export class AwsLint extends ValidationRule {
+  public name = 'awslint';
+
+  public validate(pkg: PackageJson) {
+    if (!isJSII(pkg)) {
+      return;
+    }
+
+    expectJSON(this.name, pkg, 'scripts.awslint', 'cdk-awslint');
   }
 }
 

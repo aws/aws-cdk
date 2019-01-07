@@ -4,8 +4,8 @@ import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 
 class AppWithVpc extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const vpc = new ec2.VpcNetwork(this, 'MyVpc');
 
@@ -30,8 +30,8 @@ interface MyAppProps extends cdk.StackProps {
 }
 
 class MyApp extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props: MyAppProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props: MyAppProps) {
+    super(scope, id, props);
 
     const vpc = ec2.VpcNetwork.import(this, 'VPC', props.infra.vpc);
 
@@ -52,10 +52,10 @@ class MyApp extends cdk.Stack {
 }
 
 class CommonInfrastructure extends cdk.Stack {
-  public vpc: ec2.VpcNetworkRefProps;
+  public vpc: ec2.VpcNetworkImportProps;
 
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const vpc = new ec2.VpcNetwork(this, 'VPC');
     this.vpc = vpc.export();

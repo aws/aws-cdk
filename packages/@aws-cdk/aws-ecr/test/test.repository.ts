@@ -179,9 +179,12 @@ export = {
       repositoryArn: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo'
     });
 
+    const exportImport = repo2.export();
+
     // THEN
     test.deepEqual(cdk.resolve(repo2.repositoryArn), 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
     test.deepEqual(cdk.resolve(repo2.repositoryName), 'foo/bar/foo/fooo');
+    test.deepEqual(cdk.resolve(exportImport), { repositoryArn: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo' });
 
     test.done();
   },
@@ -192,7 +195,7 @@ export = {
 
     // WHEN/THEN
     test.throws(() => ecr.Repository.import(stack, 'Repo', {
-      repositoryArn: new cdk.FnGetAtt('Boom', 'Boom').toString()
+      repositoryArn: cdk.Fn.getAtt('Boom', 'Boom').toString()
     }), /repositoryArn is a late-bound value, and therefore repositoryName is required/);
 
     test.done();
@@ -204,8 +207,8 @@ export = {
 
     // WHEN
     const repo = ecr.Repository.import(stack, 'Repo', {
-      repositoryArn: new cdk.FnGetAtt('Boom', 'Arn').toString(),
-      repositoryName: new cdk.FnGetAtt('Boom', 'Name').toString()
+      repositoryArn: cdk.Fn.getAtt('Boom', 'Arn').toString(),
+      repositoryName: cdk.Fn.getAtt('Boom', 'Name').toString()
     });
 
     // THEN
@@ -242,7 +245,7 @@ export = {
   'arnForLocalRepository can be used to render an ARN for a local repository'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const repoName = new cdk.FnGetAtt('Boom', 'Name').toString();
+    const repoName = cdk.Fn.getAtt('Boom', 'Name').toString();
 
     // WHEN
     const repo = ecr.Repository.import(stack, 'Repo', {

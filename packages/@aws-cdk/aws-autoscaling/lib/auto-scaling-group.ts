@@ -60,7 +60,7 @@ export interface AutoScalingGroupProps {
   /**
    * VPC to launch these instances in.
    */
-  vpc: ec2.VpcNetworkRef;
+  vpc: ec2.IVpcNetwork;
 
   /**
    * Where to place instances within the VPC
@@ -71,7 +71,7 @@ export interface AutoScalingGroupProps {
    * SNS topic to send notifications about fleet changes
    * @default No fleet change notifications will be sent.
    */
-  notificationsTopic?: sns.TopicRef;
+  notificationsTopic?: sns.ITopic;
 
   /**
    * Whether the instances can initiate connections to anywhere by default
@@ -190,14 +190,14 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
 
   private readonly userDataLines = new Array<string>();
   private readonly autoScalingGroup: CfnAutoScalingGroup;
-  private readonly securityGroup: ec2.SecurityGroupRef;
-  private readonly securityGroups: ec2.SecurityGroupRef[] = [];
+  private readonly securityGroup: ec2.ISecurityGroup;
+  private readonly securityGroups: ec2.ISecurityGroup[] = [];
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
   private albTargetGroup?: elbv2.ApplicationTargetGroup;
 
-  constructor(parent: cdk.Construct, name: string, props: AutoScalingGroupProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: AutoScalingGroupProps) {
+    super(scope, id);
 
     if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
       throw new RangeError(`cooldownSeconds cannot be negative, got: ${props.cooldownSeconds}`);
@@ -210,7 +210,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
     this.tags = new TagManager(this, {initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.path, { overwrite: false });
+    this.tags.setTag(NAME_TAG, this.node.path, { overwrite: false });
 
     this.role = new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
@@ -222,7 +222,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
 
     // use delayed evaluation
     const machineImage = props.machineImage.getImage(this);
-    const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
+    const userDataToken = new cdk.Token(() => cdk.Fn.base64((machineImage.os.createUserData(this.userDataLines))));
     const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
@@ -285,9 +285,9 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
    * Add the security group to all instances via the launch configuration
    * security groups array.
    *
-   * @param securityGroup: The SecurityGroupRef to add
+   * @param securityGroup: The security group to add
    */
-  public addSecurityGroup(securityGroup: ec2.SecurityGroupRef): void {
+  public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
     this.securityGroups.push(securityGroup);
   }
 

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { LogGroupRef } from './log-group';
+import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestination } from './subscription-filter';
 
@@ -56,8 +56,8 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
    */
   private readonly resource: CfnDestination;
 
-  constructor(parent: cdk.Construct, id: string, props: CrossAccountDestinationProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: CrossAccountDestinationProps) {
+    super(scope, id);
 
     // In the underlying model, the name is not optional, but we make it so anyway.
     const destinationName = props.destinationName || new cdk.Token(() => this.generateUniqueName());
@@ -78,7 +78,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
     this.policyDocument.addStatement(statement);
   }
 
-  public logSubscriptionDestination(_sourceLogGroup: LogGroupRef): LogSubscriptionDestination {
+  public logSubscriptionDestination(_sourceLogGroup: ILogGroup): LogSubscriptionDestination {
     return { arn: this.destinationArn };
   }
 

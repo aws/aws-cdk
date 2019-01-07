@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
-import { SubnetType, VpcSubnetRef } from "./vpc-ref";
+import { VpcSubnet } from './vpc';
+import { IVpcSubnet, SubnetType } from "./vpc-ref";
 
 /**
  * Turn an arbitrary string into one that can be used as a CloudFormation identifier by stripping special characters
@@ -24,8 +25,8 @@ export const DEFAULT_SUBNET_NAME = {
  *
  * All subnet names look like NAME <> "Subnet" <> INDEX
  */
-export function subnetName(subnet: VpcSubnetRef) {
-  return subnet.id.replace(/Subnet\d+$/, '');
+export function subnetName(subnet: IVpcSubnet) {
+  return subnet.node.id.replace(/Subnet\d+$/, '');
 }
 
 /**
@@ -45,9 +46,9 @@ export class ExportSubnetGroup {
   private readonly groups: number;
 
   constructor(
-      parent: cdk.Construct,
+      scope: cdk.Construct,
       exportName: string,
-      private readonly subnets: VpcSubnetRef[],
+      private readonly subnets: IVpcSubnet[],
       private readonly type: SubnetType,
       private readonly azs: number) {
 
@@ -58,13 +59,13 @@ export class ExportSubnetGroup {
       throw new Error(`Number of subnets (${subnets.length}) must be a multiple of number of availability zones (${azs})`);
     }
 
-    this.ids = this.exportIds(parent, exportName);
+    this.ids = this.exportIds(scope, exportName);
     this.names = this.exportNames();
   }
 
-  private exportIds(parent: cdk.Construct, name: string): string[] | undefined {
+  private exportIds(scope: cdk.Construct, name: string): string[] | undefined {
     if (this.subnets.length === 0) { return undefined; }
-    return new cdk.StringListOutput(parent, name, { values: this.subnets.map(s => s.subnetId) }).makeImportValues().map(x => x.toString());
+    return new cdk.StringListOutput(scope, name, { values: this.subnets.map(s => s.subnetId) }).makeImportValues().map(x => x.toString());
   }
 
   /**
@@ -116,10 +117,10 @@ export class ImportSubnetGroup {
     this.names = this.normalizeNames(names, DEFAULT_SUBNET_NAME[type], nameField);
   }
 
-  public import(parent: cdk.Construct): VpcSubnetRef[] {
+  public import(scope: cdk.Construct): IVpcSubnet[] {
     return range(this.subnetIds.length).map(i => {
       const k = Math.floor(i / this.availabilityZones.length);
-      return VpcSubnetRef.import(parent, subnetId(this.names[k], i), {
+      return VpcSubnet.import(scope, subnetId(this.names[k], i), {
         availabilityZone: this.pickAZ(i),
         subnetId: this.subnetIds[i]
       });

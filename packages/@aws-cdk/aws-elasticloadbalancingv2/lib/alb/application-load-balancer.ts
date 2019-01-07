@@ -16,7 +16,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default A security group is created
    */
-  securityGroup?: ec2.SecurityGroupRef;
+  securityGroup?: ec2.ISecurityGroup;
 
   /**
    * The type of IP addresses to use
@@ -49,15 +49,15 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Import an existing Application Load Balancer
    */
-  public static import(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerRefProps): IApplicationLoadBalancer {
-    return new ImportedApplicationLoadBalancer(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: ApplicationLoadBalancerImportProps): IApplicationLoadBalancer {
+    return new ImportedApplicationLoadBalancer(scope, id, props);
   }
 
   public readonly connections: ec2.Connections;
-  private readonly securityGroup: ec2.SecurityGroupRef;
+  private readonly securityGroup: ec2.ISecurityGroup;
 
-  constructor(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, id: string, props: ApplicationLoadBalancerProps) {
+    super(scope, id, props, {
       type: "application",
       securityGroups: new cdk.Token(() => [this.securityGroup.securityGroupId]),
       ipAddressType: props.ipAddressType,
@@ -65,7 +65,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
-      description: `Automatically created Security Group for ELB ${this.uniqueId}`,
+      description: `Automatically created Security Group for ELB ${this.node.uniqueId}`,
       allowAllOutbound: false
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
@@ -77,7 +77,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Enable access logging for this load balancer
    */
-  public logAccessLogs(bucket: s3.BucketRef, prefix?: string) {
+  public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
     this.setAttribute('access_logs.s3.enabled', 'true');
     this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
     this.setAttribute('access_logs.s3.prefix', prefix);
@@ -110,7 +110,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   /**
    * Export this load balancer
    */
-  public export(): ApplicationLoadBalancerRefProps {
+  public export(): ApplicationLoadBalancerImportProps {
     return {
       loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString(),
       securityGroupId: this.securityGroup.export().securityGroupId,
@@ -476,7 +476,7 @@ export enum HttpCodeTarget {
 /**
  * An application load balancer
  */
-export interface IApplicationLoadBalancer extends ec2.IConnectable {
+export interface IApplicationLoadBalancer extends cdk.IConstruct, ec2.IConnectable {
   /**
    * The ARN of this load balancer
    */
@@ -485,18 +485,23 @@ export interface IApplicationLoadBalancer extends ec2.IConnectable {
   /**
    * The VPC this load balancer has been created in (if available)
    */
-  readonly vpc?: ec2.VpcNetworkRef;
+  readonly vpc?: ec2.IVpcNetwork;
 
   /**
    * Add a new listener to this load balancer
    */
   addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener;
+
+  /**
+   * Export this load balancer
+   */
+  export(): ApplicationLoadBalancerImportProps;
 }
 
 /**
  * Properties to reference an existing load balancer
  */
-export interface ApplicationLoadBalancerRefProps {
+export interface ApplicationLoadBalancerImportProps {
   /**
    * ARN of the load balancer
    */
@@ -534,7 +539,7 @@ const ELBV2_ACCOUNTS: {[region: string]: string } = {
 /**
  * An ApplicationLoadBalancer that has been defined elsewhere
  */
-class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicationLoadBalancer, ec2.IConnectable {
+class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicationLoadBalancer {
   /**
    * Manage connections for this load balancer
    */
@@ -550,15 +555,19 @@ class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicat
    *
    * Always undefined.
    */
-  public readonly vpc?: ec2.VpcNetworkRef;
+  public readonly vpc?: ec2.IVpcNetwork;
 
-  constructor(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ApplicationLoadBalancerImportProps) {
+    super(scope, id);
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroupRef.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })]
+      securityGroups: [ec2.SecurityGroup.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })]
     });
+  }
+
+  public export() {
+    return this.props;
   }
 
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {

@@ -234,7 +234,7 @@ export = {
   },
 
   'import/export': {
-    'lambda.export() can be used to add Outputs to the stack and returns a LambdaRef object'(test: Test) {
+    'lambda.export() can be used to add Outputs to the stack and returns an IFunction object'(test: Test) {
       // GIVEN
       const stack1 = new cdk.Stack();
       const stack2 = new cdk.Stack();
@@ -242,7 +242,7 @@ export = {
 
       // WHEN
       const props = fn.export();
-      const imported = lambda.FunctionRef.import(stack2, 'Imported', props);
+      const imported = lambda.Function.import(stack2, 'Imported', props);
 
       // Can call addPermission() but it won't do anything
       imported.addPermission('Hello', {
@@ -1076,7 +1076,7 @@ export = {
     let bindTarget;
 
     class EventSourceMock implements lambda.IEventSource {
-      public bind(target: lambda.FunctionRef) {
+      public bind(target: lambda.IFunction) {
         bindTarget = target;
       }
     }
@@ -1124,8 +1124,8 @@ export = {
   }
 };
 
-function newTestLambda(parent: cdk.Construct) {
-  return new lambda.Function(parent, 'MyLambda', {
+function newTestLambda(scope: cdk.Construct) {
+  return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
     runtime: lambda.Runtime.Python27

@@ -1,13 +1,13 @@
 import cdk = require('@aws-cdk/cdk');
 import crypto = require('crypto');
 import { CfnDeployment, CfnDeploymentProps } from './apigateway.generated';
-import { RestApiRef } from './restapi-ref';
+import { IRestApi } from './restapi';
 
 export interface DeploymentProps  {
   /**
    * The Rest API to deploy.
    */
-  api: RestApiRef;
+  api: IRestApi;
 
   /**
    * A description of the purpose of the API Gateway deployment.
@@ -56,7 +56,7 @@ export interface DeploymentProps  {
  */
 export class Deployment extends cdk.Construct implements cdk.IDependable {
   public readonly deploymentId: string;
-  public readonly api: RestApiRef;
+  public readonly api: IRestApi;
 
   /**
    * Allows taking a dependency on this construct.
@@ -65,8 +65,8 @@ export class Deployment extends cdk.Construct implements cdk.IDependable {
 
   private readonly resource: LatestDeploymentResource;
 
-  constructor(parent: cdk.Construct, id: string, props: DeploymentProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: DeploymentProps) {
+    super(scope, id);
 
     this.resource = new LatestDeploymentResource(this, 'Resource', {
       description: props.description,
@@ -109,8 +109,8 @@ class LatestDeploymentResource extends CfnDeployment {
   private lazyLogicalId?: string;
   private hashComponents = new Array<any>();
 
-  constructor(parent: cdk.Construct, id: string, props: CfnDeploymentProps) {
-    super(parent, id, props);
+  constructor(scope: cdk.Construct, id: string, props: CfnDeploymentProps) {
+    super(scope, id, props);
 
     // from this point, don't allow accessing logical ID before synthesis
     this.lazyLogicalIdRequired = true;
@@ -159,7 +159,7 @@ class LatestDeploymentResource extends CfnDeployment {
   public addToLogicalId(data: unknown) {
     // if the construct is locked, it means we are already synthesizing and then
     // we can't modify the hash because we might have already calculated it.
-    if (this.locked) {
+    if (this.node.locked) {
       throw new Error('Cannot modify the logical ID when the construct is locked');
     }
 

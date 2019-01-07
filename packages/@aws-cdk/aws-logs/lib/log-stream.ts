@@ -1,38 +1,24 @@
 import cdk = require('@aws-cdk/cdk');
-import { LogGroupRef } from './log-group';
+import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 
-/**
- * Properties for importing a LogStream
- */
-export interface LogStreamRefProps {
-  logStreamName: string;
-}
-
-/**
- * A Log Stream in a Log Group
- */
-export abstract class LogStreamRef extends cdk.Construct {
-  /**
-   * Import an existing LogGroup
-   */
-  public static import(parent: cdk.Construct, id: string, props: LogStreamRefProps): LogStreamRef {
-    return new ImportedLogStream(parent, id, props);
-  }
-
+export interface ILogStream extends cdk.IConstruct {
   /**
    * The name of this log stream
    */
-  public abstract readonly logStreamName: string;
+  readonly logStreamName: string;
 
   /**
    * Export this LogStream
    */
-  public export(): LogStreamRefProps {
-    return {
-      logStreamName: new cdk.Output(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue().toString()
-    };
-  }
+  export(): LogStreamImportProps;
+}
+
+/**
+ * Properties for importing a LogStream
+ */
+export interface LogStreamImportProps {
+  logStreamName: string;
 }
 
 /**
@@ -42,7 +28,7 @@ export interface LogStreamProps {
   /**
    * The log group to create a log stream for.
    */
-  logGroup: LogGroupRef;
+  logGroup: ILogGroup;
 
   /**
    * The name of the log stream to create.
@@ -70,14 +56,21 @@ export interface LogStreamProps {
 /**
  * Define a Log Stream in a Log Group
  */
-export class LogStream extends LogStreamRef {
+export class LogStream extends cdk.Construct implements ILogStream {
+  /**
+   * Import an existing LogGroup
+   */
+  public static import(scope: cdk.Construct, id: string, props: LogStreamImportProps): ILogStream {
+    return new ImportedLogStream(scope, id, props);
+  }
+
   /**
    * The name of this log stream
    */
   public readonly logStreamName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: LogStreamProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: LogStreamProps) {
+    super(scope, id);
 
     const resource = new CfnLogStream(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
@@ -90,20 +83,33 @@ export class LogStream extends LogStreamRef {
 
     this.logStreamName = resource.logStreamName;
   }
+
+  /**
+   * Export this LogStream
+   */
+  public export(): LogStreamImportProps {
+    return {
+      logStreamName: new cdk.Output(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue().toString()
+    };
+  }
 }
 
 /**
  * An imported LogStream
  */
-class ImportedLogStream extends LogStreamRef {
+class ImportedLogStream extends cdk.Construct implements ILogStream {
   /**
    * The name of this log stream
    */
   public readonly logStreamName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: LogStreamRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: LogStreamImportProps) {
+    super(scope, id);
 
     this.logStreamName = props.logStreamName;
+  }
+
+  public export() {
+    return this.props;
   }
 }

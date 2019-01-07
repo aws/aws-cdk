@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
-import { RestApiRef } from './restapi-ref';
+import { IRestApi } from './restapi';
 import { parseMethodOptionsPath } from './util';
 
 export interface StageOptions extends MethodDeploymentOptions {
@@ -12,6 +12,12 @@ export interface StageOptions extends MethodDeploymentOptions {
    * @default "prod"
    */
   stageName?: string;
+
+  /**
+   * Specifies whether Amazon X-Ray tracing is enabled for this method.
+   * @default false
+   */
+  tracingEnabled?: boolean;
 
   /**
    * Indicates whether cache clustering is enabled for the stage.
@@ -130,10 +136,10 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
   public readonly stageName: string;
   public readonly dependencyElements = new Array<cdk.IDependable>();
 
-  private readonly restApi: RestApiRef;
+  private readonly restApi: IRestApi;
 
-  constructor(parent: cdk.Construct, id: string, props: StageProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: StageProps) {
+    super(scope, id);
 
     const methodSettings = this.renderMethodSettings(props);
 
@@ -157,6 +163,7 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
       description: props.description,
       documentationVersion: props.documentationVersion,
       variables: props.variables,
+      tracingEnabled: props.tracingEnabled,
       methodSettings,
     });
 

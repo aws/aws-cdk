@@ -68,7 +68,7 @@ export class Asset extends cdk.Construct {
   /**
    * The S3 bucket in which this asset resides.
    */
-  public readonly bucket: s3.BucketRef;
+  public readonly bucket: s3.IBucket;
 
   /**
    * Indicates if this asset is a zip archive. Allows constructs to ensure that the
@@ -81,8 +81,8 @@ export class Asset extends cdk.Construct {
    */
   private readonly s3Prefix: string;
 
-  constructor(parent: cdk.Construct, id: string, props: GenericAssetProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: GenericAssetProps) {
+    super(scope, id);
 
     // resolve full path
     this.assetPath = path.resolve(props.path);
@@ -101,20 +101,20 @@ export class Asset extends cdk.Construct {
 
     const bucketParam = new cdk.Parameter(this, 'S3Bucket', {
       type: 'String',
-      description: `S3 bucket for asset "${this.path}"`,
+      description: `S3 bucket for asset "${this.node.path}"`,
     });
 
     const keyParam = new cdk.Parameter(this, 'S3VersionKey', {
       type: 'String',
-      description: `S3 key for asset version "${this.path}"`
+      description: `S3 key for asset version "${this.node.path}"`
     });
 
     this.s3BucketName = bucketParam.value.toString();
-    this.s3Prefix = new cdk.FnSelect(0, new cdk.FnSplit(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.value)).toString();
-    const s3Filename = new cdk.FnSelect(1, new cdk.FnSplit(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.value)).toString();
+    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
+    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
 
-    this.bucket = s3.BucketRef.import(this, 'AssetBucket', {
+    this.bucket = s3.Bucket.import(this, 'AssetBucket', {
       bucketName: this.s3BucketName
     });
 
@@ -127,17 +127,45 @@ export class Asset extends cdk.Construct {
     // parameters.
     const asset: cxapi.FileAssetMetadataEntry = {
       path: this.assetPath,
-      id: this.uniqueId,
+      id: this.node.uniqueId,
       packaging: props.packaging,
       s3BucketParameter: bucketParam.logicalId,
       s3KeyParameter: keyParam.logicalId,
     };
 
-    this.addMetadata(cxapi.ASSET_METADATA, asset);
+    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
 
     for (const reader of (props.readers || [])) {
       this.grantRead(reader);
     }
+  }
+
+  /**
+   * Adds CloudFormation template metadata to the specified resource with
+   * information that indicates which resource property is mapped to this local
+   * asset. This can be used by tools such as SAM CLI to provide local
+   * experience such as local invocation and debugging of Lambda functions.
+   *
+   * Asset metadata will only be included if the stack is synthesized with the
+   * "aws:cdk:enable-asset-metadata" context key defined, which is the default
+   * behavior when synthesizing via the CDK Toolkit.
+   *
+   * @see https://github.com/awslabs/aws-cdk/issues/1432
+   *
+   * @param resource The CloudFormation resource which is using this asset.
+   * @param resourceProperty The property name where this asset is referenced
+   * (e.g. "Code" for AWS::Lambda::Function)
+   */
+  public addResourceMetadata(resource: cdk.Resource, resourceProperty: string) {
+    if (!this.node.getContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+      return; // not enabled
+    }
+
+    // tell tools such as SAM CLI that the "Code" property of this resource
+    // points to a local path in order to enable local invocation of this function.
+    resource.options.metadata = resource.options.metadata || { };
+    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
+    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
 
   /**
@@ -169,8 +197,8 @@ export interface FileAssetProps {
  * An asset that represents a file on disk.
  */
 export class FileAsset extends Asset {
-  constructor(parent: cdk.Construct, id: string, props: FileAssetProps) {
-    super(parent, id, { packaging: AssetPackaging.File, ...props });
+  constructor(scope: cdk.Construct, id: string, props: FileAssetProps) {
+    super(scope, id, { packaging: AssetPackaging.File, ...props });
   }
 }
 
@@ -191,8 +219,8 @@ export interface ZipDirectoryAssetProps {
  * An asset that represents a ZIP archive of a directory on disk.
  */
 export class ZipDirectoryAsset extends Asset {
-  constructor(parent: cdk.Construct, id: string, props: ZipDirectoryAssetProps) {
-    super(parent, id, { packaging: AssetPackaging.ZipDirectory, ...props });
+  constructor(scope: cdk.Construct, id: string, props: ZipDirectoryAssetProps) {
+    super(scope, id, { packaging: AssetPackaging.ZipDirectory, ...props });
   }
 }
 

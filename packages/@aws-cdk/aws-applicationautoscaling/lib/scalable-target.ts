@@ -76,8 +76,8 @@ export class ScalableTarget extends cdk.Construct {
 
   private readonly actions = new Array<CfnScalableTarget.ScheduledActionProperty>();
 
-  constructor(parent: cdk.Construct, id: string, props: ScalableTargetProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: ScalableTargetProps) {
+    super(scope, id);
 
     if (props.maxCapacity < 0) {
       throw new RangeError(`maxCapacity cannot be negative, got: ${props.maxCapacity}`);

@@ -19,14 +19,14 @@ export interface CustomResourceProps {
    *
    * Optional, exactly one of lamdaProvider or topicProvider must be set.
    */
-  lambdaProvider?: lambda.FunctionRef;
+  lambdaProvider?: lambda.IFunction;
 
   /**
    * The SNS Topic for the provider that implements this custom resource.
    *
    * Optional, exactly one of lamdaProvider or topicProvider must be set.
    */
-  topicProvider?: sns.TopicRef;
+  topicProvider?: sns.ITopic;
 
   /**
    * Properties to pass to the Lambda
@@ -68,12 +68,12 @@ export class CustomResource extends CfnCustomResource {
 
   private readonly userProperties?: Properties;
 
-  constructor(parent: cdk.Construct, name: string, props: CustomResourceProps) {
+  constructor(scope: cdk.Construct, id: string, props: CustomResourceProps) {
     if (!!props.lambdaProvider === !!props.topicProvider) {
       throw new Error('Exactly one of "lambdaProvider" or "topicProvider" must be set.');
     }
 
-    super(parent, name, {
+    super(scope, id, {
       serviceToken: props.lambdaProvider ? props.lambdaProvider.functionArn : props.topicProvider!.topicArn
     });
 

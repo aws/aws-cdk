@@ -72,7 +72,7 @@ export interface IInternalStage {
  * It extends {@link events.IEventRuleTarget},
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends events.IEventRuleTarget {
+export interface IPipeline extends cdk.IConstruct, events.IEventRuleTarget {
   /**
    * The name of the Pipeline.
    */
@@ -82,11 +82,6 @@ export interface IPipeline extends events.IEventRuleTarget {
    * The ARN of the Pipeline.
    */
   readonly pipelineArn: string;
-
-  /**
-   * The unique ID of the Pipeline Construct.
-   */
-  readonly uniqueId: string;
 
   /**
    * The service Role of the Pipeline.
@@ -111,7 +106,7 @@ export interface IPipeline extends events.IEventRuleTarget {
 /**
  * The abstract interface of a Pipeline Stage that is used by Actions.
  */
-export interface IStage {
+export interface IStage extends cdk.IConstruct {
   /**
    * The physical, human-readable name of this Pipeline Stage.
    */
@@ -221,13 +216,13 @@ export abstract class Action extends cdk.Construct {
   public readonly owner: string;
   public readonly version: string;
 
-  private readonly inputArtifacts = new Array<Artifact>();
-  private readonly outputArtifacts = new Array<Artifact>();
+  private readonly _actionInputArtifacts = new Array<Artifact>();
+  private readonly _actionOutputArtifacts = new Array<Artifact>();
   private readonly artifactBounds: ActionArtifactBounds;
   private readonly stage: IStage;
 
-  constructor(parent: cdk.Construct, id: string, props: ActionProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: ActionProps) {
+    super(scope, id);
 
     validation.validateName('Action', id);
 
@@ -245,15 +240,15 @@ export abstract class Action extends cdk.Construct {
   }
 
   public validate(): string[] {
-    return validation.validateArtifactBounds('input', this.inputArtifacts, this.artifactBounds.minInputs,
+    return validation.validateArtifactBounds('input', this._actionInputArtifacts, this.artifactBounds.minInputs,
         this.artifactBounds.maxInputs, this.category, this.provider)
-      .concat(validation.validateArtifactBounds('output', this.outputArtifacts, this.artifactBounds.minOutputs,
+      .concat(validation.validateArtifactBounds('output', this._actionOutputArtifacts, this.artifactBounds.minOutputs,
         this.artifactBounds.maxOutputs, this.category, this.provider)
     );
   }
 
   public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this.parent!!, name, options);
+    const rule = new events.EventRule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
       detailType: [ 'CodePipeline Stage Execution State Change' ],
@@ -261,35 +256,35 @@ export abstract class Action extends cdk.Construct {
       resources: [ this.stage.pipeline.pipelineArn ],
       detail: {
         stage: [ this.stage.name ],
-        action: [ this.id ],
+        action: [ this.node.id ],
       },
     });
     return rule;
   }
 
   public get _inputArtifacts(): Artifact[] {
-    return this.inputArtifacts.slice();
+    return this._actionInputArtifacts.slice();
   }
 
   public get _outputArtifacts(): Artifact[] {
-    return this.outputArtifacts.slice();
+    return this._actionOutputArtifacts.slice();
   }
 
   protected addOutputArtifact(name: string = this.stage._internal._generateOutputArtifactName(this)): Artifact {
     const artifact = new Artifact(this, name);
-    this.outputArtifacts.push(artifact);
+    this._actionOutputArtifacts.push(artifact);
     return artifact;
   }
 
   protected addInputArtifact(artifact: Artifact = this.stage._internal._findInputArtifact(this)): Action {
-    this.inputArtifacts.push(artifact);
+    this._actionInputArtifacts.push(artifact);
     return this;
   }
 }
 
 // export class ElasticBeanstalkDeploy extends DeployAction {
-//   constructor(parent: Stage, name: string, applicationName: string, environmentName: string) {
-//     super(parent, name, 'ElasticBeanstalk', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
+//   constructor(scope: Stage, id: string, applicationName: string, environmentName: string) {
+//     super(scope, id, 'ElasticBeanstalk', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
 //       ApplicationName: applicationName,
 //       EnvironmentName: environmentName
 //     });
@@ -297,8 +292,8 @@ export abstract class Action extends cdk.Construct {
 // }
 
 // export class OpsWorksDeploy extends DeployAction {
-//   constructor(parent: Stage, name: string, app: string, stack: string, layer?: string) {
-//     super(parent, name, 'OpsWorks', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
+//   constructor(scope: Stage, id: string, app: string, stack: string, layer?: string) {
+//     super(scope, id, 'OpsWorks', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
 //       Stack: stack,
 //       App: app,
 //       Layer: layer,
@@ -307,8 +302,8 @@ export abstract class Action extends cdk.Construct {
 // }
 
 // export class ECSDeploy extends DeployAction {
-//   constructor(parent: Stage, name: string, clusterName: string, serviceName: string, fileName?: string) {
-//     super(parent, name, 'ECS', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
+//   constructor(scope: Stage, id: string, clusterName: string, serviceName: string, fileName?: string) {
+//     super(scope, id, 'ECS', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
 //       ClusterName: clusterName,
 //       ServiceName: serviceName,
 //       FileName: fileName,
@@ -353,16 +348,16 @@ export abstract class Action extends cdk.Construct {
 */
 
 // export class JenkinsBuild extends BuildAction {
-//   constructor(parent: Stage, name: string, jenkinsProvider: string, project: string) {
-//     super(parent, name, jenkinsProvider, DefaultBounds(), {
+//   constructor(scope: Stage, id: string, jenkinsProvider: string, project: string) {
+//     super(scope, id, jenkinsProvider, DefaultBounds(), {
 //       ProjectName: project
 //     });
 //   }
 // }
 
 // export class JenkinsTest extends TestAction {
-//   constructor(parent: Stage, name: string, jenkinsProvider: string, project: string) {
-//     super(parent, name, jenkinsProvider, DefaultBounds(), {
+//   constructor(scope: Stage, id: string, jenkinsProvider: string, project: string) {
+//     super(scope, id, jenkinsProvider, DefaultBounds(), {
 //       ProjectName: project
 //     });
 //   }

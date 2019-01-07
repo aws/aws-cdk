@@ -101,8 +101,8 @@ export class PipelineDeployStackAction extends cdk.Construct {
 
   private readonly stack: cdk.Stack;
 
-  constructor(parent: cdk.Construct, id: string, props: PipelineDeployStackActionProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: PipelineDeployStackActionProps) {
+    super(scope, id);
 
     if (!cdk.environmentEquals(props.stack.env, cdk.Stack.find(this).env)) {
       // FIXME: Add the necessary to extend to stacks in a different account
@@ -142,7 +142,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
 
   public validate(): string[] {
     const result = super.validate();
-    const assets = this.stack.metadata.filter(md => md.type === cxapi.ASSET_METADATA);
+    const assets = this.stack.node.metadata.filter(md => md.type === cxapi.ASSET_METADATA);
     if (assets.length > 0) {
       // FIXME: Implement the necessary actions to publish assets
       result.push(`Cannot deploy the stack ${this.stack.name} because it references ${assets.length} asset(s)`);

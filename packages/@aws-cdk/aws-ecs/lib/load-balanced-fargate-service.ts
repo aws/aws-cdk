@@ -1,6 +1,6 @@
-import { CertificateRef } from '@aws-cdk/aws-certificatemanager';
+import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import { AliasRecord, HostedZoneRef } from '@aws-cdk/aws-route53';
+import { AliasRecord, IHostedZone } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
 import { ICluster } from './cluster';
 import { IContainerImage } from './container-image';
@@ -95,13 +95,13 @@ export interface LoadBalancedFargateServiceProps {
   /**
    * Route53 hosted zone for the domain, e.g. "example.com."
    */
-  domainZone?: HostedZoneRef;
+  domainZone?: IHostedZone;
 
   /**
    * Certificate Manager certificate to associate with the load balancer.
    * Setting this option will set the load balancer port to 443.
    */
-  certificate?: CertificateRef;
+  certificate?: ICertificate;
   /**
    * Whether to create an AWS log driver
    *
@@ -120,8 +120,8 @@ export class LoadBalancedFargateService extends cdk.Construct {
 
   public readonly service: FargateService;
 
-  constructor(parent: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
+    super(scope, id);
 
     const taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
       memoryMiB: props.memoryMiB,
@@ -132,7 +132,7 @@ export class LoadBalancedFargateService extends cdk.Construct {
 
     const container = taskDefinition.addContainer('web', {
       image: props.image,
-      logging: optIn ? this.createAWSLogDriver(this.id) : undefined
+      logging: optIn ? this.createAWSLogDriver(this.node.id) : undefined
     });
 
     container.addPortMappings({
@@ -179,7 +179,8 @@ export class LoadBalancedFargateService extends cdk.Construct {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      new AliasRecord(props.domainZone, "DNS", {
+      new AliasRecord(this, "DNS", {
+        zone: props.domainZone,
         recordName: props.domainName,
         target: lb
       });

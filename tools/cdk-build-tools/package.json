@@ -12,10 +12,11 @@
     "cdk-build": "bin/cdk-build",
     "cdk-watch": "bin/cdk-watch",
     "cdk-test": "bin/cdk-test",
-    "cdk-package": "bin/cdk-package"
+    "cdk-package": "bin/cdk-package",
+    "cdk-awslint": "bin/cdk-awslint"
   },
   "scripts": {
-    "build": "tsc && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && pkglint",
+    "build": "tsc && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && pkglint",
     "watch": "tsc -w",
     "pkglint": "pkglint -f"
   },
@@ -32,12 +33,12 @@
   },
   "dependencies": {
     "fs-extra": "^7.0.0",
-    "jsii": "^0.7.12",
-    "jsii-pacmak": "^0.7.12",
-    "merkle-build": "^0.21.0",
+    "jsii": "^0.7.13",
+    "jsii-pacmak": "^0.7.13",
     "nodeunit": "^0.11.3",
     "nyc": "^13.0.1",
     "typescript": "^3.1.2",
+    "awslint": "^0.21.0",
     "yargs": "^9.0.1"
   },
   "keywords": [

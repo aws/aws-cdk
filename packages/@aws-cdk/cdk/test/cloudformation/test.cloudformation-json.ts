@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationJSON, CloudFormationToken, FnConcat, resolve, Token } from '../../lib';
+import { CloudFormationJSON, CloudFormationToken, Fn, resolve, Token } from '../../lib';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {
@@ -87,7 +87,7 @@ export = {
 
   'embedded string literals in intrinsics are escaped when calling TokenJSON.stringify()'(test: Test) {
     // WHEN
-    const token = new FnConcat('Hello', 'This\nIs', 'Very "cool"');
+    const token = Fn.join('', [ 'Hello', 'This\nIs', 'Very "cool"' ]);
 
     // WHEN
     const resolved = resolve(CloudFormationJSON.stringify({
@@ -105,7 +105,7 @@ export = {
   'Tokens in Tokens are handled correctly'(test: Test) {
     // GIVEN
     const bucketName = new CloudFormationToken({ Ref: 'MyBucket' });
-    const combinedName = new FnConcat('The bucket name is ', bucketName);
+    const combinedName = Fn.join('', [ 'The bucket name is ', bucketName.toString() ]);
 
     // WHEN
     const resolved = resolve(CloudFormationJSON.stringify({ theBucket: combinedName }));

@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { HostedZoneRef } from './hosted-zone-ref';
+import { HostedZoneImportProps, IHostedZone } from './hosted-zone-ref';
 import { CfnHostedZone, HostedZoneNameServers } from './route53.generated';
 import { validateZoneName } from './util';
 
@@ -28,10 +28,26 @@ export interface PublicHostedZoneProps {
   queryLogsLogGroupArn?: string;
 }
 
+export abstract class HostedZone extends cdk.Construct implements IHostedZone {
+  public static import(scope: cdk.Construct, id: string, props: HostedZoneImportProps): IHostedZone {
+    return new ImportedHostedZone(scope, id, props);
+  }
+
+  public abstract readonly hostedZoneId: string;
+  public abstract readonly zoneName: string;
+
+  public export(): HostedZoneImportProps {
+    return {
+      hostedZoneId: new cdk.Output(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue().toString(),
+      zoneName: this.zoneName,
+    };
+  }
+}
+
 /**
  * Create a Route53 public hosted zone.
  */
-export class PublicHostedZone extends HostedZoneRef {
+export class PublicHostedZone extends HostedZone {
   /**
    * Identifier of this hosted zone
    */
@@ -47,8 +63,8 @@ export class PublicHostedZone extends HostedZoneRef {
    */
   public readonly nameServers: HostedZoneNameServers;
 
-  constructor(parent: cdk.Construct, name: string, props: PublicHostedZoneProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: PublicHostedZoneProps) {
+    super(scope, id);
 
     validateZoneName(props.zoneName);
 
@@ -69,7 +85,7 @@ export interface PrivateHostedZoneProps extends PublicHostedZoneProps {
   /**
    * One VPC that you want to associate with this hosted zone.
    */
-  vpc: ec2.VpcNetworkRef;
+  vpc: ec2.IVpcNetwork;
 }
 
 /**
@@ -78,7 +94,7 @@ export interface PrivateHostedZoneProps extends PublicHostedZoneProps {
  * Note that `enableDnsHostnames` and `enableDnsSupport` must have been enabled
  * for the VPC you're configuring for private hosted zones.
  */
-export class PrivateHostedZone extends HostedZoneRef {
+export class PrivateHostedZone extends HostedZone {
   /**
    * Identifier of this hosted zone
    */
@@ -94,8 +110,8 @@ export class PrivateHostedZone extends HostedZoneRef {
    */
   private readonly vpcs: CfnHostedZone.VPCProperty[] = [];
 
-  constructor(parent: cdk.Construct, name: string, props: PrivateHostedZoneProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: PrivateHostedZoneProps) {
+    super(scope, id);
 
     validateZoneName(props.zoneName);
 
@@ -115,12 +131,12 @@ export class PrivateHostedZone extends HostedZoneRef {
    *
    * @param vpc the other VPC to add.
    */
-  public addVpc(vpc: ec2.VpcNetworkRef) {
+  public addVpc(vpc: ec2.IVpcNetwork) {
     this.vpcs.push(toVpcProperty(vpc));
   }
 }
 
-function toVpcProperty(vpc: ec2.VpcNetworkRef): CfnHostedZone.VPCProperty {
+function toVpcProperty(vpc: ec2.IVpcNetwork): CfnHostedZone.VPCProperty {
   return { vpcId: vpc.vpcId, vpcRegion: new cdk.AwsRegion() };
 }
 
@@ -130,4 +146,24 @@ function determineHostedZoneProps(props: PublicHostedZoneProps) {
   const queryLoggingConfig = props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined;
 
   return { name, hostedZoneConfig, queryLoggingConfig };
+}
+
+/**
+ * Imported hosted zone
+ */
+class ImportedHostedZone extends cdk.Construct implements IHostedZone {
+  public readonly hostedZoneId: string;
+
+  public readonly zoneName: string;
+
+  constructor(scope: cdk.Construct, name: string, private readonly props: HostedZoneImportProps) {
+    super(scope, name);
+
+    this.hostedZoneId = props.hostedZoneId;
+    this.zoneName = props.zoneName;
+  }
+
+  public export() {
+    return this.props;
+  }
 }

@@ -24,7 +24,7 @@ export interface InstanceProps {
    *
    * Must be at least 2 subnets in two different AZs.
    */
-  vpc: ec2.VpcNetworkRef;
+  vpc: ec2.IVpcNetwork;
 
   /**
    * Where to place the instances within the VPC

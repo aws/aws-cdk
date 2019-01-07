@@ -1,8 +1,8 @@
-import { Construct, FnConcat, Token } from '@aws-cdk/cdk';
+import { Construct, Output, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { TargetInputTemplate } from './input-options';
-import { EventRuleRef } from './rule-ref';
+import { EventRuleImportProps, IEventRule } from './rule-ref';
 import { IEventRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
@@ -63,15 +63,22 @@ export interface EventRuleProps {
 /**
  * Defines a CloudWatch Event Rule in this stack.
  */
-export class EventRule extends EventRuleRef {
+export class EventRule extends Construct implements IEventRule {
+  /**
+   * Imports a rule by ARN into this stack.
+   */
+  public static import(scope: Construct, id: string, props: EventRuleImportProps): IEventRule {
+    return new ImportedEventRule(scope, id, props);
+  }
+
   public readonly ruleArn: string;
 
   private readonly targets = new Array<CfnRule.TargetProperty>();
   private readonly eventPattern: EventPattern = { };
   private scheduleExpression?: string;
 
-  constructor(parent: Construct, name: string, props: EventRuleProps = { }) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: EventRuleProps = { }) {
+    super(scope, id);
 
     const resource = new CfnRule(this, 'Resource', {
       name: props.ruleName,
@@ -93,6 +100,15 @@ export class EventRule extends EventRuleRef {
   }
 
   /**
+   * Exports this rule resource from this stack and returns an import token.
+   */
+  public export(): EventRuleImportProps {
+    return {
+      eventRuleArn: new Output(this, 'RuleArn', { value: this.ruleArn }).makeImportValue().toString()
+    };
+  }
+
+  /**
    * Adds a target to the rule. The abstract class RuleTarget can be extended to define new
    * targets.
    *
@@ -101,7 +117,7 @@ export class EventRule extends EventRuleRef {
   public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
     if (!target) { return; }
 
-    const targetProps = target.asEventRuleTarget(this.ruleArn, this.uniqueId);
+    const targetProps = target.asEventRuleTarget(this.ruleArn, this.node.uniqueId);
 
     // check if a target with this ID already exists
     if (this.targets.find(t => t.id === targetProps.id)) {
@@ -133,7 +149,7 @@ export class EventRule extends EventRuleRef {
       } else if (typeof(inputOptions.textTemplate) === 'string') {
         inputTemplate = JSON.stringify(inputOptions.textTemplate);
       } else {
-        inputTemplate = new FnConcat('"', inputOptions.textTemplate, '"');
+        inputTemplate = `"${inputOptions.textTemplate}"`;
       }
 
       return {
@@ -217,5 +233,19 @@ export class EventRule extends EventRuleRef {
     }
 
     return out;
+  }
+}
+
+class ImportedEventRule extends Construct implements IEventRule {
+  public readonly ruleArn: string;
+
+  constructor(scope: Construct, id: string, private readonly props: EventRuleImportProps) {
+    super(scope, id);
+
+    this.ruleArn = props.eventRuleArn;
+  }
+
+  public export() {
+    return this.props;
   }
 }

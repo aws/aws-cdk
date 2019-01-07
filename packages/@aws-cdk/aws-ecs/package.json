@@ -34,7 +34,8 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
   },
   "cdk-build": {
     "cloudformation": "AWS::ECS"
@@ -97,5 +98,13 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "resource-attribute:@aws-cdk/aws-ecs.ICluster.clusterArn",
+      "construct-ctor:@aws-cdk/aws-ecs.BaseService.<initializer>",
+      "construct-ctor:@aws-cdk/aws-ecs.ContainerDefinition.<initializer>",
+      "construct-ctor:@aws-cdk/aws-ecs.LoadBalancedFargateServiceApplet.<initializer>.params[0]"
+    ]
   }
 }

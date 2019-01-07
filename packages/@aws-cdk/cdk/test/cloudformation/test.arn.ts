@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, ArnUtils, FnConcat, resolve, Token } from '../../lib';
+import { ArnComponents, ArnUtils, AwsAccountId, AwsPartition, AwsRegion, resolve, Token } from '../../lib';
 
 export = {
   'create from components with defaults'(test: Test) {
@@ -9,17 +9,7 @@ export = {
     });
 
     test.deepEqual(resolve(arn),
-                   resolve(new FnConcat('arn',
-                                        ':',
-                                        { Ref: 'AWS::Partition' },
-                                        ':',
-                                        'sqs',
-                                        ':',
-                                        { Ref: 'AWS::Region' },
-                                        ':',
-                                        { Ref: 'AWS::AccountId' },
-                                        ':',
-                                        'myqueuename')));
+                   resolve(`arn:${new AwsPartition()}:sqs:${new AwsRegion()}:${new AwsAccountId()}:myqueuename`));
     test.done();
   },
 
@@ -34,19 +24,7 @@ export = {
     });
 
     test.deepEqual(resolve(arn),
-                   resolve(new FnConcat('arn',
-                                        ':',
-                                        'aws-cn',
-                                        ':',
-                                        'dynamodb',
-                                        ':',
-                                        'us-east-1',
-                                        ':',
-                                        '123456789012',
-                                        ':',
-                                        'table',
-                                        '/',
-                                        'mytable/stream/label')));
+                   'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
     test.done();
   },
 
@@ -60,17 +38,7 @@ export = {
     });
 
     test.deepEqual(resolve(arn),
-                   resolve(new FnConcat('arn',
-                                        ':',
-                                        'aws-cn',
-                                        ':',
-                                        's3',
-                                        ':',
-                                        '',
-                                        ':',
-                                        '',
-                                        ':',
-                                        'my-bucket')));
+                   'arn:aws-cn:s3:::my-bucket');
 
     test.done();
   },
@@ -84,19 +52,7 @@ export = {
     });
 
     test.deepEqual(resolve(arn),
-                   resolve(new FnConcat('arn',
-                                        ':',
-                                        { Ref: 'AWS::Partition' },
-                                        ':',
-                                        'codedeploy',
-                                        ':',
-                                        { Ref: 'AWS::Region' },
-                                        ':',
-                                        { Ref: 'AWS::AccountId' },
-                                        ':',
-                                        'application',
-                                        ':',
-                                        'WordPress_App')));
+                   resolve(`arn:${new AwsPartition()}:codedeploy:${new AwsRegion()}:${new AwsAccountId()}:application:WordPress_App`));
     test.done();
   },
 
@@ -182,7 +138,7 @@ export = {
 
     'a Token with : separator'(test: Test) {
       const theToken = { Ref: 'SomeParameter' };
-      const parsed = ArnUtils.parseToken(new Token(() => theToken), ':');
+      const parsed = ArnUtils.parseToken(new Token(() => theToken).toString(), ':');
 
       test.deepEqual(resolve(parsed.partition), { 'Fn::Select': [ 1, { 'Fn::Split': [ ':', theToken ]} ]});
       test.deepEqual(resolve(parsed.service), { 'Fn::Select': [ 2, { 'Fn::Split': [ ':', theToken ]} ]});
@@ -197,7 +153,7 @@ export = {
 
     'a Token with / separator'(test: Test) {
       const theToken = { Ref: 'SomeParameter' };
-      const parsed = ArnUtils.parseToken(new Token(() => theToken));
+      const parsed = ArnUtils.parseToken(new Token(() => theToken).toString());
 
       test.equal(parsed.sep, '/');
 

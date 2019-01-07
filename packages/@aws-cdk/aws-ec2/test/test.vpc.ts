@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
 import { AvailabilityZoneProvider, Construct, resolve, Stack, Tags } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { DefaultInstanceTenancy, SubnetType, VpcNetwork, VpcNetworkRef } from '../lib';
+import { DefaultInstanceTenancy, IVpcNetwork, SubnetType, VpcNetwork } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -362,12 +362,12 @@ export = {
       const stack = getTestStack();
       const vpc = new VpcNetwork(stack, 'TheVPC');
       for (const subnet of vpc.publicSubnets) {
-        const tag = {Key: 'Name', Value: subnet.path};
+        const tag = {Key: 'Name', Value: subnet.node.path};
         expect(stack).to(haveResource('AWS::EC2::NatGateway', hasTags([tag])));
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       for (const subnet of vpc.privateSubnets) {
-        const tag = {Key: 'Name', Value: subnet.path};
+        const tag = {Key: 'Name', Value: subnet.node.path};
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       test.done();
@@ -468,10 +468,12 @@ export = {
       test.equal(6, imported.publicSubnets.length);
 
       for (let i = 0; i < 3; i++) {
-        test.equal(true, imported.publicSubnets[i].id.startsWith('Ingress'), `${imported.publicSubnets[i].id} does not start with "Ingress"`);
+        // tslint:disable-next-line:max-line-length
+        test.equal(true, imported.publicSubnets[i].node.id.startsWith('Ingress'), `${imported.publicSubnets[i].node.id} does not start with "Ingress"`);
       }
       for (let i = 3; i < 6; i++) {
-        test.equal(true, imported.publicSubnets[i].id.startsWith('Egress'), `${imported.publicSubnets[i].id} does not start with "Egress"`);
+        // tslint:disable-next-line:max-line-length
+        test.equal(true, imported.publicSubnets[i].node.id.startsWith('Egress'), `${imported.publicSubnets[i].node.id} does not start with "Egress"`);
       }
 
       test.done();
@@ -531,7 +533,7 @@ function getTestStack(): Stack {
 /**
  * Do a complete import/export test, return the imported VPC
  */
-function doImportExportTest(constructFn: (parent: Construct) => VpcNetwork): VpcNetworkRef {
+function doImportExportTest(constructFn: (scope: Construct) => VpcNetwork): IVpcNetwork {
   // GIVEN
   const stack1 = getTestStack();
   const stack2 = getTestStack();

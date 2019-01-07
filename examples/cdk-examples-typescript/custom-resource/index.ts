@@ -20,8 +20,8 @@ class DemoResource extends cdk.Construct implements cdk.IDependable {
   public readonly dependencyElements: cdk.IDependable[];
   public readonly response: string;
 
-  constructor(parent: cdk.Construct, name: string, props: DemoResourceProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: DemoResourceProps) {
+    super(scope, id);
 
     const resource = new CustomResource(this, 'Resource', {
       lambdaProvider: new lambda.SingletonFunction(this, 'Singleton', {
@@ -44,8 +44,8 @@ class DemoResource extends cdk.Construct implements cdk.IDependable {
  * A stack that only sets up the CustomResource and shows how to get an attribute from it
  */
 class SucceedingStack extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const resource = new DemoResource(this, 'DemoResource', {
       message: 'CustomResource says hello',
@@ -63,8 +63,8 @@ class SucceedingStack extends cdk.Stack {
  * A stack that sets up a failing CustomResource creation
  */
 class FailCreationStack extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     new DemoResource(this, 'DemoResource', {
       message: 'CustomResource is silent',
@@ -78,8 +78,8 @@ class FailCreationStack extends cdk.Stack {
  * done properly.
  */
 class FailAfterCreatingStack extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const resource = new DemoResource(this, 'DemoResource', {
       message: 'CustomResource says hello',

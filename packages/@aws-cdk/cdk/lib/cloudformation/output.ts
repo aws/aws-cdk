@@ -1,7 +1,6 @@
 import { Construct } from '../core/construct';
-import { Token } from '../core/tokens';
 import { Condition } from './condition';
-import { FnImportValue, FnJoin, FnSelect, FnSplit } from './fn';
+import { Fn } from './fn';
 import { Stack, StackElement } from './stack';
 
 export interface OutputProps {
@@ -77,8 +76,8 @@ export class Output extends StackElement {
    * @param parent The parent construct.
    * @param props Output properties.
    */
-  constructor(parent: Construct, name: string, props: OutputProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: OutputProps = {}) {
+    super(scope, id);
 
     this.description = props.description;
     this.value = props.value;
@@ -91,7 +90,7 @@ export class Output extends StackElement {
       this.export = props.export;
     } else if (!props.disableExport) {
       // prefix export name with stack name since exports are global within account + region.
-      const stackName = Stack.find(this).id;
+      const stackName = Stack.find(this).node.id;
       this.export = stackName ? stackName + ':' : '';
       this.export += this.logicalId;
     }
@@ -104,7 +103,7 @@ export class Output extends StackElement {
     if (!this.export) {
       throw new Error('Cannot create an ImportValue without an export name');
     }
-    return new FnImportValue(this.export);
+    return Fn.importValue(this.export);
   }
 
   public toCloudFormation(): object {
@@ -196,8 +195,8 @@ export class StringListOutput extends Construct {
    */
   private readonly output: Output;
 
-  constructor(parent: Construct, name: string, props: StringListOutputProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: StringListOutputProps) {
+    super(scope, id);
 
     this.separator = props.separator || ',';
     this.length = props.values.length;
@@ -207,19 +206,19 @@ export class StringListOutput extends Construct {
       condition: props.condition,
       disableExport: props.disableExport,
       export: props.export,
-      value: new FnJoin(this.separator, props.values)
+      value: Fn.join(this.separator, props.values)
     });
   }
 
   /**
    * Return an array of imported values for this Output
    */
-  public makeImportValues(): Token[] {
+  public makeImportValues(): string[] {
     const combined = this.output.makeImportValue();
 
     const ret = [];
     for (let i = 0; i < this.length; i++) {
-      ret.push(new FnSelect(i, new FnSplit(this.separator, combined)));
+      ret.push(Fn.select(i, Fn.split(this.separator, combined)));
     }
 
     return ret;

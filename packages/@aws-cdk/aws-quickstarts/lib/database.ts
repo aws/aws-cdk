@@ -10,7 +10,7 @@ export interface SqlServerProps {
   masterUsername: string;
   masterPassword: string;
   allocatedStorage?: number;
-  vpc: ec2.VpcNetworkRef;
+  vpc: ec2.IVpcNetwork;
 }
 
 /**
@@ -20,8 +20,8 @@ export class SqlServer extends cdk.Construct implements ec2.IConnectable {
   private static readonly PORT = 1433;
   public readonly connections: ec2.Connections;
 
-  constructor(parent: cdk.Construct, name: string, props: SqlServerProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: SqlServerProps) {
+    super(scope, id);
 
     const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,

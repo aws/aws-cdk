@@ -7,7 +7,7 @@ import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipelin
 /**
  * Represents an ECR repository.
  */
-export interface IRepository {
+export interface IRepository extends cdk.IConstruct {
   /**
    * The name of the repository
    */
@@ -75,9 +75,14 @@ export interface IRepository {
    * @param imageTag Only trigger on the specific image tag
    */
   onImagePushed(name: string, target?: events.IEventRuleTarget, imageTag?: string): events.EventRule;
+
+  /**
+   * Export this repository from the stack
+   */
+  export(): RepositoryImportProps;
 }
 
-export interface ImportRepositoryProps {
+export interface RepositoryImportProps {
   /**
    * The ARN of the repository to import.
    *
@@ -109,8 +114,8 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Import a repository
    */
-  public static import(parent: cdk.Construct, id: string, props: ImportRepositoryProps): IRepository {
-    return new ImportedRepository(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
+    return new ImportedRepository(scope, id, props);
   }
 
   /**
@@ -166,12 +171,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Export this repository from the stack
    */
-  public export(): ImportRepositoryProps {
-    return {
-      repositoryArn: new cdk.Output(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
-      repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
-    };
-  }
+  public abstract export(): RepositoryImportProps;
 
   public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineSourceActionProps = {}):
       PipelineSourceAction {
@@ -254,8 +254,8 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ImportRepositoryProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
+    super(scope, id);
 
     if (props.repositoryArn) {
       this.repositoryArn = props.repositoryArn;
@@ -280,6 +280,10 @@ class ImportedRepository extends RepositoryBase {
 
       this.repositoryName = this.repositoryArn.split('/').slice(1).join('/');
     }
+  }
+
+  public export(): RepositoryImportProps {
+    return this.props;
   }
 
   public addToResourcePolicy(_statement: iam.PolicyStatement) {

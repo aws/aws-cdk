@@ -11,15 +11,16 @@ import { CfnDeploymentConfig } from './codedeploy.generated';
 export interface IServerDeploymentConfig {
   readonly deploymentConfigName: string;
   readonly deploymentConfigArn: string;
+  export(): ServerDeploymentConfigImportProps;
 }
 
 /**
  * Properties of a reference to a CodeDeploy EC2/on-premise Deployment Configuration.
  *
- * @see ServerDeploymentConfigRef#import
- * @see ServerDeploymentConfigRef#export
+ * @see ServerDeploymentConfig#import
+ * @see ServerDeploymentConfig#export
  */
-export interface ServerDeploymentConfigRefProps {
+export interface ServerDeploymentConfigImportProps {
   /**
    * The physical, human-readable name of the custom CodeDeploy EC2/on-premise Deployment Configuration
    * that we are referencing.
@@ -27,45 +28,19 @@ export interface ServerDeploymentConfigRefProps {
   deploymentConfigName: string;
 }
 
-/**
- * Reference to a custom Deployment Configuration for an EC2/on-premise Deployment Group.
- */
-export abstract class ServerDeploymentConfigRef extends cdk.Construct implements IServerDeploymentConfig {
-  /**
-   * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
-   *
-   * @param parent the parent Construct for this new Construct
-   * @param id the logical ID of this new Construct
-   * @param props the properties of the referenced custom Deployment Configuration
-   * @returns a Construct representing a reference to an existing custom Deployment Configuration
-   */
-  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentConfigRefProps):
-      ServerDeploymentConfigRef {
-    return new ImportedServerDeploymentConfigRef(parent, id, props);
-  }
-
-  public abstract readonly deploymentConfigName: string;
-  public abstract readonly deploymentConfigArn: string;
-
-  public export(): ServerDeploymentConfigRefProps {
-    return {
-      deploymentConfigName: new cdk.Output(this, 'DeploymentConfigName', {
-        value: this.deploymentConfigName,
-      }).makeImportValue().toString(),
-    };
-  }
-}
-
-class ImportedServerDeploymentConfigRef extends ServerDeploymentConfigRef {
+class ImportedServerDeploymentConfig extends cdk.Construct implements IServerDeploymentConfig {
   public readonly deploymentConfigName: string;
   public readonly deploymentConfigArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ServerDeploymentConfigRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ServerDeploymentConfigImportProps) {
+    super(scope, id);
 
     this.deploymentConfigName = props.deploymentConfigName;
     this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
+  }
+
+  public export() {
+    return this.props;
   }
 }
 
@@ -76,6 +51,12 @@ class DefaultServerDeploymentConfig implements IServerDeploymentConfig {
   constructor(deploymentConfigName: string) {
     this.deploymentConfigName = deploymentConfigName;
     this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
+  }
+
+  public export(): ServerDeploymentConfigImportProps {
+    return {
+      deploymentConfigName: this.deploymentConfigName
+    };
   }
 }
 
@@ -110,16 +91,29 @@ export interface ServerDeploymentConfigProps {
 /**
  * A custom Deployment Configuration for an EC2/on-premise Deployment Group.
  */
-export class ServerDeploymentConfig extends ServerDeploymentConfigRef {
+export class ServerDeploymentConfig extends cdk.Construct implements IServerDeploymentConfig {
   public static readonly OneAtATime: IServerDeploymentConfig = new DefaultServerDeploymentConfig('CodeDeployDefault.OneAtATime');
   public static readonly HalfAtATime: IServerDeploymentConfig = new DefaultServerDeploymentConfig('CodeDeployDefault.HalfAtATime');
   public static readonly AllAtOnce: IServerDeploymentConfig = new DefaultServerDeploymentConfig('CodeDeployDefault.AllAtOnce');
 
+  /**
+   * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK,
+   * or in a different CDK Stack and exported using the {@link #export} method.
+   *
+   * @param parent the parent Construct for this new Construct
+   * @param id the logical ID of this new Construct
+   * @param props the properties of the referenced custom Deployment Configuration
+   * @returns a Construct representing a reference to an existing custom Deployment Configuration
+   */
+  public static import(scope: cdk.Construct, id: string, props: ServerDeploymentConfigImportProps): IServerDeploymentConfig {
+    return new ImportedServerDeploymentConfig(scope, id, props);
+  }
+
   public readonly deploymentConfigName: string;
   public readonly deploymentConfigArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
+    super(scope, id);
 
     const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: props.deploymentConfigName,
@@ -128,6 +122,14 @@ export class ServerDeploymentConfig extends ServerDeploymentConfigRef {
 
     this.deploymentConfigName = resource.ref.toString();
     this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
+  }
+
+  public export(): ServerDeploymentConfigImportProps {
+    return {
+      deploymentConfigName: new cdk.Output(this, 'DeploymentConfigName', {
+        value: this.deploymentConfigName,
+      }).makeImportValue().toString(),
+    };
   }
 
   private minimumHealthyHosts(props: ServerDeploymentConfigProps):

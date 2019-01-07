@@ -76,6 +76,16 @@ export class Parameter extends Referenceable {
    */
   public value: Token;
 
+  /**
+   * The parameter value token represented as a string.
+   */
+  public valueAsString: string;
+
+  /**
+   * The parameter value token represented as a string array.
+   */
+  public valueAsList: string[];
+
   private properties: ParameterProps;
 
   /**
@@ -86,10 +96,12 @@ export class Parameter extends Referenceable {
    * @param parent The parent construct.
    * @param props The parameter properties.
    */
-  constructor(parent: Construct, name: string, props: ParameterProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: ParameterProps) {
+    super(scope, id);
     this.properties = props;
     this.value = new Ref(this);
+    this.valueAsString = this.value.toString();
+    this.valueAsList = this.value.toList();
   }
 
   public toCloudFormation(): object {

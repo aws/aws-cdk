@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { FnFindInMap } from './fn';
+import { Fn } from './fn';
 import { Referenceable } from './stack';
 
 export interface MappingProps {
@@ -12,8 +12,8 @@ export interface MappingProps {
 export class Mapping extends Referenceable {
   private mapping: { [k1: string]: { [k2: string]: any } } = { };
 
-  constructor(parent: Construct, name: string, props: MappingProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: MappingProps) {
+    super(scope, id);
     this.mapping = props.mapping || { };
   }
 
@@ -31,7 +31,7 @@ export class Mapping extends Referenceable {
   /**
    * @returns A reference to a value in the map based on the two keys.
    */
-  public findInMap(key1: any, key2: any) {
+  public findInMap(key1: string, key2: string): string {
     if (!(key1 in this.mapping)) {
       throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
     }
@@ -40,7 +40,7 @@ export class Mapping extends Referenceable {
       throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
     }
 
-    return new FnFindInMap(this.logicalId, key1, key2);
+    return Fn.findInMap(this.logicalId, key1, key2);
   }
 
   public toCloudFormation(): object {

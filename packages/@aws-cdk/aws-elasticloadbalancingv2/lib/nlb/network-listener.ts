@@ -39,8 +39,8 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Import an existing listener
    */
-  public static import(parent: cdk.Construct, id: string, props: NetworkListenerRefProps): INetworkListener {
-    return new ImportedNetworkListener(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: NetworkListenerImportProps): INetworkListener {
+    return new ImportedNetworkListener(scope, id, props);
   }
 
   /**
@@ -48,8 +48,8 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   private readonly loadBalancer: INetworkLoadBalancer;
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkListenerProps) {
-    super(parent, id, {
+  constructor(scope: cdk.Construct, id: string, props: NetworkListenerProps) {
+    super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       protocol: Protocol.Tcp,
       port: props.port,
@@ -103,7 +103,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Export this listener
    */
-  public export(): NetworkListenerRefProps {
+  public export(): NetworkListenerImportProps {
     return {
       listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
     };
@@ -114,17 +114,22 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 /**
  * Properties to reference an existing listener
  */
-export interface INetworkListener extends cdk.IDependable {
+export interface INetworkListener extends cdk.IConstruct, cdk.IDependable {
   /**
    * ARN of the listener
    */
   readonly listenerArn: string;
+
+  /**
+   * Export this listener
+   */
+  export(): NetworkListenerImportProps;
 }
 
 /**
  * Properties to reference an existing listener
  */
-export interface NetworkListenerRefProps {
+export interface NetworkListenerImportProps {
   /**
    * ARN of the listener
    */
@@ -142,10 +147,14 @@ class ImportedNetworkListener extends cdk.Construct implements INetworkListener 
    */
   public readonly listenerArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkListenerRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: NetworkListenerImportProps) {
+    super(scope, id);
 
     this.listenerArn = props.listenerArn;
+  }
+
+  public export() {
+    return this.props;
   }
 }
 
