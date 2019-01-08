@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames } from '../core/util';
-import { FnCondition } from './condition';
+import { IConditionExpression } from './condition';
 import { Referenceable } from './stack';
 
 /**
@@ -29,7 +29,7 @@ export interface RuleProps {
    * If the rule condition evaluates to false, the rule doesn't take effect.
    * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
    */
-  ruleCondition?: FnCondition;
+  ruleCondition?: IConditionExpression;
 
   /**
    * Assertions which define the rule.
@@ -57,7 +57,7 @@ export class Rule extends Referenceable {
    * If the rule condition evaluates to false, the rule doesn't take effect.
    * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
    */
-  public ruleCondition?: FnCondition;
+  public ruleCondition?: IConditionExpression;
 
   /**
    * Assertions which define the rule.
@@ -81,7 +81,7 @@ export class Rule extends Referenceable {
    * @param condition The expression to evaluation.
    * @param description The description of the assertion.
    */
-  public addAssertion(condition: FnCondition, description: string) {
+  public addAssertion(condition: IConditionExpression, description: string) {
     if (!this.assertions) {
       this.assertions = [];
     }
@@ -111,7 +111,7 @@ export interface RuleAssertion {
   /**
    * The assertion.
    */
-  assert: FnCondition;
+  assert: IConditionExpression;
 
   /**
    * The assertion description.
