@@ -62,7 +62,7 @@ export interface AwsIntegrationProps {
  * technology.
  */
 export class AwsIntegration extends Integration {
-  private _anchor?: cdk.IConstruct;
+  private scope?: cdk.IConstruct;
 
   constructor(props: AwsIntegrationProps) {
     const backend = props.subdomain ? `${props.subdomain}.${props.service}` : props.service;
@@ -72,20 +72,20 @@ export class AwsIntegration extends Integration {
       type,
       integrationHttpMethod: 'POST',
       uri: new cdk.Token(() => {
-        if (!this._anchor) { throw new Error('AwsIntegration must be used in API'); }
+        if (!this.scope) { throw new Error('AwsIntegration must be used in API'); }
         return cdk.ArnUtils.fromComponents({
           service: 'apigateway',
           account: backend,
           resource: apiType,
           sep: '/',
           resourceName: apiValue,
-        }, this._anchor);
+        }, this.scope);
       }),
       options: props.options,
     });
   }
 
-  public bind(_method: Method) {
-    this._anchor = _method;
+  public bind(method: Method) {
+    this.scope = method;
   }
 }

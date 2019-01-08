@@ -16,7 +16,7 @@ export class AwsManagedPolicy {
   /**
    * The Arn of this managed policy
    */
-  public policyArn(anchor: cdk.IConstruct): string {
+  public policyArn(scope: cdk.IConstruct): string {
     // the arn is in the form of - arn:aws:iam::aws:policy/<policyName>
     return cdk.ArnUtils.fromComponents({
       service: "iam",
@@ -24,6 +24,6 @@ export class AwsManagedPolicy {
       account: "aws", // the account for a managed policy is 'aws'
       resource: "policy",
       resourceName: this.managedPolicyName
-    }, anchor);
+    }, scope);
   }
 }

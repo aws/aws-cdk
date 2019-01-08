@@ -12,7 +12,7 @@ export class PolicyDocument extends cdk.Token {
     super();
   }
 
-  public resolve(_context: cdk.ResolveContext): any {
+  public scope(_context: cdk.ResolveContext): any {
     if (this.isEmpty) {
       return undefined;
     }
@@ -81,8 +81,8 @@ export class ArnPrincipal extends PolicyPrincipal {
 }
 
 export class AccountPrincipal extends ArnPrincipal {
-  constructor(public readonly anchor: cdk.Construct, public readonly accountId: any) {
-    super(`arn:${new cdk.Aws(anchor).partition}:iam::${accountId}:root`);
+  constructor(public readonly scope: cdk.Construct, public readonly accountId: any) {
+    super(`arn:${new cdk.Aws(scope).partition}:iam::${accountId}:root`);
   }
 }
 
@@ -136,8 +136,8 @@ export class FederatedPrincipal extends PolicyPrincipal {
 }
 
 export class AccountRootPrincipal extends AccountPrincipal {
-  constructor(anchor: cdk.Construct) {
-    super(anchor, new cdk.Aws(anchor).accountId);
+  constructor(scope: cdk.Construct) {
+    super(scope, new cdk.Aws(scope).scope);
   }
 }
 
@@ -250,8 +250,8 @@ export class PolicyStatement extends cdk.Token {
     return this.addPrincipal(new ArnPrincipal(arn));
   }
 
-  public addAwsAccountPrincipal(anchor: cdk.Construct, accountId: string): this {
-    return this.addPrincipal(new AccountPrincipal(anchor, accountId));
+  public addAwsAccountPrincipal(scope: cdk.Construct, accountId: string): this {
+    return this.addPrincipal(new AccountPrincipal(scope, accountId));
   }
 
   public addArnPrincipal(arn: string): this {
@@ -266,8 +266,8 @@ export class PolicyStatement extends cdk.Token {
     return this.addPrincipal(new FederatedPrincipal(federated, conditions));
   }
 
-  public addAccountRootPrincipal(anchor: cdk.Construct): this {
-    return this.addPrincipal(new AccountRootPrincipal(anchor));
+  public addAccountRootPrincipal(scope: cdk.Construct): this {
+    return this.addPrincipal(new AccountRootPrincipal(scope));
   }
 
   public addCanonicalUserPrincipal(canonicalUserId: string): this {
@@ -372,7 +372,7 @@ export class PolicyStatement extends cdk.Token {
   // Serialization
   //
 
-  public resolve(_context: cdk.ResolveContext): any {
+  public scope(_context: cdk.ResolveContext): any {
     return this.toJson();
   }
 

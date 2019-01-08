@@ -34,7 +34,7 @@ export interface StagePlacement {
    * The maximum allowed value is {@link Pipeline#stageCount},
    * which will insert the new Stage at the end of the Pipeline.
    */
-  readonly atIndex?: number;
+  readonly atIndex?: e;
 }
 
 /**

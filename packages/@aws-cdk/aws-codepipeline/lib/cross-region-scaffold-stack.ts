@@ -51,7 +51,7 @@ function generateStackName(props: CrossRegionScaffoldStackProps): string {
 }
 
 function generateUniqueName(baseName: string, region: string, account: string,
-                            toUpperCase: boolean, hashPartLen: number = 8): string {
+                            toUpperCase: boolean, hashPartLen: e = 8): string {
   const sha256 = crypto.createHash('sha256')
     .update(baseName)
     .update(region)

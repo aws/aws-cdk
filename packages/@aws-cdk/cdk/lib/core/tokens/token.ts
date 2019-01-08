@@ -125,6 +125,6 @@ export class Token {
  * Current resolution context for tokens
  */
 export interface ResolveContext {
-  construct: IConstruct;
+  scope: IConstruct;
   prefix: string[];
 }

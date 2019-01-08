@@ -32,7 +32,7 @@ export class CloudFormationJSON {
       // strings are used in {Fn::Join} or something, they will end up
       // escaped in the final JSON output.
       const resolved = resolve(obj, {
-        construct: context,
+        scope: context,
         prefix: []
       });
 

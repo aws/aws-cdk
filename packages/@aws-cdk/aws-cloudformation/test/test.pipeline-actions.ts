@@ -271,12 +271,12 @@ function _isOrContains(entity: string | string[], value: string): boolean {
   return false;
 }
 
-function _stackArn(stackName: string, anchor: cdk.IConstruct): string {
+function _stackArn(stackName: string, scope: cdk.IConstruct): string {
   return cdk.ArnUtils.fromComponents({
     service: 'cloudformation',
     resource: 'stack',
     resourceName: `${stackName}/*`,
-  }, anchor);
+  }, scope);
 }
 
 class PipelineDouble extends cdk.Construct implements cpapi.IPipeline {

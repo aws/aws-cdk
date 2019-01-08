@@ -13,22 +13,22 @@ export class CfnReference extends Token {
   private readonly tokenStack?: Stack;
   private readonly replacementTokens: Map<Stack, Token>;
 
-  constructor(value: any, displayName?: string, anchor?: Construct) {
+  constructor(value: any, displayName?: string, scope?: Construct) {
     if (typeof(value) === 'function') {
-        throw new Error('CfnReference can only contain eager values');
+        throw new Error('CfnReference can only hold CloudFormation intrinsics (not a function)');
     }
     super(value, displayName);
     this.referenceType = CfnReference.ReferenceType;
     this.replacementTokens = new Map<Stack, Token>();
 
-    if (anchor !== undefined) {
-      this.tokenStack = Stack.find(anchor);
+    if (scope !== undefined) {
+      this.tokenStack = Stack.find(scope);
     }
   }
 
   public resolve(context: ResolveContext): any {
     // If we have a special token for this stack, resolve that instead, otherwise resolve the original
-    const token = this.replacementTokens.get(Stack.find(context.construct));
+    const token = this.replacementTokens.get(Stack.find(context.scope));
     if (token) {
       return token.resolve(context);
     } else {

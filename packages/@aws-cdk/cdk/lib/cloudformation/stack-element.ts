@@ -127,7 +127,7 @@ export abstract class StackElement extends Construct implements IDependable {
       // before validate(). Swallow errors that occur because the CFN layer doesn't validate completely.
       this.node.resolve(this.toCloudFormation());
     } catch (e) {
-      if (e.type !== 'CloudFormationSynthesisError') { throw e; }
+      if (e.type !== 'CfnSynthesisError') { throw e; }
     } finally {
       options.pop();
     }

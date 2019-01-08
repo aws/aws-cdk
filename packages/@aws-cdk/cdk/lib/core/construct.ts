@@ -384,7 +384,7 @@ export class ConstructNode {
    */
   public resolve(obj: any): any {
     return resolve(obj, {
-      construct: this.host,
+      scope: this.host,
       prefix: []
     });
   }
@@ -502,6 +502,8 @@ export class Construct implements IConstruct {
    * final changes before synthesis. prepare() will be called after child
    * constructs have been prepared.
    *
+   * This is an advanced framework feature. Only use this if you
+   * understand the implications.
    */
   protected prepare(): void {
     // Intentionally left blank

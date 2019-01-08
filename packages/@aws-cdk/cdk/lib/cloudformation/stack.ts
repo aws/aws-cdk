@@ -30,17 +30,17 @@ export interface StackProps {
 export class Stack extends Construct {
   /**
    * Traverses the tree and looks up for the Stack root.
-   * @param node A construct in the tree
+   * @param scope A construct in the tree
    * @returns The Stack object (throws if the node is not part of a Stack-rooted tree)
    */
-  public static find(node: IConstruct): Stack {
-    let curr: IConstruct | undefined = node;
+  public static find(scope: IConstruct): Stack {
+    let curr: IConstruct | undefined = scope;
     while (curr != null && !Stack.isStack(curr)) {
       curr = curr.node.scope;
     }
 
     if (curr == null) {
-      throw new Error(`Cannot find a Stack parent for '${node.toString()}'`);
+      throw new Error(`Cannot find a Stack parent for '${scope.toString()}'`);
     }
     return curr;
   }

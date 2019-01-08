@@ -128,14 +128,6 @@ class LatestDeploymentResource extends CfnDeployment {
     }
 
     return this.logicalIdToken.toString();
-
-    /*
-    if (!this.lazyLogicalId) {
-      throw new Error('This resource has a lazy logical ID which is calculated just before synthesis. Use a cdk.Token to evaluate');
-    }
-
-    return this.lazyLogicalId;
-    */
   }
 
   /**

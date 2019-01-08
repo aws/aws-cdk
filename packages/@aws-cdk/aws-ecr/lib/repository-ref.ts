@@ -122,12 +122,12 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Returns an ECR ARN for a repository that resides in the same account/region
    * as the current stack.
    */
-  public static arnForLocalRepository(repositoryName: string, anchor: cdk.IConstruct): string {
+  public static arnForLocalRepository(repositoryName: string, scope: cdk.IConstruct): string {
     return cdk.ArnUtils.fromComponents({
       service: 'ecr',
       resource: 'repository',
       resourceName: repositoryName
-    }, anchor);
+    }, scope);
   }
 
   /**

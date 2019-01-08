@@ -22,10 +22,10 @@ export class ArnUtils {
    *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
    *
    * The required ARN pieces that are omitted will be taken from the stack that
-   * the 'anchor' is attached to. If all ARN pieces are supplied, the supplied anchor
+   * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
    * can be 'undefined'.
    */
-  public static fromComponents(components: ArnComponents, anchor: IConstruct | undefined): string {
+  public static fromComponents(components: ArnComponents, scope: IConstruct | undefined): string {
     const partition = components.partition !== undefined ? components.partition : theStack('partition').partition;
     const region = components.region !== undefined ? components.region : theStack('region').region;
     const account = components.account !== undefined ? components.account : theStack('account').accountId;
@@ -45,13 +45,13 @@ export class ArnUtils {
     return values.join('');
 
     /**
-     * Return the anchored stack (so the caller can get an attribute from it), throw a descriptive error if we don't have an anchor
+     * Return the stack we're scoped to (so the caller can get an attribute from it), throw a descriptive error if we don't have a scope
      */
     function theStack(attribute: string) {
-      if (!anchor) {
-        throw new Error(`Must provide anchor when using implicit ${attribute}`);
+      if (!scope) {
+        throw new Error(`Must provide scope when using implicit ${attribute}`);
       }
-      return Stack.find(anchor);
+      return Stack.find(scope);
 
     }
   }

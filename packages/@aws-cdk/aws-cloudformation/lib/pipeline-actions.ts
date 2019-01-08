@@ -410,7 +410,7 @@ class SingletonPolicy extends cdk.Construct {
     this.statementFor({
       actions: ['cloudformation:ExecuteChangeSet'],
       conditions: { StringEquals: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResource(stackArnFromProps(props, this));
+    }).addResource(this.stackArnFromProps(props));
   }
 
   public grantCreateReplaceChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
@@ -422,7 +422,7 @@ class SingletonPolicy extends cdk.Construct {
         'cloudformation:DescribeStacks',
       ],
       conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResource(stackArnFromProps(props, this));
+    }).addResource(this.stackArnFromProps(props));
   }
 
   public grantCreateUpdateStack(props: { stackName: string, replaceOnFailure?: boolean, region?: string }): void {
@@ -438,7 +438,7 @@ class SingletonPolicy extends cdk.Construct {
     if (props.replaceOnFailure) {
       actions.push('cloudformation:DeleteStack');
     }
-    this.statementFor({ actions }).addResource(stackArnFromProps(props, this));
+    this.statementFor({ actions }).addResource(this.stackArnFromProps(props));
   }
 
   public grantDeleteStack(props: { stackName: string, region?: string }): void {
@@ -447,7 +447,7 @@ class SingletonPolicy extends cdk.Construct {
         'cloudformation:DescribeStack*',
         'cloudformation:DeleteStack',
       ]
-    }).addResource(stackArnFromProps(props, this));
+    }).addResource(this.stackArnFromProps(props));
   }
 
   public grantPassRole(role: iam.IRole): void {
@@ -485,6 +485,15 @@ class SingletonPolicy extends cdk.Construct {
       }
     }
   }
+
+  private stackArnFromProps(props: { stackName: string, region?: string }): string {
+    return cdk.ArnUtils.fromComponents({
+      region: props.region,
+      service: 'cloudformation',
+      resource: 'stack',
+      resourceName: `${props.stackName}/*`
+    }, this);
+  }
 }
 
 interface StatementTemplate {
@@ -493,12 +502,3 @@ interface StatementTemplate {
 }
 
 type StatementCondition = { [op: string]: { [attribute: string]: string } };
-
-function stackArnFromProps(props: { stackName: string, region?: string }, anchor: cdk.IConstruct): string {
-  return cdk.ArnUtils.fromComponents({
-    region: props.region,
-    service: 'cloudformation',
-    resource: 'stack',
-    resourceName: `${props.stackName}/*`
-  }, anchor);
-}

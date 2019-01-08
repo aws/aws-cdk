@@ -10,7 +10,7 @@ import { CfnDeploymentConfig } from './codedeploy.generated';
  */
 export interface IServerDeploymentConfig {
   readonly deploymentConfigName: string;
-  deploymentConfigArn(anchor: cdk.IConstruct): string;
+  deploymentConfigArn(scope: cdk.IConstruct): string;
   export(): ServerDeploymentConfigImportProps;
 }
 
@@ -37,8 +37,8 @@ class ImportedServerDeploymentConfig extends cdk.Construct implements IServerDep
     this.deploymentConfigName = props.deploymentConfigName;
   }
 
-  public deploymentConfigArn(anchor: cdk.IConstruct): string {
-    return arnForDeploymentConfigName(this.deploymentConfigName, anchor);
+  public deploymentConfigArn(scope: cdk.IConstruct): string {
+    return arnForDeploymentConfigName(this.deploymentConfigName, scope);
   }
 
   public export() {
@@ -53,8 +53,8 @@ class DefaultServerDeploymentConfig implements IServerDeploymentConfig {
     this.deploymentConfigName = deploymentConfigName;
   }
 
-  public deploymentConfigArn(anchor: cdk.IConstruct): string {
-    return arnForDeploymentConfigName(this.deploymentConfigName, anchor);
+  public deploymentConfigArn(scope: cdk.IConstruct): string {
+    return arnForDeploymentConfigName(this.deploymentConfigName, scope);
   }
 
   public export(): ServerDeploymentConfigImportProps {
@@ -126,8 +126,8 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
     this.deploymentConfigName = resource.ref.toString();
   }
 
-  public deploymentConfigArn(anchor: cdk.IConstruct): string {
-    return arnForDeploymentConfigName(this.deploymentConfigName, anchor);
+  public deploymentConfigArn(scope: cdk.IConstruct): string {
+    return arnForDeploymentConfigName(this.deploymentConfigName, scope);
   }
 
   public export(): ServerDeploymentConfigImportProps {
@@ -156,11 +156,11 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
   }
 }
 
-function arnForDeploymentConfigName(name: string, anchor: cdk.IConstruct): string {
+function arnForDeploymentConfigName(name: string, scope: cdk.IConstruct): string {
   return cdk.ArnUtils.fromComponents({
     service: 'codedeploy',
     resource: 'deploymentconfig',
     resourceName: name,
     sep: ':',
-  }, anchor);
+  }, scope);
 }
