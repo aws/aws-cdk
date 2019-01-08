@@ -7,7 +7,7 @@ export class ExampleConstruct extends cdk.Construct {
 
     /// !show
     const role = new iam.Role(this, 'MyRole', {
-      assumedBy: new iam.AccountPrincipal(this, '123456789012'),
+      assumedBy: new iam.AccountPrincipal('123456789012'),
       externalId: 'SUPPLY-ME',
     });
     /// !hide

@@ -191,7 +191,7 @@ export = {
         /Invalid principal type for Lambda permission statement/);
 
       fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
-      fn.addPermission('S2', { principal: new iam.AccountPrincipal(stack, 'account') });
+      fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
 
       test.done();
     },
@@ -1030,7 +1030,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.AccountPrincipal(stack, '1234'),
+      assumedBy: new iam.AccountPrincipal('1234'),
     });
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('xxx'),

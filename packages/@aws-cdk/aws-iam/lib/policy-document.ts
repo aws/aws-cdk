@@ -81,8 +81,8 @@ export class ArnPrincipal extends PolicyPrincipal {
 }
 
 export class AccountPrincipal extends ArnPrincipal {
-  constructor(public readonly scope: cdk.Construct, public readonly accountId: any) {
-    super(`arn:${new cdk.Aws(scope).partition}:iam::${accountId}:root`);
+  constructor(public readonly accountId: any) {
+    super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
   }
 }
 
@@ -136,8 +136,8 @@ export class FederatedPrincipal extends PolicyPrincipal {
 }
 
 export class AccountRootPrincipal extends AccountPrincipal {
-  constructor(scope: cdk.Construct) {
-    super(scope, new cdk.Aws(scope).accountId);
+  constructor() {
+    super(new StackDependentToken(stack => stack.accountId).toString());
   }
 }
 
@@ -250,8 +250,8 @@ export class PolicyStatement extends cdk.Token {
     return this.addPrincipal(new ArnPrincipal(arn));
   }
 
-  public addAwsAccountPrincipal(scope: cdk.Construct, accountId: string): this {
-    return this.addPrincipal(new AccountPrincipal(scope, accountId));
+  public addAwsAccountPrincipal(accountId: string): this {
+    return this.addPrincipal(new AccountPrincipal(accountId));
   }
 
   public addArnPrincipal(arn: string): this {
@@ -266,8 +266,8 @@ export class PolicyStatement extends cdk.Token {
     return this.addPrincipal(new FederatedPrincipal(federated, conditions));
   }
 
-  public addAccountRootPrincipal(scope: cdk.Construct): this {
-    return this.addPrincipal(new AccountRootPrincipal(scope));
+  public addAccountRootPrincipal(): this {
+    return this.addPrincipal(new AccountRootPrincipal());
   }
 
   public addCanonicalUserPrincipal(canonicalUserId: string): this {
@@ -448,4 +448,18 @@ function mergePrincipal(target: { [key: string]: string[] }, source: { [key: str
   }
 
   return target;
+}
+
+/**
+ * A lazy token that requires an instance of Stack to evaluate
+ */
+class StackDependentToken extends cdk.Token {
+  constructor(private readonly fn: (stack: cdk.Stack) => any) {
+    super();
+  }
+
+  public resolve(context: cdk.ResolveContext) {
+    const stack = cdk.Stack.find(context.scope);
+    return this.fn(stack);
+  }
 }

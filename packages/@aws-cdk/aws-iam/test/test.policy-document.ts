@@ -14,7 +14,7 @@ export = {
     p.addResource('yourQueue');
 
     p.addAllResources();
-    p.addAwsAccountPrincipal(stack, `my${new Token({ account: 'account' })}name`);
+    p.addAwsAccountPrincipal(`my${new Token({ account: 'account' })}name`);
     p.limitToAccount('12221121221');
 
     test.deepEqual(stack.node.resolve(p), { Action:
@@ -117,7 +117,7 @@ export = {
     const stack = new Stack();
 
     const p = new PolicyStatement();
-    p.addAccountRootPrincipal(stack);
+    p.addAccountRootPrincipal();
     test.deepEqual(stack.node.resolve(p), {
       Effect: "Allow",
       Principal: {
@@ -158,8 +158,8 @@ export = {
     const stack = new Stack();
 
     const p = new PolicyStatement();
-    p.addAwsAccountPrincipal(stack, '1234');
-    p.addAwsAccountPrincipal(stack, '5678');
+    p.addAwsAccountPrincipal('1234');
+    p.addAwsAccountPrincipal('5678');
     test.deepEqual(stack.node.resolve(p), {
       Effect: 'Allow',
       Principal: {
@@ -282,7 +282,7 @@ export = {
       assumeRoleAction: 'sts:AssumeRole',
       policyFragment: () => new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
     };
-    const s = new PolicyStatement().addAccountRootPrincipal(stack)
+    const s = new PolicyStatement().addAccountRootPrincipal()
                                    .addPrincipal(arrayPrincipal);
     test.deepEqual(stack.node.resolve(s), {
       Effect: 'Allow',

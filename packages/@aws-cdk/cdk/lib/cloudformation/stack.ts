@@ -2,7 +2,6 @@ import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
 import { Construct, IConstruct } from '../core/construct';
 import { Environment } from '../environment';
-import { ArnComponents, arnFromComponents, parseArn } from './arn';
 import { CfnReference } from './cfn-tokens';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
@@ -510,5 +509,6 @@ function stackElements(node: IConstruct, into: StackElement[] = []): StackElemen
 }
 
 // These imports have to be at the end to prevent circular imports
+import { ArnComponents, arnFromComponents, parseArn } from './arn';
 import { Aws } from './pseudo';
 import { StackElement } from './stack-element';

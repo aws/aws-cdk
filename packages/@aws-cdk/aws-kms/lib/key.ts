@@ -204,7 +204,7 @@ export class EncryptionKey extends EncryptionKeyBase {
     this.addToResourcePolicy(new PolicyStatement()
       .addAllResources()
       .addActions(...actions)
-      .addAccountRootPrincipal(this));
+      .addAccountRootPrincipal());
   }
 }
 

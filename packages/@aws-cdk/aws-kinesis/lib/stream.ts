@@ -249,7 +249,7 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
 
     dest.addToPolicy(new iam.PolicyStatement()
       .addAction('logs:PutSubscriptionFilter')
-      .addAwsAccountPrincipal(this, sourceStack.env.account)
+      .addAwsAccountPrincipal(sourceStack.env.account)
       .addAllResources());
 
     return dest.logSubscriptionDestination(sourceLogGroup);

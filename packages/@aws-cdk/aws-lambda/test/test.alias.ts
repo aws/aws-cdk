@@ -118,7 +118,7 @@ export = {
 
     // WHEN
     alias.addPermission('Perm', {
-      principal: new AccountPrincipal(stack, '123456')
+      principal: new AccountPrincipal('123456')
     });
 
     // THEN

@@ -92,7 +92,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     // FIXME: can't use grantPut() here because that only takes IAM objects, not arbitrary principals
     bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addPrincipal(new iam.AccountPrincipal(this, account))
+      .addPrincipal(new iam.AccountPrincipal(account))
       .addAction('s3:PutObject')
       .addResource(bucket.arnForObjects(prefix || '', '*')));
   }

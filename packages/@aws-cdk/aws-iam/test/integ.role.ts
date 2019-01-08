@@ -17,7 +17,7 @@ policy.attachToRole(role);
 
 // Role with an external ID
 new Role(stack, 'TestRole2', {
-  assumedBy: new AccountRootPrincipal(stack),
+  assumedBy: new AccountRootPrincipal(),
   externalId: 'supply-me',
 });
 
