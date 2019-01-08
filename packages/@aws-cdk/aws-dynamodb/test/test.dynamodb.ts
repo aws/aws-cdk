@@ -1178,7 +1178,7 @@ export = {
     const errors = table.node.validateTree();
 
     test.strictEqual(1, errors.length);
-    test.strictEqual('a sort key of the table must be specified to add local secondary indexes', errors[0]);
+    test.strictEqual('a sort key of the table must be specified to add local secondary indexes', errors[0].message);
 
     test.done();
   },
