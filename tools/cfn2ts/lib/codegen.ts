@@ -71,19 +71,10 @@ export default class CodeGenerator {
 
       const cfnName = SpecName.parse(name);
       const resourceName = genspec.CodeName.forCfnResource(cfnName);
-      const legacyResourceName = genspec.CodeName.forLegacyResource(cfnName);
       this.code.line();
 
       this.emitResourceType(resourceName, resourceType);
       this.emitPropertyTypes(name, resourceName);
-
-      // emit the "cloudformation.XxxResource" classes for backwards compatibility
-      // those will also include a deprecation warning.
-      this.code.line('// legacy "cloudformation" namespace (will be deprecated soon)');
-      this.code.openBlock('export namespace cloudformation');
-      this.emitResourceType(legacyResourceName, resourceType, resourceName);
-      this.emitPropertyTypes(name, legacyResourceName);
-      this.code.closeBlock();
     }
   }
 
