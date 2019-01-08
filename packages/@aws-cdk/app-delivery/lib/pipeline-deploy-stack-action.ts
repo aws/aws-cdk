@@ -140,16 +140,6 @@ export class PipelineDeployStackAction extends cdk.Construct {
     });
   }
 
-  protected validate(): string[] {
-    const result = super.validate();
-    const assets = this.stack.node.metadata.filter(md => md.type === cxapi.ASSET_METADATA);
-    if (assets.length > 0) {
-      // FIXME: Implement the necessary actions to publish assets
-      result.push(`Cannot deploy the stack ${this.stack.name} because it references ${assets.length} asset(s)`);
-    }
-    return result;
-  }
-
   /**
    * Add policy statements to the role deploying the stack.
    *
@@ -161,6 +151,16 @@ export class PipelineDeployStackAction extends cdk.Construct {
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPolicy(statement);
+  }
+
+  protected validate(): string[] {
+    const result = super.validate();
+    const assets = this.stack.node.metadata.filter(md => md.type === cxapi.ASSET_METADATA);
+    if (assets.length > 0) {
+      // FIXME: Implement the necessary actions to publish assets
+      result.push(`Cannot deploy the stack ${this.stack.name} because it references ${assets.length} asset(s)`);
+    }
+    return result;
   }
 }
 

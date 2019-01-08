@@ -1175,7 +1175,7 @@ export = {
       sortKey: LSI_SORT_KEY
     });
 
-    const errors = table.validate();
+    const errors = table.node.validateTree();
 
     test.strictEqual(1, errors.length);
     test.strictEqual('a sort key of the table must be specified to add local secondary indexes', errors[0]);

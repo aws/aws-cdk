@@ -243,25 +243,6 @@ export class TaskDefinition extends cdk.Construct {
   }
 
   /**
-   * Validate this task definition
-   */
-  protected validate(): string[] {
-    const ret = super.validate();
-
-    if (isEc2Compatible(this.compatibility)) {
-      // EC2 mode validations
-
-      // Container sizes
-      for (const container of this.containers) {
-        if (!container.memoryLimitSpecified) {
-          ret.push(`ECS Container ${container.node.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
-        }
-      }
-    }
-    return ret;
-  }
-
-  /**
    * Constrain where tasks can be placed
    */
   public addPlacementConstraint(constraint: PlacementConstraint) {
@@ -292,6 +273,25 @@ export class TaskDefinition extends cdk.Construct {
       });
     }
     return this.executionRole;
+  }
+
+  /**
+   * Validate this task definition
+   */
+  protected validate(): string[] {
+    const ret = super.validate();
+
+    if (isEc2Compatible(this.compatibility)) {
+      // EC2 mode validations
+
+      // Container sizes
+      for (const container of this.containers) {
+        if (!container.memoryLimitSpecified) {
+          ret.push(`ECS Container ${container.node.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+        }
+      }
+    }
+    return ret;
   }
 
   /**

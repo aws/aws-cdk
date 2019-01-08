@@ -110,16 +110,6 @@ export class ApplicationListenerRule extends cdk.Construct implements cdk.IDepen
   }
 
   /**
-   * Validate the rule
-   */
-  protected validate() {
-    if (this.actions.length === 0) {
-      return ['Listener rule needs at least one action'];
-    }
-    return [];
-  }
-
-  /**
    * Add a TargetGroup to load balance to
    */
   public addTargetGroup(targetGroup: IApplicationTargetGroup) {
@@ -128,6 +118,16 @@ export class ApplicationListenerRule extends cdk.Construct implements cdk.IDepen
       type: 'forward'
     });
     targetGroup.registerListener(this.listener, this);
+  }
+
+  /**
+   * Validate the rule
+   */
+  protected validate() {
+    if (this.actions.length === 0) {
+      return ['Listener rule needs at least one action'];
+    }
+    return [];
   }
 
   /**

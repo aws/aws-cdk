@@ -239,14 +239,6 @@ export abstract class Action extends cdk.Construct {
     this.stage._internal._attachAction(this);
   }
 
-  protected validate(): string[] {
-    return validation.validateArtifactBounds('input', this._actionInputArtifacts, this.artifactBounds.minInputs,
-        this.artifactBounds.maxInputs, this.category, this.provider)
-      .concat(validation.validateArtifactBounds('output', this._actionOutputArtifacts, this.artifactBounds.minOutputs,
-        this.artifactBounds.maxOutputs, this.category, this.provider)
-    );
-  }
-
   public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
     const rule = new events.EventRule(this, name, options);
     rule.addTarget(target);
@@ -268,6 +260,14 @@ export abstract class Action extends cdk.Construct {
 
   public get _outputArtifacts(): Artifact[] {
     return this._actionOutputArtifacts.slice();
+  }
+
+  protected validate(): string[] {
+    return validation.validateArtifactBounds('input', this._actionInputArtifacts, this.artifactBounds.minInputs,
+        this.artifactBounds.maxInputs, this.category, this.provider)
+      .concat(validation.validateArtifactBounds('output', this._actionOutputArtifacts, this.artifactBounds.minOutputs,
+        this.artifactBounds.maxOutputs, this.category, this.provider)
+    );
   }
 
   protected addOutputArtifact(name: string = this.stage._internal._generateOutputArtifactName(this)): Artifact {

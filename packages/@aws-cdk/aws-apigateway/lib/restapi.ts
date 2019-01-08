@@ -310,6 +310,14 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
   }
 
   /**
+   * Internal API used by `Method` to keep an inventory of methods at the API
+   * level for validation purposes.
+   */
+  public _attachMethod(method: Method) {
+    this.methods.push(method);
+  }
+
+  /**
    * Performs validation of the REST API.
    */
   protected validate() {
@@ -318,14 +326,6 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
     }
 
     return [];
-  }
-
-  /**
-   * Internal API used by `Method` to keep an inventory of methods at the API
-   * level for validation purposes.
-   */
-  public _attachMethod(method: Method) {
-    this.methods.push(method);
   }
 
   private configureDeployment(props: RestApiProps) {

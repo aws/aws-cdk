@@ -706,24 +706,6 @@ export class Project extends ProjectBase {
   }
 
   /**
-   * @override
-   */
-  protected validate(): string[] {
-    const ret = new Array<string>();
-    if (this.source.type === SourceType.CodePipeline) {
-      if (this._secondarySources.length > 0) {
-        ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
-          "Use the CodeBuild Pipeline Actions' `additionalInputArtifacts` property instead");
-      }
-      if (this._secondaryArtifacts.length > 0) {
-        ret.push('A Project with a CodePipeline Source cannot have secondary artifacts. ' +
-          "Use the CodeBuild Pipeline Actions' `additionalOutputArtifactNames` property instead");
-      }
-    }
-    return ret;
-  }
-
-  /**
    * Export this Project. Allows referencing this Project in a different CDK Stack.
    */
   public export(): ProjectImportProps {
@@ -768,6 +750,24 @@ export class Project extends ProjectBase {
     }
     secondaryArtifact._bind(this);
     this._secondaryArtifacts.push(secondaryArtifact);
+  }
+
+  /**
+   * @override
+   */
+  protected validate(): string[] {
+    const ret = new Array<string>();
+    if (this.source.type === SourceType.CodePipeline) {
+      if (this._secondarySources.length > 0) {
+        ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
+          "Use the CodeBuild Pipeline Actions' `additionalInputArtifacts` property instead");
+      }
+      if (this._secondaryArtifacts.length > 0) {
+        ret.push('A Project with a CodePipeline Source cannot have secondary artifacts. ' +
+          "Use the CodeBuild Pipeline Actions' `additionalOutputArtifactNames` property instead");
+      }
+    }
+    return ret;
   }
 
   private createLoggingPermission() {

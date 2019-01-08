@@ -105,10 +105,6 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
     return this._actions.slice();
   }
 
-  protected validate(): string[] {
-    return this.validateHasActions();
-  }
-
   public render(): CfnPipeline.StageDeclarationProperty {
     return {
       name: this.node.id,
@@ -147,6 +143,10 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
 
   public _findInputArtifact(action: cpapi.Action): cpapi.Artifact {
     return (this.pipeline as any)._findInputArtifact(this, action);
+  }
+
+  protected validate(): string[] {
+    return this.validateHasActions();
   }
 
   private renderAction(action: cpapi.Action): CfnPipeline.ActionDeclarationProperty {
