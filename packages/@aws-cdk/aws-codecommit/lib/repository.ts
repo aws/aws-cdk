@@ -244,10 +244,10 @@ class ImportedRepository extends RepositoryBase {
   constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
     super(scope, id);
 
-    this.repositoryArn = cdk.ArnUtils.fromComponents({
+    this.repositoryArn = cdk.Stack.find(this).arnFromComponents({
       service: 'codecommit',
       resource: props.repositoryName,
-    }, this);
+    });
     this.repositoryName = props.repositoryName;
   }
 
