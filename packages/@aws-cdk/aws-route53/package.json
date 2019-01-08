@@ -73,11 +73,5 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  },
-  "awslint": {
-    "exclude": [
-      "resource-attribute:@aws-cdk/aws-route53.IHostedZone.hostedZoneNameServers",
-      "resource-props:@aws-cdk/aws-route53.HostedZoneProps"
-    ]
   }
 }

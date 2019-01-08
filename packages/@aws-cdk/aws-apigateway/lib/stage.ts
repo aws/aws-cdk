@@ -15,6 +15,12 @@ export interface StageOptions extends MethodDeploymentOptions {
   stageName?: string;
 
   /**
+   * Specifies whether Amazon X-Ray tracing is enabled for this method.
+   * @default false
+   */
+  tracingEnabled?: boolean;
+
+  /**
    * Indicates whether cache clustering is enabled for the stage.
    */
   cacheClusterEnabled?: boolean;
@@ -158,6 +164,7 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
       description: props.description,
       documentationVersion: props.documentationVersion,
       variables: props.variables,
+      tracingEnabled: props.tracingEnabled,
       methodSettings,
     });
 
