@@ -1,6 +1,6 @@
 import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './codepipeline.generated';
+import { CfnCustomActionType } from './codepipeline.generated';
 
 /**
  * The creation attributes used for defining a configuration property
@@ -119,7 +119,7 @@ export class CustomActionRegistration extends cdk.Construct {
   constructor(parent: cdk.Construct, id: string, props: CustomActionRegistrationProps) {
     super(parent, id);
 
-    new cloudformation.CustomActionTypeResource(this, 'Resource', {
+    new CfnCustomActionType(this, 'Resource', {
       category: props.category,
       inputArtifactDetails: {
         minimumCount: props.artifactBounds.minInputs,
