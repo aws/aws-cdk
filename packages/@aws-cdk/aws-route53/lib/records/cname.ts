@@ -3,7 +3,7 @@ import { IHostedZone } from '../hosted-zone-ref';
 import { CfnRecordSet } from '../route53.generated';
 import { determineFullyQualifiedDomainName } from './_util';
 
-export interface TxtRecordProps {
+export interface CnameRecordProps {
   /**
    * The hosted zone in which to define the new TXT record.
    */
@@ -28,22 +28,20 @@ export interface TxtRecordProps {
 }
 
 /**
- * A DNS TXT record
+ * A DNS CNAME record
  */
-export class TxtRecord extends Construct {
-  constructor(scope: Construct, id: string, props: TxtRecordProps) {
+export class CnameRecord extends Construct {
+  constructor(scope: Construct, id: string, props: CnameRecordProps) {
     super(scope, id);
 
-    // JSON.stringify conveniently wraps strings in " and escapes ".
-    const recordValue = JSON.stringify(props.recordValue);
     const ttl = props.ttl === undefined ? 1800 : props.ttl;
 
     new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
       name: determineFullyQualifiedDomainName(props.recordName, props.zone),
-      type: 'TXT',
-      resourceRecords: [recordValue],
-      ttl: ttl.toString()
+      type: 'CNAME',
+      resourceRecords: [ props.recordValue ],
+      ttl: ttl.toString(),
     });
   }
 }
