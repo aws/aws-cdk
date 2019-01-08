@@ -446,10 +446,6 @@ class FnConditionBase extends CloudFormationToken implements IConditionExpressio
   constructor(type: string, value: any) {
     super({ [type]: value });
   }
-
-  public toConditionJson() {
-    return this.resolve();
-  }
 }
 
 /**
