@@ -1,5 +1,4 @@
 import { Construct, IConstruct, PATH_SEP } from "../core/construct";
-import { RESOLVE_OPTIONS } from "../core/tokens/options";
 
 const LOGICAL_ID_MD = 'aws:cdk:logicalId';
 
@@ -119,17 +118,22 @@ export abstract class StackElement extends Construct implements IDependable {
    * Automatically detect references in this StackElement
    */
   protected prepare() {
-    const options = RESOLVE_OPTIONS.push({ preProcess: (token, _) => { this.node.recordReference(token); return token; } });
     try {
-      // Execute for side effect of calling 'preProcess'.
-      // Note: it might be that the properties of the CFN object aren't valid. This will usually be preventatively
-      // caught in a construct's validate() and turned into a nicely descriptive error, but we're running prepare()
-      // before validate(). Swallow errors that occur because the CFN layer doesn't validate completely.
-      this.node.resolve(this.toCloudFormation());
+      // Note: it might be that the properties of the CFN object aren't valid.
+      // This will usually be preventatively caught in a construct's validate()
+      // and turned into a nicely descriptive error, but we're running prepare()
+      // before validate(). Swallow errors that occur because the CFN layer
+      // doesn't validate completely.
+      //
+      // This does make the assumption that the error will not be rectified,
+      // but the error will be thrown later on anyway. If the error doesn't
+      // get thrown down the line, we may miss references.
+      this.node.recordReference(...findTokens(this.toCloudFormation(), {
+        scope: this,
+        prefix: []
+      }));
     } catch (e) {
       if (e.type !== 'CfnSynthesisError') { throw e; }
-    } finally {
-      options.pop();
     }
   }
 }
@@ -145,6 +149,7 @@ export class Ref extends CfnReference {
   }
 }
 
+import { findTokens } from "../core/tokens/resolve";
 import { Stack } from "./stack";
 
 /**

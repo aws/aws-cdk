@@ -418,9 +418,11 @@ export class ConstructNode {
   /**
    * Record a reference originating from this construct node
    */
-  public recordReference(ref: Token) {
-    if (ref.isReference) {
-      this.references.add(ref);
+  public recordReference(...refs: Token[]) {
+    for (const ref of refs) {
+      if (ref.isReference) {
+        this.references.add(ref);
+      }
     }
   }
 

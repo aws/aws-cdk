@@ -1,6 +1,6 @@
 import { containsListToken, TOKEN_MAP } from "./encoding";
 import { RESOLVE_OPTIONS } from "./options";
-import { RESOLVE_METHOD, ResolveContext } from "./token";
+import { RESOLVE_METHOD, ResolveContext, Token } from "./token";
 import { unresolved } from "./unresolved";
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
@@ -80,8 +80,9 @@ export function resolve(obj: any, context: ResolveContext): any {
   //
 
   if (unresolved(obj)) {
-    const preProcess = RESOLVE_OPTIONS.preProcess;
-    const value = preProcess(obj, context)[RESOLVE_METHOD](context);
+    const collect = RESOLVE_OPTIONS.collect;
+    if (collect) { collect(obj); }
+    const value = obj[RESOLVE_METHOD](context);
     return resolve(value, context);
   }
 
@@ -114,6 +115,23 @@ export function resolve(obj: any, context: ResolveContext): any {
   }
 
   return result;
+}
+
+/**
+ * Find all Tokens that are used in the given structure
+ */
+export function findTokens(obj: any, context: ResolveContext): Token[] {
+  const ret = new Array<Token>();
+
+  const options = RESOLVE_OPTIONS.push({ collect: ret.push.bind(ret) });
+  try {
+    // resolve() for side effect of calling 'preProcess', which adds to the
+    resolve(obj, context);
+  } finally {
+    options.pop();
+  }
+
+  return ret;
 }
 
 /**

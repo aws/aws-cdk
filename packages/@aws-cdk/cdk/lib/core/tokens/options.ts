@@ -1,9 +1,9 @@
-import { ResolveContext, Token } from "./token";
+import { Token } from "./token";
 
 /**
  * Function used to preprocess Tokens before resolving
  */
-export type PreProcessFunc = (token: Token, context: ResolveContext) => Token;
+export type CollectFunc = (token: Token) => void;
 
 /**
  * Global options for resolve()
@@ -28,12 +28,12 @@ export class ResolveConfiguration {
     };
   }
 
-  public get preProcess(): PreProcessFunc {
+  public get collect(): CollectFunc | undefined {
     for (let i = this.options.length - 1; i >= 0; i--) {
-      const ret = this.options[i].preProcess;
+      const ret = this.options[i].collect;
       if (ret !== undefined) { return ret; }
     }
-    return noPreprocessFunction;
+    return undefined;
   }
 }
 
@@ -45,7 +45,7 @@ interface ResolveOptions {
   /**
    * What function to use to preprocess Tokens before resolving them
    */
-  preProcess?: PreProcessFunc;
+  collect?: CollectFunc;
 }
 
 const glob = global as any;
@@ -54,7 +54,3 @@ const glob = global as any;
  * Singleton instance of resolver options
  */
 export const RESOLVE_OPTIONS: ResolveConfiguration = glob.__cdkResolveOptions = glob.__cdkResolveOptions || new ResolveConfiguration();
-
-function noPreprocessFunction(x: Token, _: ResolveContext) {
-  return x;
-}
