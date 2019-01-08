@@ -38,7 +38,7 @@ export = {
     });
 
     test.notDeepEqual(stack.toCloudFormation(), {});
-    test.deepEqual([], pipeline.validate());
+    test.deepEqual([], pipeline.node.validateTree());
     test.done();
   },
 
@@ -127,7 +127,7 @@ export = {
       ]
     }));
 
-    test.deepEqual([], p.validate());
+    test.deepEqual([], p.node.validateTree());
     test.done();
   },
 
@@ -211,7 +211,7 @@ export = {
       ]
     }));
 
-    test.deepEqual([], pipeline.validate());
+    test.deepEqual([], pipeline.node.validateTree());
     test.done();
   },
 

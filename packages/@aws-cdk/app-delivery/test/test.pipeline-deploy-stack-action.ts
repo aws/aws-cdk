@@ -274,7 +274,7 @@ export = nodeunit.testCase({
           for (let i = 0 ; i < assetCount ; i++) {
             deployedStack.node.addMetadata(cxapi.ASSET_METADATA, {});
           }
-          test.deepEqual(action.validate(),
+          test.deepEqual(action.node.validateTree(),
             [`Cannot deploy the stack DeployedStack because it references ${assetCount} asset(s)`]);
         }
       )
