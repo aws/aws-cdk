@@ -8,7 +8,6 @@ import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from 
 import util = require('./util');
 
 const RESOURCE_CLASS_PREFIX = 'Cfn';
-const LEGACY_RESOURCE_CLASS_POSTFIX = 'Resource';
 
 export const CORE_NAMESPACE = 'cdk';
 
@@ -22,20 +21,6 @@ export const CORE_NAMESPACE = 'cdk';
 export class CodeName {
   public static forCfnResource(specName: SpecName): CodeName {
     const className = RESOURCE_CLASS_PREFIX + specName.resourceName;
-    return new CodeName(packageName(specName), '', className, specName);
-  }
-
-  public static forLegacyResource(specName: SpecName): CodeName {
-    let className = specName.resourceName;
-
-    // add a "Resource" postfix to the class name (unless there is already a resource postfix).
-    if (!className.endsWith(LEGACY_RESOURCE_CLASS_POSTFIX)) {
-      className += LEGACY_RESOURCE_CLASS_POSTFIX;
-    } else {
-      // tslint:disable-next-line:no-console
-      console.error('INFO: Resource class %s already had a %s postfix, so we didn\'t add one', className, LEGACY_RESOURCE_CLASS_POSTFIX);
-    }
-
     return new CodeName(packageName(specName), '', className, specName);
   }
 
