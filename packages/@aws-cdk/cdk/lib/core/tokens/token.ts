@@ -19,9 +19,12 @@ export const RESOLVE_METHOD = 'resolve';
  */
 export class Token {
   /**
-   * If this Token represents a reference, an identifier for the reference Type
+   * Indicate whether this Token represent a "reference"
+   *
+   * The Construct tree can be queried for the Reference Tokens that
+   * are used in it.
    */
-  public readonly referenceType?: string;
+  public readonly isReference?: boolean;
 
   private tokenStringification?: string;
   private tokenListification?: string[];

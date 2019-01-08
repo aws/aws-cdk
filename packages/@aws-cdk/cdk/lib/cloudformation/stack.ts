@@ -1,7 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
 import { Construct, IConstruct } from '../core/construct';
-import { Token } from '../core/tokens';
 import { Environment } from '../environment';
 import { CfnReference } from './cfn-tokens';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
@@ -105,14 +104,6 @@ export class Stack extends Construct {
    * Other stacks this stack depends on
    */
   private readonly stackDependencies = new Set<Stack>();
-
-  /**
-   * A construct to hold cross-stack exports
-   *
-   * This mostly exists to trigger LogicalID munging, which would be
-   * disabled if we parented constructs directly under Stack.
-   */
-  private crossStackExports?: Construct;
 
   /**
    * Creates a new stack.
@@ -266,30 +257,6 @@ export class Stack extends Construct {
   }
 
   /**
-   * Export a Token value for use in another stack
-   */
-  public exportValue(tokenValue: Token, consumingStack: Stack): Token {
-    if (this.env.account !== consumingStack.env.account || this.env.region !== consumingStack.env.region) {
-      throw new Error('Can only reference cross stacks in the same region and account.');
-    }
-
-    // Ensure a singleton Output for this value
-    const resolved = this.node.resolve(tokenValue);
-    const id = 'Output' + JSON.stringify(resolved);
-    if (this.crossStackExports === undefined) {
-      this.crossStackExports = new Construct(this, 'Exports');
-    }
-    let output = this.crossStackExports.node.tryFindChild(id) as Output;
-    if (!output) {
-      output = new Output(this.crossStackExports, id, { value: tokenValue });
-    }
-
-    // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
-    // so construct one in-place.
-    return new Token({ 'Fn::ImportValue': output.export });
-  }
-
-  /**
    * The account in which this stack is defined
    *
    * Either returns the literal account for this stack if it was specified
@@ -374,8 +341,10 @@ export class Stack extends Construct {
    * Find all CloudFormation references and tell them we're consuming them.
    */
   protected prepare() {
-    for (const cfnRef of this.node.findReferences(CfnReference.ReferenceType)) {
-      (cfnRef as CfnReference).consumeFromStack(this);
+    for (const ref of this.node.findReferences()) {
+      if (CfnReference.isInstance(ref)) {
+        ref.consumeFromStack(this);
+      }
     }
   }
 
@@ -478,6 +447,5 @@ function stackElements(node: IConstruct, into: StackElement[] = []): StackElemen
 }
 
 // These imports have to be at the end to prevent circular imports
-import { Output } from './output';
 import { Aws } from './pseudo';
 import { StackElement } from './stack-element';

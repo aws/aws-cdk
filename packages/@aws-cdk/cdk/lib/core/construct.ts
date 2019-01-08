@@ -152,7 +152,23 @@ export class ConstructNode {
    * All direct children of this construct.
    */
   public get children() {
-    return Object.keys(this._children).map(k => this._children[k]);
+    return Object.values(this._children);
+  }
+
+  /**
+   * Return this construct and all of its children in the given order
+   */
+  public findAll(order: ConstructOrder = ConstructOrder.DepthFirst): IConstruct[] {
+    const ret = new Array<IConstruct>();
+    const queue: IConstruct[] = [this.host];
+
+    while (queue.length > 0) {
+      const next = order === ConstructOrder.BreadthFirst ? queue.splice(0, 1)[0] : queue.pop()!;
+      ret.push(next);
+      queue.push(...next.node.children);
+    }
+
+    return ret;
   }
 
   /**
@@ -265,7 +281,7 @@ export class ConstructNode {
       errors = errors.concat(child.node.validateTree());
     }
 
-    const localErrors: string[] = this.host.validate();
+    const localErrors: string[] = (this.host as any).validate();
     return errors.concat(localErrors.map(msg => new ValidationError(this.host, msg)));
   }
 
@@ -273,10 +289,12 @@ export class ConstructNode {
    * Run 'prepare()' on all constructs in the tree
    */
   public prepareTree() {
+    const constructs = this.host.node.findAll(ConstructOrder.BreadthFirst);
     // Use .reverse() to achieve post-order traversal
-    const constructs = allConstructs(this.host, CrawlStyle.BreadthFirst);
     for (const construct of constructs.reverse()) {
-      Construct.doPrepare(construct);
+      if (Construct.isInstance(construct)) {
+        (construct as any).prepare();
+      }
     }
   }
 
@@ -393,7 +411,7 @@ export class ConstructNode {
    * Record a reference originating from this construct node
    */
   public recordReference(ref: Token) {
-    if (ref.referenceType !== undefined && ref.referenceType !== '') {
+    if (ref.isReference) {
       this.references.add(ref);
     }
   }
@@ -401,14 +419,12 @@ export class ConstructNode {
   /**
    * Return all references of the given type originating from this node or any of its children
    */
-  public findReferences(type: string): Token[] {
+  public findReferences(): Token[] {
     const ret = new Set<Token>();
 
     function recurse(node: ConstructNode) {
       for (const ref of node.references) {
-        if (ref.referenceType === type) {
-          ret.add(ref);
-        }
+        ret.add(ref);
       }
 
       for (const child of node.children) {
@@ -447,15 +463,10 @@ export class ConstructNode {
  */
 export class Construct implements IConstruct {
   /**
-   * Run the prepare phase on the given construct
+   * Return whether the given object is a Construct
    */
-  public static doPrepare(construct: IConstruct) {
-    // Static method to make it possible to run 'prepare' from outside the
-    // object while not polluting the IDE autocomplete of instances with the
-    // presence of this method.
-    if (isConstruct(construct)) {
-      construct.prepare();
-    }
+  public static isInstance(x: IConstruct): x is Construct {
+    return (x as any).prepare !== undefined && (x as any).validate !== undefined;
   }
 
   /**
@@ -491,7 +502,7 @@ export class Construct implements IConstruct {
    *
    * @returns An array of validation error messages, or an empty array if there the construct is valid.
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     return [];
   }
 
@@ -564,26 +575,16 @@ function createStackTrace(below: Function): string[] {
 }
 
 /**
- * Return all constructs from the given root
+ * In what order to return constructs
  */
-export function allConstructs(root: IConstruct, style: CrawlStyle): IConstruct[] {
-  const ret = new Array<IConstruct>();
-  const queue = [root];
-
-  while (queue.length > 0) {
-    const next = style === CrawlStyle.BreadthFirst ? queue.splice(0, 1)[0] : queue.pop()!;
-    ret.push(next);
-    queue.push(...next.node.children);
-  }
-
-  return ret;
-}
-
-export enum CrawlStyle {
+export enum ConstructOrder {
+  /**
+   * Breadth first
+   */
   BreadthFirst,
-  DepthFirst
-}
 
-export function isConstruct(x: IConstruct): x is Construct {
-  return (x as any).prepare !== undefined && (x as any).validate !== undefined;
+  /**
+   * Depth first
+   */
+  DepthFirst
 }
