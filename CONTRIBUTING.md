@@ -156,6 +156,22 @@ Here are a few useful commands:
    evaluate only the rule specified [awslint README](./tools/awslint/README.md)
    for details on include/exclude rule patterns.
 
+### cfn2ts
+
+This tool is used to generate our low-level CloudFormation resources
+(L1/`CfnFoo`). It is executed as part of the build step of all modules in the
+AWS Construct Library.
+
+The tool consults the `cdk-build.cloudformation` key in `package.json` to
+determine which CloudFormation namespace this library represents (e.g.
+`AWS::EC2` is the namespace for `aws-ec2`). We maintain strict 1:1 relationship
+between those.
+
+Each module also has an npm script called `cfn2ts`:
+
+* `npm run cfn2ts`: generates L1 for a specific module
+* `lerna run cfn2ts`: generates L1 for the entire repo
+
 ## Development Workflows
 
 ### Full clean build

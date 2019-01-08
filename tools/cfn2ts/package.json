@@ -32,10 +32,8 @@
   "dependencies": {
     "@aws-cdk/cfnspec": "^0.21.0",
     "codemaker": "^0.6.4",
-    "colors": "^1.2.1",
     "fast-json-patch": "^2.0.6",
     "fs-extra": "^7.0.0",
-    "source-map-support": "^0.5.6",
     "yargs": "^9.0.1"
   },
   "devDependencies": {
