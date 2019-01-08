@@ -123,11 +123,11 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * as the current stack.
    */
   public static arnForLocalRepository(repositoryName: string, scope: cdk.IConstruct): string {
-    return cdk.ArnUtils.fromComponents({
+    return cdk.Stack.find(scope).arnFromComponents({
       service: 'ecr',
       resource: 'repository',
       resourceName: repositoryName
-    }, scope);
+    });
   }
 
   /**
@@ -164,7 +164,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    */
   public repositoryUriForTag(tag?: string): string {
     const tagSuffix = tag ? `:${tag}` : '';
-    const parts = cdk.ArnUtils.parse(this.repositoryArn);
+    const parts = cdk.Stack.find(this).parseArn(this.repositoryArn);
     return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${this.repositoryName}${tagSuffix}`;
   }
 

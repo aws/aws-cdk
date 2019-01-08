@@ -1,4 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
 import { makeUniqueId } from '../util/uniqueid';
 import { Token, unresolved } from './tokens';
 import { resolve } from './tokens/resolve';
@@ -405,6 +406,13 @@ export class ConstructNode {
       scope: this.host,
       prefix: []
     });
+  }
+
+  /**
+   * Convert an object, potentially containing tokens, to a JSON string
+   */
+  public stringifyJson(obj: any): string {
+    return CloudFormationJSON.stringify(obj, this.host).toString();
   }
 
   /**

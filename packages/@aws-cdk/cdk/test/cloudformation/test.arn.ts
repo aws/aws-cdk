@@ -1,14 +1,14 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, ArnUtils, Aws, Stack, Token } from '../../lib';
+import { ArnComponents, Aws, Stack, Token } from '../../lib';
 
 export = {
   'create from components with defaults'(test: Test) {
     const stack = new Stack();
 
-    const arn = ArnUtils.fromComponents({
+    const arn = stack.arnFromComponents({
       service: 'sqs',
       resource: 'myqueuename'
-    }, stack);
+    });
 
     const pseudo = new Aws(stack);
 
@@ -20,14 +20,14 @@ export = {
   'create from components with specific values for the various components'(test: Test) {
     const stack = new Stack();
 
-    const arn = ArnUtils.fromComponents({
+    const arn = stack.arnFromComponents({
       service: 'dynamodb',
       resource: 'table',
       account: '123456789012',
       region: 'us-east-1',
       partition: 'aws-cn',
       resourceName: 'mytable/stream/label'
-    }, undefined);
+    });
 
     test.deepEqual(stack.node.resolve(arn),
                    'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
@@ -37,13 +37,13 @@ export = {
   'allow empty string in components'(test: Test) {
     const stack = new Stack();
 
-    const arn = ArnUtils.fromComponents({
+    const arn = stack.arnFromComponents({
       service: 's3',
       resource: 'my-bucket',
       account: '',
       region: '',
       partition: 'aws-cn',
-    }, undefined);
+    });
 
     test.deepEqual(stack.node.resolve(arn),
                    'arn:aws-cn:s3:::my-bucket');
@@ -54,12 +54,12 @@ export = {
   'resourcePathSep can be set to ":" instead of the default "/"'(test: Test) {
     const stack = new Stack();
 
-    const arn = ArnUtils.fromComponents({
+    const arn = stack.arnFromComponents({
       service: 'codedeploy',
       resource: 'application',
       sep: ':',
       resourceName: 'WordPress_App'
-    }, stack);
+    });
 
     const pseudo = new Aws(stack);
 
@@ -69,10 +69,12 @@ export = {
   },
 
   'fails if resourcePathSep is neither ":" nor "/"'(test: Test) {
-    test.throws(() => ArnUtils.fromComponents({
+    const stack = new Stack();
+
+    test.throws(() => stack.arnFromComponents({
       service: 'foo',
       resource: 'bar',
-      sep: 'x' }, undefined));
+      sep: 'x' }));
     test.done();
   },
 
@@ -80,27 +82,32 @@ export = {
 
     'fails': {
       'if doesn\'t start with "arn:"'(test: Test) {
-        test.throws(() => ArnUtils.parse("barn:foo:x:a:1:2"), /ARNs must start with "arn:": barn:foo/);
+        const stack = new Stack();
+        test.throws(() => stack.parseArn("barn:foo:x:a:1:2"), /ARNs must start with "arn:": barn:foo/);
         test.done();
       },
 
       'if the ARN doesnt have enough components'(test: Test) {
-        test.throws(() => ArnUtils.parse('arn:is:too:short'), /ARNs must have at least 6 components: arn:is:too:short/);
+        const stack = new Stack();
+        test.throws(() => stack.parseArn('arn:is:too:short'), /ARNs must have at least 6 components: arn:is:too:short/);
         test.done();
       },
 
       'if "service" is not specified'(test: Test) {
-        test.throws(() => ArnUtils.parse('arn:aws::4:5:6'), /The `service` component \(3rd component\) is required/);
+        const stack = new Stack();
+        test.throws(() => stack.parseArn('arn:aws::4:5:6'), /The `service` component \(3rd component\) is required/);
         test.done();
       },
 
       'if "resource" is not specified'(test: Test) {
-        test.throws(() => ArnUtils.parse('arn:aws:service:::'), /The `resource` component \(6th component\) is required/);
+        const stack = new Stack();
+        test.throws(() => stack.parseArn('arn:aws:service:::'), /The `resource` component \(6th component\) is required/);
         test.done();
       }
     },
 
     'various successful parses'(test: Test) {
+      const stack = new Stack();
       const tests: { [arn: string]: ArnComponents } = {
         'arn:aws:a4b:region:accountid:resourcetype/resource': {
           partition: 'aws',
@@ -142,7 +149,7 @@ export = {
 
       Object.keys(tests).forEach(arn => {
         const expected = tests[arn];
-        test.deepEqual(ArnUtils.parse(arn), expected, arn);
+        test.deepEqual(stack.parseArn(arn), expected, arn);
       });
 
       test.done();
@@ -151,7 +158,7 @@ export = {
     'a Token with : separator'(test: Test) {
       const stack = new Stack();
       const theToken = { Ref: 'SomeParameter' };
-      const parsed = ArnUtils.parseToken(new Token(() => theToken).toString(), ':');
+      const parsed = stack.parseArn(new Token(() => theToken).toString(), ':');
 
       test.deepEqual(stack.node.resolve(parsed.partition), { 'Fn::Select': [ 1, { 'Fn::Split': [ ':', theToken ]} ]});
       test.deepEqual(stack.node.resolve(parsed.service), { 'Fn::Select': [ 2, { 'Fn::Split': [ ':', theToken ]} ]});
@@ -167,7 +174,7 @@ export = {
     'a Token with / separator'(test: Test) {
       const stack = new Stack();
       const theToken = { Ref: 'SomeParameter' };
-      const parsed = ArnUtils.parseToken(new Token(() => theToken).toString());
+      const parsed = stack.parseArn(new Token(() => theToken).toString());
 
       test.equal(parsed.sep, '/');
 

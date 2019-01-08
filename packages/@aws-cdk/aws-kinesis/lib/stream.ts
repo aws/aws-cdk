@@ -429,7 +429,7 @@ class ImportedStream extends StreamBase {
     this.streamArn = props.streamArn;
 
     // Get the name from the ARN
-    this.streamName = cdk.ArnUtils.parse(props.streamArn).resourceName!;
+    this.streamName = cdk.Stack.find(this).parseArn(props.streamArn).resourceName!;
 
     if (props.encryptionKey) {
       // TODO: import "scope" should be changed to "this"

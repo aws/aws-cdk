@@ -436,11 +436,11 @@ class ImportedProject extends ProjectBase {
   constructor(scope: cdk.Construct, id: string, private readonly props: ProjectImportProps) {
     super(scope, id);
 
-    this.projectArn = cdk.ArnUtils.fromComponents({
+    this.projectArn = cdk.Stack.find(this).arnFromComponents({
       service: 'codebuild',
       resource: 'project',
       resourceName: props.projectName,
-    }, this);
+    });
 
     this.projectName = props.projectName;
   }
@@ -771,12 +771,12 @@ export class Project extends ProjectBase {
   }
 
   private createLoggingPermission() {
-    const logGroupArn = cdk.ArnUtils.fromComponents({
+    const logGroupArn = cdk.Stack.find(this).arnFromComponents({
       service: 'logs',
       resource: 'log-group',
       sep: ':',
       resourceName: `/aws/codebuild/${this.projectName}`,
-    }, this);
+    });
 
     const logGroupStarArn = `${logGroupArn}:*`;
 

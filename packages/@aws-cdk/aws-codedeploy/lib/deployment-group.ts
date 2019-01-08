@@ -561,10 +561,10 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 }
 
 function deploymentGroupNameToArn(applicationName: string, deploymentGroupName: string, scope: cdk.IConstruct): string {
-  return cdk.ArnUtils.fromComponents({
+  return cdk.Stack.find(scope).arnFromComponents({
     service: 'codedeploy',
     resource: 'deploymentgroup',
     resourceName: `${applicationName}/${deploymentGroupName}`,
     sep: ':',
-  }, scope);
+  });
 }

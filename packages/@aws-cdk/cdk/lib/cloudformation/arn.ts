@@ -1,248 +1,216 @@
 import { Fn } from '../cloudformation/fn';
-import { IConstruct } from '../core/construct';
 import { unresolved } from '../core/tokens';
 import { Stack } from './stack';
 
 /**
- * An Amazon Resource Name (ARN).
- * http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html
+ * Creates an ARN from components.
+ *
+ * If `partition`, `region` or `account` are not specified, the stack's
+ * partition, region and account will be used.
+ *
+ * If any component is the empty string, an empty string will be inserted
+ * into the generated ARN at the location that component corresponds to.
+ *
+ * The ARN will be formatted as follows:
+ *
+ *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
+ *
+ * The required ARN pieces that are omitted will be taken from the stack that
+ * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
+ * can be 'undefined'.
  */
-export class ArnUtils {
-  /**
-   * Creates an ARN from components.
-   *
-   * If `partition`, `region` or `account` are not specified, the stack's
-   * partition, region and account will be used.
-   *
-   * If any component is the empty string, an empty string will be inserted
-   * into the generated ARN at the location that component corresponds to.
-   *
-   * The ARN will be formatted as follows:
-   *
-   *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
-   *
-   * The required ARN pieces that are omitted will be taken from the stack that
-   * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
-   * can be 'undefined'.
-   */
-  public static fromComponents(components: ArnComponents, scope: IConstruct | undefined): string {
-    const partition = components.partition !== undefined ? components.partition : theStack('partition').partition;
-    const region = components.region !== undefined ? components.region : theStack('region').region;
-    const account = components.account !== undefined ? components.account : theStack('account').accountId;
+export function arnFromComponents(components: ArnComponents, stack: Stack): string {
+  const partition = components.partition !== undefined ? components.partition : stack.partition;
+  const region = components.region !== undefined ? components.region : stack.region;
+  const account = components.account !== undefined ? components.account : stack.accountId;
 
-    const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];
+  const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];
 
-    const sep = components.sep || '/';
-    if (sep !== '/' && sep !== ':') {
-      throw new Error('resourcePathSep may only be ":" or "/"');
-    }
-
-    if (components.resourceName != null) {
-      values.push(sep);
-      values.push(components.resourceName);
-    }
-
-    return values.join('');
-
-    /**
-     * Return the stack we're scoped to (so the caller can get an attribute from it), throw a descriptive error if we don't have a scope
-     */
-    function theStack(attribute: string) {
-      if (!scope) {
-        throw new Error(`Must provide scope when using implicit ${attribute}`);
-      }
-      return Stack.find(scope);
-
-    }
+  const sep = components.sep || '/';
+  if (sep !== '/' && sep !== ':') {
+    throw new Error('resourcePathSep may only be ":" or "/"');
   }
 
-  /**
-   * Given an ARN, parses it and returns components.
-   *
-   * If the ARN is a concrete string, it will be parsed and validated. The
-   * separator (`sep`) will be set to '/' if the 6th component includes a '/',
-   * in which case, `resource` will be set to the value before the '/' and
-   * `resourceName` will be the rest. In case there is no '/', `resource` will
-   * be set to the 6th components and `resourceName` will be set to the rest
-   * of the string.
-   *
-   * If the ARN includes tokens (or is a token), the ARN cannot be validated,
-   * since we don't have the actual value yet at the time of this function
-   * call. You will have to know the separator and the type of ARN. The
-   * resulting `ArnComponents` object will contain tokens for the
-   * subexpressions of the ARN, not string literals. In this case this
-   * function cannot properly parse the complete final resourceName (path) out
-   * of ARNs that use '/' to both separate the 'resource' from the
-   * 'resourceName' AND to subdivide the resourceName further. For example, in
-   * S3 ARNs:
-   *
-   *    arn:aws:s3:::my_corporate_bucket/path/to/exampleobject.png
-   *
-   * After parsing the resourceName will not contain
-   * 'path/to/exampleobject.png' but simply 'path'. This is a limitation
-   * because there is no slicing functionality in CloudFormation templates.
-   *
-   * @param sep The separator used to separate resource from resourceName
-   * @param hasName Whether there is a name component in the ARN at all. For
-   * example, SNS Topics ARNs have the 'resource' component contain the topic
-   * name, and no 'resourceName' component.
-   *
-   * @returns an ArnComponents object which allows access to the various
-   * components of the ARN.
-   *
-   * @returns an ArnComponents object which allows access to the various
-   *      components of the ARN.
-   */
-  public static parse(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
-    if (unresolved(arn)) {
-      return ArnUtils.parseToken(arn, sepIfToken, hasName);
-    }
+  if (components.resourceName != null) {
+    values.push(sep);
+    values.push(components.resourceName);
+  }
 
-    const components = arn.split(':') as Array<string | undefined>;
+  return values.join('');
+}
 
-    if (components.length < 6) {
-      throw new Error('ARNs must have at least 6 components: ' + arn);
-    }
+/**
+ * Given an ARN, parses it and returns components.
+ *
+ * If the ARN is a concrete string, it will be parsed and validated. The
+ * separator (`sep`) will be set to '/' if the 6th component includes a '/',
+ * in which case, `resource` will be set to the value before the '/' and
+ * `resourceName` will be the rest. In case there is no '/', `resource` will
+ * be set to the 6th components and `resourceName` will be set to the rest
+ * of the string.
+ *
+ * If the ARN includes tokens (or is a token), the ARN cannot be validated,
+ * since we don't have the actual value yet at the time of this function
+ * call. You will have to know the separator and the type of ARN. The
+ * resulting `ArnComponents` object will contain tokens for the
+ * subexpressions of the ARN, not string literals. In this case this
+ * function cannot properly parse the complete final resourceName (path) out
+ * of ARNs that use '/' to both separate the 'resource' from the
+ * 'resourceName' AND to subdivide the resourceName further. For example, in
+ * S3 ARNs:
+ *
+ *    arn:aws:s3:::my_corporate_bucket/path/to/exampleobject.png
+ *
+ * After parsing the resourceName will not contain
+ * 'path/to/exampleobject.png' but simply 'path'. This is a limitation
+ * because there is no slicing functionality in CloudFormation templates.
+ *
+ * @param sep The separator used to separate resource from resourceName
+ * @param hasName Whether there is a name component in the ARN at all. For
+ * example, SNS Topics ARNs have the 'resource' component contain the topic
+ * name, and no 'resourceName' component.
+ *
+ * @returns an ArnComponents object which allows access to the various
+ * components of the ARN.
+ *
+ * @returns an ArnComponents object which allows access to the various
+ *      components of the ARN.
+ */
+export function parseArn(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
+  if (unresolved(arn)) {
+    return parseToken(arn, sepIfToken, hasName);
+  }
 
-    const [ arnPrefix, partition, service, region, account, sixth, ...rest ] = components;
+  const components = arn.split(':') as Array<string | undefined>;
 
-    if (arnPrefix !== 'arn') {
-      throw new Error('ARNs must start with "arn:": ' + arn);
-    }
+  if (components.length < 6) {
+    throw new Error('ARNs must have at least 6 components: ' + arn);
+  }
 
-    if (!service) {
-      throw new Error('The `service` component (3rd component) is required: ' + arn);
-    }
+  const [ arnPrefix, partition, service, region, account, sixth, ...rest ] = components;
 
-    if (!sixth) {
-      throw new Error('The `resource` component (6th component) is required: ' + arn);
-    }
+  if (arnPrefix !== 'arn') {
+    throw new Error('ARNs must start with "arn:": ' + arn);
+  }
 
-    let resource: string;
-    let resourceName: string | undefined;
-    let sep: string | undefined;
+  if (!service) {
+    throw new Error('The `service` component (3rd component) is required: ' + arn);
+  }
 
-    let sepIndex = sixth.indexOf('/');
-    if (sepIndex !== -1) {
-      sep = '/';
-    } else if (rest.length > 0) {
-      sep = ':';
-      sepIndex = -1;
-    }
+  if (!sixth) {
+    throw new Error('The `resource` component (6th component) is required: ' + arn);
+  }
 
-    if (sepIndex !== -1) {
-      resource = sixth.substr(0, sepIndex);
-      resourceName = sixth.substr(sepIndex + 1);
+  let resource: string;
+  let resourceName: string | undefined;
+  let sep: string | undefined;
+
+  let sepIndex = sixth.indexOf('/');
+  if (sepIndex !== -1) {
+    sep = '/';
+  } else if (rest.length > 0) {
+    sep = ':';
+    sepIndex = -1;
+  }
+
+  if (sepIndex !== -1) {
+    resource = sixth.substr(0, sepIndex);
+    resourceName = sixth.substr(sepIndex + 1);
+  } else {
+    resource = sixth;
+  }
+
+  if (rest.length > 0) {
+    if (!resourceName) {
+      resourceName = '';
     } else {
-      resource = sixth;
+      resourceName += ':';
     }
 
-    if (rest.length > 0) {
-      if (!resourceName) {
-        resourceName = '';
-      } else {
-        resourceName += ':';
-      }
-
-      resourceName += rest.join(':');
-    }
-
-    const result: ArnComponents = { service, resource };
-    if (partition) {
-      result.partition = partition;
-    }
-
-    if (region) {
-      result.region = region;
-    }
-
-    if (account) {
-      result.account = account;
-    }
-
-    if (resourceName) {
-      result.resourceName = resourceName;
-    }
-
-    if (sep) {
-      result.sep = sep;
-    }
-
-    return result;
+    resourceName += rest.join(':');
   }
 
-  /**
-   * Given a Token evaluating to ARN, parses it and returns components.
-   *
-   * The ARN cannot be validated, since we don't have the actual value yet
-   * at the time of this function call. You will have to know the separator
-   * and the type of ARN.
-   *
-   * The resulting `ArnComponents` object will contain tokens for the
-   * subexpressions of the ARN, not string literals.
-   *
-   * WARNING: this function cannot properly parse the complete final
-   * resourceName (path) out of ARNs that use '/' to both separate the
-   * 'resource' from the 'resourceName' AND to subdivide the resourceName
-   * further. For example, in S3 ARNs:
-   *
-   *    arn:aws:s3:::my_corporate_bucket/path/to/exampleobject.png
-   *
-   * After parsing the resourceName will not contain 'path/to/exampleobject.png'
-   * but simply 'path'. This is a limitation because there is no slicing
-   * functionality in CloudFormation templates.
-   *
-   * @param arnToken The input token that contains an ARN
-   * @param sep The separator used to separate resource from resourceName
-   * @param hasName Whether there is a name component in the ARN at all.
-   * For example, SNS Topics ARNs have the 'resource' component contain the
-   * topic name, and no 'resourceName' component.
-   * @returns an ArnComponents object which allows access to the various
-   * components of the ARN.
-   */
-  public static parseToken(arnToken: string, sep: string = '/', hasName: boolean = true): ArnComponents {
-    // Arn ARN looks like:
-    // arn:partition:service:region:account-id:resource
-    // arn:partition:service:region:account-id:resourcetype/resource
-    // arn:partition:service:region:account-id:resourcetype:resource
-
-    // We need the 'hasName' argument because {Fn::Select}ing a nonexistent field
-    // throws an error.
-
-    const components = Fn.split(':', arnToken);
-
-    const partition = Fn.select(1, components).toString();
-    const service = Fn.select(2, components).toString();
-    const region = Fn.select(3, components).toString();
-    const account = Fn.select(4, components).toString();
-
-    if (sep === ':') {
-      const resource = Fn.select(5, components).toString();
-      const resourceName = hasName ? Fn.select(6, components).toString() : undefined;
-
-      return { partition, service, region, account, resource, resourceName, sep };
-    } else {
-      const lastComponents = Fn.split(sep, Fn.select(5, components));
-
-      const resource = Fn.select(0, lastComponents).toString();
-      const resourceName = hasName ? Fn.select(1, lastComponents).toString() : undefined;
-
-      return { partition, service, region, account, resource, resourceName, sep };
-    }
+  const result: ArnComponents = { service, resource };
+  if (partition) {
+    result.partition = partition;
   }
 
-  /**
-   * Return a Token that represents the resource component of the ARN
-   */
-  public static resourceComponent(arn: string, sep: string = '/'): string {
-    return ArnUtils.parseToken(arn, sep).resource;
+  if (region) {
+    result.region = region;
   }
 
-  /**
-   * Return a Token that represents the resource Name component of the ARN
-   */
-  public static resourceNameComponent(arn: string, sep: string = '/'): string {
-    return ArnUtils.parseToken(arn, sep, true).resourceName!;
+  if (account) {
+    result.account = account;
+  }
+
+  if (resourceName) {
+    result.resourceName = resourceName;
+  }
+
+  if (sep) {
+    result.sep = sep;
+  }
+
+  return result;
+}
+
+/**
+ * Given a Token evaluating to ARN, parses it and returns components.
+ *
+ * The ARN cannot be validated, since we don't have the actual value yet
+ * at the time of this function call. You will have to know the separator
+ * and the type of ARN.
+ *
+ * The resulting `ArnComponents` object will contain tokens for the
+ * subexpressions of the ARN, not string literals.
+ *
+ * WARNING: this function cannot properly parse the complete final
+ * resourceName (path) out of ARNs that use '/' to both separate the
+ * 'resource' from the 'resourceName' AND to subdivide the resourceName
+ * further. For example, in S3 ARNs:
+ *
+ *    arn:aws:s3:::my_corporate_bucket/path/to/exampleobject.png
+ *
+ * After parsing the resourceName will not contain 'path/to/exampleobject.png'
+ * but simply 'path'. This is a limitation because there is no slicing
+ * functionality in CloudFormation templates.
+ *
+ * @param arnToken The input token that contains an ARN
+ * @param sep The separator used to separate resource from resourceName
+ * @param hasName Whether there is a name component in the ARN at all.
+ * For example, SNS Topics ARNs have the 'resource' component contain the
+ * topic name, and no 'resourceName' component.
+ * @returns an ArnComponents object which allows access to the various
+ * components of the ARN.
+ */
+function parseToken(arnToken: string, sep: string = '/', hasName: boolean = true): ArnComponents {
+  // Arn ARN looks like:
+  // arn:partition:service:region:account-id:resource
+  // arn:partition:service:region:account-id:resourcetype/resource
+  // arn:partition:service:region:account-id:resourcetype:resource
+
+  // We need the 'hasName' argument because {Fn::Select}ing a nonexistent field
+  // throws an error.
+
+  const components = Fn.split(':', arnToken);
+
+  const partition = Fn.select(1, components).toString();
+  const service = Fn.select(2, components).toString();
+  const region = Fn.select(3, components).toString();
+  const account = Fn.select(4, components).toString();
+
+  if (sep === ':') {
+    const resource = Fn.select(5, components).toString();
+    const resourceName = hasName ? Fn.select(6, components).toString() : undefined;
+
+    return { partition, service, region, account, resource, resourceName, sep };
+  } else {
+    const lastComponents = Fn.split(sep, Fn.select(5, components));
+
+    const resource = Fn.select(0, lastComponents).toString();
+    const resourceName = hasName ? Fn.select(1, lastComponents).toString() : undefined;
+
+    return { partition, service, region, account, resource, resourceName, sep };
   }
 }
 

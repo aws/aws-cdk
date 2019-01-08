@@ -73,13 +73,13 @@ export class AwsIntegration extends Integration {
       integrationHttpMethod: 'POST',
       uri: new cdk.Token(() => {
         if (!this.scope) { throw new Error('AwsIntegration must be used in API'); }
-        return cdk.ArnUtils.fromComponents({
+        return cdk.Stack.find(this.scope).arnFromComponents({
           service: 'apigateway',
           account: backend,
           resource: apiType,
           sep: '/',
           resourceName: apiValue,
-        }, this.scope);
+        });
       }),
       options: props.options,
     });

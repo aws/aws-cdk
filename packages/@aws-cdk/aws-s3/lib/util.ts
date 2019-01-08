@@ -9,14 +9,14 @@ export function parseBucketArn(construct: cdk.IConstruct, props: BucketImportPro
   }
 
   if (props.bucketName) {
-    return cdk.ArnUtils.fromComponents({
+    return cdk.Stack.find(construct).arnFromComponents({
       // S3 Bucket names are globally unique in a partition,
       // and so their ARNs have empty region and account components
       region: '',
       account: '',
       service: 's3',
       resource: props.bucketName
-    }, construct);
+    });
   }
 
   throw new Error('Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed');
@@ -34,7 +34,7 @@ export function parseBucketName(construct: cdk.IConstruct, props: BucketImportPr
 
     const resolved = construct.node.resolve(props.bucketArn);
     if (typeof(resolved) === 'string') {
-      const components = cdk.ArnUtils.parse(resolved);
+      const components = cdk.Stack.find(construct).parseArn(resolved);
       if (components.service !== 's3') {
         throw new Error('Invalid ARN. Expecting "s3" service:' + resolved);
       }

@@ -301,12 +301,12 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
       method = '*';
     }
 
-    return cdk.ArnUtils.fromComponents({
+    return cdk.Stack.find(this).arnFromComponents({
       service: 'execute-api',
       resource: this.restApiId,
       sep: '/',
       resourceName: `${stage}/${method}${path}`
-    }, this);
+    });
   }
 
   /**
@@ -358,14 +358,14 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
   private configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      managedPolicyArns: [ cdk.ArnUtils.fromComponents({
+      managedPolicyArns: [ cdk.Stack.find(this).arnFromComponents({
         service: 'iam',
         region: '',
         account: 'aws',
         resource: 'policy',
         sep: '/',
         resourceName: 'service-role/AmazonAPIGatewayPushToCloudWatchLogs'
-      }, this) ]
+      }) ]
     });
 
     const resource = new CfnAccount(this, 'Account', {

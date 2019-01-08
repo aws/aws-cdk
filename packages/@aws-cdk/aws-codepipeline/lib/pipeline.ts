@@ -127,10 +127,10 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     this.artifactStores = {};
 
     // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
-    this.pipelineArn = cdk.ArnUtils.fromComponents({
+    this.pipelineArn = cdk.Stack.find(this).arnFromComponents({
       service: 'codepipeline',
       resource: this.pipelineName
-    }, this);
+    });
   }
 
   /**
