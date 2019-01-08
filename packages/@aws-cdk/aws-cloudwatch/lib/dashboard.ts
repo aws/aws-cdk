@@ -1,4 +1,4 @@
-import { CloudFormationJSON, Construct, Stack, Token } from "@aws-cdk/cdk";
+import { Construct, Stack, Token } from "@aws-cdk/cdk";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -33,7 +33,7 @@ export class Dashboard extends Construct {
       dashboardBody: new Token(() => {
         const column = new Column(...this.rows);
         column.position(0, 0);
-        return CloudFormationJSON.stringify({ widgets: column.toJson() }, this);
+        return this.node.stringifyJson({ widgets: column.toJson() });
       })
     });
   }

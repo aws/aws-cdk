@@ -82,7 +82,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
         const resource = new CfnStateMachine(this, 'Resource', {
             stateMachineName: props.stateMachineName,
             roleArn: this.role.roleArn,
-            definitionString: cdk.CloudFormationJSON.stringify(graph.toGraphJson(), this),
+            definitionString: this.node.stringifyJson(graph.toGraphJson()),
         });
 
         for (const statement of graph.policyStatements) {

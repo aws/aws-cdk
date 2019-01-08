@@ -96,7 +96,7 @@ export class Token {
    */
   public toJSON(): any {
     // tslint:disable-next-line:max-line-length
-    throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use CloudFormationJSON.stringify() instead.');
+    throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use this.node.stringifyJson() instead.');
   }
 
   /**

@@ -95,6 +95,6 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
    * Return a stringified JSON version of the PolicyDocument
    */
   private stringifiedPolicyDocument() {
-    return this.policyDocument.isEmpty ? '' : cdk.CloudFormationJSON.stringify(this.node.resolve(this.policyDocument), this);
+    return this.policyDocument.isEmpty ? '' : this.node.stringifyJson(this.policyDocument);
   }
 }
