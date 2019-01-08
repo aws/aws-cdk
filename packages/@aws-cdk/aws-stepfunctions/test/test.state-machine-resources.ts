@@ -103,7 +103,10 @@ export = {
             outputPath: "$.state",
             parameters: {
                 "input.$": "$",
-                "step": "inital-task"
+                "stringArgument": "inital-task",
+                "numberArgument": 123,
+                "booleanArgument": true,
+                "arrayArgument": ["a", "b", "c"]
             }
         });
 
@@ -111,12 +114,16 @@ export = {
         const taskState = task.toStateJson();
 
         // THEN
-        test.deepEqual(taskState, {
-            End: true,
+        test.deepEqual(taskState, { End: true,
             Retry: undefined,
             Catch: undefined,
             InputPath: '$',
-            Parameters: { 'input.$': '$', 'step': 'inital-task' },
+            Parameters:
+             { 'input.$': '$',
+               'stringArgument': 'inital-task',
+               'numberArgument': 123,
+               'booleanArgument': true,
+               'arrayArgument': [ 'a', 'b', 'c' ] },
             OutputPath: '$.state',
             Type: 'Task',
             Comment: undefined,
