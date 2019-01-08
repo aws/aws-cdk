@@ -5,6 +5,7 @@ export * from './base/task-definition';
 export * from './container-definition';
 export * from './container-image';
 export * from './cluster';
+export * from './drain-hook/instance-drain-hook';
 
 export * from './ec2/ec2-service';
 export * from './ec2/ec2-task-definition';
@@ -24,8 +25,6 @@ export * from './images/ecr';
 
 export * from './log-drivers/aws-log-driver';
 export * from './log-drivers/log-driver';
-
-export * from './drain-hook/instance-drain-hook';
 
 // AWS::ECS CloudFormation Resources:
 //
