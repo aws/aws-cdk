@@ -25,6 +25,16 @@ export interface StateProps {
     inputPath?: string;
 
     /**
+     * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
+     *
+     * @see
+     * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
+     *
+     * @default No parameters
+     */
+    parameters?: { [name: string]: any };
+
+    /**
      * JSONPath expression to select part of the state to be the output to this state.
      *
      * May also be the special value DISCARD, which will cause the effective
@@ -112,6 +122,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     // pragmatic!
     protected readonly comment?: string;
     protected readonly inputPath?: string;
+    protected readonly parameters?: object;
     protected readonly outputPath?: string;
     protected readonly resultPath?: string;
     protected readonly branches: StateGraph[] = [];
@@ -144,6 +155,7 @@ export abstract class State extends cdk.Construct implements IChainable {
 
         this.comment = props.comment;
         this.inputPath = props.inputPath;
+        this.parameters = props.parameters;
         this.outputPath = props.outputPath;
         this.resultPath = props.resultPath;
     }
@@ -297,11 +309,12 @@ export abstract class State extends cdk.Construct implements IChainable {
     }
 
     /**
-     * Render InputPath/OutputPath in ASL JSON format
+     * Render InputPath/Parameters/OutputPath in ASL JSON format
      */
     protected renderInputOutput(): any {
         return {
             InputPath: renderJsonPath(this.inputPath),
+            Parameters: this.parameters,
             OutputPath: renderJsonPath(this.outputPath),
         };
     }

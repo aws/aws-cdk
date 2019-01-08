@@ -92,6 +92,48 @@ export = {
         });
 
         test.done();
+    },
+
+    'Task should render InputPath / Parameters / OutputPath correctly'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const task = new stepfunctions.Task(stack, 'Task', {
+            resource: new FakeResource(),
+            inputPath: "$",
+            outputPath: "$.state",
+            parameters: {
+                "input.$": "$",
+                "stringArgument": "inital-task",
+                "numberArgument": 123,
+                "booleanArgument": true,
+                "arrayArgument": ["a", "b", "c"]
+            }
+        });
+
+        // WHEN
+        const taskState = task.toStateJson();
+
+        // THEN
+        test.deepEqual(taskState, { End: true,
+            Retry: undefined,
+            Catch: undefined,
+            InputPath: '$',
+            Parameters:
+             { 'input.$': '$',
+               'stringArgument': 'inital-task',
+               'numberArgument': 123,
+               'booleanArgument': true,
+               'arrayArgument': [ 'a', 'b', 'c' ] },
+            OutputPath: '$.state',
+            Type: 'Task',
+            Comment: undefined,
+            Resource: 'resource',
+            ResultPath: undefined,
+            TimeoutSeconds: undefined,
+            HeartbeatSeconds: undefined
+        });
+
+        test.done();
     }
 };
 
