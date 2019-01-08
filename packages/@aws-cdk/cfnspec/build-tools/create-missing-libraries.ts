@@ -107,7 +107,8 @@ async function main() {
         package: "cdk-package",
         pkglint: "pkglint -f",
         test: "cdk-test",
-        watch: "cdk-watch"
+        watch: "cdk-watch",
+        cfn2ts: "cfn2ts"
       },
       'cdk-build': {
         cloudformation: namespace

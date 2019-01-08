@@ -15,7 +15,7 @@ export class CloudFormationJSON {
    * All Tokens substituted in this way must return strings, or the evaluation
    * in CloudFormation will fail.
    */
-  public static stringify(obj: any): Token {
+  public static stringify(obj: any): string {
     return new Token(() => {
       // Resolve inner value first so that if they evaluate to literals, we
       // maintain the type (and discard 'undefined's).
@@ -31,7 +31,7 @@ export class CloudFormationJSON {
       // We can just directly return this value, since resolve() will be called
       // on our return value anyway.
       return JSON.stringify(deepReplaceIntrinsics(resolved));
-    });
+    }).toString();
 
     /**
      * Recurse into a structure, replace all intrinsics with IntrinsicTokens.
