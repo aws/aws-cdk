@@ -20,7 +20,7 @@ export class CloudFormationJSON {
    * @param obj The object to stringify
    * @param context The Construct from which to resolve any Tokens found in the object
    */
-  public static stringify(obj: any, context: IConstruct): Token {
+  public static stringify(obj: any, context: IConstruct): string {
     return new Token(() => {
       // Resolve inner value first so that if they evaluate to literals, we
       // maintain the type (and discard 'undefined's).
@@ -39,7 +39,7 @@ export class CloudFormationJSON {
       // We can just directly return this value, since resolve() will be called
       // on our return value anyway.
       return JSON.stringify(deepReplaceIntrinsics(resolved));
-    });
+    }).toString();
 
     /**
      * Recurse into a structure, replace all intrinsics with IntrinsicTokens.

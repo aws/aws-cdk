@@ -71,7 +71,7 @@ export class HostedZone extends cdk.Construct implements IHostedZone {
     });
 
     this.hostedZoneId = hostedZone.ref;
-    this.hostedZoneNameServers = hostedZone.hostedZoneNameServers.toList();
+    this.hostedZoneNameServers = hostedZone.hostedZoneNameServers;
     this.zoneName = props.zoneName;
 
     for (const vpc of props.vpcs || []) {

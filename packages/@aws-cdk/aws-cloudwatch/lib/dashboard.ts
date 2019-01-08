@@ -26,7 +26,7 @@ export class Dashboard extends Construct {
     // This is a bug in CloudFormation, but we don't want CDK users to have a bad
     // experience. We'll generate a name here if you did not supply one.
     // See: https://github.com/awslabs/aws-cdk/issues/213
-    const dashboardName = (props && props.dashboardName) || new Token(() => this.generateDashboardName());
+    const dashboardName = (props && props.dashboardName) || new Token(() => this.generateDashboardName()).toString();
 
     this.dashboard = new CfnDashboard(this, 'Resource', {
       dashboardName,
@@ -34,7 +34,7 @@ export class Dashboard extends Construct {
         const column = new Column(...this.rows);
         column.position(0, 0);
         return this.node.stringifyJson({ widgets: column.toJson() });
-      })
+      }).toString()
     });
   }
 
