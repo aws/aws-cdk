@@ -312,7 +312,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
   /**
    * Performs validation of the REST API.
    */
-  public validate() {
+  protected validate() {
     if (this.methods.length === 0) {
       return [ `The REST API doesn't contain any methods` ];
     }

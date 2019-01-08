@@ -307,13 +307,13 @@ export = {
   'construct.validate() can be implemented to perform validation, construct.validateTree() will return all errors from the subtree (DFS)'(test: Test) {
 
     class MyConstruct extends Construct {
-      public validate() {
+      protected validate() {
         return [ 'my-error1', 'my-error2' ];
       }
     }
 
     class YourConstruct extends Construct {
-      public validate() {
+      protected validate() {
         return [ 'your-error1' ];
       }
     }
@@ -325,7 +325,7 @@ export = {
         new YourConstruct(this, 'YourConstruct');
       }
 
-      public validate() {
+      protected validate() {
         return [ 'their-error' ];
       }
     }
@@ -338,7 +338,7 @@ export = {
         new TheirConstruct(this, 'TheirConstruct');
       }
 
-      public validate() {
+      protected validate() {
         return  [ 'stack-error' ];
       }
     }

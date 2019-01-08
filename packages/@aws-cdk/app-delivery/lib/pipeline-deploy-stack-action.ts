@@ -140,7 +140,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
     });
   }
 
-  public validate(): string[] {
+  protected validate(): string[] {
     const result = super.validate();
     const assets = this.stack.node.metadata.filter(md => md.type === cxapi.ASSET_METADATA);
     if (assets.length > 0) {

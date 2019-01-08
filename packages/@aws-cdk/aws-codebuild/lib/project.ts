@@ -708,7 +708,7 @@ export class Project extends ProjectBase {
   /**
    * @override
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     const ret = new Array<string>();
     if (this.source.type === SourceType.CodePipeline) {
       if (this._secondarySources.length > 0) {

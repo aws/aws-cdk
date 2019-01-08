@@ -112,7 +112,7 @@ export class ApplicationListenerRule extends cdk.Construct implements cdk.IDepen
   /**
    * Validate the rule
    */
-  public validate() {
+  protected validate() {
     if (this.actions.length === 0) {
       return ['Listener rule needs at least one action'];
     }

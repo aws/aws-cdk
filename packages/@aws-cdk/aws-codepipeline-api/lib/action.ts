@@ -239,7 +239,7 @@ export abstract class Action extends cdk.Construct {
     this.stage._internal._attachAction(this);
   }
 
-  public validate(): string[] {
+  protected validate(): string[] {
     return validation.validateArtifactBounds('input', this._actionInputArtifacts, this.artifactBounds.minInputs,
         this.artifactBounds.maxInputs, this.category, this.provider)
       .concat(validation.validateArtifactBounds('output', this._actionOutputArtifacts, this.artifactBounds.minOutputs,

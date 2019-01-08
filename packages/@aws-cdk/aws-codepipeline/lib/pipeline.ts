@@ -220,7 +220,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#pipeline-requirements
    * @override
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     return [
       ...this.validateHasStages(),
       ...this.validateSourceActionLocations()

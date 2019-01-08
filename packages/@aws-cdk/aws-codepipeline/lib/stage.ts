@@ -105,7 +105,7 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
     return this._actions.slice();
   }
 
-  public validate(): string[] {
+  protected validate(): string[] {
     return this.validateHasActions();
   }
 

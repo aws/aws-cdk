@@ -474,7 +474,7 @@ export class Table extends Construct {
    *
    * @returns an array of validation error message
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     const errors = new Array<string>();
 
     if (!this.tablePartitionKey) {

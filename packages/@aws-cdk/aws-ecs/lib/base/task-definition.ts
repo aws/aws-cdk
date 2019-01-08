@@ -245,7 +245,7 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * Validate this task definition
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     const ret = super.validate();
 
     if (isEc2Compatible(this.compatibility)) {
