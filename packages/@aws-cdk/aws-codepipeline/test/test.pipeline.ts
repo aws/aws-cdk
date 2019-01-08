@@ -531,7 +531,7 @@ export = {
       test.done();
     },
   },
-} as any;
+};
 
 function stageForTesting(stack: cdk.Stack): codepipeline.Stage {
   const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
