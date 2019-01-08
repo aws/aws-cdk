@@ -101,7 +101,7 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
 }
 
 function applicationNameToArn(applicationName: string, scope: cdk.IConstruct): string {
-  return cdk.Stack.find(scope).arnFromComponents({
+  return cdk.Stack.find(scope).formatArn({
     service: 'codedeploy',
     resource: 'application',
     resourceName: applicationName,

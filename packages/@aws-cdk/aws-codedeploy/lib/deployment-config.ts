@@ -157,7 +157,7 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
 }
 
 function arnForDeploymentConfigName(name: string, scope: cdk.IConstruct): string {
-  return cdk.Stack.find(scope).arnFromComponents({
+  return cdk.Stack.find(scope).formatArn({
     service: 'codedeploy',
     resource: 'deploymentconfig',
     resourceName: name,

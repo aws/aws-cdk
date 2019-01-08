@@ -5,7 +5,7 @@ export = {
   'create from components with defaults'(test: Test) {
     const stack = new Stack();
 
-    const arn = stack.arnFromComponents({
+    const arn = stack.formatArn({
       service: 'sqs',
       resource: 'myqueuename'
     });
@@ -20,7 +20,7 @@ export = {
   'create from components with specific values for the various components'(test: Test) {
     const stack = new Stack();
 
-    const arn = stack.arnFromComponents({
+    const arn = stack.formatArn({
       service: 'dynamodb',
       resource: 'table',
       account: '123456789012',
@@ -37,7 +37,7 @@ export = {
   'allow empty string in components'(test: Test) {
     const stack = new Stack();
 
-    const arn = stack.arnFromComponents({
+    const arn = stack.formatArn({
       service: 's3',
       resource: 'my-bucket',
       account: '',
@@ -54,7 +54,7 @@ export = {
   'resourcePathSep can be set to ":" instead of the default "/"'(test: Test) {
     const stack = new Stack();
 
-    const arn = stack.arnFromComponents({
+    const arn = stack.formatArn({
       service: 'codedeploy',
       resource: 'application',
       sep: ':',
@@ -71,7 +71,7 @@ export = {
   'fails if resourcePathSep is neither ":" nor "/"'(test: Test) {
     const stack = new Stack();
 
-    test.throws(() => stack.arnFromComponents({
+    test.throws(() => stack.formatArn({
       service: 'foo',
       resource: 'bar',
       sep: 'x' }));

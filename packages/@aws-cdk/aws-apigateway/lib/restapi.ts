@@ -301,7 +301,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
       method = '*';
     }
 
-    return cdk.Stack.find(this).arnFromComponents({
+    return cdk.Stack.find(this).formatArn({
       service: 'execute-api',
       resource: this.restApiId,
       sep: '/',
@@ -358,7 +358,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
   private configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      managedPolicyArns: [ cdk.Stack.find(this).arnFromComponents({
+      managedPolicyArns: [ cdk.Stack.find(this).formatArn({
         service: 'iam',
         region: '',
         account: 'aws',

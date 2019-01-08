@@ -159,7 +159,7 @@ export class Method extends cdk.Construct {
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
       // tslint:disable-next-line:max-line-length
-      credentials = cdk.Stack.find(this).arnFromComponents({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
+      credentials = cdk.Stack.find(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
     }
 
     return {

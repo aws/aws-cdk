@@ -340,7 +340,7 @@ export class Stack extends Construct {
    * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
    * can be 'undefined'.
    */
-  public arnFromComponents(components: ArnComponents): string {
+  public formatArn(components: ArnComponents): string {
     return arnFromComponents(components, this);
   }
 

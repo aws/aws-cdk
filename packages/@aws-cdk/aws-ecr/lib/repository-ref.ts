@@ -123,7 +123,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * as the current stack.
    */
   public static arnForLocalRepository(repositoryName: string, scope: cdk.IConstruct): string {
-    return cdk.Stack.find(scope).arnFromComponents({
+    return cdk.Stack.find(scope).formatArn({
       service: 'ecr',
       resource: 'repository',
       resourceName: repositoryName
