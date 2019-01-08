@@ -149,18 +149,29 @@ Outputs
 Conditions
 ----------
 
-.. NEEDS SOME INTRO TEXT
+`cdk.Condition` can be used to define CloudFormation "Condition" elements in the template.
+The `cdk.Fn.conditionXx()` static methods can be used to produce "condition expressions".
 
 .. code-block:: js
 
     import sqs = require('@aws-cdk/aws-sqs');
     import cdk = require('@aws-cdk/cdk');
+
+    const param = new cdk.Parameter(this, 'Param1', { type: 'String' });
+    const cond1 = new cdk.Condition(this, 'Condition1', { expression: cdk.Fn.conditionEquals("a", "b") });
+    const cond2 = new cdk.Condition(this, 'Condition2', { expression: cdk.Fn.conditionContains([ "a", "b", "c" ], "c") });
+    const cond3 = new cdk.Condition(this, 'Condition3', { expression: cdk.Fn.conditionEquals(param, "hello") });
+
+    const cond4 = new cdk.Condition(this, 'Condition4', {
+      expression: cdk.Fn.conditionOr(cond1, cond2, cdk.Fn.conditionNot(cond3))
+    });
+
     const cond = new cdk.Condition(this, 'MyCondition', {
         expression: new cdk.FnIf(...)
     });
 
     const queue = new sqs.CfnQueue(this, 'MyQueue');
-    queue.options.condition = cond;
+    queue.options.condition = cond4;
 
 .. _intrinsic_functions:
 
