@@ -370,14 +370,14 @@ export = {
     });
 
     new PipelineExecuteChangeSetAction(stack.pipeline, 'ImportedRoleAction', {
-      actionRole: importedRole,
+      role: importedRole,
       changeSetName: 'magicSet',
       stackName: 'magicStack',
       stage: stack.deployStage
     });
 
     new PipelineExecuteChangeSetAction(stack.pipeline, 'FreshRoleAction', {
-      actionRole: freshRole,
+      role: freshRole,
       changeSetName: 'magicSet',
       stackName: 'magicStack',
       stage: stack.deployStage

@@ -37,7 +37,7 @@ new cloudformation.PipelineCreateUpdateStackAction(stack, 'CFN_Deploy', {
   stackName: 'aws-cdk-codepipeline-cross-region-deploy-stack',
   templatePath: sourceAction.outputArtifact.atPath('template.yml'),
   adminPermissions: false,
-  actionRole: role
+  role
 });
 
 pipeline.addToRolePolicy(new iam.PolicyStatement()

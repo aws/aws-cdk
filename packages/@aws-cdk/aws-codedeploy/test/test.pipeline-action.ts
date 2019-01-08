@@ -40,7 +40,7 @@ export = {
           _generateOutputArtifactName: () => 'DeployOut'
         }
       },
-      actionRole: iam.Role.import(app.stack, 'Role', {
+      role: iam.Role.import(app.stack, 'Role', {
         roleArn: 'arn:aws:iam::123456789012:role/superUser'
       }),
       deploymentGroup: new ServerDeploymentGroup(app.stack, 'DeployGroup', {
@@ -50,7 +50,7 @@ export = {
     });
 
     test.equals(action.runOrder, 456);
-    test.equals(action.actionRole!.roleArn, 'arn:aws:iam::123456789012:role/superUser');
+    test.equals(action.role!.roleArn, 'arn:aws:iam::123456789012:role/superUser');
     test.done();
   }
 };

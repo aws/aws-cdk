@@ -63,7 +63,7 @@ export = {
       oauthToken: secret.value,
       owner: 'foo',
       repo: 'bar',
-      actionRole: role
+      role
     });
 
     const s2 = new codepipeline.Stage(stack, 'Two', { pipeline: p });
@@ -304,7 +304,7 @@ export = {
       stage,
       lambda: lambdaFun,
       userParameters: 'foo-bar/42',
-      actionRole: role,
+      role,
       inputArtifacts: [
           source2.outputArtifact,
           source1.outputArtifact,

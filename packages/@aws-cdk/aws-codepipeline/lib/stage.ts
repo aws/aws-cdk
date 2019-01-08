@@ -162,7 +162,7 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
       configuration: action.configuration,
       outputArtifacts: action._outputArtifacts.map(a => ({ name: a.name })),
       runOrder: action.runOrder,
-      roleArn: action.actionRole ? action.actionRole.roleArn : undefined
+      roleArn: action.role ? action.role.roleArn : undefined
     };
   }
 

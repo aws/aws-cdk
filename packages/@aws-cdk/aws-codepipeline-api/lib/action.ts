@@ -144,7 +144,7 @@ export interface CommonActionProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions.html
    */
-  actionRole?: iam.IRole;
+  role?: iam.IRole;
 }
 
 /**
@@ -221,7 +221,7 @@ export abstract class Action extends cdk.Construct {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions.html
    */
-  public readonly actionRole?: iam.IRole;
+  public readonly role?: iam.IRole;
 
   /**
    * The order in which AWS CodePipeline runs this action.
@@ -254,7 +254,7 @@ export abstract class Action extends cdk.Construct {
     this.artifactBounds = props.artifactBounds;
     this.runOrder = props.runOrder === undefined ? 1 : props.runOrder;
     this.stage = props.stage;
-    this.actionRole = props.actionRole;
+    this.role = props.role;
 
     this.stage._internal._attachAction(this);
   }
