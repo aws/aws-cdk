@@ -137,7 +137,7 @@ export class FederatedPrincipal extends PolicyPrincipal {
 
 export class AccountRootPrincipal extends AccountPrincipal {
   constructor(scope: cdk.Construct) {
-    super(scope, new cdk.Aws(scope).scope);
+    super(scope, new cdk.Aws(scope).accountId);
   }
 }
 

@@ -1,4 +1,4 @@
-import { ResolveContext, Token } from "./token";
+import { ResolveContext, Token } from "../core/tokens";
 
 /**
  * A Token that represents a CloudFormation reference to another resource
@@ -7,7 +7,7 @@ export class CfnReference extends Token {
   /**
    * The reference type for instances of this class
    */
-  public static ReferenceType = 'cfn-reference';
+  public static readonly ReferenceType = 'cfn-reference';
 
   public readonly referenceType?: string;
   private readonly tokenStack?: Stack;
@@ -48,5 +48,5 @@ export class CfnReference extends Token {
   }
 }
 
-import { Stack } from "../../cloudformation/stack";
-import { Construct } from "../construct";
+import { Construct } from "../core/construct";
+import { Stack } from "./stack";

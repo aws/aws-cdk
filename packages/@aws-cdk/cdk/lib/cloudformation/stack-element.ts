@@ -134,7 +134,7 @@ export abstract class StackElement extends Construct implements IDependable {
   }
 }
 
-import { CfnReference } from "../core/tokens/cfn-tokens";
+import { CfnReference } from "./cfn-tokens";
 
 /**
  * A generic, untyped reference to a Stack Element

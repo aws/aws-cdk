@@ -385,6 +385,7 @@ function isCloudFormationIntrinsic(x: any) {
   return keys[0] === 'Ref' || keys[0].substr(0, 4) === 'Fn::';
 }
 
-export class CfnSynthesisError extends Error {
+// Cannot be public because JSII gets confused about es5.d.ts
+class CfnSynthesisError extends Error {
   public readonly type = 'CfnSynthesisError';
 }

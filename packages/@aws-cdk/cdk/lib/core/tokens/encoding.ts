@@ -1,4 +1,3 @@
-import { cloudFormationConcat } from "./cfn-concat";
 import { resolve } from "./resolve";
 import { ResolveContext, Token } from "./token";
 import { unresolved } from "./unresolved";
@@ -61,7 +60,8 @@ export class TokenMap {
   public resolveStringTokens(s: string, context: ResolveContext): any {
     const str = this.createStringTokenString(s);
     const fragments = str.split(this.lookupToken.bind(this));
-    const ret = fragments.mapUnresolved(x => resolve(x, context)).join(cloudFormationConcat);
+    // require() here to break cyclic dependencies
+    const ret = fragments.mapUnresolved(x => resolve(x, context)).join(require('./cfn-concat').cloudFormationConcat);
     if (unresolved(ret)) {
       return resolve(ret, context);
     }

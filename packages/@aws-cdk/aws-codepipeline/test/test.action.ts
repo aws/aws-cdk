@@ -119,7 +119,7 @@ export = {
   },
 };
 
-function boundsValidationResult(numberOfArtifacts: e, min: e, max: e): string[] {
+function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {
   const stack = new cdk.Stack();
   const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
   const stage = new codepipeline.Stage(stack, 'stage', { pipeline });

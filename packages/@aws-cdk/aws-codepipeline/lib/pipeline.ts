@@ -230,7 +230,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
   /**
    * Get the number of Stages in this Pipeline.
    */
-  public get stageCount(): e {
+  public get stageCount(): number {
     return this.stages.length;
   }
 
@@ -369,7 +369,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
       'Please provide it explicitly with the inputArtifact property.');
   }
 
-  private calculateInsertIndexFromPlacement(placement: StagePlacement): e {
+  private calculateInsertIndexFromPlacement(placement: StagePlacement): number {
     // check if at most one placement property was provided
     const providedPlacementProps = ['rightBefore', 'justAfter', 'atIndex']
       .filter((prop) => (placement as any)[prop] !== undefined);

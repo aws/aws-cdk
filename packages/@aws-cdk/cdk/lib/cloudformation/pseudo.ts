@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { CfnReference } from '../core/tokens/cfn-tokens';
+import { CfnReference } from './cfn-tokens';
 
 /**
  * Accessor for pseudo parameters

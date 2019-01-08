@@ -2,8 +2,8 @@ import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
 import { Construct, IConstruct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { CfnReference } from '../core/tokens/cfn-tokens';
 import { Environment } from '../environment';
+import { CfnReference } from './cfn-tokens';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
 

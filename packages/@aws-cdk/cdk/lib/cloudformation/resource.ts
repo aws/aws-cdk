@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct } from '../core/construct';
-import { CfnReference } from '../core/tokens/cfn-tokens';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
+import { CfnReference } from './cfn-tokens';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { IDependable, Referenceable, StackElement } from './stack-element';
