@@ -188,7 +188,7 @@ export class TaskDefinition extends cdk.Construct {
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: new cdk.Token(() => this.containers.map(x => x.renderContainerDefinition())),
       volumes: new cdk.Token(() => this.volumes),
-      executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn),
+      executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn).toString(),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
       requiresCompatibilities: [

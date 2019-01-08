@@ -76,7 +76,7 @@ export class GitHubSourceAction extends actions.SourceAction {
       new CfnWebhook(this, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
-          secretToken: props.oauthToken,
+          secretToken: props.oauthToken.toString(),
         },
         filters: [
           {

@@ -680,7 +680,27 @@ export class AwsLint extends ValidationRule {
       return;
     }
 
+    if (!isAWS(pkg)) {
+      return;
+    }
+
     expectJSON(this.name, pkg, 'scripts.awslint', 'cdk-awslint');
+  }
+}
+
+export class Cfn2Ts extends ValidationRule {
+  public name = 'cfn2ts';
+
+  public validate(pkg: PackageJson) {
+    if (!isJSII(pkg)) {
+      return;
+    }
+
+    if (!isAWS(pkg)) {
+      return;
+    }
+
+    expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
   }
 }
 
@@ -691,6 +711,14 @@ export class AwsLint extends ValidationRule {
  */
 function isJSII(pkg: PackageJson): boolean {
   return pkg.json.jsii;
+}
+
+/**
+ * Indicates that this is an "AWS" package (i.e. that it it has a cloudformation source)
+ * @param pkg
+ */
+function isAWS(pkg: PackageJson): boolean {
+  return pkg.json['cdk-build'] && pkg.json['cdk-build'].cloudformation;
 }
 
 /**

@@ -71,7 +71,7 @@ export class HostedZone extends cdk.Construct implements IHostedZone {
     });
 
     this.hostedZoneId = hostedZone.ref;
-    this.hostedZoneNameServers = hostedZone.hostedZoneNameServers.toList();
+    this.hostedZoneNameServers = hostedZone.hostedZoneNameServers;
     this.zoneName = props.zoneName;
 
     for (const vpc of props.vpcs || []) {
@@ -92,7 +92,7 @@ export class HostedZone extends cdk.Construct implements IHostedZone {
    * @param vpc the other VPC to add.
    */
   public addVpc(vpc: ec2.IVpcNetwork) {
-    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: new cdk.AwsRegion() });
+    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: new cdk.AwsRegion().toString() });
   }
 }
 

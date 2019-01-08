@@ -84,7 +84,7 @@ export class EventRule extends Construct implements IEventRule {
       name: props.ruleName,
       description: props.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
-      scheduleExpression: new Token(() => this.scheduleExpression),
+      scheduleExpression: new Token(() => this.scheduleExpression).toString(),
       eventPattern: new Token(() => this.renderEventPattern()),
       targets: new Token(() => this.renderTargets())
     });

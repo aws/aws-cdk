@@ -108,7 +108,7 @@ export class Policy extends Construct implements IDependable {
 
     const resource = new CfnPolicy(this, 'Resource', {
       policyDocument: this.document,
-      policyName: new Token(() => this.policyName),
+      policyName: new Token(() => this.policyName).toString(),
       roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
       users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
       groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),

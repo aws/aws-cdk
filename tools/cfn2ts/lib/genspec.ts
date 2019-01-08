@@ -102,22 +102,6 @@ export class CodeName {
   }
 }
 
-/**
- * Class declaration
- */
-export class AttributeTypeDeclaration {
-  constructor(
-      readonly typeName: CodeName,
-      readonly baseClassName?: CodeName,
-      readonly docLink?: string
-    ) {
-  }
-
-  public get isPrimitive() {
-    return !this.baseClassName;
-  }
-}
-
 export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
 export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
 
@@ -127,7 +111,7 @@ export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
 export class Attribute {
   constructor(
     readonly propertyName: string,
-    readonly attributeType: AttributeTypeDeclaration,
+    readonly attributeType: string,
     readonly constructorArguments: string) {
   }
 }
@@ -192,13 +176,15 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
   const descriptiveName = descriptiveAttributeName(resourceName, attributeName);  // "BucketArn"
   const propertyName = cloudFormationToScriptName(descriptiveName);      // "bucketArn"
 
-  let attrType;
+  let attrType: string;
   if ('PrimitiveType' in spec && spec.PrimitiveType === 'String') {
-    attrType = new AttributeTypeDeclaration(CodeName.forPrimitive('string'));
+    attrType = 'string';
+  } else if ('Type' in spec && 'PrimitiveItemType' in spec && spec.Type === 'List' && spec.PrimitiveItemType === 'String') {
+    attrType = 'string[]';
   } else {
-    // Not in a namespace, base the name on the descriptive name
-    const typeName = new CodeName(resourceName.packageName, '', descriptiveName); // "BucketArn"
-    attrType = new AttributeTypeDeclaration(typeName, TOKEN_NAME, undefined);
+    // tslint:disable-next-line:no-console
+    console.error(`WARNING: Unable to represent attribute type ${JSON.stringify(spec)} as a native type`);
+    attrType = TOKEN_NAME.fqn;
   }
 
   const constructorArguments = `this.getAtt('${attributeName}')`;
@@ -213,8 +199,7 @@ export function refAttributeDefinition(resourceName: CodeName, refKind: string):
 
   const constructorArguments = 'this.ref';
 
-  const refType = new AttributeTypeDeclaration(CodeName.forPrimitive('string'));
-  return new Attribute(propertyName, refType, constructorArguments);
+  return new Attribute(propertyName, 'string', constructorArguments);
 }
 
 /**
