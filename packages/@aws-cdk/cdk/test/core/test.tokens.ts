@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationToken, Fn, resolve, Token, unresolved } from '../../lib';
+import { Fn, Root, Token, unresolved } from '../../lib';
 import { evaluateCFN } from '../cloudformation/evaluate-cfn';
 
 export = {
@@ -159,7 +159,7 @@ export = {
 
   'Tokens stringification and reversing of CloudFormation Tokens is implemented using Fn::Join'(test: Test) {
     // GIVEN
-    const token = new CloudFormationToken(() => ({ woof: 'woof' }));
+    const token = new Token(() => ({ woof: 'woof' }));
 
     // WHEN
     const stringified = `The dog says: ${token}`;
@@ -259,7 +259,7 @@ export = {
 
   'fails if token in a hash key resolves to a non-string'(test: Test) {
     // GIVEN
-    const token = new CloudFormationToken({ Ref: 'Other' });
+    const token = new Token({ Ref: 'Other' });
 
     // WHEN
     const s = {
@@ -274,7 +274,7 @@ export = {
   'list encoding': {
     'can encode Token to string and resolve the encoding'(test: Test) {
       // GIVEN
-      const token = new CloudFormationToken({ Ref: 'Other' });
+      const token = new Token({ Ref: 'Other' });
 
       // WHEN
       const struct = {
@@ -291,7 +291,7 @@ export = {
 
     'cannot add to encoded list'(test: Test) {
       // GIVEN
-      const token = new CloudFormationToken({ Ref: 'Other' });
+      const token = new Token({ Ref: 'Other' });
 
       // WHEN
       const encoded: string[] = token.toList();
@@ -307,7 +307,7 @@ export = {
 
     'cannot add to strings in encoded list'(test: Test) {
       // GIVEN
-      const token = new CloudFormationToken({ Ref: 'Other' });
+      const token = new Token({ Ref: 'Other' });
 
       // WHEN
       const encoded: string[] = token.toList();
@@ -323,7 +323,7 @@ export = {
 
     'can pass encoded lists to FnSelect'(test: Test) {
       // GIVEN
-      const encoded: string[] = new CloudFormationToken({ Ref: 'Other' }).toList();
+      const encoded: string[] = new Token({ Ref: 'Other' }).toList();
 
       // WHEN
       const struct = Fn.select(1, encoded);
@@ -338,10 +338,25 @@ export = {
 
     'can pass encoded lists to FnJoin'(test: Test) {
       // GIVEN
-      const encoded: string[] = new CloudFormationToken({ Ref: 'Other' }).toList();
+      const encoded: string[] = new Token({ Ref: 'Other' }).toList();
 
       // WHEN
       const struct = Fn.join('/', encoded);
+
+      // THEN
+      test.deepEqual(resolve(struct), {
+        'Fn::Join': ['/', { Ref: 'Other'}]
+      });
+
+      test.done();
+    },
+
+    'can pass encoded lists to FnJoin, even if join is stringified'(test: Test) {
+      // GIVEN
+      const encoded: string[] = new Token({ Ref: 'Other' }).toList();
+
+      // WHEN
+      const struct = Fn.join('/', encoded).toString();
 
       // THEN
       test.deepEqual(resolve(struct), {
@@ -401,8 +416,8 @@ function literalTokensThatResolveTo(value: any): Token[] {
  */
 function cloudFormationTokensThatResolveTo(value: any): Token[] {
   return [
-    new CloudFormationToken(value),
-    new CloudFormationToken(() => value)
+    new Token(value),
+    new Token(() => value)
   ];
 }
 
@@ -411,4 +426,13 @@ function cloudFormationTokensThatResolveTo(value: any): Token[] {
  */
 function tokensThatResolveTo(value: string): Token[] {
   return literalTokensThatResolveTo(value).concat(cloudFormationTokensThatResolveTo(value));
+}
+
+/**
+ * Wrapper for resolve that creates an throwaway Construct to call it on
+ *
+ * So I don't have to change all call sites in this file.
+ */
+function resolve(x: any) {
+  return new Root().node.resolve(x);
 }

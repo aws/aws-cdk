@@ -123,7 +123,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(cdk.resolve(method.methodArn), {
+    test.deepEqual(method.node.resolve(method.methodArn), {
       "Fn::Join": [
         "",
         [
@@ -157,7 +157,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(cdk.resolve(method.testMethodArn), {
+    test.deepEqual(method.node.resolve(method.testMethodArn), {
       "Fn::Join": [
         "",
         [

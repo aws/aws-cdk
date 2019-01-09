@@ -127,7 +127,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     this.artifactStores = {};
 
     // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
-    this.pipelineArn = cdk.ArnUtils.fromComponents({
+    this.pipelineArn = cdk.Stack.find(this).formatArn({
       service: 'codepipeline',
       resource: this.pipelineName
     });
@@ -213,21 +213,6 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
   }
 
   /**
-   * Validate the pipeline structure
-   *
-   * Validation happens according to the rules documented at
-   *
-   * https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#pipeline-requirements
-   * @override
-   */
-  public validate(): string[] {
-    return [
-      ...this.validateHasStages(),
-      ...this.validateSourceActionLocations()
-    ];
-  }
-
-  /**
    * Get the number of Stages in this Pipeline.
    */
   public get stageCount(): number {
@@ -252,6 +237,21 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
       ret[key] = this._crossRegionScaffoldStacks[key];
     });
     return ret;
+  }
+
+  /**
+   * Validate the pipeline structure
+   *
+   * Validation happens according to the rules documented at
+   *
+   * https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#pipeline-requirements
+   * @override
+   */
+  protected validate(): string[] {
+    return [
+      ...this.validateHasStages(),
+      ...this.validateSourceActionLocations()
+    ];
   }
 
   /**

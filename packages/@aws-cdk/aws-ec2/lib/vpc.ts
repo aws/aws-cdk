@@ -5,6 +5,7 @@ import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
 import { IVpcNetwork, IVpcSubnet, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcPlacementStrategy, VpcSubnetImportProps } from './vpc-ref';
+
 /**
  * Name tag constant
  */

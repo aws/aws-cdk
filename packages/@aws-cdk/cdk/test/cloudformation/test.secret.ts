@@ -1,13 +1,14 @@
 import { Test } from 'nodeunit';
-import { resolve, Secret, SecretParameter, Stack } from '../../lib';
+import { Secret, SecretParameter, Stack } from '../../lib';
 
 export = {
   'Secret is merely a token'(test: Test) {
+    const stack = new Stack();
     const foo = new Secret('Foo');
     const bar = new Secret(() => 'Bar');
 
-    test.deepEqual(resolve(foo), 'Foo');
-    test.deepEqual(resolve(bar), 'Bar');
+    test.deepEqual(stack.node.resolve(foo), 'Foo');
+    test.deepEqual(stack.node.resolve(bar), 'Bar');
     test.done();
   },
 
@@ -43,7 +44,7 @@ export = {
          NoEcho: true } } });
 
     // value resolves to a "Ref"
-    test.deepEqual(resolve(mySecret.value), { Ref: 'MySecretParameterBB81DE58' });
+    test.deepEqual(stack.node.resolve(mySecret.value), { Ref: 'MySecretParameterBB81DE58' });
 
     test.done();
   }

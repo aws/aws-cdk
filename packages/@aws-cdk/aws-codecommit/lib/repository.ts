@@ -244,7 +244,7 @@ class ImportedRepository extends RepositoryBase {
   constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
     super(scope, id);
 
-    this.repositoryArn = cdk.ArnUtils.fromComponents({
+    this.repositoryArn = cdk.Stack.find(this).formatArn({
       service: 'codecommit',
       resource: props.repositoryName,
     });
@@ -264,7 +264,8 @@ class ImportedRepository extends RepositoryBase {
   }
 
   private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
-    return `${protocol}://git-codecommit.${new cdk.AwsRegion()}.${new cdk.AwsURLSuffix()}/v1/repos/${this.repositoryName}`;
+    const stack = cdk.Stack.find(this);
+    return `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${this.repositoryName}`;
   }
 }
 

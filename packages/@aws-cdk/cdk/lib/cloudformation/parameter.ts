@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { Ref, Referenceable } from './stack';
+import { Ref, Referenceable } from './stack-element';
 
 export interface ParameterProps {
   /**

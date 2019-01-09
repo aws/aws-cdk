@@ -1,10 +1,12 @@
-import { resolve, Token } from '@aws-cdk/cdk';
+import { Stack, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Anyone, AnyPrincipal, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
 
 export = {
   'the Permission class is a programming model for iam'(test: Test) {
+    const stack = new Stack();
+
     const p = new PolicyStatement();
     p.addAction('sqs:SendMessage');
     p.addActions('dynamodb:CreateTable', 'dynamodb:DeleteTable');
@@ -15,7 +17,7 @@ export = {
     p.addAwsAccountPrincipal(`my${new Token({ account: 'account' })}name`);
     p.limitToAccount('12221121221');
 
-    test.deepEqual(resolve(p), { Action:
+    test.deepEqual(stack.node.resolve(p), { Action:
       [ 'sqs:SendMessage',
         'dynamodb:CreateTable',
         'dynamodb:DeleteTable' ],
@@ -36,6 +38,7 @@ export = {
   },
 
   'the PolicyDocument class is a dom for iam policy documents'(test: Test) {
+    const stack = new Stack();
     const doc = new PolicyDocument();
     const p1 = new PolicyStatement();
     p1.addAction('sqs:SendMessage');
@@ -48,7 +51,7 @@ export = {
     doc.addStatement(p1);
     doc.addStatement(p2);
 
-    test.deepEqual(resolve(doc), {
+    test.deepEqual(stack.node.resolve(doc), {
       Version: '2012-10-17',
       Statement:
         [ { Effect: 'Allow', Action: 'sqs:SendMessage', Resource: '*' },
@@ -58,6 +61,7 @@ export = {
   },
 
   'A PolicyDocument can be initialized with an existing policy, which is merged upon serialization'(test: Test) {
+    const stack = new Stack();
     const base = {
       Version: 'Foo',
       Something: 123,
@@ -69,7 +73,7 @@ export = {
     const doc = new PolicyDocument(base);
     doc.addStatement(new PolicyStatement().addResource('resource').addAction('action'));
 
-    test.deepEqual(resolve(doc), { Version: 'Foo',
+    test.deepEqual(stack.node.resolve(doc), { Version: 'Foo',
     Something: 123,
     Statement:
      [ { Statement1: 1 },
@@ -79,8 +83,9 @@ export = {
   },
 
   'Permission allows specifying multiple actions upon construction'(test: Test) {
+    const stack = new Stack();
     const perm = new PolicyStatement().addResource('MyResource').addActions('Action1', 'Action2', 'Action3');
-    test.deepEqual(resolve(perm), {
+    test.deepEqual(stack.node.resolve(perm), {
       Effect: 'Allow',
       Action: [ 'Action1', 'Action2', 'Action3' ],
       Resource: 'MyResource' });
@@ -88,16 +93,18 @@ export = {
   },
 
   'PolicyDoc resolves to undefined if there are no permissions'(test: Test) {
+    const stack = new Stack();
     const p = new PolicyDocument();
-    test.deepEqual(resolve(p), undefined);
+    test.deepEqual(stack.node.resolve(p), undefined);
     test.done();
   },
 
   'canonicalUserPrincipal adds a principal to a policy with the passed canonical user id'(test: Test) {
+    const stack = new Stack();
     const p = new PolicyStatement();
     const canoncialUser = "averysuperduperlongstringfor";
     p.addPrincipal(new CanonicalUserPrincipal(canoncialUser));
-    test.deepEqual(resolve(p), {
+    test.deepEqual(stack.node.resolve(p), {
       Effect: "Allow",
       Principal: {
         CanonicalUser: canoncialUser
@@ -107,9 +114,11 @@ export = {
   },
 
   'addAccountRootPrincipal adds a principal with the current account root'(test: Test) {
+    const stack = new Stack();
+
     const p = new PolicyStatement();
     p.addAccountRootPrincipal();
-    test.deepEqual(resolve(p), {
+    test.deepEqual(stack.node.resolve(p), {
       Effect: "Allow",
       Principal: {
         AWS: {
@@ -130,9 +139,10 @@ export = {
   },
 
   'addFederatedPrincipal adds a Federated principal with the passed value'(test: Test) {
+    const stack = new Stack();
     const p = new PolicyStatement();
     p.addFederatedPrincipal("com.amazon.cognito", { StringEquals: { key: 'value' }});
-    test.deepEqual(resolve(p), {
+    test.deepEqual(stack.node.resolve(p), {
       Effect: "Allow",
       Principal: {
         Federated: "com.amazon.cognito"
@@ -145,10 +155,12 @@ export = {
   },
 
   'addAwsAccountPrincipal can be used multiple times'(test: Test) {
+    const stack = new Stack();
+
     const p = new PolicyStatement();
     p.addAwsAccountPrincipal('1234');
     p.addAwsAccountPrincipal('5678');
-    test.deepEqual(resolve(p), {
+    test.deepEqual(stack.node.resolve(p), {
       Effect: 'Allow',
       Principal: {
         AWS: [
@@ -208,13 +220,14 @@ export = {
   },
 
   'the { AWS: "*" } principal is represented as `Anyone` or `AnyPrincipal`'(test: Test) {
+    const stack = new Stack();
     const p = new PolicyDocument();
 
     p.addStatement(new PolicyStatement().addPrincipal(new Anyone()));
     p.addStatement(new PolicyStatement().addPrincipal(new AnyPrincipal()));
     p.addStatement(new PolicyStatement().addAnyPrincipal());
 
-    test.deepEqual(resolve(p), {
+    test.deepEqual(stack.node.resolve(p), {
       Statement: [
         { Effect: 'Allow', Principal: '*' },
         { Effect: 'Allow', Principal: '*' },
@@ -226,13 +239,14 @@ export = {
   },
 
   'addAwsPrincipal/addArnPrincipal are the aliases'(test: Test) {
+    const stack = new Stack();
     const p = new PolicyDocument();
 
     p.addStatement(new PolicyStatement().addAwsPrincipal('111222-A'));
     p.addStatement(new PolicyStatement().addArnPrincipal('111222-B'));
     p.addStatement(new PolicyStatement().addPrincipal(new ArnPrincipal('111222-C')));
 
-    test.deepEqual(resolve(p), {
+    test.deepEqual(stack.node.resolve(p), {
       Statement: [ {
         Effect: 'Allow', Principal: { AWS: '111222-A' } },
         { Effect: 'Allow', Principal: { AWS: '111222-B' } },
@@ -245,12 +259,13 @@ export = {
   },
 
   'addCanonicalUserPrincipal can be used to add cannonical user principals'(test: Test) {
+    const stack = new Stack();
     const p = new PolicyDocument();
 
     p.addStatement(new PolicyStatement().addCanonicalUserPrincipal('cannonical-user-1'));
     p.addStatement(new PolicyStatement().addPrincipal(new CanonicalUserPrincipal('cannonical-user-2')));
 
-    test.deepEqual(resolve(p), {
+    test.deepEqual(stack.node.resolve(p), {
       Statement: [
         { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-1' } },
         { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-2' } }
@@ -262,13 +277,14 @@ export = {
   },
 
   'addPrincipal correctly merges array in'(test: Test) {
+    const stack = new Stack();
     const arrayPrincipal: PolicyPrincipal = {
       assumeRoleAction: 'sts:AssumeRole',
       policyFragment: () => new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
     };
     const s = new PolicyStatement().addAccountRootPrincipal()
                                    .addPrincipal(arrayPrincipal);
-    test.deepEqual(resolve(s), {
+    test.deepEqual(stack.node.resolve(s), {
       Effect: 'Allow',
       Principal: {
         AWS: [
@@ -282,13 +298,14 @@ export = {
 
   // https://github.com/awslabs/aws-cdk/issues/1201
   'policy statements with multiple principal types can be created using multiple addPrincipal calls'(test: Test) {
+    const stack = new Stack();
     const s = new PolicyStatement()
       .addAwsPrincipal('349494949494')
       .addServicePrincipal('ec2.amazonaws.com')
       .addResource('resource')
       .addAction('action');
 
-    test.deepEqual(resolve(s), {
+    test.deepEqual(stack.node.resolve(s), {
       Action: 'action',
       Effect: 'Allow',
       Principal: { AWS: '349494949494', Service: 'ec2.amazonaws.com' },
@@ -301,9 +318,10 @@ export = {
   'CompositePrincipal can be used to represent a principal that has multiple types': {
 
     'with a single principal'(test: Test) {
+      const stack = new Stack();
       const p = new CompositePrincipal(new ArnPrincipal('i:am:an:arn'));
       const statement = new PolicyStatement().addPrincipal(p);
-      test.deepEqual(resolve(statement), { Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
+      test.deepEqual(stack.node.resolve(statement), { Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
       test.done();
     },
 
@@ -316,6 +334,7 @@ export = {
     },
 
     'principals and conditions are a big nice merge'(test: Test) {
+      const stack = new Stack();
       // add via ctor
       const p = new CompositePrincipal(
         new ArnPrincipal('i:am:an:arn'),
@@ -333,7 +352,7 @@ export = {
       statement.addAwsPrincipal('aws-principal-3');
       statement.addCondition('cond2', { boom: 123 });
 
-      test.deepEqual(resolve(statement), {
+      test.deepEqual(stack.node.resolve(statement), {
         Condition: {
           cond2: { boom: 123 }
         },
