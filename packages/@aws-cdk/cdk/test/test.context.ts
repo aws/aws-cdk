@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, AvailabilityZoneProvider, Construct, ContextProvider,
-  MetadataEntry, resolve, SSMParameterProvider, Stack } from '../lib';
+  MetadataEntry, SSMParameterProvider, Stack } from '../lib';
 
 export = {
   'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {
@@ -86,7 +86,7 @@ export = {
     stack.node.setContext(key, 'abc');
 
     const ssmp = new SSMParameterProvider(stack,  {parameterName: 'test'});
-    const azs = resolve(ssmp.parameterValue());
+    const azs = stack.node.resolve(ssmp.parameterValue());
     test.deepEqual(azs, 'abc');
 
     test.done();

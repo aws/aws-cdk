@@ -1,4 +1,4 @@
-import { Construct, IConstruct, IDependable } from "@aws-cdk/cdk";
+import { Construct, IConstruct, IDependable, Stack } from "@aws-cdk/cdk";
 import { subnetName } from './util';
 
 export interface IVpcSubnet extends IConstruct, IDependable {
@@ -43,6 +43,11 @@ export interface IVpcNetwork extends IConstruct, IDependable {
    * AZs for this VPC
    */
   readonly availabilityZones: string[];
+
+  /**
+   * Region where this VPC is located
+   */
+  readonly vpcRegion: string;
 
   /**
    * Take a dependency on internet connectivity having been added to this VPC
@@ -240,6 +245,14 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   public internetDependency(): IDependable {
     return new DependencyList(this.internetDependencies);
   }
+
+  /**
+   * The region where this VPC is defined
+   */
+  public get vpcRegion(): string {
+    return Stack.find(this).region;
+  }
+
 }
 
 /**

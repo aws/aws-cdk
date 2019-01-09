@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { StackElement } from './stack';
+import { StackElement } from './stack-element';
 
 export interface IncludeProps {
   /**

@@ -1,10 +1,10 @@
-import { CloudFormationToken } from '@aws-cdk/cdk';
+import { Token } from '@aws-cdk/cdk';
 import { Policy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;
 
-export function undefinedIfEmpty<T>(f: () => T[]): CloudFormationToken {
-  return new CloudFormationToken(() => {
+export function undefinedIfEmpty<T>(f: () => T[]): Token {
+  return new Token(() => {
     const array = f();
     return (array && array.length > 0) ? array : undefined;
   });

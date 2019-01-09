@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { AvailabilityZoneProvider, Construct, resolve, Stack, Tags } from '@aws-cdk/cdk';
+import { AvailabilityZoneProvider, Construct, Stack, Tags } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { DefaultInstanceTenancy, IVpcNetwork, SubnetType, VpcNetwork } from '../lib';
 
@@ -10,7 +10,7 @@ export = {
       "vpc.vpcId returns a token to the VPC ID"(test: Test) {
         const stack = getTestStack();
         const vpc = new VpcNetwork(stack, 'TheVPC');
-        test.deepEqual(resolve(vpc.vpcId), {Ref: 'TheVPC92636AB0' } );
+        test.deepEqual(stack.node.resolve(vpc.vpcId), {Ref: 'TheVPC92636AB0' } );
         test.done();
       },
 
@@ -68,7 +68,7 @@ export = {
       const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
       test.equal(vpc.publicSubnets.length, zones);
       test.equal(vpc.privateSubnets.length, zones);
-      test.deepEqual(resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' });
+      test.deepEqual(stack.node.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' });
       test.done();
     },
 
@@ -442,7 +442,7 @@ export = {
       });
 
       // THEN
-      test.deepEqual(resolve(vpc2.vpcId), {
+      test.deepEqual(vpc2.node.resolve(vpc2.vpcId), {
         'Fn::ImportValue': 'TestStack:TheVPCVpcIdD346CDBA'
       });
 
@@ -461,7 +461,7 @@ export = {
       });
 
       // THEN
-      test.deepEqual(resolve(imported.vpcId), {
+      test.deepEqual(imported.node.resolve(imported.vpcId), {
         'Fn::ImportValue': 'TestStack:TheVPCVpcIdD346CDBA'
       });
 

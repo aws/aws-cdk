@@ -6,6 +6,7 @@ import { debug, error, print, warning } from '../../logging';
 import { Configuration } from '../../settings';
 import cdkUtil = require('../../util');
 import { SDK } from '../util/sdk';
+import { topologicalSort } from '../util/toposort';
 import { execProgram } from './exec';
 
 /**
@@ -62,9 +63,17 @@ export class AppStacks {
     return stacks.filter(s => matched.has(s.name));
   }
 
+  /**
+   * Return all stacks in the CX
+   *
+   * If the stacks have dependencies between them, they will be returned in
+   * topologically sorted order. If there are dependencies that are not in the
+   * set, they will be ignored; it is the user's responsibility that the
+   * non-selected stacks have already been deployed previously.
+   */
   public async listStacks(): Promise<cxapi.SynthesizedStack[]> {
     const response = await this.synthesizeStacks();
-    return response.stacks;
+    return topologicalSort(response.stacks, s => s.name, s => s.dependsOn || []);
   }
 
   /**

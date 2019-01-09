@@ -60,7 +60,7 @@ export class PipelineDeployAction extends codepipeline.DeployAction {
       ));
 
     props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
-      .addResource(props.deploymentGroup.deploymentConfig.deploymentConfigArn)
+      .addResource(props.deploymentGroup.deploymentConfig.deploymentConfigArn(this))
       .addActions(
         'codedeploy:GetDeploymentConfig',
       ));

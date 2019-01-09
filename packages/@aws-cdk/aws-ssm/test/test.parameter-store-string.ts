@@ -14,7 +14,7 @@ export = {
     });
 
     // THEN
-    test.equal(cdk.resolve(ref.value), '{{resolve:ssm:/some/key:123}}');
+    test.equal(ref.node.resolve(ref.value), '{{resolve:ssm:/some/key:123}}');
 
     test.done();
   },
@@ -30,7 +30,7 @@ export = {
     });
 
     // THEN
-    test.equal(cdk.resolve(ref.value), '{{resolve:ssm-secure:/some/key:123}}');
+    test.equal(ref.node.resolve(ref.value), '{{resolve:ssm-secure:/some/key:123}}');
 
     test.done();
   },

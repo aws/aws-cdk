@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { DynamicReference, DynamicReferenceService, resolve, Stack } from '../../lib';
+import { DynamicReference, DynamicReferenceService, Stack } from '../../lib';
 
 export = {
   'can create dynamic references with service and key with colons'(test: Test) {
@@ -13,7 +13,7 @@ export = {
     });
 
     // THEN
-    test.equal(resolve(ref.value), '{{resolve:ssm:a:b:c}}');
+    test.equal(stack.node.resolve(ref.value), '{{resolve:ssm:a:b:c}}');
 
     test.done();
   },

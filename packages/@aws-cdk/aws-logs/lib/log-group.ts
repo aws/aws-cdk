@@ -295,7 +295,7 @@ class ImportedLogGroup extends LogGroupBase {
     super(scope, id);
 
     this.logGroupArn = props.logGroupArn;
-    this.logGroupName = cdk.ArnUtils.resourceNameComponent(props.logGroupArn, ':');
+    this.logGroupName = cdk.Stack.find(this).parseArn(props.logGroupArn, ':').resourceName!;
   }
 
   /**

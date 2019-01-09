@@ -246,7 +246,7 @@ export = {
 
       const x = new iam.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
 
-      test.deepEqual(cdk.resolve(x), {
+      test.deepEqual(bucket.node.resolve(x), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
         Resource: { 'Fn::GetAtt': [ 'MyBucketF68F3FF0', 'Arn' ] }
@@ -262,7 +262,7 @@ export = {
 
       const p = new iam.PolicyStatement().addResource(bucket.arnForObjects('hello/world')).addAction('s3:GetObject');
 
-      test.deepEqual(cdk.resolve(p), {
+      test.deepEqual(bucket.node.resolve(p), {
         Action: 's3:GetObject',
         Effect: 'Allow',
         Resource: {
@@ -288,7 +288,7 @@ export = {
       const resource = bucket.arnForObjects('home/', team.groupName, '/', user.userName, '/*');
       const p = new iam.PolicyStatement().addResource(resource).addAction('s3:GetObject');
 
-      test.deepEqual(cdk.resolve(p), {
+      test.deepEqual(bucket.node.resolve(p), {
         Action: 's3:GetObject',
         Effect: 'Allow',
         Resource: {
@@ -331,7 +331,7 @@ export = {
       const stack = new cdk.Stack(undefined, 'MyStack');
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const bucketRef = bucket.export();
-      test.deepEqual(cdk.resolve(bucketRef), {
+      test.deepEqual(bucket.node.resolve(bucketRef), {
         bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
         bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' },
         bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' }
@@ -343,7 +343,7 @@ export = {
       const stack = new cdk.Stack(undefined, 'MyStack');
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
       const bucketRef = bucket.export();
-      test.deepEqual(cdk.resolve(bucketRef), {
+      test.deepEqual(bucket.node.resolve(bucketRef), {
         bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
         bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' },
         bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' }
@@ -363,14 +363,14 @@ export = {
       const p = new iam.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
 
       // it is possible to obtain a permission statement for a ref
-      test.deepEqual(cdk.resolve(p), {
+      test.deepEqual(bucket.node.resolve(p), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
         Resource: 'arn:aws:s3:::my-bucket'
       });
 
       test.deepEqual(bucket.bucketArn, bucketArn);
-      test.deepEqual(cdk.resolve(bucket.bucketName), 'my-bucket');
+      test.deepEqual(bucket.node.resolve(bucket.bucketName), 'my-bucket');
 
       test.deepEqual(stack.toCloudFormation(), {}, 'the ref is not a real resource');
       test.done();

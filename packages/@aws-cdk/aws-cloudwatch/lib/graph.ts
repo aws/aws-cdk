@@ -1,4 +1,4 @@
-import { AwsRegion } from "@aws-cdk/cdk";
+import cdk = require('@aws-cdk/cdk');
 import { Alarm } from "./alarm";
 import { Metric } from "./metric";
 import { parseStatistic } from './util.statistic';
@@ -73,7 +73,7 @@ export class AlarmWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || new AwsRegion(),
+        region: this.props.region || new cdk.Aws().region,
         annotations: {
           alarms: [this.props.alarm.alarmArn]
         },
@@ -150,7 +150,7 @@ export class GraphWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || new AwsRegion(),
+        region: this.props.region || new cdk.Aws().region,
         metrics: (this.props.left || []).map(m => metricJson(m, 'left')).concat(
              (this.props.right || []).map(m => metricJson(m, 'right'))),
         annotations: {
@@ -197,7 +197,7 @@ export class SingleValueWidget extends ConcreteWidget {
       properties: {
         view: 'singleValue',
         title: this.props.title,
-        region: this.props.region || new AwsRegion(),
+        region: this.props.region || new cdk.Aws().region,
         metrics: this.props.metrics.map(m => metricJson(m, 'left'))
       }
     }];

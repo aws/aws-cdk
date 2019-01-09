@@ -1,5 +1,5 @@
 import { makeUniqueId } from '../util/uniqueid';
-import { StackElement } from './stack';
+import { StackElement } from './stack-element';
 
 const PATH_SEP = '/';
 

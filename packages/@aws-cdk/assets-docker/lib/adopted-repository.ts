@@ -42,7 +42,7 @@ export class AdoptedRepository extends ecr.RepositoryBase {
     });
 
     fn.addToRolePolicy(new iam.PolicyStatement()
-      .addResource(ecr.Repository.arnForLocalRepository(props.repositoryName))
+      .addResource(ecr.Repository.arnForLocalRepository(props.repositoryName, this))
       .addActions(
         'ecr:GetRepositoryPolicy',
         'ecr:SetRepositoryPolicy',
@@ -67,7 +67,7 @@ export class AdoptedRepository extends ecr.RepositoryBase {
 
     // this this repository is "local" to the stack (in the same region/account)
     // we can render it's ARN from it's name.
-    this.repositoryArn = ecr.Repository.arnForLocalRepository(this.repositoryName);
+    this.repositoryArn = ecr.Repository.arnForLocalRepository(this.repositoryName, this);
   }
 
   /**

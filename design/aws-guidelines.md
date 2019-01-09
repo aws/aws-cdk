@@ -204,7 +204,7 @@ properties that allow the user to specify an external resource identity, usually
 by providing one or more resource attributes such as ARN, physical name, etc.
 
 The import interface should have the minimum required properties, that is: if it
-is possible to parse the resource name from the ARN (using `cdk.ArnUtils.parse`),
+is possible to parse the resource name from the ARN (using `cdk.Stack.parseArn`),
 then only the ARN should be required. In cases where it
 is not possible to parse the ARN (e.g. if it is a token and the resource name
 might have use "/" characters), both the ARN and the name should be optional and

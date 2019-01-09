@@ -37,7 +37,7 @@ export = {
     'should fail if Stage has no Actions'(test: Test) {
       const stage = stageForTesting();
 
-      test.deepEqual(stage.validate().length, 1);
+      test.deepEqual(stage.node.validateTree().length, 1);
 
       test.done();
     }
@@ -48,7 +48,7 @@ export = {
       const stack = new cdk.Stack();
       const pipeline = new Pipeline(stack, 'Pipeline');
 
-      test.deepEqual(pipeline.validate().length, 1);
+      test.deepEqual(pipeline.node.validateTree().length, 1);
 
       test.done();
     },
@@ -73,7 +73,7 @@ export = {
         bucketKey: 'key',
       });
 
-      test.deepEqual(pipeline.validate().length, 1);
+      test.deepEqual(pipeline.node.validateTree().length, 1);
 
       test.done();
     }

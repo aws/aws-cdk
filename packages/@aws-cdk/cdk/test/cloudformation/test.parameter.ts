@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Construct, Parameter, resolve, Resource, Stack } from '../../lib';
+import { Construct, Parameter, Resource, Stack } from '../../lib';
 
 export = {
   'parameters can be used and referenced using param.ref'(test: Test) {
@@ -32,7 +32,7 @@ export = {
     const stack = new Stack();
     const param = new Parameter(stack, 'MyParam', { type: 'String' });
 
-    test.deepEqual(resolve(param), { Ref: 'MyParam' });
+    test.deepEqual(stack.node.resolve(param), { Ref: 'MyParam' });
     test.done();
   }
 };

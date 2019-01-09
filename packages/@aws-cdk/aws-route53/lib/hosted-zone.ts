@@ -92,7 +92,7 @@ export class HostedZone extends cdk.Construct implements IHostedZone {
    * @param vpc the other VPC to add.
    */
   public addVpc(vpc: ec2.IVpcNetwork) {
-    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: new cdk.AwsRegion().toString() });
+    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.vpcRegion });
   }
 }
 

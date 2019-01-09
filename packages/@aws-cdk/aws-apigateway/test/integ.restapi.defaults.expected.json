@@ -109,7 +109,9 @@
             {
               "Ref": "AWS::Region"
             },
-            ".amazonaws.com/",
+            ".",
+            { "Ref": "AWS::URLSuffix" },
+            "/",
             {
               "Ref": "myapiDeploymentStageprod298F01AF"
             },

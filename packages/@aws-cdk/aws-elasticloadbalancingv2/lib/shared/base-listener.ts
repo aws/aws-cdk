@@ -25,7 +25,7 @@ export abstract class BaseListener extends cdk.Construct implements cdk.IDependa
   /**
    * Validate this listener
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     if (this.defaultActions.length === 0) {
       return ['Listener needs at least one default target group (call addTargetGroups)'];
     }

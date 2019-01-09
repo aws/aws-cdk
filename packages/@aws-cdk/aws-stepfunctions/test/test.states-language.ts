@@ -729,5 +729,5 @@ class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
 }
 
 function render(sm: stepfunctions.IChainable) {
-    return cdk.resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
+    return new cdk.Stack().node.resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
 }

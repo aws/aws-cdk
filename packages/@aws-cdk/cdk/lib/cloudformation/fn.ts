@@ -1,5 +1,7 @@
-import { CloudFormationToken, FnJoin } from './cloudformation-token';
+import { ResolveContext, Token, unresolved } from '../core/tokens';
+import { resolve } from '../core/tokens/resolve';
 import { IConditionExpression } from './condition';
+import { minimalCloudFormationJoin } from './instrinsics';
 
 // tslint:disable:max-line-length
 
@@ -19,7 +21,7 @@ export class Fn {
    * attributes available for that resource type.
    * @returns a CloudFormationToken object
    */
-  public static getAtt(logicalNameOfResource: string, attributeName: string): CloudFormationToken {
+  public static getAtt(logicalNameOfResource: string, attributeName: string): Token {
     return new FnGetAtt(logicalNameOfResource, attributeName);
   }
 
@@ -285,7 +287,7 @@ export class Fn {
 /**
  * Base class for tokens that represent CloudFormation intrinsic functions.
  */
-class FnBase extends CloudFormationToken {
+class FnBase extends Token {
   constructor(name: string, value: any) {
     super({ [name]: value });
   }
@@ -442,7 +444,7 @@ class FnCidr extends FnBase {
   }
 }
 
-class FnConditionBase extends CloudFormationToken implements IConditionExpression {
+class FnConditionBase extends Token implements IConditionExpression {
   constructor(type: string, value: any) {
     super({ [type]: value });
   }
@@ -605,5 +607,57 @@ class FnValueOfAll extends FnBase {
    */
   constructor(parameterType: string, attribute: string) {
     super('Fn::ValueOfAll', [ parameterType, attribute ]);
+  }
+}
+
+/**
+ * The intrinsic function ``Fn::Join`` appends a set of values into a single value, separated by
+ * the specified delimiter. If a delimiter is the empty string, the set of values are concatenated
+ * with no delimiter.
+ */
+class FnJoin extends Token {
+  private readonly delimiter: string;
+  private readonly listOfValues: any[];
+  // Cache for the result of resolveValues() - since it otherwise would be computed several times
+  private _resolvedValues?: any[];
+
+  /**
+   * Creates an ``Fn::Join`` function.
+   * @param delimiter The value you want to occur between fragments. The delimiter will occur between fragments only.
+   *          It will not terminate the final value.
+   * @param listOfValues The list of values you want combined.
+   */
+  constructor(delimiter: string, listOfValues: any[]) {
+    if (listOfValues.length === 0) {
+      throw new Error(`FnJoin requires at least one value to be provided`);
+    }
+    super();
+
+    this.delimiter = delimiter;
+    this.listOfValues = listOfValues;
+  }
+
+  public resolve(context: ResolveContext): any {
+    if (unresolved(this.listOfValues)) {
+      // This is a list token, don't try to do smart things with it.
+      return { 'Fn::Join': [ this.delimiter, this.listOfValues ] };
+    }
+    const resolved = this.resolveValues(context);
+    if (resolved.length === 1) {
+      return resolved[0];
+    }
+    return { 'Fn::Join': [ this.delimiter, resolved ] };
+  }
+
+  /**
+   * Optimization: if an Fn::Join is nested in another one and they share the same delimiter, then flatten it up. Also,
+   * if two concatenated elements are literal strings (not tokens), then pre-concatenate them with the delimiter, to
+   * generate shorter output.
+   */
+  private resolveValues(context: ResolveContext) {
+    if (this._resolvedValues) { return this._resolvedValues; }
+
+    const resolvedValues = this.listOfValues.map(e => resolve(e, context));
+    return this._resolvedValues = minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }

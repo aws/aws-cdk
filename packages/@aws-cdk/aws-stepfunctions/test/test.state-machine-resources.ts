@@ -79,13 +79,13 @@ export = {
             namespace: 'AWS/States',
             dimensions: { ResourceArn: 'resource' },
         };
-        test.deepEqual(cdk.resolve(task.metricRunTime()), {
+        test.deepEqual(stack.node.resolve(task.metricRunTime()), {
             ...sharedMetric,
             metricName: 'FakeResourceRunTime',
             statistic: 'Average'
         });
 
-        test.deepEqual(cdk.resolve(task.metricFailed()), {
+        test.deepEqual(stack.node.resolve(task.metricFailed()), {
             ...sharedMetric,
             metricName: 'FakeResourcesFailed',
             statistic: 'Sum'

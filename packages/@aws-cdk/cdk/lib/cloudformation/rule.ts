@@ -1,7 +1,7 @@
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames } from '../core/util';
 import { IConditionExpression } from './condition';
-import { Referenceable } from './stack';
+import { Referenceable } from './stack-element';
 
 /**
  * A rule can include a RuleCondition property and must include an Assertions property.
@@ -97,7 +97,7 @@ export class Rule extends Referenceable {
       Rules: {
         [this.logicalId]: {
           RuleCondition: this.ruleCondition,
-          Assertions: capitalizePropertyNames(this.assertions)
+          Assertions: capitalizePropertyNames(this, this.assertions)
         }
       }
     };

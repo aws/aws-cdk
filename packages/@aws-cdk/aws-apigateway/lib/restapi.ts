@@ -301,7 +301,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
       method = '*';
     }
 
-    return cdk.ArnUtils.fromComponents({
+    return cdk.Stack.find(this).formatArn({
       service: 'execute-api',
       resource: this.restApiId,
       sep: '/',
@@ -310,22 +310,22 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
   }
 
   /**
-   * Performs validation of the REST API.
-   */
-  public validate() {
-    if (this.methods.length === 0) {
-      return [ `The REST API doesn't contain any methods` ];
-    }
-
-    return [];
-  }
-
-  /**
    * Internal API used by `Method` to keep an inventory of methods at the API
    * level for validation purposes.
    */
   public _attachMethod(method: Method) {
     this.methods.push(method);
+  }
+
+  /**
+   * Performs validation of the REST API.
+   */
+  protected validate() {
+    if (this.methods.length === 0) {
+      return [ `The REST API doesn't contain any methods` ];
+    }
+
+    return [];
   }
 
   private configureDeployment(props: RestApiProps) {
@@ -358,7 +358,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
   private configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      managedPolicyArns: [ cdk.ArnUtils.fromComponents({
+      managedPolicyArns: [ cdk.Stack.find(this).formatArn({
         service: 'iam',
         region: '',
         account: 'aws',
@@ -404,8 +404,6 @@ export enum EndpointType {
    */
   Private = 'PRIVATE'
 }
-
-export class RestApiUrl extends cdk.CloudFormationToken { }
 
 class ImportedRestApi extends cdk.Construct implements IRestApi {
   public restApiId: string;

@@ -171,7 +171,7 @@ export class Policy extends Construct implements IDependable {
     group.attachInlinePolicy(this);
   }
 
-  public validate(): string[] {
+  protected validate(): string[] {
     const result = new Array<string>();
 
     // validate that the policy document is not empty

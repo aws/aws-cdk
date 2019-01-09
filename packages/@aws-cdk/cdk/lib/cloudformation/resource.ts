@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
-import { CloudFormationToken } from './cloudformation-token';
+import { CfnReference } from './cfn-tokens';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { IDependable, Referenceable, StackElement } from './stack';
+import { IDependable, Referenceable, StackElement } from './stack-element';
 
 export interface ResourceProps {
   /**
@@ -105,7 +105,7 @@ export class Resource extends Referenceable {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new CloudFormationToken({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`);
+    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`, this);
   }
 
   /**
@@ -187,12 +187,12 @@ export class Resource extends Referenceable {
         Resources: {
           [this.logicalId]: deepMerge({
             Type: this.resourceType,
-            Properties: ignoreEmpty(properties),
-            DependsOn: ignoreEmpty(this.renderDependsOn()),
-            CreationPolicy:  capitalizePropertyNames(this.options.creationPolicy),
-            UpdatePolicy: capitalizePropertyNames(this.options.updatePolicy),
-            DeletionPolicy: capitalizePropertyNames(this.options.deletionPolicy),
-            Metadata: ignoreEmpty(this.options.metadata),
+            Properties: ignoreEmpty(this, properties),
+            DependsOn: ignoreEmpty(this, this.renderDependsOn()),
+            CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
+            UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
+            DeletionPolicy: capitalizePropertyNames(this, this.options.deletionPolicy),
+            Metadata: ignoreEmpty(this, this.options.metadata),
             Condition: this.options.condition && this.options.condition.logicalId
           }, this.rawOverrides)
         }

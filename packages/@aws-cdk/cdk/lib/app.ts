@@ -3,7 +3,6 @@ import fs = require('fs');
 import path = require('path');
 import { Stack } from './cloudformation/stack';
 import { IConstruct, MetadataEntry, PATH_SEP, Root } from './core/construct';
-import { resolve } from './core/tokens';
 
 /**
  * Represents a CDK program.
@@ -59,6 +58,8 @@ export class App extends Root {
   public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
     const stack = this.getStack(stackName);
 
+    this.node.prepareTree();
+
     // first, validate this stack and stop if there are errors.
     const errors = stack.node.validateTree();
     if (errors.length > 0) {
@@ -81,7 +82,8 @@ export class App extends Root {
       environment,
       missing,
       template: stack.toCloudFormation(),
-      metadata: this.collectMetadata(stack)
+      metadata: this.collectMetadata(stack),
+      dependsOn: noEmptyArray(stack.dependencies().map(s => s.node.id)),
     };
   }
 
@@ -114,7 +116,7 @@ export class App extends Root {
     function visit(node: IConstruct) {
       if (node.node.metadata.length > 0) {
         // Make the path absolute
-        output[PATH_SEP + node.node.path] = node.node.metadata.map(md => resolve(md) as MetadataEntry);
+        output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as MetadataEntry);
       }
 
       for (const child of node.node.children) {
@@ -226,4 +228,8 @@ function getJsiiAgentVersion() {
   }
 
   return jsiiAgent;
+}
+
+function noEmptyArray<T>(xs: T[]): T[] | undefined {
+  return xs.length > 0 ? xs : undefined;
 }

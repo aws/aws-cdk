@@ -126,7 +126,7 @@ export class Repository extends RepositoryBase {
     if (this.lifecycleRules.length === 0 && !this.registryId) { return undefined; }
 
     if (this.lifecycleRules.length > 0) {
-      lifecyclePolicyText = JSON.stringify(cdk.resolve({
+      lifecyclePolicyText = JSON.stringify(this.node.resolve({
         rules: this.orderedLifecycleRules().map(renderLifecycleRule),
       }));
     }

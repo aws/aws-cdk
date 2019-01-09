@@ -1,6 +1,6 @@
 import { beASupersetOfTemplate, expect, haveResource } from '@aws-cdk/assert';
 import { AccountPrincipal } from '@aws-cdk/aws-iam';
-import { resolve, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import lambda = require('../lib');
 
@@ -31,7 +31,7 @@ export = {
         Type: "AWS::Lambda::Alias",
         Properties: {
           FunctionName: { Ref: "MyLambdaCCE802FB" },
-          FunctionVersion: resolve(version.functionVersion),
+          FunctionVersion: stack.node.resolve(version.functionVersion),
           Name: "prod"
         }
         }
@@ -59,11 +59,11 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::Lambda::Alias', {
-      FunctionVersion: resolve(version1.functionVersion),
+      FunctionVersion: stack.node.resolve(version1.functionVersion),
       RoutingConfig: {
         AdditionalVersionWeights: [
           {
-          FunctionVersion: resolve(version2.functionVersion),
+          FunctionVersion: stack.node.resolve(version2.functionVersion),
           FunctionWeight: 0.1
           }
         ]
@@ -123,7 +123,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      FunctionName: resolve(fn.functionName),
+      FunctionName: stack.node.resolve(fn.functionName),
       Principal: "123456"
     }));
 

@@ -1,5 +1,6 @@
 import { Construct } from '../core/construct';
-import { Referenceable } from './stack';
+import { ResolveContext } from '../core/tokens';
+import { Referenceable } from './stack-element';
 
 export interface ConditionProps {
   expression?: IConditionExpression;
@@ -39,7 +40,7 @@ export class Condition extends Referenceable implements IConditionExpression {
   /**
    * Synthesizes the condition.
    */
-  public resolve(): any {
+  public resolve(_context: ResolveContext): any {
     return { Condition: this.logicalId };
   }
 }
@@ -72,5 +73,5 @@ export interface IConditionExpression {
   /**
    * Returns a JSON node that represents this condition expression
    */
-  resolve(): any;
+  resolve(context: ResolveContext): any;
 }

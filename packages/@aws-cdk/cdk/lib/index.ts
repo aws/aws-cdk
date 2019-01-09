@@ -3,7 +3,7 @@ export * from './core/tokens';
 export * from './core/tag-manager';
 
 export * from './cloudformation/cloudformation-json';
-export * from './cloudformation/cloudformation-token';
+export * from './cloudformation/cfn-tokens';
 export * from './cloudformation/condition';
 export * from './cloudformation/fn';
 export * from './cloudformation/include';
@@ -16,6 +16,7 @@ export * from './cloudformation/resource';
 export * from './cloudformation/resource-policy';
 export * from './cloudformation/rule';
 export * from './cloudformation/stack';
+export * from './cloudformation/stack-element';
 export * from './cloudformation/dynamic-reference';
 export * from './cloudformation/tag';
 export * from './cloudformation/removal-policy';
