@@ -310,7 +310,7 @@ export default class CodeGenerator {
     this.code.closeBlock();
 
     this.code.openBlock('protected renderProperties(properties: any): { [key: string]: any } ');
-    this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(${CORE}.resolve(properties));`);
+    this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(this.node.resolve(properties));`);
     this.code.closeBlock();
   }
 

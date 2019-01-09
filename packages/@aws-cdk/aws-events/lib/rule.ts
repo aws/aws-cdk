@@ -199,7 +199,7 @@ export class EventRule extends Construct implements IEventRule {
     mergeEventPattern(this.eventPattern, eventPattern);
   }
 
-  public validate() {
+  protected validate() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
       return [ `Either 'eventPattern' or 'scheduleExpression' must be defined` ];
     }

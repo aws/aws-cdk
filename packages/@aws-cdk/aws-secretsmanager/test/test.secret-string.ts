@@ -13,7 +13,7 @@ export = {
     });
 
     // THEN
-    test.equal(cdk.resolve(ref.value), '{{resolve:secretsmanager:SomeSecret:SecretString:::}}');
+    test.equal(ref.node.resolve(ref.value), '{{resolve:secretsmanager:SomeSecret:SecretString:::}}');
 
     test.done();
   },
@@ -28,7 +28,7 @@ export = {
     });
 
     // THEN
-    test.equal(cdk.resolve(ref.jsonFieldValue('subkey')), '{{resolve:secretsmanager:SomeSecret:SecretString:subkey::}}');
+    test.equal(ref.node.resolve(ref.jsonFieldValue('subkey')), '{{resolve:secretsmanager:SomeSecret:SecretString:subkey::}}');
 
     test.done();
   },

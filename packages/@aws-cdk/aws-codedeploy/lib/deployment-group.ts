@@ -104,8 +104,8 @@ class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
-    this.deploymentGroupArn = deploymentGroupName2Arn(props.application.applicationName,
-      props.deploymentGroupName);
+    this.deploymentGroupArn = deploymentGroupNameToArn(props.application.applicationName,
+      props.deploymentGroupName, this);
   }
 
   public export() {
@@ -310,9 +310,9 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent === undefined ? true : props.installAgent;
-    const region = new cdk.AwsRegion().toString();
+    const stack = cdk.Stack.find(this);
     this.codeDeployBucket = s3.Bucket.import(this, 'CodeDeployBucket', {
-      bucketName: `aws-codedeploy-${region}`,
+      bucketName: `aws-codedeploy-${stack.region}`,
     });
     for (const asg of this._autoScalingGroups) {
       this.addCodeDeployAgentInstallUserData(asg);
@@ -343,8 +343,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     });
 
     this.deploymentGroupName = resource.deploymentGroupName;
-    this.deploymentGroupArn = deploymentGroupName2Arn(this.application.applicationName,
-      this.deploymentGroupName);
+    this.deploymentGroupArn = deploymentGroupNameToArn(this.application.applicationName,
+      this.deploymentGroupName, this);
   }
 
   public export(): ServerDeploymentGroupImportProps {
@@ -387,7 +387,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this.codeDeployBucket.grantRead(asg.role, 'latest/*');
 
-    const region = (new cdk.AwsRegion()).toString();
+    const stack = cdk.Stack.find(this);
     switch (asg.osType) {
       case ec2.OperatingSystemType.Linux:
         asg.addUserData(
@@ -405,7 +405,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           '$PKG_CMD install -y awscli',
           'TMP_DIR=`mktemp -d`',
           'cd $TMP_DIR',
-          `aws s3 cp s3://aws-codedeploy-${region}/latest/install . --region ${region}`,
+          `aws s3 cp s3://aws-codedeploy-${stack.region}/latest/install . --region ${stack.region}`,
           'chmod +x ./install',
           './install auto',
           'rm -fr $TMP_DIR',
@@ -414,7 +414,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       case ec2.OperatingSystemType.Windows:
         asg.addUserData(
           'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
-          `aws s3 cp s3://aws-codedeploy-${region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
+          `aws s3 cp s3://aws-codedeploy-${stack.region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
           '$TEMPDIR\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
         );
         break;
@@ -560,8 +560,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   }
 }
 
-function deploymentGroupName2Arn(applicationName: string, deploymentGroupName: string): string {
-  return cdk.ArnUtils.fromComponents({
+function deploymentGroupNameToArn(applicationName: string, deploymentGroupName: string, scope: cdk.IConstruct): string {
+  return cdk.Stack.find(scope).formatArn({
     service: 'codedeploy',
     resource: 'deploymentgroup',
     resourceName: `${applicationName}/${deploymentGroupName}`,

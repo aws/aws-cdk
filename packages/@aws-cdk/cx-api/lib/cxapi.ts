@@ -56,6 +56,11 @@ export interface SynthesizedStack {
   missing?: { [key: string]: MissingContext };
   metadata: StackMetadata;
   template: any;
+
+  /**
+   * Other stacks this stack depends on
+   */
+  dependsOn?: string[];
 }
 
 /**

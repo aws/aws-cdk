@@ -10,6 +10,7 @@ import yargs = require('yargs');
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { AppStacks, listStackNames } from '../lib/api/cxapp/stacks';
+import { leftPad } from '../lib/api/util/string-manipulation';
 import { printSecurityDiff, printStackDiff, RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
@@ -53,7 +54,8 @@ async function parseCommandLineArguments() {
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
     .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
       .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
-      .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory' }))
+      .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory' })
+      .option('numbered', { type: 'boolean', alias: 'n', desc: 'Prefix filenames with numbers to indicate deployment ordering' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment')
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' }))
@@ -172,7 +174,7 @@ async function initCommandLine() {
 
       case 'synthesize':
       case 'synth':
-        return await cliSynthesize(args.STACKS, args.interactive, args.output, args.json);
+        return await cliSynthesize(args.STACKS, args.interactive, args.output, args.json, args.numbered);
 
       case 'metadata':
         return await cliMetadata(await findStack(args.STACK));
@@ -239,7 +241,8 @@ async function initCommandLine() {
   async function cliSynthesize(stackNames: string[],
                                doInteractive: boolean,
                                outputDir: string|undefined,
-                               json: boolean): Promise<void> {
+                               json: boolean,
+                               numbered: boolean): Promise<void> {
     const stacks = await appStacks.selectStacks(...stackNames);
     renames.validateSelectedStacks(stacks);
 
@@ -261,11 +264,14 @@ async function initCommandLine() {
 
     fs.mkdirpSync(outputDir);
 
+    let i = 0;
     for (const stack of stacks) {
       const finalName = renames.finalName(stack.name);
-      const fileName = `${outputDir}/${finalName}.template.${json ? 'json' : 'yaml'}`;
+      const prefix = numbered ? leftPad(`${i}`, 3, '0') + '.' : '';
+      const fileName = `${outputDir}/${prefix}${finalName}.template.${json ? 'json' : 'yaml'}`;
       highlight(fileName);
       await fs.writeFile(fileName, toJsonOrYaml(stack.template));
+      i++;
     }
 
     return undefined; // Nothing to print

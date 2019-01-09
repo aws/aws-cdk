@@ -1,6 +1,6 @@
-import { AwsAccountId, AwsPartition, Token } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/cdk');
 
-export class PolicyDocument extends Token {
+export class PolicyDocument extends cdk.Token {
   private statements = new Array<PolicyStatement>();
 
   /**
@@ -12,7 +12,7 @@ export class PolicyDocument extends Token {
     super();
   }
 
-  public resolve(): any {
+  public resolve(_context: cdk.ResolveContext): any {
     if (this.isEmpty) {
       return undefined;
     }
@@ -82,7 +82,7 @@ export class ArnPrincipal extends PolicyPrincipal {
 
 export class AccountPrincipal extends ArnPrincipal {
   constructor(public readonly accountId: any) {
-    super(`arn:${new AwsPartition()}:iam::${accountId}:root`);
+    super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
   }
 }
 
@@ -137,7 +137,7 @@ export class FederatedPrincipal extends PolicyPrincipal {
 
 export class AccountRootPrincipal extends AccountPrincipal {
   constructor() {
-    super(new AwsAccountId());
+    super(new StackDependentToken(stack => stack.accountId).toString());
   }
 }
 
@@ -201,7 +201,7 @@ export class CompositePrincipal extends PolicyPrincipal {
 /**
  * Represents a statement in an IAM policy document.
  */
-export class PolicyStatement extends Token {
+export class PolicyStatement extends cdk.Token {
   private action = new Array<any>();
   private principal: { [key: string]: any[] } = {};
   private resource = new Array<any>();
@@ -250,12 +250,12 @@ export class PolicyStatement extends Token {
     return this.addPrincipal(new ArnPrincipal(arn));
   }
 
-  public addArnPrincipal(arn: string): this {
-    return this.addAwsPrincipal(arn);
-  }
-
   public addAwsAccountPrincipal(accountId: string): this {
     return this.addPrincipal(new AccountPrincipal(accountId));
+  }
+
+  public addArnPrincipal(arn: string): this {
+    return this.addAwsPrincipal(arn);
   }
 
   public addServicePrincipal(service: string): this {
@@ -363,7 +363,7 @@ export class PolicyStatement extends Token {
   }
 
   public limitToAccount(accountId: string): PolicyStatement {
-    return this.addCondition('StringEquals', new Token(() => {
+    return this.addCondition('StringEquals', new cdk.Token(() => {
       return { 'sts:ExternalId': accountId };
     }));
   }
@@ -371,8 +371,7 @@ export class PolicyStatement extends Token {
   //
   // Serialization
   //
-
-  public resolve(): any {
+  public resolve(_context: cdk.ResolveContext): any {
     return this.toJson();
   }
 
@@ -449,4 +448,18 @@ function mergePrincipal(target: { [key: string]: string[] }, source: { [key: str
   }
 
   return target;
+}
+
+/**
+ * A lazy token that requires an instance of Stack to evaluate
+ */
+class StackDependentToken extends cdk.Token {
+  constructor(private readonly fn: (stack: cdk.Stack) => any) {
+    super();
+  }
+
+  public resolve(context: cdk.ResolveContext) {
+    const stack = cdk.Stack.find(context.scope);
+    return this.fn(stack);
+  }
 }

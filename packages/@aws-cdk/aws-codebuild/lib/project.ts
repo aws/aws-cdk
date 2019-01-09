@@ -436,7 +436,7 @@ class ImportedProject extends ProjectBase {
   constructor(scope: cdk.Construct, id: string, private readonly props: ProjectImportProps) {
     super(scope, id);
 
-    this.projectArn = cdk.ArnUtils.fromComponents({
+    this.projectArn = cdk.Stack.find(this).formatArn({
       service: 'codebuild',
       resource: 'project',
       resourceName: props.projectName,
@@ -706,24 +706,6 @@ export class Project extends ProjectBase {
   }
 
   /**
-   * @override
-   */
-  public validate(): string[] {
-    const ret = new Array<string>();
-    if (this.source.type === SourceType.CodePipeline) {
-      if (this._secondarySources.length > 0) {
-        ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
-          "Use the CodeBuild Pipeline Actions' `additionalInputArtifacts` property instead");
-      }
-      if (this._secondaryArtifacts.length > 0) {
-        ret.push('A Project with a CodePipeline Source cannot have secondary artifacts. ' +
-          "Use the CodeBuild Pipeline Actions' `additionalOutputArtifactNames` property instead");
-      }
-    }
-    return ret;
-  }
-
-  /**
    * Export this Project. Allows referencing this Project in a different CDK Stack.
    */
   public export(): ProjectImportProps {
@@ -770,8 +752,26 @@ export class Project extends ProjectBase {
     this._secondaryArtifacts.push(secondaryArtifact);
   }
 
+  /**
+   * @override
+   */
+  protected validate(): string[] {
+    const ret = new Array<string>();
+    if (this.source.type === SourceType.CodePipeline) {
+      if (this._secondarySources.length > 0) {
+        ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
+          "Use the CodeBuild Pipeline Actions' `additionalInputArtifacts` property instead");
+      }
+      if (this._secondaryArtifacts.length > 0) {
+        ret.push('A Project with a CodePipeline Source cannot have secondary artifacts. ' +
+          "Use the CodeBuild Pipeline Actions' `additionalOutputArtifactNames` property instead");
+      }
+    }
+    return ret;
+  }
+
   private createLoggingPermission() {
-    const logGroupArn = cdk.ArnUtils.fromComponents({
+    const logGroupArn = cdk.Stack.find(this).formatArn({
       service: 'logs',
       resource: 'log-group',
       sep: ':',

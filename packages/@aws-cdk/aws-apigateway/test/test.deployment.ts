@@ -152,7 +152,7 @@ export = {
     test.done();
 
     function synthesize() {
-      stack.node.validateTree();
+      stack.node.prepareTree();
       return stack.toCloudFormation();
     }
   },

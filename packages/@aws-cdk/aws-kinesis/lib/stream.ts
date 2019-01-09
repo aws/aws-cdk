@@ -197,9 +197,10 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
   public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
     // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#DestinationKinesisExample
     if (!this.cloudWatchLogsRole) {
+      const stack = cdk.Stack.find(this);
       // Create a role to be assumed by CWL that can write to this stream and pass itself.
       this.cloudWatchLogsRole = new iam.Role(this, 'CloudWatchLogsCanPutRecords', {
-        assumedBy: new iam.ServicePrincipal(`logs.${new cdk.AwsRegion()}.amazonaws.com`)
+        assumedBy: new iam.ServicePrincipal(`logs.${stack.region}.amazonaws.com`)
       });
       this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
       this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));
@@ -428,7 +429,7 @@ class ImportedStream extends StreamBase {
     this.streamArn = props.streamArn;
 
     // Get the name from the ARN
-    this.streamName = cdk.ArnUtils.parse(props.streamArn).resourceName!;
+    this.streamName = cdk.Stack.find(this).parseArn(props.streamArn).resourceName!;
 
     if (props.encryptionKey) {
       // TODO: import "scope" should be changed to "this"

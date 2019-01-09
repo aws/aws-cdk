@@ -40,11 +40,7 @@ const ExpectedBucketPolicyProperties = {
                   "Arn"
                 ]
               },
-              "/AWSLogs/",
-              {
-                Ref: "AWS::AccountId"
-              },
-              "/*"
+              "/AWSLogs/123456789012/*",
             ]
           ]
         }

@@ -310,7 +310,8 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @returns an ObjectS3Url token
    */
   public urlForObject(key?: string): string {
-    const components = [ `https://s3.${new cdk.AwsRegion()}.${new cdk.AwsURLSuffix()}/${this.bucketName}` ];
+    const stack = cdk.Stack.find(this);
+    const components = [ `https://s3.${stack.region}.${stack.urlSuffix}/${this.bucketName}` ];
     if (key) {
       // trim prepending '/'
       if (typeof key === 'string' && key.startsWith('/')) {
@@ -963,12 +964,12 @@ class ImportedBucket extends BucketBase {
   constructor(scope: cdk.Construct, id: string, private readonly props: BucketImportProps) {
     super(scope, id);
 
-    const bucketName = parseBucketName(props);
+    const bucketName = parseBucketName(this, props);
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }
 
-    this.bucketArn = parseBucketArn(props);
+    this.bucketArn = parseBucketArn(this, props);
     this.bucketName = bucketName;
     this.domainName = props.bucketDomainName || this.generateDomainName();
     this.autoCreatePolicy = false;

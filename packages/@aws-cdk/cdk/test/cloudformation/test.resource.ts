@@ -2,7 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { applyRemovalPolicy, Condition, Construct, DeletionPolicy,
     Fn, HashedAddressingScheme, IDependable,
-    RemovalPolicy, resolve, Resource, Root, Stack } from '../../lib';
+    RemovalPolicy, Resource, Root, Stack } from '../../lib';
 
 export = {
   'all resources derive from Resource, which derives from Entity'(test: Test) {
@@ -359,7 +359,7 @@ export = {
     const stack = new Stack();
     const r = new Resource(stack, 'MyResource', { type: 'R' });
 
-    test.deepEqual(resolve(r.ref), { Ref: 'MyResource' });
+    test.deepEqual(stack.node.resolve(r.ref), { Ref: 'MyResource' });
     test.done();
   },
 

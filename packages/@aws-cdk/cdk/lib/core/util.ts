@@ -1,18 +1,18 @@
-import { resolve } from './tokens';
+import { IConstruct } from "./construct";
 
 /**
  * Given an object, converts all keys to PascalCase given they are currently in camel case.
  * @param obj The object.
  */
-export function capitalizePropertyNames(obj: any): any {
-  obj = resolve(obj);
+export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
+  obj = construct.node.resolve(obj);
 
   if (typeof(obj) !== 'object') {
     return obj;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map(x => capitalizePropertyNames(x));
+    return obj.map(x => capitalizePropertyNames(construct, x));
   }
 
   const newObj: any = { };
@@ -21,7 +21,7 @@ export function capitalizePropertyNames(obj: any): any {
 
     const first = key.charAt(0).toUpperCase();
     const newKey = first + key.slice(1);
-    newObj[newKey] = capitalizePropertyNames(value);
+    newObj[newKey] = capitalizePropertyNames(construct, value);
   }
 
   return newObj;
@@ -30,8 +30,8 @@ export function capitalizePropertyNames(obj: any): any {
 /**
  * Turns empty arrays/objects to undefined (after evaluating tokens).
  */
-export function ignoreEmpty(o: any): any {
-  o = resolve(o); // first resolve tokens, in case they evaluate to 'undefined'.
+export function ignoreEmpty(construct: IConstruct, o: any): any {
+  o = construct.node.resolve(o); // first resolve tokens, in case they evaluate to 'undefined'.
 
   // undefined/null
   if (o == null) {

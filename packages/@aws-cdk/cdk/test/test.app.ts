@@ -195,7 +195,7 @@ export = {
   'app.synthesizeStack(stack) performs validation first (app.validateAll()) and if there are errors, it returns the errors'(test: Test) {
 
     class Child extends Construct {
-      public validate() {
+      protected validate() {
         return [ `Error from ${this.node.id}` ];
       }
     }

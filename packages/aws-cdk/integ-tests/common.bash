@@ -77,7 +77,7 @@ function assert() {
 
   echo "| running ${command}"
 
-  $command > ${actual} || {
+  eval "$command" > ${actual} || {
     fail "command ${command} non-zero exit code"
   }
 
