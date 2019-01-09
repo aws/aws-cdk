@@ -1,6 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
 import { makeUniqueId } from '../util/uniqueid';
-import { unresolved } from './tokens';
+import { Token, unresolved } from './tokens';
+import { resolve } from './tokens/resolve';
 export const PATH_SEP = '/';
 
 /**
@@ -35,6 +37,7 @@ export class ConstructNode {
   private readonly _children: { [name: string]: IConstruct } = { };
   private readonly context: { [key: string]: any } = { };
   private readonly _metadata = new Array<MetadataEntry>();
+  private readonly references = new Set<Token>();
 
   /**
    * If this is set to 'true'. addChild() calls for this construct and any child
@@ -150,7 +153,23 @@ export class ConstructNode {
    * All direct children of this construct.
    */
   public get children() {
-    return Object.keys(this._children).map(k => this._children[k]);
+    return Object.values(this._children);
+  }
+
+  /**
+   * Return this construct and all of its children in the given order
+   */
+  public findAll(order: ConstructOrder = ConstructOrder.DepthFirst): IConstruct[] {
+    const ret = new Array<IConstruct>();
+    const queue: IConstruct[] = [this.host];
+
+    while (queue.length > 0) {
+      const next = order === ConstructOrder.BreadthFirst ? queue.splice(0, 1)[0] : queue.pop()!;
+      ret.push(next);
+      queue.push(...next.node.children);
+    }
+
+    return ret;
   }
 
   /**
@@ -263,8 +282,21 @@ export class ConstructNode {
       errors = errors.concat(child.node.validateTree());
     }
 
-    const localErrors: string[] = this.host.validate();
+    const localErrors: string[] = (this.host as any).validate();
     return errors.concat(localErrors.map(msg => new ValidationError(this.host, msg)));
+  }
+
+  /**
+   * Run 'prepare()' on all constructs in the tree
+   */
+  public prepareTree() {
+    const constructs = this.host.node.findAll(ConstructOrder.BreadthFirst);
+    // Use .reverse() to achieve post-order traversal
+    for (const construct of constructs.reverse()) {
+      if (Construct.isInstance(construct)) {
+        (construct as any).prepare();
+      }
+    }
   }
 
   /**
@@ -351,15 +383,6 @@ export class ConstructNode {
   }
 
   /**
-   * Return the path of components up to but excluding the root
-   */
-  private rootPath(): IConstruct[] {
-    const ancestors = this.ancestors();
-    ancestors.shift();
-    return ancestors;
-  }
-
-  /**
    * Returns true if this construct or the scopes in which it is defined are
    * locked.
    */
@@ -373,6 +396,64 @@ export class ConstructNode {
     }
 
     return false;
+  }
+
+  /**
+   * Resolve a tokenized value in the context of the current Construct
+   */
+  public resolve(obj: any): any {
+    return resolve(obj, {
+      scope: this.host,
+      prefix: []
+    });
+  }
+
+  /**
+   * Convert an object, potentially containing tokens, to a JSON string
+   */
+  public stringifyJson(obj: any): string {
+    return CloudFormationJSON.stringify(obj, this.host).toString();
+  }
+
+  /**
+   * Record a reference originating from this construct node
+   */
+  public recordReference(...refs: Token[]) {
+    for (const ref of refs) {
+      if (ref.isReference) {
+        this.references.add(ref);
+      }
+    }
+  }
+
+  /**
+   * Return all references of the given type originating from this node or any of its children
+   */
+  public findReferences(): Token[] {
+    const ret = new Set<Token>();
+
+    function recurse(node: ConstructNode) {
+      for (const ref of node.references) {
+        ret.add(ref);
+      }
+
+      for (const child of node.children) {
+        recurse(child.node);
+      }
+    }
+
+    recurse(this);
+
+    return Array.from(ret);
+  }
+
+  /**
+   * Return the path of components up to but excluding the root
+   */
+  private rootPath(): IConstruct[] {
+    const ancestors = this.ancestors();
+    ancestors.shift();
+    return ancestors;
   }
 
   /**
@@ -391,6 +472,13 @@ export class ConstructNode {
  * another construct.
  */
 export class Construct implements IConstruct {
+  /**
+   * Return whether the given object is a Construct
+   */
+  public static isInstance(x: IConstruct): x is Construct {
+    return (x as any).prepare !== undefined && (x as any).validate !== undefined;
+  }
+
   /**
    * Construct node.
    */
@@ -417,13 +505,29 @@ export class Construct implements IConstruct {
   }
 
   /**
+   * Validate the current construct.
+   *
    * This method can be implemented by derived constructs in order to perform
    * validation logic. It is called on all constructs before synthesis.
    *
    * @returns An array of validation error messages, or an empty array if there the construct is valid.
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     return [];
+  }
+
+  /**
+   * Perform final modifications before synthesis
+   *
+   * This method can be implemented by derived constructs in order to perform
+   * final changes before synthesis. prepare() will be called after child
+   * constructs have been prepared.
+   *
+   * This is an advanced framework feature. Only use this if you
+   * understand the implications.
+   */
+  protected prepare(): void {
+    // Intentionally left blank
   }
 }
 
@@ -478,4 +582,19 @@ function createStackTrace(below: Function): string[] {
     return [];
   }
   return object.stack.split('\n').slice(1).map(s => s.replace(/^\s*at\s+/, ''));
+}
+
+/**
+ * In what order to return constructs
+ */
+export enum ConstructOrder {
+  /**
+   * Breadth first
+   */
+  BreadthFirst,
+
+  /**
+   * Depth first
+   */
+  DepthFirst
 }

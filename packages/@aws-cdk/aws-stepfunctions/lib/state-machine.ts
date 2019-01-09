@@ -71,8 +71,9 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
     constructor(scope: cdk.Construct, id: string, props: StateMachineProps) {
         super(scope, id);
 
+        const stack = cdk.Stack.find(this);
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new iam.ServicePrincipal(`states.${new cdk.AwsRegion()}.amazonaws.com`),
+            assumedBy: new iam.ServicePrincipal(`states.${stack.region}.amazonaws.com`),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
@@ -81,7 +82,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
         const resource = new CfnStateMachine(this, 'Resource', {
             stateMachineName: props.stateMachineName,
             roleArn: this.role.roleArn,
-            definitionString: cdk.CloudFormationJSON.stringify(graph.toGraphJson()),
+            definitionString: this.node.stringifyJson(graph.toGraphJson()),
         });
 
         for (const statement of graph.policyStatements) {

@@ -33,7 +33,7 @@ export = {
 
       // WHEN
       const provider = new HostedZoneProvider(stack, filter);
-      const zoneProps = cdk.resolve(provider.findHostedZone());
+      const zoneProps = stack.node.resolve(provider.findHostedZone());
       const zoneRef = provider.findAndImport(stack, 'MyZoneProvider');
 
       // THEN

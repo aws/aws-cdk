@@ -122,8 +122,8 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Returns an ECR ARN for a repository that resides in the same account/region
    * as the current stack.
    */
-  public static arnForLocalRepository(repositoryName: string): string {
-    return cdk.ArnUtils.fromComponents({
+  public static arnForLocalRepository(repositoryName: string, scope: cdk.IConstruct): string {
+    return cdk.Stack.find(scope).formatArn({
       service: 'ecr',
       resource: 'repository',
       resourceName: repositoryName
@@ -164,7 +164,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    */
   public repositoryUriForTag(tag?: string): string {
     const tagSuffix = tag ? `:${tag}` : '';
-    const parts = cdk.ArnUtils.parse(this.repositoryArn);
+    const parts = cdk.Stack.find(this).parseArn(this.repositoryArn);
     return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${this.repositoryName}${tagSuffix}`;
   }
 
@@ -265,7 +265,7 @@ class ImportedRepository extends RepositoryBase {
           'which also implies that the repository resides in the same region/account as this stack');
       }
 
-      this.repositoryArn = RepositoryBase.arnForLocalRepository(props.repositoryName);
+      this.repositoryArn = RepositoryBase.arnForLocalRepository(props.repositoryName, this);
     }
 
     if (props.repositoryName) {

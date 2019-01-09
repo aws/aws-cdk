@@ -225,17 +225,6 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   }
 
   /**
-   * Validate this listener.
-   */
-  public validate(): string[] {
-    const errors = super.validate();
-    if (this.protocol === ApplicationProtocol.Https && this.certificateArns.length === 0) {
-      errors.push('HTTPS Listener needs at least one certificate (call addCertificateArns)');
-    }
-    return errors;
-  }
-
-  /**
    * Export this listener
    */
   public export(): ApplicationListenerImportProps {
@@ -244,6 +233,17 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       securityGroupId: this.connections.securityGroups[0]!.export().securityGroupId,
       defaultPort: new cdk.Output(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
     };
+  }
+
+  /**
+   * Validate this listener.
+   */
+  protected validate(): string[] {
+    const errors = super.validate();
+    if (this.protocol === ApplicationProtocol.Https && this.certificateArns.length === 0) {
+      errors.push('HTTPS Listener needs at least one certificate (call addCertificateArns)');
+    }
+    return errors;
   }
 
   /**

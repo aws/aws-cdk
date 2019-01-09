@@ -35,7 +35,8 @@ async function main() {
     }
 
     try {
-      await test.invoke([ ...args, 'deploy', '--prompt', 'never' ], { verbose: argv.verbose }); // Note: no context, so use default user settings!
+      // tslint:disable-next-line:max-line-length
+      await test.invoke([ ...args, 'deploy', '--require-approval', 'never' ], { verbose: argv.verbose }); // Note: no context, so use default user settings!
 
       console.error(`Success! Writing out reference synth.`);
 

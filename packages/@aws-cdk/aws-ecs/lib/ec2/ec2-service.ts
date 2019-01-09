@@ -231,7 +231,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   /**
    * Validate this Ec2Service
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     const ret = super.validate();
     if (!this.cluster.hasEc2Capacity) {
       ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');

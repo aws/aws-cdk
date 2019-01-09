@@ -105,7 +105,7 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
   /**
    * Validate this construct
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     if (Object.keys(this.parameters).length === 0) {
       return ['At least one parameter required, call setParameter().'];
     }
