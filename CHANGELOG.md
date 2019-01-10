@@ -1,4 +1,8 @@
-# [0.22.0](https://github.com/awslabs/aws-cdk/compare/v0.21.0...v0.22.0) (2019-01-10)
+# Change Log
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [0.22.0](https://github.com/awslabs/aws-cdk/compare/v0.21.0...v0.22.0) (2019-01-10)
 
 This is a major release with multiple breaking changes in the core layers.
 Please consult the __breaking changes__ section below for details.
@@ -60,9 +64,6 @@ communicate when this foundational work is complete.
   - `XxxRef.import(...)` are now `Xxx.import(...)` accept `XxxImportProps` and return `IXxx`
   - `export(): XxxImportProps` is now defined in `IXxx` and implemented by imported resources
 
-# Change Log
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 # [0.21.0](https://github.com/awslabs/aws-cdk/compare/v0.20.0...v0.21.0) (2018-12-20)
 
