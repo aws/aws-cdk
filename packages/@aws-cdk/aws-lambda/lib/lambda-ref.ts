@@ -33,7 +33,7 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   /**
    * The IAM role associated with this function.
    */
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
 
   /**
    * Whether or not this Lambda function was bound to a VPC
@@ -123,7 +123,7 @@ export interface FunctionImportProps {
    *
    * If the role is not specified, any role-related operations will no-op.
    */
-  role?: iam.Role;
+  role?: iam.IRole;
 
   /**
    * Id of the securityGroup for this Lambda, if in a VPC.
@@ -149,7 +149,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   /**
    * The IAM role associated with this function.
    */
-  public abstract readonly role?: iam.Role;
+  public abstract readonly role?: iam.IRole;
 
   /**
    * Whether the addPermission() call adds any permissions

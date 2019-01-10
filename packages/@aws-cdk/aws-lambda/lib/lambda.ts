@@ -111,7 +111,7 @@ export interface FunctionProps {
    * @default a unique role will be generated for this lambda function.
    * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
    */
-  role?: iam.Role;
+  role?: iam.IRole;
 
   /**
    * VPC network to place Lambda network interfaces
@@ -284,7 +284,7 @@ export class Function extends FunctionBase {
   /**
    * Execution role associated with this function
    */
-  public readonly role?: iam.Role;
+  public readonly role?: iam.IRole;
 
   /**
    * The runtime configured for this lambda.
@@ -493,7 +493,7 @@ export class Function extends FunctionBase {
 export class ImportedFunction extends FunctionBase {
   public readonly functionName: string;
   public readonly functionArn: string;
-  public readonly role?: iam.Role;
+  public readonly role?: iam.IRole;
 
   protected readonly canCreatePermissions = false;
 

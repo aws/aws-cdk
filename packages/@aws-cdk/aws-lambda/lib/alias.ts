@@ -71,7 +71,7 @@ export class Alias extends FunctionBase {
   /**
    * Role associated with this alias
    */
-  public readonly role?: iam.Role | undefined;
+  public readonly role?: iam.IRole | undefined;
 
   protected readonly canCreatePermissions: boolean = true; // Not used anyway
 
