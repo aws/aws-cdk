@@ -37,7 +37,7 @@ export interface SingletonFunctionProps extends FunctionProps {
 export class SingletonFunction extends FunctionBase {
   public readonly functionName: string;
   public readonly functionArn: string;
-  public readonly role?: iam.Role | undefined;
+  public readonly role?: iam.IRole | undefined;
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: IFunction;
 
