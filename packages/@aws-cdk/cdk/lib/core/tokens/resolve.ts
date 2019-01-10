@@ -120,13 +120,12 @@ export function resolve(obj: any, context: ResolveContext): any {
 /**
  * Find all Tokens that are used in the given structure
  */
-export function findTokens(obj: any, context: ResolveContext): Token[] {
+export function findTokens(fn: () => void): Token[] {
   const ret = new Array<Token>();
 
   const options = RESOLVE_OPTIONS.push({ collect: ret.push.bind(ret) });
   try {
-    // resolve() for side effect of calling 'preProcess', which adds to the
-    resolve(obj, context);
+    fn();
   } finally {
     options.pop();
   }

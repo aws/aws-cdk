@@ -128,10 +128,7 @@ export abstract class StackElement extends Construct implements IDependable {
       // This does make the assumption that the error will not be rectified,
       // but the error will be thrown later on anyway. If the error doesn't
       // get thrown down the line, we may miss references.
-      this.node.recordReference(...findTokens(this.toCloudFormation(), {
-        scope: this,
-        prefix: []
-      }));
+      this.node.recordReference(...findTokens(() => this.toCloudFormation()));
     } catch (e) {
       if (e.type !== 'CfnSynthesisError') { throw e; }
     }
