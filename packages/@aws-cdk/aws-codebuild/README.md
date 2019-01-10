@@ -165,12 +165,11 @@ const rule = project.onStateChange('BuildStateChange');
 rule.addTarget(lambdaFunction);
 ```
 
-
 ## Using a CodeBuild Project as an AWS CodePipeline action
 
 Example of a Project used in CodePipeline, alongside CodeCommit:
 
-```ts
+```typescript
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
@@ -178,18 +177,26 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 const repository = new codecommit.Repository(this, 'MyRepository', {
   repositoryName: 'MyRepository',
 });
-
 const project = new codebuild.PipelineProject(this, 'MyProject');
 
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-
-const sourceStage = pipeline.addStage('Source');
-repository.addToPipeline(sourceStage, 'CodeCommit');
-
-const buildStage = pipeline.addStage('Build');
-new codebuild.PipelineBuildAction(this, 'CodeBuild', {
-  stage: buildStage,
+const sourceAction = repository.toCodePipelineSourceAction({ actionName: 'CodeCommit' });
+const buildAction = new codebuild.PipelineBuildAction({
+  actionName: 'CodeBuild',
   project,
+  inputArtifact: sourceAction.outputArtifact,
+});
+
+new codepipeline.Pipeline(this, 'MyPipeline', {
+  stages: [
+    {
+      name: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      name: 'Build',
+      actions: [buildAction],
+    },
+  ],
 });
 ```
 
@@ -204,11 +211,14 @@ const project = new codebuild.Project(this, 'MyProject', {
 }
 ```
 
-You can also add the Project to the Pipeline directly:
+You can also create the action from the Project directly:
 
 ```ts
 // equivalent to the code above:
-const buildAction = project.addToPipeline(buildStage, 'CodeBuild');
+const buildAction = project.toCodePipelineBuildAction({
+  actionName: 'CodeBuild',
+  inputArtifact: sourceAction.outputArtifact,
+});
 ```
 
 In addition to the build Action, there is also a test Action. It works very
@@ -217,19 +227,22 @@ not always produce an output artifact.
 
 Examples:
 
-```ts
-new codebuild.PipelineTestAction(this, 'IntegrationTest', {
-  stage: buildStage,
+```typescript
+const testAction = new codebuild.PipelineTestAction({
+  actionName: 'IntegrationTest',
   project,
+  inputArtifact: sourceAction.outputArtifact,
   // outputArtifactName is optional - if you don't specify it,
   // the Action will have an undefined `outputArtifact` property
   outputArtifactName: 'IntegrationTestOutput',
 });
 
 // equivalent to the code above:
-project.addToPipelineAsTest(buildStage, 'IntegrationTest', {
-    // of course, this property is optional here as well
-    outputArtifactName: 'IntegrationTestOutput',
+const testAction = project.toCodePipelineTestAction({
+  actionName: 'IntegrationTest',
+  inputArtifact: sourceAction.outputArtifact,
+  // of course, this property is optional here as well
+  outputArtifactName: 'IntegrationTestOutput',
 });
 ```
 
@@ -307,22 +320,24 @@ properties, you need to use the `additionalInputArtifacts` and
 Actions. Example:
 
 ```ts
-const sourceStage = pipeline.addStage('Source');
-const sourceAction1 = repository1.addToPipeline(sourceStage, 'Source1');
-const sourceAction2 = repository2.addToPipeline(sourceStage, 'Source2', {
+const sourceAction1 = repository1.toCodePipelineSourceAction({
+  actionName: 'Source1',
+});
+const sourceAction2 = repository2.toCodePipelineSourceAction({
+  actionName: 'Source2',
   outputArtifactName: 'source2',
 });
 
-const buildStage = pipeline.addStage('Build');
-const buildAction = project.addToPipeline(buildStage, 'Build', {
-    inputArtifact: sourceAction1.outputArtifact,
-    outputArtifactName: 'artifact1', // for better buildspec readability - see below
-    additionalInputArtifacts: [
-        sourceAction2.outputArtifact, // this is where 'source2' comes from
-    ],
-    additionalOutputArtifactNames: [
-        'artifact2',
-    ],
+const buildAction = project.toCodePipelineBuildAction({
+  actionName: 'Build',
+  inputArtifact: sourceAction1.outputArtifact,
+  outputArtifactName: 'artifact1', // for better buildspec readability - see below
+  additionalInputArtifacts: [
+    sourceAction2.outputArtifact, // this is where 'source2' comes from
+  ],
+  additionalOutputArtifactNames: [
+    'artifact2',
+  ],
 });
 ```
 

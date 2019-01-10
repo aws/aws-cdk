@@ -20,15 +20,22 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
 });
 
-const sourceStage = pipeline.addStage('Source');
-const sourceAction1 = repository.addToPipeline(sourceStage, 'Source1');
-const sourceAction2 = bucket.addToPipeline(sourceStage, 'Source2', {
+const sourceAction1 = repository.toCodePipelineSourceAction({ actionName: 'Source1' });
+const sourceAction2 = bucket.toCodePipelineSourceAction({
+  actionName: 'Source2',
   bucketKey: 'some/path',
+});
+pipeline.addStage({
+  name: 'Source',
+  actions: [
+    sourceAction1,
+    sourceAction2,
+  ],
 });
 
 const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
-const buildStage = pipeline.addStage('Build');
-const buildAction = project.addToPipeline(buildStage, 'Build1', {
+const buildAction = project.toCodePipelineBuildAction({
+  actionName: 'Build1',
   inputArtifact: sourceAction1.outputArtifact,
   additionalInputArtifacts: [
     sourceAction2.outputArtifact,
@@ -37,13 +44,21 @@ const buildAction = project.addToPipeline(buildStage, 'Build1', {
     'CustomOutput1',
   ],
 });
-const testAction = project.addToPipelineAsTest(buildStage, 'Build2', {
+const testAction = project.toCodePipelineTestAction({
+  actionName: 'Build2',
   inputArtifact: sourceAction2.outputArtifact,
   additionalInputArtifacts: [
     sourceAction1.outputArtifact,
   ],
   additionalOutputArtifactNames: [
     'CustomOutput2',
+  ],
+});
+pipeline.addStage({
+  name: 'Build',
+  actions: [
+    buildAction,
+    testAction,
   ],
 });
 
