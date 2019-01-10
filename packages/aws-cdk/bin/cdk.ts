@@ -9,7 +9,7 @@ import yargs = require('yargs');
 
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
-import { AppStacks, listStackNames } from '../lib/api/cxapp/stacks';
+import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';
 import { leftPad } from '../lib/api/util/string-manipulation';
 import { printSecurityDiff, printStackDiff, RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
@@ -53,13 +53,16 @@ async function parseCommandLineArguments() {
     .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
     .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
       .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
       .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory' })
       .option('numbered', { type: 'boolean', alias: 'n', desc: 'Prefix filenames with numbers to indicate deployment ordering' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment')
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' }))
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
+      .option('exclusively', { type: 'boolean', alias: 'x', desc: 'only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
     .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
       .option('context-lines', { type: 'number', desc: 'number of context lines to include in arbitrary JSON diff rendering', default: 3 })
@@ -167,14 +170,14 @@ async function initCommandLine() {
         return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
 
       case 'deploy':
-        return await cliDeploy(args.STACKS, toolkitStackName, args.roleArn, configuration.combined.get(['requireApproval']));
+        return await cliDeploy(args.STACKS, args.exclusively, toolkitStackName, args.roleArn, configuration.combined.get(['requireApproval']));
 
       case 'destroy':
-        return await cliDestroy(args.STACKS, args.force, args.roleArn);
+        return await cliDestroy(args.STACKS, args.exclusively, args.force, args.roleArn);
 
       case 'synthesize':
       case 'synth':
-        return await cliSynthesize(args.STACKS, args.interactive, args.output, args.json, args.numbered);
+        return await cliSynthesize(args.STACKS, args.exclusively, args.interactive, args.output, args.json, args.numbered);
 
       case 'metadata':
         return await cliMetadata(await findStack(args.STACK));
@@ -239,11 +242,12 @@ async function initCommandLine() {
    * should be supplied, where the templates will be written.
    */
   async function cliSynthesize(stackNames: string[],
+                               exclusively: boolean,
                                doInteractive: boolean,
                                outputDir: string|undefined,
                                json: boolean,
                                numbered: boolean): Promise<void> {
-    const stacks = await appStacks.selectStacks(...stackNames);
+    const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
     renames.validateSelectedStacks(stacks);
 
     if (doInteractive) {
@@ -300,10 +304,14 @@ async function initCommandLine() {
     return 0; // exit-code
   }
 
-  async function cliDeploy(stackNames: string[], toolkitStackName: string, roleArn: string | undefined, requireApproval: RequireApproval) {
+  async function cliDeploy(stackNames: string[],
+                           exclusively: boolean,
+                           toolkitStackName: string,
+                           roleArn: string | undefined,
+                           requireApproval: RequireApproval) {
     if (requireApproval === undefined) { requireApproval = RequireApproval.Broadening; }
 
-    const stacks = await appStacks.selectStacks(...stackNames);
+    const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
     renames.validateSelectedStacks(stacks);
 
     for (const stack of stacks) {
@@ -364,8 +372,12 @@ async function initCommandLine() {
     }
   }
 
-  async function cliDestroy(stackNames: string[], force: boolean, roleArn: string | undefined) {
-    const stacks = await appStacks.selectStacks(...stackNames);
+  async function cliDestroy(stackNames: string[], exclusively: boolean, force: boolean, roleArn: string | undefined) {
+    const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream);
+
+    // The stacks will have been ordered for deployment, so reverse them for deletion.
+    stacks.reverse();
+
     renames.validateSelectedStacks(stacks);
 
     if (!force) {
@@ -434,7 +446,7 @@ async function initCommandLine() {
    * Match a single stack from the list of available stacks
    */
   async function findStack(name: string): Promise<string> {
-    const stacks = await appStacks.selectStacks(name);
+    const stacks = await appStacks.selectStacks([name], ExtendedStackSelection.None);
 
     // Could have been a glob so check that we evaluated to exactly one
     if (stacks.length > 1) {

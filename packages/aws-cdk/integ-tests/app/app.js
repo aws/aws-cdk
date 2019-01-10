@@ -33,6 +33,8 @@ class IamStack extends cdk.Stack {
 class ProvidingStack extends cdk.Stack {
   constructor(parent, id) {
     super(parent, id);
+
+    new sns.Topic(this, 'BogusTopic'); // Some filler
   }
 }
 
@@ -40,6 +42,8 @@ class ConsumingStack extends cdk.Stack {
   constructor(parent, id, providingStack) {
     super(parent, id);
 
+
+    new sns.Topic(this, 'BogusTopic');  // Some filler
     new cdk.Output(this, 'IConsumedSomething', { value: providingStack.stackName });
   }
 }
