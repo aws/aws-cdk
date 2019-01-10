@@ -366,6 +366,10 @@ async function initCommandLine() {
 
   async function cliDestroy(stackNames: string[], force: boolean, roleArn: string | undefined) {
     const stacks = await appStacks.selectStacks(...stackNames);
+
+    // The stacks will have been ordered for deployment, so reverse them for deletion.
+    stacks.reverse();
+
     renames.validateSelectedStacks(stacks);
 
     if (!force) {

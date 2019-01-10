@@ -6,10 +6,10 @@ source ${scriptdir}/common.bash
 
 setup
 
-# ls order == synthesis order == provider before consumer
-assert "cdk list | grep -- -order-" <<HERE
-cdk-toolkit-integration-order-providing
-cdk-toolkit-integration-order-consuming
-HERE
+# Deploy all stacks with an ordering component between them
+cdk deploy cdk-toolkit-integration-order-\*
+
+# Destroy them again
+cdk destroy -f cdk-toolkit-integration-order-\*
 
 echo "✅  success"
