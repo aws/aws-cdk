@@ -6,10 +6,10 @@ source ${scriptdir}/common.bash
 
 setup
 
-# Deploy all stacks with an ordering component between them
-cdk deploy cdk-toolkit-integration-order-\*
+# Deploy the consuming stack which will include the producing stack
+cdk deploy cdk-toolkit-integration-order-consuming
 
-# Destroy them again
-cdk destroy -f cdk-toolkit-integration-order-\*
+# Destroy the providing stack which will include the consuming stack
+cdk destroy -f cdk-toolkit-integration-order-providing
 
 echo "✅  success"
