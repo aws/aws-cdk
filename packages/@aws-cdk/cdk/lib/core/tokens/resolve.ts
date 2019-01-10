@@ -1,3 +1,4 @@
+import { IConstruct } from '../construct';
 import { containsListToken, TOKEN_MAP } from "./encoding";
 import { RESOLVE_OPTIONS } from "./options";
 import { RESOLVE_METHOD, ResolveContext, Token } from "./token";
@@ -120,12 +121,15 @@ export function resolve(obj: any, context: ResolveContext): any {
 /**
  * Find all Tokens that are used in the given structure
  */
-export function findTokens(fn: () => void): Token[] {
+export function findTokens(scope: IConstruct, fn: () => any): Token[] {
   const ret = new Array<Token>();
 
   const options = RESOLVE_OPTIONS.push({ collect: ret.push.bind(ret) });
   try {
-    fn();
+    resolve(fn(), {
+      scope,
+      prefix: []
+    });
   } finally {
     options.pop();
   }
