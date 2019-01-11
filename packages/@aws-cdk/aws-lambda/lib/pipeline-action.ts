@@ -83,9 +83,7 @@ export interface PipelineInvokeActionProps extends CommonPipelineInvokeActionPro
 export class PipelineInvokeAction extends codepipeline.Action {
   constructor(scope: cdk.Construct, id: string, props: PipelineInvokeActionProps) {
     super(scope, id, {
-      stage: props.stage,
-      role: props.role,
-      runOrder: props.runOrder,
+      ...props,
       category: codepipeline.ActionCategory.Invoke,
       provider: 'Lambda',
       artifactBounds: codepipeline.defaultBounds(),
