@@ -199,6 +199,13 @@ export interface BucketImportProps {
    * @default Inferred from bucket name
    */
   bucketDomainName?: string;
+
+  /**
+   * The website URL of the bucket (if static web hosting is enabled).
+   *
+   * @default Inferred from bucket name
+   */
+  bucketWebsiteURL?: string;
 }
 
 /**
@@ -620,6 +627,7 @@ export class Bucket extends BucketBase {
       bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
       bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
       bucketDomainName: new cdk.Output(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
+      bucketWebsiteURL: new cdk.Output(this, 'WebsiteURL', { value: this.domainName }).makeImportValue().toString()
     };
   }
 
