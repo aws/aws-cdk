@@ -22,10 +22,3 @@ This documentation is the reference for the |cdk|.
 The |cdk| documentation also includes the
 |cdk| User Guide.
 .. `AWS CDK User Guide <https://docs.aws.amazon.com/CDK/latest/userguide>`_.
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-
-   Tool Reference <tool-ref>
-   Reference <reference>
