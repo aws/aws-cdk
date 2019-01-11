@@ -18,7 +18,7 @@ The |cdk| is an infrastructure modeling framework that allows you to define your
 cloud resources using an imperative programming interface. *The CDK is currently
 in developer preview. We look forward to community feedback and collaboration*.
 
-This documentation is the refernce for the |cdk|.
+This documentation is the reference for the |cdk|.
 The |cdk| documentation also includes the
 |cdk| User Guide.
 .. `AWS CDK User Guide <https://docs.aws.amazon.com/CDK/latest/userguide>`_.
