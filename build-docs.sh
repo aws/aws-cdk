@@ -4,7 +4,7 @@ set -euo pipefail
 # render docs to docs/dist
 (cd docs && bash ./build-docs.sh)
 
-lerna ls >> docs/dist/packages.txt
+lerna ls > docs/dist/packages.txt
 
 # deploy output to 'pack/docs'
 rm -fr dist/docs
