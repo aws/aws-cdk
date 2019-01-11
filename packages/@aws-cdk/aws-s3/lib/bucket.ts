@@ -180,7 +180,7 @@ export interface IBucket extends cdk.IConstruct {
  */
 export interface BucketImportProps {
   /**
-   * The ARN fo the bucket. At least one of bucketArn or bucketName must be
+   * The ARN of the bucket. At least one of bucketArn or bucketName must be
    * defined in order to initialize a bucket ref.
    */
   bucketArn?: string;
