@@ -265,6 +265,13 @@ $ cd docs
 $ BUILD_DOCS_DEV=1 ./build-docs.sh
 ```
 
+### Tooling Assists
+#### Jetbrains (WebStorm/IntelliJ)
+This project uses lerna and utilizes symlinks inside nested node_modules directories. You may encounter an issue during
+indexing where the IDE attempts to index these directories and keeps following links until the process runs out of 
+available memory and crashes. To fix this, you can run ```node ./scripts/jetbrains-remove-node-modules.js``` to exclude
+these directories.
+
 ## Dependencies
 
 ### Adding Dependencies
