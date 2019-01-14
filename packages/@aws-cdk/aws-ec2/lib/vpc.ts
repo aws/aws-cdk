@@ -58,6 +58,10 @@ export interface VpcNetworkProps {
    * If the region has more AZs than you want to use (for example, because of EIP limits),
    * pick a lower number here. The AZs will be sorted and picked from the start of the list.
    *
+   * If you pick a higher number than the number of AZs in the region, all AZs in
+   * the region will be selected. To use "all AZs" available to your account, use a
+   * high number (such as 99).
+   *
    * @default 3
    */
   maxAZs?: number;
