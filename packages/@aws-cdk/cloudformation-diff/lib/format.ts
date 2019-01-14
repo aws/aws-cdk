@@ -186,7 +186,7 @@ class Formatter {
     case ResourceImpact.MAY_REPLACE:
       return colors.italic(colors.yellow('may be replaced'));
     case ResourceImpact.WILL_REPLACE:
-      return colors.italic(colors.bold(colors.yellow('replace')));
+      return colors.italic(colors.bold(colors.red('replace')));
     case ResourceImpact.WILL_DESTROY:
       return colors.italic(colors.bold(colors.red('destroy')));
     case ResourceImpact.WILL_ORPHAN:
