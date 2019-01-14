@@ -577,6 +577,7 @@ export class Bucket extends BucketBase {
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly domainName: string;
+  public readonly bucketWebsiteUrl: string;
   public readonly dualstackDomainName: string;
   public readonly encryptionKey?: kms.IEncryptionKey;
   public policy?: BucketPolicy;
@@ -605,6 +606,7 @@ export class Bucket extends BucketBase {
     this.bucketArn = resource.bucketArn;
     this.bucketName = resource.bucketName;
     this.domainName = resource.bucketDomainName;
+    this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
     this.dualstackDomainName = resource.bucketDualStackDomainName;
 
     // Add all lifecycle rules
@@ -627,7 +629,7 @@ export class Bucket extends BucketBase {
       bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
       bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
       bucketDomainName: new cdk.Output(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
-      bucketWebsiteUrl: new cdk.Output(this, 'WebsiteURL', { value: this.domainName }).makeImportValue().toString()
+      bucketWebsiteUrl: new cdk.Output(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
     };
   }
 
@@ -963,6 +965,7 @@ class ImportedBucket extends BucketBase {
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly domainName: string;
+  public readonly bucketWebsiteUrl: string;
   public readonly encryptionKey?: kms.EncryptionKey;
 
   public policy?: BucketPolicy;
@@ -979,6 +982,7 @@ class ImportedBucket extends BucketBase {
     this.bucketArn = parseBucketArn(props);
     this.bucketName = bucketName;
     this.domainName = props.bucketDomainName || this.generateDomainName();
+    this.bucketWebsiteUrl = props.bucketWebsiteUrl || this.generateBucketWebsiteUrl();
     this.autoCreatePolicy = false;
     this.policy = undefined;
   }
@@ -992,5 +996,9 @@ class ImportedBucket extends BucketBase {
 
   private generateDomainName() {
     return `${this.bucketName}.s3.amazonaws.com`;
+  }
+
+  private generateBucketWebsiteUrl() {
+    return `${this.bucketName}.s3-website-${new cdk.AwsRegion()}.amazonaws.com`;
   }
 }

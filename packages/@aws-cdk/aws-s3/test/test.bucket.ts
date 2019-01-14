@@ -472,7 +472,7 @@ export = {
           "Value": {
             "Fn::GetAtt": [
               "MyBucketF68F3FF0",
-              "DomainName"
+              "WebsiteURL"
             ]
           },
           "Export": {
@@ -916,7 +916,7 @@ export = {
         "Value": {
           "Fn::GetAtt": [
             "MyBucketF68F3FF0",
-            "DomainName"
+            "WebsiteURL"
           ]
         },
         "Export": {
