@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
-import { Integration } from './integration';
+import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { IRestApiResource } from './resource';
 import { RestApi } from './restapi';
@@ -39,6 +39,7 @@ export interface MethodOptions {
   // - RequestModels
   // - RequestParameters
   // - MethodResponses
+  requestParameters?: { [param: string]: boolean };
 }
 
 export interface MethodProps {
@@ -91,6 +92,7 @@ export class Method extends cdk.Construct {
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
       authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.None,
       authorizerId: options.authorizerId || defaultMethodOptions.authorizerId,
+      requestParameters: options.requestParameters,
       integration: this.renderIntegration(props.integration)
     };
 
@@ -154,6 +156,10 @@ export class Method extends cdk.Construct {
       throw new Error(`'credentialsPassthrough' and 'credentialsRole' are mutually exclusive`);
     }
 
+    if (options.connectionType === ConnectionType.VpcLink && options.vpcLink === undefined) {
+      throw new Error(`'connectionType' of VPC_LINK requires 'vpcLink' prop to be set`);
+    }
+
     if (options.credentialsRole) {
       credentials = options.credentialsRole.roleArn;
     } else if (options.credentialsPassthrough) {
@@ -173,6 +179,8 @@ export class Method extends cdk.Construct {
       requestTemplates: options.requestTemplates,
       passthroughBehavior: options.passthroughBehavior,
       integrationResponses: options.integrationResponses,
+      connectionType: options.connectionType,
+      connectionId: options.vpcLink ? options.vpcLink.vpcLinkId : undefined,
       credentials,
     };
   }

@@ -3,6 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
+import { ConnectionType } from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -252,6 +253,25 @@ export = {
 
     // THEN
     test.throws(() => api.root.addMethod('GET', integration), /'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
+    test.done();
+  },
+
+  'integration connectionType VpcLink requires vpcLink to be set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    const integration = new apigateway.Integration({
+      type: apigateway.IntegrationType.HttpProxy,
+      integrationHttpMethod: 'ANY',
+      options: {
+        connectionType: ConnectionType.VpcLink,
+      }
+    });
+
+    // THEN
+    test.throws(() => api.root.addMethod('GET', integration), /'connectionType' of VPC_LINK requires 'vpcLink' prop to be set/);
     test.done();
   },
 };
