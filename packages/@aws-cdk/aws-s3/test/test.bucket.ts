@@ -335,7 +335,7 @@ export = {
         bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
         bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' },
         bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' },
-        bucketWebsiteURL: { 'Fn::ImportValue': 'MyStack:MyBucketWebsiteURL9C222788' }
+        bucketWebsiteUrl: { 'Fn::ImportValue': 'MyStack:MyBucketWebsiteURL9C222788' }
       });
       test.done();
     },
@@ -348,7 +348,7 @@ export = {
         bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
         bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' },
         bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' },
-        bucketWebsiteURL: { 'Fn::ImportValue': 'MyStack:MyBucketWebsiteURL9C222788' }
+        bucketWebsiteUrl: { 'Fn::ImportValue': 'MyStack:MyBucketWebsiteURL9C222788' }
       });
       test.done();
     },
