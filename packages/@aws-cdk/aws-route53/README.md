@@ -28,6 +28,25 @@ const zone = new route53.PrivateHostedZone(this, 'HostedZone', {
 
 Additional VPCs can be added with `zone.addVPC()`.
 
+### Adding Alias
+
+To add an alias to your zone:
+```ts
+import route53 = require('@aws-cdk/aws-route53');
+
+// For the example, using existing hosted zone
+const _baz = route53.HostedZone.import(this, 'baz', {
+    zoneName: 'example.com',
+    hosstedZoneId: 'baz',
+});
+
+new route53.Alias(this, 'Alias', {
+    recordName: 'foo.example.com', 
+    target: 'bar.example.com', 
+    zone: _baz,
+    type: 'AAAA' // Optional - the record time defaults to 'A'
+});
+```
 ### Adding Records
 
 To add a TXT record to your zone:

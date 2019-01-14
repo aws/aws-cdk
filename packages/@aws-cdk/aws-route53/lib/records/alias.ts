@@ -22,7 +22,6 @@ export interface AliasRecordTargetProps {
    * Hosted zone ID of the target
    */
   hostedZoneId: string;
-
   /**
    * DNS name of the target
    */
@@ -43,6 +42,10 @@ export interface AliasRecordProps {
    * Target for the alias record
    */
   target: IAliasRecordTarget;
+  /**
+   * The type of the alias (A or AAAA). Defaults to 'A'.
+   */
+  type?: string;
 }
 
 /**
@@ -55,7 +58,7 @@ export class AliasRecord extends Construct {
     new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
       name: determineFullyQualifiedDomainName(props.recordName, props.zone),
-      type: 'A',  // ipv4
+      type: props.type || 'A',  // ipv4
       aliasTarget: props.target.asAliasRecordTarget()
     });
   }
