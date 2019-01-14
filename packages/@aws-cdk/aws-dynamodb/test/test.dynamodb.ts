@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import {
   Attribute,
@@ -391,11 +391,11 @@ export = {
       sseEnabled: true,
       billingMode: BillingMode.Provisioned,
       streamSpecification: StreamViewType.KeysOnly,
-      tags: { Environment: 'Production' },
       ttlAttributeName: 'timeToLive'
     });
     table.addPartitionKey(TABLE_PARTITION_KEY);
     table.addSortKey(TABLE_SORT_KEY);
+    table.apply(new Tag('Environment', 'Production'));
     const template = app.synthesizeTemplate();
 
     test.deepEqual(template, {
@@ -1357,12 +1357,18 @@ export = {
   },
 };
 
+class TestStack extends Stack {
+  public testInvokeAspects() {
+    this.invokeAspects();
+  }
+}
 class TestApp {
   private readonly app = new App();
   // tslint:disable-next-line:member-ordering
-  public readonly stack: Stack = new Stack(this.app, STACK_NAME);
+  public readonly stack: TestStack = new TestStack(this.app, STACK_NAME);
 
   public synthesizeTemplate() {
+    this.stack.testInvokeAspects();
     return this.app.synthesizeStack(this.stack.name).template;
   }
 }
