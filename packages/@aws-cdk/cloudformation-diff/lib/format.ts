@@ -96,12 +96,12 @@ class Formatter {
       collection: DifferenceCollection<V, T>,
       formatter: (type: string, id: string, diff: T) => void = this.formatDifference.bind(this)) {
 
-    if (collection.count === 0) {
+    if (collection.differenceCount === 0) {
       return;
     }
 
     this.printSectionHeader(title);
-    collection.forEach((id, diff) => formatter(entryType, id, diff));
+    collection.forEachDifference((id, diff) => formatter(entryType, id, diff));
     this.printSectionFooter();
   }
 
@@ -120,7 +120,7 @@ class Formatter {
    * @param diff the difference to be rendered.
    */
   public formatDifference(type: string, logicalId: string, diff: Difference<any> | undefined) {
-    if (!diff) { return; }
+    if (!diff || !diff.isDifferent) { return; }
 
     let value;
 
@@ -144,16 +144,19 @@ class Formatter {
    * @param diff      the change to be rendered.
    */
   public formatResourceDifference(_type: string, logicalId: string, diff: ResourceDifference) {
+    if (!diff.isDifferent) { return; }
+
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // tslint:disable-next-line:max-line-length
     this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, colors.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {
+      const differenceCount = diff.differenceCount;
       let processedCount = 0;
-      diff.forEach((_, name, values) => {
+      diff.forEachDifference((_, name, values) => {
         processedCount += 1;
-        this.formatTreeDiff(name, values, processedCount === diff.count);
+        this.formatTreeDiff(name, values, processedCount === differenceCount);
       });
     }
   }
@@ -193,6 +196,7 @@ class Formatter {
       return colors.italic(colors.yellow('orphan'));
     case ResourceImpact.WILL_UPDATE:
     case ResourceImpact.WILL_CREATE:
+    case ResourceImpact.NO_CHANGE:
       return ''; // no extra info is gained here
     }
   }

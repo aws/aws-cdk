@@ -37,7 +37,7 @@ export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedS
     print(colors.green('There were no differences'));
   }
 
-  return diff.count;
+  return diff.differenceCount;
 }
 
 export enum RequireApproval {
