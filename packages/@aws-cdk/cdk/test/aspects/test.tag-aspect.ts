@@ -3,13 +3,16 @@ import { RemoveTag, Resource, Stack, Tag, TagManager, TagType } from '../../lib'
 
 class TaggableResource extends Resource {
   public readonly tags = new TagManager(TagType.Standard);
+  public testProperties() {
+    return this.properties;
+  }
 }
 
-class AsgTaggableResource extends Resource {
+class AsgTaggableResource extends TaggableResource {
   public readonly tags = new TagManager(TagType.AutoScalingGroup);
 }
 
-class MapTaggableResource extends Resource {
+class MapTaggableResource extends TaggableResource {
   public readonly tags = new TagManager(TagType.Map);
 }
 
@@ -127,7 +130,7 @@ export = {
     test.deepEqual(map.tags.renderTags(), undefined);
     test.deepEqual(res2.tags.renderTags(), undefined);
     test.deepEqual(asg.tags.renderTags(), [{key: 'foo', value: 'bar', propagateAtLaunch: true}]);
-    test.deepEqual(map.properties.tags, undefined);
+    test.deepEqual(map.testProperties().tags, undefined);
     test.done();
   },
   'exclude prevents tag application to resource types in the list'(test: Test) {
@@ -174,7 +177,7 @@ export = {
     aspectBranch.apply(new Tag('aspects', 'rule'));
     root.testInvokeAspects();
     test.deepEqual(aspectBranch.tags.renderTags(), [{key: 'aspects', value: 'rule'}]);
-    test.deepEqual(cfnBranch.properties.tags, [{key: 'cfn', value: 'is cool'}]);
+    test.deepEqual(cfnBranch.testProperties().tags, [{key: 'cfn', value: 'is cool'}]);
     test.done();
   },
 };

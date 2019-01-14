@@ -67,7 +67,7 @@ export class Resource extends Referenceable {
    *
    * This object is rendered via a call to "renderProperties(this.properties)".
    */
-  public readonly properties: any;
+  protected readonly properties: any;
 
   /**
    * AWS resource property overrides.
