@@ -253,6 +253,37 @@ export = {
     },
   },
 
+  'can add environment variables to the container definition'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromDockerHub('test'),
+      memoryLimitMiB: 1024,
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE: "test environment variable value"
+      }
+    });
+
+    // THEN
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Environment: [{
+            Name: "TEST_ENVIRONMENT_VARIABLE",
+            Value: "test environment variable value"
+          }]
+        }
+      ]
+    }));
+
+    test.done();
+
+  },
+
   'can add AWS logging to container definition'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -285,9 +316,9 @@ export = {
       PolicyDocument: {
         Statement: [
           {
-            Action: [ "logs:CreateLogStream", "logs:PutLogEvents" ],
+            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
             Effect: "Allow",
-            Resource: { "Fn::GetAtt": [ "LoggingLogGroupC6B8E20B", "Arn" ] }
+            Resource: { "Fn::GetAtt": ["LoggingLogGroupC6B8E20B", "Arn"] }
           }
         ],
         Version: "2012-10-17"

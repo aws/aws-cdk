@@ -61,6 +61,13 @@ export interface LoadBalancedEc2ServiceProps {
    * @default 1
    */
   desiredCount?: number;
+
+  /**
+   * Environment variables to pass to the container
+   *
+   * @default No environment variables
+   */
+  environment?: { [key: string]: string };
 }
 
 /**
@@ -80,6 +87,7 @@ export class LoadBalancedEc2Service extends cdk.Construct {
     const container = taskDefinition.addContainer('web', {
       image: props.image,
       memoryLimitMiB: props.memoryLimitMiB,
+      environment: props.environment,
     });
 
     container.addPortMappings({

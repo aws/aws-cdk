@@ -95,6 +95,13 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
    * Setting this option will set the load balancer port to 443.
    */
   certificate?: string;
+
+  /**
+   * Environment variables to pass to the container
+   *
+   * @default No environment variables
+   */
+  environment?: { [key: string]: string };
 }
 
 /**
@@ -127,6 +134,7 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
       publicTasks: props.publicTasks,
       image: ContainerImage.fromDockerHub(props.image),
       desiredCount: props.desiredCount,
+      environment: props.environment,
       certificate,
       domainName: props.domainName,
       domainZone

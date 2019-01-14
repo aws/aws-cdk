@@ -59,7 +59,7 @@ export interface ContainerDefinitionProps {
    *
    * @default No labels
    */
-  dockerLabels?: {[key: string]: string };
+  dockerLabels?: { [key: string]: string };
 
   /**
    * A list of custom labels for SELinux and AppArmor multi-level security systems.
@@ -81,7 +81,7 @@ export interface ContainerDefinitionProps {
    *
    * @default No environment variables
    */
-  environment?: {[key: string]: string};
+  environment?: { [key: string]: string };
 
   /**
    * Indicates whether the task stops if this container fails.
@@ -101,7 +101,7 @@ export interface ContainerDefinitionProps {
    *
    * @default No extra hosts
    */
-  extraHosts?: {[name: string]: string};
+  extraHosts?: { [name: string]: string };
 
   /**
    * Container health check.
@@ -434,7 +434,7 @@ export interface HealthCheck {
   timeout?: number;
 }
 
-function renderKV(env: {[key: string]: string}, keyName: string, valueName: string): any {
+function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
   const ret = [];
   for (const [key, value] of Object.entries(env)) {
     ret.push({ [keyName]: key, [valueName]: value });
@@ -577,16 +577,16 @@ function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProper
 }
 
 export interface ScratchSpace {
-    containerPath: string,
-    readOnly: boolean,
-    sourcePath: string
-    name: string,
+  containerPath: string,
+  readOnly: boolean,
+  sourcePath: string
+  name: string,
 }
 
 export interface MountPoint {
-    containerPath: string,
-    readOnly: boolean,
-    sourceVolume: string,
+  containerPath: string,
+  readOnly: boolean,
+  sourceVolume: string,
 }
 
 function renderMountPoint(mp: MountPoint): CfnTaskDefinition.MountPointProperty {

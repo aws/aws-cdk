@@ -108,6 +108,14 @@ export interface LoadBalancedFargateServiceProps {
    * @default true
    */
   createLogs?: boolean;
+
+  /**
+   * Environment variables to pass to the container
+   *
+   * @default No environment variables
+   */
+  environment?: { [key: string]: string };
+
 }
 
 /**
@@ -132,7 +140,8 @@ export class LoadBalancedFargateService extends cdk.Construct {
 
     const container = taskDefinition.addContainer('web', {
       image: props.image,
-      logging: optIn ? this.createAWSLogDriver(this.node.id) : undefined
+      logging: optIn ? this.createAWSLogDriver(this.node.id) : undefined,
+      environment: props.environment
     });
 
     container.addPortMappings({
