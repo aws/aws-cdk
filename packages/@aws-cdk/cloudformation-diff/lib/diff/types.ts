@@ -611,7 +611,7 @@ export class ResourceDifference implements IDifference<Resource> {
 
     return Object.values(this.propertyDiffs)
            .map(elt => elt.changeImpact)
-           .reduce(worstImpact, ResourceImpact.WILL_UPDATE);
+           .reduce(worstImpact, ResourceImpact.NO_CHANGE);
   }
 
   /**
