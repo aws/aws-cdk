@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
-import Table = require('cli-table');
 import colors = require('colors/safe');
 import { format } from 'util';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
+import { formatTable } from './format-table';
 import { IamChanges } from './iam/iam-changes';
 import { SecurityGroupChanges } from './network/security-group-changes';
 
@@ -352,12 +352,12 @@ class Formatter {
 
     if (changes.statements.hasChanges) {
       this.printSectionHeader('IAM Statement Changes');
-      this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarizeStatements())));
+      this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeStatements()), this.stream.columns));
     }
 
     if (changes.managedPolicies.hasChanges) {
       this.printSectionHeader('IAM Policy Changes');
-      this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies())));
+      this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies()), this.stream.columns));
     }
   }
 
@@ -365,7 +365,7 @@ class Formatter {
     if (!changes.hasChanges) { return; }
 
     this.printSectionHeader('Security Group Changes');
-    this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarize())));
+    this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarize()), this.stream.columns));
   }
 
   public deepSubstituteBracedLogicalIds(rows: string[][]): string[][] {
@@ -379,47 +379,6 @@ class Formatter {
     return source.replace(/\$\{([^.}]+)(.[^}]+)?\}/ig, (_match, logId, suffix) => {
       return '${' + (this.normalizedLogicalIdPath(logId) || logId) + (suffix || '') + '}';
   });
-  }
-}
-
-/**
- * Render a two-dimensional array to a visually attractive table
- *
- * First row is considered the table header.
- */
-function renderTable(cells: string[][]): string {
-  const head = cells.splice(0, 1)[0];
-
-  const table = new Table({ head, style: { head: [] } });
-  table.push(...cells);
-  return stripHorizontalLines(table.toString()).trimRight();
-}
-
-/**
- * Strip horizontal lines in the table rendering if the second-column values are the same
- *
- * We couldn't find a table library that BOTH does newlines-in-cells correctly AND
- * has an option to enable/disable separator lines on a per-row basis. So we're
- * going to do some character post-processing on the table instead.
- */
-function stripHorizontalLines(tableRendering: string) {
-  const lines = tableRendering.split('\n');
-
-  let i = 3;
-  while (i < lines.length - 3) {
-    if (secondColumnValue(lines[i]) === secondColumnValue(lines[i + 2])) {
-      lines.splice(i + 1, 1);
-      i += 1;
-    } else {
-      i += 2;
-    }
-  }
-
-  return lines.join('\n');
-
-  function secondColumnValue(line: string) {
-    const cols = colors.stripColors(line).split('│').filter(x => x !== '');
-    return cols[1];
   }
 }
 
