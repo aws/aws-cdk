@@ -20,5 +20,4 @@ in developer preview. We look forward to community feedback and collaboration*.
 
 This documentation is the reference for the |cdk|.
 The |cdk| documentation also includes the
-|cdk| User Guide.
-.. `AWS CDK User Guide <https://docs.aws.amazon.com/CDK/latest/userguide>`_.
+`AWS CDK User Guide <https://docs.aws.amazon.com/CDK/latest/userguide>`.
