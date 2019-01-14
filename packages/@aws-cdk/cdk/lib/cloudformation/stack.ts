@@ -404,7 +404,7 @@ export class Stack extends Construct {
    */
   protected prepare() {
     for (const ref of this.node.findReferences()) {
-      if (CfnReference.isInstance(ref)) {
+      if (CfnReference.isCfnReference(ref)) {
         ref.consumeFromStack(this);
       }
     }

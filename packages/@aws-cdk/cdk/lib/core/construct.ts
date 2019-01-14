@@ -293,7 +293,7 @@ export class ConstructNode {
     const constructs = this.host.node.findAll(ConstructOrder.BreadthFirst);
     // Use .reverse() to achieve post-order traversal
     for (const construct of constructs.reverse()) {
-      if (Construct.isInstance(construct)) {
+      if (Construct.isConstruct(construct)) {
         (construct as any).prepare();
       }
     }
@@ -475,7 +475,7 @@ export class Construct implements IConstruct {
   /**
    * Return whether the given object is a Construct
    */
-  public static isInstance(x: IConstruct): x is Construct {
+  public static isConstruct(x: IConstruct): x is Construct {
     return (x as any).prepare !== undefined && (x as any).validate !== undefined;
   }
 
