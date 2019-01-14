@@ -609,9 +609,13 @@ export class ResourceDifference implements IDifference<Resource> {
       return ResourceImpact.WILL_REPLACE;
     }
 
+    // Base impact (before we mix in the worst of the property impacts);
+    // WILL_UPDATE if we have "other" changes, NO_CHANGE if there are no "other" changes.
+    const baseImpact = Object.keys(this.otherChanges).length > 0 ? ResourceImpact.WILL_UPDATE : ResourceImpact.NO_CHANGE;
+
     return Object.values(this.propertyDiffs)
            .map(elt => elt.changeImpact)
-           .reduce(worstImpact, ResourceImpact.NO_CHANGE);
+           .reduce(worstImpact, baseImpact);
   }
 
   /**
