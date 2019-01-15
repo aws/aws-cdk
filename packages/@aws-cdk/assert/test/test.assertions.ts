@@ -14,6 +14,13 @@ passingExample('expect <stack> at <some path> to have <some type>', () => {
   });
   expect(synthStack).at('/TestResource').to(haveType(resourceType));
 });
+passingExample('expect <stack> at <some path> to have <some type>', () => {
+  const resourceType = 'Test::Resource';
+  const stack = new cdk.Stack();
+  new TestResource(stack, 'TestResource', { type: resourceType });
+
+  expect(stack).at('/TestResource').to(haveType(resourceType));
+});
 passingExample('expect <stack> at <some path> *not* to have <some type>', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {

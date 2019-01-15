@@ -19,7 +19,7 @@ export function expect(stack: api.SynthesizedStack | cdk.Stack, skipValidation =
     }
 
     sstack = {
-      name: 'test',
+      name: stack.name,
       template: stack.toCloudFormation(),
       metadata: collectStackMetadata(stack.node),
       environment: {
@@ -42,9 +42,10 @@ function isStackClassInstance(x: api.SynthesizedStack | cdk.Stack): x is cdk.Sta
 function collectStackMetadata(root: cdk.ConstructNode): api.StackMetadata {
   const result: api.StackMetadata = {};
   for (const construct of root.findAll(cdk.ConstructOrder.DepthFirst)) {
+    const path = `/${root.id}/${construct.node.path}`;
     for (const entry of construct.node.metadata) {
-      result[construct.node.path] = result[construct.node.path] || [];
-      result[construct.node.path].push(entry);
+      result[path] = result[path] || [];
+      result[path].push(root.resolve(entry));
     }
   }
   return result;
