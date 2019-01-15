@@ -206,6 +206,14 @@ export interface BucketImportProps {
    * @default Inferred from bucket name
    */
   bucketWebsiteUrl?: string;
+
+  /**
+   * The format of the website URL of the bucket. This should be true for
+   * regions launched since 2014.
+   *
+   * @default false
+   */
+  bucketWebsiteNewUrlFormat?: boolean;
 }
 
 /**
@@ -967,6 +975,7 @@ class ImportedBucket extends BucketBase {
   public readonly bucketName: string;
   public readonly domainName: string;
   public readonly bucketWebsiteUrl: string;
+  public readonly bucketWebsiteNewUrlFormat: boolean;
   public readonly encryptionKey?: kms.EncryptionKey;
 
   public policy?: BucketPolicy;
@@ -985,6 +994,9 @@ class ImportedBucket extends BucketBase {
     this.domainName = props.bucketDomainName || this.generateDomainName();
     this.bucketWebsiteUrl = props.bucketWebsiteUrl || this.generateBucketWebsiteUrl();
     this.autoCreatePolicy = false;
+    this.bucketWebsiteNewUrlFormat = props.bucketWebsiteNewUrlFormat === undefined
+      ? false
+      : props.bucketWebsiteNewUrlFormat;
     this.policy = undefined;
   }
 
@@ -1000,6 +1012,8 @@ class ImportedBucket extends BucketBase {
   }
 
   private generateBucketWebsiteUrl() {
-    return `${this.bucketName}.s3-website-${new cdk.Aws().region}.amazonaws.com`;
+    return this.bucketWebsiteNewUrlFormat
+      ? `${this.bucketName}.s3-website.${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`
+      : `${this.bucketName}.s3-website-${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`;
   }
 }
