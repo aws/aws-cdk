@@ -71,11 +71,16 @@ __So the problem we are trying to solve is how to enable users to reference reso
 
 ## Scope
 
-As an initial step, we'll address the use case of referencing resources across apps but within __the same AWS environment__ (account + region). This limitation is based on the limitation AWS CloudFormation has for exports/imports.
+As an initial step, we'll address the use case of referencing resources across within __the same AWS environment__ (account + region). This limitation is based on the limitation AWS CloudFormation has for exports/imports.
 
-However, there are definitely use cases for being able to reference resources across environments, and we are also aware that some customers are reluctant to use CloudFormation import/exports due to the strong-coupling this mechanism creates between the stacks (for example, if an Output of one stack is being referenced by another stack, the original stack cannot be deleted).
+We differentiate two types of references:
 
-Another related use case is referencing resources by runtime code. An application's runtime code (AWS Lambda functions, CodeBuild projects, ECS containers, etc) needs to be able to interact with resources defined in CDK apps (e.g. read/write from a Amazon DynamoDB table, send messages to an SQS Queue, etc). This is a very similar use case to the cross-app references because basically the same information needs to be transferred between the apps.
+1. Reference a resource created through another CDK app.
+2. Reference a resource created by some other means.
+
+In the former case (app to app), the producing app can explicitly "export" the resource and the consuming app can explicitly "import" the resource.
+
+In the latter case (environment to app), we usually just have a resource's physical identity such as ARN or name and we want to be able to use it in a CDK app.
 
 ## Requirements
 
@@ -87,7 +92,8 @@ an existing S3 bucket.
 - **REQ4**: If possible, implement the mechanism such that it can be later used to publish and consume constructs through other key/value mechanism such as environment variables, SSM parameters, etc.
 - **REQ5**: If a resource is exported twice under the same export name, only a single set of outputs will be created ([#1496](https://github.com/awslabs/aws-cdk/issues/1496)).
 - **REQ6**: If the same resource is imported twice in the same stack, the "import" method will return the same object.
-- **REQ7**: For some resources (like VPC for example), it should be possible to import the resource by retrieving it's details from the deployed environment via a context provider.
+- **REQ7**: For some resources (like VPC for example), it should be possible look up the resource in the current environment by querying through an environmental context provider.
+- **REQ8**: It should be possible to resolve import values either during synthesis time (i.e. via an environmental context provider) or during deploy time (i.e. via `Fn::ImportValue`). There are certain resources that will _require_ the use of synthesis-time resolution due to their complex representation.
 
 ## Approach
 
@@ -95,9 +101,11 @@ As usual, we'll take a layered approach.
 
 **Serializable constructs**: At the low-level, we'll define what it means for a construct to be "__serializable__" through string key/value context. The mechanism will be recursive such that it will be possible to write/read singular values and write/read serializable objects (which, themselves will write/read their own values and so forth).
 
-**Serialization context**: the notion of a "string key/value context" represents the lowest common denominator for serialization, and specifically is the only type supported by CloudFormation's cross-stack export/import mechanism. If a construct can serialize itself through a set of string key/values, we can pass it via CloudFormation's import/export, environment variables, SSM parameters, etc.
+**Serialization context**: the notion of a "string key/value context" represents the lowest common denominator for serialization, and specifically is the only type supported by CloudFormation's cross-stack export/import mechanism (CloudFormation outputs can only be of "string" type). If a construct can serialize itself through a set of key/values, we can pass it via CloudFormation's import/export, environment variables, SSM parameters, etc.
 
-**CloudFormation imports/exports as a serialization context**: on top of that, we will implement a serialization/deserialization context based on AWS CloudFormation's import/exports mechanism. "writing" a value means "output/export" and "reading" a value means "import". The "export name" will be used as a prefix that represent an object, and sub-objects will be serialized by adding another component to the export name.
+**CloudFormation imports/exports as a serialization context**: on top of that, we will implement a serialization/deserialization context based on AWS CloudFormation's import/exports mechanism. "writing" a value means defining an Output with an Export and "reading" a value means `Fn::ImportValue` with this export name. The "export name" will be used as a prefix that represent an object, and sub-objects will be serialized by adding another component to the export name.
+
+**Synthesis-time Imports**: we will also define an environmental context provider that will import values during synthesis and store them in `cdk.json`. This approach is more robust since it will allow CDK code to reason about concrete values instead of opaque tokens. It's especially needed for situations where a list of values needs to be passed and the arity is required.
 
 **Convenience methods**: now that constructs can be serializable through imports/exports, we can implement a set of convenience methods for each AWS resource to provide nice ergonomics for the specific use case of exporting and importing resources across apps.
 
@@ -132,6 +140,8 @@ The serialization context allows the object serialize itself through key/value s
 
 To support deserialization, classes must also include a public static `deserializeXxx` method which reads the object from a deserialization context and returns an object that implements the resource type interface:
 
+> The reason we indicate the type in the method name is because static methods in JavaScript are inherited, so we can differentiate between `ExtraBucket.deserializeExtraBucket` and `ExtraBucket.deserizlizeBucket`.
+
 ```ts
 class MyResource extends Construct implements ISerializable {
   static deserializeMyResource(ctx: IDeserializationContext): IMyResource;
@@ -144,18 +154,22 @@ The deserialization context is an object that implements the following interface
 interface IDeserializationContext {
   scope: Construct;
   id: string;
-  readString(key: string): string;
+  readString(key: string, options?: ReadStringOptions): string;
   readObject(key: string): IDeserializationContext;
+}
+
+interface ReadStringOptions {
+  allowUnresolved?: boolean; /** @default true */
 }
 ```
 
 `readString(key)` can be used to read values stored by `writeString`. and `readObject(key)` returns a deserialization context for composite deserialization written via `writeObject`.
 
-Since `deserializeXxx` will normally need to create new construct objects, the deserialization context should supply a consistent `scope` and `id` which can be used to instantiate a construct object that represents this object.
+The `allowUnresolved` option for `readString` can be used by constructs to indicate that returned value must be a resolved value (i.e. not a token). This implies, for example, that when importing this value, users cannot use the `resolveType: Deployment`  option (REQ8).
 
-Implementers of `deserializeXxx` should check if a construct with `id` already exists within `scope` and return it instead of instantiating and new object. This will satisfy REQ6.
+Since `deserializeXxx` will need to create new construct objects, the deserialization context will supply a consistent `scope` and `id` which can be used to instantiate a construct object that represents this object. For example, `scope` can be mapped to the current `Stack` and `id` can be mapped to `exportName` which is ensured to be unique within the environment (and therefore, the current stack).
 
-The reason we indicate the type in the method name is because static methods in JavaScript are inherited, so we can differentiate between `ExtraBucket.deserializeExtraBucket` and `ExtraBucket.deserizlizeBucket`.
+Implementers of `deserializeXxx` should check if a construct with `id` already exists within `scope` and return it instead of instantiating and new object (REQ6).
 
 ---
 
@@ -184,32 +198,49 @@ class ApplicationLoadBalancer {
 
 ### Imports/Exports
 
-Now that constructs can be serialized and deserialized into a key-value context, we can implement a context that utilizes CloudFormation's import/export mechanism.
+Now that constructs can be serialized and deserialized into a key-value context, we can implement a serialization mechanism for exporting resources from stacks and importing them in another stack. Importing can be done either at synthesis time using an environmental context provider or at runtime by returning `Fn::ImportValue` tokens for `readString`.
 
 The following methods will be added to the `Stack` class:
 
 ```ts
-exportString(exportName: string, value: string, options?: ExportOptions): void
+class Stack {
+  exportString(exportName: string, value: string, options?: ExportOptions): void;
+  importString(exportName: string, options?: ImportOptions): string;
+}
+
+interface ExportOptions {
+  description?: string
+}
+
+interface ImportOptions {
+  type?: ResolveType // default is Synthesis
+  weak?: boolean; // default is "false"
+}
+
+enum ResolveType {
+  Synthesis,
+  Deployment
+}
 ```
 
+The `exportString` method creates an AWS CloudFormation Output for this value assigned to this export name.
 
-`exportString` creates an AWS CloudFormation Output with `Value` set to `value` and `Export` set to `exportName`. `options` includes `description`.
+The `importString` method returns the value for this specific export name. When importing a value, users can specify the following `ImportOptions`:
+
+* If `type` is set to `Deployment`, the method will return an `Fn::ImportValue(exportName)` token. This means that CDK code cannot reason about the concrete value, which will only be resolved when the stack is deployed.
+* If `type` is set to `Synthesis` (default) the method will exercise an environmental context provider to look up the export value __during synthesis__. The concrete value will be propagated to the CDK app and can be reasoned about like any normal value.
+* The `weak` option is only relevant for synth-time resolution. If it is `true` (which is the default), the CDK will automatically embed a `Metadata` entry on the consuming resource with an `Fn::ImportValue`. This will force CloudFormation to take a strong reference on the export, even through the actual value is concretely resolved during synthesis. This ensures, for example, that the producing stack can't be deleted as long as there stacks consuming the exported values. This behavior (which is the default), can be disabled by settings `weak: false`, in which case the `Fn::ImportValue` will simply not be included.
+
+On top of these two methods, we can now define import and export methods for serializable objects:
 
 ```ts
-importString(exportName: string): string
-```
-
-`importString` returns a stringified token for `Fn::ImportValue(exportName)`. Technically this method can be static, but for the sake of discoverability and symmetry, it's defined next to `exportString`.
-
-```ts
-exportObject(exportName: string, obj: ISerializable): void
+class Stack {
+  exportObject(exportName: string, obj: ISerializable): void;
+  importObject(exportName: string, options?: ImportOptions): IDeserializationContext;
+}
 ```
 
 The `exportObject` method will invoke `obj.serialize` with a serialization context "bound" to this export name. This means the export name will be used as a prefix to all written keys. `writeObject` will be implemented with a nested serialization context that adds another component to the export name prefix.
-
-```ts
-importObject(exportName: string): IDeserializationContext
-```
 
 The `importObject` method will be used like this:
 
@@ -219,6 +250,8 @@ const importedBucket = Bucket.deserializeBucket(stack.importObject('MyBucketExpo
 
 The method will return a deserialization context that's bound to the export name. Similarly to the serialization context, it will prefix all values read through `readString` with the export name, and so forth with `readObject`.
 
+As mentioned about, the default resolve type for imports is `Synthesis` (with strong-references). This means that the values returned by `readString` will be actual concrete values. If users opt-in to deploy-time resolution (by setting using `Deployment` resolve type), the values returned will be tokens. In some cases this would be fine, but there could be constructs that cannot deal with opaque values (i.e. if the value is an list of strings and needs to be deconstructed). In those cases (REQ8), constructs should invoke `readString` with `allowUnresolved: false` to indicate that this specific value cannot be a token.
+
 #### Export names
 
 AWS CloudFormation export names must be unique within an environment (account/region), and they will be formed by concatenating root `exportName` and all the keys that lead to a value in the serialization tree.
@@ -226,6 +259,21 @@ AWS CloudFormation export names must be unique within an environment (account/re
 We will use `-` as a component separator devising fully qualified export names. To avoid collisions, if the main export name or any subsequent serialization key includes a `-` it will be removed.
 
 Since AWS CloudFormation has a limit on export name length, and we wouldn't want to restrict the serialization depth, the import/export serializer should trim the name and add a hash of the full name, but only if the total length exceeds the limit.
+
+### Synthesis-time Imports (REQ8)
+
+As mentioned in the previous section, `importObject` will support both synthesis and deploy-time imports by export name.
+
+In order to implement synthesis-time imports, we will add a new environmental context provider to the toolkit which will be able to retrieve a value for a certain CloudFormation named export.
+
+The implementation of this provider will use the CloudFormation ListExports operation to find the exports needed and pass their values in through the CDK context mechanism.
+
+Bear in mind that once a value has been retrieved, it will automatically be saved in the local `cdk.json` and won't be retrieved again until `cdk context --reset` is called.
+
+Since synthesis-time resolution doesn't create strong coupling between the stacks at the CloudFormation
+level, production and operational issues can arise if the producing stack deletes an exported resource. On the other hand, we hear from customers that strong-referencing behavior of `Fn::ImportValue` is sometimes a curse. Customers tell us that they found themselves stuck with unremovable or stacks that cannot be updates due to imports.
+
+Luckily, we can enable both capabilities. By default, when synthesis-time resolution is used, the CDK will automatically add a resource metadata entry to the template with an `Fn::ImportValue`. This will create the strong coupling between the stacks. Users can opt-out of this behavior by setting `weak: true` when they import the resource.
 
 ### Convenience Methods
 
@@ -238,7 +286,9 @@ Here's the usage:
 myAwesomeBucket.exportBucket('JohnnyBucket');
 
 // now, any CDK app that wishes to refer to this bucket can do this:
-const importedBucket: IBucket = Bucket.importBucket(this, 'JohnnyBucket');
+const importedBucket: IBucket = Bucket.importBucket(this, 'JohnnyBucket', {
+  weak: true // weak-reference
+});
 ```
 
 > The reason we call this `importBucket` (and `exportBucket`) is because `import` is a reserved word in Java ([#89](https://github.com/awslabs/aws-cdk/issues/89)). Also, in JavaScript both static and instance methods are inherited, so if someone extends `Bucket` (say `ExtraBucket`), we should have a way to distinguish between `ExtraBucket.importBucket` and `ExtraBucket.importExtraBucket`.
@@ -247,8 +297,8 @@ The implementation of these two methods is ~trivial:
 
 ```ts
 class Bucket {
-  public static importBucket(scope: Construct, exportName: string): IBucket {
-    return Bucket.deserializeBucket(Stack.find(scope).importObject(exportName));
+  public static importBucket(scope: Construct, exportName: string, options?: ImportOptions): IBucket {
+    return Bucket.deserializeBucket(Stack.find(scope).importObject(exportName, options));
   }
 
   public exportBucket(exportName: string): void {
@@ -281,15 +331,20 @@ public static fromBucketArn(scope: Construct, bucketArn: string): IBucket {
 }
 ```
 
-### Load from Environment (REQ6)
+### Lookup from Environment (REQ7)
 
 In composite cases, the resource's physical identity is not sufficient. For example, a `VpcNetwork` resource encapsulates many resources behind it such as subnets, NAT Gateways, etc. In those cases we still want to provide a great experience for developers who wish to reference a VPC:
 
 ```ts
-const vpc = VpcNetwork.fromVpcId(this, 'vpc-bfeebad8');
+const vpc = VpcNetwork.lookupVpc(this, {
+  tags: {
+    department: 'sales',
+    stage: 'prod'
+  }
+});
 ```
 
-The underlying implementation here is different, it must use an environmental context provider to lookup the VPC and extract all the relevant information from it, such as subnets, NAT Gateways and route tables.
+The underlying implementation here is different, it uses an environmental context provider to lookup the VPC and extract all the relevant information from it, such as subnets, NAT Gateways and route tables.
 
 Here too, we expect idempotent behavior, which can be implemented in a similar manner.
 
@@ -337,8 +392,3 @@ The various static import methods (`deserializeXxx` `importXxx`, `fromXxx`) will
 
 - [ ] Can we provide a nicer API for implementing idempotency? Seems like this is a repeating pattern. We can definitely implement something very nice that's not jsii-compatible, but that might be fine as long as non-jsii users can still use the same mechanism.
 - [ ] Consider renaming the `ImportXxx` classes to something that's not coupled with export/import. Maybe `ExternalXxx` or `ExistingXxx`. Those are internal classes, so it doesn't really matter, but still.
-
-## Issues
-
-- https://github.com/awslabs/aws-cdk/issues/89
--
