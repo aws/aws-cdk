@@ -78,6 +78,7 @@ export async function execProgram(aws: SDK, config: Settings): Promise<cxapi.Syn
       const proc = childProcess.spawn(commandLine[0], commandLine.slice(1), {
         stdio: ['ignore', 'inherit', 'inherit'],
         detached: false,
+        shell: true,
         env: {
           ...process.env,
           ...env
