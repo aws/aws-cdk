@@ -211,7 +211,7 @@ export interface BucketImportProps {
    * The format of the website URL of the bucket. This should be true for
    * regions launched since 2014.
    *
-   * @default true
+   * @default false
    */
   bucketWebsiteNewUrlFormat?: boolean;
 }
@@ -995,7 +995,7 @@ class ImportedBucket extends BucketBase {
     this.bucketWebsiteUrl = props.bucketWebsiteUrl || this.generateBucketWebsiteUrl();
     this.autoCreatePolicy = false;
     this.bucketWebsiteNewUrlFormat = props.bucketWebsiteNewUrlFormat === undefined
-      ? true
+      ? false
       : props.bucketWebsiteNewUrlFormat;
     this.policy = undefined;
   }
