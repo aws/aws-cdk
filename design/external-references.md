@@ -117,8 +117,12 @@ When an object is serialized, the `serialize` method is called with an object wh
 
 ```ts
 interface ISerializationContext {
-  writeString(key: string, value: string): void
-  writeObject(key: string, obj: ISerializable): void;
+  writeString(key: string, value: string, options?: SerializationOptions): void
+  writeObject(key: string, obj: ISerializable, options?: SerializationOptions): void;
+}
+
+interface SerializationOptions {
+  description?: string;
 }
 ```
 
@@ -126,11 +130,11 @@ The serialization context allows the object serialize itself through key/value s
 
 ### Deserialization
 
-To support deserialization, classes must also include a public static `deserialize` method which reads the object from a deserialization context and returns an object that implements the resource type interface:
+To support deserialization, classes must also include a public static `deserializeXxx` method which reads the object from a deserialization context and returns an object that implements the resource type interface:
 
 ```ts
 class MyResource extends Construct implements ISerializable {
-  static deserialize(ctx: IDeserializationContext): IMyResource;
+  static deserializeMyResource(ctx: IDeserializationContext): IMyResource;
 }
 ```
 
@@ -147,9 +151,11 @@ interface IDeserializationContext {
 
 `readString(key)` can be used to read values stored by `writeString`. and `readObject(key)` returns a deserialization context for composite deserialization written via `writeObject`.
 
-Since `deserialize` will normally need to create new construct objects, the deserialization context should supply a consistent `scope` and `id` which can be used to instantiate a construct object that represents this object.
+Since `deserializeXxx` will normally need to create new construct objects, the deserialization context should supply a consistent `scope` and `id` which can be used to instantiate a construct object that represents this object.
 
-Implementers of `deserialize` should check if a construct with `id` already exists within `scope` and return it instead of instantiating and new object. This will satisfy REQ6.
+Implementers of `deserializeXxx` should check if a construct with `id` already exists within `scope` and return it instead of instantiating and new object. This will satisfy REQ6.
+
+The reason we indicate the type in the method name is because static methods in JavaScript are inherited, so we can differentiate between `ExtraBucket.deserializeExtraBucket` and `ExtraBucket.deserizlizeBucket`.
 
 ---
 
@@ -162,7 +168,7 @@ class ApplicationLoadBalancer {
     ctx.writeObject('SecurityGroup', this.securityGroup);
   }
 
-  static deserialize(ctx: IDeserializationContext): IApplicationLoadBalancer {
+  static deserializeApplicationLoadBalancer(ctx: IDeserializationContext): IApplicationLoadBalancer {
     const exists = ctx.scope.findChild(ctx.id);
     if (exists) {
       return exists;
@@ -170,7 +176,7 @@ class ApplicationLoadBalancer {
 
     return new ImportedApplicationLoadBalancer(ctx.scope, ctx.id, {
       loadBalancerArn: ctx.readString('LoadBalancerArn'),
-      securityGroup: ec2.SecurityGroup.deserialize(ctx.readObject('SecurityGroup'))
+      securityGroup: ec2.SecurityGroup.deserializeSecurityGroup(ctx.readObject('SecurityGroup'))
     });
   }
 }
@@ -183,10 +189,11 @@ Now that constructs can be serialized and deserialized into a key-value context,
 The following methods will be added to the `Stack` class:
 
 ```ts
-exportString(exportName: string, value: string): void
+exportString(exportName: string, value: string, options?: ExportOptions): void
 ```
 
-`exportString` creates an AWS CloudFormation Output with `Value` set to `value` and `Export` set to `exportName`.
+
+`exportString` creates an AWS CloudFormation Output with `Value` set to `value` and `Export` set to `exportName`. `options` includes `description`.
 
 ```ts
 importString(exportName: string): string
@@ -207,10 +214,18 @@ importObject(exportName: string): IDeserializationContext
 The `importObject` method will be used like this:
 
 ```ts
-const importedBucket = Bucket.deserialize(stack.importObject('MyBucketExportName'));
+const importedBucket = Bucket.deserializeBucket(stack.importObject('MyBucketExportName'));
 ```
 
 The method will return a deserialization context that's bound to the export name. Similarly to the serialization context, it will prefix all values read through `readString` with the export name, and so forth with `readObject`.
+
+#### Export names
+
+AWS CloudFormation export names must be unique within an environment (account/region), and they will be formed by concatenating root `exportName` and all the keys that lead to a value in the serialization tree.
+
+We will use `-` as a component separator devising fully qualified export names. To avoid collisions, if the main export name or any subsequent serialization key includes a `-` it will be removed.
+
+Since AWS CloudFormation has a limit on export name length, and we wouldn't want to restrict the serialization depth, the import/export serializer should trim the name and add a hash of the full name, but only if the total length exceeds the limit.
 
 ### Convenience Methods
 
@@ -233,7 +248,7 @@ The implementation of these two methods is ~trivial:
 ```ts
 class Bucket {
   public static importBucket(scope: Construct, exportName: string): IBucket {
-    return Bucket.deserialize(Stack.find(scope).importObject(exportName));
+    return Bucket.deserializeBucket(Stack.find(scope).importObject(exportName));
   }
 
   public exportBucket(exportName: string): void {
@@ -278,9 +293,50 @@ The underlying implementation here is different, it must use an environmental co
 
 Here too, we expect idempotent behavior, which can be implemented in a similar manner.
 
+## Other Applications
+
+The construct serialization mechanism opens an opportunity for other applications that may benefit from being able to reference CDK constructs from outside the app. This section describes a few examples.
+
+### Serialization to JSON
+
+It should be trivial to implement a JSON serialization context:
+
+```ts
+const ctx = new JsonSerializtionContext();
+alb.serialize(ctx);
+
+assertEquals(resolve(ctx.json), {
+  "loadBalancerArn": { "Fn::GetAtt": [ "MyALB1288xxx", "Arn" ] },
+  "securityGroup": {
+    "securityGroupId": { "Ref": "MyALBSecurityGroup4444" }
+  }
+});
+```
+
+Representing a construct's runtime attributes as JSON (or a stringified JSON if needed via `CloudFormationJSON`) opens up a few interesting applications as described below.
+
+### Cross-Account/Region References
+
+The serialization mechanism, together with a bunch of custom resources can be used to reference constructs across accounts and region via, e.g. an S3 bucket.
+
+The producing stack can write a file to an S3 bucket with e.g. the JSON serialized representation of the construct and the consuming stack can read this file during deployment and deserialize the construct.
+
+### Environment Variables Serialization
+
+When runtime code needs to interact with resources defined in a CDK app, it needs to be able to reference these resources.
+
+The current practice is to manually wire specific resource attributes via environment variables so they will be available for runtime code. This may be sufficient for simple use cases such as simple AWS resources where a single attribute might be sufficient to represent the construct, but more complex scenarios (such as composite constructs) may benefit from the ability to serialize the entire construct through environment variables either through individual keys or as a single key + JSON value.
+
+## Implementation Notes
+
+The underlying pattern we use today for supporting imports/exports (`IBucket`, `BucketBase`, `Bucket` and `ImportedBucket`) continues to be relevant for implementing serialization and the `fromXxx` methods.
+
+The various static import methods (`deserializeXxx` `importXxx`, `fromXxx`) will all return an object that implements `IXxx`. The concrete type of this object will be an internal class `ImportedXxx` that includes the heuristics of how to represent an external resource.
+
 ## Open issues/questions
 
 - [ ] Can we provide a nicer API for implementing idempotency? Seems like this is a repeating pattern. We can definitely implement something very nice that's not jsii-compatible, but that might be fine as long as non-jsii users can still use the same mechanism.
+- [ ] Consider renaming the `ImportXxx` classes to something that's not coupled with export/import. Maybe `ExternalXxx` or `ExistingXxx`. Those are internal classes, so it doesn't really matter, but still.
 
 ## Issues
 
