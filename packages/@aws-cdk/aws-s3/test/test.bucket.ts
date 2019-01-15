@@ -334,7 +334,8 @@ export = {
       test.deepEqual(bucket.node.resolve(bucketRef), {
         bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
         bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' },
-        bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' }
+        bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' },
+        bucketWebsiteUrl: { 'Fn::ImportValue': 'MyStack:MyBucketWebsiteURL9C222788' }
       });
       test.done();
     },
@@ -346,7 +347,8 @@ export = {
       test.deepEqual(bucket.node.resolve(bucketRef), {
         bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
         bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' },
-        bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' }
+        bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' },
+        bucketWebsiteUrl: { 'Fn::ImportValue': 'MyStack:MyBucketWebsiteURL9C222788' }
       });
       test.done();
     },
@@ -464,6 +466,17 @@ export = {
           },
           "Export": {
             "Name": "S1:MyBucketDomainNameF76B9A7A"
+          }
+        },
+        "MyBucketWebsiteURL9C222788": {
+          "Value": {
+            "Fn::GetAtt": [
+              "MyBucketF68F3FF0",
+              "WebsiteURL"
+            ]
+          },
+          "Export": {
+            "Name": "S1:MyBucketWebsiteURL9C222788"
           }
         }
         }
@@ -898,6 +911,17 @@ export = {
         "Export": {
           "Name": "MyBucketDomainNameF76B9A7A"
         }
+      },
+      "MyBucketWebsiteURL9C222788": {
+        "Value": {
+          "Fn::GetAtt": [
+            "MyBucketF68F3FF0",
+            "WebsiteURL"
+          ]
+        },
+        "Export": {
+          "Name": "MyBucketWebsiteURL9C222788"
+        }
       }
       }
     });
@@ -1189,6 +1213,14 @@ export = {
           ErrorDocument: "error.html"
         }
       }));
+      test.done();
+    },
+    'exports the WebsiteURL'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'Website', {
+        websiteIndexDocument: 'index.html'
+      });
+      test.deepEqual(bucket.node.resolve(bucket.bucketWebsiteUrl), { 'Fn::GetAtt': [ 'Website32962D0B', 'WebsiteURL' ] });
       test.done();
     }
   }
