@@ -237,5 +237,41 @@ export = {
 
       test.done();
     },
+
+    "correctly sets dockerVolumeConfiguration"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const volume = {
+        name: "scratch",
+        dockerVolumeConfiguration: {
+          driver: "local",
+          scope: ecs.Scope.Task
+        }
+      };
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        volumes: [volume]
+      });
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+        Family: "Ec2TaskDef",
+        Volumes: [{
+          Name: "scratch",
+          DockerVolumeConfiguration: {
+            Driver: "local",
+            Scope: 'task'
+          }
+        }]
+      }));
+
+      test.done();
+    },
+
   }
 };

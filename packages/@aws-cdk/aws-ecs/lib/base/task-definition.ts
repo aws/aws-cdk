@@ -141,7 +141,7 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * All volumes
    */
-  private readonly volumes: CfnTaskDefinition.VolumeProperty[] = [];
+  private readonly volumes: Volume[] = [];
 
   /**
    * Execution role for this task definition
@@ -345,8 +345,12 @@ export interface Volume {
   /**
    * A name for the volume
    */
-  name?: string;
-  // FIXME add dockerVolumeConfiguration
+  name: string;
+
+  /**
+   * Specifies this configuration when using Docker volumes
+   */
+  dockerVolumeConfiguration?: DockerVolumeConfiguration;
 }
 
 /**
@@ -357,6 +361,50 @@ export interface Host {
    * Source path on the host
    */
   sourcePath?: string;
+}
+
+/**
+ * A configuration of a Docker volume
+ */
+export interface DockerVolumeConfiguration {
+  /**
+   * If true, the Docker volume is created if it does not already exist
+   *
+   * @default false
+   */
+  autoprovision?: boolean;
+  /**
+   * The Docker volume driver to use
+   */
+  driver: string;
+  /**
+   * A map of Docker driver specific options passed through
+   *
+   * @default No options
+   */
+  driverOpts?: string[];
+  /**
+   * Custom metadata to add to your Docker volume
+   *
+   * @default No labels
+   */
+  labels?: string[];
+  /**
+   * The scope for the Docker volume which determines it's lifecycle
+   */
+  scope: Scope;
+}
+
+export enum Scope {
+  /**
+   * Docker volumes are automatically provisioned when the task starts and destroyed when the task stops
+   */
+  Task = "task",
+
+  /**
+   * Docker volumes are persist after the task stops
+   */
+  Shared = "shared"
 }
 
 /**
