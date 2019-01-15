@@ -233,6 +233,25 @@ export = {
       }));
       test.done();
     },
+
+    "maxAZs defaults to 3 if unset"(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC');
+      expect(stack).to(countResources("AWS::EC2::Subnet", 6));
+      expect(stack).to(countResources("AWS::EC2::Route", 6));
+      for (let i = 0; i < 6; i++) {
+        expect(stack).to(haveResource("AWS::EC2::Subnet", {
+          CidrBlock: `10.0.${i * 32}.0/19`
+        }));
+      }
+      expect(stack).to(haveResourceLike("AWS::EC2::Route", {
+        DestinationCidrBlock: '0.0.0.0/0',
+        NatGatewayId: { },
+      }));
+
+      test.done();
+    },
+
     "with maxAZs set to 2"(test: Test) {
       const stack = getTestStack();
       new VpcNetwork(stack, 'VPC', { maxAZs: 2 });
