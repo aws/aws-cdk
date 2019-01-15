@@ -180,7 +180,7 @@ export interface IBucket extends cdk.IConstruct {
  */
 export interface BucketImportProps {
   /**
-   * The ARN fo the bucket. At least one of bucketArn or bucketName must be
+   * The ARN of the bucket. At least one of bucketArn or bucketName must be
    * defined in order to initialize a bucket ref.
    */
   bucketArn?: string;
@@ -199,6 +199,21 @@ export interface BucketImportProps {
    * @default Inferred from bucket name
    */
   bucketDomainName?: string;
+
+  /**
+   * The website URL of the bucket (if static web hosting is enabled).
+   *
+   * @default Inferred from bucket name
+   */
+  bucketWebsiteUrl?: string;
+
+  /**
+   * The format of the website URL of the bucket. This should be true for
+   * regions launched since 2014.
+   *
+   * @default false
+   */
+  bucketWebsiteNewUrlFormat?: boolean;
 }
 
 /**
@@ -571,6 +586,7 @@ export class Bucket extends BucketBase {
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly domainName: string;
+  public readonly bucketWebsiteUrl: string;
   public readonly dualstackDomainName: string;
   public readonly encryptionKey?: kms.IEncryptionKey;
   public policy?: BucketPolicy;
@@ -599,6 +615,7 @@ export class Bucket extends BucketBase {
     this.bucketArn = resource.bucketArn;
     this.bucketName = resource.bucketName;
     this.domainName = resource.bucketDomainName;
+    this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
     this.dualstackDomainName = resource.bucketDualStackDomainName;
 
     // Add all lifecycle rules
@@ -621,6 +638,7 @@ export class Bucket extends BucketBase {
       bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
       bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
       bucketDomainName: new cdk.Output(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
+      bucketWebsiteUrl: new cdk.Output(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
     };
   }
 
@@ -956,6 +974,8 @@ class ImportedBucket extends BucketBase {
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly domainName: string;
+  public readonly bucketWebsiteUrl: string;
+  public readonly bucketWebsiteNewUrlFormat: boolean;
   public readonly encryptionKey?: kms.EncryptionKey;
 
   public policy?: BucketPolicy;
@@ -972,7 +992,11 @@ class ImportedBucket extends BucketBase {
     this.bucketArn = parseBucketArn(this, props);
     this.bucketName = bucketName;
     this.domainName = props.bucketDomainName || this.generateDomainName();
+    this.bucketWebsiteUrl = props.bucketWebsiteUrl || this.generateBucketWebsiteUrl();
     this.autoCreatePolicy = false;
+    this.bucketWebsiteNewUrlFormat = props.bucketWebsiteNewUrlFormat === undefined
+      ? false
+      : props.bucketWebsiteNewUrlFormat;
     this.policy = undefined;
   }
 
@@ -985,5 +1009,11 @@ class ImportedBucket extends BucketBase {
 
   private generateDomainName() {
     return `${this.bucketName}.s3.amazonaws.com`;
+  }
+
+  private generateBucketWebsiteUrl() {
+    return this.bucketWebsiteNewUrlFormat
+      ? `${this.bucketName}.s3-website.${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`
+      : `${this.bucketName}.s3-website-${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`;
   }
 }

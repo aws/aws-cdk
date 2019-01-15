@@ -6,21 +6,23 @@ import { CfnVpcLink } from './apigateway.generated';
  * Properties for a VpcLink
  */
 export interface VpcLinkProps {
-    /**
-     * The name used to label and identify the VPC link.
-     */
-    name: string;
+  /**
+   * The name used to label and identify the VPC link.
+   * @default automatically generated name
+   */
+  name?: string;
 
-    /**
-     * The description of the VPC link.
-     */
-    description?: string;
+  /**
+   * The description of the VPC link.
+   * @default no description
+   */
+  description?: string;
 
-    /**
-     * The network load balancers of the VPC targeted by the VPC link.
-     * The network load balancers must be owned by the same AWS account of the API owner.
-     */
-    targets: elbv2.NetworkLoadBalancer[];
+  /**
+   * The network load balancers of the VPC targeted by the VPC link.
+   * The network load balancers must be owned by the same AWS account of the API owner.
+   */
+  targets: elbv2.INetworkLoadBalancer[];
 }
 
 /**
@@ -28,21 +30,20 @@ export interface VpcLinkProps {
  * Specifies an API Gateway VPC link for a RestApi to access resources in an Amazon Virtual Private Cloud (VPC).
  */
 export class VpcLink extends cdk.Construct {
+  /**
+   * Physical ID of the VpcLink resource
+   */
+  public readonly vpcLinkId: string;
 
-    private readonly cfnResource: CfnVpcLink;
+  constructor(scope: cdk.Construct, id: string, props: VpcLinkProps) {
+    super(scope, id);
 
-    constructor(scope: cdk.Construct, id: string, props: VpcLinkProps) {
-        super(scope, id);
+    const cfnResource = new CfnVpcLink(this, 'Resource', {
+      name: props.name || this.node.uniqueId,
+      description: props.description,
+      targetArns: props.targets.map(nlb => nlb.loadBalancerArn)
+    });
 
-        this.cfnResource = new CfnVpcLink(this, 'Resource', {
-            name: props.name,
-            description: props.description,
-            targetArns: props.targets.map(nlb => nlb.loadBalancerArn)
-        });
-    }
-
-    public get vpcLinkId() {
-        return this.cfnResource.vpcLinkId;
-    }
-
+    this.vpcLinkId = cfnResource.vpcLinkId;
+  }
 }

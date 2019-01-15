@@ -10,7 +10,7 @@ export enum LoadBalancerType {
   Network
 }
 
-export interface LoadBalancedServiceProps {
+export interface LoadBalancedServiceBaseProps {
   /**
    * The cluster where your service will be deployed
    */
@@ -49,22 +49,23 @@ export interface LoadBalancedServiceProps {
   loadBalancerType?: LoadBalancerType
 
   /**
-   * Environment variables to pass to the container created for the service
-   * @default No environment variables
-   */
-  containerEnvironment?: {[key: string]: string};
-
-  /**
    * Certificate Manager certificate to associate with the load balancer.
    * Setting this option will set the load balancer port to 443.
    */
   certificate?: ICertificate;
+
+  /**
+   * Environment variables to pass to the container
+   *
+   * @default No environment variables
+   */
+  environment?: { [key: string]: string };
 }
 
 /**
  * Base class for load-balanced Fargate and ECS service
  */
-export abstract class LoadBalancedService extends cdk.Construct {
+export abstract class LoadBalancedServiceBase extends cdk.Construct {
   public readonly loadBalancerType: LoadBalancerType;
 
   public readonly loadBalancer: elbv2.BaseLoadBalancer;
@@ -73,7 +74,7 @@ export abstract class LoadBalancedService extends cdk.Construct {
 
   public readonly targetGroup: elbv2.ApplicationTargetGroup | elbv2.NetworkTargetGroup;
 
-  constructor(scope: cdk.Construct, id: string, props: LoadBalancedServiceProps) {
+  constructor(scope: cdk.Construct, id: string, props: LoadBalancedServiceBaseProps) {
     super(scope, id);
 
     // Load balancer

@@ -1,12 +1,12 @@
 import cdk = require('@aws-cdk/cdk');
 import { Ec2Service } from './ec2/ec2-service';
 import { Ec2TaskDefinition } from './ec2/ec2-task-definition';
-import { LoadBalancedService, LoadBalancedServiceProps } from './load-balanced-service';
+import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from './load-balanced-service-base';
 
 /**
  * Properties for a LoadBalancedEc2Service
  */
-export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceProps {
+export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProps {
   /**
    * The hard limit (in MiB) of memory to present to the container.
    *
@@ -33,7 +33,7 @@ export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceProps {
 /**
  * A single task running on an ECS cluster fronted by a load balancer
  */
-export class LoadBalancedEc2Service extends LoadBalancedService {
+export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedEc2ServiceProps) {
     super(scope, id, props);
 
@@ -41,8 +41,8 @@ export class LoadBalancedEc2Service extends LoadBalancedService {
 
     const container = taskDefinition.addContainer('web', {
       image: props.image,
-      environment: props.containerEnvironment,
       memoryLimitMiB: props.memoryLimitMiB,
+      environment: props.environment,
     });
 
     container.addPortMappings({

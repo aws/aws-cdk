@@ -2,13 +2,13 @@ import { AliasRecord, IHostedZone } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
 import { FargateService } from './fargate/fargate-service';
 import { FargateTaskDefinition } from './fargate/fargate-task-definition';
-import { LoadBalancedService, LoadBalancedServiceProps } from './load-balanced-service';
+import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from './load-balanced-service-base';
 import { AwsLogDriver } from './log-drivers/aws-log-driver';
 
 /**
  * Properties for a LoadBalancedEcsService
  */
-export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceProps {
+export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBaseProps {
   /**
    * The number of cpu units used by the task.
    * Valid values, which determines your range of valid values for the memory parameter:
@@ -74,7 +74,7 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceProp
 /**
  * A Fargate service running on an ECS cluster fronted by a load balancer
  */
-export class LoadBalancedFargateService extends LoadBalancedService {
+export class LoadBalancedFargateService extends LoadBalancedServiceBase {
 
   public readonly service: FargateService;
 
@@ -90,8 +90,8 @@ export class LoadBalancedFargateService extends LoadBalancedService {
 
     const container = taskDefinition.addContainer('web', {
       image: props.image,
-      environment: props.containerEnvironment,
-      logging: optIn ? this.createAWSLogDriver(this.node.id) : undefined
+      logging: optIn ? this.createAWSLogDriver(this.node.id) : undefined,
+      environment: props.environment
     });
 
     container.addPortMappings({

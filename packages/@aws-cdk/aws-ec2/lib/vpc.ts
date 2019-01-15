@@ -58,7 +58,11 @@ export interface VpcNetworkProps {
    * If the region has more AZs than you want to use (for example, because of EIP limits),
    * pick a lower number here. The AZs will be sorted and picked from the start of the list.
    *
-   * @default All AZs in the region
+   * If you pick a higher number than the number of AZs in the region, all AZs in
+   * the region will be selected. To use "all AZs" available to your account, use a
+   * high number (such as 99).
+   *
+   * @default 3
    */
   maxAZs?: number;
 
@@ -315,9 +319,9 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
 
     this.availabilityZones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
     this.availabilityZones.sort();
-    if (props.maxAZs != null) {
-       this.availabilityZones = this.availabilityZones.slice(0, props.maxAZs);
-    }
+
+    const maxAZs = props.maxAZs !== undefined ? props.maxAZs : 3;
+    this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
     this.vpcId = this.resource.vpcId;
     this.dependencyElements.push(this.resource);
