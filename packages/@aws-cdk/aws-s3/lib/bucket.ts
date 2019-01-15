@@ -1013,7 +1013,7 @@ class ImportedBucket extends BucketBase {
 
   private generateBucketWebsiteUrl() {
     return this.bucketWebsiteNewUrlFormat
-      ? `${this.bucketName}.s3-website-${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`
-      : `${this.bucketName}.s3-website.${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`;
+      ? `${this.bucketName}.s3-website.${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`
+      : `${this.bucketName}.s3-website-${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`;
   }
 }
