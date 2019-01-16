@@ -1,5 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import { Method } from './method';
+import { VpcLink } from './vpc-link';
 
 export interface IntegrationOptions {
   /**
@@ -93,6 +94,18 @@ export interface IntegrationOptions {
    * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
    */
   selectionPattern?: string;
+
+  /**
+   * The type of network connection to the integration endpoint.
+   * @default ConnectionType.Internet
+   */
+  connectionType?: ConnectionType;
+
+  /**
+   * The VpcLink used for the integration.
+   * Required if connectionType is VPC_LINK
+   */
+  vpcLink?: VpcLink;
 }
 
 export interface IntegrationProps {
@@ -215,6 +228,18 @@ export enum PassthroughBehavior {
    * unmapped content types will be rejected with the same 415 response.
    */
   WhenNoTemplates = 'WHEN_NO_TEMPLATES'
+}
+
+export enum ConnectionType {
+  /**
+   * For connections through the public routable internet
+   */
+  Internet = 'INTERNET',
+
+  /**
+   * For private connections between API Gateway and a network load balancer in a VPC
+   */
+  VpcLink = 'VPC_LINK'
 }
 
 export interface IntegrationResponse {
