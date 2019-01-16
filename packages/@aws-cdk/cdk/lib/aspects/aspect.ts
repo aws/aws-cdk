@@ -16,12 +16,22 @@ export interface IAspect {
 }
 
 /**
- * TODO: description
+ * The representation of an Apect
  */
 export abstract class Aspect implements IAspect {
+  /**
+   * The type of the aspect
+   */
   public abstract readonly type: string;
+
   private readonly visitedBy: {[id: string]: boolean} = {};
 
+  /**
+   * The visit function is invoked during synthesis for each aspect
+   *
+   * The visit function will visit each child node in the construct tree. Each
+   * Node will only be visited once.
+   */
   public visit(construct: IConstruct): void {
     if (this.visitedBy[construct.node.uniqueId] === true) {
       return;
@@ -34,5 +44,11 @@ export abstract class Aspect implements IAspect {
     }
   }
 
+  /**
+   * This is the function concrete Aspects should implement
+   *
+   * The ``visit()`` function will call this method to invoke the customized
+   * apsect actions.
+   */
   protected abstract visitAction(construct: IConstruct): void;
 }

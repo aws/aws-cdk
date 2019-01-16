@@ -3,26 +3,54 @@ import { IConstruct } from '../core/construct';
 import { Aspect } from './aspect';
 
 export interface TagBaseProps extends TagProperties {
-  // TODO docs
+  /**
+   * The value of the tag
+   */
   value?: string;
 }
 
 export interface TagProperties {
-  // TODO docs
+  /**
+   * This applies specifically to AutoScalingGroup PropagateAtLaunch
+   */
   applyToLaunchInstances?: boolean;
+
+  /**
+   * An array of Resource Types that will receive this tag
+   */
   include?: string[];
+
+  /**
+   * An array of Resource Types that will not receive this tag
+   */
   exclude?: string[];
 }
 
+/**
+ * The common functionality for Tag and Remove Tag Aspects
+ */
 export abstract class TagBase extends Aspect {
 
+  /**
+   * Test if the construct is a CloudFormation Resource
+   */
   public static isResource(resource: any): resource is Resource {
     return resource.resourceType !== undefined;
   }
 
+  /**
+   * The ``taggable`` type for these aspects
+   */
   public readonly type: string = 'taggable';
 
+  /**
+   * The string key for the tag
+   */
   public readonly key: string;
+
+  /**
+   * The string value of the tag
+   */
   public readonly value?: string;
 
   private readonly include: string[];
@@ -56,6 +84,9 @@ export abstract class TagBase extends Aspect {
   protected abstract applyTag(resource: ITaggable): void;
 }
 
+/**
+ * The Tag Aspect will handle adding a tag to this node and cascading tags to children
+ */
 export class Tag extends TagBase {
 
   private readonly applyToLaunchInstances: boolean;
@@ -73,6 +104,9 @@ export class Tag extends TagBase {
   }
 }
 
+/**
+ * The RemoveTag Aspect will handle removing tags from this node and children
+ */
 export class RemoveTag extends TagBase {
 
   constructor(key: string, props: TagProperties = {}) {
