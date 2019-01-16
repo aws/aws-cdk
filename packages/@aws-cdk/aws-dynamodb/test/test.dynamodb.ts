@@ -1,4 +1,4 @@
-import { expect, countResources, haveResource, TestStack } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, TestStack } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import { Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -928,7 +928,6 @@ export = {
       projectionType: ProjectionType.Include,
       nonKeyAttributes: [ lsiNonKeyAttributeGenerator.next().value, lsiNonKeyAttributeGenerator.next().value ]
     });
-
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
