@@ -230,7 +230,6 @@ export class Stack extends Construct {
    * Rename a generated logical identities
    */
   public renameLogical(oldId: string, newId: string) {
-    // tslint:disable-next-line:no-console
     if (this.node.children.length > 0) {
       throw new Error("All renames must be set up before adding elements to the stack");
     }

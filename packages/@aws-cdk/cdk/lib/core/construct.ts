@@ -123,7 +123,6 @@ export class ConstructNode {
    * @returns a child by path or undefined if not found.
    */
   public tryFindChild(path: string): IConstruct | undefined {
-    // tslint:disable-next-line:no-console
     if (path.startsWith(PATH_SEP)) {
       throw new Error('Path must be relative');
     }
