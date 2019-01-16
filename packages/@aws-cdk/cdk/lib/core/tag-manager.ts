@@ -41,8 +41,6 @@ export class TagManager {
    * @param key The key of the tag to remove
    */
   public removeTag(key: string): void {
-    // tslint:disable-next-line:no-console
-    console.log(`removing ${key}`);
     delete this.tags[key];
   }
 
