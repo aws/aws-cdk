@@ -160,6 +160,10 @@ export class Method extends cdk.Construct {
       throw new Error(`'connectionType' of VPC_LINK requires 'vpcLink' prop to be set`);
     }
 
+    if (options.connectionType === ConnectionType.Internet && options.vpcLink !== undefined) {
+      throw new Error(`cannot set 'vpcLink' where 'connectionType' is INTERNET`);
+    }
+
     if (options.credentialsRole) {
       credentials = options.credentialsRole.roleArn;
     } else if (options.credentialsPassthrough) {
