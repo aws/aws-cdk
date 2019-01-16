@@ -1,24 +1,12 @@
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
-import { ICluster } from './cluster';
-import { IContainerImage } from './container-image';
 import { Ec2Service } from './ec2/ec2-service';
 import { Ec2TaskDefinition } from './ec2/ec2-task-definition';
+import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from './load-balanced-service-base';
 
 /**
  * Properties for a LoadBalancedEc2Service
  */
-export interface LoadBalancedEc2ServiceProps {
-  /**
-   * The cluster where your EC2 service will be deployed
-   */
-  cluster: ICluster;
-
-  /**
-   * The image to start.
-   */
-  image: IContainerImage;
-
+export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProps {
   /**
    * The hard limit (in MiB) of memory to present to the container.
    *
@@ -40,47 +28,14 @@ export interface LoadBalancedEc2ServiceProps {
    * At least one of memoryLimitMiB and memoryReservationMiB is required.
    */
   memoryReservationMiB?: number;
-
-  /**
-   * The container port of the application load balancer attached to your EC2 service. Corresponds to container port mapping.
-   *
-   * @default 80
-   */
-  containerPort?: number;
-
-  /**
-   * Determines whether the Application Load Balancer will be internet-facing
-   *
-   * @default true
-   */
-  publicLoadBalancer?: boolean;
-
-  /**
-   * Number of desired copies of running tasks
-   *
-   * @default 1
-   */
-  desiredCount?: number;
-
-  /**
-   * Environment variables to pass to the container
-   *
-   * @default No environment variables
-   */
-  environment?: { [key: string]: string };
 }
 
 /**
  * A single task running on an ECS cluster fronted by a load balancer
  */
-export class LoadBalancedEc2Service extends cdk.Construct {
-  /**
-   * The load balancer that is fronting the ECS service
-   */
-  public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
-
+export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedEc2ServiceProps) {
-    super(scope, id);
+    super(scope, id, props);
 
     const taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {});
 
@@ -100,20 +55,6 @@ export class LoadBalancedEc2Service extends cdk.Construct {
       taskDefinition,
     });
 
-    const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
-    const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
-      vpc: props.cluster.vpc,
-      internetFacing
-    });
-
-    this.loadBalancer = lb;
-
-    const listener = lb.addListener('PublicListener', { port: 80, open: true });
-    listener.addTargets('ECS', {
-      port: 80,
-      targets: [service]
-    });
-
-    new cdk.Output(this, 'LoadBalancerDNS', { value: lb.dnsName });
+    this.addServiceAsTarget(service);
   }
 }
