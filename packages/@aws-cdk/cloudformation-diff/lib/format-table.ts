@@ -10,7 +10,7 @@ import table = require('table');
 export function formatTable(cells: string[][], columns: number | undefined): string {
   return table.table(cells, {
     border: TABLE_BORDER_CHARACTERS,
-    columns: buildColumnConfig(calculcateColumnWidths(cells, columns)),
+    columns: buildColumnConfig(columns !== undefined ? calculcateColumnWidths(cells, columns) : undefined),
     drawHorizontalLine: (line) => {
       // Numbering like this: [line 0] [header = row[0]] [line 1] [row 1] [line 2] [content 2] [line 3]
       return (line < 2 || line === cells.length) || lineBetween(cells[line - 1], cells[line]);
@@ -27,7 +27,9 @@ function lineBetween(rowA: string[], rowB: string[]) {
   return rowA[1] !== rowB[1];
 }
 
-function buildColumnConfig(widths: Array<number | undefined>): { [index: number]: table.ColumnConfig } {
+function buildColumnConfig(widths: number[] | undefined): { [index: number]: table.ColumnConfig } | undefined {
+  if (widths === undefined) { return undefined; }
+
   const ret: { [index: number]: table.ColumnConfig } = {};
   widths.forEach((width, i) => {
     ret[i] = { width, useWordWrap: true } as any; // 'useWordWrap' is not in @types/table
@@ -46,17 +48,15 @@ function buildColumnConfig(widths: Array<number | undefined>): { [index: number]
  * than the fair share is evenly distributed over all columns that exceed their
  * fair share.
  */
-function calculcateColumnWidths(rows: string[][], terminalWidth: number | undefined): Array<number | undefined> {
+function calculcateColumnWidths(rows: string[][], terminalWidth: number): number[] {
   // use 'string-width' to not count ANSI chars as actual character width
   const columns = rows[0].map((_, i) => Math.max(...rows.map(row => stringWidth(row[i]))));
 
   // If we have no terminal width, do nothing
-  if (terminalWidth === undefined) { return columns.map(_ => undefined); }
-
   const contentWidth = terminalWidth - 2 - columns.length * 3;
 
   // If we don't exceed the terminal width, do nothing
-  if (sum(columns) <= contentWidth) { return columns.map(_ => undefined); }
+  if (sum(columns) <= contentWidth) { return columns; }
 
   const fairShare = Math.min(contentWidth / columns.length);
   const smallColumns = columns.filter(w => w < fairShare);
