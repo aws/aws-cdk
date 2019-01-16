@@ -54,7 +54,6 @@ export function diffKeyedEntities<T>(oldValue: { [key: string]: any } | undefine
   for (const logicalId of unionOf(Object.keys(oldValue || {}), Object.keys(newValue || {}))) {
     const oldElement = oldValue && oldValue[logicalId];
     const newElement = newValue && newValue[logicalId];
-    if (deepEqual(oldElement, newElement)) { continue; }
     result[logicalId] = elementDiff(oldElement, newElement, logicalId);
   }
   return result;

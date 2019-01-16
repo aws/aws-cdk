@@ -52,6 +52,16 @@ export async function realHandler(options: CommandOptions): Promise<number> {
 function listContext(context: any) {
   const keys = contextKeys(context);
 
+  if (keys.length === 0) {
+    print(`This CDK application does not have any saved context values yet.`);
+    print('');
+    print(`Context will automatically be saved when you synthesize CDK apps`);
+    print(`that use environment context information like AZ information, VPCs,`);
+    print(`SSM parameters, and so on.`);
+
+    return;
+  }
+
   // Print config by default
   const data: any[] = [[colors.green('#'), colors.green('Key'), colors.green('Value')]];
   for (const [i, key] of keys) {
@@ -61,7 +71,7 @@ function listContext(context: any) {
 
   print(`Context found in ${colors.blue(DEFAULTS)}:\n`);
 
-  print(renderTable(data, { colWidths: [2, 50, 50] }));
+  print(renderTable(data, process.stdout.columns));
 
   // tslint:disable-next-line:max-line-length
   print(`Run ${colors.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);

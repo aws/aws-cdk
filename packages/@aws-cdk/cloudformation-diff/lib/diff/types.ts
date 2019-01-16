@@ -62,7 +62,7 @@ export class TemplateDiff implements ITemplateDiff {
     });
   }
 
-  public get count() {
+  public get differenceCount() {
     let count = 0;
 
     if (this.awsTemplateFormatVersion !== undefined) {
@@ -75,19 +75,19 @@ export class TemplateDiff implements ITemplateDiff {
       count += 1;
     }
 
-    count += this.conditions.count;
-    count += this.mappings.count;
-    count += this.metadata.count;
-    count += this.outputs.count;
-    count += this.parameters.count;
-    count += this.resources.count;
-    count += this.unknown.count;
+    count += this.conditions.differenceCount;
+    count += this.mappings.differenceCount;
+    count += this.metadata.differenceCount;
+    count += this.outputs.differenceCount;
+    count += this.parameters.differenceCount;
+    count += this.resources.differenceCount;
+    count += this.unknown.differenceCount;
 
     return count;
   }
 
   public get isEmpty(): boolean {
-    return this.count === 0;
+    return this.differenceCount === 0;
   }
 
   /**
@@ -257,10 +257,24 @@ export interface ResourceChange {
   newProperties?: PropertyMap;
 }
 
+export interface IDifference<ValueType> {
+  readonly oldValue: ValueType | undefined;
+  readonly newValue: ValueType | undefined;
+  readonly isDifferent: boolean;
+  readonly isAddition: boolean;
+  readonly isRemoval: boolean;
+  readonly isUpdate: boolean;
+}
+
 /**
  * Models an entity that changed between two versions of a CloudFormation template.
  */
-export class Difference<ValueType> {
+export class Difference<ValueType> implements IDifference<ValueType> {
+  /**
+   * Whether this is an actual different or the values are actually the same
+   */
+  public readonly isDifferent: boolean;
+
   /**
    * @param oldValue the old value, cannot be equal (to the sense of +deepEqual+) to +newValue+.
    * @param newValue the new value, cannot be equal (to the sense of +deepEqual+) to +oldValue+.
@@ -269,11 +283,7 @@ export class Difference<ValueType> {
     if (oldValue === undefined && newValue === undefined) {
       throw new AssertionError({ message: 'oldValue and newValue are both undefined!' });
     }
-    if (deepEqual(oldValue, newValue)) {
-      const oldStr = JSON.stringify(oldValue);
-      const newStr = JSON.stringify(newValue);
-      throw new NoDifferenceError(`oldValue (${oldStr}) and newValue (${newStr}) are equal!`);
-    }
+    this.isDifferent = !deepEqual(oldValue, newValue);
   }
 
   /** @returns +true+ if the element is new to the template. */
@@ -302,11 +312,21 @@ export class PropertyDifference<ValueType> extends Difference<ValueType> {
   }
 }
 
-export class DifferenceCollection<V, T extends Difference<V>> {
-  constructor(public readonly changes: { [logicalId: string]: T | undefined }) {}
+export class DifferenceCollection<V, T extends IDifference<V>> {
+  constructor(private readonly diffs: { [logicalId: string]: T }) {}
 
-  public get count(): number {
-    return this.logicalIds.length;
+  public get changes(): { [logicalId: string]: T } {
+    return onlyChanges(this.diffs);
+  }
+
+  public get differenceCount(): number {
+    return Object.values(this.changes).length;
+  }
+
+  public get(logicalId: string): T {
+    const ret = this.diffs[logicalId];
+    if (!ret) { throw new Error(`No object with logical ID '${logicalId}'`); }
+    return ret;
   }
 
   public get logicalIds(): string[] {
@@ -318,7 +338,7 @@ export class DifferenceCollection<V, T extends Difference<V>> {
    * returns `true`.
    */
   public filter(predicate: (diff: T | undefined) => boolean): DifferenceCollection<V, T> {
-    const newChanges: { [logicalId: string]: T | undefined } = { };
+    const newChanges: { [logicalId: string]: T } = { };
     for (const id of Object.keys(this.changes)) {
       const diff = this.changes[id];
 
@@ -341,7 +361,7 @@ export class DifferenceCollection<V, T extends Difference<V>> {
    *
    * @param cb
    */
-  public forEach(cb: (logicalId: string, change: T) => any): void {
+  public forEachDifference(cb: (logicalId: string, change: T) => any): void {
     const removed = new Array<{ logicalId: string, change: T }>();
     const added = new Array<{ logicalId: string, change: T }>();
     const updated = new Array<{ logicalId: string, change: T }>();
@@ -355,7 +375,7 @@ export class DifferenceCollection<V, T extends Difference<V>> {
         removed.push({ logicalId, change });
       } else if (change.isUpdate) {
         updated.push({ logicalId, change });
-      } else {
+      } else if (change.isDifferent) {
         others.push({ logicalId, change });
       }
     }
@@ -372,9 +392,9 @@ export class DifferenceCollection<V, T extends Difference<V>> {
  * of (relative) conciseness of the constructor's signature.
  */
 export interface ITemplateDiff {
-  awsTemplateFormatVersion?: Difference<string>;
-  description?: Difference<string>;
-  transform?: Difference<string>;
+  awsTemplateFormatVersion?: IDifference<string>;
+  description?: IDifference<string>;
+  transform?: IDifference<string>;
 
   conditions?: DifferenceCollection<Condition, ConditionDifference>;
   mappings?: DifferenceCollection<Mapping, MappingDifference>;
@@ -383,7 +403,7 @@ export interface ITemplateDiff {
   parameters?: DifferenceCollection<Parameter, ParameterDifference>;
   resources?: DifferenceCollection<Resource, ResourceDifference>;
 
-  unknown?: DifferenceCollection<any, Difference<any>>;
+  unknown?: DifferenceCollection<any, IDifference<any>>;
 }
 
 export type Condition = any;
@@ -423,7 +443,9 @@ export enum ResourceImpact {
   /** The existing physical resource will be destroyed */
   WILL_DESTROY = 'WILL_DESTROY',
   /** The existing physical resource will be removed from CloudFormation supervision */
-  WILL_ORPHAN = 'WILL_ORPHAN'
+  WILL_ORPHAN = 'WILL_ORPHAN',
+  /** There is no change in this resource */
+  NO_CHANGE = 'NO_CHANGE',
 }
 
 /**
@@ -436,12 +458,13 @@ export enum ResourceImpact {
 function worstImpact(one: ResourceImpact, two?: ResourceImpact): ResourceImpact {
   if (!two) { return one; }
   const badness = {
-    [ResourceImpact.WILL_UPDATE]: 0,
-    [ResourceImpact.WILL_CREATE]: 1,
-    [ResourceImpact.WILL_ORPHAN]: 2,
-    [ResourceImpact.MAY_REPLACE]: 3,
-    [ResourceImpact.WILL_REPLACE]: 4,
-    [ResourceImpact.WILL_DESTROY]: 5,
+    [ResourceImpact.NO_CHANGE]: 0,
+    [ResourceImpact.WILL_UPDATE]: 1,
+    [ResourceImpact.WILL_CREATE]: 2,
+    [ResourceImpact.WILL_ORPHAN]: 3,
+    [ResourceImpact.MAY_REPLACE]: 4,
+    [ResourceImpact.WILL_REPLACE]: 5,
+    [ResourceImpact.WILL_DESTROY]: 6,
   };
   return badness[one] > badness[two] ? one : two;
 }
@@ -453,41 +476,67 @@ export interface Resource {
   [key: string]: any;
 }
 
-export class ResourceDifference extends Difference<Resource> {
+/**
+ * Change to a single resource between two CloudFormation templates
+ *
+ * This class can be mutated after construction.
+ */
+export class ResourceDifference implements IDifference<Resource> {
   /**
-   * Old property values
+   * Whether this resource was added
    */
-  public readonly oldProperties?: PropertyMap;
+  public readonly isAddition: boolean;
 
   /**
-   * New property values
+   * Whether this resource was removed
    */
-  public readonly newProperties?: PropertyMap;
+  public readonly isRemoval: boolean;
 
   /** Property-level changes on the resource */
-  public readonly propertyUpdates: { [key: string]: PropertyDifference<any> };
+  private readonly propertyDiffs: { [key: string]: PropertyDifference<any> };
+
   /** Changes to non-property level attributes of the resource */
-  public readonly otherChanges: { [key: string]: Difference<any> };
+  private readonly otherDiffs: { [key: string]: Difference<any> };
 
   /** The resource type (or old and new type if it has changed) */
   private readonly resourceTypes: { readonly oldType?: string, readonly newType?: string };
 
-  constructor(oldValue: Resource | undefined,
-              newValue: Resource | undefined,
+  constructor(public readonly oldValue: Resource | undefined,
+              public readonly newValue: Resource | undefined,
               args: {
           resourceType: { oldType?: string, newType?: string },
-          oldProperties?: PropertyMap,
-          newProperties?: PropertyMap,
-          propertyUpdates: { [key: string]: PropertyDifference<any> },
-          otherChanges: { [key: string]: Difference<any> }
+          propertyDiffs: { [key: string]: PropertyDifference<any> },
+          otherDiffs: { [key: string]: Difference<any> }
         }
   ) {
-    super(oldValue, newValue);
     this.resourceTypes = args.resourceType;
-    this.propertyUpdates = args.propertyUpdates;
-    this.otherChanges = args.otherChanges;
-    this.oldProperties = args.oldProperties;
-    this.newProperties = args.newProperties;
+    this.propertyDiffs = args.propertyDiffs;
+    this.otherDiffs = args.otherDiffs;
+
+    this.isAddition = oldValue === undefined;
+    this.isRemoval = newValue === undefined;
+  }
+
+  public get oldProperties(): PropertyMap | undefined {
+    return this.oldValue && this.oldValue.Properties;
+  }
+
+  public get newProperties(): PropertyMap | undefined {
+    return this.newValue && this.newValue.Properties;
+  }
+
+  /**
+   * Whether this resource was modified at all
+   */
+  public get isDifferent(): boolean {
+    return this.differenceCount > 0 || this.oldResourceType !== this.newResourceType;
+  }
+
+  /**
+   * Whether the resource was updated in-place
+   */
+  public get isUpdate(): boolean {
+    return this.isDifferent && !this.isAddition && !this.isRemoval;
   }
 
   public get oldResourceType(): string | undefined {
@@ -496,6 +545,20 @@ export class ResourceDifference extends Difference<Resource> {
 
   public get newResourceType(): string | undefined {
     return this.resourceTypes.newType;
+  }
+
+  /**
+   * All actual property updates
+   */
+  public get propertyUpdates(): { [key: string]: PropertyDifference<any> } {
+    return onlyChanges(this.propertyDiffs);
+  }
+
+  /**
+   * All actual "other" updates
+   */
+  public get otherChanges(): { [key: string]: Difference<any> } {
+    return onlyChanges(this.otherDiffs);
   }
 
   /**
@@ -522,6 +585,18 @@ export class ResourceDifference extends Difference<Resource> {
     return this.resourceTypes.oldType || this.resourceTypes.newType!;
   }
 
+  /**
+   * Replace a PropertyChange in this object
+   *
+   * This affects the property diff as it is summarized to users, but it DOES
+   * NOT affect either the "oldValue" or "newValue" values; those still contain
+   * the actual template values as provided by the user (they might still be
+   * used for downstream processing).
+   */
+  public setPropertyChange(propertyName: string, change: PropertyDifference<any>) {
+    this.propertyDiffs[propertyName] = change;
+  }
+
   public get changeImpact(): ResourceImpact {
     // Check the Type first
     if (this.resourceTypes.oldType !== this.resourceTypes.newType) {
@@ -534,22 +609,32 @@ export class ResourceDifference extends Difference<Resource> {
       return ResourceImpact.WILL_REPLACE;
     }
 
-    return Object.values(this.propertyUpdates)
+    // Base impact (before we mix in the worst of the property impacts);
+    // WILL_UPDATE if we have "other" changes, NO_CHANGE if there are no "other" changes.
+    const baseImpact = Object.keys(this.otherChanges).length > 0 ? ResourceImpact.WILL_UPDATE : ResourceImpact.NO_CHANGE;
+
+    return Object.values(this.propertyDiffs)
            .map(elt => elt.changeImpact)
-           .reduce(worstImpact, ResourceImpact.WILL_UPDATE);
+           .reduce(worstImpact, baseImpact);
   }
 
-  public get count(): number {
-    return Object.keys(this.propertyUpdates).length
-      + Object.keys(this.otherChanges).length;
+  /**
+   * Count of actual differences (not of elements)
+   */
+  public get differenceCount(): number {
+    return Object.values(this.propertyUpdates).length
+      + Object.values(this.otherChanges).length;
   }
 
-  public forEach(cb: (type: 'Property' | 'Other', name: string, value: Difference<any> | PropertyDifference<any>) => any) {
+  /**
+   * Invoke a callback for each actual difference
+   */
+  public forEachDifference(cb: (type: 'Property' | 'Other', name: string, value: Difference<any> | PropertyDifference<any>) => any) {
     for (const key of Object.keys(this.propertyUpdates).sort()) {
       cb('Property', key, this.propertyUpdates[key]);
     }
     for (const key of Object.keys(this.otherChanges).sort()) {
-      cb('Other', key, this.otherChanges[key]);
+      cb('Other', key, this.otherDiffs[key]);
     }
   }
 }
@@ -558,8 +643,15 @@ export function isPropertyDifference<T>(diff: Difference<T>): diff is PropertyDi
   return (diff as PropertyDifference<T>).changeImpact !== undefined;
 }
 
-class NoDifferenceError extends Error {
-  constructor(message: string) {
-    super(`No difference: ${message}`);
+/**
+ * Filter a map of IDifferences down to only retain the actual changes
+ */
+function onlyChanges<V, T extends IDifference<V>>(xs: {[key: string]: T}): {[key: string]: T} {
+  const ret: { [key: string]: T } = {};
+  for (const [key, diff] of Object.entries(xs)) {
+    if (diff.isDifferent) {
+      ret[key] = diff;
+    }
   }
+  return ret;
 }

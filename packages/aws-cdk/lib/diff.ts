@@ -37,7 +37,7 @@ export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedS
     print(colors.green('There were no differences'));
   }
 
-  return diff.count;
+  return diff.differenceCount;
 }
 
 export enum RequireApproval {
@@ -61,7 +61,7 @@ export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.Synthesiz
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
     warning(`Please confirm you intend to make the following modifications:\n`);
 
-    cfnDiff.formatSecurityChanges(process.stderr, diff, buildLogicalToPathMap(newTemplate));
+    cfnDiff.formatSecurityChanges(process.stdout, diff, buildLogicalToPathMap(newTemplate));
     return true;
   }
   return false;
