@@ -1,4 +1,4 @@
-import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
+import { expect, haveResource, MatchStyle, TestStack } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -7,7 +7,7 @@ import autoscaling = require('../lib');
 export = {
   'can schedule an action'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new TestStack();
     const asg = makeAutoScalingGroup(stack);
 
     // WHEN
@@ -27,7 +27,7 @@ export = {
 
   'correctly formats date objects'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new TestStack();
     const asg = makeAutoScalingGroup(stack);
 
     // WHEN
@@ -114,11 +114,6 @@ function makeAutoScalingGroup(scope: cdk.Construct) {
   });
 }
 
-class TestStack extends cdk.Stack {
-  public testInvokeAspects(): void {
-    this.invokeAspects();
-  }
-}
 function getTestStack(): TestStack {
   return new TestStack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
 }

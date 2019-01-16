@@ -199,7 +199,9 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.apply(new cdk.Tag(NAME_TAG, this.node.path, { applyToLaunchInstances: true }));
+    this.apply(new cdk.Tag(NAME_TAG, this.node.path, {
+      applyToLaunchInstances: true,
+    }));
 
     this.role = new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')

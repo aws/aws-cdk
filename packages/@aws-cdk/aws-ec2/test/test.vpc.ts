@@ -1,5 +1,5 @@
-import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { AvailabilityZoneProvider, Construct, Stack, Tag } from '@aws-cdk/cdk';
+import { countResources, expect, haveResource, haveResourceLike, isSuperObject, TestStack } from '@aws-cdk/assert';
+import { AvailabilityZoneProvider, Construct, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { CfnVPC, DefaultInstanceTenancy, IVpcNetwork, SubnetType, VpcNetwork } from '../lib';
 
@@ -28,7 +28,6 @@ export = {
       'the Name tag is defaulted to path'(test: Test) {
         const stack = getTestStack();
         new VpcNetwork(stack, 'TheVPC');
-        stack.testInvokeAspects();
         expect(stack).to(
           haveResource('AWS::EC2::VPC',
             hasTags( [ {Key: 'Name', Value: 'TheVPC'} ]))
@@ -294,7 +293,6 @@ export = {
           subnetName: 'egress'
         },
       });
-      stack.testInvokeAspects();
       expect(stack).to(countResources("AWS::EC2::NatGateway", 3));
       for (let i = 1; i < 4; i++) {
         expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
@@ -353,7 +351,6 @@ export = {
       // overwrite to set propagate
       vpc.apply(new Tag('BusinessUnit', 'Marketing', {include: [CfnVPC.resourceTypeName]}));
       vpc.apply(new Tag('VpcType', 'Good'));
-      stack.testInvokeAspects();
       expect(stack).to(haveResource("AWS::EC2::VPC", hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
       const propTags = toCfnTags(tags);
@@ -367,7 +364,6 @@ export = {
     'Subnet Name will propagate to route tables and NATGW'(test: Test) {
       const stack = getTestStack();
       const vpc = new VpcNetwork(stack, 'TheVPC');
-      stack.testInvokeAspects();
       for (const subnet of vpc.publicSubnets) {
         const tag = {Key: 'Name', Value: subnet.node.path};
         expect(stack).to(haveResource('AWS::EC2::NatGateway', hasTags([tag])));
@@ -384,10 +380,8 @@ export = {
 
       const vpc = new VpcNetwork(stack, 'TheVPC');
       const tag = {Key: 'Late', Value: 'Adder'};
-      stack.testInvokeAspects();
       expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
       vpc.apply(new Tag(tag.Key, tag.Value));
-      stack.testInvokeAspects();
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
       test.done();
     },
@@ -535,12 +529,6 @@ export = {
     },
   },
 };
-
-class TestStack extends Stack {
-  public testInvokeAspects(): void {
-    this.invokeAspects();
-  }
-}
 
 function getTestStack(): TestStack {
   return new TestStack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, TestStack } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import { InstanceType } from '@aws-cdk/aws-ec2';
 import cdk = require('@aws-cdk/cdk');
@@ -9,7 +9,7 @@ export = {
   "When creating an ECS Cluster": {
     "with only required properties set, it correctly sets default properties"(test: Test) {
       // GIVEN
-      const stack =  new cdk.Stack();
+      const stack =  new TestStack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,

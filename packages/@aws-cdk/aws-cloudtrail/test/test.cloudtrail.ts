@@ -1,4 +1,4 @@
-import { expect, haveResource, not } from '@aws-cdk/assert';
+import { expect, haveResource, not, TestStack } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { CloudTrail, LogRetention, ReadWriteType } from '../lib';
@@ -147,5 +147,5 @@ export = {
 };
 
 function getTestStack(): Stack {
-  return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+  return new TestStack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 }
