@@ -6,12 +6,11 @@ import { EncryptionKey } from '../lib';
 
 export = {
   'default key'(test: Test) {
-    const app = new App();
-    const stack = new TestStack(app, 'TestStack');
+    const stack = new TestStack();
 
     new EncryptionKey(stack, 'MyKey');
 
-    expect(app.synthesizeStack(stack.name)).to(exactlyMatchTemplate({
+    expect(stack).to(exactlyMatchTemplate({
       Resources: {
       MyKey6AB29FA6: {
         Type: "AWS::KMS::Key",
@@ -138,8 +137,7 @@ export = {
   },
 
   'key with some options'(test: Test) {
-    const app = new App();
-    const stack = new TestStack(app, 'Test');
+    const stack = new TestStack();
 
     const key = new EncryptionKey(stack, 'MyKey', {
       enableKeyRotation: true,
@@ -153,8 +151,7 @@ export = {
     key.apply(new Tag('tag2', 'value2'));
     key.apply(new Tag('tag3', ''));
 
-    stack.testInvokeAspects();
-    expect(app.synthesizeStack(stack.name)).to(exactlyMatchTemplate({
+    expect(stack).to(exactlyMatchTemplate({
       Resources: {
         MyKey6AB29FA6: {
           Type: "AWS::KMS::Key",
