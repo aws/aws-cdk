@@ -172,13 +172,15 @@ The `VpcNetwork` above will have the exact same subnet definitions as listed
 above. However, this time the VPC will have only 1 NAT Gateway and all
 Application subnets will route to the NAT Gateway.
 
-#### Sharing VPCs across stacks
+#### Sharing VPCs between stacks
 
 If you are creating multiple `Stack`s inside the same CDK application, you
 can reuse a VPC defined in one Stack in another by using `export()` and
 `import()`:
 
-[sharing VPCs between stacks](test/example.share-vpcs.lit.ts)
+[sharing VPCs between stacks](test/integ.share-vpcs.lit.ts)
+
+#### Importing an existing VPC
 
 If your VPC is created outside your CDK app, you can use `importFromContext()`:
 

@@ -112,75 +112,24 @@ const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
 });
 ```
 
-### Importing and Exporting Buckets
+### Sharing buckets between stacks
 
-You can create a `Bucket` construct that represents an external/existing/unowned bucket by using the `Bucket.import` factory method.
+To use a bucket in a different stack in the same CDK application, pass the object to the other stack:
 
-This method accepts an object that adheres to `BucketRef` which basically include tokens to bucket's attributes.
+[sharing bucket between stacks](test/integ.bucket-sharing.lit.ts)
 
-This means that you can define a `BucketRef` using token literals:
+### Importing existing buckets
+
+To import an existing bucket into your CDK application, use the `Bucket.import` factory method.  This method accepts a
+`BucketImportProps` which describes the properties of the already existing bucket:
 
 ```ts
 const bucket = Bucket.import(this, {
-    bucketArn: new BucketArn('arn:aws:s3:::my-bucket')
+    bucketArn: 'arn:aws:s3:::my-bucket'
 });
 
 // now you can just call methods on the bucket
 bucket.grantReadWrite(user);
-```
-
-The `bucket.export()` method can be used to "export" the bucket from the current stack. It returns a `BucketRef` object that can later be used in a call to `Bucket.import` in another stack.
-
-Here's an example.
-
-Let's define a stack with an S3 bucket and export it using `bucket.export()`.
-
-```ts
-class Producer extends Stack {
-    public readonly myBucketRef: BucketRef;
-
-    constructor(parent: App, name: string) {
-        super(parent, name);
-
-        const bucket = new Bucket(this, 'MyBucket');
-        this.myBucketRef = bucket.export();
-    }
-}
-```
-
-Now let's define a stack that requires a BucketRef as an input and uses
-`Bucket.import` to create a `Bucket` object that represents this external
-bucket. Grant a user principal created within this consuming stack read/write
-permissions to this bucket and contents.
-
-```ts
-interface ConsumerProps {
-    public userBucketRef: BucketRef;
-}
-
-class Consumer extends Stack {
-    constructor(parent: App, name: string, props: ConsumerProps) {
-        super(parent, name);
-
-        const user = new User(this, 'MyUser');
-        const userBucket = Bucket.import(this, props.userBucketRef);
-        userBucket.grantReadWrite(user);
-    }
-}
-```
-
-Now, let's define our CDK app to bind these together:
-
-```ts
-const app = new App();
-
-const producer = new Producer(app, 'produce');
-
-new Consumer(app, 'consume', {
-    userBucketRef: producer.myBucketRef
-});
-
-app.run();
 ```
 
 ### Bucket Notifications
