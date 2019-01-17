@@ -350,7 +350,7 @@ export class Table extends Construct {
     });
   }
 
-  /**StreamArn
+  /**
    * Enable write capacity scaling for this table
    *
    * @returns An object to configure additional AutoScaling settings for this attribute
