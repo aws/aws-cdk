@@ -172,6 +172,14 @@ export interface FunctionProps {
    * @default undefined X-Ray tracing disabled
    */
   tracing?: Tracing;
+
+  /**
+   * The maximum of concurrent executions you want to reserve for the function.
+   *
+   * @default no specific limit - account limit
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html
+   */
+  reservedConcurrentExecutions?: number;
 }
 
 /**
@@ -339,7 +347,8 @@ export class Function extends FunctionBase {
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(props),
-      tracingConfig: this.buildTracingConfig(props)
+      tracingConfig: this.buildTracingConfig(props),
+      reservedConcurrentExecutions: props.reservedConcurrentExecutions
     });
 
     resource.addDependency(this.role);

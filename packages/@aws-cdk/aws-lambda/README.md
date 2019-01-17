@@ -138,3 +138,18 @@ const fn = new lambda.Function(this, 'MyFunction', {
 ```
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html)
 to learn more about AWS Lambda's X-Ray support.
+
+### Lambda with Reserved Concurrent Executions
+
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NodeJS810,
+    handler: 'index.handler',
+    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    reservedConcurrentExecutions: 100
+});
+```
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
+managing concurrency.
