@@ -2,9 +2,17 @@ import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
 import { Construct, IConstruct } from '../core/construct';
 import { Environment } from '../environment';
+import { CloudFormationImportContextProvider } from '../serialization/import-context-provider';
+import { ExportSerializationContext, ImportDeserializationContext } from '../serialization/import-export';
+import { IDeserializationContext, ISerializable, SerializationOptions } from '../serialization/serialization';
+import { ArnComponents, arnFromComponents, parseArn } from './arn';
 import { CfnReference } from './cfn-tokens';
+import { Fn } from './fn';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
+import { Output } from './output';
+import { Aws } from './pseudo';
 import { Resource } from './resource';
+import { StackElement } from './stack-element';
 
 export interface StackProps {
   /**
@@ -257,6 +265,109 @@ export class Stack extends Construct {
   }
 
   /**
+   * Returns a deserialization context for importing an object which was exported under the
+   * specified export name.
+   *
+   * @param exportName The export name specified when the object was exported.
+   * @param options Import options
+   */
+  public importObject(exportName: string, options?: ImportOptions): IDeserializationContext {
+    return new ImportDeserializationContext(this, exportName, options);
+  }
+
+  /**
+   * Produces CloudFormation outputs for a serializable object under the specified
+   * export name.
+   *
+   * @param exportName The export name prefix for all the outputs.
+   * @param obj The object to serialize
+   */
+  public exportObject(exportName: string, obj: ISerializable): void {
+    const ctx = new ExportSerializationContext(this, exportName);
+    obj.serialize(ctx);
+  }
+
+  /**
+   * Imports a string from another stack in the same account/region which was
+   * exported under the specified export name.
+   * @param exportName The export name under which the string was exported
+   * @param options Import options
+   */
+  public importString(exportName: string, options: ImportOptions = { }): string {
+    const stack = this;
+    const resolve = options.resolve === undefined ? ResolveType.Synthesis : options.resolve;
+    const weak = options.weak === undefined ? false : options.weak;
+
+    if (resolve === ResolveType.Deployment && weak) {
+      throw new Error(`Deployment-time import resolution cannot be "weak"`);
+    }
+
+    switch (resolve) {
+      case ResolveType.Deployment:
+        return Fn.importValue(exportName);
+      case ResolveType.Synthesis:
+        const value = new CloudFormationImportContextProvider(stack, { exportName }).parameterValue();
+        if (!weak) {
+          stack.addStrongReference(exportName);
+        }
+
+        return value;
+    }
+  }
+
+  /**
+   * Exports a string value under an export name.
+   * @param exportName The export name under which to export the string. Export
+   * names must be unique within the account/region.
+   * @param value The value to export.
+   * @param options Export options, such as description.
+   */
+  public exportString(exportName: string, value: string, options: ExportOptions = { }): Output {
+    let output = this.node.tryFindChild(exportName) as Output;
+    if (!output) {
+      output =  new Output(this.exportsScope, exportName, {
+        description: options.description,
+        export: exportName,
+        value
+      });
+    } else {
+      if (output.value !== value) {
+        // tslint:disable-next-line:max-line-length
+        throw new Error(`Trying to export ${exportName}=${value} but there is already an export with a similar name and a different value (${output.value})`);
+      }
+    }
+    return output;
+  }
+
+  /**
+   * Adds a strong reference from this stack to a specific export name.
+   *
+   * Technically, if the stack has strong references, a WaitCondition resource
+   * will be synthesized, and a metadata entry with Fn::ImportValue will be
+   * added for each export name.
+   *
+   * @param exportName The name of the CloudFormation export to reference
+   */
+  public addStrongReference(exportName: string) {
+    const id = 'StrongReferences8A180F';
+    let strongRef = this.node.tryFindChild(id) as Resource;
+    if (!strongRef) {
+      strongRef = new Resource(this, id, { type: 'AWS::CloudFormation::WaitCondition' });
+    }
+
+    strongRef.options.metadata = strongRef.options.metadata || { };
+    strongRef.options.metadata[exportName] = Fn.importValue(exportName);
+  }
+
+  private get exportsScope() {
+    const exists = this.node.tryFindChild('Exports') as Construct;
+    if (exists) {
+      return exists;
+    }
+    return new Construct(this, 'Exports');
+  }
+
+  /**
    * The account in which this stack is defined
    *
    * Either returns the literal account for this stack if it was specified
@@ -404,6 +515,7 @@ export class Stack extends Construct {
    */
   protected prepare() {
     for (const ref of this.node.findReferences()) {
+      // tslint:disable-next-line:no-console
       if (CfnReference.isInstance(ref)) {
         ref.consumeFromStack(this);
       }
@@ -508,7 +620,16 @@ function stackElements(node: IConstruct, into: StackElement[] = []): StackElemen
   return into;
 }
 
-// These imports have to be at the end to prevent circular imports
-import { ArnComponents, arnFromComponents, parseArn } from './arn';
-import { Aws } from './pseudo';
-import { StackElement } from './stack-element';
+export interface ExportOptions {
+  description?: string;
+}
+
+export interface ImportOptions {
+  resolve?: ResolveType;
+  weak?: boolean;
+}
+
+export enum ResolveType {
+  Synthesis,
+  Deployment
+}

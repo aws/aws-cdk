@@ -81,24 +81,10 @@ export class CfnReference extends Token {
       throw new Error('Can only reference cross stacks in the same region and account.');
     }
 
-    // Ensure a singleton "Exports" scoping Construct
-    // This mostly exists to trigger LogicalID munging, which would be
-    // disabled if we parented constructs directly under Stack.
-    // Also it nicely prevents likely construct name clashes
-
-    const exportsName = 'Exports';
-    let stackExports = producingStack.node.tryFindChild(exportsName) as Construct;
-    if (stackExports === undefined) {
-      stackExports = new Construct(producingStack, exportsName);
-    }
-
     // Ensure a singleton Output for this value
     const resolved = producingStack.node.resolve(tokenValue);
-    const id = 'Output' + JSON.stringify(resolved);
-    let output = stackExports.node.tryFindChild(id) as Output;
-    if (!output) {
-      output = new Output(stackExports, id, { value: tokenValue });
-    }
+    const id = JSON.stringify(resolved);
+    const output = producingStack.exportString(`AutoExport-${id}`, tokenValue.toString());
 
     // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
     // so construct one in-place.
@@ -108,5 +94,4 @@ export class CfnReference extends Token {
 }
 
 import { Construct } from "../core/construct";
-import { Output } from "./output";
 import { Stack } from "./stack";
