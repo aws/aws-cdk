@@ -1372,7 +1372,14 @@ export = {
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [ 'dynamodb:BatchGetItem', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator', 'dynamodb:Query', 'dynamodb:GetItem', 'dynamodb:Scan' ],
+              "Action": [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan'
+              ],
               "Effect": "Allow",
               "Resource": [
                 { "Fn::GetAtt": ["mytable0324D45C", "Arn"] },
