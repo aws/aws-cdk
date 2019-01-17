@@ -429,7 +429,7 @@ export class Table extends Construct {
       return;
     }
     principal.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.tableArn)
+      .addResources(this.tableArn, new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : new cdk.Aws().noValue).toString())
       .addActions(...actions));
   }
 
@@ -621,6 +621,13 @@ export class Table extends Construct {
         resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
       })
     });
+  }
+
+  /**
+   * Whether this table has indexes
+   */
+  private get hasIndex(): boolean {
+    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
   }
 }
 
