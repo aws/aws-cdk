@@ -1353,6 +1353,44 @@ export = {
 
     '"grantFullAccess" allows the principal to perform any action on the table ("*")'(test: Test) {
       testGrant(test, [ '*' ], (p, t) => t.grantFullAccess(p));
+    },
+
+    '"grantReadStreamData" allows principal to read the table stream and list/describe streams"'(test: Test) {
+      const stack = new Stack();
+      const table = new Table(stack, 'my-table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.String
+        },
+        streamSpecification: StreamViewType.NewImage
+      });
+      const user = new iam.User(stack, 'user');
+      table.grantReadStreamData(user);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "mytable0324D45C",
+                  "StreamArn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Users": [ { "Ref": "user2C2B57AE" } ]
+      }));
+      test.done();
     }
   },
 };
