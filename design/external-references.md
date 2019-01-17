@@ -85,13 +85,11 @@ In the latter case (environment to app), we usually just have a resource's physi
 ## Requirements
 
 - **REQ1**: Allow constructs to be published from one CDK app and consumed by other CDK apps within the same environment
-- **REQ2**: Support "simple" constructs, which are resources that can be represented by a set of attributes such as an ARN
-- Support "composite" constructs, which are resources that encapsulate other resources (such as security groups, roles, etc).
-- **REQ3**: Allow CDK apps to reference resources that were created elsewhere (by other CDK apps, manually or any other mean) by referencing the physical identity. For example, an S3 Bucket ARN should be sufficient in order to reference
-an existing S3 bucket.
-- **REQ4**: If possible, implement the mechanism such that it can be later used to publish and consume constructs through other key/value mechanism such as environment variables, SSM parameters, etc.
+- **REQ2**: Support "simple" constructs, which are resources that can be represented by a set of attributes such as an ARN and also support "composite" constructs, which are resources that encapsulate other resources (such as security groups, roles, etc).
+- **REQ3**: Allow CDK apps to reference resources that were created elsewhere (by other CDK apps, manually or any other mean) by referencing the physical identity. For example, an S3 Bucket ARN should be sufficient in order to reference an existing S3 bucket.
+- **REQ4**: Implement the mechanism such that it can be later used to publish and consume constructs through other key/value mechanism such as environment variables, SSM parameters, etc.
 - **REQ5**: If a resource is exported twice under the same export name, only a single set of outputs will be created ([#1496](https://github.com/awslabs/aws-cdk/issues/1496)).
-- **REQ6**: If the same resource is imported twice in the same stack, the "import" method will return the same object.
+- **REQ6**: If the same resource is imported twice into the same stack, the "import" method **may** return the same object (as in, the same instance).
 - **REQ7**: For some resources (like VPC for example), it should be possible look up the resource in the current environment by querying through an environmental context provider.
 - **REQ8**: It should be possible to resolve import values either during synthesis time (i.e. via an environmental context provider) or during deploy time (i.e. via `Fn::ImportValue`). There are certain resources that will _require_ the use of synthesis-time resolution due to their complex representation.
 
@@ -126,6 +124,7 @@ When an object is serialized, the `serialize` method is called with an object wh
 ```ts
 interface ISerializationContext {
   writeString(key: string, value: string, options?: SerializationOptions): void
+  writeStringList(key: string, value: string[], options?: SerializationOptions): void;
   writeObject(key: string, obj: ISerializable, options?: SerializationOptions): void;
 }
 
@@ -134,7 +133,7 @@ interface SerializationOptions {
 }
 ```
 
-The serialization context allows the object serialize itself through key/value strings via calls to `writeString(key, value)`. If the object encapsulates another serializable object, it can use `writeObject(key, obj)`, which will result in a subsequent call to the sub-object's `serialize` method with an appropriate context.
+The serialization context allows the object serialize itself through key/value strings via calls to `writeString(key, value)` and `writeStringList(key, array)`. If the object encapsulates another serializable object, it can use `writeObject(key, obj)`, which will result in a subsequent call to the sub-object's `serialize` method with an appropriate context.
 
 ### Deserialization
 
@@ -154,18 +153,25 @@ The deserialization context is an object that implements the following interface
 interface IDeserializationContext {
   scope: Construct;
   id: string;
-  readString(key: string, options?: ReadStringOptions): string;
+  readString(key: string, options?: DeserializationOptions): string;
+  readStringList(key: string, options?: DeserializationOptions): string[];
   readObject(key: string): IDeserializationContext;
 }
 
-interface ReadStringOptions {
-  allowUnresolved?: boolean; /** @default true */
+interface DeserializationOptions {
+  allowUnresolved?: boolean;
 }
 ```
 
-`readString(key)` can be used to read values stored by `writeString`. and `readObject(key)` returns a deserialization context for composite deserialization written via `writeObject`.
+The method `readString` can be used to read values stored by `writeString`.
 
-The `allowUnresolved` option for `readString` can be used by constructs to indicate that returned value must be a resolved value (i.e. not a token). This implies, for example, that when importing this value, users cannot use the `resolveType: Deployment`  option (REQ8).
+The method `readStringList` can be used to read string list values stored by `writeStringList`.
+
+The method `readObject` returns a deserialization context for composite deserialization written via `writeObject`.
+
+The `allowUnresolved` option can be used by constructs to indicate that returned value __must be a resolved value__ (i.e. not a token). This implies, for example, that when importing this value, users cannot use the `resolveType: Deployment`  option (REQ8).
+
+The CloudFormation import/export serializer is unable to support unresolved imports for string lists, so `allowUnresolved` must be either undefined or set to `false`. If it is set to `true` and `readStringList` is used, an error will be thrown.
 
 Since `deserializeXxx` will need to create new construct objects, the deserialization context will supply a consistent `scope` and `id` which can be used to instantiate a construct object that represents this object. For example, `scope` can be mapped to the current `Stack` and `id` can be mapped to `exportName` which is ensured to be unique within the environment (and therefore, the current stack).
 
@@ -384,9 +390,9 @@ The current practice is to manually wire specific resource attributes via enviro
 
 ## Implementation Notes
 
-The underlying pattern we use today for supporting imports/exports (`IBucket`, `BucketBase`, `Bucket` and `ImportedBucket`) continues to be relevant for implementing serialization and the `fromXxx` methods.
+The underlying pattern we use today for supporting imports/exports (`IBucket`, `BucketBase`, `Bucket` and `ImportedBucket`) continues to be **recommended** for implementing serialization and the `fromXxx` methods.
 
-The various static import methods (`deserializeXxx` `importXxx`, `fromXxx`) will all return an object that implements `IXxx`. The concrete type of this object will be an internal class `ImportedXxx` that includes the heuristics of how to represent an external resource.
+The various static import methods (`deserializeXxx` `importXxx`, `fromXxx`) can all return an object that implements `IXxx`. The concrete type of this object can be implemented as an module-internal class `ImportedXxx` that includes the heuristics of how to represent an external resource of this type. For example, is may include the logic that determines how to convert an ARN to a name and vice versa, construct URLs, etc.
 
 ## Open issues/questions
 
