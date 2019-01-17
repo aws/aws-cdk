@@ -8,8 +8,10 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'CICD');
 const pipeline = new code.Pipeline(stack, 'CodePipeline', {
-  artifactBucket: new s3.Bucket(stack, 'ArtifactBucket', {
-    removalPolicy: cdk.RemovalPolicy.Destroy
+  artifactsStore: new code.ArtifactsStore(stack, 'ArtifactsStore', {
+    bucket: new s3.Bucket(stack, 'ArtifactBucket', {
+      removalPolicy: cdk.RemovalPolicy.Destroy
+    })
   })
 });
 const source = new code.GitHubSourceAction(stack, 'GitHub', {

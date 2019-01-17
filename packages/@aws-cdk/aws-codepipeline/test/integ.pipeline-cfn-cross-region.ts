@@ -18,7 +18,7 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
-  artifactBucket: bucket,
+  artifactsStore: new codepipeline.ArtifactsStore(stack, 'ArtifactsStore', { bucket } )
 });
 
 const sourceStage = pipeline.addStage('Source');
