@@ -1,6 +1,7 @@
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import crypto = require('crypto');
+import { ImportedArtifactsStore } from './artifacts-store';
 
 /**
  * Construction properties for {@link CrossRegionScaffoldStack}.
@@ -43,6 +44,12 @@ export class CrossRegionScaffoldStack extends cdk.Stack {
       bucketName: replicationBucketName,
     });
     this.replicationBucketName = replicationBucketName;
+  }
+
+  public buildImportedStore(parent: cdk.Construct, id: string) {
+    return new ImportedArtifactsStore(parent, id, {
+      bucketName: this.replicationBucketName
+    });
   }
 }
 

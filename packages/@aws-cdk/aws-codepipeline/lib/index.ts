@@ -1,3 +1,4 @@
+export * from './artifacts-store';
 export * from './cross-region-scaffold-stack';
 export * from './github-source-action';
 export * from './jenkins-actions';

@@ -76,6 +76,7 @@
     "@aws-cdk/aws-codepipeline-api": "^0.22.0",
     "@aws-cdk/aws-events": "^0.22.0",
     "@aws-cdk/aws-iam": "^0.22.0",
+    "@aws-cdk/aws-kms": "^0.22.0",
     "@aws-cdk/aws-s3": "^0.22.0",
     "@aws-cdk/aws-sns": "^0.22.0",
     "@aws-cdk/cdk": "^0.22.0"
@@ -85,6 +86,7 @@
     "@aws-cdk/aws-codepipeline-api": "^0.22.0",
     "@aws-cdk/aws-events": "^0.22.0",
     "@aws-cdk/aws-iam": "^0.22.0",
+    "@aws-cdk/aws-kms": "^0.22.0",
     "@aws-cdk/aws-s3": "^0.22.0",
     "@aws-cdk/aws-sns": "^0.22.0",
     "@aws-cdk/cdk": "^0.22.0"

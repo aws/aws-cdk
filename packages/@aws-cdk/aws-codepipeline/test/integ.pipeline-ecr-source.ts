@@ -11,7 +11,7 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
   removalPolicy: cdk.RemovalPolicy.Destroy,
 });
 const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
-  artifactBucket: bucket,
+  artifactsStore: new codepipeline.ArtifactsStore(stack, 'ArtifactsStore', { bucket } )
 });
 
 const repository = new ecr.Repository(stack, 'MyEcrRepo');

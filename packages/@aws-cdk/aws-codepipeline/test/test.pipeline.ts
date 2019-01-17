@@ -426,9 +426,11 @@ export = {
       });
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
-        crossRegionReplicationBuckets: {
-          'us-west-1': 'sfo-replication-bucket',
-        },
+        crossRegionArtifactsStores: {
+          'us-west-1': new codepipeline.ImportedArtifactsStore(stack, 'Imported-us-west-1', {
+            bucketName: 'sfo-replication-bucket'
+          })
+        }
       });
 
       const stage1 = pipeline.addStage('Stage1');
@@ -462,9 +464,12 @@ export = {
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
         "ArtifactStores": [
           {
-            "Region": "us-east-1",
+            "Region": "us-west-2",
             "ArtifactStore": {
-              "Type": "S3",
+              "Location": {
+                "Ref": "MyPipelineArtifactsBucket727923DD"
+              },
+              "Type": "S3"
             },
           },
           {
@@ -475,9 +480,10 @@ export = {
             },
           },
           {
-            "Region": "us-west-2",
+            "Region": "us-east-1",
             "ArtifactStore": {
-              "Type": "S3",
+              "Location": "cdk-cross-region-codepipeline-replication-bucket-685c6feea5fb",
+              "Type": "S3"
             },
           },
         ],

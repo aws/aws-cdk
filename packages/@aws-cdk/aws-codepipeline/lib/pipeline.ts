@@ -3,16 +3,17 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
+import { ArtifactsStore, IArtifactsStore, ImportedArtifactsStore } from './artifacts-store';
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';
 import { CommonStageProps, Stage, StagePlacement } from './stage';
 
 export interface PipelineProps {
   /**
-   * The S3 bucket used by this Pipeline to store artifacts.
-   * If not specified, a new S3 bucket will be created.
+   * The artifact store used by this Pipeline to store artifacts.
+   * If not specified, a new one one will be created.
    */
-  artifactBucket?: s3.IBucket;
+  artifactsStore?: IArtifactsStore;
 
   /**
    * Indicates whether to rerun the AWS CodePipeline pipeline after you update it.
@@ -26,14 +27,14 @@ export interface PipelineProps {
   pipelineName?: string;
 
   /**
-   * A map of region to S3 bucket name used for cross-region CodePipeline.
+   * A map of region to artifacts stores used for cross-region CodePipeline.
    * For every Action that you specify targeting a different region than the Pipeline itself,
-   * if you don't provide an explicit Bucket for that region using this property,
-   * the construct will automatically create a scaffold Stack containing an S3 Bucket in that region.
+   * if you don't provide an explicit store for that region using this property,
+   * the construct will automatically create a scaffold Stack containing a store in that region.
    * Note that you will have to `cdk deploy` that Stack before you can deploy your Pipeline-containing Stack.
    * You can query the generated Stacks using the {@link Pipeline#crossRegionScaffoldStacks} property.
    */
-  crossRegionReplicationBuckets?: { [region: string]: string };
+  crossRegionArtifactsStores?: { [region: string]: ImportedArtifactsStore };
 }
 
 /**
@@ -79,15 +80,17 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
   /**
    * Bucket used to store output artifacts
    */
-  public readonly artifactBucket: s3.IBucket;
+  public readonly artifactsStore: IArtifactsStore;
+
+  /**
+   * Imported artifact stores used for cross-region replication.
+   */
+  public readonly artifactsStores: { [region: string]: ImportedArtifactsStore } = {};
 
   private readonly stages = new Array<Stage>();
   private eventsRole?: iam.Role;
   private readonly pipelineResource: CfnPipeline;
-  private readonly crossRegionReplicationBuckets: { [region: string]: string };
-  private readonly artifactStores: { [region: string]: any };
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
-
   constructor(scope: cdk.Construct, id: string, props?: PipelineProps) {
     super(scope, id);
     props = props || {};
@@ -95,13 +98,11 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     cpapi.validateName('Pipeline', props.pipelineName);
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
-    let propsBucket = props.artifactBucket;
-    if (!propsBucket) {
-      propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
+    this.artifactsStore = props.artifactsStore || new ArtifactsStore(this, 'ArtifactStore', {
+      bucket: new s3.Bucket(this, 'ArtifactsBucket', {
         removalPolicy: cdk.RemovalPolicy.Orphan
-      });
-    }
-    this.artifactBucket = propsBucket;
+      })
+    });
 
     this.role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
@@ -118,13 +119,17 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     // this will produce a DependsOn for both the role and the policy resources.
     codePipeline.addDependency(this.role);
 
-    this.artifactBucket.grantReadWrite(this.role);
+    this.artifactsStore.grantReadWrite(this.role);
 
     this.pipelineName = codePipeline.ref;
     this.pipelineVersion = codePipeline.pipelineVersion;
     this.pipelineResource = codePipeline;
-    this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
-    this.artifactStores = {};
+
+    if (props.crossRegionArtifactsStores) {
+      Object.keys(props.crossRegionArtifactsStores).forEach(region => {
+        this.artifactsStores[region] = props!.crossRegionArtifactsStores![region]!;
+      });
+    }
 
     // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
     this.pipelineArn = cdk.Stack.find(this).formatArn({
@@ -220,11 +225,11 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
   }
 
   public grantBucketRead(identity?: iam.IPrincipal): void {
-    this.artifactBucket.grantRead(identity);
+    this.artifactsStore.grantRead(identity);
   }
 
   public grantBucketReadWrite(identity?: iam.IPrincipal): void {
-    this.artifactBucket.grantReadWrite(identity);
+    this.artifactsStore.grantReadWrite(identity);
   }
 
   /**
@@ -297,12 +302,12 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
       "You need to specify an explicit region when using CodePipeline's cross-region support");
 
     // if we already have an ArtifactStore generated for this region, or it's the Pipeline's region, nothing to do
-    if (this.artifactStores[action.region] || action.region === pipelineRegion) {
+    if (this.artifactsStores[action.region] || action.region === pipelineRegion) {
       return;
     }
 
-    let replicationBucketName = this.crossRegionReplicationBuckets[action.region];
-    if (!replicationBucketName) {
+    let replicationStore = this.artifactsStores[action.region];
+    if (!replicationStore) {
       const pipelineAccount = pipelineStack.requireAccountId(
         "You need to specify an explicit account when using CodePipeline's cross-region support");
       const app = pipelineStack.parentApp();
@@ -314,18 +319,11 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
         account: pipelineAccount,
       });
       this._crossRegionScaffoldStacks[action.region] = crossRegionScaffoldStack;
-      replicationBucketName = crossRegionScaffoldStack.replicationBucketName;
+      this.artifactsStores[action.region] = replicationStore =
+        crossRegionScaffoldStack.buildImportedStore(this, `ArtifactsStore-${action.region}`);
     }
 
-    const replicationBucket = s3.Bucket.import(this, 'CrossRegionCodePipelineReplicationBucket-' + action.region, {
-      bucketName: replicationBucketName,
-    });
-    replicationBucket.grantReadWrite(this.role);
-
-    this.artifactStores[action.region] = {
-      Location: replicationBucket.bucketName,
-      Type: 'S3',
-    };
+    replicationStore.grantReadWrite(this.role);
   }
 
   // ignore unused private method (it's actually used in Stage)
@@ -436,15 +434,16 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
 
   private renderArtifactStore(): CfnPipeline.ArtifactStoreProperty {
     let encryptionKey: CfnPipeline.EncryptionKeyProperty | undefined;
-    const bucketKey = this.artifactBucket.encryptionKey;
-    if (bucketKey) {
+    const artifactStore = this.artifactsStore;
+
+    if (artifactStore.encryptionMaterialArn) {
       encryptionKey = {
         type: 'KMS',
-        id: bucketKey.keyArn,
+        id: artifactStore.encryptionMaterialArn
       };
     }
 
-    const bucketName = this.artifactBucket.bucketName;
+    const bucketName = artifactStore.bucket.bucketName;
     if (!bucketName) {
       throw new Error('Artifacts bucket must have a bucket name');
     }
@@ -472,25 +471,35 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
       // we don't need ArtifactStore in this case
       this.pipelineResource.addPropertyDeletionOverride('ArtifactStore');
 
-      // add the Pipeline's artifact store
-      const artifactStore = this.renderArtifactStore();
-      this.artifactStores[cdk.Stack.find(this).requireRegion()] = {
-        Location: artifactStore.location,
-        Type: artifactStore.type,
-        EncryptionKey: artifactStore.encryptionKey,
-      };
-
       const artifactStoresProp: any[] = [];
+
+      // add the Pipeline's artifact store
+      artifactStoresProp.push({
+        Region: cdk.Stack.find(this).requireRegion(),
+        ArtifactStore: this.artifactStoreToCfn(this.artifactsStore)
+      });
+
       // tslint:disable-next-line:forin
-      for (const region in this.artifactStores) {
+      for (const region in this.artifactsStores) {
         artifactStoresProp.push({
           Region: region,
-          ArtifactStore: this.artifactStores[region],
+          ArtifactStore: this.artifactStoreToCfn(this.artifactsStores[region])
         });
       }
       this.pipelineResource.addPropertyOverride('ArtifactStores', artifactStoresProp);
     }
 
     return this.stages.map(stage => stage.render());
+  }
+
+  private artifactStoreToCfn(artifactStore: IArtifactsStore) {
+    return {
+      Location: artifactStore.bucket.bucketName,
+      Type: 'S3',
+      EncryptionKey: artifactStore.encryptionMaterialArn ? {
+        Type: 'KMS',
+        Id: artifactStore.encryptionMaterialArn
+      } : undefined
+    };
   }
 }

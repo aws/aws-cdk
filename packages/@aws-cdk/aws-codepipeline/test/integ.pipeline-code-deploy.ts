@@ -27,7 +27,9 @@ const bucket = new s3.Bucket(stack, 'CodeDeployPipelineIntegTest', {
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-  artifactBucket: bucket,
+  artifactsStore: new codepipeline.ArtifactsStore(stack, 'ArtifactsStore', {
+    bucket
+  })
 });
 
 const sourceStage = new codepipeline.Stage(stack, 'Source', { pipeline });

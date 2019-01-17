@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-manual-approval');
 const bucket = new s3.Bucket(stack, 'Bucket');
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-  artifactBucket: bucket,
+  artifactsStore: new codepipeline.ArtifactsStore(stack, 'ArtifactsStore', { bucket } )
 });
 
 const sourceStage = pipeline.addStage('Source');
