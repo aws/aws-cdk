@@ -162,6 +162,13 @@ export interface ActionProps extends CommonActionProps, CommonActionConstructPro
    */
   region?: string;
 
+  /**
+   * The account this Action resides in.
+   *
+   * @default the Action resides in the same account as the Pipeline
+   */
+  account?: string;
+
   artifactBounds: ActionArtifactBounds;
   configuration?: any;
   version?: string;
@@ -198,6 +205,18 @@ export abstract class Action extends cdk.Construct {
   public readonly region?: string;
 
   /**
+   * The AWS account the given Action resides in.
+   * Note that a cross-account Pipeline requires replication artifact stores (buckets and KMS keys)
+   * to function correctly. You can provide their names with the
+   * {@link PipelineProps#crossRegionReplicationBuckets} property.
+   * If you don't, the CodePipeline Construct will create new Stacks in your CDK app containing those buckets,
+   * that you will need to `cdk deploy` before deploying the main, Pipeline-containing Stack.
+   *
+   * @default the Action resides in the same account as the Pipeline
+   */
+  public readonly account?: string;
+
+  /**
    * The action's configuration. These are key-value pairs that specify input values for an action.
    * For more information, see the AWS CodePipeline User Guide.
    *
@@ -231,6 +250,7 @@ export abstract class Action extends cdk.Construct {
     this.category = props.category;
     this.provider = props.provider;
     this.region = props.region;
+    this.account = props.account;
     this.configuration = props.configuration;
     this.artifactBounds = props.artifactBounds;
     this.runOrder = props.runOrder === undefined ? 1 : props.runOrder;
