@@ -14,39 +14,40 @@ class ConstructThatTakesAVpc extends cdk.Construct {
 }
 
 /// !show
+/**
+ * Stack1 creates the VPC
+ */
 class Stack1 extends cdk.Stack {
-  public readonly vpcProps: ec2.VpcNetworkImportProps;
+  public readonly vpc: ec2.VpcNetwork;
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.VpcNetwork(this, 'VPC');
-
-    // Export the VPC to a set of properties
-    this.vpcProps = vpc.export();
+    this.vpc = new ec2.VpcNetwork(this, 'VPC');
   }
 }
 
 interface Stack2Props extends cdk.StackProps {
-  vpcProps: ec2.VpcNetworkImportProps;
+  vpc: ec2.IVpcNetwork;
 }
 
+/**
+ * Stack2 consumes the VPC
+ */
 class Stack2 extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: Stack2Props) {
     super(scope, id, props);
 
-    // Import the VPC from a set of properties
-    const vpc = ec2.VpcNetwork.import(this, 'VPC', props.vpcProps);
-
+    // Pass the VPC to a construct that needs it
     new ConstructThatTakesAVpc(this, 'Construct', {
-      vpc
+      vpc: props.vpc
     });
   }
 }
 
 const stack1 = new Stack1(app, 'Stack1');
 const stack2 = new Stack2(app, 'Stack2', {
-  vpcProps: stack1.vpcProps
+  vpc: stack1.vpc,
 });
 /// !hide
 
