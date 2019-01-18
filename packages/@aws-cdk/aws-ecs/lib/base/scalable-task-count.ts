@@ -1,5 +1,6 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 
 /**
  * Scalable attribute representing task count
@@ -29,21 +30,39 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       disableScaleIn: props.disableScaleIn,
       targetValue: props.targetUtilizationPercent,
       scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec,
+      scaleOutCooldownSec: props.scaleOutCooldownSec
     });
   }
 
   /**
-   * Scale out or in to achieve a target memory utilization utilization
+   * Scale out or in to achieve a target memory utilization
    */
-  public scaleOnMemoryUtilization(id: string, props: CpuUtilizationScalingProps) {
+  public scaleOnMemoryUtilization(id: string, props: MemoryUtilizationScalingProps) {
     return super.doScaleToTrackMetric(id, {
       predefinedMetric: appscaling.PredefinedMetric.ECSServiceAverageMemoryUtilization,
       targetValue: props.targetUtilizationPercent,
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
       scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec,
+      scaleOutCooldownSec: props.scaleOutCooldownSec
+    });
+  }
+  /**
+   * Scale out or in to achieve a target ALB request count per target
+   */
+  public scaleOnRequestCount(id: string, props: RequestCountScalingProps) {
+    const resourceLabel = `${props.targetGroup.firstLoadBalancerFullName}/${
+      props.targetGroup.targetGroupFullName
+      }`;
+
+    return super.doScaleToTrackMetric(id, {
+      predefinedMetric: appscaling.PredefinedMetric.ALBRequestCountPerTarget,
+      resourceLabel,
+      targetValue: props.requestsPerTarget,
+      policyName: props.policyName,
+      disableScaleIn: props.disableScaleIn,
+      scaleInCooldownSec: props.scaleInCooldownSec,
+      scaleOutCooldownSec: props.scaleOutCooldownSec
     });
   }
 
@@ -80,6 +99,21 @@ export interface MemoryUtilizationScalingProps extends appscaling.BaseTargetTrac
    * Target average memory utilization across the task
    */
   targetUtilizationPercent: number;
+}
+
+/**
+ * Properties for enabling scaling based on memory utilization
+ */
+export interface RequestCountScalingProps extends appscaling.BaseTargetTrackingProps {
+  /**
+   * Targert ALB requests per target
+   */
+  requestsPerTarget: number;
+
+  /**
+   * ALB Target Group
+   */
+  targetGroup: elbv2.ApplicationTargetGroup;
 }
 
 /**
