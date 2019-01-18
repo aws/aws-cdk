@@ -353,6 +353,33 @@ export = {
     test.done();
   },
 
+  'json template': {
+    'can just be a JSON object'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const rule = new EventRule(stack, 'Rule', {
+        scheduleExpression: 'rate(1 minute)'
+      });
+
+      // WHEN
+      rule.addTarget(new SomeTarget(), {
+        jsonTemplate: { SomeObject: 'withAValue' },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Targets: [
+          {
+            InputTransformer: {
+              InputTemplate: "{\"SomeObject\":\"withAValue\"}"
+            },
+          }
+        ]
+      }));
+      test.done();
+    },
+  },
+
   'text templates': {
     'strings with newlines are serialized to a newline-delimited list of JSON strings'(test: Test) {
       // GIVEN

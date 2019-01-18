@@ -116,6 +116,7 @@ export class EventRule extends Construct implements IEventRule {
    */
   public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
     if (!target) { return; }
+    const self = this;
 
     const targetProps = target.asEventRuleTarget(this.ruleArn, this.node.uniqueId);
 
@@ -145,12 +146,15 @@ export class EventRule extends Construct implements IEventRule {
       let inputTemplate: any;
 
       if (inputOptions.jsonTemplate) {
-        inputTemplate = inputOptions.jsonTemplate;
-      } else if (typeof(inputOptions.textTemplate) === 'string') {
-        // Newline separated list of JSON-encoded strings
-        inputTemplate = inputOptions.textTemplate.split('\n').map(x => JSON.stringify(x)).join('\n');
+        inputTemplate = typeof inputOptions.jsonTemplate === 'string'
+            ? inputOptions.jsonTemplate
+            : self.node.stringifyJson(inputOptions.jsonTemplate);
       } else {
-        inputTemplate = `"${inputOptions.textTemplate}"`;
+        inputTemplate = typeof(inputOptions.textTemplate) === 'string'
+            // Newline separated list of JSON-encoded strings
+            ? inputOptions.textTemplate.split('\n').map(x => self.node.stringifyJson(x)).join('\n')
+            // Some object, stringify it, then stringify the string for proper escaping
+            : self.node.stringifyJson(self.node.stringifyJson(inputOptions.textTemplate));
       }
 
       return {
