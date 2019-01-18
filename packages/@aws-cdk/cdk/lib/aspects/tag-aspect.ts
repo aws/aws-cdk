@@ -2,14 +2,7 @@ import { ITaggable, Resource } from '../cloudformation/resource';
 import { IConstruct } from '../core/construct';
 import { Aspect } from './aspect';
 
-export interface TagBaseProps extends TagProperties {
-  /**
-   * The value of the tag
-   */
-  value?: string;
-}
-
-export interface TagProperties {
+export interface TagAspectProps {
   /**
    * This applies specifically to AutoScalingGroup PropagateAtLaunch
    */
@@ -17,11 +10,20 @@ export interface TagProperties {
 
   /**
    * An array of Resource Types that will receive this tag
+   *
+   * An empty array will match any Resource. A non-empty array will apply this
+   * tag only to Resource types that are included in this array.
+   * @default []
    */
   include?: string[];
 
   /**
    * An array of Resource Types that will not receive this tag
+   *
+   * An empty array will allow this tag to be applied to all resources. A
+   * non-empty array will apply this tag only if the Resource type is not in
+   * this array.
+   * @default []
    */
   exclude?: string[];
 }
@@ -30,13 +32,6 @@ export interface TagProperties {
  * The common functionality for Tag and Remove Tag Aspects
  */
 export abstract class TagBase extends Aspect {
-
-  /**
-   * Test if the construct is a CloudFormation Resource
-   */
-  public static isResource(resource: any): resource is Resource {
-    return resource.resourceType !== undefined;
-  }
 
   /**
    * The ``taggable`` type for these aspects
@@ -48,25 +43,19 @@ export abstract class TagBase extends Aspect {
    */
   public readonly key: string;
 
-  /**
-   * The string value of the tag
-   */
-  public readonly value?: string;
-
   private readonly include: string[];
   private readonly exclude: string[];
 
-  constructor(key: string, props: TagBaseProps = {}) {
+  constructor(key: string, props: TagAspectProps = {}) {
     super();
     this.key = key;
 
-    this.value = props.value;
     this.include = props.include || [];
     this.exclude = props.exclude || [];
   }
 
-  protected visitAction(construct: IConstruct): void {
-    if (!TagBase.isResource(construct)) {
+  public visit(construct: IConstruct): void {
+    if (!Resource.isResource(construct)) {
       return;
     }
     const resource = construct as Resource;
@@ -89,14 +78,20 @@ export abstract class TagBase extends Aspect {
  */
 export class Tag extends TagBase {
 
+  /**
+   * The string value of the tag
+   */
+  public readonly value: string;
+
   private readonly applyToLaunchInstances: boolean;
 
-  constructor(key: string, value: string, props: TagProperties = {}) {
-    super(key, {value, ...props});
+  constructor(key: string, value: string, props: TagAspectProps = {}) {
+    super(key, {...props});
     this.applyToLaunchInstances = props.applyToLaunchInstances !== false;
-    if (this.value === undefined) {
+    if (value === undefined) {
       throw new Error('Tag must have a value');
     }
+    this.value = value;
   }
 
   protected applyTag(resource: ITaggable) {
@@ -109,7 +104,7 @@ export class Tag extends TagBase {
  */
 export class RemoveTag extends TagBase {
 
-  constructor(key: string, props: TagProperties = {}) {
+  constructor(key: string, props: TagAspectProps = {}) {
     super(key, props);
   }
 

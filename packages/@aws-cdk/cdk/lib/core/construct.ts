@@ -548,7 +548,7 @@ export class Construct implements IConstruct {
    */
   protected invokeAspects(): void {
     for (const aspect of this.node.aspects) {
-      aspect.visit(this);
+      aspect.visitTree(this);
     }
     for (const child of this.node.children) {
       (child as Construct).invokeAspects();

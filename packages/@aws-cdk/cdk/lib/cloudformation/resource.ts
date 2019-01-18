@@ -53,6 +53,13 @@ export class Resource extends Referenceable {
   }
 
   /**
+   * determines if the reosurce is taggable
+   */
+  public static isResource(resource: any): resource is Resource {
+    return resource.resourceType !== undefined;
+  }
+
+  /**
    * Options for this resource, such as condition, update policy etc.
    */
   public readonly options: ResourceOptions = {};
@@ -259,9 +266,9 @@ export class Resource extends Referenceable {
 
 export enum TagType {
   Standard = 'StandardTag',
-    AutoScalingGroup = 'AutoScalingGroupTag',
-    Map = 'StringToStringMap',
-    NotTaggable = 'NotTaggable',
+  AutoScalingGroup = 'AutoScalingGroupTag',
+  Map = 'StringToStringMap',
+  NotTaggable = 'NotTaggable',
 }
 
 export interface ResourceOptions {

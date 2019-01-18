@@ -12,7 +12,7 @@ export interface IAspect {
   /**
    * All aspects can visit by IConstructs
    */
-  visit(node: IConstruct): void;
+  visitTree(node: IConstruct): void;
 }
 
 /**
@@ -32,15 +32,15 @@ export abstract class Aspect implements IAspect {
    * The visit function will visit each child node in the construct tree. Each
    * Node will only be visited once.
    */
-  public visit(construct: IConstruct): void {
+  public visitTree(construct: IConstruct): void {
     if (this.visitedBy[construct.node.uniqueId] === true) {
       return;
     }
     this.visitedBy[construct.node.uniqueId] = true;
-    this.visitAction(construct);
+    this.visit(construct);
     for (const child of construct.node.children) {
       // recurse through all children
-      this.visit(child);
+      this.visitTree(child);
     }
   }
 
@@ -50,5 +50,5 @@ export abstract class Aspect implements IAspect {
    * The ``visit()`` function will call this method to invoke the customized
    * apsect actions.
    */
-  protected abstract visitAction(construct: IConstruct): void;
+  protected abstract visit(construct: IConstruct): void;
 }
