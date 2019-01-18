@@ -295,6 +295,7 @@ export class ConstructNode {
    * Run 'prepare()' on all constructs in the tree
    */
   public prepareTree() {
+    this.invokeAspects();
     const constructs = this.host.node.findAll(ConstructOrder.BreadthFirst);
     // Use .reverse() to achieve post-order traversal
     for (const construct of constructs.reverse()) {
@@ -453,6 +454,17 @@ export class ConstructNode {
   }
 
   /**
+   * Triggers each aspect to invoke visit
+   */
+  protected invokeAspects(): void {
+    for (const aspect of this.aspects) {
+      aspect.visitTree(this.host);
+    }
+    for (const child of this.children) {
+      (child as Construct).node.invokeAspects();
+    }
+  }
+  /**
    * Return the path of components up to but excluding the root
    */
   private rootPath(): IConstruct[] {
@@ -543,17 +555,6 @@ export class Construct implements IConstruct {
     // Intentionally left blank
   }
 
-  /**
-   * Triggers each aspect to invoke visit
-   */
-  protected invokeAspects(): void {
-    for (const aspect of this.node.aspects) {
-      aspect.visitTree(this);
-    }
-    for (const child of this.node.children) {
-      (child as Construct).invokeAspects();
-    }
-  }
 }
 
 /**

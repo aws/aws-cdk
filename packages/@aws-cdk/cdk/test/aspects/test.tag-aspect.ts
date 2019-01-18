@@ -21,7 +21,7 @@ class TestRoot extends Stack {
     super(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
   }
   public testInvokeAspects() {
-    this.invokeAspects();
+    this.node.prepareTree();
   }
 }
 

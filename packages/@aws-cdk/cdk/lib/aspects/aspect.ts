@@ -33,14 +33,12 @@ export abstract class Aspect implements IAspect {
    * Node will only be visited once.
    */
   public visitTree(construct: IConstruct): void {
-    if (this.visitedBy[construct.node.uniqueId] === true) {
-      return;
-    }
-    this.visitedBy[construct.node.uniqueId] = true;
-    this.visit(construct);
-    for (const child of construct.node.children) {
-      // recurse through all children
-      this.visitTree(child);
+    for (const child of construct.node.findAll()) {
+      if (this.visitedBy[child.node.uniqueId] === true) {
+        return;
+      }
+      this.visitedBy[child.node.uniqueId] = true;
+      this.visit(child);
     }
   }
 
