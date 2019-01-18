@@ -205,7 +205,7 @@ const service = new ecs.FargateService(this, 'Service', { /* ... */ });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
-listener.addTargets('ECS', {
+const target = listener.addTargets('ECS', {
   port: 80,
   targets: [service]
 });
@@ -226,6 +226,11 @@ const scaling = service.autoScaleTaskCount({ maxCapacity: 10 });
 scaling.scaleOnCpuUtilization('CpuScaling', {
   targetUtilizationPercent: 50
 });
+
+scaling.scaleOnRequestCount('RequestScaling', {
+  requestsPerTarget: 10000,
+  targetGroup: target
+})
 ```
 
 Task AutoScaling is powered by *Application AutoScaling*. Refer to that for
