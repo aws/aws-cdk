@@ -102,6 +102,13 @@ async function calculateImageFingerprint(imageId: string) {
   // We're not interested in the Docker version used to create this image
   delete manifest.DockerVersion;
 
+  // On some Docker versions Metadata contains a LastTagTime which updates
+  // on every push, causing us to miss all cache hits.
+  delete manifest.Metadata;
+
+  // GraphDriver is about running the image, not about
+  delete manifest.GraphDriver;
+
   return crypto.createHash('sha256').update(JSON.stringify(manifest)).digest('hex');
 }
 

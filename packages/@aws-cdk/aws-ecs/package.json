@@ -71,6 +71,7 @@
     "@aws-cdk/aws-cloudwatch": "^0.22.0",
     "@aws-cdk/aws-ec2": "^0.22.0",
     "@aws-cdk/aws-ecr": "^0.22.0",
+    "@aws-cdk/aws-events": "^0.22.0",
     "@aws-cdk/aws-elasticloadbalancing": "^0.22.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "^0.22.0",
     "@aws-cdk/aws-iam": "^0.22.0",

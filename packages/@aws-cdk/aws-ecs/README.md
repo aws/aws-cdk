@@ -263,6 +263,15 @@ autoScalingGroup.scaleOnCpuUtilization('KeepCpuHalfwayLoaded', {
 See the `@aws-cdk/aws-autoscaling` library for more autoscaling options
 you can configure on your instances.
 
+### Integration with CloudWatch Events
+
+To start an ECS task on an EC2-backed Cluster, instantiate an
+`Ec2TaskEventRuleTarget` intead of an `Ec2Service`:
+
+[example of CloudWatch Events integration](test/ec2/integ.event-task.lit.ts)
+
+> Note: it is currently not possible to start Fargate tasks in this way.
+
 ### Roadmap
 
 - [ ] Service Discovery Integration
