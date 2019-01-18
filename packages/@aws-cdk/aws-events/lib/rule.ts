@@ -147,7 +147,8 @@ export class EventRule extends Construct implements IEventRule {
       if (inputOptions.jsonTemplate) {
         inputTemplate = inputOptions.jsonTemplate;
       } else if (typeof(inputOptions.textTemplate) === 'string') {
-        inputTemplate = JSON.stringify(inputOptions.textTemplate);
+        // Newline separated list of JSON-encoded strings
+        inputTemplate = inputOptions.textTemplate.split('\n').map(x => JSON.stringify(x)).join('\n');
       } else {
         inputTemplate = `"${inputOptions.textTemplate}"`;
       }
