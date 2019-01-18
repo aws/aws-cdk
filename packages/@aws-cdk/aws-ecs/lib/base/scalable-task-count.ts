@@ -102,11 +102,11 @@ export interface MemoryUtilizationScalingProps extends appscaling.BaseTargetTrac
 }
 
 /**
- * Properties for enabling scaling based on memory utilization
+ * Properties for enabling scaling based on ALB request counts
  */
 export interface RequestCountScalingProps extends appscaling.BaseTargetTrackingProps {
   /**
-   * Targert ALB requests per target
+   * ALB requests per target
    */
   requestsPerTarget: number;
 
