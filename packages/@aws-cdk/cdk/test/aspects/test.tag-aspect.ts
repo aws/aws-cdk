@@ -16,15 +16,6 @@ class MapTaggableResource extends TaggableResource {
   public readonly tags = new TagManager(TagType.Map);
 }
 
-// class TestRoot extends Stack {
-//   constructor() {
-//     super(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
-//   }
-//   public testInvokeAspects() {
-//     this.node.prepareTree();
-//   }
-// }
-
 export = {
   'Tag visit all children of the applied node'(test: Test) {
     const root = new Stack();

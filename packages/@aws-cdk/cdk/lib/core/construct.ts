@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { IAspect } from '../aspects/aspect';
+import { AspectVisitType, IAspect } from '../aspects/aspect';
 import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
 import { makeUniqueId } from '../util/uniqueid';
 import { Token, unresolved } from './tokens';
@@ -463,11 +463,17 @@ export class ConstructNode {
    */
   private invokeAspects(): void {
     const descendants = this.findAll();
-    const nonInvoked = this.aspects.filter(
-      aspect => !this.invokedAspects.includes(aspect));
-    nonInvoked.forEach( aspect => {
+    const aspectsToVisit = this.visitableAspects();
+    aspectsToVisit.forEach( aspect => {
       descendants.forEach( member => aspect.visit(member))
       this.invokedAspects.push(aspect);
+    });
+  }
+
+  private visitableAspects(): IAspect[] {
+    return this.aspects.filter( aspect => {
+      return aspect.visitType === AspectVisitType.Multiple ||
+        !this.invokedAspects.includes(aspect)
     });
   }
   /**

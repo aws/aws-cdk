@@ -1,6 +1,6 @@
 import { ITaggable, Resource } from '../cloudformation/resource';
 import { IConstruct } from '../core/construct';
-import { IAspect } from './aspect';
+import { AspectVisitType, IAspect } from './aspect';
 
 export interface TagAspectProps {
   /**
@@ -38,6 +38,7 @@ export abstract class TagBase implements IAspect {
    */
   public readonly key: string;
 
+  public readonly visitType: AspectVisitType = AspectVisitType.Single
   private readonly include: string[];
   private readonly exclude: string[];
 
