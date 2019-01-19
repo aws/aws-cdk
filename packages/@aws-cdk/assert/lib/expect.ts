@@ -1,7 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import api = require('@aws-cdk/cx-api');
 import { StackInspector } from './inspector';
-import { TestStack } from './test-stack';
 
 export function expect(stack: api.SynthesizedStack | cdk.Stack, skipValidation = false): StackInspector {
   // Can't use 'instanceof' here, that breaks if we have multiple copies
@@ -17,10 +16,6 @@ export function expect(stack: api.SynthesizedStack | cdk.Stack, skipValidation =
       if (errors.length > 0) {
         throw new Error(`Stack validation failed:\n${errors.map(e => `${e.message} at: ${e.source.node.scope}`).join('\n')}`);
       }
-    }
-
-    if (isTestStack(stack)) {
-      stack.testInvokeAspects();
     }
 
     sstack = {
@@ -54,8 +49,4 @@ function collectStackMetadata(root: cdk.ConstructNode): api.StackMetadata {
     }
   }
   return result;
-}
-
-function isTestStack(t: any): t is TestStack {
-  return t.testInvokeAspects !== undefined;
 }

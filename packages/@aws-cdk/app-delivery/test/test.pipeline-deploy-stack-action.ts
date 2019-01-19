@@ -9,7 +9,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import fc = require('fast-check');
 import nodeunit = require('nodeunit');
 
-import { countResources, expect, haveResource, isSuperObject, TestStack } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, isSuperObject } from '@aws-cdk/assert';
 import { PipelineDeployStackAction } from '../lib/pipeline-deploy-stack-action';
 
 interface SelfUpdatingPipeline {
@@ -299,7 +299,7 @@ class FakeAction extends api.Action {
 }
 
 function getTestStack(): cdk.Stack {
-  return new TestStack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+  return new cdk.Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 }
 
 function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline {

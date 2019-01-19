@@ -1,12 +1,12 @@
-import { exactlyMatchTemplate, expect, TestStack } from '@aws-cdk/assert';
+import { exactlyMatchTemplate, expect } from '@aws-cdk/assert';
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { App, Tag } from '@aws-cdk/cdk';
+import { App, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { EncryptionKey } from '../lib';
 
 export = {
   'default key'(test: Test) {
-    const stack = new TestStack();
+    const stack = new Stack();
 
     new EncryptionKey(stack, 'MyKey');
 
@@ -66,7 +66,7 @@ export = {
 
   'default with some permission'(test: Test) {
     const app = new App();
-    const stack = new TestStack(app, 'Test');
+    const stack = new Stack(app, 'Test');
 
     const key = new EncryptionKey(stack, 'MyKey');
     const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
@@ -137,7 +137,7 @@ export = {
   },
 
   'key with some options'(test: Test) {
-    const stack = new TestStack();
+    const stack = new Stack();
 
     const key = new EncryptionKey(stack, 'MyKey', {
       enableKeyRotation: true,
@@ -232,7 +232,7 @@ export = {
 
   'addAlias creates an alias'(test: Test) {
     const app = new App();
-    const stack = new TestStack(app, 'Test');
+    const stack = new Stack(app, 'Test');
 
     const key = new EncryptionKey(stack, 'MyKey', {
       enableKeyRotation: true,
@@ -312,7 +312,7 @@ export = {
   },
 
   'import/export can be used to bring in an existing key'(test: Test) {
-    const stack1 = new TestStack();
+    const stack1 = new Stack();
     const policy = new PolicyDocument();
     policy.addStatement(new PolicyStatement().addAllResources());
     const myKey = new EncryptionKey(stack1, 'MyKey', { policy });
@@ -351,7 +351,7 @@ export = {
       }
     });
 
-    const stack2 = new TestStack();
+    const stack2 = new Stack();
     const myKeyImported = EncryptionKey.import(stack2, 'MyKeyImported', exportedKeyRef);
 
     // addAlias can be called on imported keys.
@@ -376,7 +376,7 @@ export = {
 
   'addToResourcePolicy allowNoOp and there is no policy': {
     'succeed if set to true (default)'(test: Test) {
-      const stack = new TestStack();
+      const stack = new Stack();
 
       const key = EncryptionKey.import(stack, 'Imported', { keyArn: 'foo/bar' });
 
@@ -387,7 +387,7 @@ export = {
 
     'fails if set to false'(test: Test) {
 
-      const stack = new TestStack();
+      const stack = new Stack();
 
       const key = EncryptionKey.import(stack, 'Imported', { keyArn: 'foo/bar' });
 

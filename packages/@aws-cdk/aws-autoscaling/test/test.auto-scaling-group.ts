@@ -18,8 +18,6 @@ export = {
       vpc
     });
 
-    stack.testInvokeAspects();
-
     expect(stack).toMatch({
       "Resources": {
         "MyFleetInstanceSecurityGroup774E8234": {
@@ -385,7 +383,6 @@ export = {
     asg.apply( new cdk.Tag('superfood', 'acai'));
     asg.apply( new cdk.Tag('notsuper', 'caramel', { applyToLaunchInstances: false }));
 
-    stack.testInvokeAspects();
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
       Tags: [
@@ -426,11 +423,6 @@ function mockSecurityGroup(stack: cdk.Stack) {
   });
 }
 
-class TestStack extends cdk.Stack {
-  public testInvokeAspects(): void {
-    this.invokeAspects();
-  }
-}
-function getTestStack(): TestStack {
-  return new TestStack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
+function getTestStack(): cdk.Stack {
+  return new cdk.Stack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
 }

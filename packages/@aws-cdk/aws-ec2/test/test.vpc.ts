@@ -1,5 +1,5 @@
-import { countResources, expect, haveResource, haveResourceLike, isSuperObject, TestStack } from '@aws-cdk/assert';
-import { AvailabilityZoneProvider, Construct, Tag } from '@aws-cdk/cdk';
+import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
+import { AvailabilityZoneProvider, Construct, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { CfnVPC, DefaultInstanceTenancy, IVpcNetwork, SubnetType, VpcNetwork } from '../lib';
 
@@ -530,8 +530,8 @@ export = {
   },
 };
 
-function getTestStack(): TestStack {
-  return new TestStack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+function getTestStack(): Stack {
+  return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 }
 
 /**
