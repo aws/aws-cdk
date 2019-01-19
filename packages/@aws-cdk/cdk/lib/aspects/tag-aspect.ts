@@ -38,7 +38,7 @@ export abstract class TagBase implements IAspect {
    */
   public readonly key: string;
 
-  public readonly visitType: AspectVisitType = AspectVisitType.Single
+  public readonly visitType: AspectVisitType = AspectVisitType.Single;
   private readonly include: string[];
   private readonly exclude: string[];
 

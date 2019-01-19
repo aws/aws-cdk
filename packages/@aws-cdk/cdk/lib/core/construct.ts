@@ -465,7 +465,7 @@ export class ConstructNode {
     const descendants = this.findAll();
     const aspectsToVisit = this.visitableAspects();
     aspectsToVisit.forEach( aspect => {
-      descendants.forEach( member => aspect.visit(member))
+      descendants.forEach( member => aspect.visit(member));
       this.invokedAspects.push(aspect);
     });
   }
@@ -473,7 +473,7 @@ export class ConstructNode {
   private visitableAspects(): IAspect[] {
     return this.aspects.filter( aspect => {
       return aspect.visitType === AspectVisitType.Multiple ||
-        !this.invokedAspects.includes(aspect)
+        !this.invokedAspects.includes(aspect);
     });
   }
   /**

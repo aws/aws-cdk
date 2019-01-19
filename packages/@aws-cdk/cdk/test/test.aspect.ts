@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
-import { IConstruct, Root } from '../lib/core/construct';
 import { AspectVisitType, IAspect } from '../lib/aspects/aspect';
+import { IConstruct, Root } from '../lib/core/construct';
 
 class MyConstruct extends Root {
   public static IsMyConstruct(x: any): x is MyConstruct {
@@ -61,4 +61,4 @@ export = {
     test.deepEqual(root.visitCounter, 3);
     test.done();
   },
-}
+};
