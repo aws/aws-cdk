@@ -51,6 +51,8 @@ export class ConstructNode {
    */
   private _locked = false;
 
+  private invokedAspects: IAspect[] = [];
+
   constructor(private readonly host: Construct, scope: IConstruct, id: string) {
     id = id || ''; // if undefined, convert to empty string
 
@@ -295,8 +297,11 @@ export class ConstructNode {
    * Run 'prepare()' on all constructs in the tree
    */
   public prepareTree() {
-    this.invokeAspects();
     const constructs = this.host.node.findAll(ConstructOrder.BreadthFirst);
+    // Aspects are applied root to leaf
+    for (const construct of constructs) {
+      construct.node.invokeAspects();
+    }
     // Use .reverse() to achieve post-order traversal
     for (const construct of constructs.reverse()) {
       if (Construct.isConstruct(construct)) {
@@ -456,13 +461,14 @@ export class ConstructNode {
   /**
    * Triggers each aspect to invoke visit
    */
-  protected invokeAspects(): void {
-    for (const aspect of this.aspects) {
-      aspect.visitTree(this.host);
-    }
-    for (const child of this.children) {
-      (child as Construct).node.invokeAspects();
-    }
+  private invokeAspects(): void {
+    const descendants = this.findAll();
+    const nonInvoked = this.aspects.filter(
+      aspect => !this.invokedAspects.includes(aspect));
+    nonInvoked.forEach( aspect => {
+      descendants.forEach( member => aspect.visit(member))
+      this.invokedAspects.push(aspect);
+    });
   }
   /**
    * Return the path of components up to but excluding the root

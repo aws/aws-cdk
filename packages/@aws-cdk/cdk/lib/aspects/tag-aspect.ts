@@ -1,6 +1,6 @@
 import { ITaggable, Resource } from '../cloudformation/resource';
 import { IConstruct } from '../core/construct';
-import { Aspect } from './aspect';
+import { IAspect } from './aspect';
 
 export interface TagAspectProps {
   /**
@@ -31,12 +31,7 @@ export interface TagAspectProps {
 /**
  * The common functionality for Tag and Remove Tag Aspects
  */
-export abstract class TagBase extends Aspect {
-
-  /**
-   * The ``taggable`` type for these aspects
-   */
-  public readonly type: string = 'taggable';
+export abstract class TagBase implements IAspect {
 
   /**
    * The string key for the tag
@@ -47,7 +42,6 @@ export abstract class TagBase extends Aspect {
   private readonly exclude: string[];
 
   constructor(key: string, props: TagAspectProps = {}) {
-    super();
     this.key = key;
 
     this.include = props.include || [];

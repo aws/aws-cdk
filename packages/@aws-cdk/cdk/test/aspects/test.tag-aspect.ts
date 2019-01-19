@@ -16,18 +16,18 @@ class MapTaggableResource extends TaggableResource {
   public readonly tags = new TagManager(TagType.Map);
 }
 
-class TestRoot extends Stack {
-  constructor() {
-    super(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
-  }
-  public testInvokeAspects() {
-    this.node.prepareTree();
-  }
-}
+// class TestRoot extends Stack {
+//   constructor() {
+//     super(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+//   }
+//   public testInvokeAspects() {
+//     this.node.prepareTree();
+//   }
+// }
 
 export = {
   'Tag visit all children of the applied node'(test: Test) {
-    const root = new TestRoot();
+    const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
@@ -43,7 +43,7 @@ export = {
     });
     res.apply(new Tag('foo', 'bar'));
     test.deepEqual(res.node.aspects.length, 1);
-    root.testInvokeAspects();
+    root.node.prepareTree();
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.deepEqual(map.tags.renderTags(), {foo: 'bar'});
@@ -51,7 +51,7 @@ export = {
     test.done();
   },
   'The last aspect applied takes precedence'(test: Test) {
-    const root = new TestRoot();
+    const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
@@ -62,13 +62,13 @@ export = {
     res.apply(new Tag('foo', 'foobar'));
     res.apply(new Tag('foo', 'baz'));
     res2.apply(new Tag('foo', 'good'));
-    root.testInvokeAspects();
+    root.node.prepareTree();
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'baz'}]);
     test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'good'}]);
     test.done();
   },
   'RemoveTag will remove a tag if it exists'(test: Test) {
-    const root = new TestRoot();
+    const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
@@ -86,7 +86,7 @@ export = {
     res.apply(new Tag('first', 'there is only 1'));
     res.apply(new RemoveTag('root'));
     res.apply(new RemoveTag('doesnotexist'));
-    root.testInvokeAspects();
+    root.node.prepareTree();
 
     test.deepEqual(res.tags.renderTags(), [{key: 'first', value: 'there is only 1'}]);
     test.deepEqual(map.tags.renderTags(), {first: 'there is only 1'});
@@ -95,22 +95,22 @@ export = {
     test.done();
   },
   'the #visit function is idempotent'(test: Test) {
-    const root = new TestRoot();
+    const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
 
     res.apply(new Tag('foo', 'bar'));
-    root.testInvokeAspects();
+    root.node.prepareTree();
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
-    root.testInvokeAspects();
+    root.node.prepareTree();
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
-    root.testInvokeAspects();
+    root.node.prepareTree();
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.done();
   },
   'include restricts tag application to resources types in the list'(test: Test) {
-    const root = new TestRoot();
+    const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
@@ -125,7 +125,7 @@ export = {
       type: 'AWS::Fake::Map',
     });
     res.apply(new Tag('foo', 'bar', {include: ['AWS::Fake::Asg']}));
-    root.testInvokeAspects();
+    root.node.prepareTree();
     test.deepEqual(res.tags.renderTags(), undefined);
     test.deepEqual(map.tags.renderTags(), undefined);
     test.deepEqual(res2.tags.renderTags(), undefined);
@@ -134,7 +134,7 @@ export = {
     test.done();
   },
   'exclude prevents tag application to resource types in the list'(test: Test) {
-    const root = new TestRoot();
+    const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
@@ -149,7 +149,7 @@ export = {
       type: 'AWS::Fake::Map',
     });
     res.apply(new Tag('foo', 'bar', {exclude: ['AWS::Fake::Asg']}));
-    root.testInvokeAspects();
+    root.node.prepareTree();
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.deepEqual(asg.tags.renderTags(), undefined);
@@ -157,7 +157,7 @@ export = {
     test.done();
   },
   'Aspects are mutually exclusive with tags created by L1 Constructor'(test: Test) {
-    const root = new TestRoot();
+    const root = new Stack();
     const aspectBranch = new TaggableResource(root, 'FakeBranchA', {
       type: 'AWS::Fake::Thing',
       properties: {
@@ -175,7 +175,7 @@ export = {
       },
     });
     aspectBranch.apply(new Tag('aspects', 'rule'));
-    root.testInvokeAspects();
+    root.node.prepareTree();
     test.deepEqual(aspectBranch.tags.renderTags(), [{key: 'aspects', value: 'rule'}]);
     test.deepEqual(cfnBranch.testProperties().tags, [{key: 'cfn', value: 'is cool'}]);
     test.done();
