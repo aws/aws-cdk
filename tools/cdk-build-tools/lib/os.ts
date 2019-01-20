@@ -16,7 +16,11 @@ export async function shell(command: string[], timers?: Timers): Promise<string>
   const child = child_process.spawn(command[0], command.slice(1), {
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
-    stdio: [ 'ignore', 'pipe', 'inherit' ]
+    stdio: [ 'ignore', 'pipe', 'inherit' ],
+    env: {
+      CDK_TEST_MODE: '1',
+      ...process.env,
+    },
   });
 
   return new Promise<string>((resolve, reject) => {

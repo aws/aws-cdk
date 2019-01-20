@@ -450,7 +450,7 @@ export class ConstructNode {
   /**
    * Return the path of components up to but excluding the root
    */
-  private rootPath(): IConstruct[] {
+  public rootPath(): IConstruct[] {
     const ancestors = this.ancestors();
     ancestors.shift();
     return ancestors;

@@ -1,20 +1,83 @@
 import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import path = require('path');
 import { Stack } from './cloudformation/stack';
-import { IConstruct, MetadataEntry, PATH_SEP, Root } from './core/construct';
+import { Construct } from './core/construct';
+import { IConstruct, MetadataEntry, PATH_SEP } from './core/construct';
+import { Environment } from './environment';
+import { Program } from './program';
 
 /**
- * Represents a CDK program.
+ * Properties for an App
  */
-export class App extends Root {
+export interface AppProps {
+  /**
+   * The AWS environment (account/region) where stacks in this app will be deployed.
+   *
+   * If not supplied, the `default-account` and `default-region` context parameters will be
+   * used. If they are undefined, it will not be possible to deploy the stack.
+   *
+   * @default Automatically determined
+   */
+  env?: Environment;
+
+  /**
+   * The CDK Program instance in which this app will be defined.
+   *
+   * You don't have to pass this, it exists for testing purposes. Only
+   * supply this parameter if you know what you are doing.
+   *
+   * @default Automatically created
+   */
+  program?: Program;
+}
+
+/**
+ * Used as construct name if no ID is supplied for the App
+ */
+const DEFAULT_APP_NAME = 'App';
+
+/**
+ * An instance of your App
+ */
+export class App extends Construct {
+  /**
+   * True if the given construct is a default-named App
+   */
+  public static isDefaultApp(construct: IConstruct) {
+    return App.isApp(construct) && construct.defaultAppName;
+  }
+
+  /**
+   * True if the given construct is an App object
+   */
+  public static isApp(construct: IConstruct): construct is App {
+    return (construct as any).defaultAppName !== undefined;
+  }
+
+  /**
+   * The environment in which this stack is deployed.
+   */
+  public readonly env: Environment;
+
+  /**
+   * Whether the App id was supplied
+   */
+  private defaultAppName: boolean;
+
   /**
    * Initializes a CDK application.
+   *
    * @param request Optional toolkit request (e.g. for tests)
    */
-  constructor() {
-    super();
-    this.loadContext();
+  constructor(id?: string, props: AppProps = {}) {
+    // For tests, we use a fresh Program every time
+    const program = props.program || (process.env.CDK_TEST_MODE === '1'
+        ? new Program()
+        : Program.defaultInstance());
+
+    super(program, id || DEFAULT_APP_NAME);
+
+    this.env = props.env || {};
+    this.defaultAppName = id === undefined;
   }
 
   private get stacks() {
@@ -30,25 +93,10 @@ export class App extends Root {
   }
 
   /**
-   * Runs the program. Output is written to output directory as specified in the request.
+   * @deprecated
    */
-  public run(): void {
-    const outdir = process.env[cxapi.OUTDIR_ENV];
-    if (!outdir) {
-      process.stderr.write(`ERROR: The environment variable "${cxapi.OUTDIR_ENV}" is not defined\n`);
-      process.stderr.write('AWS CDK Toolkit (>= 0.11.0) is required in order to interact with this program.\n');
-      process.exit(1);
-      return;
-    }
-
-    const result: cxapi.SynthesizeResponse = {
-      version: cxapi.PROTO_RESPONSE_VERSION,
-      stacks: this.synthesizeStacks(Object.keys(this.stacks)),
-      runtime: this.collectRuntimeInformation()
-    };
-
-    const outfile = path.join(outdir, cxapi.OUTFILE_NAME);
-    fs.writeFileSync(outfile, JSON.stringify(result, undefined, 2));
+  public run() {
+    this.node.addWarning(`It's not necessary to call app.run() anymore`);
   }
 
   /**
@@ -57,15 +105,6 @@ export class App extends Root {
    */
   public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
     const stack = this.getStack(stackName);
-
-    this.node.prepareTree();
-
-    // first, validate this stack and stop if there are errors.
-    const errors = stack.node.validateTree();
-    if (errors.length > 0) {
-      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-      throw new Error(`Stack validation failed with the following errors:\n  ${errorList}`);
-    }
 
     const account = stack.env.account || 'unknown-account';
     const region = stack.env.region || 'unknown-region';
@@ -78,12 +117,12 @@ export class App extends Root {
 
     const missing = Object.keys(stack.missingContext).length ? stack.missingContext : undefined;
     return {
-      name: stack.node.id,
+      name: stack.name,
       environment,
       missing,
       template: stack.toCloudFormation(),
       metadata: this.collectMetadata(stack),
-      dependsOn: noEmptyArray(stack.dependencies().map(s => s.node.id)),
+      dependsOn: noEmptyArray(stack.dependencies().map(s => s.name)),
     };
   }
 
@@ -106,16 +145,16 @@ export class App extends Root {
 
     visit(stack);
 
-    // add app-level metadata under "."
+    // add app-level metadata as well
     if (this.node.metadata.length > 0) {
-      output[PATH_SEP] = this.node.metadata;
+      output[PATH_SEP + this.node.path] = this.node.metadata;
     }
 
     return output;
 
     function visit(node: IConstruct) {
       if (node.node.metadata.length > 0) {
-        // Make the path absolute
+        // Make the path absolute.
         output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as MetadataEntry);
       }
 
@@ -125,27 +164,20 @@ export class App extends Root {
     }
   }
 
-  private collectRuntimeInformation(): cxapi.AppRuntime {
-    const libraries: { [name: string]: string } = {};
-
-    for (const fileName of Object.keys(require.cache)) {
-      const pkg = findNpmPackage(fileName);
-      if (pkg && !pkg.private) {
-        libraries[pkg.name] = pkg.version;
-      }
+  protected validate(): string[] {
+    if (numberOfAppsInProgram(this) > 1 && this.node.id === DEFAULT_APP_NAME) {
+      return ['When constructing more than one App, all of them must have ids'];
     }
+    return [];
+  }
 
-    // include only libraries that are in the @aws-cdk npm scope
-    for (const name of Object.keys(libraries)) {
-      if (!name.startsWith('@aws-cdk/')) {
-        delete libraries[name];
-      }
-    }
-
-    // add jsii runtime version
-    libraries['jsii-runtime'] = getJsiiAgentVersion();
-
-    return { libraries };
+  /**
+   * Synthesize the App
+   */
+  protected synthesize() {
+    return {
+      stacks: this.synthesizeStacks(Object.keys(this.stacks)),
+    };
   }
 
   private getStack(stackname: string) {
@@ -159,77 +191,25 @@ export class App extends Root {
     }
     return stack;
   }
-
-  private loadContext() {
-    const contextJson = process.env[cxapi.CONTEXT_ENV];
-    const context = !contextJson ? { } : JSON.parse(contextJson);
-    for (const key of Object.keys(context)) {
-      this.node.setContext(key, context[key]);
-    }
-  }
-}
-
-/**
- * Determines which NPM module a given loaded javascript file is from.
- *
- * The only infromation that is available locally is a list of Javascript files,
- * and every source file is associated with a search path to resolve the further
- * ``require`` calls made from there, which includes its own directory on disk,
- * and parent directories - for example:
- *
- * [ '...repo/packages/aws-cdk-resources/lib/cfn/node_modules',
- *   '...repo/packages/aws-cdk-resources/lib/node_modules',
- *   '...repo/packages/aws-cdk-resources/node_modules',
- *   '...repo/packages/node_modules',
- *   // etc...
- * ]
- *
- * We are looking for ``package.json`` that is anywhere in the tree, except it's
- * in the parent directory, not in the ``node_modules`` directory. For this
- * reason, we strip the ``/node_modules`` suffix off each path and use regular
- * module resolution to obtain a reference to ``package.json``.
- *
- * @param fileName a javascript file name.
- * @returns the NPM module infos (aka ``package.json`` contents), or
- *      ``undefined`` if the lookup was unsuccessful.
- */
-function findNpmPackage(fileName: string): { name: string, version: string, private?: boolean } | undefined {
-  const mod = require.cache[fileName];
-  const paths = mod.paths.map(stripNodeModules);
-
-  try {
-    const packagePath = require.resolve('package.json', { paths });
-    return require(packagePath);
-  } catch (e) {
-    return undefined;
-  }
-
-  /**
-   * @param s a path.
-   * @returns ``s`` with any terminating ``/node_modules``
-   *      (or ``\\node_modules``) stripped off.)
-   */
-  function stripNodeModules(s: string): string {
-    if (s.endsWith('/node_modules') || s.endsWith('\\node_modules')) {
-      // /node_modules is 13 characters
-      return s.substr(0, s.length - 13);
-    }
-    return s;
-  }
-}
-
-function getJsiiAgentVersion() {
-  let jsiiAgent = process.env.JSII_AGENT;
-
-  // if JSII_AGENT is not specified, we will assume this is a node.js runtime
-  // and plug in our node.js version
-  if (!jsiiAgent) {
-    jsiiAgent = `node.js/${process.version}`;
-  }
-
-  return jsiiAgent;
 }
 
 function noEmptyArray<T>(xs: T[]): T[] | undefined {
   return xs.length > 0 ? xs : undefined;
+}
+
+/**
+ * Cound the Apps in the construct tree
+ */
+function numberOfAppsInProgram(app: IConstruct): number {
+  return findRoot(app).node.findAll().filter(App.isApp).length;
+}
+
+/**
+ * Return the root of the construct tree
+ */
+function findRoot(current: IConstruct): IConstruct {
+  while (current.node.scope !== undefined) {
+    current = current.node.scope;
+  }
+  return current;
 }

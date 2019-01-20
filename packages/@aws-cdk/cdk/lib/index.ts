@@ -24,6 +24,7 @@ export * from './cloudformation/arn';
 export * from './cloudformation/secret';
 
 export * from './app';
+export * from './program';
 export * from './context';
 export * from './environment';
 

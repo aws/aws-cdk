@@ -345,6 +345,41 @@ export = {
 
     test.done();
   },
+
+  'Stack inherits environment from App'(test: Test) {
+    // WHEN
+    const app = new App(undefined, { env: { account: '12345' }});
+    const stack = new Stack(app, 'Stack', { env: { region: 'us-north-west' }});
+
+    // THEN
+    test.deepEqual(stack.env, {
+      account: '12345',
+      region: 'us-north-west'
+    });
+
+    test.done();
+  },
+
+  'Stack name can be overridden via properties'(test: Test) {
+    // WHEN
+    const stack = new Stack(undefined, 'Stack', { stackName: 'otherName' });
+
+    // THEN
+    test.deepEqual(stack.name, 'otherName');
+
+    test.done();
+  },
+
+  'Stack name is inherited from App name if available'(test: Test) {
+    // WHEN
+    const app = new App('Prod');
+    const stack = new Stack(app, 'Stack');
+
+    // THEN
+    test.deepEqual(stack.name, 'Prod-Stack');
+
+    test.done();
+  },
 };
 
 class StackWithPostProcessor extends Stack {

@@ -3,7 +3,7 @@ import fs = require('fs');
 import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
-import { Construct, Resource, Stack, StackProps } from '../lib';
+import { Construct, Program, Resource, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
 
 function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void) {
@@ -16,11 +16,12 @@ function withApp(context: { [key: string]: any } | undefined, block: (app: App) 
     delete process.env[cxapi.CONTEXT_ENV];
   }
 
-  const app = new App();
+  const program = new Program();
+  const app = new App(undefined, { program });
 
   block(app);
 
-  app.run();
+  program.run();
 
   const outfile = path.join(outdir, cxapi.OUTFILE_NAME);
   const response = JSON.parse(fs.readFileSync(outfile).toString());
@@ -119,25 +120,25 @@ export = {
     const output = stack.metadata;
     stripStackTraces(output);
 
-    test.ok(output['/'], 'app-level metadata is included under "."');
-    test.equal(output['/'][0].type, 'applevel');
-    test.equal(output['/'][0].data, 123);
+    test.ok(output['/App'], 'app-level metadata is included under "."');
+    test.equal(output['/App'][0].type, 'applevel');
+    test.equal(output['/App'][0].data, 123);
 
-    test.ok(output['/stack1'], 'the construct "stack1" has metadata');
-    test.equal(output['/stack1'][0].type, 'meta');
-    test.equal(output['/stack1'][0].data, 111);
-    test.ok(output['/stack1'][0].trace.length > 0, 'trace contains multiple entries');
+    test.ok(output['/App/stack1'], 'the construct "stack1" has metadata');
+    test.equal(output['/App/stack1'][0].type, 'meta');
+    test.equal(output['/App/stack1'][0].data, 111);
+    test.ok(output['/App/stack1'][0].trace.length > 0, 'trace contains multiple entries');
 
-    test.ok(output['/stack1/s1c2']);
-    test.equal(output['/stack1/s1c2'].length, 2, 'two entries');
-    test.equal(output['/stack1/s1c2'][0].data, 'warning1');
+    test.ok(output['/App/stack1/s1c2']);
+    test.equal(output['/App/stack1/s1c2'].length, 2, 'two entries');
+    test.equal(output['/App/stack1/s1c2'][0].data, 'warning1');
 
     const stack2 = synthStack('stack2', true);
     const output2 = stack2.metadata;
 
-    test.ok(output2['/stack2/s1c2']);
-    test.equal(output2['/stack2/s1c2'][0].type, 'meta');
-    test.deepEqual(output2['/stack2/s1c2'][0].data, { key: 'value' });
+    test.ok(output2['/App/stack2/s1c2']);
+    test.equal(output2['/App/stack2/s1c2'][0].type, 'meta');
+    test.deepEqual(output2['/App/stack2/s1c2'][0].data, { key: 'value' });
 
     test.done();
   },
@@ -192,8 +193,7 @@ export = {
     test.done();
   },
 
-  'app.synthesizeStack(stack) performs validation first (app.validateAll()) and if there are errors, it returns the errors'(test: Test) {
-
+  'Program.synthesizeAll(stack) performs validation first and returns the errors'(test: Test) {
     class Child extends Construct {
       protected validate() {
         return [ `Error from ${this.node.id}` ];
@@ -201,17 +201,17 @@ export = {
     }
 
     class Parent extends Stack {
-
     }
 
-    const app = new App();
+    const program = new Program();
+    const app = new App(undefined, { program });
 
     const parent = new Parent(app, 'Parent');
     new Child(parent, 'C1');
     new Child(parent, 'C2');
 
     test.throws(() => {
-      app.synthesizeStacks(['Parent']);
+      program.synthesizeAll();
     }, /Stack validation failed with the following errors/);
 
     test.done();

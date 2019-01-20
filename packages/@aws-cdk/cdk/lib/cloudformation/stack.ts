@@ -2,6 +2,8 @@ import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
 import { Construct, IConstruct } from '../core/construct';
 import { Environment } from '../environment';
+import { firstDefined } from '../util/collections';
+import { merge } from '../util/json';
 import { CfnReference } from './cfn-tokens';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
@@ -14,6 +16,13 @@ export interface StackProps {
    * used. If they are undefined, it will not be possible to deploy the stack.
    */
   env?: Environment;
+
+  /**
+   * Name to deploy the stack with
+   *
+   * @default Derived from construct IDs
+   */
+  stackName?: string;
 
   /**
    * Strategy for logical ID generation
@@ -76,11 +85,6 @@ export class Stack extends Construct {
   public readonly missingContext: { [key: string]: cxapi.MissingContext } = { };
 
   /**
-   * The environment in which this stack is deployed.
-   */
-  public readonly env: Environment;
-
-  /**
    * Logical ID generation strategy
    */
   public readonly logicalIds: LogicalIDs;
@@ -106,13 +110,20 @@ export class Stack extends Construct {
   private readonly stackDependencies = new Set<Stack>();
 
   /**
+   * Environment as configured via props
+   *
+   * (Both on Stack and inherited from App)
+   */
+  private readonly configuredEnv: Environment;
+
+  /**
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually a Program instance.
    * @param name The name of the CloudFormation stack. Defaults to "Stack".
    * @param props Stack properties.
    */
-  public constructor(scope?: App, name?: string, private readonly props?: StackProps) {
+  public constructor(scope?: App, name?: string, props: StackProps = {}) {
     // For unit test convenience parents are optional, so bypass the type check when calling the parent.
     super(scope!, name!);
 
@@ -120,10 +131,13 @@ export class Stack extends Construct {
       throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
 
-    this.env = this.parseEnvironment(props);
+    this.configuredEnv = {
+      account: firstDefined(props.env && props.env.account, scope && scope.env.account),
+      region: firstDefined(props.env && props.env.region, scope && scope.env.region),
+    };
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
-    this.name = this.node.id;
+    this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
   }
 
   /**
@@ -177,6 +191,16 @@ export class Stack extends Construct {
       // allow mutations after synthesis is finished.
       this.node.unlock();
     }
+  }
+
+  /**
+   * The environment in which this stack is deployed.
+   */
+  public get env(): Environment {
+    return {
+      account: firstDefined(this.configuredEnv.account, this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY)),
+      region: firstDefined(this.configuredEnv.region, this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY)),
+    };
   }
 
   /**
@@ -264,8 +288,8 @@ export class Stack extends Construct {
    * to the correct account at deployment time.
    */
   public get accountId(): string {
-    if (this.props && this.props.env && this.props.env.account) {
-      return this.props.env.account;
+    if (this.configuredEnv.account !== undefined) {
+      return this.configuredEnv.account;
     }
     return new Aws(this).accountId;
   }
@@ -278,8 +302,8 @@ export class Stack extends Construct {
    * to the correct region at deployment time.
    */
   public get region(): string {
-    if (this.props && this.props.env && this.props.env.region) {
-      return this.props.env.region;
+    if (this.configuredEnv.region !== undefined) {
+      return this.configuredEnv.region;
     }
     return new Aws(this).region;
   }
@@ -411,26 +435,6 @@ export class Stack extends Construct {
   }
 
   /**
-   * Applied defaults to environment attributes.
-   */
-  private parseEnvironment(props?: StackProps) {
-    // start with `env`.
-    const env: Environment = (props && props.env) || { };
-
-    // if account is not specified, attempt to read from context.
-    if (!env.account) {
-      env.account = this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY);
-    }
-
-    // if region is not specified, attempt to read from context.
-    if (!env.region) {
-      env.region = this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY);
-    }
-
-    return env;
-  }
-
-  /**
    * Check whether this stack has a (transitive) dependency on another stack
    */
   private dependsOnStack(other: Stack) {
@@ -440,25 +444,15 @@ export class Stack extends Construct {
     }
     return false;
   }
-}
 
-function merge(template: any, part: any) {
-  for (const section of Object.keys(part)) {
-    const src = part[section];
-
-    // create top-level section if it doesn't exist
-    let dest = template[section];
-    if (!dest) {
-      template[section] = dest = src;
-    } else {
-      // add all entities from source section to destination section
-      for (const id of Object.keys(src)) {
-        if (id in dest) {
-          throw new Error(`section '${section}' already contains '${id}'`);
-        }
-        dest[id] = src[id];
-      }
-    }
+  /**
+   * Calculcate the stack name based on the construct path
+   */
+  private calculateStackName() {
+    return this.node.rootPath()
+        .filter(c => !App.isDefaultApp(c))
+        .map(c => c.node.id)
+        .join('-');
   }
 }
 
