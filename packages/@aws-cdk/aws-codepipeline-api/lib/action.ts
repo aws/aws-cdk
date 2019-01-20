@@ -136,15 +136,6 @@ export interface CommonActionProps {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
    */
   runOrder?: number;
-
-  /**
-   * The service role that is assumed during execution of action.
-   * This role is not mandatory, however more advanced configuration
-   * may require specifying it.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions.html
-   */
-  role?: iam.IRole;
 }
 
 /**
@@ -170,6 +161,15 @@ export interface ActionProps extends CommonActionProps, CommonActionConstructPro
    * @default the Action resides in the same region as the Pipeline
    */
   region?: string;
+
+  /**
+   * The service role that is assumed during execution of action.
+   * This role is not mandatory, however more advanced configuration
+   * may require specifying it.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions.html
+   */
+  role?: iam.IRole;
 
   artifactBounds: ActionArtifactBounds;
   configuration?: any;

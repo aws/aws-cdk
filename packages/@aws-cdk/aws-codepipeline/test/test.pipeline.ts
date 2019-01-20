@@ -2,7 +2,6 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import cloudformation = require('@aws-cdk/aws-cloudformation');
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
-import iam = require( '@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
@@ -50,10 +49,6 @@ export = {
 
     const p = new codepipeline.Pipeline(stack, 'P');
 
-    const role = iam.Role.import(stack, 'PipelineActionRole', {
-      roleArn: 'arn:aws:iam::123456789012:root'
-    });
-
     const s1 = new codepipeline.Stage(stack, 'Source', { pipeline: p });
     new codepipeline.GitHubSourceAction(stack, 'GH', {
       stage: s1,
@@ -62,8 +57,7 @@ export = {
       branch: 'branch',
       oauthToken: secret.value,
       owner: 'foo',
-      repo: 'bar',
-      role
+      repo: 'bar'
     });
 
     const s2 = new codepipeline.Stage(stack, 'Two', { pipeline: p });
@@ -109,7 +103,6 @@ export = {
           }
           ],
           "RunOrder": 8,
-          "RoleArn": "arn:aws:iam::123456789012:root"
         }
         ],
         "Name": "Source"
@@ -295,16 +288,11 @@ export = {
       outputArtifactName: 'sourceArtifact2',
     });
 
-    const role = iam.Role.import(stack, 'PipelineActionRole', {
-      roleArn: 'arn:aws:iam::123456789012:root'
-    });
-
     const stage = new codepipeline.Stage(stack, 'Stage', { pipeline });
     const lambdaAction = new lambda.PipelineInvokeAction(stack, 'InvokeAction', {
       stage,
       lambda: lambdaFun,
       userParameters: 'foo-bar/42',
-      role,
       inputArtifacts: [
           source2.outputArtifact,
           source1.outputArtifact,
@@ -358,7 +346,6 @@ export = {
             { "Name": "lambdaOutput2" },
             { "Name": "lambdaOutput3" },
           ],
-          "RoleArn": "arn:aws:iam::123456789012:root",
           "RunOrder": 1
           }
         ],
