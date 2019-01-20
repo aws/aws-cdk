@@ -47,13 +47,13 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       scaleOutCooldownSec: props.scaleOutCooldownSec
     });
   }
+  
   /**
    * Scale out or in to achieve a target ALB request count per target
    */
   public scaleOnRequestCount(id: string, props: RequestCountScalingProps) {
-    const resourceLabel = `${props.targetGroup.firstLoadBalancerFullName}/${
-      props.targetGroup.targetGroupFullName
-      }`;
+    const resourceLabel = props.targetGroup.firstLoadBalancerFullName +
+       '/' + props.targetGroup.targetGroupFullName;
 
     return super.doScaleToTrackMetric(id, {
       predefinedMetric: appscaling.PredefinedMetric.ALBRequestCountPerTarget,
