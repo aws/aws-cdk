@@ -33,13 +33,23 @@ export class Stack extends Construct {
    * @returns The Stack object (throws if the node is not part of a Stack-rooted tree)
    */
   public static find(scope: IConstruct): Stack {
+    const curr = Stack.tryFind(scope);
+    if (curr == null) {
+      throw new Error(`Cannot find a Stack parent for '${scope.toString()}'`);
+    }
+    return curr;
+  }
+
+  /**
+   * Traverses the tree and looks up for the Stack root.
+   *
+   * @param scope A construct in the tree
+   * @returns The Stack object, or undefined if no stack was found.
+   */
+  public static tryFind(scope: IConstruct): Stack | undefined {
     let curr: IConstruct | undefined = scope;
     while (curr != null && !Stack.isStack(curr)) {
       curr = curr.node.scope;
-    }
-
-    if (curr == null) {
-      throw new Error(`Cannot find a Stack parent for '${scope.toString()}'`);
     }
     return curr;
   }

@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Resource, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal } from '../lib';
 
@@ -108,17 +108,6 @@ export = {
               Principal: { Service: 'service' } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns: [ 'managed1', 'managed2', 'managed3' ] } } } });
-    test.done();
-  },
-
-  'role implements IDependable to allow resources to depend on it'(test: Test) {
-    const stack = new Stack();
-    const role = new Role(stack, 'MyRole', { assumedBy: new ServicePrincipal('foo') });
-
-    test.equal(role.dependencyElements.length, 1);
-
-    const roleResource = role.dependencyElements[0] as Resource;
-    test.equal(roleResource.resourceType, 'AWS::IAM::Role');
     test.done();
   },
 

@@ -3,6 +3,7 @@ import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
 import { makeUniqueId } from '../util/uniqueid';
 import { Token, unresolved } from './tokens';
 import { resolve } from './tokens/resolve';
+import { addSet } from './util';
 export const PATH_SEP = '/';
 
 /**
@@ -38,6 +39,7 @@ export class ConstructNode {
   private readonly context: { [key: string]: any } = { };
   private readonly _metadata = new Array<MetadataEntry>();
   private readonly references = new Set<Token>();
+  private readonly dependencies = new Set<IConstruct>();
 
   /**
    * If this is set to 'true'. addChild() calls for this construct and any child
@@ -445,6 +447,31 @@ export class ConstructNode {
     recurse(this);
 
     return Array.from(ret);
+  }
+
+  /**
+   * Add an ordering dependency on another Construct.
+   *
+   * All constructs in the dependency's scope will be deployed before any
+   * construct in this construct's scope.
+   */
+  public addDependency(...dependencies: IConstruct[]) {
+    for (const dependency of dependencies) {
+      this.dependencies.add(dependency);
+    }
+  }
+
+  /**
+   * Return all dependencies registered on this node and its ancestors.
+   */
+  public myDependencies(): Set<IConstruct> {
+    const ret = new Set<IConstruct>();
+    let node: ConstructNode | undefined = this;
+    while (node !== undefined) {
+      addSet(ret, node.dependencies);
+      node = node.scope && node.scope.node;
+    }
+    return ret;
   }
 
   /**

@@ -1,10 +1,11 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Construct } from '../core/construct';
+import { Construct, IConstruct } from '../core/construct';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CfnReference } from './cfn-tokens';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { IDependable, Referenceable, StackElement } from './stack-element';
+import { Stack } from './stack';
+import { Referenceable } from './stack-element';
 
 export interface ResourceProps {
   /**
@@ -36,6 +37,13 @@ export class Resource extends Referenceable {
         }
       });
     };
+  }
+
+  /**
+   * Check whether the given construct is a Resource
+   */
+  public static isResource(construct: IConstruct): construct is Resource {
+    return (construct as any).resourceType !== undefined;
   }
 
   /**
@@ -72,7 +80,12 @@ export class Resource extends Referenceable {
    */
   private readonly rawOverrides: any = { };
 
-  private dependsOn = new Array<IDependable>();
+  /**
+   * Logical IDs of dependencies.
+   *
+   * Is filled during prepare().
+   */
+  private readonly dependsOn = new Set<string>();
 
   /**
    * Creates a resource construct.
@@ -106,14 +119,6 @@ export class Resource extends Referenceable {
    */
   public getAtt(attributeName: string) {
     return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`, this);
-  }
-
-  /**
-   * Adds a dependency on another resource.
-   * @param other The other resource.
-   */
-  public addDependency(...other: IDependable[]) {
-    this.dependsOn.push(...other);
   }
 
   /**
@@ -188,7 +193,8 @@ export class Resource extends Referenceable {
           [this.logicalId]: deepMerge({
             Type: this.resourceType,
             Properties: ignoreEmpty(this, properties),
-            DependsOn: ignoreEmpty(this, this.renderDependsOn()),
+            // Return a sorted set of dependencies to be consistent across tests
+            DependsOn: ignoreEmpty(this, sortedSet(this.dependsOn)),
             CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
             UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
             DeletionPolicy: capitalizePropertyNames(this, this.options.deletionPolicy),
@@ -213,28 +219,35 @@ export class Resource extends Referenceable {
     return properties;
   }
 
-  private renderDependsOn() {
-    const logicalIDs = new Set<string>();
-    for (const d of this.dependsOn) {
-      addDependency(d);
+  /**
+   * Final preparation before rendering.
+   *
+   * Take all dependencies, find the CloudFormation Resources in them,
+   * and take a dependency on their logical IDs. If the discovered
+   * resources turn out to be in different Stacks, take a Stack dependency
+   * instead.
+   */
+  protected prepare() {
+    super.prepare();
+
+    // As an optimization, do the stack dependencies first on the parents
+    // (instead of all the leaf nodes), so that we minimize the amount of stack
+    // lookups.
+    const deps = this.node.myDependencies();
+
+    // Can not be in Stacks in tests, in which case we make no assumptions at all
+    const myStack = Stack.tryFind(this);
+    for (const dep of Array.from(deps)) {
+      const theirStack = Stack.tryFind(dep);
+      if (myStack && theirStack && myStack !== theirStack) {
+        myStack.addDependency(theirStack);
+        deps.delete(dep);
+      }
     }
 
-    return Array.from(logicalIDs);
-
-    function addDependency(d: IDependable) {
-      d.dependencyElements.forEach(dep => {
-        const logicalId = (dep as StackElement).logicalId;
-        if (logicalId) {
-          logicalIDs.add(logicalId);
-        }
-      });
-
-      // break if dependencyElements include only 'd', which means we reached a terminal.
-      if (d.dependencyElements.length === 1 && d.dependencyElements[0] === d) {
-        return;
-      } else {
-        d.dependencyElements.forEach(dep => addDependency(dep));
-      }
+    const resources = findResources(deps);
+    for (const id of resources.map(r => r.logicalId)) {
+      this.dependsOn.add(id);
     }
   }
 }
@@ -312,4 +325,21 @@ export function deepMerge(target: any, source: any) {
   }
 
   return target;
+}
+
+/**
+ * Find all resources in a set of constructs
+ */
+function findResources(roots: Iterable<IConstruct>): Resource[] {
+  const ret = new Array<Resource>();
+  for (const root of roots) {
+    ret.push(...root.node.findAll().filter(Resource.isResource));
+  }
+  return ret;
+}
+
+function sortedSet<T>(xs: Set<T>): T[] {
+  const ret = Array.from(xs);
+  ret.sort();
+  return ret;
 }

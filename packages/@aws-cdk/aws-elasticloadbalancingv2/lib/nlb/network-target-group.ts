@@ -3,7 +3,6 @@ import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, Lo
          TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
-import { LazyDependable } from '../shared/util';
 import { INetworkListener } from './network-listener';
 
 /**
@@ -76,7 +75,7 @@ export class NetworkTargetGroup extends TargetGroupBase {
    * Don't call this directly. It will be called by listeners.
    */
   public registerListener(listener: INetworkListener) {
-    this.loadBalancerAssociationDependencies.push(listener);
+    this.loadBalancerConstructs.push(listener);
     this.listeners.push(listener);
   }
 
@@ -110,10 +109,6 @@ export interface INetworkTargetGroup extends ITargetGroup {
 class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INetworkTargetGroup {
   public registerListener(_listener: INetworkListener) {
     // Nothing to do, we know nothing of our members
-  }
-
-  public loadBalancerDependency(): cdk.IDependable {
-    return new LazyDependable([]);
   }
 }
 

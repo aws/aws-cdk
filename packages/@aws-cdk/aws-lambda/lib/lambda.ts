@@ -351,7 +351,7 @@ export class Function extends FunctionBase {
       reservedConcurrentExecutions: props.reservedConcurrentExecutions
     });
 
-    resource.addDependency(this.role);
+    resource.node.addDependency(this.role);
 
     this.functionName = resource.ref;
     this.functionArn = resource.functionArn;

@@ -185,7 +185,7 @@ export class CloudTrail extends cdk.Construct {
     });
     this.cloudTrailArn = trail.trailArn;
     const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
-    trail.addDependency(s3BucketPolicy);
+    trail.node.addDependency(s3BucketPolicy);
   }
 
   /**

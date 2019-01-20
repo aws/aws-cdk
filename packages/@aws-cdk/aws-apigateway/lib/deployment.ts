@@ -51,17 +51,12 @@ export interface DeploymentProps  {
  * Furthermore, since a deployment does not reference any of the REST API
  * resources and methods, CloudFormation will likely provision it before these
  * resources are created, which means that it will represent a "half-baked"
- * model. Use the `addDependency(dep)` method to circumvent that. This is done
+ * model. Use the `node.addDependency(dep)` method to circumvent that. This is done
  * automatically for the `restApi.latestDeployment` deployment.
  */
-export class Deployment extends cdk.Construct implements cdk.IDependable {
+export class Deployment extends cdk.Construct {
   public readonly deploymentId: string;
   public readonly api: IRestApi;
-
-  /**
-   * Allows taking a dependency on this construct.
-   */
-  public readonly dependencyElements = new Array<cdk.IDependable>();
 
   private readonly resource: LatestDeploymentResource;
 
@@ -79,15 +74,6 @@ export class Deployment extends cdk.Construct implements cdk.IDependable {
 
     this.api = props.api;
     this.deploymentId = new cdk.Token(() => this.resource.deploymentId).toString();
-    this.dependencyElements.push(this.resource);
-  }
-
-  /**
-   * Adds a dependency for this deployment. Should be called by all resources and methods
-   * so they are provisioned before this Deployment.
-   */
-  public addDependency(dep: cdk.IDependable) {
-    this.resource.addDependency(dep);
   }
 
   /**

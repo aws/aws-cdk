@@ -33,7 +33,7 @@ export interface BucketNotificationDestinationProps {
    * Any additional dependencies that should be resolved before the bucket notification
    * can be configured (for example, the SNS Topic Policy resource).
    */
-  dependencies?: cdk.IDependable[]
+  dependencies?: cdk.IConstruct[]
 }
 
 /**

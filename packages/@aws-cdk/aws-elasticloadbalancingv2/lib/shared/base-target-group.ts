@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
-import { Attributes, LazyDependable, renderAttributes } from './util';
+import { Attributes, renderAttributes } from './util';
 
 /**
  * Basic properties of both Application and Network Target Groups
@@ -173,14 +173,14 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   public healthCheck: HealthCheck;
 
   /**
+   * List of constructs that need to be depended on to ensure the TargetGroup is associated to a load balancer
+   */
+  public readonly loadBalancerConstructs = new Array<cdk.IConstruct>();
+
+  /**
    * Default port configured for members of this target group
    */
   protected readonly defaultPort: string;
-
-  /**
-   * List of dependables that need to be depended on to ensure the TargetGroup is associated to a load balancer
-   */
-  protected readonly loadBalancerAssociationDependencies = new Array<cdk.IDependable>();
 
   /**
    * Attributes of this target group
@@ -268,25 +268,11 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     };
   }
 
-  /**
-   * Add a dependency between this target group and the indicated resources
-   */
-  public addDependency(...other: cdk.IDependable[]) {
-    this.resource.addDependency(...other);
-  }
-
   public asCodeDeployLoadBalancer(): codedeploy.ILoadBalancerProps {
     return {
       generation: codedeploy.LoadBalancerGeneration.Second,
       name: this.targetGroupName,
     };
-  }
-
-  /**
-   * Return an object to depend on this TargetGroup being attached to a load balancer
-   */
-  public loadBalancerDependency(): cdk.IDependable {
-    return new LazyDependable(this.loadBalancerAssociationDependencies);
   }
 
   /**
@@ -341,7 +327,7 @@ export interface ITargetGroup extends cdk.IConstruct {
   /**
    * Return an object to depend on the listeners added to this target group
    */
-  loadBalancerDependency(): cdk.IDependable;
+  readonly loadBalancerConstructs: cdk.IConstruct[];
 
   /**
    * Export this target group

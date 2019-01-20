@@ -3,20 +3,9 @@ import { Construct, IConstruct, PATH_SEP } from "../core/construct";
 const LOGICAL_ID_MD = 'aws:cdk:logicalId';
 
 /**
- * Represents a construct that can be "depended on" via `addDependency`.
- */
-export interface IDependable {
-  /**
-   * Returns the set of all stack elements (resources, parameters, conditions)
-   * that should be added when a resource "depends on" this construct.
-   */
-  readonly dependencyElements: IDependable[];
-}
-
-/**
  * An element of a CloudFormation stack.
  */
-export abstract class StackElement extends Construct implements IDependable {
+export abstract class StackElement extends Construct {
   /**
    * Returns `true` if a construct is a stack element (i.e. part of the
    * synthesized cloudformation template).
@@ -91,10 +80,6 @@ export abstract class StackElement extends Construct implements IDependable {
    */
   public get stackPath(): string {
     return this.node.ancestors(this.stack).map(c => c.node.id).join(PATH_SEP);
-  }
-
-  public get dependencyElements(): IDependable[] {
-    return [ this ];
   }
 
   /**

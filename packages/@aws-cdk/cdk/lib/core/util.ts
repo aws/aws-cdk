@@ -48,3 +48,12 @@ export function ignoreEmpty(construct: IConstruct, o: any): any {
 
   return o;
 }
+
+/**
+ * Add elements of the right-hand set into the left-hand set.
+ */
+export function addSet<T, U extends T>(into: Set<T>, from: Set<U>) {
+  for (const y of from) {
+    into.add(y);
+  }
+}

@@ -125,17 +125,19 @@ export = {
     });
 
     // WHEN
-    const resource = new cdk.Resource(stack, 'MyResource', {
-      type: 'SomeResource',
-    });
-    resource.addDependency(group.loadBalancerDependency());
+    new ResourceWithLBDependency(stack, 'MyResource', group);
 
     // THEN
     expect(stack).toMatch({
       Resources: {
         MyResource: {
-          Type: "SomeResource",
-          DependsOn: [ "LBListener49E825B4" ]
+          Type: "Test::Resource",
+          DependsOn: [
+            "LBListener49E825B4",
+            // 2nd dependency is there because of the structure of the construct tree.
+            // It does not harm.
+            "LBListenerGroupGroup79B304FF"
+          ]
         }
       }
     }, MatchStyle.SUPERSET);
@@ -143,3 +145,15 @@ export = {
     test.done();
   },
 };
+
+class ResourceWithLBDependency extends cdk.Resource {
+  constructor(scope: cdk.Construct, id: string, private readonly targetGroup: elbv2.ITargetGroup) {
+    super(scope, id, { type: 'Test::Resource' });
+  }
+
+  protected prepare() {
+    this.node.addDependency(...this.targetGroup.loadBalancerConstructs);
+
+    super.prepare();
+  }
+}

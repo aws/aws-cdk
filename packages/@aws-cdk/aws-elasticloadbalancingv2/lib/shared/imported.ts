@@ -15,17 +15,17 @@ export abstract class ImportedTargetGroupBase extends cdk.Construct implements I
    */
   public readonly loadBalancerArns: string;
 
+  /**
+   * Return an object to depend on the listeners added to this target group
+   */
+  public readonly loadBalancerConstructs: cdk.IConstruct[] = [];
+
   constructor(scope: cdk.Construct, id: string, private readonly props: TargetGroupImportProps) {
     super(scope, id);
 
     this.targetGroupArn = props.targetGroupArn;
     this.loadBalancerArns = props.loadBalancerArns || new cdk.AwsNoValue().toString();
   }
-
-  /**
-   * Return an object to depend on the listeners added to this target group
-   */
-  public abstract loadBalancerDependency(): cdk.IDependable;
 
   public export() {
     return this.props;

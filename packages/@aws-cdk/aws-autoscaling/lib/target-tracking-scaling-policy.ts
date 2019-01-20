@@ -1,4 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
@@ -93,21 +94,18 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   autoScalingGroup: IAutoScalingGroup;
 }
 
-export class TargetTrackingScalingPolicy extends cdk.Construct implements cdk.IDependable {
+export class TargetTrackingScalingPolicy extends cdk.Construct {
   /**
    * ARN of the scaling policy
    */
   public readonly scalingPolicyArn: string;
 
   /**
-   * Inner objects of this policy
-   */
-  public readonly dependencyElements: cdk.IDependable[];
-
-  /**
    * The resource object
    */
   private resource: CfnScalingPolicy;
+
+  private targetGroups: elbv2.ITargetGroup[];
 
   constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
@@ -128,6 +126,8 @@ export class TargetTrackingScalingPolicy extends cdk.Construct implements cdk.ID
 
     super(scope, id);
 
+    this.targetGroups = [];
+
     this.resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'TargetTrackingScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
@@ -145,15 +145,27 @@ export class TargetTrackingScalingPolicy extends cdk.Construct implements cdk.ID
     });
 
     this.scalingPolicyArn = this.resource.scalingPolicyArn;
-    this.dependencyElements = [this.resource];
   }
 
   /**
-   * Add a dependency on the given dependenable
+   * Mark this scaling policy as depending on the given targetGroup being attached to a LoadBalancer.
+   *
+   * The scaling policy can only be created after the attachment has happened,
+   * so we add an ordering dependency on the Target Group being associated with
+   * a Load Balancer.
    */
-  public addDependency(...other: cdk.IDependable[]) {
-    this.resource.addDependency(...other);
+  public dependOnLoadBalancerAttachment(targetGroup: elbv2.ITargetGroup) {
+    // Defer the actual work until prepare() since the load balancer association
+    // may still be created later during setup.
+    this.targetGroups.push(targetGroup);
   }
+
+  protected prepare() {
+    for (const targetGroup of this.targetGroups) {
+      this.node.addDependency(...targetGroup.loadBalancerConstructs);
+    }
+  }
+
 }
 
 function renderCustomMetric(metric?: cloudwatch.Metric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {

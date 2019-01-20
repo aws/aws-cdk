@@ -565,7 +565,7 @@ export = {
     const resource = new cdk.Resource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
 
     // WHEN
-    resource.addDependency(api);
+    resource.node.addDependency(api);
 
     // THEN
     expect(stack).to(haveResource('My::Resource', {
