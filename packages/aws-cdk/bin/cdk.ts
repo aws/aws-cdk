@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
+// tslint:disable-next-line:no-var-requires
+require('source-map-support').install();
 
 import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
