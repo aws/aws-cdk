@@ -464,14 +464,14 @@ export class ConstructNode {
   /**
    * Return all dependencies registered on this node and its ancestors.
    */
-  public myDependencies(): Set<IConstruct> {
+  public myDependencies(): IConstruct[] {
     const ret = new Set<IConstruct>();
     let node: ConstructNode | undefined = this;
     while (node !== undefined) {
       addSet(ret, node.dependencies);
       node = node.scope && node.scope.node;
     }
-    return ret;
+    return Array.from(ret);
   }
 
   /**

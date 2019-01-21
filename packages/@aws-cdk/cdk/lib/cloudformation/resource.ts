@@ -234,18 +234,19 @@ export class Resource extends Referenceable {
     // (instead of all the leaf nodes), so that we minimize the amount of stack
     // lookups.
     const deps = this.node.myDependencies();
+    const depSet = new Set(deps);
 
     // Can not be in Stacks in tests, in which case we make no assumptions at all
     const myStack = Stack.tryFind(this);
-    for (const dep of Array.from(deps)) {
+    for (const dep of deps) {
       const theirStack = Stack.tryFind(dep);
       if (myStack && theirStack && myStack !== theirStack) {
         myStack.addDependency(theirStack);
-        deps.delete(dep);
+        depSet.delete(dep);
       }
     }
 
-    const resources = findResources(deps);
+    const resources = findResources(depSet);
     for (const id of resources.map(r => r.logicalId)) {
       this.dependsOn.add(id);
     }
