@@ -106,7 +106,7 @@ async function calculateImageFingerprint(imageId: string) {
   // on every push, causing us to miss all cache hits.
   delete manifest.Metadata;
 
-  // GraphDriver is about running the image, not about
+  // GraphDriver is about running the image, not about the image itself.
   delete manifest.GraphDriver;
 
   return crypto.createHash('sha256').update(JSON.stringify(manifest)).digest('hex');

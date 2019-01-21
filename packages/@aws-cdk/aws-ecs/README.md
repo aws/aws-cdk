@@ -266,7 +266,7 @@ you can configure on your instances.
 ### Integration with CloudWatch Events
 
 To start an ECS task on an EC2-backed Cluster, instantiate an
-`Ec2TaskEventRuleTarget` intead of an `Ec2Service`:
+`Ec2TaskEventRuleTarget` instead of an `Ec2Service`:
 
 [example of CloudWatch Events integration](test/ec2/integ.event-task.lit.ts)
 

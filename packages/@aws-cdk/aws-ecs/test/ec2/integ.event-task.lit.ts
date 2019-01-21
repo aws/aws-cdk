@@ -4,45 +4,51 @@ import cdk = require('@aws-cdk/cdk');
 import ecs = require('../../lib');
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ-ecs');
 
-const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 1 });
+class EventStack extends cdk.Stack {
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
-const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-cluster.addDefaultAutoScalingGroupCapacity({
-  instanceType: new ec2.InstanceType('t2.micro')
-});
+    const vpc = new ec2.VpcNetwork(this, 'Vpc', { maxAZs: 1 });
 
-/// !show
-// Create a Task Definition for the container to start
-const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
-taskDefinition.addContainer('TheContainer', {
-  image: ecs.ContainerImage.fromAsset(stack, 'EventImage', { directory: 'eventhandler-image' }),
-  memoryLimitMiB: 256,
-  logging: new ecs.AwsLogDriver(stack, 'TaskLogging', { streamPrefix: 'EventDemo' })
-});
+    const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
+    cluster.addDefaultAutoScalingGroupCapacity({
+      instanceType: new ec2.InstanceType('t2.micro')
+    });
 
-// An EventRule that describes the event trigger (in this case a scheduled run)
-const rule = new events.EventRule(stack, 'Rule', {
-  scheduleExpression: 'rate(1 minute)',
-});
+    /// !show
+    // Create a Task Definition for the container to start
+    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+    taskDefinition.addContainer('TheContainer', {
+      image: ecs.ContainerImage.fromAsset(this, 'EventImage', { directory: 'eventhandler-image' }),
+      memoryLimitMiB: 256,
+      logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
+    });
 
-// Use Ec2TaskEventRuleTarget as the target of the EventRule
-const target = new ecs.Ec2TaskEventRuleTarget(stack, 'EventTarget', {
-  cluster,
-  taskDefinition,
-  taskCount: 1
-});
+    // An EventRule that describes the event trigger (in this case a scheduled run)
+    const rule = new events.EventRule(this, 'Rule', {
+      scheduleExpression: 'rate(1 minute)',
+    });
 
-// Pass an environment variable to the container 'TheContainer' in the task
-rule.addTarget(target, {
-  jsonTemplate: JSON.stringify({
-    containerOverrides: [{
-      name: 'TheContainer',
-      environment: [{ name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' }]
-    }]
-  })
-});
-/// !hide
+    // Use Ec2TaskEventRuleTarget as the target of the EventRule
+    const target = new ecs.Ec2TaskEventRuleTarget(this, 'EventTarget', {
+      cluster,
+      taskDefinition,
+      taskCount: 1
+    });
 
+    // Pass an environment variable to the container 'TheContainer' in the task
+    rule.addTarget(target, {
+      jsonTemplate: JSON.stringify({
+        containerOverrides: [{
+          name: 'TheContainer',
+          environment: [{ name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' }]
+        }]
+      })
+    });
+    /// !hide
+  }
+}
+
+new EventStack(app, 'aws-ecs-integ-ecs');
 app.run();
