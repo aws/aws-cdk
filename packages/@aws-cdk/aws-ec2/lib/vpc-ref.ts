@@ -58,7 +58,7 @@ export interface IVpcNetwork extends IConstruct {
    * This method is for construct authors; application builders should not
    * need to call this.
    */
-  internetDependencies: IConstruct[];
+  readonly internetDependencies: IConstruct[];
 
   /**
    * Constructs that will ensure NAT connectivity has been added to the VPC
@@ -69,7 +69,7 @@ export interface IVpcNetwork extends IConstruct {
    * This method is for construct authors; application builders should not
    * need to call this.
    */
-  natDependencies: IConstruct[];
+  readonly natDependencies: IConstruct[];
 
   /**
    * Return the subnets appropriate for the placement strategy
