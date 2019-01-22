@@ -132,6 +132,26 @@ const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
 });
 ```
 
+### Buckets as deploy targets in CodePipeline
+
+This package also defines an Action that allows you to use a
+Bucket as a deployment target in CodePipeline:
+
+```ts
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import s3 = require('@aws-cdk/aws-s3');
+
+const targetBucket = new s3.Bucket(this, 'MyBucket', {});
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const deployStage = pipeline.addStage('Deploy');
+const deployAction = new s3.PipelineDeployAction(this, 'S3Deploy', {
+    stage: deployStage,
+    bucket: targetBucket,
+    inputArtifact: sourceAction.outputArtifact,
+});
+```
+
 ### Sharing buckets between stacks
 
 To use a bucket in a different stack in the same CDK application, pass the object to the other stack:

@@ -39,7 +39,7 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
  * Construction properties of the {@link PipelineSourceAction S3 source Action}.
  */
 export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps,
-    codepipeline.CommonActionConstructProps {
+  codepipeline.CommonActionConstructProps {
   /**
    * The Amazon S3 bucket that stores the source code
    */
@@ -68,5 +68,56 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
 
     // pipeline needs permissions to read from the S3 bucket
     props.bucket.grantRead(props.stage.pipeline.role);
+  }
+}
+
+/**
+ * Construction properties of the {@link PipelineDeployAction S3 deploy Action}.
+ */
+export interface PipelineDeployActionProps extends codepipeline.CommonActionProps,
+  codepipeline.CommonActionConstructProps {
+  /**
+   * The Amazon S3 bucket that is the deploy target
+   */
+  bucket: IBucket;
+  /**
+   * Should the deploy action extract the artifact before deploying to Amazon S3. Defaults to true
+   */
+  extract?: boolean;
+  /**
+   * The key of the target object. This is required if extract is false.
+   */
+  objectKey?: string;
+  /**
+   * The inputArtifact to deploy to Amazon S3
+   */
+  inputArtifact: codepipeline.Artifact;
+}
+
+/**
+ * Deploys the sourceArtifact to Amazon S3.
+ */
+export class PipelineDeployAction extends codepipeline.DeployAction {
+  constructor(scope: cdk.Construct, id: string, props: PipelineDeployActionProps) {
+    super(scope, id, {
+      stage: props.stage,
+      runOrder: props.runOrder,
+      owner: 'AWS',
+      provider: 'S3',
+      inputArtifact: props.inputArtifact,
+      artifactBounds: {
+        minInputs: 1,
+        maxInputs: 1,
+        minOutputs: 0,
+        maxOutputs: 0,
+      },
+      configuration: {
+        BucketName: props.bucket.bucketName,
+        Extract: props.extract || 'true',
+        ObjectKey: props.objectKey,
+      },
+    });
+    // pipeline needs permissions to write to the S3 bucket
+    props.bucket.grantWrite(props.stage.pipeline.role);
   }
 }
