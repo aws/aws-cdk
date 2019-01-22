@@ -42,7 +42,6 @@ export = nodeunit.testCase({
     test.done();
   },
 
-
   'returns appropriate roleName'(test: nodeunit.Test) {
     // GIVEN
     const stack = new cdk.Stack();
