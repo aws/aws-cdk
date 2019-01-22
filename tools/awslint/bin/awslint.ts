@@ -19,7 +19,7 @@ async function main() {
     .option('exclude', { alias: 'x', type: 'array', desc: 'do not evaludate these rules (takes priority over --include)', default: [ ] })
     .option('save', { type: 'boolean', desc: 'updates package.json with "exclude" statements for all failing rules', default: false })
     .option('verbose', { alias: 'v', type: 'boolean', desc: 'verbose output (prints all assertions)', default: false })
-    .option('quiet', { alias: 'q', type: 'boolean', desc: 'quiet mode - shows only errors', default: false })
+    .option('quiet', { alias: 'q', type: 'boolean', desc: 'quiet mode - shows only errors', default: true })
     .option('force', { type: 'boolean', desc: 'succeed silently if this is not a jsii module', default: true })
     .option('config', { type: 'boolean', desc: 'reads options from the "awslint" section in package.json', default: true })
     .option('debug', { type: 'boolean', desc: 'debug output', default: false })
@@ -136,10 +136,12 @@ async function main() {
               color = colors.blue;
             }
             break;
+          default:
         }
 
         if (color) {
-          console.error(color(`${colors.bold(diag.scope)} -- ${DiagnosticLevel[diag.level].toLowerCase()}: ${diag.message} [${diag.rule.code}]`));
+          const indent = DiagnosticLevel[diag.level].length;
+          console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: ${diag.message}\n${' '.repeat(indent)}  [${diag.rule.code}:${colors.bold(diag.scope)}]`));
         }
       }
     }
@@ -196,7 +198,6 @@ async function main() {
     // compile!
     return true;
   }
-
 }
 
 main().catch(e => {

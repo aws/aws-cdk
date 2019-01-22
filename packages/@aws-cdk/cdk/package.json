@@ -29,8 +29,10 @@
   },
   "awslint": {
     "exclude": [
-      "construct-ctor:@aws-cdk/cdk.App.<initializer>",
+      "construct-ctor:@aws-cdk/cdk.App.<initializer>.params[0]",
+      "construct-ctor:@aws-cdk/cdk.App.<initializer>.params[1]",
       "construct-ctor:@aws-cdk/cdk.Root.<initializer>",
+      "construct-ctor:@aws-cdk/cdk.Program.<initializer>",
       "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params*"
     ]
   },
