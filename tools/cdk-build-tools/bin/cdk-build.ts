@@ -28,12 +28,12 @@ async function main() {
   const options = cdkBuildOptions();
 
   if (options.pre) {
-    await shell(options.pre, timers);
+    await shell(options.pre, { timers });
   }
 
   // See if we need to call cfn2ts
   if (options.cloudformation) {
-    await shell(['cfn2ts', `--scope=${options.cloudformation}`], timers);
+    await shell(['cfn2ts', `--scope=${options.cloudformation}`], { timers });
   }
 
   await compileCurrentPackage(timers, { jsii: args.jsii, tsc: args.tsc });

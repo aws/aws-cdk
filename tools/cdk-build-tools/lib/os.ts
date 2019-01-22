@@ -3,13 +3,18 @@ import fs = require('fs');
 import util = require('util');
 import { Timers } from "./timer";
 
+export interface ShellOptions {
+  timers?: Timers;
+  env?: {[key: string]: string};
+}
+
 /**
  * A shell command that does what you want
  *
  * Is platform-aware, handles errors nicely.
  */
-export async function shell(command: string[], timers?: Timers): Promise<string> {
-  const timer = (timers || new Timers()).start(command[0]);
+export async function shell(command: string[], options: ShellOptions = {}): Promise<string> {
+  const timer = (options.timers || new Timers()).start(command[0]);
 
   await makeShellScriptExecutable(command[0]);
 
@@ -17,10 +22,7 @@ export async function shell(command: string[], timers?: Timers): Promise<string>
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
     stdio: [ 'ignore', 'pipe', 'inherit' ],
-    env: {
-      CDK_TEST_MODE: '1',
-      ...process.env,
-    },
+    env: { ...process.env, ...(options.env || {}) }
   });
 
   return new Promise<string>((resolve, reject) => {

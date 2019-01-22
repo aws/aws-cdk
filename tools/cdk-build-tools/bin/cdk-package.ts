@@ -36,10 +36,10 @@ async function main() {
   }
 
   if (pkg.jsii) {
-    await shell([ args.jsiiPacmak, args.verbose ? '-vvv' : '-v', '-o', outdir ], timers);
+    await shell([ args.jsiiPacmak, args.verbose ? '-vvv' : '-v', '-o', outdir ], { timers });
   } else {
     // just "npm pack" and deploy to "outdir"
-    const tarball = (await shell([ 'npm', 'pack' ], timers)).trim();
+    const tarball = (await shell([ 'npm', 'pack' ], { timers })).trim();
     const target = path.join(outdir, 'js');
     await fs.remove(target);
     await fs.mkdirp(target);

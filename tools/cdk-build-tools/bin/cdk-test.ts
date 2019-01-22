@@ -43,7 +43,7 @@ async function main() {
   const options = cdkBuildOptions();
 
   if (options.test) {
-    await shell(options.test, timers);
+    await shell(options.test, { timers });
   }
 
   const testFiles = await unitTestFiles();
@@ -70,12 +70,15 @@ async function main() {
     testCommand.push(args.nodeunit);
     testCommand.push(...testFiles.map(f => f.path));
 
-    await shell(testCommand, timers);
+    await shell(testCommand, {
+      timers,
+      env: { CDK_TEST_MODE: '1' }
+    });
   }
 
   // Run integration test if the package has integ test files
   if (await hasIntegTests()) {
-    await shell(['cdk-integ-assert'], timers);
+    await shell(['cdk-integ-assert'], { timers });
   }
 }
 
