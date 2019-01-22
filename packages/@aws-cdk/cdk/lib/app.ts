@@ -80,7 +80,9 @@ export class App extends Construct {
    * @param request Optional toolkit request (e.g. for tests)
    */
   constructor(id?: string, props: AppProps = {}) {
-    // For tests, we use a fresh Program every time
+    // For tests, we use a fresh Program every time. Right now, we configure this as
+    // an environment variable set by 'cdk-test'. If we were using Jest,
+    // we could use Jest initialization to configure testing mode.
     const program = props.program || (process.env.CDK_TEST_MODE === '1'
         ? new Program()
         : Program.defaultInstance());
