@@ -37,6 +37,7 @@
     "@aws-cdk/aws-rds": "^0.22.0",
     "@aws-cdk/aws-s3": "^0.22.0",
     "@aws-cdk/aws-sns": "^0.22.0",
+    "@aws-cdk/aws-events": "^0.22.0",
     "@aws-cdk/aws-sqs": "^0.22.0",
     "@aws-cdk/cdk": "^0.22.0",
     "@aws-cdk/runtime-values": "^0.22.0"

@@ -40,7 +40,7 @@ export interface StateMachineProps {
 /**
  * Define a StepFunctions State Machine
  */
-export class StateMachine extends cdk.Construct implements IStateMachine {
+export class StateMachine extends cdk.Construct implements IStateMachine, events.IEventRuleTarget {
     /**
      * Import a state machine
      */
