@@ -1,7 +1,5 @@
 import dynamodb = require('@aws-cdk/aws-dynamodb');
-import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Table } from '@aws-cdk/aws-dynamodb';
 
 export interface DynamoEventSourceProps {
   /**
@@ -40,6 +38,6 @@ export class DynamoEventSource implements lambda.IEventSource {
     });
 
     this.table.grantStreamRead(target.role);
-    Table.grantListStreams(target.role);
+    dynamodb.Table.grantListStreams(target.role);
   }
 }

@@ -1355,7 +1355,32 @@ export = {
       testGrant(test, [ '*' ], (p, t) => t.grantFullAccess(p));
     },
 
-    '"grantReadStreamData" allows principal to read the table stream and list/describe streams"'(test: Test) {
+    '"Table.grantListStreams" allows principal to list all streams'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      Table.grantListStreams(user);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Users": [ { "Ref": "user2C2B57AE" } ]
+      }));
+      test.done();
+    },
+
+    '"grantStreamRead" allows principal to read and describe the table stream"'(test: Test) {
       const stack = new Stack();
       const table = new Table(stack, 'my-table', {
         partitionKey: {
@@ -1365,7 +1390,7 @@ export = {
         streamSpecification: StreamViewType.NewImage
       });
       const user = new iam.User(stack, 'user');
-      table.grantReadStreamData(user);
+      table.grantStreamRead(user);
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
