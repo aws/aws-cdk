@@ -9,7 +9,7 @@
     }
   },
   "metadata": {
-    "/NoStackApplet/Default/P1": [
+    "/App/NoStackApplet/Default/P1": [
       {
         "type": "aws:cdk:logicalId",
         "data": "P1",

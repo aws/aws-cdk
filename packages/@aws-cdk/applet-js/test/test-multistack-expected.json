@@ -13,7 +13,7 @@
     }
   },
   "metadata": {
-    "/Stack2/P1": [
+    "/App/Stack2/P1": [
       {
         "type": "aws:cdk:logicalId",
         "data": "P1",
@@ -22,7 +22,7 @@
         ]
       }
     ],
-    "/Stack2/P2": [
+    "/App/Stack2/P2": [
       {
         "type": "aws:cdk:logicalId",
         "data": "P2",

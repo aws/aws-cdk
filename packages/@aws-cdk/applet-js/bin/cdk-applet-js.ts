@@ -37,12 +37,13 @@ async function main() {
   const searchDir = path.dirname(appletFile);
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdkapplet'));
   try {
-    const app = new cdk.App();
+    const program = new cdk.Program();
+    const app = new cdk.App(undefined, { program });
 
     for (const [name, definition] of Object.entries(appletMap)) {
       await constructStack(app, searchDir, tempDir, name, definition);
     }
-    app.run();
+    program.run();
   } finally {
     await fs.remove(tempDir);
   }

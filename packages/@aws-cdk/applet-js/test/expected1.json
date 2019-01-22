@@ -13,7 +13,7 @@
     }
   },
   "metadata": {
-    "/TestApplet/P1": [
+    "/App/TestApplet/P1": [
       {
         "type": "aws:cdk:logicalId",
         "data": "P1",
@@ -22,7 +22,7 @@
         ]
       }
     ],
-    "/TestApplet/P2": [
+    "/App/TestApplet/P2": [
       {
         "type": "aws:cdk:logicalId",
         "data": "P2",
