@@ -168,5 +168,7 @@ class LatestDeploymentResource extends CfnDeployment {
 
       this.lazyLogicalId = this.originalLogicalId + md5.digest("hex");
     }
+
+    super.prepare();
   }
 }
