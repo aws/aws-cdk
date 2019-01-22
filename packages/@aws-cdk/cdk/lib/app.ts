@@ -4,6 +4,7 @@ import { Construct } from './core/construct';
 import { IConstruct, MetadataEntry, PATH_SEP } from './core/construct';
 import { Environment } from './environment';
 import { Program } from './program';
+import { validateAndThrow } from './util/validation';
 
 /**
  * Properties for an App
@@ -64,6 +65,16 @@ export class App extends Construct {
   private defaultAppName: boolean;
 
   /**
+   * Whether validate() was already run or not
+   */
+  private validated: boolean;
+
+  /**
+   * Whether prepare() was already run or not
+   */
+  private prepared: boolean;
+
+  /**
    * Initializes a CDK application.
    *
    * @param request Optional toolkit request (e.g. for tests)
@@ -78,6 +89,8 @@ export class App extends Construct {
 
     this.env = props.env || {};
     this.defaultAppName = id === undefined;
+    this.validated = false;
+    this.prepared = false;
   }
 
   private get stacks() {
@@ -104,6 +117,15 @@ export class App extends Construct {
    * @param stackName The name of the stack to synthesize
    */
   public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
+    // Maintain the existing contract that `synthesizeStack` can be called
+    // by consumers, and that it will prepare and validate the construct tree.
+    if (!this.prepared) {
+      this.node.prepareTree();
+    }
+    if (!this.validated) {
+      validateAndThrow(this);
+    }
+
     const stack = this.getStack(stackName);
 
     const account = stack.env.account || 'unknown-account';
@@ -164,7 +186,12 @@ export class App extends Construct {
     }
   }
 
+  protected prepare() {
+    this.prepared = true;
+  }
+
   protected validate(): string[] {
+    this.validated = true;
     if (numberOfAppsInProgram(this) > 1 && this.node.id === DEFAULT_APP_NAME) {
       return ['When constructing more than one App, all of them must have ids'];
     }
@@ -174,7 +201,7 @@ export class App extends Construct {
   /**
    * Synthesize the App
    */
-  protected synthesize() {
+  protected synthesize(): any {
     return {
       stacks: this.synthesizeStacks(Object.keys(this.stacks)),
     };

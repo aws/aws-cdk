@@ -3,6 +3,7 @@ import fs = require('fs');
 import path = require('path');
 import { IConstruct, Root } from './core/construct';
 import { merge } from './util/json';
+import { validateAndThrow } from './util/validation';
 
 /**
  * Represents a CDK program.
@@ -52,11 +53,7 @@ export class Program extends Root {
     this.node.prepareTree();
 
     // first, validate this stack and stop if there are errors.
-    const errors = this.node.validateTree();
-    if (errors.length > 0) {
-      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-      throw new Error(`Stack validation failed with the following errors:\n  ${errorList}`);
-    }
+    validateAndThrow(this);
 
     const result: any = {
       version: cxapi.PROTO_RESPONSE_VERSION,

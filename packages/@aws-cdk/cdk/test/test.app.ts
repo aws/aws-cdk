@@ -193,7 +193,7 @@ export = {
     test.done();
   },
 
-  'Program.synthesizeAll(stack) performs validation first and returns the errors'(test: Test) {
+  'app.synthesizeStack(stack) performs validation first and returns any errors'(test: Test) {
     class Child extends Construct {
       protected validate() {
         return [ `Error from ${this.node.id}` ];
@@ -211,7 +211,7 @@ export = {
     new Child(parent, 'C2');
 
     test.throws(() => {
-      program.synthesizeAll();
+      app.synthesizeStacks(['Parent']);
     }, /Stack validation failed with the following errors/);
 
     test.done();
