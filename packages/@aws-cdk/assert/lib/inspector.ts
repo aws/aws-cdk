@@ -51,11 +51,33 @@ export class StackPathInspector extends Inspector {
   }
 
   public get value(): { [key: string]: any } | undefined {
-    const md = this.stack.metadata[`/${this.stack.name}${this.path}`];
+    const md = this.getPathMetadata();
     if (md === undefined) { return undefined; }
     const resourceMd = md.find(entry => entry.type === 'aws:cdk:logicalId');
     if (resourceMd === undefined) { return undefined; }
     const logicalId = resourceMd.data;
     return this.stack.template.Resources[logicalId];
+  }
+
+  /**
+   * Return the metadata entry for the given stack and path
+   *
+   * Complicated slightly by the fact that the stack may or may not
+   * have an "App" parent, whose id will appear in the metadata key
+   * but there's no way to get the app's id otherwise.
+   */
+  private getPathMetadata() {
+    for (const [mdKey, mdValue] of Object.entries(this.stack.metadata)) {
+      // Looks like either:
+      //   "/App/Stack/Resource/Path"
+      //   "/Stack/Resource/Path"
+      const parts = mdKey.split('/');
+
+      if ((parts[1] === this.stack.name && ('/' + parts.slice(2).join('/')) === this.path)
+        || (parts[2] === this.stack.name && ('/' + parts.slice(3).join('/')) === this.path)) {
+          return mdValue;
+      }
+    }
+    return undefined;
   }
 }
