@@ -180,6 +180,18 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
  * Provides a DynamoDB table.
  */
 export class Table extends Construct {
+  /**
+   * Permits an IAM Principal to list all DynamoDB Streams.
+   * @param principal The principal (no-op if undefined)
+   */
+  public static grantListStreams(principal?: iam.IPrincipal): void {
+    if (principal) {
+      principal.addToPolicy(new iam.PolicyStatement()
+        .addAction('dynamodb:ListStreams')
+        .addResource("*"));
+    }
+  }
+
   public readonly tableArn: string;
   public readonly tableName: string;
   public readonly tableStreamArn: string;
@@ -469,7 +481,7 @@ export class Table extends Construct {
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
    * @param principal The principal to grant access to
    */
-  public grantReadStreamData(principal?: iam.IPrincipal) {
+  public grantStreamRead(principal?: iam.IPrincipal) {
     this.grantStream(principal, ...READ_STREAM_DATA_ACTIONS);
   }
 
