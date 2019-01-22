@@ -2,7 +2,7 @@ import { Construct, Token } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
-import { Role } from './role';
+import { IRole } from './role';
 import { User } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
 
@@ -62,7 +62,7 @@ export interface PolicyProps {
    * Roles to attach this policy to.
    * You can also use `attachToRole(role)` to attach this policy to a role.
    */
-  roles?: Role[];
+  roles?: IRole[];
 
   /**
    * Groups to attach this policy to.
@@ -94,7 +94,7 @@ export class Policy extends Construct {
    */
   public readonly policyName: string;
 
-  private readonly roles = new Array<Role>();
+  private readonly roles = new Array<IRole>();
   private readonly users = new Array<User>();
   private readonly groups = new Array<Group>();
 
@@ -150,7 +150,7 @@ export class Policy extends Construct {
   /**
    * Attaches this policy to a role.
    */
-  public attachToRole(role: Role) {
+  public attachToRole(role: IRole) {
     if (this.roles.find(r => r === role)) { return; }
     this.roles.push(role);
     role.attachInlinePolicy(this);

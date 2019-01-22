@@ -1,4 +1,4 @@
-import { Construct, IConstruct, Output } from '@aws-cdk/cdk';
+import { Construct, IConstruct, Output, Stack } from '@aws-cdk/cdk';
 import { CfnRole } from './iam.generated';
 import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
@@ -217,6 +217,11 @@ export interface IRole extends IConstruct, IPrincipal {
   readonly roleId: string;
 
   /**
+   * Returns the name of this role.
+   */
+  readonly roleName: string;
+
+  /**
    * Export this role to another stack.
    */
   export(): RoleImportProps;
@@ -285,6 +290,10 @@ class ImportedRole extends Construct implements IRole {
       throw new Error(`No roleId specified for imported role`);
     }
     return this._roleId;
+  }
+
+  public get roleName() {
+    return Stack.find(this).parseArn(this.roleArn).resourceName!;
   }
 
   public export() {

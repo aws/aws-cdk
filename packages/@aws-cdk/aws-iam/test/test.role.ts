@@ -245,6 +245,17 @@ export = {
 
     test.deepEqual(stack.node.resolve(importedRole.roleArn), { 'Fn::ImportValue': 'MyRoleRoleArn3388B7E2' });
     test.deepEqual(stack.node.resolve(importedRole.roleId), { 'Fn::ImportValue': 'MyRoleRoleIdF7B258D8' });
+    test.deepEqual(stack.node.resolve(importedRole.roleName), {
+      'Fn::Select': [ 1, {
+        'Fn::Split': [ '/', {
+          'Fn::Select': [ 5, {
+            'Fn::Split': [ ':', {
+              'Fn::ImportValue': 'MyRoleRoleArn3388B7E2'
+            } ]
+          } ]
+        } ]
+      } ]
+    });
     test.done();
   }
 };
