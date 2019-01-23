@@ -3,7 +3,6 @@ import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
 import { makeUniqueId } from '../util/uniqueid';
 import { Token, unresolved } from './tokens';
 import { resolve } from './tokens/resolve';
-import { addSet } from './util';
 export const PATH_SEP = '/';
 
 /**
@@ -462,16 +461,25 @@ export class ConstructNode {
   }
 
   /**
-   * Return all dependencies registered on this node and its ancestors.
+   * Return all dependencies registered on this node or any of its children
    */
-  public myDependencies(): IConstruct[] {
-    const ret = new Set<IConstruct>();
-    let node: ConstructNode | undefined = this;
-    while (node !== undefined) {
-      addSet(ret, node.dependencies);
-      node = node.scope && node.scope.node;
+  public findDependencies(): Dependency[] {
+    const found = new Map<IConstruct, Set<IConstruct>>(); // Deduplication map
+    const ret = new Array<Dependency>();
+
+    for (const source of this.findAll()) {
+      for (const target of source.node.dependencies) {
+        let foundTargets = found.get(source);
+        if (!foundTargets) { found.set(source, foundTargets = new Set()); }
+
+        if (!foundTargets.has(target)) {
+          ret.push({ source, target });
+          foundTargets.add(target);
+        }
+      }
     }
-    return Array.from(ret);
+
+    return ret;
   }
 
   /**
@@ -624,4 +632,19 @@ export enum ConstructOrder {
    * Depth first
    */
   DepthFirst
+}
+
+/**
+ * A single dependency
+ */
+export interface Dependency {
+  /**
+   * Source the dependency
+   */
+  source: IConstruct;
+
+  /**
+   * Target of the dependency
+   */
+  target: IConstruct;
 }

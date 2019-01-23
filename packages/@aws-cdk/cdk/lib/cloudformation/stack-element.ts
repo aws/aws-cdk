@@ -131,9 +131,6 @@ export class Ref extends CfnReference {
   }
 }
 
-import { findTokens } from "../core/tokens/resolve";
-import { Stack } from "./stack";
-
 /**
  * Base class for referenceable CloudFormation constructs which are not Resources
  *
@@ -152,3 +149,6 @@ export abstract class Referenceable extends StackElement {
     return new Ref(this).toString();
   }
 }
+
+import { findTokens } from "../core/tokens/resolve";
+import { Stack } from "./stack";

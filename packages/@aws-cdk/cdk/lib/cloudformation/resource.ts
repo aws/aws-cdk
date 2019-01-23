@@ -4,7 +4,6 @@ import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CfnReference } from './cfn-tokens';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { Stack } from './stack';
 import { Referenceable } from './stack-element';
 
 export interface ResourceProps {
@@ -180,6 +179,10 @@ export class Resource extends Referenceable {
     this.addPropertyOverride(propertyPath, undefined);
   }
 
+  public addDependsOn(resource: Resource) {
+    this.dependsOn.add(resource.logicalId);
+  }
+
   /**
    * Emits CloudFormation for this resource.
    */
@@ -219,38 +222,6 @@ export class Resource extends Referenceable {
     return properties;
   }
 
-  /**
-   * Final preparation before rendering.
-   *
-   * Take all dependencies, find the CloudFormation Resources in them,
-   * and take a dependency on their logical IDs. If the discovered
-   * resources turn out to be in different Stacks, take a Stack dependency
-   * instead.
-   */
-  protected prepare() {
-    super.prepare();
-
-    // As an optimization, do the stack dependencies first on the parents
-    // (instead of all the leaf nodes), so that we minimize the amount of stack
-    // lookups.
-    const deps = this.node.myDependencies();
-    const depSet = new Set(deps);
-
-    // Can not be in Stacks in tests, in which case we make no assumptions at all
-    const myStack = Stack.tryFind(this);
-    for (const dep of deps) {
-      const theirStack = Stack.tryFind(dep);
-      if (myStack && theirStack && myStack !== theirStack) {
-        myStack.addDependency(theirStack);
-        depSet.delete(dep);
-      }
-    }
-
-    const resources = findResources(depSet);
-    for (const id of resources.map(r => r.logicalId)) {
-      this.dependsOn.add(id);
-    }
-  }
 }
 
 export interface ResourceOptions {
@@ -327,18 +298,6 @@ export function deepMerge(target: any, source: any) {
 
   return target;
 }
-
-/**
- * Find all resources in a set of constructs
- */
-function findResources(roots: Iterable<IConstruct>): Resource[] {
-  const ret = new Array<Resource>();
-  for (const root of roots) {
-    ret.push(...root.node.findAll().filter(Resource.isResource));
-  }
-  return ret;
-}
-
 function sortedSet<T>(xs: Set<T>): T[] {
   const ret = Array.from(xs);
   ret.sort();
