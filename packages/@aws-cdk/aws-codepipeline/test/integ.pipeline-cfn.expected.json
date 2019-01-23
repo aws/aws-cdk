@@ -207,7 +207,8 @@
                       "CfnChangeSetRole6F05F6FC",
                       "Arn"
                     ]
-                  }
+                  },
+                  "ParameterOverrides": "{\"BucketName\":{\"Fn::GetArtifactAtt\":[\"SourceArtifact\",\"BucketName\"]},\"ObjectKey\":{\"Fn::GetArtifactAtt\":[\"SourceArtifact\",\"ObjectKey\"]},\"Url\":{\"Fn::GetArtifactAtt\":[\"SourceArtifact\",\"URL\"]},\"OtherParam\":{\"Fn::GetParam\":[\"SourceArtifact\",\"params.json\",\"OtherParam\"]}}"
                 },
                 "InputArtifacts": [
                   {

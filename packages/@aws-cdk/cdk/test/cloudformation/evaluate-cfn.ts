@@ -3,6 +3,8 @@
  *
  * Note that this function is not production quality, it exists to support tests.
  */
+import { isNameOfCloudFormationIntrinsic } from '../../lib/cloudformation/instrinsics';
+
 export function evaluateCFN(object: any, context: {[key: string]: string} = {}): any {
   const intrinsics: any = {
     'Fn::Join'(separator: string, args: string[]) {
@@ -34,7 +36,7 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
 
     if (typeof obj === 'object') {
       const keys = Object.keys(obj);
-      if (keys.length === 1 && (keys[0].startsWith('Fn::') || keys[0] === 'Ref')) {
+      if (keys.length === 1 && (isNameOfCloudFormationIntrinsic(keys[0]) || keys[0] === 'Ref')) {
         return evaluateIntrinsic(keys[0], obj[keys[0]]);
       }
 
