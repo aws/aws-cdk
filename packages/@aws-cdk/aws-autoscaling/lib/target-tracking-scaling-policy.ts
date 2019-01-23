@@ -1,5 +1,4 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
@@ -105,8 +104,6 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
    */
   private resource: CfnScalingPolicy;
 
-  private targetGroups: elbv2.ITargetGroup[];
-
   constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
@@ -126,8 +123,6 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
 
     super(scope, id);
 
-    this.targetGroups = [];
-
     this.resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'TargetTrackingScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
@@ -146,26 +141,6 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
 
     this.scalingPolicyArn = this.resource.scalingPolicyArn;
   }
-
-  /**
-   * Mark this scaling policy as depending on the given targetGroup being attached to a LoadBalancer.
-   *
-   * The scaling policy can only be created after the attachment has happened,
-   * so we add an ordering dependency on the Target Group being associated with
-   * a Load Balancer.
-   */
-  public dependOnLoadBalancerAttachment(targetGroup: elbv2.ITargetGroup) {
-    // Defer the actual work until prepare() since the load balancer association
-    // may still be created later during setup.
-    this.targetGroups.push(targetGroup);
-  }
-
-  protected prepare() {
-    for (const targetGroup of this.targetGroups) {
-      this.node.addDependency(...targetGroup.loadBalancerDependencies);
-    }
-  }
-
 }
 
 function renderCustomMetric(metric?: cloudwatch.Metric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {

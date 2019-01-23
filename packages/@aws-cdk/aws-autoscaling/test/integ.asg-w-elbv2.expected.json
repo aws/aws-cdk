@@ -544,7 +544,8 @@
         }
       },
       "DependsOn": [
-        "LBListener49E825B4"
+        "LBListener49E825B4",
+        "LBListenerTargetGroupF04FCF6D"
       ]
     },
     "LB8A12904C": {

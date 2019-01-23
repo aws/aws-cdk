@@ -377,7 +377,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
    * in order to be able to call this.
    */
   public scaleOnRequestCount(id: string, props: RequestCountScalingProps): TargetTrackingScalingPolicy {
-    if (this.albTargetGroup === undefined) {
+    if (this.albTargetGroup === undefined || this.albTargetGroup.loadBalancerDependencies.length === 0) {
       throw new Error('Attach the AutoScalingGroup to an Application Load Balancer before calling scaleOnRequestCount()');
     }
 
@@ -391,7 +391,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       ...props
     });
 
-    policy.dependOnLoadBalancerAttachment(this.albTargetGroup);
+    policy.node.addDependency(...this.albTargetGroup.loadBalancerDependencies);
     return policy;
   }
 
