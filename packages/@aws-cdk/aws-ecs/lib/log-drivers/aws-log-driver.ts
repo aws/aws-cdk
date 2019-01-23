@@ -55,8 +55,8 @@ export class AwsLogDriver extends LogDriver {
    */
   public readonly logGroup: logs.ILogGroup;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: AwsLogDriverProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: AwsLogDriverProps) {
+    super(scope, id);
     this.logGroup = props.logGroup || new logs.LogGroup(this, 'LogGroup', {
         retentionDays: 365,
     });
@@ -73,12 +73,13 @@ export class AwsLogDriver extends LogDriver {
    * Return the log driver CloudFormation JSON
    */
   public renderLogDriver(): CfnTaskDefinition.LogConfigurationProperty {
+    const stack = cdk.Stack.find(this);
     return {
       logDriver: 'awslogs',
       options: removeEmpty({
         'awslogs-group': this.logGroup.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
-        'awslogs-region': `${new cdk.AwsRegion()}`,
+        'awslogs-region': stack.region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
       }),

@@ -141,7 +141,7 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * All volumes
    */
-  private readonly volumes: CfnTaskDefinition.VolumeProperty[] = [];
+  private readonly volumes: Volume[] = [];
 
   /**
    * Execution role for this task definition
@@ -155,10 +155,10 @@ export class TaskDefinition extends cdk.Construct {
    */
   private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
 
-  constructor(parent: cdk.Construct, name: string, props: TaskDefinitionProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: TaskDefinitionProps) {
+    super(scope, id);
 
-    this.family = props.family || this.uniqueId;
+    this.family = props.family || this.node.uniqueId;
     this.compatibility = props.compatibility;
 
     if (props.volumes) {
@@ -188,7 +188,7 @@ export class TaskDefinition extends cdk.Construct {
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: new cdk.Token(() => this.containers.map(x => x.renderContainerDefinition())),
       volumes: new cdk.Token(() => this.volumes),
-      executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn),
+      executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn).toString(),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
       requiresCompatibilities: [
@@ -243,25 +243,6 @@ export class TaskDefinition extends cdk.Construct {
   }
 
   /**
-   * Validate this task definition
-   */
-  public validate(): string[] {
-    const ret = super.validate();
-
-    if (isEc2Compatible(this.compatibility)) {
-      // EC2 mode validations
-
-      // Container sizes
-      for (const container of this.containers) {
-        if (!container.memoryLimitSpecified) {
-          ret.push(`ECS Container ${container.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
-        }
-      }
-    }
-    return ret;
-  }
-
-  /**
    * Constrain where tasks can be placed
    */
   public addPlacementConstraint(constraint: PlacementConstraint) {
@@ -292,6 +273,25 @@ export class TaskDefinition extends cdk.Construct {
       });
     }
     return this.executionRole;
+  }
+
+  /**
+   * Validate this task definition
+   */
+  protected validate(): string[] {
+    const ret = super.validate();
+
+    if (isEc2Compatible(this.compatibility)) {
+      // EC2 mode validations
+
+      // Container sizes
+      for (const container of this.containers) {
+        if (!container.memoryLimitSpecified) {
+          ret.push(`ECS Container ${container.node.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+        }
+      }
+    }
+    return ret;
   }
 
   /**
@@ -345,8 +345,12 @@ export interface Volume {
   /**
    * A name for the volume
    */
-  name?: string;
-  // FIXME add dockerVolumeConfiguration
+  name: string;
+
+  /**
+   * Specifies this configuration when using Docker volumes
+   */
+  dockerVolumeConfiguration?: DockerVolumeConfiguration;
 }
 
 /**
@@ -357,6 +361,50 @@ export interface Host {
    * Source path on the host
    */
   sourcePath?: string;
+}
+
+/**
+ * A configuration of a Docker volume
+ */
+export interface DockerVolumeConfiguration {
+  /**
+   * If true, the Docker volume is created if it does not already exist
+   *
+   * @default false
+   */
+  autoprovision?: boolean;
+  /**
+   * The Docker volume driver to use
+   */
+  driver: string;
+  /**
+   * A map of Docker driver specific options passed through
+   *
+   * @default No options
+   */
+  driverOpts?: string[];
+  /**
+   * Custom metadata to add to your Docker volume
+   *
+   * @default No labels
+   */
+  labels?: string[];
+  /**
+   * The scope for the Docker volume which determines it's lifecycle
+   */
+  scope: Scope;
+}
+
+export enum Scope {
+  /**
+   * Docker volumes are automatically provisioned when the task starts and destroyed when the task stops
+   */
+  Task = "task",
+
+  /**
+   * Docker volumes are persist after the task stops
+   */
+  Shared = "shared"
 }
 
 /**

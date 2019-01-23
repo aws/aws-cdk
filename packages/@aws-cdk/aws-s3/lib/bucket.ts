@@ -11,7 +11,7 @@ import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
-export interface IBucket {
+export interface IBucket extends cdk.IConstruct {
   /**
    * The ARN of the bucket.
    */
@@ -180,7 +180,7 @@ export interface IBucket {
  */
 export interface BucketImportProps {
   /**
-   * The ARN fo the bucket. At least one of bucketArn or bucketName must be
+   * The ARN of the bucket. At least one of bucketArn or bucketName must be
    * defined in order to initialize a bucket ref.
    */
   bucketArn?: string;
@@ -199,6 +199,21 @@ export interface BucketImportProps {
    * @default Inferred from bucket name
    */
   bucketDomainName?: string;
+
+  /**
+   * The website URL of the bucket (if static web hosting is enabled).
+   *
+   * @default Inferred from bucket name
+   */
+  bucketWebsiteUrl?: string;
+
+  /**
+   * The format of the website URL of the bucket. This should be true for
+   * regions launched since 2014.
+   *
+   * @default false
+   */
+  bucketWebsiteNewUrlFormat?: boolean;
 }
 
 /**
@@ -310,7 +325,8 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @returns an ObjectS3Url token
    */
   public urlForObject(key?: string): string {
-    const components = [ `https://s3.${new cdk.AwsRegion()}.${new cdk.AwsURLSuffix()}/${this.bucketName}` ];
+    const stack = cdk.Stack.find(this);
+    const components = [ `https://s3.${stack.region}.${stack.urlSuffix}/${this.bucketName}` ];
     if (key) {
       // trim prepending '/'
       if (typeof key === 'string' && key.startsWith('/')) {
@@ -560,16 +576,17 @@ export class Bucket extends BucketBase {
    *
    * @param parent The parent creating construct (usually `this`).
    * @param id The construct's name.
-   * @param attrs A `BucketAttributes` object. Can be obtained from a call to
+   * @param props A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.
    */
-  public static import(parent: cdk.Construct, id: string, attrs: BucketImportProps): IBucket {
-    return new ImportedBucket(parent, id, attrs);
+  public static import(scope: cdk.Construct, id: string, props: BucketImportProps): IBucket {
+    return new ImportedBucket(scope, id, props);
   }
 
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly domainName: string;
+  public readonly bucketWebsiteUrl: string;
   public readonly dualstackDomainName: string;
   public readonly encryptionKey?: kms.IEncryptionKey;
   public policy?: BucketPolicy;
@@ -578,8 +595,8 @@ export class Bucket extends BucketBase {
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
 
-  constructor(parent: cdk.Construct, name: string, props: BucketProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: BucketProps = {}) {
+    super(scope, id);
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
@@ -598,6 +615,7 @@ export class Bucket extends BucketBase {
     this.bucketArn = resource.bucketArn;
     this.bucketName = resource.bucketName;
     this.domainName = resource.bucketDomainName;
+    this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
     this.dualstackDomainName = resource.bucketDualStackDomainName;
 
     // Add all lifecycle rules
@@ -620,6 +638,7 @@ export class Bucket extends BucketBase {
       bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
       bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
       bucketDomainName: new cdk.Output(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
+      bucketWebsiteUrl: new cdk.Output(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
     };
   }
 
@@ -708,7 +727,7 @@ export class Bucket extends BucketBase {
 
     if (encryptionType === BucketEncryption.Kms) {
       const encryptionKey = props.encryptionKey || new kms.EncryptionKey(this, 'Key', {
-        description: `Created by ${this.path}`
+        description: `Created by ${this.node.path}`
       });
 
       const bucketEncryption = {
@@ -955,23 +974,29 @@ class ImportedBucket extends BucketBase {
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly domainName: string;
+  public readonly bucketWebsiteUrl: string;
+  public readonly bucketWebsiteNewUrlFormat: boolean;
   public readonly encryptionKey?: kms.EncryptionKey;
 
   public policy?: BucketPolicy;
   protected autoCreatePolicy: boolean;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: BucketImportProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, private readonly props: BucketImportProps) {
+    super(scope, id);
 
-    const bucketName = parseBucketName(props);
+    const bucketName = parseBucketName(this, props);
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }
 
-    this.bucketArn = parseBucketArn(props);
+    this.bucketArn = parseBucketArn(this, props);
     this.bucketName = bucketName;
     this.domainName = props.bucketDomainName || this.generateDomainName();
+    this.bucketWebsiteUrl = props.bucketWebsiteUrl || this.generateBucketWebsiteUrl();
     this.autoCreatePolicy = false;
+    this.bucketWebsiteNewUrlFormat = props.bucketWebsiteNewUrlFormat === undefined
+      ? false
+      : props.bucketWebsiteNewUrlFormat;
     this.policy = undefined;
   }
 
@@ -984,5 +1009,11 @@ class ImportedBucket extends BucketBase {
 
   private generateDomainName() {
     return `${this.bucketName}.s3.amazonaws.com`;
+  }
+
+  private generateBucketWebsiteUrl() {
+    return this.bucketWebsiteNewUrlFormat
+      ? `${this.bucketName}.s3-website.${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`
+      : `${this.bucketName}.s3-website-${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`;
   }
 }

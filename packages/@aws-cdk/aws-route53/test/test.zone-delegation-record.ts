@@ -47,7 +47,7 @@ class TestApp {
   constructor() {
     const account = '123456789012';
     const region = 'bermuda-triangle';
-    this.app.setContext(`availability-zones:${account}:${region}`,
+    this.app.node.setContext(`availability-zones:${account}:${region}`,
               [`${region}-1a`]);
     this.stack = new Stack(this.app, 'MyStack', { env: { account, region } });
   }

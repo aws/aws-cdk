@@ -111,7 +111,7 @@ export interface FunctionProps {
    * @default a unique role will be generated for this lambda function.
    * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
    */
-  role?: iam.Role;
+  role?: iam.IRole;
 
   /**
    * VPC network to place Lambda network interfaces
@@ -172,6 +172,14 @@ export interface FunctionProps {
    * @default undefined X-Ray tracing disabled
    */
   tracing?: Tracing;
+
+  /**
+   * The maximum of concurrent executions you want to reserve for the function.
+   *
+   * @default no specific limit - account limit
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html
+   */
+  reservedConcurrentExecutions?: number;
 }
 
 /**
@@ -194,11 +202,11 @@ export class Function extends FunctionBase {
    *
    * @param parent The parent construct
    * @param id The name of the lambda construct
-   * @param attrs A reference to a Lambda function. Can be created manually (see
+   * @param props A reference to a Lambda function. Can be created manually (see
    * example above) or obtained through a call to `lambda.export()`.
    */
-  public static import(parent: cdk.Construct, id: string, attrs: FunctionImportProps): IFunction {
-    return new ImportedFunction(parent, id, attrs);
+  public static import(scope: cdk.Construct, id: string, props: FunctionImportProps): IFunction {
+    return new ImportedFunction(scope, id, props);
   }
 
   /**
@@ -284,7 +292,7 @@ export class Function extends FunctionBase {
   /**
    * Execution role associated with this function
    */
-  public readonly role?: iam.Role;
+  public readonly role?: iam.IRole;
 
   /**
    * The runtime configured for this lambda.
@@ -303,19 +311,19 @@ export class Function extends FunctionBase {
    */
   private readonly environment?: { [key: string]: any };
 
-  constructor(parent: cdk.Construct, id: string, props: FunctionProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: FunctionProps) {
+    super(scope, id);
 
     this.environment = props.environment || { };
 
     const managedPolicyArns = new Array<string>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaBasicExecutionRole").policyArn);
+    managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaBasicExecutionRole", this).policyArn);
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaVPCAccessExecutionRole").policyArn);
+      managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaVPCAccessExecutionRole", this).policyArn);
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
@@ -339,7 +347,8 @@ export class Function extends FunctionBase {
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(props),
-      tracingConfig: this.buildTracingConfig(props)
+      tracingConfig: this.buildTracingConfig(props),
+      reservedConcurrentExecutions: props.reservedConcurrentExecutions
     });
 
     resource.addDependency(this.role);
@@ -432,7 +441,7 @@ export class Function extends FunctionBase {
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
-      description: 'Automatic security group for Lambda Function ' + this.uniqueId,
+      description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
       allowAllOutbound: props.allowAllOutbound
     });
 
@@ -493,12 +502,12 @@ export class Function extends FunctionBase {
 export class ImportedFunction extends FunctionBase {
   public readonly functionName: string;
   public readonly functionArn: string;
-  public readonly role?: iam.Role;
+  public readonly role?: iam.IRole;
 
   protected readonly canCreatePermissions = false;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: FunctionImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: FunctionImportProps) {
+    super(scope, id);
 
     this.functionArn = props.functionArn;
     this.functionName = extractNameFromArn(props.functionArn);

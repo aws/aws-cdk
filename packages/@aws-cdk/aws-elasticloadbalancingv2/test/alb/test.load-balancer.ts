@@ -2,6 +2,7 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 
@@ -179,11 +180,29 @@ export = {
 
     for (const metric of metrics) {
       test.equal('AWS/ApplicationELB', metric.namespace);
-      test.deepEqual(cdk.resolve(metric.dimensions), {
+      test.deepEqual(stack.node.resolve(metric.dimensions), {
         LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] }
       });
     }
 
+    test.done();
+  },
+
+  'loadBalancerName'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
+      loadBalancerName: 'myLoadBalancer',
+      vpc
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Name: 'myLoadBalancer'
+    }));
     test.done();
   },
 };

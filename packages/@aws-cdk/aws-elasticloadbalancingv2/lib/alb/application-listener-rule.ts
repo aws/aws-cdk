@@ -73,8 +73,8 @@ export class ApplicationListenerRule extends cdk.Construct implements cdk.IDepen
   private readonly actions: any[] = [];
   private readonly listener: IApplicationListener;
 
-  constructor(parent: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
+    super(scope, id);
 
     if (!props.hostHeader && !props.pathPattern) {
       throw new Error(`At least one of 'hostHeader' or 'pathPattern' is required when defining a load balancing rule.`);
@@ -110,16 +110,6 @@ export class ApplicationListenerRule extends cdk.Construct implements cdk.IDepen
   }
 
   /**
-   * Validate the rule
-   */
-  public validate() {
-    if (this.actions.length === 0) {
-      return ['Listener rule needs at least one action'];
-    }
-    return [];
-  }
-
-  /**
    * Add a TargetGroup to load balance to
    */
   public addTargetGroup(targetGroup: IApplicationTargetGroup) {
@@ -128,6 +118,16 @@ export class ApplicationListenerRule extends cdk.Construct implements cdk.IDepen
       type: 'forward'
     });
     targetGroup.registerListener(this.listener, this);
+  }
+
+  /**
+   * Validate the rule
+   */
+  protected validate() {
+    if (this.actions.length === 0) {
+      return ['Listener rule needs at least one action'];
+    }
+    return [];
   }
 
   /**

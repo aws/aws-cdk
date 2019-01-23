@@ -57,8 +57,8 @@ export abstract class PipelineCloudFormationAction extends codepipeline.Action {
    */
   public outputArtifact?: codepipeline.Artifact;
 
-  constructor(parent: cdk.Construct, id: string, props: PipelineCloudFormationActionProps, configuration?: any) {
-    super(parent, id, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineCloudFormationActionProps, configuration?: any) {
+    super(scope, id, {
       stage: props.stage,
       runOrder: props.runOrder,
       region: props.region,
@@ -79,7 +79,7 @@ export abstract class PipelineCloudFormationAction extends codepipeline.Action {
 
     if (props.outputFileName) {
       this.outputArtifact = this.addOutputArtifact(props.outputArtifactName ||
-        (props.stage.name + this.id + 'Artifact'));
+        (props.stage.name + this.node.id + 'Artifact'));
     }
   }
 }
@@ -98,8 +98,8 @@ export interface PipelineExecuteChangeSetActionProps extends PipelineCloudFormat
  * CodePipeline action to execute a prepared change set.
  */
 export class PipelineExecuteChangeSetAction extends PipelineCloudFormationAction {
-  constructor(parent: cdk.Construct, id: string, props: PipelineExecuteChangeSetActionProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineExecuteChangeSetActionProps) {
+    super(scope, id, props, {
       ActionMode: 'CHANGE_SET_EXECUTE',
       ChangeSetName: props.changeSetName,
     });
@@ -196,14 +196,14 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
 export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFormationAction {
   public readonly role: iam.IRole;
 
-  constructor(parent: cdk.Construct, id: string, props: PipelineCloudFormationDeployActionProps, configuration: any) {
+  constructor(scope: cdk.Construct, id: string, props: PipelineCloudFormationDeployActionProps, configuration: any) {
     const capabilities = props.adminPermissions && props.capabilities === undefined ? CloudFormationCapabilities.NamedIAM : props.capabilities;
-    super(parent, id, props, {
+    super(scope, id, props, {
       ...configuration,
       // None evaluates to empty string which is falsey and results in undefined
       Capabilities: (capabilities && capabilities.toString()) || undefined,
       RoleArn: new cdk.Token(() => this.role.roleArn),
-      ParameterOverrides: cdk.CloudFormationJSON.stringify(props.parameterOverrides),
+      ParameterOverrides: new cdk.Token(() => this.node.stringifyJson(props.parameterOverrides)),
       TemplateConfiguration: props.templateConfiguration ? props.templateConfiguration.location : undefined,
       StackName: props.stackName,
     });
@@ -253,8 +253,8 @@ export interface PipelineCreateReplaceChangeSetActionProps extends PipelineCloud
  * If the change set exists, AWS CloudFormation deletes it, and then creates a new one.
  */
 export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormationDeployAction {
-  constructor(parent: cdk.Construct, id: string, props: PipelineCreateReplaceChangeSetActionProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineCreateReplaceChangeSetActionProps) {
+    super(scope, id, props, {
       ActionMode: 'CHANGE_SET_REPLACE',
       ChangeSetName: props.changeSetName,
       TemplatePath: props.templatePath.location,
@@ -309,8 +309,8 @@ export interface PipelineCreateUpdateStackActionProps extends PipelineCloudForma
  * troubleshooting them. You would typically choose this mode for testing.
  */
 export class PipelineCreateUpdateStackAction extends PipelineCloudFormationDeployAction {
-  constructor(parent: cdk.Construct, id: string, props: PipelineCreateUpdateStackActionProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineCreateUpdateStackActionProps) {
+    super(scope, id, props, {
       ActionMode: props.replaceOnFailure ? 'REPLACE_ON_FAILURE' : 'CREATE_UPDATE',
       TemplatePath: props.templatePath.location
     });
@@ -338,8 +338,8 @@ export interface PipelineDeleteStackActionProps extends PipelineCloudFormationDe
  * without deleting a stack.
  */
 export class PipelineDeleteStackAction extends PipelineCloudFormationDeployAction {
-  constructor(parent: cdk.Construct, id: string, props: PipelineDeleteStackActionProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineDeleteStackActionProps) {
+    super(scope, id, props, {
       ActionMode: 'DELETE_ONLY',
     });
     SingletonPolicy.forRole(props.stage.pipeline.role).grantDeleteStack(props);
@@ -394,7 +394,7 @@ class SingletonPolicy extends cdk.Construct {
    * @returns the SingletonPolicy for this role.
    */
   public static forRole(role: iam.Role): SingletonPolicy {
-    const found = role.tryFindChild(SingletonPolicy.UUID);
+    const found = role.node.tryFindChild(SingletonPolicy.UUID);
     return (found as SingletonPolicy) || new SingletonPolicy(role);
   }
 
@@ -410,7 +410,7 @@ class SingletonPolicy extends cdk.Construct {
     this.statementFor({
       actions: ['cloudformation:ExecuteChangeSet'],
       conditions: { StringEquals: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResource(stackArnFromProps(props));
+    }).addResource(this.stackArnFromProps(props));
   }
 
   public grantCreateReplaceChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
@@ -422,7 +422,7 @@ class SingletonPolicy extends cdk.Construct {
         'cloudformation:DescribeStacks',
       ],
       conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResource(stackArnFromProps(props));
+    }).addResource(this.stackArnFromProps(props));
   }
 
   public grantCreateUpdateStack(props: { stackName: string, replaceOnFailure?: boolean, region?: string }): void {
@@ -438,7 +438,7 @@ class SingletonPolicy extends cdk.Construct {
     if (props.replaceOnFailure) {
       actions.push('cloudformation:DeleteStack');
     }
-    this.statementFor({ actions }).addResource(stackArnFromProps(props));
+    this.statementFor({ actions }).addResource(this.stackArnFromProps(props));
   }
 
   public grantDeleteStack(props: { stackName: string, region?: string }): void {
@@ -447,7 +447,7 @@ class SingletonPolicy extends cdk.Construct {
         'cloudformation:DescribeStack*',
         'cloudformation:DeleteStack',
       ]
-    }).addResource(stackArnFromProps(props));
+    }).addResource(this.stackArnFromProps(props));
   }
 
   public grantPassRole(role: iam.IRole): void {
@@ -485,6 +485,15 @@ class SingletonPolicy extends cdk.Construct {
       }
     }
   }
+
+  private stackArnFromProps(props: { stackName: string, region?: string }): string {
+    return cdk.Stack.find(this).formatArn({
+      region: props.region,
+      service: 'cloudformation',
+      resource: 'stack',
+      resourceName: `${props.stackName}/*`
+    });
+  }
 }
 
 interface StatementTemplate {
@@ -493,12 +502,3 @@ interface StatementTemplate {
 }
 
 type StatementCondition = { [op: string]: { [attribute: string]: string } };
-
-function stackArnFromProps(props: { stackName: string, region?: string }): string {
-  return cdk.ArnUtils.fromComponents({
-    region: props.region,
-    service: 'cloudformation',
-    resource: 'stack',
-    resourceName: `${props.stackName}/*`
-  });
-}

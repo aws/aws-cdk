@@ -84,7 +84,7 @@ export class IntegrationTest {
       return exec([cdk, '-a', `node ${this.name}`].concat(args), {
         cwd: this.directory,
         json: options.json,
-        verbose: options.verbose
+        verbose: options.verbose,
       });
     } finally {
       this.deleteCdkConfig();
@@ -137,6 +137,10 @@ export const STATIC_TEST_CONTEXT = {
 function exec(commandLine: string[], options: { cwd?: string, json?: boolean, verbose?: boolean} = { }): any {
   const proc = spawnSync(commandLine[0], commandLine.slice(1), {
     stdio: [ 'ignore', 'pipe', options.verbose ? 'inherit' : 'pipe' ], // inherit STDERR in verbose mode
+    env: {
+      ...process.env,
+      CDK_INTEG_MODE: '1'
+    },
     cwd: options.cwd
   });
 

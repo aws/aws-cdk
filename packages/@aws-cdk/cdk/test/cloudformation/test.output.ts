@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Construct, Output, Ref, resolve, Resource, Stack } from '../../lib';
+import { Construct, Output, Ref, Resource, Stack } from '../../lib';
 
 export = {
   'outputs can be added to the stack'(test: Test) {
@@ -63,7 +63,7 @@ export = {
   'makeImportValue can be used to create an Fn::ImportValue from an output'(test: Test) {
     const stack = new Stack(undefined, 'MyStack');
     const output = new Output(stack, 'MyOutput');
-    test.deepEqual(resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyStack:MyOutput' });
+    test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyStack:MyOutput' });
     test.done();
   }
 };

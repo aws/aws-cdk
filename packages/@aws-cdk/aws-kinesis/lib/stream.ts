@@ -4,7 +4,7 @@ import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
 import { CfnStream } from './kinesis.generated';
 
-export interface IStream extends logs.ILogSubscriptionDestination {
+export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestination {
   /**
    * The ARN of the stream.
    */
@@ -197,9 +197,10 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
   public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
     // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#DestinationKinesisExample
     if (!this.cloudWatchLogsRole) {
+      const stack = cdk.Stack.find(this);
       // Create a role to be assumed by CWL that can write to this stream and pass itself.
       this.cloudWatchLogsRole = new iam.Role(this, 'CloudWatchLogsCanPutRecords', {
-        assumedBy: new iam.ServicePrincipal(`logs.${new cdk.AwsRegion()}.amazonaws.com`)
+        assumedBy: new iam.ServicePrincipal(`logs.${stack.region}.amazonaws.com`)
       });
       this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
       this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));
@@ -235,7 +236,10 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
 
     // Take some effort to construct a unique ID for the destination that is unique to the
     // combination of (stream, loggroup).
-    const uniqueId =  new cdk.HashedAddressingScheme().allocateAddress([sourceLogGroupConstruct.path.replace('/', ''), sourceStack.env.account!]);
+    const uniqueId =  new cdk.HashedAddressingScheme().allocateAddress([
+      sourceLogGroupConstruct.node.path.replace('/', ''),
+      sourceStack.env.account!
+    ]);
 
     // The destination lives in the target account
     const dest = new logs.CrossAccountDestination(this, `CWLDestination${uniqueId}`, {
@@ -312,13 +316,13 @@ export class Stream extends StreamBase {
   /**
    * Creates a Stream construct that represents an external stream.
    *
-   * @param parent The parent creating construct (usually `this`).
-   * @param name The construct's name.
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
    * @param ref A `StreamAttributes` object. Can be obtained from a call to
    * `stream.export()`.
    */
-  public static import(parent: cdk.Construct, name: string, props: StreamImportProps): IStream {
-    return new ImportedStream(parent, name, props);
+  public static import(scope: cdk.Construct, id: string, props: StreamImportProps): IStream {
+    return new ImportedStream(scope, id, props);
   }
 
   public readonly streamArn: string;
@@ -327,8 +331,8 @@ export class Stream extends StreamBase {
 
   private readonly stream: CfnStream;
 
-  constructor(parent: cdk.Construct, name: string, props: StreamProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: StreamProps = {}) {
+    super(scope, id);
 
     const shardCount = props.shardCount || 1;
     const retentionPeriodHours = props.retentionPeriodHours || 24;
@@ -348,7 +352,7 @@ export class Stream extends StreamBase {
     this.streamName = this.stream.streamId;
     this.encryptionKey = encryptionKey;
 
-    if (props.streamName) { this.addMetadata('aws:cdk:hasPhysicalName', props.streamName); }
+    if (props.streamName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.streamName); }
   }
 
   /**
@@ -384,7 +388,7 @@ export class Stream extends StreamBase {
 
     if (encryptionType === StreamEncryption.Kms) {
       const encryptionKey = props.encryptionKey || new kms.EncryptionKey(this, 'Key', {
-        description: `Created by ${this.path}`
+        description: `Created by ${this.node.path}`
       });
 
       const streamEncryption: CfnStream.StreamEncryptionProperty = {
@@ -419,16 +423,17 @@ class ImportedStream extends StreamBase {
   public readonly streamName: string;
   public readonly encryptionKey?: kms.IEncryptionKey;
 
-  constructor(parent: cdk.Construct, name: string, private readonly props: StreamImportProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, private readonly props: StreamImportProps) {
+    super(scope, id);
 
     this.streamArn = props.streamArn;
 
     // Get the name from the ARN
-    this.streamName = cdk.ArnUtils.parse(props.streamArn).resourceName!;
+    this.streamName = cdk.Stack.find(this).parseArn(props.streamArn).resourceName!;
 
     if (props.encryptionKey) {
-      this.encryptionKey = kms.EncryptionKey.import(parent, 'Key', props.encryptionKey);
+      // TODO: import "scope" should be changed to "this"
+      this.encryptionKey = kms.EncryptionKey.import(scope, 'Key', props.encryptionKey);
     } else {
       this.encryptionKey = undefined;
     }

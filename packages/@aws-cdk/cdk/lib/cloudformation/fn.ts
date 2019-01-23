@@ -1,5 +1,7 @@
-import { CloudFormationToken, FnJoin } from './cloudformation-token';
-import { FnCondition } from './condition';
+import { ResolveContext, Token, unresolved } from '../core/tokens';
+import { resolve } from '../core/tokens/resolve';
+import { IConditionExpression } from './condition';
+import { minimalCloudFormationJoin } from './instrinsics';
 
 // tslint:disable:max-line-length
 
@@ -19,7 +21,7 @@ export class Fn {
    * attributes available for that resource type.
    * @returns a CloudFormationToken object
    */
-  public static getAtt(logicalNameOfResource: string, attributeName: string): CloudFormationToken {
+  public static getAtt(logicalNameOfResource: string, attributeName: string): Token {
     return new FnGetAtt(logicalNameOfResource, attributeName);
   }
 
@@ -148,7 +150,7 @@ export class Fn {
    * @param conditions conditions to AND
    * @returns an FnCondition token
    */
-  public static conditionAnd(...conditions: FnCondition[]): FnCondition {
+  public static conditionAnd(...conditions: IConditionExpression[]): IConditionExpression {
     return new FnAnd(...conditions);
   }
 
@@ -159,7 +161,7 @@ export class Fn {
    * @param rhs A value of any type that you want to compare.
    * @returns an FnCondition token
    */
-  public static conditionEquals(lhs: any, rhs: any): FnCondition {
+  public static conditionEquals(lhs: any, rhs: any): IConditionExpression {
     return new FnEquals(lhs, rhs);
   }
 
@@ -178,7 +180,7 @@ export class Fn {
    * evaluates to false.
    * @returns an FnCondition token
    */
-  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): FnCondition {
+  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): IConditionExpression {
     return new FnIf(conditionId, valueIfTrue, valueIfFalse);
   }
 
@@ -189,7 +191,7 @@ export class Fn {
    * or false.
    * @returns an FnCondition token
    */
-  public static conditionNot(condition: FnCondition): FnCondition {
+  public static conditionNot(condition: IConditionExpression): IConditionExpression {
     return new FnNot(condition);
   }
 
@@ -201,7 +203,7 @@ export class Fn {
    * @param conditions conditions that evaluates to true or false.
    * @returns an FnCondition token
    */
-  public static conditionOr(...conditions: FnCondition[]): FnCondition {
+  public static conditionOr(...conditions: IConditionExpression[]): IConditionExpression {
     return new FnOr(...conditions);
   }
 
@@ -212,7 +214,7 @@ export class Fn {
    * @param value A string, such as "A", that you want to compare against a list of strings.
    * @returns an FnCondition token
    */
-  public static conditionContains(listOfStrings: string[], value: string): FnCondition {
+  public static conditionContains(listOfStrings: string[], value: string): IConditionExpression {
     return new FnContains(listOfStrings, value);
   }
 
@@ -223,7 +225,7 @@ export class Fn {
    * of strings.
    * @returns an FnCondition token
    */
-  public conditionEachMemberEquals(listOfStrings: string[], value: string): FnCondition {
+  public conditionEachMemberEquals(listOfStrings: string[], value: string): IConditionExpression {
     return new FnEachMemberEquals(listOfStrings, value);
   }
 
@@ -238,7 +240,7 @@ export class Fn {
    * strings_to_check parameter.
    * @returns an FnCondition token
    */
-  public conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string): FnCondition {
+  public conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string): IConditionExpression {
     return new FnEachMemberIn(stringsToCheck, stringsToMatch);
   }
 
@@ -285,7 +287,7 @@ export class Fn {
 /**
  * Base class for tokens that represent CloudFormation intrinsic functions.
  */
-class FnBase extends CloudFormationToken {
+class FnBase extends Token {
   constructor(name: string, value: any) {
     super({ [name]: value });
   }
@@ -442,13 +444,19 @@ class FnCidr extends FnBase {
   }
 }
 
+class FnConditionBase extends Token implements IConditionExpression {
+  constructor(type: string, value: any) {
+    super({ [type]: value });
+  }
+}
+
 /**
  * Returns true if all the specified conditions evaluate to true, or returns false if any one
  *  of the conditions evaluates to false. ``Fn::And`` acts as an AND operator. The minimum number of
  * conditions that you can include is 2, and the maximum is 10.
  */
-class FnAnd extends FnCondition {
-  constructor(...condition: FnCondition[]) {
+class FnAnd extends FnConditionBase {
+  constructor(...condition: IConditionExpression[]) {
     super('Fn::And', condition);
   }
 }
@@ -457,7 +465,7 @@ class FnAnd extends FnCondition {
  * Compares if two values are equal. Returns true if the two values are equal or false
  * if they aren't.
  */
-class FnEquals extends FnCondition {
+class FnEquals extends FnConditionBase {
   /**
    * Creates an ``Fn::Equals`` condition function.
    * @param lhs A value of any type that you want to compare.
@@ -475,7 +483,7 @@ class FnEquals extends FnCondition {
  * in the Resources section and Outputs sections of a template. You can use the AWS::NoValue
  * pseudo parameter as a return value to remove the corresponding property.
  */
-class FnIf extends FnCondition {
+class FnIf extends FnConditionBase {
   /**
    * Creates an ``Fn::If`` condition function.
    * @param condition A reference to a condition in the Conditions section. Use the condition's name to reference it.
@@ -491,12 +499,12 @@ class FnIf extends FnCondition {
  * Returns true for a condition that evaluates to false or returns false for a condition that evaluates to true.
  * ``Fn::Not`` acts as a NOT operator.
  */
-class FnNot extends FnCondition {
+class FnNot extends FnConditionBase {
   /**
    * Creates an ``Fn::Not`` condition function.
    * @param condition A condition such as ``Fn::Equals`` that evaluates to true or false.
    */
-  constructor(condition: FnCondition) {
+  constructor(condition: IConditionExpression) {
     super('Fn::Not', [ condition ]);
   }
 }
@@ -506,12 +514,12 @@ class FnNot extends FnCondition {
  * all of the conditions evaluates to false. ``Fn::Or`` acts as an OR operator. The minimum number
  * of conditions that you can include is 2, and the maximum is 10.
  */
-class FnOr extends FnCondition {
+class FnOr extends FnConditionBase {
   /**
    * Creates an ``Fn::Or`` condition function.
    * @param condition A condition that evaluates to true or false.
    */
-  constructor(...condition: FnCondition[]) {
+  constructor(...condition: IConditionExpression[]) {
     super('Fn::Or', condition);
   }
 }
@@ -519,7 +527,7 @@ class FnOr extends FnCondition {
 /**
  * Returns true if a specified string matches at least one value in a list of strings.
  */
-class FnContains extends FnCondition {
+class FnContains extends FnConditionBase {
   /**
    * Creates an ``Fn::Contains`` function.
    * @param listOfStrings A list of strings, such as "A", "B", "C".
@@ -533,7 +541,7 @@ class FnContains extends FnCondition {
 /**
  * Returns true if a specified string matches all values in a list.
  */
-class FnEachMemberEquals extends FnCondition {
+class FnEachMemberEquals extends FnConditionBase {
   /**
    * Creates an ``Fn::EachMemberEquals`` function.
    * @param listOfStrings A list of strings, such as "A", "B", "C".
@@ -548,7 +556,7 @@ class FnEachMemberEquals extends FnCondition {
  * Returns true if each member in a list of strings matches at least one value in a second
  * list of strings.
  */
-class FnEachMemberIn extends FnCondition {
+class FnEachMemberIn extends FnConditionBase {
   /**
    * Creates an ``Fn::EachMemberIn`` function.
    * @param stringsToCheck A list of strings, such as "A", "B", "C". AWS CloudFormation checks whether each member in the strings_to_check parameter is in the strings_to_match parameter.
@@ -599,5 +607,57 @@ class FnValueOfAll extends FnBase {
    */
   constructor(parameterType: string, attribute: string) {
     super('Fn::ValueOfAll', [ parameterType, attribute ]);
+  }
+}
+
+/**
+ * The intrinsic function ``Fn::Join`` appends a set of values into a single value, separated by
+ * the specified delimiter. If a delimiter is the empty string, the set of values are concatenated
+ * with no delimiter.
+ */
+class FnJoin extends Token {
+  private readonly delimiter: string;
+  private readonly listOfValues: any[];
+  // Cache for the result of resolveValues() - since it otherwise would be computed several times
+  private _resolvedValues?: any[];
+
+  /**
+   * Creates an ``Fn::Join`` function.
+   * @param delimiter The value you want to occur between fragments. The delimiter will occur between fragments only.
+   *          It will not terminate the final value.
+   * @param listOfValues The list of values you want combined.
+   */
+  constructor(delimiter: string, listOfValues: any[]) {
+    if (listOfValues.length === 0) {
+      throw new Error(`FnJoin requires at least one value to be provided`);
+    }
+    super();
+
+    this.delimiter = delimiter;
+    this.listOfValues = listOfValues;
+  }
+
+  public resolve(context: ResolveContext): any {
+    if (unresolved(this.listOfValues)) {
+      // This is a list token, don't try to do smart things with it.
+      return { 'Fn::Join': [ this.delimiter, this.listOfValues ] };
+    }
+    const resolved = this.resolveValues(context);
+    if (resolved.length === 1) {
+      return resolved[0];
+    }
+    return { 'Fn::Join': [ this.delimiter, resolved ] };
+  }
+
+  /**
+   * Optimization: if an Fn::Join is nested in another one and they share the same delimiter, then flatten it up. Also,
+   * if two concatenated elements are literal strings (not tokens), then pre-concatenate them with the delimiter, to
+   * generate shorter output.
+   */
+  private resolveValues(context: ResolveContext) {
+    if (this._resolvedValues) { return this._resolvedValues; }
+
+    const resolvedValues = this.listOfValues.map(e => resolve(e, context));
+    return this._resolvedValues = minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }

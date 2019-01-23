@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -12,6 +13,12 @@ export interface StageOptions extends MethodDeploymentOptions {
    * @default "prod"
    */
   stageName?: string;
+
+  /**
+   * Specifies whether Amazon X-Ray tracing is enabled for this method.
+   * @default false
+   */
+  tracingEnabled?: boolean;
 
   /**
    * Indicates whether cache clustering is enabled for the stage.
@@ -132,8 +139,8 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
 
   private readonly restApi: IRestApi;
 
-  constructor(parent: cdk.Construct, id: string, props: StageProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: StageProps) {
+    super(scope, id);
 
     const methodSettings = this.renderMethodSettings(props);
 
@@ -157,6 +164,7 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
       description: props.description,
       documentationVersion: props.documentationVersion,
       variables: props.variables,
+      tracingEnabled: props.tracingEnabled,
       methodSettings,
     });
 
@@ -173,7 +181,8 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
     if (!path.startsWith('/')) {
       throw new Error(`Path must begin with "/": ${path}`);
     }
-    return `https://${this.restApi.restApiId}.execute-api.${new cdk.AwsRegion()}.amazonaws.com/${this.stageName}${path}`;
+    const stack = Stack.find(this);
+    return `https://${this.restApi.restApiId}.execute-api.${stack.region}.${stack.urlSuffix}/${this.stageName}${path}`;
   }
 
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {

@@ -14,7 +14,7 @@ export interface RestApiImportProps {
   restApiId: string;
 }
 
-export interface IRestApi {
+export interface IRestApi extends cdk.IConstruct {
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -161,8 +161,8 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
    * @param id Construct ID
    * @param props Imported rest API properties
    */
-  public static import(parent: cdk.Construct, id: string, props: RestApiImportProps): IRestApi {
-    return new ImportedRestApi(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: RestApiImportProps): IRestApi {
+    return new ImportedRestApi(scope, id, props);
   }
 
   /**
@@ -201,8 +201,8 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
 
   private readonly methods = new Array<Method>();
 
-  constructor(parent: cdk.Construct, id: string, props: RestApiProps = { }) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: RestApiProps = { }) {
+    super(scope, id);
 
     const resource = new CfnRestApi(this, 'Resource', {
       name: props.restApiName || id,
@@ -236,6 +236,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
 
     // configure the "root" resource
     this.root = {
+      node: this.node,
       addResource: (pathPart: string, options?: ResourceOptions) => {
         return new Resource(this, pathPart, { parent: this.root, pathPart, ...options });
       },
@@ -300,7 +301,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
       method = '*';
     }
 
-    return cdk.ArnUtils.fromComponents({
+    return cdk.Stack.find(this).formatArn({
       service: 'execute-api',
       resource: this.restApiId,
       sep: '/',
@@ -309,22 +310,22 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
   }
 
   /**
-   * Performs validation of the REST API.
-   */
-  public validate() {
-    if (this.methods.length === 0) {
-      return [ `The REST API doesn't contain any methods` ];
-    }
-
-    return [];
-  }
-
-  /**
    * Internal API used by `Method` to keep an inventory of methods at the API
    * level for validation purposes.
    */
   public _attachMethod(method: Method) {
     this.methods.push(method);
+  }
+
+  /**
+   * Performs validation of the REST API.
+   */
+  protected validate() {
+    if (this.methods.length === 0) {
+      return [ `The REST API doesn't contain any methods` ];
+    }
+
+    return [];
   }
 
   private configureDeployment(props: RestApiProps) {
@@ -357,7 +358,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
   private configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      managedPolicyArns: [ cdk.ArnUtils.fromComponents({
+      managedPolicyArns: [ cdk.Stack.find(this).formatArn({
         service: 'iam',
         region: '',
         account: 'aws',
@@ -404,13 +405,11 @@ export enum EndpointType {
   Private = 'PRIVATE'
 }
 
-export class RestApiUrl extends cdk.CloudFormationToken { }
-
 class ImportedRestApi extends cdk.Construct implements IRestApi {
   public restApiId: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: RestApiImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: RestApiImportProps) {
+    super(scope, id);
 
     this.restApiId = props.restApiId;
   }

@@ -93,13 +93,13 @@ export abstract class BaseService extends cdk.Construct
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
 
-  constructor(parent: cdk.Construct,
-              name: string,
+  constructor(scope: cdk.Construct,
+              id: string,
               props: BaseServiceProps,
               additionalProps: any,
               clusterName: string,
               taskDefinition: TaskDefinition) {
-    super(parent, name);
+    super(scope, id);
 
     this.taskDefinition = taskDefinition;
 
@@ -212,7 +212,7 @@ export abstract class BaseService extends cdk.Construct
 
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
-      containerName: this.taskDefinition.defaultContainer!.id,
+      containerName: this.taskDefinition.defaultContainer!.node.id,
       containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
 
@@ -228,7 +228,7 @@ export abstract class BaseService extends cdk.Construct
   private makeAutoScalingRole(): iam.IRole {
     // Use a Service Linked Role.
     return iam.Role.import(this, 'ScalingRole', {
-      roleArn: cdk.ArnUtils.fromComponents({
+      roleArn: cdk.Stack.find(this).formatArn({
         service: 'iam',
         resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
         resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',

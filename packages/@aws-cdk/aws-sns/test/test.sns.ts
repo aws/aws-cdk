@@ -5,7 +5,6 @@ import lambda = require('@aws-cdk/aws-lambda');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
-import { resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import sns = require('../lib');
 
@@ -552,7 +551,7 @@ export = {
       {
         "Action": "sns:Publish",
         "Effect": "Allow",
-        "Resource": cdk.resolve(topic.topicArn)
+        "Resource": stack.node.resolve(topic.topicArn)
       }
       ],
     }
@@ -692,11 +691,11 @@ export = {
             "Action": "sqs:SendMessage",
             "Condition": {
               "ArnEquals": {
-                "aws:SourceArn": resolve(imported.topicArn)
+                "aws:SourceArn": stack2.node.resolve(imported.topicArn)
               }
             },
             "Principal": { "Service": "sns.amazonaws.com" },
-            "Resource": resolve(queue.queueArn),
+            "Resource": stack2.node.resolve(queue.queueArn),
             "Effect": "Allow",
           }
         ],
@@ -715,20 +714,20 @@ export = {
     const bucketId = 'bucketId';
 
     const dest1 = topic.asBucketNotificationDestination(bucketArn, bucketId);
-    test.deepEqual(resolve(dest1.arn), resolve(topic.topicArn));
+    test.deepEqual(stack.node.resolve(dest1.arn), stack.node.resolve(topic.topicArn));
     test.deepEqual(dest1.type, s3n.BucketNotificationDestinationType.Topic);
 
     const dep: cdk.Construct = dest1.dependencies![0] as any;
-    test.deepEqual((dep.children[0] as any).logicalId, 'MyTopicPolicy12A5EC17', 'verify topic policy is added as dependency');
+    test.deepEqual((dep.node.children[0] as any).logicalId, 'MyTopicPolicy12A5EC17', 'verify topic policy is added as dependency');
 
     // calling again on the same bucket yields is idempotent
     const dest2 = topic.asBucketNotificationDestination(bucketArn, bucketId);
-    test.deepEqual(resolve(dest2.arn), resolve(topic.topicArn));
+    test.deepEqual(stack.node.resolve(dest2.arn), stack.node.resolve(topic.topicArn));
     test.deepEqual(dest2.type, s3n.BucketNotificationDestinationType.Topic);
 
     // another bucket will be added to the topic policy
     const dest3 = topic.asBucketNotificationDestination('bucket2', 'bucket2');
-    test.deepEqual(resolve(dest3.arn), resolve(topic.topicArn));
+    test.deepEqual(stack.node.resolve(dest3.arn), stack.node.resolve(topic.topicArn));
     test.deepEqual(dest3.type, s3n.BucketNotificationDestinationType.Topic);
 
     expect(stack).toMatch({

@@ -56,8 +56,8 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps,
  * Source that is provided by a GitHub repository.
  */
 export class GitHubSourceAction extends actions.SourceAction {
-  constructor(parent: cdk.Construct, name: string, props: GitHubSourceActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, id: string, props: GitHubSourceActionProps) {
+    super(scope, id, {
       stage: props.stage,
       runOrder: props.runOrder,
       owner: 'ThirdParty',
@@ -76,7 +76,7 @@ export class GitHubSourceAction extends actions.SourceAction {
       new CfnWebhook(this, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
-          secretToken: props.oauthToken,
+          secretToken: props.oauthToken.toString(),
         },
         filters: [
           {
@@ -84,7 +84,7 @@ export class GitHubSourceAction extends actions.SourceAction {
             matchEquals: 'refs/heads/{Branch}',
           },
         ],
-        targetAction: this.id,
+        targetAction: this.node.id,
         targetPipeline: props.stage.pipeline.pipelineName,
         targetPipelineVersion: 1,
         registerWithThirdParty: true,

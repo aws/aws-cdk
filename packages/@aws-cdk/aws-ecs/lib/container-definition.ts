@@ -59,7 +59,7 @@ export interface ContainerDefinitionProps {
    *
    * @default No labels
    */
-  dockerLabels?: {[key: string]: string };
+  dockerLabels?: { [key: string]: string };
 
   /**
    * A list of custom labels for SELinux and AppArmor multi-level security systems.
@@ -81,7 +81,7 @@ export interface ContainerDefinitionProps {
    *
    * @default No environment variables
    */
-  environment?: {[key: string]: string};
+  environment?: { [key: string]: string };
 
   /**
    * Indicates whether the task stops if this container fails.
@@ -101,7 +101,7 @@ export interface ContainerDefinitionProps {
    *
    * @default No extra hosts
    */
-  extraHosts?: {[name: string]: string};
+  extraHosts?: { [name: string]: string };
 
   /**
    * Container health check.
@@ -222,8 +222,8 @@ export class ContainerDefinition extends cdk.Construct {
    */
   private readonly links = new Array<string>();
 
-  constructor(parent: cdk.Construct, id: string, taskDefinition: TaskDefinition, private readonly props: ContainerDefinitionProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, taskDefinition: TaskDefinition, private readonly props: ContainerDefinitionProps) {
+    super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
     this.taskDefinition = taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
@@ -243,9 +243,9 @@ export class ContainerDefinition extends cdk.Construct {
       throw new Error(`You must use network mode Bridge to add container links.`);
     }
     if (alias !== undefined) {
-      this.links.push(`${container.id}:${alias}`);
+      this.links.push(`${container.node.id}:${alias}`);
     } else {
-      this.links.push(`${container.id}`);
+      this.links.push(`${container.node.id}`);
     }
   }
 
@@ -323,7 +323,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.id} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(`Container ${this.node.id} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
 
@@ -342,7 +342,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public get containerPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.id} hasn't defined any ports. Call addPortMappings().`);
+      throw new Error(`Container ${this.node.id} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
     return defaultPortMapping.containerPort;
@@ -367,7 +367,7 @@ export class ContainerDefinition extends cdk.Construct {
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
       mountPoints: this.mountPoints.map(renderMountPoint),
-      name: this.id,
+      name: this.node.id,
       portMappings: this.portMappings.map(renderPortMapping),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
@@ -434,7 +434,7 @@ export interface HealthCheck {
   timeout?: number;
 }
 
-function renderKV(env: {[key: string]: string}, keyName: string, valueName: string): any {
+function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
   const ret = [];
   for (const [key, value] of Object.entries(env)) {
     ret.push({ [keyName]: key, [valueName]: value });
@@ -577,16 +577,16 @@ function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProper
 }
 
 export interface ScratchSpace {
-    containerPath: string,
-    readOnly: boolean,
-    sourcePath: string
-    name: string,
+  containerPath: string,
+  readOnly: boolean,
+  sourcePath: string
+  name: string,
 }
 
 export interface MountPoint {
-    containerPath: string,
-    readOnly: boolean,
-    sourceVolume: string,
+  containerPath: string,
+  readOnly: boolean,
+  sourceVolume: string,
 }
 
 function renderMountPoint(mp: MountPoint): CfnTaskDefinition.MountPointProperty {

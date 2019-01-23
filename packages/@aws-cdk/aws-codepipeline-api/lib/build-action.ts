@@ -22,11 +22,18 @@ export interface BuildActionProps extends CommonActionProps, CommonActionConstru
   artifactBounds: ActionArtifactBounds;
 
   /**
-   * The source action owner (could be 'AWS', 'ThirdParty' or 'Custom').
+   * The build Action owner (could be 'AWS', 'ThirdParty' or 'Custom').
    *
    * @default 'AWS'
    */
   owner?: string;
+
+  /**
+   * The build Action version.
+   *
+   * @default '1'
+   */
+  version?: string;
 
   /**
    * The name of the build's output artifact.
@@ -50,8 +57,8 @@ export interface BuildActionProps extends CommonActionProps, CommonActionConstru
 export abstract class BuildAction extends Action {
   public readonly outputArtifact: Artifact;
 
-  constructor(parent: cdk.Construct, name: string, props: BuildActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, id: string, props: BuildActionProps) {
+    super(scope, id, {
       category: ActionCategory.Build,
       ...props,
     });

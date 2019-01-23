@@ -29,8 +29,8 @@ export interface PipelineDeployActionProps extends CommonPipelineDeployActionPro
 }
 
 export class PipelineDeployAction extends codepipeline.DeployAction {
-  constructor(parent: cdk.Construct, id: string, props: PipelineDeployActionProps) {
-    super(parent, id, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineDeployActionProps) {
+    super(scope, id, {
       stage: props.stage,
       runOrder: props.runOrder,
       artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 },
@@ -60,7 +60,7 @@ export class PipelineDeployAction extends codepipeline.DeployAction {
       ));
 
     props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
-      .addResource(props.deploymentGroup.deploymentConfig.deploymentConfigArn)
+      .addResource(props.deploymentGroup.deploymentConfig.deploymentConfigArn(this))
       .addActions(
         'codedeploy:GetDeploymentConfig',
       ));

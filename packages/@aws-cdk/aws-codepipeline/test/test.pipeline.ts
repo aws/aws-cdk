@@ -38,7 +38,7 @@ export = {
     });
 
     test.notDeepEqual(stack.toCloudFormation(), {});
-    test.deepEqual([], pipeline.validate());
+    test.deepEqual([], pipeline.node.validateTree());
     test.done();
   },
 
@@ -127,7 +127,7 @@ export = {
       ]
     }));
 
-    test.deepEqual([], p.validate());
+    test.deepEqual([], p.node.validateTree());
     test.done();
   },
 
@@ -211,7 +211,7 @@ export = {
       ]
     }));
 
-    test.deepEqual([], pipeline.validate());
+    test.deepEqual([], pipeline.node.validateTree());
     test.done();
   },
 
@@ -416,7 +416,9 @@ export = {
       const pipelineRegion = 'us-west-2';
       const pipelineAccount = '123';
 
-      const stack = new cdk.Stack(undefined, undefined, {
+      const app = new cdk.App();
+
+      const stack = new cdk.Stack(app, 'TestStack', {
         env: {
           region: pipelineRegion,
           account: pipelineAccount,
@@ -510,8 +512,8 @@ export = {
       test.notEqual(usEast1ScaffoldStack, undefined);
       test.equal(usEast1ScaffoldStack.env.region, 'us-east-1');
       test.equal(usEast1ScaffoldStack.env.account, pipelineAccount);
-      test.ok(usEast1ScaffoldStack.id.indexOf('us-east-1') !== -1,
-        `expected '${usEast1ScaffoldStack.id}' to contain 'us-east-1'`);
+      test.ok(usEast1ScaffoldStack.node.id.indexOf('us-east-1') !== -1,
+        `expected '${usEast1ScaffoldStack.node.id}' to contain 'us-east-1'`);
 
       test.done();
     },

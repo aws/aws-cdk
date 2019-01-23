@@ -22,7 +22,7 @@ export = {
         ResourceRecordSetCount: 3
       };
 
-      stack.setContext(key, fakeZone);
+      stack.node.setContext(key, fakeZone);
 
       const cdkZoneProps: HostedZoneImportProps = {
         hostedZoneId: fakeZone.Id,
@@ -33,7 +33,7 @@ export = {
 
       // WHEN
       const provider = new HostedZoneProvider(stack, filter);
-      const zoneProps = cdk.resolve(provider.findHostedZone());
+      const zoneProps = stack.node.resolve(provider.findHostedZone());
       const zoneRef = provider.findAndImport(stack, 'MyZoneProvider');
 
       // THEN

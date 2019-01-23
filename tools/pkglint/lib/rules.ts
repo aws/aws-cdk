@@ -611,10 +611,6 @@ export class AllVersionsTheSame extends ValidationRule {
   private readonly ourPackages: {[pkg: string]: string} = {};
   private readonly usedDeps: {[pkg: string]: VersionCount[]} = {};
 
-  constructor() {
-    super();
-  }
-
   public prepare(pkg: PackageJson): void {
     this.ourPackages[pkg.json.name] = "^" + pkg.json.version;
     this.recordDeps(pkg.json.dependencies);
@@ -676,6 +672,38 @@ export class AllVersionsTheSame extends ValidationRule {
   }
 }
 
+export class AwsLint extends ValidationRule {
+  public name = 'awslint';
+
+  public validate(pkg: PackageJson) {
+    if (!isJSII(pkg)) {
+      return;
+    }
+
+    if (!isAWS(pkg)) {
+      return;
+    }
+
+    expectJSON(this.name, pkg, 'scripts.awslint', 'cdk-awslint');
+  }
+}
+
+export class Cfn2Ts extends ValidationRule {
+  public name = 'cfn2ts';
+
+  public validate(pkg: PackageJson) {
+    if (!isJSII(pkg)) {
+      return;
+    }
+
+    if (!isAWS(pkg)) {
+      return;
+    }
+
+    expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
+  }
+}
+
 /**
  * Determine whether this is a JSII package
  *
@@ -683,6 +711,14 @@ export class AllVersionsTheSame extends ValidationRule {
  */
 function isJSII(pkg: PackageJson): boolean {
   return pkg.json.jsii;
+}
+
+/**
+ * Indicates that this is an "AWS" package (i.e. that it it has a cloudformation source)
+ * @param pkg
+ */
+function isAWS(pkg: PackageJson): boolean {
+  return pkg.json['cdk-build'] && pkg.json['cdk-build'].cloudformation;
 }
 
 /**

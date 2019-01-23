@@ -1,9 +1,11 @@
+import cdk = require('@aws-cdk/cdk');
+
 /**
  * Imported or created hosted zone
  */
-export interface IHostedZone {
+export interface IHostedZone extends cdk.IConstruct {
   /**
-   * ID of this hosted zone
+   * ID of this hosted zone, such as "Z23ABC4XYZL05B"
    */
   readonly hostedZoneId: string;
 
@@ -11,6 +13,14 @@ export interface IHostedZone {
    * FQDN of this hosted zone
    */
   readonly zoneName: string;
+
+  /**
+   * Returns the set of name servers for the specific hosted zone. For example:
+   * ns1.example.com.
+   *
+   * This attribute will be undefined for private hosted zones or hosted zones imported from another stack.
+   */
+  readonly hostedZoneNameServers?: string[];
 
   /**
    * Export the hosted zone

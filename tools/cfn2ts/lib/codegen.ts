@@ -71,23 +71,10 @@ export default class CodeGenerator {
 
       const cfnName = SpecName.parse(name);
       const resourceName = genspec.CodeName.forCfnResource(cfnName);
-      const legacyResourceName = genspec.CodeName.forLegacyResource(cfnName);
       this.code.line();
 
-      const attributeTypes = this.emitResourceType(resourceName, resourceType);
+      this.emitResourceType(resourceName, resourceType);
       this.emitPropertyTypes(name, resourceName);
-
-      // emit the "cloudformation.XxxResource" classes for backwards compatibility
-      // those will also include a deprecation warning.
-      this.code.line('// legacy "cloudformation" namespace (will be deprecated soon)');
-      this.code.openBlock('export namespace cloudformation');
-      this.emitResourceType(legacyResourceName, resourceType, resourceName);
-      this.emitPropertyTypes(name, legacyResourceName);
-      this.code.closeBlock();
-
-      for (const attributeType of attributeTypes) {
-        this.emitAttributeType(attributeType);
-      }
     }
   }
 
@@ -177,7 +164,7 @@ export default class CodeGenerator {
     }
   }
 
-  private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType, deprecated?: genspec.CodeName) {
+  private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType, deprecated?: genspec.CodeName): void {
     this.beginNamespace(resourceName);
 
     //
@@ -215,7 +202,6 @@ export default class CodeGenerator {
     // Attributes
     //
 
-    const attributeTypes = new Array<genspec.AttributeTypeDeclaration>();
     const attributes = new Array<genspec.Attribute>();
 
     if (spec.Attributes) {
@@ -227,10 +213,9 @@ export default class CodeGenerator {
         this.docLink(undefined, `@cloudformation_attribute ${attributeName}`);
         const attr = genspec.attributeDefinition(resourceName, attributeName, attributeSpec);
 
-        this.code.line(`public readonly ${attr.propertyName}: ${attr.attributeType.typeName.className};`);
+        this.code.line(`public readonly ${attr.propertyName}: ${attr.attributeType};`);
 
         attributes.push(attr);
-        attributeTypes.push(attr.attributeType);
       }
     }
 
@@ -242,9 +227,8 @@ export default class CodeGenerator {
 
       // If there's already an attribute with the same name, ref is not needed
       if (!attributes.some(a => a.propertyName === refAttribute.propertyName)) {
-        this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.attributeType.typeName.className};`);
+        this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.attributeType};`);
         attributes.push(refAttribute);
-        attributeTypes.push(refAttribute.attributeType);
       }
     }
 
@@ -256,20 +240,20 @@ export default class CodeGenerator {
     this.code.line('/**');
     this.code.line(` * Creates a new ${quoteCode(resourceName.specName!.fqn)}.`);
     this.code.line(' *');
-    this.code.line(` * @param parent   the ${quoteCode(CONSTRUCT_CLASS)} this ${quoteCode(resourceName.className)} is a part of`);
-    this.code.line(` * @param name     the name of the resource in the ${quoteCode(CONSTRUCT_CLASS)} tree`);
-    this.code.line(` * @param properties the properties of this ${quoteCode(resourceName.className)}`);
+    this.code.line(` * @param scope scope in which this resource is defined`);
+    this.code.line(` * @param id    scoped id of the resource`);
+    this.code.line(` * @param props resource properties`);
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required);
-    const propsArgument = propsType ? `, properties${optionalProps ? '?' : ''}: ${propsType.className}` : '';
-    this.code.openBlock(`constructor(parent: ${CONSTRUCT_CLASS}, name: string${propsArgument})`);
-    this.code.line(`super(parent, name, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties' : ''} });`);
+    const propsArgument = propsType ? `, props${optionalProps ? '?' : ''}: ${propsType.className}` : '';
+    this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string${propsArgument})`);
+    this.code.line(`super(scope, id, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties: props' : ''} });`);
     // verify all required properties
     if (spec.Properties) {
       for (const propName of Object.keys(spec.Properties)) {
         const prop = spec.Properties[propName];
         if (prop.Required) {
-          this.code.line(`${CORE}.requireProperty(properties, '${genspec.cloudFormationToScriptName(propName)}', this);`);
+          this.code.line(`${CORE}.requireProperty(props, '${genspec.cloudFormationToScriptName(propName)}', this);`);
         }
       }
     }
@@ -286,19 +270,17 @@ export default class CodeGenerator {
 
     // initialize all attribute properties
     for (const at of attributes) {
-      if (at.attributeType.isPrimitive) {
-        if (at.attributeType.typeName.className === 'string') {
-          this.code.line(`this.${at.propertyName} = ${at.constructorArguments}.toString();`);
-        } else {
-          throw new Error(`Unsupported primitive attribute type ${at.attributeType.typeName.className}`);
-        }
-      } else {
-        this.code.line(`this.${at.propertyName} = new ${at.attributeType.typeName.className}(${at.constructorArguments});`);
+      if (at.attributeType === 'string') {
+        this.code.line(`this.${at.propertyName} = ${at.constructorArguments}.toString();`);
+      } else if (at.attributeType === 'string[]') {
+        this.code.line(`this.${at.propertyName} = ${at.constructorArguments}.toList();`);
+      } else if (at.attributeType === genspec.TOKEN_NAME.fqn) {
+        this.code.line(`this.${at.propertyName} = ${at.constructorArguments};`);
       }
     }
 
     if (deprecated) {
-      this.code.line(`this.addWarning('DEPRECATION: ${deprecation}');`);
+      this.code.line(`this.node.addWarning('DEPRECATION: ${deprecation}');`);
     }
 
     this.code.closeBlock();
@@ -315,8 +297,6 @@ export default class CodeGenerator {
     this.closeClass(resourceName);
 
     this.endNamespace(resourceName);
-
-    return attributeTypes;
   }
 
   /**
@@ -330,7 +310,7 @@ export default class CodeGenerator {
     this.code.closeBlock();
 
     this.code.openBlock('protected renderProperties(properties: any): { [key: string]: any } ');
-    this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(${CORE}.resolve(properties));`);
+    this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(this.node.resolve(properties));`);
     this.code.closeBlock();
   }
 
@@ -486,26 +466,6 @@ export default class CodeGenerator {
     this.code.closeBlock();
   }
 
-  /**
-   * Attribute types are classes that represent resource attributes (e.g. QueueArnAttribute).
-   */
-  private emitAttributeType(attr: genspec.AttributeTypeDeclaration) {
-    if (!attr.baseClassName) {
-      return; // primitive, no attribute type generated
-    }
-
-    this.code.line();
-    this.openClass(attr.typeName, attr.docLink, attr.baseClassName.fqn);
-    // Add a private member that will make the class structurally
-    // different in TypeScript, which prevents assigning returning
-    // incorrectly-typed Tokens. Those will cause ClassCastExceptions
-    // in strictly-typed languages.
-    this.code.line('// @ts-ignore: private but unused on purpose.');
-    this.code.line(`private readonly thisIsA${attr.typeName.className} = true;`);
-
-    this.closeClass(attr.typeName);
-  }
-
   private emitProperty(context: genspec.CodeName, propName: string, spec: schema.Property, additionalDocs: string): string {
     const question = spec.Required ? '' : '?';
     const javascriptPropertyName = genspec.cloudFormationToScriptName(propName);
@@ -596,8 +556,14 @@ export default class CodeGenerator {
       alternatives.push(this.renderTypeUnion(resourceContext, types));
     }
 
-    // Always
-    alternatives.push(genspec.TOKEN_NAME.fqn);
+    // Only if this property is not of a "tokenizable type" (string, string[],
+    // number in the future) we add a type union for `cdk.Token`. We rather
+    // everything to be tokenizable because there are languages that do not
+    // support union types (i.e. Java, .NET), so we lose type safety if we have
+    // a union.
+    if (!tokenizableType(alternatives)) {
+      alternatives.push(genspec.TOKEN_NAME.fqn);
+    }
 
     return alternatives.join(' | ');
   }
@@ -648,4 +614,23 @@ function mapperNames(types: genspec.CodeName[]): string {
  */
 function quoteCode(code: string): string {
   return '``' + code + '``';
+}
+
+function tokenizableType(alternatives: string[]) {
+  if (alternatives.length > 1) {
+    return false;
+  }
+
+  const type = alternatives[0];
+  if (type === 'string') {
+    return true;
+  }
+
+  if (type === 'string[]') {
+    return true;
+  }
+
+  // TODO: number
+
+  return false;
 }

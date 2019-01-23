@@ -40,12 +40,12 @@ export interface StateMachineProps {
 /**
  * Define a StepFunctions State Machine
  */
-export class StateMachine extends cdk.Construct implements IStateMachine {
+export class StateMachine extends cdk.Construct implements IStateMachine, events.IEventRuleTarget {
     /**
      * Import a state machine
      */
-    public static import(parent: cdk.Construct, id: string, props: StateMachineImportProps): IStateMachine {
-        return new ImportedStateMachine(parent, id, props);
+    public static import(scope: cdk.Construct, id: string, props: StateMachineImportProps): IStateMachine {
+        return new ImportedStateMachine(scope, id, props);
     }
 
     /**
@@ -68,11 +68,12 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
      */
     private eventsRole?: iam.Role;
 
-    constructor(parent: cdk.Construct, id: string, props: StateMachineProps) {
-        super(parent, id);
+    constructor(scope: cdk.Construct, id: string, props: StateMachineProps) {
+        super(scope, id);
 
+        const stack = cdk.Stack.find(this);
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new iam.ServicePrincipal(`states.${new cdk.AwsRegion()}.amazonaws.com`),
+            assumedBy: new iam.ServicePrincipal(`states.${stack.region}.amazonaws.com`),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
@@ -81,7 +82,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
         const resource = new CfnStateMachine(this, 'Resource', {
             stateMachineName: props.stateMachineName,
             roleArn: this.role.roleArn,
-            definitionString: cdk.CloudFormationJSON.stringify(graph.toGraphJson()),
+            definitionString: this.node.stringifyJson(graph.toGraphJson()),
         });
 
         for (const statement of graph.policyStatements) {
@@ -114,7 +115,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
         }
 
         return {
-            id: this.id,
+            id: this.node.id,
             arn: this.stateMachineArn,
             roleArn: this.eventsRole.roleArn,
         };
@@ -202,7 +203,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
 /**
  * A State Machine
  */
-export interface IStateMachine {
+export interface IStateMachine extends cdk.IConstruct {
     /**
      * The ARN of the state machine
      */
@@ -226,8 +227,8 @@ export interface StateMachineImportProps {
 
 class ImportedStateMachine extends cdk.Construct implements IStateMachine {
     public readonly stateMachineArn: string;
-    constructor(parent: cdk.Construct, id: string, private readonly props: StateMachineImportProps) {
-        super(parent, id);
+    constructor(scope: cdk.Construct, id: string, private readonly props: StateMachineImportProps) {
+        super(scope, id);
         this.stateMachineArn = props.stateMachineArn;
     }
 

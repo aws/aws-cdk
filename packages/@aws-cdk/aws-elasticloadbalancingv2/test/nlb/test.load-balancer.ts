@@ -75,4 +75,23 @@ export = {
 
     test.done();
   },
+
+  'loadBalancerName'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'ALB', {
+      loadBalancerName: 'myLoadBalancer',
+      vpc
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Name: 'myLoadBalancer'
+    }));
+    test.done();
+  }
+
 };

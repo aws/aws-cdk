@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
@@ -118,7 +118,7 @@ export = {
       fn.addPermission('S3Permission', {
         action: 'lambda:*',
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
-        sourceAccount: new cdk.AwsAccountId().toString(),
+        sourceAccount: stack.accountId,
         sourceArn: 'arn:aws:s3:::my_bucket'
       });
 
@@ -621,9 +621,7 @@ export = {
   'default function with SQS DLQ when client provides Queue to be used as DLQ'(test: Test) {
     const stack = new cdk.Stack();
 
-    const dlqStack = new cdk.Stack();
-
-    const dlQueue = new sqs.Queue(dlqStack, 'DeadLetterQueue', {
+    const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
       retentionPeriodSec: 1209600
     });
@@ -725,16 +723,14 @@ export = {
           }
         }
         }
-    );
+    , MatchStyle.SUPERSET);
     test.done();
   },
 
   'default function with SQS DLQ when client provides Queue to be used as DLQ and deadLetterQueueEnabled set to true'(test: Test) {
     const stack = new cdk.Stack();
 
-    const dlqStack = new cdk.Stack();
-
-    const dlQueue = new sqs.Queue(dlqStack, 'DeadLetterQueue', {
+    const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
       retentionPeriodSec: 1209600
     });
@@ -837,16 +833,14 @@ export = {
         }
         }
       }
-    );
+    , MatchStyle.SUPERSET);
     test.done();
   },
 
   'error when default function with SQS DLQ when client provides Queue to be used as DLQ and deadLetterQueueEnabled set to false'(test: Test) {
     const stack = new cdk.Stack();
 
-    const dlqStack = new cdk.Stack();
-
-    const dlQueue = new sqs.Queue(dlqStack, 'DeadLetterQueue', {
+    const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
       retentionPeriodSec: 1209600
     });
@@ -1121,11 +1115,47 @@ export = {
           Runtime: 'ruby2.5' },
           DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
     test.done();
+  },
+  'support reserved concurrent executions'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS,
+      reservedConcurrentExecutions: 10
+    });
+
+    expect(stack).toMatch({ Resources:
+      { MyLambdaServiceRole4539ECB6:
+          { Type: 'AWS::IAM::Role',
+          Properties:
+          { AssumeRolePolicyDocument:
+            { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Version: '2012-10-17' },
+          ManagedPolicyArns:
+          // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+            // tslint:disable-next-line:max-line-length
+            [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
+          }},
+        MyLambdaCCE802FB:
+          { Type: 'AWS::Lambda::Function',
+          Properties:
+          { Code: { ZipFile: 'foo' },
+          Handler: 'index.handler',
+          ReservedConcurrentExecutions: 10,
+          Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
+          Runtime: 'nodejs' },
+          DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
+    test.done();
   }
 };
 
-function newTestLambda(parent: cdk.Construct) {
-  return new lambda.Function(parent, 'MyLambda', {
+function newTestLambda(scope: cdk.Construct) {
+  return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
     runtime: lambda.Runtime.Python27

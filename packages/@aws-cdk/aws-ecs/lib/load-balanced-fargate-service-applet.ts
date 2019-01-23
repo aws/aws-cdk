@@ -95,6 +95,13 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
    * Setting this option will set the load balancer port to 443.
    */
   certificate?: string;
+
+  /**
+   * Environment variables to pass to the container
+   *
+   * @default No environment variables
+   */
+  environment?: { [key: string]: string };
 }
 
 /**
@@ -102,8 +109,8 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
  * load balancer, ECS cluster, VPC, and (optionally) Route53 alias record.
  */
 export class LoadBalancedFargateServiceApplet extends cdk.Stack {
-  constructor(parent: cdk.App, id: string, props: LoadBalancedFargateServiceAppletProps) {
-    super(parent, id, props);
+  constructor(scope: cdk.App, id: string, props: LoadBalancedFargateServiceAppletProps) {
+    super(scope, id, props);
 
     const vpc = new VpcNetwork(this, 'MyVpc', { maxAZs: 2 });
     const cluster = new Cluster(this, 'Cluster', { vpc });
@@ -127,6 +134,7 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
       publicTasks: props.publicTasks,
       image: ContainerImage.fromDockerHub(props.image),
       desiredCount: props.desiredCount,
+      environment: props.environment,
       certificate,
       domainName: props.domainName,
       domainZone

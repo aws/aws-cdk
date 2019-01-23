@@ -67,8 +67,8 @@ export class EventRule extends Construct implements IEventRule {
   /**
    * Imports a rule by ARN into this stack.
    */
-  public static import(parent: Construct, name: string, props: EventRuleImportProps): IEventRule {
-    return new ImportedEventRule(parent, name, props);
+  public static import(scope: Construct, id: string, props: EventRuleImportProps): IEventRule {
+    return new ImportedEventRule(scope, id, props);
   }
 
   public readonly ruleArn: string;
@@ -77,14 +77,14 @@ export class EventRule extends Construct implements IEventRule {
   private readonly eventPattern: EventPattern = { };
   private scheduleExpression?: string;
 
-  constructor(parent: Construct, name: string, props: EventRuleProps = { }) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: EventRuleProps = { }) {
+    super(scope, id);
 
     const resource = new CfnRule(this, 'Resource', {
       name: props.ruleName,
       description: props.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
-      scheduleExpression: new Token(() => this.scheduleExpression),
+      scheduleExpression: new Token(() => this.scheduleExpression).toString(),
       eventPattern: new Token(() => this.renderEventPattern()),
       targets: new Token(() => this.renderTargets())
     });
@@ -116,8 +116,9 @@ export class EventRule extends Construct implements IEventRule {
    */
   public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
     if (!target) { return; }
+    const self = this;
 
-    const targetProps = target.asEventRuleTarget(this.ruleArn, this.uniqueId);
+    const targetProps = target.asEventRuleTarget(this.ruleArn, this.node.uniqueId);
 
     // check if a target with this ID already exists
     if (this.targets.find(t => t.id === targetProps.id)) {
@@ -145,11 +146,15 @@ export class EventRule extends Construct implements IEventRule {
       let inputTemplate: any;
 
       if (inputOptions.jsonTemplate) {
-        inputTemplate = inputOptions.jsonTemplate;
-      } else if (typeof(inputOptions.textTemplate) === 'string') {
-        inputTemplate = JSON.stringify(inputOptions.textTemplate);
+        inputTemplate = typeof inputOptions.jsonTemplate === 'string'
+            ? inputOptions.jsonTemplate
+            : self.node.stringifyJson(inputOptions.jsonTemplate);
       } else {
-        inputTemplate = `"${inputOptions.textTemplate}"`;
+        inputTemplate = typeof(inputOptions.textTemplate) === 'string'
+            // Newline separated list of JSON-encoded strings
+            ? inputOptions.textTemplate.split('\n').map(x => self.node.stringifyJson(x)).join('\n')
+            // Some object, stringify it, then stringify the string for proper escaping
+            : self.node.stringifyJson(self.node.stringifyJson(inputOptions.textTemplate));
       }
 
       return {
@@ -199,7 +204,7 @@ export class EventRule extends Construct implements IEventRule {
     mergeEventPattern(this.eventPattern, eventPattern);
   }
 
-  public validate() {
+  protected validate() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
       return [ `Either 'eventPattern' or 'scheduleExpression' must be defined` ];
     }
@@ -239,8 +244,8 @@ export class EventRule extends Construct implements IEventRule {
 class ImportedEventRule extends Construct implements IEventRule {
   public readonly ruleArn: string;
 
-  constructor(parent: Construct, id: string, private readonly props: EventRuleImportProps) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, private readonly props: EventRuleImportProps) {
+    super(scope, id);
 
     this.ruleArn = props.eventRuleArn;
   }

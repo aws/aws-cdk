@@ -1,5 +1,5 @@
-import { Construct } from './construct';
-import { Token } from './tokens';
+import { Construct, IConstruct } from './construct';
+import { ResolveContext, Token } from './tokens';
 
 /**
  * ITaggable indicates a entity manages tags via the `tags` property
@@ -155,7 +155,7 @@ export class TagManager extends Token {
    */
   private readonly blockedTags: string[] = [];
 
-  constructor(private readonly parent: Construct, props: TagManagerProps  = {}) {
+  constructor(private readonly scope: Construct, props: TagManagerProps  = {}) {
     super();
 
     const initialTags = props.initialTags || {};
@@ -171,7 +171,7 @@ export class TagManager extends Token {
   /**
    * Converts the `tags` to a Token for use in lazy evaluation
    */
-  public resolve(): any {
+  public resolve(_context: ResolveContext): any {
     // need this for scoping
     const blockedTags = this.blockedTags;
     function filterTags(_tags: FullTags, filter: TagProps = {}): Tags {
@@ -197,7 +197,7 @@ export class TagManager extends Token {
       return filteredTags;
     }
 
-    function propagatedTags(tagProviders: Construct[]): Tags {
+    function propagatedTags(tagProviders: IConstruct[]): Tags {
       const parentTags: Tags = {};
       for (const ancestor of tagProviders) {
         if (TagManager.isTaggable(ancestor)) {
@@ -211,7 +211,7 @@ export class TagManager extends Token {
 
     const nonStickyTags = filterTags(this._tags, {sticky: false});
     const stickyTags = filterTags(this._tags, {sticky: true});
-    const ancestors = this.parent.ancestors();
+    const ancestors = this.scope.node.ancestors();
     const ancestorTags = propagatedTags(ancestors);
     const propagateTags = filterTags(this._tags, {propagate: true});
     return this.tagFormatResolve( {

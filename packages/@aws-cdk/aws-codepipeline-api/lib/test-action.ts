@@ -36,11 +36,18 @@ export interface TestActionProps extends CommonActionProps, CommonActionConstruc
   artifactBounds: ActionArtifactBounds;
 
   /**
-   * The source action owner (could be 'AWS', 'ThirdParty' or 'Custom').
+   * The test Action owner (could be 'AWS', 'ThirdParty' or 'Custom').
    *
    * @default 'AWS'
    */
   owner?: string;
+
+  /**
+   * The test Action version.
+   *
+   * @default '1'
+   */
+  version?: string;
 
   /**
    * The action's configuration. These are key-value pairs that specify input values for an action.
@@ -64,8 +71,8 @@ export interface TestActionProps extends CommonActionProps, CommonActionConstruc
 export abstract class TestAction extends Action {
   public readonly outputArtifact?: Artifact;
 
-  constructor(parent: cdk.Construct, name: string, props: TestActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, id: string, props: TestActionProps) {
+    super(scope, id, {
       category: ActionCategory.Test,
       ...props,
     });

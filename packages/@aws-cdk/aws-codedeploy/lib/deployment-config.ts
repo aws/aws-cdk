@@ -10,7 +10,7 @@ import { CfnDeploymentConfig } from './codedeploy.generated';
  */
 export interface IServerDeploymentConfig {
   readonly deploymentConfigName: string;
-  readonly deploymentConfigArn: string;
+  deploymentConfigArn(scope: cdk.IConstruct): string;
   export(): ServerDeploymentConfigImportProps;
 }
 
@@ -30,13 +30,15 @@ export interface ServerDeploymentConfigImportProps {
 
 class ImportedServerDeploymentConfig extends cdk.Construct implements IServerDeploymentConfig {
   public readonly deploymentConfigName: string;
-  public readonly deploymentConfigArn: string;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ServerDeploymentConfigImportProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: ServerDeploymentConfigImportProps) {
+    super(scope, id);
 
     this.deploymentConfigName = props.deploymentConfigName;
-    this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
+  }
+
+  public deploymentConfigArn(scope: cdk.IConstruct): string {
+    return arnForDeploymentConfigName(this.deploymentConfigName, scope);
   }
 
   public export() {
@@ -46,11 +48,13 @@ class ImportedServerDeploymentConfig extends cdk.Construct implements IServerDep
 
 class DefaultServerDeploymentConfig implements IServerDeploymentConfig {
   public readonly deploymentConfigName: string;
-  public readonly deploymentConfigArn: string;
 
   constructor(deploymentConfigName: string) {
     this.deploymentConfigName = deploymentConfigName;
-    this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
+  }
+
+  public deploymentConfigArn(scope: cdk.IConstruct): string {
+    return arnForDeploymentConfigName(this.deploymentConfigName, scope);
   }
 
   public export(): ServerDeploymentConfigImportProps {
@@ -105,15 +109,14 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
    * @param props the properties of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static import(parent: cdk.Construct, id: string, props: ServerDeploymentConfigImportProps): IServerDeploymentConfig {
-    return new ImportedServerDeploymentConfig(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: ServerDeploymentConfigImportProps): IServerDeploymentConfig {
+    return new ImportedServerDeploymentConfig(scope, id, props);
   }
 
   public readonly deploymentConfigName: string;
-  public readonly deploymentConfigArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
+    super(scope, id);
 
     const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: props.deploymentConfigName,
@@ -121,7 +124,10 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
     });
 
     this.deploymentConfigName = resource.ref.toString();
-    this.deploymentConfigArn = arnForDeploymentConfigName(this.deploymentConfigName);
+  }
+
+  public deploymentConfigArn(scope: cdk.IConstruct): string {
+    return arnForDeploymentConfigName(this.deploymentConfigName, scope);
   }
 
   public export(): ServerDeploymentConfigImportProps {
@@ -150,8 +156,8 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
   }
 }
 
-function arnForDeploymentConfigName(name: string): string {
-  return cdk.ArnUtils.fromComponents({
+function arnForDeploymentConfigName(name: string, scope: cdk.IConstruct): string {
+  return cdk.Stack.find(scope).formatArn({
     service: 'codedeploy',
     resource: 'deploymentconfig',
     resourceName: name,

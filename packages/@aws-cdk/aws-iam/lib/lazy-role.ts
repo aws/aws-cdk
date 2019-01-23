@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { Policy } from './policy';
 import { PolicyPrincipal, PolicyStatement } from './policy-document';
-import { IRole, Role, RoleProps } from './role';
+import { IRole, Role, RoleImportProps, RoleProps } from './role';
 
 /**
  * An IAM role that only gets attached to the construct tree once it gets used, not before
@@ -18,8 +18,12 @@ export class LazyRole extends cdk.Construct implements IRole {
   private readonly policies = new Array<Policy>();
   private readonly managedPolicies = new Array<string>();
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: RoleProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: RoleProps) {
+    super(scope, id);
+  }
+
+  public export(): RoleImportProps {
+    return this.instantiate().export();
   }
 
   /**
@@ -71,6 +75,14 @@ export class LazyRole extends cdk.Construct implements IRole {
    */
   public get roleArn(): string {
     return this.instantiate().roleArn;
+  }
+
+  public get roleId(): string {
+    return this.instantiate().roleId;
+  }
+
+  public get roleName(): string {
+    return this.instantiate().roleName;
   }
 
   /**

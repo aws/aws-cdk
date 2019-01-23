@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Fn } from './fn';
-import { Referenceable } from './stack';
+import { Referenceable } from './stack-element';
 
 export interface MappingProps {
   mapping?: { [k1: string]: { [k2: string]: any } };
@@ -12,8 +12,8 @@ export interface MappingProps {
 export class Mapping extends Referenceable {
   private mapping: { [k1: string]: { [k2: string]: any } } = { };
 
-  constructor(parent: Construct, name: string, props: MappingProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: MappingProps) {
+    super(scope, id);
     this.mapping = props.mapping || { };
   }
 

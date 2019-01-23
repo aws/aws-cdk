@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { Ref, Referenceable } from './stack';
+import { Ref, Referenceable } from './stack-element';
 
 export interface ParameterProps {
   /**
@@ -96,8 +96,8 @@ export class Parameter extends Referenceable {
    * @param parent The parent construct.
    * @param props The parameter properties.
    */
-  constructor(parent: Construct, name: string, props: ParameterProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: ParameterProps) {
+    super(scope, id);
     this.properties = props;
     this.value = new Ref(this);
     this.valueAsString = this.value.toString();

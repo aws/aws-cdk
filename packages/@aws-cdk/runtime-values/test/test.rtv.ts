@@ -20,8 +20,10 @@ export = {
 
 class RuntimeValueTest extends cdk.Construct {
 
-  constructor(parent: cdk.Construct, name: string) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    const stack = cdk.Stack.find(this);
 
     const queue = new sqs.CfnQueue(this, 'Queue', {});
 
@@ -42,7 +44,7 @@ class RuntimeValueTest extends cdk.Construct {
       role: role.roleArn,
       environment: {
         variables: {
-          [RuntimeValue.ENV_NAME]: RuntimeValue.ENV_VALUE
+          [RuntimeValue.ENV_NAME]: stack.stackName,
         }
       }
     });

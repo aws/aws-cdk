@@ -196,8 +196,8 @@ export class Table extends Construct {
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
 
-  constructor(parent: Construct, name: string, props: TableProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: TableProps = {}) {
+    super(scope, id);
 
     this.billingMode = props.billingMode || BillingMode.Provisioned;
     this.validateProvisioning(props);
@@ -220,7 +220,7 @@ export class Table extends Construct {
       timeToLiveSpecification: props.ttlAttributeName ? { attributeName: props.ttlAttributeName, enabled: true } : undefined
     });
 
-    if (props.tableName) { this.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
+    if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
     this.tableArn = this.table.tableArn;
     this.tableName = this.table.tableName;
@@ -429,7 +429,7 @@ export class Table extends Construct {
       return;
     }
     principal.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.tableArn)
+      .addResources(this.tableArn, new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : new cdk.Aws().noValue).toString())
       .addActions(...actions));
   }
 
@@ -474,7 +474,7 @@ export class Table extends Construct {
    *
    * @returns an array of validation error message
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     const errors = new Array<string>();
 
     if (!this.tablePartitionKey) {
@@ -614,13 +614,20 @@ export class Table extends Construct {
   private makeScalingRole(): iam.IRole {
     // Use a Service Linked Role.
     return iam.Role.import(this, 'ScalingRole', {
-      roleArn: cdk.ArnUtils.fromComponents({
+      roleArn: cdk.Stack.find(this).formatArn({
         // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
         service: 'iam',
         resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
         resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
       })
     });
+  }
+
+  /**
+   * Whether this table has indexes
+   */
+  private get hasIndex(): boolean {
+    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
   }
 }
 

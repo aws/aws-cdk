@@ -12,7 +12,7 @@ import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
 
-export interface IFunction extends events.IEventRuleTarget, logs.ILogSubscriptionDestination,
+export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
   s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource {
 
   /**
@@ -33,7 +33,7 @@ export interface IFunction extends events.IEventRuleTarget, logs.ILogSubscriptio
   /**
    * The IAM role associated with this function.
    */
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
 
   /**
    * Whether or not this Lambda function was bound to a VPC
@@ -123,7 +123,7 @@ export interface FunctionImportProps {
    *
    * If the role is not specified, any role-related operations will no-op.
    */
-  role?: iam.Role;
+  role?: iam.IRole;
 
   /**
    * Id of the securityGroup for this Lambda, if in a VPC.
@@ -149,7 +149,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   /**
    * The IAM role associated with this function.
    */
-  public abstract readonly role?: iam.Role;
+  public abstract readonly role?: iam.IRole;
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -191,6 +191,10 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
       sourceAccount: permission.sourceAccount,
       sourceArn: permission.sourceArn,
     });
+  }
+
+  public get id() {
+    return this.node.id;
   }
 
   /**
@@ -246,7 +250,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
    */
   public asEventRuleTarget(ruleArn: string, ruleId: string): events.EventRuleTargetProps {
     const permissionId = `AllowEventRule${ruleId}`;
-    if (!this.tryFindChild(permissionId)) {
+    if (!this.node.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('events.amazonaws.com'),
@@ -255,7 +259,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     }
 
     return {
-      id: this.id,
+      id: this.node.id,
       arn: this.functionArn,
     };
   }
@@ -323,12 +327,13 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     const arn = sourceLogGroup.logGroupArn;
 
     if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
+      const stack = cdk.Stack.find(this);
       // NOTE: the use of {AWS::Region} limits this to the same region, which shouldn't really be an issue,
       // since the Lambda must be in the same region as the SubscriptionFilter anyway.
       //
       // (Wildcards in principals are unfortunately not supported.
       this.addPermission('InvokedByCloudWatchLogs', {
-        principal: new iam.ServicePrincipal(`logs.${new cdk.AwsRegion()}.amazonaws.com`),
+        principal: new iam.ServicePrincipal(`logs.${stack.region}.amazonaws.com`),
         sourceArn: arn
       });
       this.logSubscriptionDestinationPolicyAddedFor.push(arn);
@@ -347,9 +352,10 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
    */
   public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
     const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
-    if (!this.tryFindChild(permissionId)) {
+    const stack = cdk.Stack.find(this);
+    if (!this.node.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
-        sourceAccount: new cdk.AwsAccountId().toString(),
+        sourceAccount: stack.accountId,
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
         sourceArn: bucketArn,
       });
@@ -357,7 +363,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
     // if we have a permission resource for this relationship, add it as a dependency
     // to the bucket notifications resource, so it will be created first.
-    const permission = this.tryFindChild(permissionId) as cdk.Resource;
+    const permission = this.node.tryFindChild(permissionId) as cdk.Resource;
 
     return {
       type: s3n.BucketNotificationDestinationType.Lambda,
@@ -410,7 +416,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(cdk.resolve(principal))}. ` +
+    throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(this.node.resolve(principal))}. ` +
       'Supported: AccountPrincipal, ServicePrincipal');
   }
 }

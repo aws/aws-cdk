@@ -125,7 +125,9 @@ export = {
             {
             Ref: "AWS::Region"
             },
-            ".amazonaws.com/",
+            ".",
+            { Ref: "AWS::URLSuffix" },
+            "/",
             {
             Ref: "myapiDeploymentStageprod298F01AF"
             },
@@ -386,13 +388,13 @@ export = {
     const exported = api.export();
 
     // THEN
-    stack.validateTree();
+    stack.node.prepareTree();
     test.deepEqual(stack.toCloudFormation().Outputs.MyRestApiRestApiIdB93C5C2D, {
       Value: { Ref: 'MyRestApi2D1F47A9' },
       Export: { Name: 'MyRestApiRestApiIdB93C5C2D' }
     });
-    test.deepEqual(cdk.resolve(imported.restApiId), 'api-rxt4498f');
-    test.deepEqual(cdk.resolve(exported), { restApiId: { 'Fn::ImportValue': 'MyRestApiRestApiIdB93C5C2D' } });
+    test.deepEqual(imported.node.resolve(imported.restApiId), 'api-rxt4498f');
+    test.deepEqual(imported.node.resolve(exported), { restApiId: { 'Fn::ImportValue': 'MyRestApiRestApiIdB93C5C2D' } });
     test.done();
   },
 
@@ -403,22 +405,26 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.deepEqual(cdk.resolve(api.url), { 'Fn::Join':
+    test.deepEqual(api.node.resolve(api.url), { 'Fn::Join':
     [ '',
       [ 'https://',
       { Ref: 'apiC8550315' },
       '.execute-api.',
       { Ref: 'AWS::Region' },
-      '.amazonaws.com/',
+      ".",
+      { Ref: "AWS::URLSuffix" },
+      "/",
       { Ref: 'apiDeploymentStageprod896C8101' },
       '/' ] ] });
-    test.deepEqual(cdk.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
+    test.deepEqual(api.node.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
     [ '',
       [ 'https://',
       { Ref: 'apiC8550315' },
       '.execute-api.',
       { Ref: 'AWS::Region' },
-      '.amazonaws.com/',
+      ".",
+      { Ref: "AWS::URLSuffix" },
+      "/",
       { Ref: 'apiDeploymentStageprod896C8101' },
       '/foo/bar' ] ] });
     test.done();
@@ -457,7 +463,7 @@ export = {
     const arn = api.executeApiArn('method', '/path', 'stage');
 
     // THEN
-    test.deepEqual(cdk.resolve(arn), { 'Fn::Join':
+    test.deepEqual(api.node.resolve(arn), { 'Fn::Join':
     [ '',
       [ 'arn:',
       { Ref: 'AWS::Partition' },
@@ -490,7 +496,7 @@ export = {
     const method = api.root.addMethod('ANY');
 
     // THEN
-    test.deepEqual(cdk.resolve(method.methodArn), { 'Fn::Join':
+    test.deepEqual(api.node.resolve(method.methodArn), { 'Fn::Join':
     [ '',
       [ 'arn:',
       { Ref: 'AWS::Partition' },

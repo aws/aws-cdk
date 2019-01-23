@@ -1,4 +1,4 @@
-import { CloudFormationJSON, Construct, Stack, Token } from "@aws-cdk/cdk";
+import { Construct, Stack, Token } from "@aws-cdk/cdk";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -19,22 +19,22 @@ export class Dashboard extends Construct {
   private readonly rows: IWidget[] = [];
   private readonly dashboard: CfnDashboard;
 
-  constructor(parent: Construct, name: string, props?: DashboardProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props?: DashboardProps) {
+    super(scope, id);
 
     // WORKAROUND -- Dashboard cannot be updated if the DashboardName is missing.
     // This is a bug in CloudFormation, but we don't want CDK users to have a bad
     // experience. We'll generate a name here if you did not supply one.
     // See: https://github.com/awslabs/aws-cdk/issues/213
-    const dashboardName = (props && props.dashboardName) || new Token(() => this.generateDashboardName());
+    const dashboardName = (props && props.dashboardName) || new Token(() => this.generateDashboardName()).toString();
 
     this.dashboard = new CfnDashboard(this, 'Resource', {
       dashboardName,
       dashboardBody: new Token(() => {
         const column = new Column(...this.rows);
         column.position(0, 0);
-        return CloudFormationJSON.stringify({ widgets: column.toJson() });
-      })
+        return this.node.stringifyJson({ widgets: column.toJson() });
+      }).toString()
     });
   }
 

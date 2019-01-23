@@ -71,7 +71,7 @@ export class Alias extends FunctionBase {
   /**
    * Role associated with this alias
    */
-  public readonly role?: iam.Role | undefined;
+  public readonly role?: iam.IRole | undefined;
 
   protected readonly canCreatePermissions: boolean = true; // Not used anyway
 
@@ -80,8 +80,8 @@ export class Alias extends FunctionBase {
    */
   private readonly underlyingLambda: IFunction;
 
-  constructor(parent: cdk.Construct, id: string, props: AliasProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: AliasProps) {
+    super(scope, id);
 
     this.underlyingLambda = props.version.lambda;
 

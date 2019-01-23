@@ -18,8 +18,8 @@ interface DemoResourceProps {
 class DemoResource extends cdk.Construct {
   public readonly response: string;
 
-  constructor(parent: cdk.Construct, name: string, props: DemoResourceProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: DemoResourceProps) {
+    super(scope, id);
 
     const resource = new CustomResource(this, 'Resource', {
       lambdaProvider: new lambda.SingletonFunction(this, 'Singleton', {
@@ -41,8 +41,8 @@ class DemoResource extends cdk.Construct {
  * A stack that only sets up the CustomResource and shows how to get an attribute from it
  */
 class SucceedingStack extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const resource = new DemoResource(this, 'DemoResource', {
       message: 'CustomResource says hello',

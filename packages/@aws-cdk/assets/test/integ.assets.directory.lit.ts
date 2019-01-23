@@ -4,8 +4,8 @@ import path = require('path');
 import assets = require('../lib');
 
 class TestStack extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     /// !show
     const asset = new assets.ZipDirectoryAsset(this, 'SampleAsset', {

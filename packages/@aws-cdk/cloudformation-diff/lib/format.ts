@@ -1,22 +1,30 @@
 import cxapi = require('@aws-cdk/cx-api');
-import Table = require('cli-table');
 import colors = require('colors/safe');
 import { format } from 'util';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
+import { formatTable } from './format-table';
 import { IamChanges } from './iam/iam-changes';
 import { SecurityGroupChanges } from './network/security-group-changes';
+
+// tslint:disable-next-line:no-var-requires
+const { structuredPatch } = require('diff');
 
 /**
  * Renders template differences to the process' console.
  *
- * @param templateDiff TemplateDiff to be rendered to the console.
+ * @param stream           The IO stream where to output the rendered diff.
+ * @param templateDiff     TemplateDiff to be rendered to the console.
  * @param logicalToPathMap A map from logical ID to construct path. Useful in
  *                         case there is no aws:cdk:path metadata in the template.
+ * @param context          the number of context lines to use in arbitrary JSON diff (defaults to 3).
  */
-export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: TemplateDiff, logicalToPathMap: { [logicalId: string]: string } = { }) {
-  const formatter = new Formatter(stream, logicalToPathMap, templateDiff);
+export function formatDifferences(stream: NodeJS.WriteStream,
+                                  templateDiff: TemplateDiff,
+                                  logicalToPathMap: { [logicalId: string]: string } = { },
+                                  context: number = 3) {
+  const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
   if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
     formatter.printSectionHeader('Template');
@@ -40,8 +48,11 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
 /**
  * Renders a diff of security changes to the given stream
  */
-export function formatSecurityChanges(stream: NodeJS.WriteStream, templateDiff: TemplateDiff, logicalToPathMap: {[logicalId: string]: string} = {}) {
-  const formatter = new Formatter(stream, logicalToPathMap, templateDiff);
+export function formatSecurityChanges(stream: NodeJS.WriteStream,
+                                      templateDiff: TemplateDiff,
+                                      logicalToPathMap: {[logicalId: string]: string} = {},
+                                      context?: number) {
+  const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
   formatSecurityChangesWithBanner(formatter, templateDiff);
 }
@@ -56,11 +67,15 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
 }
 
 const ADDITION = colors.green('[+]');
+const CONTEXT  = colors.grey('[ ]');
 const UPDATE   = colors.yellow('[~]');
 const REMOVAL  = colors.red('[-]');
 
 class Formatter {
-  constructor(private readonly stream: NodeJS.WriteStream, private readonly logicalToPathMap: { [logicalId: string]: string }, diff?: TemplateDiff) {
+  constructor(private readonly stream: NodeJS.WriteStream,
+              private readonly logicalToPathMap: { [logicalId: string]: string },
+              diff?: TemplateDiff,
+              private readonly context: number = 3) {
     // Read additional construct paths from the diff if it is supplied
     if (diff) {
       this.readConstructPathsFrom(diff);
@@ -81,12 +96,12 @@ class Formatter {
       collection: DifferenceCollection<V, T>,
       formatter: (type: string, id: string, diff: T) => void = this.formatDifference.bind(this)) {
 
-    if (collection.count === 0) {
+    if (collection.differenceCount === 0) {
       return;
     }
 
     this.printSectionHeader(title);
-    collection.forEach((id, diff) => formatter(entryType, id, diff));
+    collection.forEachDifference((id, diff) => formatter(entryType, id, diff));
     this.printSectionFooter();
   }
 
@@ -105,7 +120,7 @@ class Formatter {
    * @param diff the difference to be rendered.
    */
   public formatDifference(type: string, logicalId: string, diff: Difference<any> | undefined) {
-    if (!diff) { return; }
+    if (!diff || !diff.isDifferent) { return; }
 
     let value;
 
@@ -126,19 +141,22 @@ class Formatter {
    * Print a resource difference for a given logical ID.
    *
    * @param logicalId the logical ID of the resource that changed.
-   * @param diff    the change to be rendered.
+   * @param diff      the change to be rendered.
    */
   public formatResourceDifference(_type: string, logicalId: string, diff: ResourceDifference) {
+    if (!diff.isDifferent) { return; }
+
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // tslint:disable-next-line:max-line-length
     this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, colors.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {
+      const differenceCount = diff.differenceCount;
       let processedCount = 0;
-      diff.forEach((_, name, values) => {
+      diff.forEachDifference((_, name, values) => {
         processedCount += 1;
-        this.formatTreeDiff(name, values, processedCount === diff.count);
+        this.formatTreeDiff(name, values, processedCount === differenceCount);
       });
     }
   }
@@ -171,22 +189,23 @@ class Formatter {
     case ResourceImpact.MAY_REPLACE:
       return colors.italic(colors.yellow('may be replaced'));
     case ResourceImpact.WILL_REPLACE:
-      return colors.italic(colors.bold(colors.yellow('replace')));
+      return colors.italic(colors.bold(colors.red('replace')));
     case ResourceImpact.WILL_DESTROY:
       return colors.italic(colors.bold(colors.red('destroy')));
     case ResourceImpact.WILL_ORPHAN:
       return colors.italic(colors.yellow('orphan'));
     case ResourceImpact.WILL_UPDATE:
     case ResourceImpact.WILL_CREATE:
+    case ResourceImpact.NO_CHANGE:
       return ''; // no extra info is gained here
     }
   }
 
   /**
    * Renders a tree of differences under a particular name.
-   * @param name the name of the root of the tree.
-   * @param diff the difference on the tree.
-   * @param last whether this is the last node of a parent tree.
+   * @param name    the name of the root of the tree.
+   * @param diff    the difference on the tree.
+   * @param last    whether this is the last node of a parent tree.
    */
   public formatTreeDiff(name: string, diff: Difference<any>, last: boolean) {
     let additionalInfo = '';
@@ -210,10 +229,19 @@ class Formatter {
    * @param linePrefix a prefix (indent-like) to be used on every line.
    */
   public formatObjectDiff(oldObject: any, newObject: any, linePrefix: string) {
-    if ((typeof oldObject !== typeof newObject) || Array.isArray(oldObject) || typeof oldObject === 'string' || typeof oldObject === 'number') {
+    if ((typeof oldObject !== typeof newObject) || Array.isArray(oldObject) || typeof oldObject === 'string' || typeof oldObject === 'number') {
       if (oldObject !== undefined && newObject !== undefined) {
-        this.print('%s   ├─ %s %s', linePrefix, REMOVAL, this.formatValue(oldObject, colors.red));
-        this.print('%s   └─ %s %s', linePrefix, ADDITION, this.formatValue(newObject, colors.green));
+        if (typeof oldObject === 'object' || typeof newObject === 'object') {
+          const oldStr = JSON.stringify(oldObject, null, 2);
+          const newStr = JSON.stringify(newObject, null, 2);
+          const diff = _diffStrings(oldStr, newStr, this.context);
+          for (let i = 0 ; i < diff.length ; i++) {
+            this.print('%s   %s %s', linePrefix, i === 0 ? '└─' : '  ', diff[i]);
+          }
+        } else {
+          this.print('%s   ├─ %s %s', linePrefix, REMOVAL, this.formatValue(oldObject, colors.red));
+          this.print('%s   └─ %s %s', linePrefix, ADDITION, this.formatValue(newObject, colors.green));
+        }
       } else if (oldObject !== undefined /* && newObject === undefined */) {
         this.print('%s   └─ %s', linePrefix, this.formatValue(oldObject, colors.red));
       } else /* if (oldObject === undefined && newObject !== undefined) */ {
@@ -328,12 +356,12 @@ class Formatter {
 
     if (changes.statements.hasChanges) {
       this.printSectionHeader('IAM Statement Changes');
-      this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarizeStatements())));
+      this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeStatements()), this.stream.columns));
     }
 
     if (changes.managedPolicies.hasChanges) {
       this.printSectionHeader('IAM Policy Changes');
-      this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies())));
+      this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies()), this.stream.columns));
     }
   }
 
@@ -341,7 +369,7 @@ class Formatter {
     if (!changes.hasChanges) { return; }
 
     this.printSectionHeader('Security Group Changes');
-    this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarize())));
+    this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarize()), this.stream.columns));
   }
 
   public deepSubstituteBracedLogicalIds(rows: string[][]): string[][] {
@@ -359,42 +387,73 @@ class Formatter {
 }
 
 /**
- * Render a two-dimensional array to a visually attractive table
- *
- * First row is considered the table header.
+ * A patch as returned by ``diff.structuredPatch``.
  */
-function renderTable(cells: string[][]): string {
-  const head = cells.splice(0, 1)[0];
-
-  const table = new Table({ head, style: { head: [] } });
-  table.push(...cells);
-  return stripHorizontalLines(table.toString()).trimRight();
+interface Patch {
+  /**
+   * Hunks in the patch.
+   */
+  hunks: ReadonlyArray<PatchHunk>;
 }
 
 /**
- * Strip horizontal lines in the table rendering if the second-column values are the same
- *
- * We couldn't find a table library that BOTH does newlines-in-cells correctly AND
- * has an option to enable/disable separator lines on a per-row basis. So we're
- * going to do some character post-processing on the table instead.
+ * A hunk in a patch produced by ``diff.structuredPatch``.
  */
-function stripHorizontalLines(tableRendering: string) {
-  const lines = tableRendering.split('\n');
+interface PatchHunk {
+  oldStart: number;
+  oldLines: number;
+  newStart: number;
+  newLines: number;
+  lines: string[];
+}
 
-  let i = 3;
-  while (i < lines.length - 3) {
-    if (secondColumnValue(lines[i]) === secondColumnValue(lines[i + 2])) {
-      lines.splice(i + 1, 1);
-      i += 1;
-    } else {
-      i += 2;
+/**
+ * Creates a unified diff of two strings.
+ *
+ * @param oldStr  the "old" version of the string.
+ * @param newStr  the "new" version of the string.
+ * @param context the number of context lines to use in arbitrary JSON diff.
+ *
+ * @returns an array of diff lines.
+ */
+function _diffStrings(oldStr: string, newStr: string, context: number): string[] {
+  const patch: Patch = structuredPatch(null, null, oldStr, newStr, null, null, { context });
+  const result = new Array<string>();
+  for (const hunk of patch.hunks) {
+    result.push(colors.magenta(`@@ -${hunk.oldStart},${hunk.oldLines} +${hunk.newStart},${hunk.newLines} @@`));
+    const baseIndent = _findIndent(hunk.lines);
+    for (const line of hunk.lines) {
+      // Don't care about termination newline.
+      if (line === '\\ No newline at end of file') { continue; }
+      const marker = line.charAt(0);
+      const text = line.slice(1 + baseIndent);
+      switch (marker) {
+      case ' ':
+        result.push(`${CONTEXT} ${text}`);
+        break;
+      case '+':
+        result.push(colors.bold(`${ADDITION} ${colors.green(text)}`));
+        break;
+      case '-':
+        result.push(colors.bold(`${REMOVAL} ${colors.red(text)}`));
+        break;
+      default:
+        throw new Error(`Unexpected diff marker: ${marker} (full line: ${line})`);
+      }
     }
   }
+  return result;
 
-  return lines.join('\n');
-
-  function secondColumnValue(line: string) {
-    const cols = colors.stripColors(line).split('│').filter(x => x !== '');
-    return cols[1];
+  function _findIndent(lines: string[]): number {
+    let indent = Number.MAX_SAFE_INTEGER;
+    for (const line of lines) {
+      for (let i = 1 ; i < line.length ; i++) {
+        if (line.charAt(i) !== ' ') {
+          indent = indent > i - 1 ? i - 1 : indent;
+          break;
+        }
+      }
+    }
+    return indent;
   }
 }

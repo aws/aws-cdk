@@ -88,6 +88,8 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.xlarge'),
   machineImage: new EcsOptimizedAmi(),
+  // Or use ECS-Optimized Amazon Linux 2 AMI
+  // machineImage: new EcsOptimizedAmi({ generation: ec2.AmazonLinuxGeneration.AmazonLinux2 }),
   desiredCapacity: 3,
   // ... other options here ...
 });
@@ -203,7 +205,7 @@ const service = new ecs.FargateService(this, 'Service', { /* ... */ });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
-listener.addTargets('ECS', {
+const target = listener.addTargets('ECS', {
   port: 80,
   targets: [service]
 });
@@ -224,6 +226,11 @@ const scaling = service.autoScaleTaskCount({ maxCapacity: 10 });
 scaling.scaleOnCpuUtilization('CpuScaling', {
   targetUtilizationPercent: 50
 });
+
+scaling.scaleOnRequestCount('RequestScaling', {
+  requestsPerTarget: 10000,
+  targetGroup: target
+})
 ```
 
 Task AutoScaling is powered by *Application AutoScaling*. Refer to that for

@@ -10,8 +10,8 @@ export abstract class BaseListener extends cdk.Construct implements cdk.IDependa
   public readonly listenerArn: string;
   private readonly defaultActions: any[] = [];
 
-  constructor(parent: cdk.Construct, id: string, additionalProps: any) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, additionalProps: any) {
+    super(scope, id);
 
     const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
@@ -25,7 +25,7 @@ export abstract class BaseListener extends cdk.Construct implements cdk.IDependa
   /**
    * Validate this listener
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     if (this.defaultActions.length === 0) {
       return ['Listener needs at least one default target group (call addTargetGroups)'];
     }
