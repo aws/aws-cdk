@@ -29,7 +29,7 @@ export = {
         const stack = getTestStack();
         new VpcNetwork(stack, 'TheVPC');
         expect(stack).to(haveResource('AWS::EC2::VPC',
-          hasTags( [ {Key: 'Name', Value: 'TheVPC'} ])));
+          hasTags( [ {Key: 'Name', Value: 'TestStack/TheVPC'} ])));
         test.done();
       },
 
@@ -312,7 +312,7 @@ export = {
           Tags: [
             {
               Key: 'Name',
-              Value: `VPC/egressSubnet${i}`,
+              Value: `TestStack/VPC/egressSubnet${i}`,
             }
           ]
         }));
@@ -381,12 +381,12 @@ export = {
       const stack = getTestStack();
       const vpc = new VpcNetwork(stack, 'TheVPC');
       for (const subnet of vpc.publicSubnets) {
-        const tag = {Key: 'Name', Value: subnet.node.path};
+        const tag = {Key: 'Name', Value: 'TestStack/TheVPC/' + subnet.node.id};
         expect(stack).to(haveResource('AWS::EC2::NatGateway', hasTags([tag])));
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       for (const subnet of vpc.privateSubnets) {
-        const tag = {Key: 'Name', Value: subnet.node.path};
+        const tag = {Key: 'Name', Value: 'TestStack/TheVPC/' + subnet.node.id};
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       test.done();

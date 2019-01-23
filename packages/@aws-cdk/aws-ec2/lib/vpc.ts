@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
@@ -299,7 +300,7 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
     }
 
     this.tags = new cdk.TagManager(this, { initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.node.path, { overwrite: false });
+    this.tags.setTag(NAME_TAG, legacyPath(this), { overwrite: false });
 
     const cidrBlock = ifUndefined(props.cidr, VpcNetwork.DEFAULT_CIDR_RANGE);
     this.networkBuilder = new NetworkBuilder(cidrBlock);
@@ -556,7 +557,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
   constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
     super(scope, id);
     this.tags = new cdk.TagManager(this, {initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.node.path, {overwrite: false});
+    this.tags.setTag(NAME_TAG, legacyPath(this), {overwrite: false});
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -713,4 +714,21 @@ class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
   public export() {
     return this.props;
   }
+}
+
+/**
+ * Return the legacy path of the construct, used for tagging.
+ *
+ * Tag names look like:
+ *
+ *     MyStack/Vpc/Subnet, for production stacks
+ *
+ * We do a slightly complicated calculation here because we want to
+ * keep the tag names that were created using previous versions of
+ * the CDK stable.
+ */
+function legacyPath(construct: cdk.IConstruct): string {
+  const stack = Stack.find(construct);
+  const path = construct.node.ancestors(stack).map(a => a.node.id);
+  return `${stack.name}/${path.join('/')}`;
 }
