@@ -92,6 +92,29 @@ export = {
     test.done();
   },
 
+  'fake intrinsics are serialized to objects'(test: Test) {
+    const stack = new Stack();
+    const fakeIntrinsics = new Token(() => ({
+      a: {
+        'Fn::GetArtifactAtt': {
+          key: 'val',
+        },
+      },
+      b: {
+        'Fn::GetParam': [
+          'val1',
+          'val2',
+        ],
+      },
+    }));
+
+    const stringified = CloudFormationJSON.stringify(fakeIntrinsics, stack);
+    test.equal(evaluateCFN(stack.node.resolve(stringified)),
+        '{"a":{"Fn::GetArtifactAtt":{"key":"val"}},"b":{"Fn::GetParam":["val1","val2"]}}');
+
+    test.done();
+  },
+
   'embedded string literals in intrinsics are escaped when calling TokenJSON.stringify()'(test: Test) {
     // GIVEN
     const stack = new Stack();
