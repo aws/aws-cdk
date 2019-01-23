@@ -150,10 +150,10 @@ export interface AutoScalingGroupProps {
   cooldownSeconds?: number;
 
   /**
-   * Specifies whether instances in the Auto Scaling Group should have public
-   * IP addresses associated with them.  If undefined, each instance will be assigned
-   * a public IP address if the subnet in which it is placed is configured to
-   * assign one by default.
+   * Whether instances in the Auto Scaling Group should have public
+   * IP addresses associated with them.
+   *
+   * @default Use subnet setting
    */
   associatePublicIpAddress?: boolean;
 }
