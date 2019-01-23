@@ -39,7 +39,7 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
  * Construction properties of the {@link PipelineSourceAction S3 source Action}.
  */
 export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps,
-  codepipeline.CommonActionConstructProps {
+    codepipeline.CommonActionConstructProps {
   /**
    * The Amazon S3 bucket that stores the source code
    */
@@ -72,26 +72,38 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
 }
 
 /**
- * Construction properties of the {@link PipelineDeployAction S3 deploy Action}.
+ * Common properties for creating {@link PipelineDeployAction} -
+ * either directly, through its constructor,
+ * or through {@link IBucket#addToPipelineAsDeploy}.
  */
-export interface PipelineDeployActionProps extends codepipeline.CommonActionProps,
-  codepipeline.CommonActionConstructProps {
+export interface CommonPipelineDeployActionProps extends codepipeline.CommonActionProps {
   /**
-   * The Amazon S3 bucket that is the deploy target
-   */
-  bucket: IBucket;
-  /**
-   * Should the deploy action extract the artifact before deploying to Amazon S3. Defaults to true
+   * Should the deploy action extract the artifact before deploying to Amazon S3.
+   *
+   * @default true
    */
   extract?: boolean;
+
   /**
    * The key of the target object. This is required if extract is false.
    */
   objectKey?: string;
+
   /**
-   * The inputArtifact to deploy to Amazon S3
+   * The inputArtifact to deploy to Amazon S3.
    */
-  inputArtifact: codepipeline.Artifact;
+  inputArtifact?: codepipeline.Artifact;
+}
+
+/**
+ * Construction properties of the {@link PipelineDeployAction S3 deploy Action}.
+ */
+export interface PipelineDeployActionProps extends CommonPipelineDeployActionProps,
+    codepipeline.CommonActionConstructProps {
+  /**
+   * The Amazon S3 bucket that is the deploy target.
+   */
+  bucket: IBucket;
 }
 
 /**
@@ -100,11 +112,7 @@ export interface PipelineDeployActionProps extends codepipeline.CommonActionProp
 export class PipelineDeployAction extends codepipeline.DeployAction {
   constructor(scope: cdk.Construct, id: string, props: PipelineDeployActionProps) {
     super(scope, id, {
-      stage: props.stage,
-      runOrder: props.runOrder,
-      owner: 'AWS',
       provider: 'S3',
-      inputArtifact: props.inputArtifact,
       artifactBounds: {
         minInputs: 1,
         maxInputs: 1,
@@ -113,9 +121,10 @@ export class PipelineDeployAction extends codepipeline.DeployAction {
       },
       configuration: {
         BucketName: props.bucket.bucketName,
-        Extract: props.extract || 'true',
+        Extract: (props.extract === false) ? 'false' : 'true',
         ObjectKey: props.objectKey,
       },
+      ...props,
     });
     // pipeline needs permissions to write to the S3 bucket
     props.bucket.grantWrite(props.stage.pipeline.role);
