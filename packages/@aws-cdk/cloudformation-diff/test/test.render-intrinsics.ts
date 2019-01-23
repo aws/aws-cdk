@@ -27,6 +27,15 @@ export = {
     test.done();
   },
 
+  'removes AWS::NoValue from Fn::Join'(test: Test) {
+    test.equals(
+      renderIntrinsics({ 'Fn::Join': ['/', ['a', { Ref: 'AWS::NoValue' }, 'b', 'c']] }),
+      'a/b/c'
+    );
+
+    test.done();
+  },
+
   'does not resolve Fn::Join if the second argument is not a list literal'(test: Test) {
     test.equals(
       renderIntrinsics({ 'Fn::Join': ['/', { Ref: 'ListParameter' }] }),
@@ -59,6 +68,32 @@ export = {
       [
         '${SomeLogicalId}',
         'Do not replace',
+      ]
+    );
+    test.done();
+  },
+
+  'removes NoValue from object'(test: Test) {
+    test.deepEqual(
+      renderIntrinsics({
+        Deeper1: { Ref: 'SomeLogicalId' },
+        Deeper2: { Ref: 'AWS::NoValue' }
+      }),
+      {
+        Deeper1: '${SomeLogicalId}',
+      }
+    );
+    test.done();
+  },
+
+  'removes NoValue from array'(test: Test) {
+    test.deepEqual(
+      renderIntrinsics([
+        { Ref: 'SomeLogicalId' },
+        { Ref: 'AWS::NoValue' },
+      ]),
+      [
+        '${SomeLogicalId}',
       ]
     );
     test.done();
