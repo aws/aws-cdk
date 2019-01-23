@@ -62,7 +62,6 @@ export = {
     stage: prodStage,
     stackName,
     changeSetName,
-    runOrder: 321,
     deploymentRole: changeSetExecRole,
     templatePath: new ArtifactPath(buildAction.outputArtifact, 'template.yaml'),
     templateConfiguration: new ArtifactPath(buildAction.outputArtifact, 'templateConfig.json'),
@@ -170,7 +169,7 @@ export = {
       "InputArtifacts": [{"Name": "OutputYo"}],
       "Name": "BuildChangeSetProd",
       "OutputArtifacts": [],
-      "RunOrder": 321
+      "RunOrder": 1
       },
       {
       "ActionTypeId": {
@@ -384,23 +383,29 @@ export = {
     });
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-      "Stages": [{
+      "Stages": [
+        {
           "Name": "Source" /* don't care about the rest */
-      }, {
-        "Name": "Deploy",
-        "Actions": [{
-          "Name": "ImportedRoleAction",
-          "RoleArn": "arn:aws:iam::000000000000:role/action-role"
-        }, {
-          "Name": "FreshRoleAction",
-          "RoleArn": {
-            "Fn::GetAtt": [
-              "FreshRole472F6E18",
-              "Arn"
-            ]
-          }
-        }]
-      }]
+        },
+        {
+          "Name": "Deploy",
+          "Actions": [
+            {
+              "Name": "ImportedRoleAction",
+              "RoleArn": "arn:aws:iam::000000000000:role/action-role"
+            },
+            {
+              "Name": "FreshRoleAction",
+              "RoleArn": {
+                "Fn::GetAtt": [
+                  "FreshRole472F6E18",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     }));
 
     test.done();

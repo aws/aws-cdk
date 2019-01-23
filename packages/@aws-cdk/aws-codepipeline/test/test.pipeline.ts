@@ -102,7 +102,7 @@ export = {
             "Name": "A"
           }
           ],
-          "RunOrder": 8,
+          "RunOrder": 8
         }
         ],
         "Name": "Source"
