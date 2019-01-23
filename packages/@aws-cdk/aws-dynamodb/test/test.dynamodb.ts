@@ -1381,6 +1381,7 @@ export = {
     },
 
     '"grantStreamRead" allows principal to read and describe the table stream"'(test: Test) {
+      // GIVEN
       const stack = new Stack();
       const table = new Table(stack, 'my-table', {
         partitionKey: {
@@ -1390,8 +1391,10 @@ export = {
         streamSpecification: StreamViewType.NewImage
       });
       const user = new iam.User(stack, 'user');
+
+      // WHEN
       table.grantStreamRead(user);
-      
+
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         "PolicyDocument": {
