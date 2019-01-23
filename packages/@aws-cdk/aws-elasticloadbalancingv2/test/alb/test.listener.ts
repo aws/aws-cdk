@@ -470,7 +470,7 @@ class ResourceWithLBDependency extends cdk.Resource {
   }
 
   protected prepare() {
-    this.node.addDependency(...this.targetGroup.loadBalancerConstructs);
+    this.node.addDependency(...this.targetGroup.loadBalancerDependencies);
 
     super.prepare();
   }

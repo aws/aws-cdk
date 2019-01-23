@@ -162,7 +162,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
 
   protected prepare() {
     for (const targetGroup of this.targetGroups) {
-      this.node.addDependency(...targetGroup.loadBalancerConstructs);
+      this.node.addDependency(...targetGroup.loadBalancerDependencies);
     }
   }
 

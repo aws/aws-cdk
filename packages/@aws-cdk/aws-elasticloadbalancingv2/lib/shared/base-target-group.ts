@@ -175,7 +175,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   /**
    * List of constructs that need to be depended on to ensure the TargetGroup is associated to a load balancer
    */
-  public readonly loadBalancerConstructs = new Array<cdk.IConstruct>();
+  public readonly loadBalancerDependencies = new Array<cdk.IConstruct>();
 
   /**
    * Default port configured for members of this target group
@@ -327,7 +327,7 @@ export interface ITargetGroup extends cdk.IConstruct {
   /**
    * Return an object to depend on the listeners added to this target group
    */
-  readonly loadBalancerConstructs: cdk.IConstruct[];
+  readonly loadBalancerDependencies: cdk.IConstruct[];
 
   /**
    * Export this target group

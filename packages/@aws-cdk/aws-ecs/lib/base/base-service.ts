@@ -201,7 +201,7 @@ export abstract class BaseService extends cdk.Construct
     // Service creation can only happen after the load balancer has
     // been associated with our target group(s), so add ordering dependency.
     for (const targetGroup of this.targetGroups) {
-      this.resource.node.addDependency(...targetGroup.loadBalancerConstructs);
+      this.resource.node.addDependency(...targetGroup.loadBalancerDependencies);
     }
   }
 
