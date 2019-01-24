@@ -6,7 +6,7 @@ import { IRepository } from './repository-ref';
 /**
  * Common properties for the {@link PipelineSourceAction CodePipeline source Action},
  * whether creating it directly,
- * or through the {@link RepositoryRef#addToPipeline} method.
+ * or through the {@link IRepository#addToPipeline} method.
  */
 export interface CommonPipelineSourceActionProps extends codepipeline.CommonActionProps {
   /**
@@ -40,8 +40,8 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
  * The ECR Repository source CodePipeline Action.
  */
 export class PipelineSourceAction extends codepipeline.SourceAction {
-  constructor(parent: cdk.Construct, name: string, props: PipelineSourceActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineSourceActionProps) {
+    super(scope, id, {
       provider: 'ECR',
       configuration: {
         RepositoryName: props.repository.repositoryName,
@@ -56,7 +56,7 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
       )
       .addResource(props.repository.repositoryArn));
 
-    props.repository.onImagePushed(props.stage.pipeline.uniqueId + 'SourceEventRule',
+    props.repository.onImagePushed(props.stage.pipeline.node.uniqueId + 'SourceEventRule',
         props.stage.pipeline, props.imageTag);
   }
 }

@@ -1175,10 +1175,10 @@ export = {
       sortKey: LSI_SORT_KEY
     });
 
-    const errors = table.validate();
+    const errors = table.node.validateTree();
 
     test.strictEqual(1, errors.length);
-    test.strictEqual('a sort key of the table must be specified to add local secondary indexes', errors[0]);
+    test.strictEqual('a sort key of the table must be specified to add local secondary indexes', errors[0].message);
 
     test.done();
   },
@@ -1353,6 +1353,110 @@ export = {
 
     '"grantFullAccess" allows the principal to perform any action on the table ("*")'(test: Test) {
       testGrant(test, [ '*' ], (p, t) => t.grantFullAccess(p));
+    },
+
+    '"Table.grantListStreams" allows principal to list all streams'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      Table.grantListStreams(user);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Users": [ { "Ref": "user2C2B57AE" } ]
+      }));
+      test.done();
+    },
+
+    '"grantStreamRead" allows principal to read and describe the table stream"'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = new Table(stack, 'my-table', {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.String
+        },
+        streamSpecification: StreamViewType.NewImage
+      });
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      table.grantStreamRead(user);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "mytable0324D45C",
+                  "StreamArn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Users": [ { "Ref": "user2C2B57AE" } ]
+      }));
+      test.done();
+    },
+    'if table has an index grant gives access to the index'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const table = new Table(stack, 'my-table');
+      table.addPartitionKey({ name: 'ID', type: AttributeType.String });
+      table.addGlobalSecondaryIndex({ indexName: 'MyIndex', partitionKey: { name: 'Age', type: AttributeType.Number }});
+      const user = new iam.User(stack, 'user');
+
+      // WHEN
+      table.grantReadData(user);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan'
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                { "Fn::GetAtt": ["mytable0324D45C", "Arn"] },
+                { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] }, "/index/*" ] ] }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Users": [ { "Ref": "user2C2B57AE" } ]
+      }));
+      test.done();
     }
   },
 };
@@ -1387,12 +1491,10 @@ function testGrant(test: Test, expectedActions: string[], invocation: (user: iam
         {
           "Action": action,
           "Effect": "Allow",
-          "Resource": {
-            "Fn::GetAtt": [
-              "mytable0324D45C",
-              "Arn"
-            ]
-          }
+          "Resource": [
+            { "Fn::GetAtt": [ "mytable0324D45C", "Arn" ] },
+            { "Ref" : "AWS::NoValue" }
+          ]
         }
       ],
       "Version": "2012-10-17"

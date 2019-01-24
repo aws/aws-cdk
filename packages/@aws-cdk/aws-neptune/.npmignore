@@ -16,3 +16,6 @@ dist
 .jsii
 
 *.snk
+
+# Include .jsii
+!.jsii

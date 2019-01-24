@@ -1,14 +1,14 @@
 import { exactlyMatchTemplate, expect } from '@aws-cdk/assert';
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { PublicHostedZone, TXTRecord } from '../lib';
+import { PublicHostedZone, TxtRecord } from '../lib';
 
 export = {
   'TXT records': {
     TXT(test: Test) {
       const app = new TestApp();
       const zone = new PublicHostedZone(app.stack, 'HostedZone', { zoneName: 'test.public' });
-      new TXTRecord(zone, 'TXT', { recordName: '_foo', recordValue: 'Bar!' });
+      new TxtRecord(zone, 'TXT', { zone, recordName: '_foo', recordValue: 'Bar!' });
       expect(app.synthesizeTemplate()).to(exactlyMatchTemplate({
         Resources: {
           HostedZoneDB99F866: {
@@ -43,7 +43,7 @@ class TestApp {
   constructor() {
     const account = '123456789012';
     const region = 'bermuda-triangle';
-    this.app.setContext(`availability-zones:${account}:${region}`,
+    this.app.node.setContext(`availability-zones:${account}:${region}`,
               [`${region}-1a`]);
     this.stack = new Stack(this.app, 'MyStack', { env: { account, region } });
   }

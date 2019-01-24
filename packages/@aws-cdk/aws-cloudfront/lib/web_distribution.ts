@@ -110,7 +110,7 @@ export interface LoggingConfiguration {
    *
    * @default A logging bucket is automatically created
    */
-  readonly bucket?: s3.BucketRef,
+  readonly bucket?: s3.IBucket,
 
   /**
    * Whether to include the cookies in the logs
@@ -489,7 +489,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
    * The logging bucket for this CloudFront distribution.
    * If logging is not enabled for this distribution - this property will be undefined.
    */
-  public readonly loggingBucket?: s3.BucketRef;
+  public readonly loggingBucket?: s3.IBucket;
 
   /**
    * The domain name created by CloudFront for this distribution.
@@ -523,8 +523,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
     "vip": [SecurityPolicyProtocol.SSLv3, SecurityPolicyProtocol.TLSv1],
   };
 
-  constructor(parent: cdk.Construct, name: string, props: CloudFrontWebDistributionProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: CloudFrontWebDistributionProps) {
+    super(scope, id);
 
     const distributionConfig: CfnDistribution.DistributionConfigProperty = {
       comment: props.comment,
@@ -574,9 +574,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
 
       if (originConfig.s3OriginSource && originConfig.s3OriginSource.originAccessIdentity) {
         originProperty.s3OriginConfig = {
-          originAccessIdentity: new cdk.FnConcat(
-            "origin-access-identity/cloudfront/", originConfig.s3OriginSource.originAccessIdentity.ref
-          ),
+          originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.ref}`
         };
       } else if (originConfig.s3OriginSource) {
         originProperty.s3OriginConfig = {};

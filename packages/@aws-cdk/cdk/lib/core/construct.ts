@@ -1,42 +1,43 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
 import { makeUniqueId } from '../util/uniqueid';
+import { Token, unresolved } from './tokens';
+import { resolve } from './tokens/resolve';
 export const PATH_SEP = '/';
 
 /**
- * Represents the building block of the construct graph.
- * When a construct is created, it is always added as a child
+ * Represents a construct.
  */
-export class Construct {
+export interface IConstruct {
   /**
-   * Returns the parent of this node or undefined if this is a root node.
+   * The construct node in the scope tree.
    */
-  public readonly parent?: Construct;
+  readonly node: ConstructNode;
+}
+
+/**
+ * Represents the construct node in the scope tree.
+ */
+export class ConstructNode {
+  /**
+   * Returns the scope in which this construct is defined.
+   */
+  public readonly scope?: IConstruct;
 
   /**
-   * The local id of the construct.
-   * This id is unique amongst its siblings.
-   * To obtain a tree-global unique id for this construct, use `uniqueId`.
+   * The scoped construct ID
+   * This ID is unique amongst all constructs defined in the same scope.
+   * To obtain a global unique id for this construct, use `uniqueId`.
    */
   public readonly id: string;
 
   /**
-   * The full path of this construct in the tree.
-   * Components are separated by '/'.
-   */
-  public readonly path: string;
-
-  /**
-   * A tree-global unique alphanumeric identifier for this construct.
-   * Includes all components of the tree.
-   */
-  public readonly uniqueId: string;
-
-  /**
    * List of children and their names
    */
-  private readonly _children: { [name: string]: Construct } = { };
+  private readonly _children: { [name: string]: IConstruct } = { };
   private readonly context: { [key: string]: any } = { };
   private readonly _metadata = new Array<MetadataEntry>();
+  private readonly references = new Set<Token>();
 
   /**
    * If this is set to 'true'. addChild() calls for this construct and any child
@@ -44,29 +45,21 @@ export class Construct {
    */
   private _locked = false;
 
-  /**
-   * Creates a new construct node.
-   *
-   * @param parent The parent construct
-   * @param id The local logical ID of the construct. Must be unique amongst
-   * siblings. If the ID includes a path separator (`/`), then it will be
-   * replaced by double dash `--`.
-   */
-  constructor(parent: Construct, id: string) {
+  constructor(private readonly host: Construct, scope: IConstruct, id: string) {
     id = id || ''; // if undefined, convert to empty string
 
     this.id = id;
-    this.parent = parent;
+    this.scope = scope;
 
-    // We say that parent is required, but some root constructs bypass the type checks and
-    // actually pass in 'undefined'.
-    if (parent != null) {
+    // We say that scope is required, but root scopes will bypass the type
+    // checks and actually pass in 'undefined'.
+    if (scope != null) {
       if (id === '') {
         throw new Error('Only root constructs may have an empty name');
       }
 
       // Has side effect so must be very last thing in constructor
-      parent.addChild(this, this.id);
+      scope.node.addChild(host, this.id);
     } else {
       // This is a root construct.
       this.id = id;
@@ -75,20 +68,27 @@ export class Construct {
     // escape any path separators so they don't wreck havoc
     this.id = this._escapePathSeparator(this.id);
 
-    // allow derived classes to validate the construct id
-    this._validateId(this.id);
-
-    const components = this.rootPath().map(c => c.id);
-    this.path = components.join(PATH_SEP);
-    this.uniqueId = components.length > 0 ? makeUniqueId(components) : '';
+    if (unresolved(id)) {
+      throw new Error(`Cannot use tokens in construct ID: ${id}`);
+    }
   }
 
   /**
-   * Returns a string representation of this construct.
+   * The full path of this construct in the tree.
+   * Components are separated by '/'.
    */
-  public toString() {
-    const path = this.path;
-    return this.typename + (path.length > 0 ? ` [${path}]` : '');
+  public get path(): string {
+    const components = this.rootPath().map(c => c.node.id);
+    return components.join(PATH_SEP);
+  }
+
+  /**
+   * A tree-global unique alphanumeric identifier for this construct.
+   * Includes all components of the tree.
+   */
+  public get uniqueId(): string {
+    const components = this.rootPath().map(c => c.node.id);
+    return components.length > 0 ? makeUniqueId(components) : '';
   }
 
   /**
@@ -102,7 +102,7 @@ export class Construct {
     const name = this.id || '';
     out += `${this.typename}${name.length > 0 ? ' [' + name + ']' : ''}\n`;
     for (const child of this.children) {
-      out += child.toTreeString(depth + 1);
+      out += child.node.toTreeString(depth + 1);
     }
     return out;
   }
@@ -116,16 +116,16 @@ export class Construct {
    * @param name Relative name of a direct or indirect child
    * @returns a child by path or undefined if not found.
    */
-  public tryFindChild(path: string): Construct | undefined {
+  public tryFindChild(path: string): IConstruct | undefined {
     // tslint:disable-next-line:no-console
     if (path.startsWith(PATH_SEP)) {
       throw new Error('Path must be relative');
     }
     const parts = path.split(PATH_SEP);
 
-    let curr: Construct|undefined = this;
+    let curr: IConstruct|undefined = this.host;
     while (curr != null && parts.length > 0) {
-      curr = curr._children[parts.shift()!];
+      curr = curr.node._children[parts.shift()!];
     }
     return curr;
   }
@@ -141,7 +141,7 @@ export class Construct {
    * @param name Relative name of a direct or indirect child
    * @returns Child with the given path.
    */
-  public findChild(path: string): Construct {
+  public findChild(path: string): IConstruct {
     const ret = this.tryFindChild(path);
     if (!ret) {
       throw new Error(`No child with path: '${path}'`);
@@ -153,7 +153,23 @@ export class Construct {
    * All direct children of this construct.
    */
   public get children() {
-    return Object.keys(this._children).map(k => this._children[k]);
+    return Object.values(this._children);
+  }
+
+  /**
+   * Return this construct and all of its children in the given order
+   */
+  public findAll(order: ConstructOrder = ConstructOrder.DepthFirst): IConstruct[] {
+    const ret = new Array<IConstruct>();
+    const queue: IConstruct[] = [this.host];
+
+    while (queue.length > 0) {
+      const next = order === ConstructOrder.BreadthFirst ? queue.splice(0, 1)[0] : queue.pop()!;
+      ret.push(next);
+      queue.push(...next.node.children);
+    }
+
+    return ret;
   }
 
   /**
@@ -165,7 +181,7 @@ export class Construct {
    */
   public setContext(key: string, value: any) {
     if (this.children.length > 0) {
-      const names = this.children.map(c => c.id);
+      const names = this.children.map(c => c.node.id);
       throw new Error('Cannot set context after children have been added: ' + names.join(','));
     }
     this.context[key] = value;
@@ -183,7 +199,7 @@ export class Construct {
     const value = this.context[key];
     if (value !== undefined) { return value; }
 
-    return this.parent && this.parent.getContext(key);
+    return this.scope && this.scope.node.getContext(key);
   }
 
   /**
@@ -219,13 +235,12 @@ export class Construct {
    * @param data the value of the metadata (can be a Token). If null/undefined, metadata will not be added.
    * @param from a function under which to restrict the metadata entry's stack trace (defaults to this.addMetadata)
    */
-  public addMetadata(type: string, data: any, from?: any): Construct {
+  public addMetadata(type: string, data: any, from?: any): void {
     if (data == null) {
-      return this;
+      return;
     }
     const trace = createStackTrace(from || this.addMetadata);
     this._metadata.push({ type, data, trace });
-    return this;
   }
 
   /**
@@ -233,8 +248,8 @@ export class Construct {
    * The toolkit will display the info message when apps are synthesized.
    * @param message The info message.
    */
-  public addInfo(message: string): Construct {
-    return this.addMetadata(cxapi.INFO_METADATA_KEY, message);
+  public addInfo(message: string): void {
+    this.addMetadata(cxapi.INFO_METADATA_KEY, message);
   }
 
   /**
@@ -243,8 +258,8 @@ export class Construct {
    * if run in --strict mode.
    * @param message The warning message.
    */
-  public addWarning(message: string): Construct {
-    return this.addMetadata(cxapi.WARNING_METADATA_KEY, message);
+  public addWarning(message: string): void {
+    this.addMetadata(cxapi.WARNING_METADATA_KEY, message);
   }
 
   /**
@@ -252,18 +267,8 @@ export class Construct {
    * The toolkit will fail synthesis when errors are reported.
    * @param message The error message.
    */
-  public addError(message: string): Construct {
-    return this.addMetadata(cxapi.ERROR_METADATA_KEY, message);
-  }
-
-  /**
-   * This method can be implemented by derived constructs in order to perform
-   * validation logic. It is called on all constructs before synthesis.
-   *
-   * @returns An array of validation error messages, or an empty array if there the construct is valid.
-   */
-  public validate(): string[] {
-    return [];
+  public addError(message: string) {
+    this.addMetadata(cxapi.ERROR_METADATA_KEY, message);
   }
 
   /**
@@ -274,11 +279,24 @@ export class Construct {
     let errors = new Array<ValidationError>();
 
     for (const child of this.children) {
-      errors = errors.concat(child.validateTree());
+      errors = errors.concat(child.node.validateTree());
     }
 
-    const localErrors = this.validate();
-    return errors.concat(localErrors.map(msg => new ValidationError(this, msg)));
+    const localErrors: string[] = (this.host as any).validate();
+    return errors.concat(localErrors.map(msg => new ValidationError(this.host, msg)));
+  }
+
+  /**
+   * Run 'prepare()' on all constructs in the tree
+   */
+  public prepareTree() {
+    const constructs = this.host.node.findAll(ConstructOrder.BreadthFirst);
+    // Use .reverse() to achieve post-order traversal
+    for (const construct of constructs.reverse()) {
+      if (Construct.isConstruct(construct)) {
+        (construct as any).prepare();
+      }
+    }
   }
 
   /**
@@ -287,24 +305,16 @@ export class Construct {
    * @param to The construct to return the path components relative to, or
    * the entire list of ancestors (including root) if omitted.
    */
-  public ancestors(upTo?: Construct): Construct[] {
-    const ret = new Array<Construct>();
+  public ancestors(upTo?: Construct): IConstruct[] {
+    const ret = new Array<IConstruct>();
 
-    let curr: Construct | undefined = this;
+    let curr: IConstruct | undefined = this.host;
     while (curr && curr !== upTo) {
       ret.unshift(curr);
-      curr = curr.parent;
+      curr = curr.node && curr.node.scope;
     }
 
     return ret;
-  }
-
-  /**
-   * Validate that the id of the construct legal.
-   * Construct IDs can be any characters besides the path separator.
-   */
-  protected _validateId(_id: string) {
-    // can be used by derived classes to customize ID validation.
   }
 
   /**
@@ -315,7 +325,7 @@ export class Construct {
    *
    * @deprecated use ``requireProperty`` from ``@aws-cdk/runtime`` instead.
    */
-  protected required(props: any, name: string): any {
+  public required(props: any, name: string): any {
     if (!(name in props)) {
       throw new Error(`Construct of type ${this.typename} is missing required property: ${name}`);
     }
@@ -327,8 +337,8 @@ export class Construct {
   /**
    * @returns The type name of this node.
    */
-  private get typename(): string {
-    const ctor: any = this.constructor;
+  public get typename(): string {
+    const ctor: any = this.host.constructor;
     return ctor.name || 'Construct';
   }
 
@@ -339,7 +349,7 @@ export class Construct {
    * @param name The type name of the child construct.
    * @returns The resolved path part name of the child
    */
-  protected addChild(child: Construct, childName: string) {
+  public addChild(child: IConstruct, childName: string) {
     if (this.locked) {
 
       // special error if root is locked
@@ -361,40 +371,89 @@ export class Construct {
    * Locks this construct from allowing more children to be added. After this
    * call, no more children can be added to this construct or to any children.
    */
-  protected lock() {
+  public lock() {
     this._locked = true;
   }
 
   /**
    * Unlocks this costruct and allows mutations (adding children).
    */
-  protected unlock() {
+  public unlock() {
     this._locked = false;
+  }
+
+  /**
+   * Returns true if this construct or the scopes in which it is defined are
+   * locked.
+   */
+  public get locked() {
+    if (this._locked) {
+      return true;
+    }
+
+    if (this.scope && this.scope.node.locked) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Resolve a tokenized value in the context of the current Construct
+   */
+  public resolve(obj: any): any {
+    return resolve(obj, {
+      scope: this.host,
+      prefix: []
+    });
+  }
+
+  /**
+   * Convert an object, potentially containing tokens, to a JSON string
+   */
+  public stringifyJson(obj: any): string {
+    return CloudFormationJSON.stringify(obj, this.host).toString();
+  }
+
+  /**
+   * Record a reference originating from this construct node
+   */
+  public recordReference(...refs: Token[]) {
+    for (const ref of refs) {
+      if (ref.isReference) {
+        this.references.add(ref);
+      }
+    }
+  }
+
+  /**
+   * Return all references of the given type originating from this node or any of its children
+   */
+  public findReferences(): Token[] {
+    const ret = new Set<Token>();
+
+    function recurse(node: ConstructNode) {
+      for (const ref of node.references) {
+        ret.add(ref);
+      }
+
+      for (const child of node.children) {
+        recurse(child.node);
+      }
+    }
+
+    recurse(this);
+
+    return Array.from(ret);
   }
 
   /**
    * Return the path of components up to but excluding the root
    */
-  private rootPath(): Construct[] {
+  private rootPath(): IConstruct[] {
     const ancestors = this.ancestors();
     ancestors.shift();
     return ancestors;
-  }
-
-  /**
-   * Returns true if this construct or any of it's parent constructs are
-   * locked.
-   */
-  protected get locked() {
-    if (this._locked) {
-      return true;
-    }
-
-    if (this.parent && this.parent.locked) {
-      return true;
-    }
-
-    return false;
   }
 
   /**
@@ -407,8 +466,74 @@ export class Construct {
 }
 
 /**
+ * Represents the building block of the construct graph.
+ *
+ * All constructs besides the root construct must be created within the scope of
+ * another construct.
+ */
+export class Construct implements IConstruct {
+  /**
+   * Return whether the given object is a Construct
+   */
+  public static isConstruct(x: IConstruct): x is Construct {
+    return (x as any).prepare !== undefined && (x as any).validate !== undefined;
+  }
+
+  /**
+   * Construct node.
+   */
+  public readonly node: ConstructNode;
+
+  /**
+   * Creates a new construct node.
+   *
+   * @param scope The scope in which to define this construct
+   * @param id The scoped construct ID. Must be unique amongst siblings. If
+   * the ID includes a path separator (`/`), then it will be replaced by double
+   * dash `--`.
+   */
+  constructor(scope: Construct, id: string) {
+    this.node = new ConstructNode(this, scope, id);
+  }
+
+  /**
+   * Returns a string representation of this construct.
+   */
+  public toString() {
+    const path = this.node.path;
+    return this.node.typename + (path.length > 0 ? ` [${path}]` : '');
+  }
+
+  /**
+   * Validate the current construct.
+   *
+   * This method can be implemented by derived constructs in order to perform
+   * validation logic. It is called on all constructs before synthesis.
+   *
+   * @returns An array of validation error messages, or an empty array if there the construct is valid.
+   */
+  protected validate(): string[] {
+    return [];
+  }
+
+  /**
+   * Perform final modifications before synthesis
+   *
+   * This method can be implemented by derived constructs in order to perform
+   * final changes before synthesis. prepare() will be called after child
+   * constructs have been prepared.
+   *
+   * This is an advanced framework feature. Only use this if you
+   * understand the implications.
+   */
+  protected prepare(): void {
+    // Intentionally left blank
+  }
+}
+
+/**
  * Represents the root of a construct tree.
- * No parent and no name.
+ * No scope and no name.
  */
 export class Root extends Construct {
   constructor() {
@@ -438,7 +563,7 @@ export interface MetadataEntry {
 }
 
 export class ValidationError {
-  constructor(public readonly source: Construct, public readonly message: string) {
+  constructor(public readonly source: IConstruct, public readonly message: string) {
 
   }
 }
@@ -457,4 +582,19 @@ function createStackTrace(below: Function): string[] {
     return [];
   }
   return object.stack.split('\n').slice(1).map(s => s.replace(/^\s*at\s+/, ''));
+}
+
+/**
+ * In what order to return constructs
+ */
+export enum ConstructOrder {
+  /**
+   * Breadth first
+   */
+  BreadthFirst,
+
+  /**
+   * Depth first
+   */
+  DepthFirst
 }

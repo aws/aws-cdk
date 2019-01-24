@@ -34,10 +34,10 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
  *
  */
 export class LambdaIntegration extends AwsIntegration {
-  private readonly handler: lambda.FunctionRef;
+  private readonly handler: lambda.IFunction;
   private readonly enableTest: boolean;
 
-  constructor(handler: lambda.FunctionRef, options: LambdaIntegrationOptions = { }) {
+  constructor(handler: lambda.IFunction, options: LambdaIntegrationOptions = { }) {
     const proxy = options.proxy === undefined ? true : options.proxy;
 
     super({
@@ -52,6 +52,7 @@ export class LambdaIntegration extends AwsIntegration {
   }
 
   public bind(method: Method) {
+    super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
     const desc = `${method.httpMethod}.${method.resource.resourcePath.replace(/\//g, '.')}`;

@@ -1,7 +1,28 @@
-import { Construct } from '@aws-cdk/cdk';
-import { CertificateRef } from './certificate-ref';
+import { Construct, IConstruct, Output } from '@aws-cdk/cdk';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
+
+export interface ICertificate extends IConstruct {
+  /**
+   * The certificate's ARN
+   */
+  readonly certificateArn: string;
+
+  /**
+   * Export this certificate from the stack
+   */
+  export(): CertificateImportProps;
+}
+
+/**
+ * Reference to an existing Certificate
+ */
+export interface CertificateImportProps {
+  /**
+   * The certificate's ARN
+   */
+  certificateArn: string;
+}
 
 /**
  * Properties for your certificate
@@ -48,14 +69,21 @@ export interface CertificateProps {
  *
  * For every domain that you register.
  */
-export class Certificate extends CertificateRef {
+export class Certificate extends Construct implements ICertificate {
+  /**
+   * Import a certificate
+   */
+  public static import(scope: Construct, id: string, props: CertificateImportProps): ICertificate {
+    return new ImportedCertificate(scope, id, props);
+  }
+
   /**
    * The certificate's ARN
    */
   public readonly certificateArn: string;
 
-  constructor(parent: Construct, name: string, props: CertificateProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: CertificateProps) {
+    super(scope, id);
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
@@ -81,4 +109,29 @@ export class Certificate extends CertificateRef {
     }
   }
 
+  /**
+   * Export this certificate from the stack
+   */
+  public export(): CertificateImportProps {
+    return {
+      certificateArn: new Output(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
+    };
+  }
+}
+
+/**
+ * A Certificate that has been imported from another stack
+ */
+class ImportedCertificate extends Construct implements ICertificate {
+  public readonly certificateArn: string;
+
+  constructor(scope: Construct, id: string, private readonly props: CertificateImportProps) {
+    super(scope, id);
+
+    this.certificateArn = props.certificateArn;
+  }
+
+  public export() {
+    return this.props;
+  }
 }

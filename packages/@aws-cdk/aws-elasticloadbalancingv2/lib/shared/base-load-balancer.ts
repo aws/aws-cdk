@@ -18,7 +18,7 @@ export interface BaseLoadBalancerProps {
   /**
    * The VPC network to place the load balancer in
    */
-  vpc: ec2.VpcNetworkRef;
+  vpc: ec2.IVpcNetwork;
 
   /**
    * Whether the load balancer has an internet-routable address
@@ -86,15 +86,15 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
    *
    * If the Load Balancer was imported, the VPC is not available.
    */
-  public readonly vpc?: ec2.VpcNetworkRef;
+  public readonly vpc?: ec2.IVpcNetwork;
 
   /**
    * Attributes set on this load balancer
    */
   private readonly attributes: Attributes = {};
 
-  constructor(parent: cdk.Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
+    super(scope, id);
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
@@ -104,7 +104,7 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
     this.vpc = baseProps.vpc;
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
-      loadBalancerName: baseProps.loadBalancerName,
+      name: baseProps.loadBalancerName,
       subnets: subnets.map(s => s.subnetId),
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: new cdk.Token(() => renderAttributes(this.attributes)),

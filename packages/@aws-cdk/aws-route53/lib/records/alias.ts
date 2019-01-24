@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/cdk';
-import { HostedZoneRef } from '../hosted-zone-ref';
+import { IHostedZone } from '../hosted-zone-ref';
 import { CfnRecordSet } from '../route53.generated';
 import { determineFullyQualifiedDomainName } from './_util';
 
@@ -31,6 +31,10 @@ export interface AliasRecordTargetProps {
 
 export interface AliasRecordProps {
   /**
+   * The zone in which this alias should be defined.
+   */
+  zone: IHostedZone;
+  /**
    * Name for the record. This can be the FQDN for the record (foo.example.com) or
    * a subdomain of the parent hosted zone (foo, with example.com as the hosted zone).
    */
@@ -45,12 +49,12 @@ export interface AliasRecordProps {
  * A Route53 alias record
  */
 export class AliasRecord extends Construct {
-  constructor(parent: HostedZoneRef, id: string, props: AliasRecordProps) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, props: AliasRecordProps) {
+    super(scope, id);
 
     new CfnRecordSet(this, 'Resource', {
-      hostedZoneId: parent.hostedZoneId,
-      name: determineFullyQualifiedDomainName(props.recordName, parent),
+      hostedZoneId: props.zone.hostedZoneId,
+      name: determineFullyQualifiedDomainName(props.recordName, props.zone),
       type: 'A',  // ipv4
       aliasTarget: props.target.asAliasRecordTarget()
     });

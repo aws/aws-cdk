@@ -1,8 +1,5 @@
 import { Construct } from '../core/construct';
-import { Token } from '../core/tokens';
-import { Condition } from './condition';
-import { FnImportValue, FnJoin, FnSelect, FnSplit } from './fn';
-import { Stack, StackElement } from './stack';
+import { StackElement } from './stack-element';
 
 export interface OutputProps {
   /**
@@ -53,13 +50,6 @@ export class Output extends StackElement {
   public readonly description?: string;
 
   /**
-   * The value of the property returned by the aws cloudformation describe-stacks command.
-   * The value of an output can include literals, parameter references, pseudo-parameters,
-   * a mapping value, or intrinsic functions.
-   */
-  public readonly value?: any;
-
-  /**
    * The name of the resource output to be exported for a cross-stack reference.
    * By default, the logical ID of the Output element is used as it's export name.
    */
@@ -72,16 +62,18 @@ export class Output extends StackElement {
    */
   public readonly condition?: Condition;
 
+  private _value?: any;
+
   /**
    * Creates an Output value for this stack.
    * @param parent The parent construct.
    * @param props Output properties.
    */
-  constructor(parent: Construct, name: string, props: OutputProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: OutputProps = {}) {
+    super(scope, id);
 
     this.description = props.description;
-    this.value = props.value;
+    this._value = props.value;
     this.condition = props.condition;
 
     if (props.export) {
@@ -91,10 +83,19 @@ export class Output extends StackElement {
       this.export = props.export;
     } else if (!props.disableExport) {
       // prefix export name with stack name since exports are global within account + region.
-      const stackName = Stack.find(this).id;
+      const stackName = require('./stack').Stack.find(this).node.id;
       this.export = stackName ? stackName + ':' : '';
       this.export += this.logicalId;
     }
+  }
+
+  /**
+   * The value of the property returned by the aws cloudformation describe-stacks command.
+   * The value of an output can include literals, parameter references, pseudo-parameters,
+   * a mapping value, or intrinsic functions.
+   */
+  public get value(): any {
+    return this._value;
   }
 
   /**
@@ -104,7 +105,7 @@ export class Output extends StackElement {
     if (!this.export) {
       throw new Error('Cannot create an ImportValue without an export name');
     }
-    return new FnImportValue(this.export);
+    return fn().importValue(this.export);
   }
 
   public toCloudFormation(): object {
@@ -196,8 +197,8 @@ export class StringListOutput extends Construct {
    */
   private readonly output: Output;
 
-  constructor(parent: Construct, name: string, props: StringListOutputProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: StringListOutputProps) {
+    super(scope, id);
 
     this.separator = props.separator || ',';
     this.length = props.values.length;
@@ -207,21 +208,28 @@ export class StringListOutput extends Construct {
       condition: props.condition,
       disableExport: props.disableExport,
       export: props.export,
-      value: new FnJoin(this.separator, props.values)
+      value: fn().join(this.separator, props.values)
     });
   }
 
   /**
    * Return an array of imported values for this Output
    */
-  public makeImportValues(): Token[] {
+  public makeImportValues(): string[] {
     const combined = this.output.makeImportValue();
 
     const ret = [];
     for (let i = 0; i < this.length; i++) {
-      ret.push(new FnSelect(i, new FnSplit(this.separator, combined)));
+      ret.push(fn().select(i, fn().split(this.separator, combined)));
     }
 
     return ret;
   }
 }
+
+function fn() {
+  // Lazy loading of "Fn" module to break dependency cycles on startup
+  return require('./fn').Fn;
+}
+
+import { Condition } from './condition';

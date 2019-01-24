@@ -88,6 +88,8 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.xlarge'),
   machineImage: new EcsOptimizedAmi(),
+  // Or use ECS-Optimized Amazon Linux 2 AMI
+  // machineImage: new EcsOptimizedAmi({ generation: ec2.AmazonLinuxGeneration.AmazonLinux2 }),
   desiredCapacity: 3,
   // ... other options here ...
 });
@@ -111,14 +113,14 @@ For a `FargateTaskDefinition`, specify the task size (`memoryMiB` and `cpu`):
 
 ```ts
 const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
-  memoryMiB: '512'
-  cpu: 256,
+  memoryMiB: '512',
+  cpu: '256'
 });
 ```
 To add containers to a Task Definition, call `addContainer()`:
 
 ```ts
-const container = fargateTaskDefinition.addContainer(this, {
+const container = fargateTaskDefinition.addContainer("WebContainer", {
   // Use an image from DockerHub
   image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
   // ... other options here ...
@@ -132,7 +134,7 @@ const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
   networkMode: bridge
 });
 
-const container = ec2TaskDefinition.addContainer(this, {
+const container = ec2TaskDefinition.addContainer("WebContainer", {
   // Use an image from DockerHub
   image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 1024
@@ -156,7 +158,7 @@ tasks you intend to run: EC2, Fargate, or both:
 
 ```ts
 const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
-  memoryMiB: '512'
+  memoryMiB: '512',
   cpu: 256,
   networkMode: 'awsvpc',
   compatibility: ecs.Compatibility.Ec2AndFargate,
@@ -203,7 +205,7 @@ const service = new ecs.FargateService(this, 'Service', { /* ... */ });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
-listener.addTargets('ECS', {
+const target = listener.addTargets('ECS', {
   port: 80,
   targets: [service]
 });
@@ -224,6 +226,11 @@ const scaling = service.autoScaleTaskCount({ maxCapacity: 10 });
 scaling.scaleOnCpuUtilization('CpuScaling', {
   targetUtilizationPercent: 50
 });
+
+scaling.scaleOnRequestCount('RequestScaling', {
+  requestsPerTarget: 10000,
+  targetGroup: target
+})
 ```
 
 Task AutoScaling is powered by *Application AutoScaling*. Refer to that for

@@ -88,7 +88,7 @@ export = {
     });
 
     // THEN
-    const errors = stack.validateTree();
+    const errors = stack.node.validateTree();
     test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificateArns)']);
 
     test.done();
@@ -412,7 +412,7 @@ export = {
       test.equal('AWS/ApplicationELB', metric.namespace);
       const loadBalancerArn = { Ref: "LBSomeListenerCA01F1A0" };
 
-      test.deepEqual(cdk.resolve(metric.dimensions), {
+      test.deepEqual(lb.node.resolve(metric.dimensions), {
          TargetGroup: { 'Fn::GetAtt': [ 'TargetGroup3D7CD9B8', 'TargetGroupFullName' ] },
          LoadBalancer: { 'Fn::Join':
             [ '',

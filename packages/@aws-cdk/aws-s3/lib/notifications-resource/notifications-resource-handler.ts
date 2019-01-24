@@ -30,7 +30,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
 
     // well-known logical id to ensure stack singletonity
     const logicalId = 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834';
-    let lambda = root.tryFindChild(logicalId) as NotificationsResourceHandler;
+    let lambda = root.node.tryFindChild(logicalId) as NotificationsResourceHandler;
     if (!lambda) {
       lambda = new NotificationsResourceHandler(root, logicalId);
     }
@@ -44,13 +44,13 @@ export class NotificationsResourceHandler extends cdk.Construct {
    */
   public readonly functionArn: string;
 
-  constructor(parent: cdk.Construct, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
 
     const role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicyArns: [
-        cdk.ArnUtils.fromComponents({
+        cdk.Stack.find(this).formatArn({
           service: 'iam',
           region: '', // no region for managed policy
           account: 'aws', // the account for a managed policy is 'aws'

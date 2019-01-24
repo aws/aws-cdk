@@ -1,13 +1,13 @@
 import cdk = require('@aws-cdk/cdk');
 import crypto = require('crypto');
 import { CfnDeployment, CfnDeploymentProps } from './apigateway.generated';
-import { RestApiRef } from './restapi-ref';
+import { IRestApi } from './restapi';
 
 export interface DeploymentProps  {
   /**
    * The Rest API to deploy.
    */
-  api: RestApiRef;
+  api: IRestApi;
 
   /**
    * A description of the purpose of the API Gateway deployment.
@@ -56,7 +56,7 @@ export interface DeploymentProps  {
  */
 export class Deployment extends cdk.Construct implements cdk.IDependable {
   public readonly deploymentId: string;
-  public readonly api: RestApiRef;
+  public readonly api: IRestApi;
 
   /**
    * Allows taking a dependency on this construct.
@@ -65,8 +65,8 @@ export class Deployment extends cdk.Construct implements cdk.IDependable {
 
   private readonly resource: LatestDeploymentResource;
 
-  constructor(parent: cdk.Construct, id: string, props: DeploymentProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: DeploymentProps) {
+    super(scope, id);
 
     this.resource = new LatestDeploymentResource(this, 'Resource', {
       description: props.description,
@@ -107,13 +107,16 @@ class LatestDeploymentResource extends CfnDeployment {
   private originalLogicalId?: string;
   private lazyLogicalIdRequired: boolean;
   private lazyLogicalId?: string;
+  private logicalIdToken: cdk.Token;
   private hashComponents = new Array<any>();
 
-  constructor(parent: cdk.Construct, id: string, props: CfnDeploymentProps) {
-    super(parent, id, props);
+  constructor(scope: cdk.Construct, id: string, props: CfnDeploymentProps) {
+    super(scope, id, props);
 
     // from this point, don't allow accessing logical ID before synthesis
     this.lazyLogicalIdRequired = true;
+
+    this.logicalIdToken = new cdk.Token(() => this.lazyLogicalId);
   }
 
   /**
@@ -124,11 +127,7 @@ class LatestDeploymentResource extends CfnDeployment {
       return this.originalLogicalId!;
     }
 
-    if (!this.lazyLogicalId) {
-      throw new Error('This resource has a lazy logical ID which is calculated just before synthesis. Use a cdk.Token to evaluate');
-    }
-
-    return this.lazyLogicalId;
+    return this.logicalIdToken.toString();
   }
 
   /**
@@ -159,7 +158,7 @@ class LatestDeploymentResource extends CfnDeployment {
   public addToLogicalId(data: unknown) {
     // if the construct is locked, it means we are already synthesizing and then
     // we can't modify the hash because we might have already calculated it.
-    if (this.locked) {
+    if (this.node.locked) {
       throw new Error('Cannot modify the logical ID when the construct is locked');
     }
 
@@ -170,7 +169,7 @@ class LatestDeploymentResource extends CfnDeployment {
    * Hooks into synthesis to calculate a logical ID that hashes all the components
    * add via `addToLogicalId`.
    */
-  public validate() {
+  protected prepare() {
     // if hash components were added to the deployment, we use them to calculate
     // a logical ID for the deployment resource.
     if (this.hashComponents.length === 0) {
@@ -178,12 +177,10 @@ class LatestDeploymentResource extends CfnDeployment {
     } else {
       const md5 = crypto.createHash('md5');
       this.hashComponents
-        .map(c => cdk.resolve(c))
+        .map(c => this.node.resolve(c))
         .forEach(c => md5.update(JSON.stringify(c)));
 
       this.lazyLogicalId = this.originalLogicalId + md5.digest("hex");
     }
-
-    return [];
   }
 }

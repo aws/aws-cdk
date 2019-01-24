@@ -1,8 +1,8 @@
 import cdk = require('@aws-cdk/cdk');
-import { BaseTargetGroup, BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn,
-         LoadBalancerTargetProps, TargetGroupRefProps } from '../shared/base-target-group';
+import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
+         TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
-import { BaseImportedTargetGroup } from '../shared/imported';
+import { ImportedTargetGroupBase } from '../shared/imported';
 import { LazyDependable } from '../shared/util';
 import { INetworkListener } from './network-listener';
 
@@ -35,18 +35,18 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
 /**
  * Define a Network Target Group
  */
-export class NetworkTargetGroup extends BaseTargetGroup {
+export class NetworkTargetGroup extends TargetGroupBase {
   /**
    * Import an existing listener
    */
-  public static import(parent: cdk.Construct, id: string, props: TargetGroupRefProps): INetworkTargetGroup {
-    return new ImportedNetworkTargetGroup(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: TargetGroupImportProps): INetworkTargetGroup {
+    return new ImportedNetworkTargetGroup(scope, id, props);
   }
 
   private readonly listeners: INetworkListener[];
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
+    super(scope, id, props, {
       protocol: Protocol.Tcp,
       port: props.port,
     });
@@ -107,7 +107,7 @@ export interface INetworkTargetGroup extends ITargetGroup {
 /**
  * An imported network target group
  */
-class ImportedNetworkTargetGroup extends BaseImportedTargetGroup implements INetworkTargetGroup {
+class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INetworkTargetGroup {
   public registerListener(_listener: INetworkListener) {
     // Nothing to do, we know nothing of our members
   }

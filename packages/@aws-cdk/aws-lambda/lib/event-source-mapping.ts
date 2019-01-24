@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { FunctionRef } from './lambda-ref';
+import { IFunction } from './lambda-ref';
 import { CfnEventSourceMapping } from './lambda.generated';
 
 export interface EventSourceMappingProps {
@@ -12,7 +12,7 @@ export interface EventSourceMappingProps {
   /**
    * The target AWS Lambda function.
    */
-  target: FunctionRef;
+  target: IFunction;
 
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
@@ -55,8 +55,8 @@ export interface EventSourceMappingProps {
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
 export class EventSourceMapping extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string, props: EventSourceMappingProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
+    super(scope, id);
 
     new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,

@@ -1,10 +1,11 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
-import { FunctionRef } from './lambda-ref';
-import { FunctionVersion } from './lambda-version';
+import { FunctionBase, FunctionImportProps, IFunction } from './lambda-ref';
+import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
 import { Runtime } from './runtime';
@@ -111,14 +112,14 @@ export interface FunctionProps {
    * @default a unique role will be generated for this lambda function.
    * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
    */
-  role?: iam.Role;
+  role?: iam.IRole;
 
   /**
    * VPC network to place Lambda network interfaces
    *
    * Specify this if the Lambda function needs to access resources in a VPC.
    */
-  vpc?: ec2.VpcNetworkRef;
+  vpc?: ec2.IVpcNetwork;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -139,7 +140,7 @@ export interface FunctionProps {
    * not specified, a dedicated security group will be created for this
    * function.
    */
-  securityGroup?: ec2.SecurityGroupRef;
+  securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Whether to allow the Lambda to send all network traffic
@@ -164,7 +165,7 @@ export interface FunctionProps {
    *
    * @default SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
-  deadLetterQueue?: sqs.QueueRef;
+  deadLetterQueue?: sqs.IQueue;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
@@ -181,6 +182,14 @@ export interface FunctionProps {
    * @default no layers
    */
   layers?: ILayerVersion[];
+
+  /**
+   * The maximum of concurrent executions you want to reserve for the function.
+   *
+   * @default no specific limit - account limit
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html
+   */
+  reservedConcurrentExecutions?: number;
 }
 
 /**
@@ -194,7 +203,92 @@ export interface FunctionProps {
  * This construct does not yet reproduce all features from the underlying resource
  * library.
  */
-export class Function extends FunctionRef {
+export class Function extends FunctionBase {
+  /**
+   * Creates a Lambda function object which represents a function not defined
+   * within this stack.
+   *
+   *    Lambda.import(this, 'MyImportedFunction', { lambdaArn: new LambdaArn('arn:aws:...') });
+   *
+   * @param parent The parent construct
+   * @param id The name of the lambda construct
+   * @param props A reference to a Lambda function. Can be created manually (see
+   * example above) or obtained through a call to `lambda.export()`.
+   */
+  public static import(scope: cdk.Construct, id: string, props: FunctionImportProps): IFunction {
+    return new ImportedFunction(scope, id, props);
+  }
+
+  /**
+   * Return the given named metric for this Lambda
+   */
+  public static metricAll(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Lambda',
+      metricName,
+      ...props
+    });
+  }
+  /**
+   * Metric for the number of Errors executing all Lambdas
+   *
+   * @default sum over 5 minutes
+   */
+  public static metricAllErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Errors', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the Duration executing all Lambdas
+   *
+   * @default average over 5 minutes
+   */
+  public static metricAllDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Duration', props);
+  }
+
+  /**
+   * Metric for the number of invocations of all Lambdas
+   *
+   * @default sum over 5 minutes
+   */
+  public static metricAllInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Invocations', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the number of throttled invocations of all Lambdas
+   *
+   * @default sum over 5 minutes
+   */
+  public static metricAllThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('Throttles', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the number of concurrent executions across all Lambdas
+   *
+   * @default max over 5 minutes
+   */
+  public static metricAllConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    // Mini-FAQ: why max? This metric is a gauge that is emitted every
+    // minute, so either max or avg or a percentile make sense (but sum
+    // doesn't). Max is more sensitive to spiky load changes which is
+    // probably what you're interested in if you're looking at this metric
+    // (Load spikes may lead to concurrent execution errors that would
+    // otherwise not be visible in the avg)
+    return this.metricAll('ConcurrentExecutions', { statistic: 'max', ...props });
+  }
+
+  /**
+   * Metric for the number of unreserved concurrent executions across all Lambdas
+   *
+   * @default max over 5 minutes
+   */
+  public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
+  }
+
   /**
    * Name of this function
    */
@@ -208,7 +302,7 @@ export class Function extends FunctionRef {
   /**
    * Execution role associated with this function
    */
-  public readonly role?: iam.Role;
+  public readonly role?: iam.IRole;
 
   /**
    * The runtime configured for this lambda.
@@ -229,19 +323,19 @@ export class Function extends FunctionRef {
    */
   private readonly environment?: { [key: string]: any };
 
-  constructor(parent: cdk.Construct, name: string, props: FunctionProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: FunctionProps) {
+    super(scope, id);
 
     this.environment = props.environment || { };
 
     const managedPolicyArns = new Array<string>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaBasicExecutionRole").policyArn);
+    managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaBasicExecutionRole", this).policyArn);
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaVPCAccessExecutionRole").policyArn);
+      managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaVPCAccessExecutionRole", this).policyArn);
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
@@ -256,7 +350,7 @@ export class Function extends FunctionRef {
     const resource = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
-      code: new cdk.Token(() => props.code.toJSON()),
+      code: new cdk.Token(() => props.code.toJSON(resource)),
       layers: new cdk.Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined),
       handler: props.handler,
       timeout: props.timeout,
@@ -266,7 +360,8 @@ export class Function extends FunctionRef {
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(props),
-      tracingConfig: this.buildTracingConfig(props)
+      tracingConfig: this.buildTracingConfig(props),
+      reservedConcurrentExecutions: props.reservedConcurrentExecutions
     });
 
     resource.addDependency(this.role);
@@ -282,6 +377,18 @@ export class Function extends FunctionRef {
     for (const layer of props.layers || []) {
       this.addLayer(layer);
     }
+  }
+
+  /**
+   * Export this Function (without the role)
+   */
+  public export(): FunctionImportProps {
+    return {
+      functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
+      securityGroupId: this._connections && this._connections.securityGroups[0]
+          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
+          : undefined
+    };
   }
 
   /**
@@ -334,8 +441,8 @@ export class Function extends FunctionRef {
    * @param description A description for this version.
    * @returns A new Version object.
    */
-  public addVersion(name: string, codeSha256?: string, description?: string): FunctionVersion {
-    return new FunctionVersion(this, 'Version' + name, {
+  public addVersion(name: string, codeSha256?: string, description?: string): Version {
+    return new Version(this, 'Version' + name, {
       lambda: this,
       codeSha256,
       description,
@@ -371,7 +478,7 @@ export class Function extends FunctionRef {
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
-      description: 'Automatic security group for Lambda Function ' + this.uniqueId,
+      description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
       allowAllOutbound: props.allowAllOutbound
     });
 
@@ -427,5 +534,49 @@ export class Function extends FunctionRef {
       mode: Tracing[props.tracing]
     };
   }
+}
 
+export class ImportedFunction extends FunctionBase {
+  public readonly functionName: string;
+  public readonly functionArn: string;
+  public readonly role?: iam.IRole;
+
+  protected readonly canCreatePermissions = false;
+
+  constructor(scope: cdk.Construct, id: string, private readonly props: FunctionImportProps) {
+    super(scope, id);
+
+    this.functionArn = props.functionArn;
+    this.functionName = extractNameFromArn(props.functionArn);
+    this.role = props.role;
+
+    if (props.securityGroupId) {
+      this._connections = new ec2.Connections({
+        securityGroups: [
+          ec2.SecurityGroup.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })
+        ]
+      });
+    }
+  }
+
+  public export() {
+    return this.props;
+  }
+}
+
+/**
+ * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the function
+ * name from the ARN.
+ *
+ * Function ARNs look like this:
+ *
+ *   arn:aws:lambda:region:account-id:function:function-name
+ *
+ * ..which means that in order to extract the `function-name` component from the ARN, we can
+ * split the ARN using ":" and select the component in index 6.
+ *
+ * @returns `FnSelect(6, FnSplit(':', arn))`
+ */
+function extractNameFromArn(arn: string) {
+  return cdk.Fn.select(6, cdk.Fn.split(':', arn));
 }

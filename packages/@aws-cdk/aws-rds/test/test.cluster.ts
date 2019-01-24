@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, DatabaseClusterRef } from '../lib';
+import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine } from '../lib';
 
 export = {
   'check that instantiation works'(test: Test) {
@@ -52,7 +52,7 @@ export = {
     });
 
     // WHEN
-    DatabaseClusterRef.import(stack2, 'Database', cluster.export());
+    DatabaseCluster.import(stack2, 'Database', cluster.export());
 
     // THEN: No error
 
@@ -122,10 +122,28 @@ export = {
 
     test.done();
   },
+
+  'import/export cluster parameter group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const group = new ClusterParameterGroup(stack, 'Params', {
+      family: 'hello',
+      description: 'desc'
+    });
+
+    // WHEN
+    const exported = group.export();
+    const imported = ClusterParameterGroup.import(stack, 'ImportParams', exported);
+
+    // THEN
+    test.deepEqual(stack.node.resolve(exported), { parameterGroupName: { 'Fn::ImportValue': 'ParamsParameterGroupNameA6B808D7' } });
+    test.deepEqual(stack.node.resolve(imported.parameterGroupName), { 'Fn::ImportValue': 'ParamsParameterGroupNameA6B808D7' });
+    test.done();
+  }
 };
 
 function testStack() {
   const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' }});
-  stack.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
+  stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

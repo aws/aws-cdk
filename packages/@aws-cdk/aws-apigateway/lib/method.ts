@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
-import { Integration } from './integration';
+import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { IRestApiResource } from './resource';
 import { RestApi } from './restapi';
@@ -23,7 +23,7 @@ export interface MethodOptions {
    * If `authorizationType` is `Custom`, this specifies the ID of the method
    * authorizer resource.
    *
-   * NOTE: in the future this will be replaced with an `AuthorizerRef`
+   * NOTE: in the future this will be replaced with an `IAuthorizer`
    * construct.
    */
   authorizerId?: string;
@@ -39,6 +39,7 @@ export interface MethodOptions {
   // - RequestModels
   // - RequestParameters
   // - MethodResponses
+  requestParameters?: { [param: string]: boolean };
 }
 
 export interface MethodProps {
@@ -70,8 +71,8 @@ export class Method extends cdk.Construct {
   public readonly resource: IRestApiResource;
   public readonly restApi: RestApi;
 
-  constructor(parent: cdk.Construct, id: string, props: MethodProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: MethodProps) {
+    super(scope, id);
 
     this.resource = props.resource;
     this.restApi = props.resource.resourceApi;
@@ -91,6 +92,7 @@ export class Method extends cdk.Construct {
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
       authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.None,
       authorizerId: options.authorizerId || defaultMethodOptions.authorizerId,
+      requestParameters: options.requestParameters,
       integration: this.renderIntegration(props.integration)
     };
 
@@ -118,7 +120,7 @@ export class Method extends cdk.Construct {
   public get methodArn(): string {
     if (!this.restApi.deploymentStage) {
       throw new Error(
-        `Unable to determine ARN for method "${this.id}" since there is no stage associated with this API.\n` +
+        `Unable to determine ARN for method "${this.node.id}" since there is no stage associated with this API.\n` +
         'Either use the `deploy` prop or explicitly assign `deploymentStage` on the RestApi');
     }
 
@@ -154,11 +156,20 @@ export class Method extends cdk.Construct {
       throw new Error(`'credentialsPassthrough' and 'credentialsRole' are mutually exclusive`);
     }
 
+    if (options.connectionType === ConnectionType.VpcLink && options.vpcLink === undefined) {
+      throw new Error(`'connectionType' of VPC_LINK requires 'vpcLink' prop to be set`);
+    }
+
+    if (options.connectionType === ConnectionType.Internet && options.vpcLink !== undefined) {
+      throw new Error(`cannot set 'vpcLink' where 'connectionType' is INTERNET`);
+    }
+
     if (options.credentialsRole) {
       credentials = options.credentialsRole.roleArn;
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
-      credentials = cdk.ArnUtils.fromComponents({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
+      // tslint:disable-next-line:max-line-length
+      credentials = cdk.Stack.find(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
     }
 
     return {
@@ -172,6 +183,8 @@ export class Method extends cdk.Construct {
       requestTemplates: options.requestTemplates,
       passthroughBehavior: options.passthroughBehavior,
       integrationResponses: options.integrationResponses,
+      connectionType: options.connectionType,
+      connectionId: options.vpcLink ? options.vpcLink.vpcLinkId : undefined,
       credentials,
     };
   }

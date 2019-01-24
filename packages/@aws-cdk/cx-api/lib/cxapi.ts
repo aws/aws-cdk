@@ -56,6 +56,11 @@ export interface SynthesizedStack {
   missing?: { [key: string]: MissingContext };
   metadata: StackMetadata;
   template: any;
+
+  /**
+   * Other stacks this stack depends on
+   */
+  dependsOn?: string[];
 }
 
 /**
@@ -128,15 +133,3 @@ export const PATH_METADATA_KEY = 'aws:cdk:path';
  * Enables the embedding of the "aws:cdk:path" in CloudFormation template metadata.
  */
 export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
-
-/**
- * Separator string that separates the prefix separator from the object key separator.
- *
- * Asset keys will look like:
- *
- *    /assets/MyConstruct12345678/||abcdef12345.zip
- *
- * This allows us to encode both the prefix and the full location in a single
- * CloudFormation Template Parameter.
- */
-export const ASSET_PREFIX_SEPARATOR = '||';

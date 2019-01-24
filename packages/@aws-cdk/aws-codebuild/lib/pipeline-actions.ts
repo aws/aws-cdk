@@ -1,7 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { ProjectRef } from './project';
+import { IProject } from './project';
 
 /**
  * Common construction properties of all CodeBuild Pipeline Actions.
@@ -23,7 +23,7 @@ export interface CommonCodeBuildActionProps {
 /**
  * Common properties for creating {@link PipelineBuildAction} -
  * either directly, through its constructor,
- * or through {@link ProjectRef#addToPipeline}.
+ * or through {@link IProject#addToPipeline}.
  */
 export interface CommonPipelineBuildActionProps extends CommonCodeBuildActionProps,
     codepipeline.CommonActionProps {
@@ -50,18 +50,18 @@ export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps
   /**
    * The build project
    */
-  project: ProjectRef;
+  project: IProject;
 }
 
 /**
  * CodePipeline build Action that uses AWS CodeBuild.
  */
 export class PipelineBuildAction extends codepipeline.BuildAction {
-  constructor(parent: cdk.Construct, name: string, props: PipelineBuildActionProps) {
+  constructor(scope: cdk.Construct, id: string, props: PipelineBuildActionProps) {
     // This happened when ProjectName was accidentally set to the project's ARN:
     // https://qiita.com/ikeisuke/items/2fbc0b80b9bbd981b41f
 
-    super(parent, name, {
+    super(scope, id, {
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
       configuration: {
@@ -109,7 +109,7 @@ export class PipelineBuildAction extends codepipeline.BuildAction {
 /**
  * Common properties for creating {@link PipelineTestAction} -
  * either directly, through its constructor,
- * or through {@link ProjectRef#addToPipelineAsTest}.
+ * or through {@link IProject#addToPipelineAsTest}.
  */
 export interface CommonPipelineTestActionProps extends CommonCodeBuildActionProps,
     codepipeline.CommonActionProps {
@@ -139,12 +139,12 @@ export interface PipelineTestActionProps extends CommonPipelineTestActionProps,
   /**
    * The build Project.
    */
-  project: ProjectRef;
+  project: IProject;
 }
 
 export class PipelineTestAction extends codepipeline.TestAction {
-  constructor(parent: cdk.Construct, name: string, props: PipelineTestActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineTestActionProps) {
+    super(scope, id, {
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
       configuration: {
@@ -192,7 +192,7 @@ export class PipelineTestAction extends codepipeline.TestAction {
   }
 }
 
-function setCodeBuildNeededPermissions(stage: codepipeline.IStage, project: ProjectRef,
+function setCodeBuildNeededPermissions(stage: codepipeline.IStage, project: IProject,
                                        needsPipelineBucketWrite: boolean) {
   // grant the Pipeline role the required permissions to this Project
   stage.pipeline.role.addToPolicy(new iam.PolicyStatement()

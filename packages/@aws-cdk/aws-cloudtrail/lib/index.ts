@@ -65,7 +65,7 @@ export interface CloudTrailProps {
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    * @default none
    */
-  kmsKey?: kms.EncryptionKeyRef;
+  kmsKey?: kms.IEncryptionKey;
 
   /** The name of an Amazon SNS topic that is notified when new log files are published.
    * @default none
@@ -126,11 +126,13 @@ export class CloudTrail extends cdk.Construct {
   private readonly cloudWatchLogsGroupArn?: string;
   private eventSelectors: EventSelector[] = [];
 
-  constructor(parent: cdk.Construct, name: string, props: CloudTrailProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: CloudTrailProps = {}) {
+    super(scope, id);
 
     const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
     const cloudTrailPrincipal = "cloudtrail.amazonaws.com";
+
+    const stack = cdk.Stack.find(this);
 
     s3bucket.addToResourcePolicy(new iam.PolicyStatement()
       .addResource(s3bucket.bucketArn)
@@ -138,7 +140,7 @@ export class CloudTrail extends cdk.Construct {
       .addServicePrincipal(cloudTrailPrincipal));
 
     s3bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addResource(s3bucket.arnForObjects(new cdk.FnConcat('AWSLogs/', new cdk.AwsAccountId(), "/*")))
+      .addResource(s3bucket.arnForObjects(`AWSLogs/${stack.accountId}/*`))
       .addActions("s3:PutObject")
       .addServicePrincipal(cloudTrailPrincipal)
       .setCondition("StringEquals", {'s3:x-amz-acl': "bucket-owner-full-control"}));
@@ -182,7 +184,7 @@ export class CloudTrail extends cdk.Construct {
       eventSelectors: this.eventSelectors
     });
     this.cloudTrailArn = trail.trailArn;
-    const s3BucketPolicy = s3bucket.findChild("Policy").findChild("Resource") as s3.CfnBucketPolicy;
+    const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
     trail.addDependency(s3BucketPolicy);
   }
 

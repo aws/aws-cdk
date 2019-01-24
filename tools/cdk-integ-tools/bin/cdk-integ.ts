@@ -25,8 +25,9 @@ async function main() {
 
     const args = new Array<string>();
 
-    // inject "--no-path-metadata" so aws:cdk:path entries are not added to CFN metadata
+    // don't inject cloudformation metadata into template
     args.push('--no-path-metadata');
+    args.push('--no-asset-metadata');
 
     // inject "--verbose" to the command line of "cdk" if we are in verbose mode
     if (argv.verbose) {
@@ -34,7 +35,8 @@ async function main() {
     }
 
     try {
-      await test.invoke([ ...args, 'deploy', '--prompt', 'never' ], { verbose: argv.verbose }); // Note: no context, so use default user settings!
+      // tslint:disable-next-line:max-line-length
+      await test.invoke([ ...args, 'deploy', '--require-approval', 'never' ], { verbose: argv.verbose }); // Note: no context, so use default user settings!
 
       console.error(`Success! Writing out reference synth.`);
 

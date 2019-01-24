@@ -5,14 +5,14 @@ import { CognitoChatRoomPool } from './cognito-chat-room-pool';
 import { DynamoPostsTable } from './dynamodb-posts-table';
 
 class MyStack extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     new DynamoPostsTable(this, 'Posts');
 
     new CognitoChatRoomPool(this, 'UserPool');
 
-    const bucket = s3.BucketRef.import(this, 'DougsBucket', {
+    const bucket = s3.Bucket.import(this, 'DougsBucket', {
       bucketName: 'dougs-chat-app'
     });
 
@@ -69,7 +69,7 @@ class MyStack extends cdk.Stack {
 }
 
 interface ChatAppFuncProps {
-  bucket: s3.BucketRef;
+  bucket: s3.IBucket;
   zipFile: string;
 }
 
@@ -77,8 +77,8 @@ interface ChatAppFuncProps {
  * Extend Function as all of the Chat app functions have these common props.
  */
 class ChatAppFunction extends lambda.Function {
-  constructor(parent: cdk.Construct, name: string, props: ChatAppFuncProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, id: string, props: ChatAppFuncProps) {
+    super(scope, id, {
       code: new lambda.S3Code(props.bucket, props.zipFile),
       runtime: lambda.Runtime.NodeJS610,
       handler: 'index.handler'

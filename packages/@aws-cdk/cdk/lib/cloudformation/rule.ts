@@ -1,7 +1,7 @@
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames } from '../core/util';
-import { FnCondition } from './fn';
-import { Referenceable } from './stack';
+import { IConditionExpression } from './condition';
+import { Referenceable } from './stack-element';
 
 /**
  * A rule can include a RuleCondition property and must include an Assertions property.
@@ -29,7 +29,7 @@ export interface RuleProps {
    * If the rule condition evaluates to false, the rule doesn't take effect.
    * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
    */
-  ruleCondition?: FnCondition;
+  ruleCondition?: IConditionExpression;
 
   /**
    * Assertions which define the rule.
@@ -57,7 +57,7 @@ export class Rule extends Referenceable {
    * If the rule condition evaluates to false, the rule doesn't take effect.
    * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
    */
-  public ruleCondition?: FnCondition;
+  public ruleCondition?: IConditionExpression;
 
   /**
    * Assertions which define the rule.
@@ -69,8 +69,8 @@ export class Rule extends Referenceable {
    * @param parent The parent construct.
    * @param props The rule props.
    */
-  constructor(parent: Construct, name: string, props?: RuleProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props?: RuleProps) {
+    super(scope, id);
 
     this.ruleCondition = props && props.ruleCondition;
     this.assertions = props && props.assertions;
@@ -81,7 +81,7 @@ export class Rule extends Referenceable {
    * @param condition The expression to evaluation.
    * @param description The description of the assertion.
    */
-  public addAssertion(condition: FnCondition, description: string) {
+  public addAssertion(condition: IConditionExpression, description: string) {
     if (!this.assertions) {
       this.assertions = [];
     }
@@ -97,7 +97,7 @@ export class Rule extends Referenceable {
       Rules: {
         [this.logicalId]: {
           RuleCondition: this.ruleCondition,
-          Assertions: capitalizePropertyNames(this.assertions)
+          Assertions: capitalizePropertyNames(this, this.assertions)
         }
       }
     };
@@ -111,7 +111,7 @@ export interface RuleAssertion {
   /**
    * The assertion.
    */
-  assert: FnCondition;
+  assert: IConditionExpression;
 
   /**
    * The assertion description.

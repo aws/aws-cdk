@@ -1,10 +1,10 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { BaseTargetGroup, BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn,
-         LoadBalancerTargetProps, TargetGroupRefProps } from '../shared/base-target-group';
+import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
+         TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { ApplicationProtocol } from '../shared/enums';
-import { BaseImportedTargetGroup } from '../shared/imported';
+import { ImportedTargetGroupBase } from '../shared/imported';
 import { determineProtocolAndPort, LazyDependable } from '../shared/util';
 import { IApplicationListener } from './application-listener';
 import { HttpCodeTarget } from './application-load-balancer';
@@ -62,21 +62,21 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
 /**
  * Define an Application Target Group
  */
-export class ApplicationTargetGroup extends BaseTargetGroup {
+export class ApplicationTargetGroup extends TargetGroupBase {
   /**
    * Import an existing target group
    */
-  public static import(parent: cdk.Construct, id: string, props: TargetGroupRefProps): IApplicationTargetGroup {
-    return new ImportedApplicationTargetGroup(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
+    return new ImportedApplicationTargetGroup(scope, id, props);
   }
 
   private readonly connectableMembers: ConnectableMember[];
   private readonly listeners: IApplicationListener[];
 
-  constructor(parent: cdk.Construct, id: string, props: ApplicationTargetGroupProps) {
+  constructor(scope: cdk.Construct, id: string, props: ApplicationTargetGroupProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
 
-    super(parent, id, props, {
+    super(scope, id, props, {
       protocol,
       port,
     });
@@ -330,7 +330,7 @@ export interface IApplicationTargetGroup extends ITargetGroup {
 /**
  * An imported application target group
  */
-class ImportedApplicationTargetGroup extends BaseImportedTargetGroup implements IApplicationTargetGroup {
+class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
   public registerListener(_listener: IApplicationListener, _dependable?: cdk.IDependable) {
     // Nothing to do, we know nothing of our members
   }

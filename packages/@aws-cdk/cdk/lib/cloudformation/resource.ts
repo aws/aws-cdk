@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
-import { CloudFormationToken } from './cloudformation-token';
+import { CfnReference } from './cfn-tokens';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { IDependable, Referenceable, StackElement } from './stack';
+import { IDependable, Referenceable, StackElement } from './stack-element';
 
 export interface ResourceProps {
   /**
@@ -78,8 +78,8 @@ export class Resource extends Referenceable {
    * Creates a resource construct.
    * @param resourceType The CloudFormation type of this resource (e.g. AWS::DynamoDB::Table)
    */
-  constructor(parent: Construct, name: string, props: ResourceProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: ResourceProps) {
+    super(scope, id);
 
     if (!props.type) {
       throw new Error('The `type` property is required');
@@ -91,9 +91,9 @@ export class Resource extends Referenceable {
     // if aws:cdk:enable-path-metadata is set, embed the current construct's
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
-    if (this.getContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+    if (this.node.getContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
       this.options.metadata = {
-        [cxapi.PATH_METADATA_KEY]: this.path
+        [cxapi.PATH_METADATA_KEY]: this.node.path
       };
     }
   }
@@ -105,7 +105,7 @@ export class Resource extends Referenceable {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new CloudFormationToken({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`);
+    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`, this);
   }
 
   /**
@@ -187,19 +187,19 @@ export class Resource extends Referenceable {
         Resources: {
           [this.logicalId]: deepMerge({
             Type: this.resourceType,
-            Properties: ignoreEmpty(properties),
-            DependsOn: ignoreEmpty(this.renderDependsOn()),
-            CreationPolicy:  capitalizePropertyNames(this.options.creationPolicy),
-            UpdatePolicy: capitalizePropertyNames(this.options.updatePolicy),
-            DeletionPolicy: capitalizePropertyNames(this.options.deletionPolicy),
-            Metadata: ignoreEmpty(this.options.metadata),
+            Properties: ignoreEmpty(this, properties),
+            DependsOn: ignoreEmpty(this, this.renderDependsOn()),
+            CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
+            UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
+            DeletionPolicy: capitalizePropertyNames(this, this.options.deletionPolicy),
+            Metadata: ignoreEmpty(this, this.options.metadata),
             Condition: this.options.condition && this.options.condition.logicalId
           }, this.rawOverrides)
         }
       };
     } catch (e) {
       // Change message
-      e.message = `While synthesizing ${this.path}: ${e.message}`;
+      e.message = `While synthesizing ${this.node.path}: ${e.message}`;
       // Adjust stack trace (make it look like node built it, too...)
       const creationStack = ['--- resource created at ---', ...this.creationStackTrace].join('\n  at ');
       const problemTrace = e.stack.substr(e.stack.indexOf(e.message) + e.message.length);

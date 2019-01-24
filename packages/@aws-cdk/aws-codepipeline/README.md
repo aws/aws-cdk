@@ -74,6 +74,82 @@ new codepipeline.JenkinsBuildAction(this, 'Jenkins_Build', {
 });
 ```
 
+#### Manual approval Action
+
+This package contains an Action that stops the Pipeline until someone manually clicks the approve button:
+
+```typescript
+const manualApprovalAction = new codepipeline.ManualApprovalAction(this, 'Approve', {
+  stage: approveStage,
+  notificationTopic: new sns.Topic(this, 'Topic'), // optional
+  notifyEmails: [
+    'some_email@example.com',
+  ], // optional
+  additionalInformation: 'additional info', // optional
+});
+// `manualApprovalAction.notificationTopic` can be used to access the Topic
+```
+
+If the `notificationTopic` has not been provided,
+but `notifyEmails` were,
+a new SNS Topic will be created
+(and accessible through the `notificationTopic` property of the Action).
+
+#### Jenkins Actions
+
+In order to use Jenkins Actions in the Pipeline,
+you first need to create a `JenkinsProvider`:
+
+```ts
+const jenkinsProvider = new codepipeline.JenkinsProvider(this, 'JenkinsProvider', {
+  providerName: 'MyJenkinsProvider',
+  serverUrl: 'http://my-jenkins.com:8080',
+  version: '2', // optional, default: '1'
+});
+```
+
+If you've registered a Jenkins provider in a different CDK app,
+or outside the CDK (in the CodePipeline AWS Console, for example),
+you can import it:
+
+```ts
+const jenkinsProvider = codepipeline.JenkinsProvider.import(this, 'JenkinsProvider', {
+  providerName: 'MyJenkinsProvider',
+  serverUrl: 'http://my-jenkins.com:8080',
+  version: '2', // optional, default: '1'
+});
+```
+
+Note that a Jenkins provider
+(identified by the provider name-category(build/test)-version tuple)
+must always be registered in the given account, in the given AWS region,
+before it can be used in CodePipeline.
+
+With a `JenkinsProvider`,
+we can create a Jenkins Action:
+
+```ts
+const buildAction = new codepipeline.JenkinsBuildAction(this, 'JenkinsBuild', {
+  stage: buildStage,
+  jenkinsProvider: jenkinsProvider,
+  projectName: 'MyProject',
+});
+// there's also a JenkinsTestAction that works identically
+```
+
+You can also add the Action to the Pipeline directly:
+
+```ts
+// equivalent to the code above:
+const buildAction = jenkinsProvider.addToPipeline(buildStage, 'JenkinsBuild', {
+  projectName: 'MyProject',
+});
+
+const testAction = jenkinsProvider.addToPipelineAsTest(buildStage, 'JenkinsTest', {
+  projectName: 'MyProject',
+});
+```
+
 ### Cross-region CodePipelines
 
 You can also use the cross-region feature to deploy resources

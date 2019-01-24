@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
-import { RepositoryBase } from "./repository-ref";
+import { RepositoryBase, RepositoryImportProps } from "./repository-ref";
 
 export interface RepositoryProps {
   /**
@@ -48,8 +48,8 @@ export class Repository extends RepositoryBase {
   private readonly registryId?: string;
   private policyDocument?: iam.PolicyDocument;
 
-  constructor(parent: cdk.Construct, id: string, props: RepositoryProps = {}) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: RepositoryProps = {}) {
+    super(scope, id);
 
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
@@ -69,6 +69,16 @@ export class Repository extends RepositoryBase {
 
     this.repositoryName = resource.repositoryName;
     this.repositoryArn = resource.repositoryArn;
+  }
+
+  /**
+   * Export this repository from the stack
+   */
+  public export(): RepositoryImportProps {
+    return {
+      repositoryArn: new cdk.Output(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
+      repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
+    };
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {
@@ -116,7 +126,7 @@ export class Repository extends RepositoryBase {
     if (this.lifecycleRules.length === 0 && !this.registryId) { return undefined; }
 
     if (this.lifecycleRules.length > 0) {
-      lifecyclePolicyText = JSON.stringify(cdk.resolve({
+      lifecyclePolicyText = JSON.stringify(this.node.resolve({
         rules: this.orderedLifecycleRules().map(renderLifecycleRule),
       }));
     }

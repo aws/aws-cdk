@@ -13,13 +13,17 @@
  *
  * Evaluates Fn::Join directly if the second argument is a literal list of strings.
  *
+ * Removes list and object values evaluating to { Ref: 'AWS::NoValue' }.
+ *
  * For other intrinsics we choose a string representation that CloudFormation
  * cannot actually parse, but is comprehensible to humans.
  */
 export function renderIntrinsics(x: any): any {
   if (Array.isArray(x)) {
-    return x.map(renderIntrinsics);
+    return x.filter(el => !isNoValue(el)).map(renderIntrinsics);
   }
+
+  if (isNoValue(x)) { return undefined; }
 
   const intrinsic = getIntrinsic(x);
   if (intrinsic) {
@@ -32,7 +36,9 @@ export function renderIntrinsics(x: any): any {
   if (typeof x === 'object' && x !== null) {
     const ret: any = {};
     for (const [key, value] of Object.entries(x)) {
-      ret[key] = renderIntrinsics(value);
+      if (!isNoValue(value)) {
+        ret[key] = renderIntrinsics(value);
+      }
     }
     return ret;
   }
@@ -41,7 +47,7 @@ export function renderIntrinsics(x: any): any {
 
 function unCloudFormationFnJoin(separator: string, args: any) {
   if (Array.isArray(args)) {
-    return args.map(renderIntrinsics).join(separator);
+    return args.filter(el => !isNoValue(el)).map(renderIntrinsics).join(separator);
   }
   return stringifyIntrinsic('Fn::Join', [separator, args]);
 }
@@ -55,6 +61,11 @@ function getIntrinsic(x: any): Intrinsic | undefined {
   if (typeof x !== 'object') { return undefined; }
   const keys = Object.keys(x);
   return keys.length === 1 && (keys[0] === 'Ref' || keys[0].startsWith('Fn::')) ? { fn: keys[0], args: x[keys[0]] } : undefined;
+}
+
+function isNoValue(x: any) {
+  const int = getIntrinsic(x);
+  return int && int.fn === 'Ref' && int.args === 'AWS::NoValue';
 }
 
 interface Intrinsic {

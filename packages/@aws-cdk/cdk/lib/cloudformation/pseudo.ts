@@ -1,61 +1,101 @@
-import { CloudFormationToken } from './cloudformation-token';
+import { Construct } from '../core/construct';
+import { Token } from '../core/tokens';
+import { CfnReference } from './cfn-tokens';
 
-export class PseudoParameter extends CloudFormationToken {
-  constructor(name: string) {
-    super({ Ref: name }, name);
+/**
+ * Accessor for pseudo parameters
+ *
+ * Since pseudo parameters need to be anchored to a stack somewhere in the
+ * construct tree, this class takes an scope parameter; the pseudo parameter
+ * values can be obtained as properties from an scoped object.
+ */
+export class Aws {
+  constructor(private readonly scope?: Construct) {
+  }
+
+  public get accountId(): string {
+    return new AwsAccountId(this.scope).toString();
+  }
+
+  public get urlSuffix(): string {
+    return new AwsURLSuffix(this.scope).toString();
+  }
+
+  public get notificationArns(): string[] {
+    return new AwsNotificationARNs(this.scope).toList();
+  }
+
+  public get partition(): string {
+    return new AwsPartition(this.scope).toString();
+  }
+
+  public get region(): string {
+    return new AwsRegion(this.scope).toString();
+  }
+
+  public get stackId(): string {
+    return new AwsStackId(this.scope).toString();
+  }
+
+  public get stackName(): string {
+    return new AwsStackName(this.scope).toString();
+  }
+
+  public get noValue(): string {
+    return new AwsNoValue().toString();
   }
 }
 
-export class AwsAccountId extends PseudoParameter {
-  constructor() {
-    super('AWS::AccountId');
+class PseudoParameter extends CfnReference {
+  constructor(name: string, scope: Construct | undefined) {
+      super({ Ref: name }, name, scope);
   }
 }
 
-export class AwsDomainSuffix extends PseudoParameter {
-  constructor() {
-    super('AWS::DomainSuffix');
+class AwsAccountId extends PseudoParameter {
+  constructor(scope: Construct | undefined) {
+    super('AWS::AccountId', scope);
   }
 }
 
-export class AwsURLSuffix extends PseudoParameter {
-  constructor() {
-    super('AWS::URLSuffix');
+class AwsURLSuffix extends PseudoParameter {
+  constructor(scope: Construct | undefined) {
+    super('AWS::URLSuffix', scope);
   }
 }
 
-export class AwsNotificationARNs extends PseudoParameter {
-  constructor() {
-    super('AWS::NotificationARNs');
+class AwsNotificationARNs extends PseudoParameter {
+  constructor(scope: Construct | undefined) {
+    super('AWS::NotificationARNs', scope);
   }
 }
 
-export class AwsNoValue extends PseudoParameter {
+export class AwsNoValue extends Token {
   constructor() {
-    super('AWS::NoValue');
+    super({ Ref:  'AWS::NoValue' });
   }
 }
 
-export class AwsPartition extends PseudoParameter {
-  constructor() {
-    super('AWS::Partition');
+class AwsPartition extends PseudoParameter {
+  constructor(scope: Construct | undefined) {
+    super('AWS::Partition', scope);
   }
 }
 
-export class AwsRegion extends PseudoParameter {
-  constructor() {
-    super('AWS::Region');
+class AwsRegion extends PseudoParameter {
+  constructor(scope: Construct | undefined) {
+    super('AWS::Region', scope);
   }
 }
 
-export class AwsStackId extends PseudoParameter {
-  constructor() {
-    super('AWS::StackId');
+class AwsStackId extends PseudoParameter {
+  constructor(scope: Construct | undefined) {
+    super('AWS::StackId', scope);
   }
 }
 
-export class AwsStackName extends PseudoParameter {
-  constructor() {
-    super('AWS::StackName');
+class AwsStackName extends PseudoParameter {
+  constructor(scope: Construct | undefined) {
+    super('AWS::StackName', scope);
   }
 }

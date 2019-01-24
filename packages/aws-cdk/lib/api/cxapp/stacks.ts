@@ -1,4 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
+import colors = require('colors/safe');
 import minimatch = require('minimatch');
 import yargs = require('yargs');
 import contextproviders = require('../../context-providers');
@@ -6,6 +7,7 @@ import { debug, error, print, warning } from '../../logging';
 import { Configuration } from '../../settings';
 import cdkUtil = require('../../util');
 import { SDK } from '../util/sdk';
+import { topologicalSort } from '../util/toposort';
 import { execProgram } from './exec';
 
 /**
@@ -29,7 +31,7 @@ export class AppStacks {
    * It's an error if there are no stacks to select, or if one of the requested parameters
    * refers to a nonexistant stack.
    */
-  public async selectStacks(...selectors: string[]): Promise<cxapi.SynthesizedStack[]> {
+  public async selectStacks(selectors: string[], extendedSelection: ExtendedStackSelection): Promise<cxapi.SynthesizedStack[]> {
     selectors = selectors.filter(s => s != null); // filter null/undefined
 
     const stacks: cxapi.SynthesizedStack[] = await this.listStacks();
@@ -42,14 +44,19 @@ export class AppStacks {
       return stacks;
     }
 
+    const allStacks = new Map<string, cxapi.SynthesizedStack>();
+    for (const stack of stacks) {
+      allStacks.set(stack.name, stack);
+    }
+
     // For every selector argument, pick stacks from the list.
-    const matched = new Set<string>();
+    const selectedStacks = new Map<string, cxapi.SynthesizedStack>();
     for (const pattern of selectors) {
       let found = false;
 
       for (const stack of stacks) {
-        if (minimatch(stack.name, pattern)) {
-          matched.add(stack.name);
+        if (minimatch(stack.name, pattern) && !selectedStacks.has(stack.name)) {
+          selectedStacks.set(stack.name, stack);
           found = true;
         }
       }
@@ -59,12 +66,30 @@ export class AppStacks {
       }
     }
 
-    return stacks.filter(s => matched.has(s.name));
+    switch (extendedSelection) {
+      case ExtendedStackSelection.Downstream:
+        includeDownstreamStacks(selectedStacks, allStacks);
+        break;
+      case ExtendedStackSelection.Upstream:
+        includeUpstreamStacks(selectedStacks, allStacks);
+        break;
+    }
+
+    // Filter original array because it is in the right order
+    return stacks.filter(s => selectedStacks.has(s.name));
   }
 
+  /**
+   * Return all stacks in the CX
+   *
+   * If the stacks have dependencies between them, they will be returned in
+   * topologically sorted order. If there are dependencies that are not in the
+   * set, they will be ignored; it is the user's responsibility that the
+   * non-selected stacks have already been deployed previously.
+   */
   public async listStacks(): Promise<cxapi.SynthesizedStack[]> {
     const response = await this.synthesizeStacks();
-    return response.stacks;
+    return topologicalSort(response.stacks, s => s.name, s => s.dependsOn || []);
   }
 
   /**
@@ -196,4 +221,79 @@ export class AppStacks {
  */
 export function listStackNames(stacks: cxapi.SynthesizedStack[]): string {
   return stacks.map(s => s.name).join(', ');
+}
+
+/**
+ * When selecting stacks, what other stacks to include because of dependencies
+ */
+export enum ExtendedStackSelection {
+  /**
+   * Don't select any extra stacks
+   */
+  None,
+
+  /**
+   * Include stacks that this stack depends on
+   */
+  Upstream,
+
+  /**
+   * Include stacks that depend on this stack
+   */
+  Downstream
+}
+
+/**
+ * Include stacks that depend on the stacks already in the set
+ *
+ * Modifies `selectedStacks` in-place.
+ */
+function includeDownstreamStacks(selectedStacks: Map<string, cxapi.SynthesizedStack>, allStacks: Map<string, cxapi.SynthesizedStack>) {
+  const added = new Array<string>();
+
+  let madeProgress = true;
+  while (madeProgress) {
+    madeProgress = false;
+
+    for (const [name, stack] of allStacks) {
+      // Select this stack if it's not selected yet AND it depends on a stack that's in the selected set
+      if (!selectedStacks.has(name) && (stack.dependsOn || []).some(dependencyName => selectedStacks.has(dependencyName))) {
+        selectedStacks.set(name, stack);
+        added.push(name);
+        madeProgress = true;
+      }
+    }
+  }
+
+  if (added.length > 0) {
+    print('Including depending stacks: %s', colors.bold(added.join(', ')));
+  }
+}
+
+/**
+ * Include stacks that that stacks in the set depend on
+ *
+ * Modifies `selectedStacks` in-place.
+ */
+function includeUpstreamStacks(selectedStacks: Map<string, cxapi.SynthesizedStack>, allStacks: Map<string, cxapi.SynthesizedStack>) {
+  const added = new Array<string>();
+  let madeProgress = true;
+  while (madeProgress) {
+    madeProgress = false;
+
+    for (const stack of selectedStacks.values()) {
+      // Select an additional stack if it's not selected yet and a dependency of a selected stack (and exists, obviously)
+      for (const dependencyName of (stack.dependsOn || [])) {
+        if (!selectedStacks.has(dependencyName) && allStacks.has(dependencyName)) {
+          added.push(dependencyName);
+          selectedStacks.set(dependencyName, allStacks.get(dependencyName)!);
+          madeProgress = true;
+        }
+      }
+    }
+  }
+
+  if (added.length > 0) {
+    print('Including dependency stacks: %s', colors.bold(added.join(', ')));
+  }
 }

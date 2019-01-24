@@ -38,7 +38,7 @@ export = {
     });
 
     test.notDeepEqual(stack.toCloudFormation(), {});
-    test.deepEqual([], pipeline.validate());
+    test.deepEqual([], pipeline.node.validateTree());
     test.done();
   },
 
@@ -127,7 +127,7 @@ export = {
       ]
     }));
 
-    test.deepEqual([], p.validate());
+    test.deepEqual([], p.node.validateTree());
     test.done();
   },
 
@@ -211,8 +211,23 @@ export = {
       ]
     }));
 
-    test.deepEqual([], pipeline.validate());
+    test.deepEqual([], pipeline.node.validateTree());
     test.done();
+  },
+
+  'manual approval Action': {
+    'allows passing an SNS Topic when constructing it'(test: Test) {
+      const stack = new cdk.Stack();
+      const topic = new sns.Topic(stack, 'Topic');
+      const manualApprovalAction = new codepipeline.ManualApprovalAction(stack, 'Approve', {
+        stage: stageForTesting(stack),
+        notificationTopic: topic,
+      });
+
+      test.equal(manualApprovalAction.notificationTopic, topic);
+
+      test.done();
+    },
   },
 
   'PipelineProject': {
@@ -262,15 +277,34 @@ export = {
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
-    // first stage must contain a Source action so we can't use it to test Lambda
-    const stage = new codepipeline.Stage(stack, 'Stage', { pipeline });
-    new lambda.PipelineInvokeAction(stack, 'InvokeAction', {
-      stage,
-      lambda: lambdaFun,
-      userParameters: 'foo-bar/42'
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const sourceStage = pipeline.addStage('Source');
+    const source1 = bucket.addToPipeline(sourceStage, 'SourceAction1', {
+      bucketKey: 'some/key',
+      outputArtifactName: 'sourceArtifact1',
+    });
+    const source2 = bucket.addToPipeline(sourceStage, 'SourceAction2', {
+      bucketKey: 'another/key',
+      outputArtifactName: 'sourceArtifact2',
     });
 
-    expect(stack, /* skip validation */ true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    const stage = new codepipeline.Stage(stack, 'Stage', { pipeline });
+    const lambdaAction = new lambda.PipelineInvokeAction(stack, 'InvokeAction', {
+      stage,
+      lambda: lambdaFun,
+      userParameters: 'foo-bar/42',
+      inputArtifacts: [
+          source2.outputArtifact,
+          source1.outputArtifact,
+      ],
+      outputArtifactNames: [
+          'lambdaOutput1',
+          'lambdaOutput2',
+          'lambdaOutput3',
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "ArtifactStore": {
         "Location": {
         "Ref": "PipelineArtifactsBucket22248F97"
@@ -284,6 +318,9 @@ export = {
         ]
       },
       "Stages": [
+        {
+          "Name": "Source",
+        },
         {
         "Actions": [
           {
@@ -299,9 +336,16 @@ export = {
             },
             "UserParameters": "foo-bar/42"
           },
-          "InputArtifacts": [],
+          "InputArtifacts": [
+            { "Name": "sourceArtifact2" },
+            { "Name": "sourceArtifact1" },
+          ],
           "Name": "InvokeAction",
-          "OutputArtifacts": [],
+          "OutputArtifacts": [
+            { "Name": "lambdaOutput1" },
+            { "Name": "lambdaOutput2" },
+            { "Name": "lambdaOutput3" },
+          ],
           "RunOrder": 1
           }
         ],
@@ -309,6 +353,9 @@ export = {
         }
       ]
     }));
+
+    test.equal(lambdaAction.outputArtifacts().length, 3);
+    test.notEqual(lambdaAction.outputArtifact('lambdaOutput2'), undefined);
 
     expect(stack, /* skip validation */ true).to(haveResource('AWS::IAM::Policy', {
       "PolicyDocument": {
@@ -369,7 +416,9 @@ export = {
       const pipelineRegion = 'us-west-2';
       const pipelineAccount = '123';
 
-      const stack = new cdk.Stack(undefined, undefined, {
+      const app = new cdk.App();
+
+      const stack = new cdk.Stack(app, 'TestStack', {
         env: {
           region: pipelineRegion,
           account: pipelineAccount,
@@ -463,8 +512,8 @@ export = {
       test.notEqual(usEast1ScaffoldStack, undefined);
       test.equal(usEast1ScaffoldStack.env.region, 'us-east-1');
       test.equal(usEast1ScaffoldStack.env.account, pipelineAccount);
-      test.ok(usEast1ScaffoldStack.id.indexOf('us-east-1') !== -1,
-        `expected '${usEast1ScaffoldStack.id}' to contain 'us-east-1'`);
+      test.ok(usEast1ScaffoldStack.node.id.indexOf('us-east-1') !== -1,
+        `expected '${usEast1ScaffoldStack.node.id}' to contain 'us-east-1'`);
 
       test.done();
     },

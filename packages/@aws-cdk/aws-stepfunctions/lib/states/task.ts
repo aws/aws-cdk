@@ -35,6 +35,16 @@ export interface TaskProps {
     inputPath?: string;
 
     /**
+     * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
+     *
+     * @see
+     * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
+     *
+     * @default No parameters
+     */
+    parameters?: { [name: string]: any };
+
+    /**
      * JSONPath expression to select part of the state to be the output to this state.
      *
      * May also be the special value DISCARD, which will cause the effective
@@ -87,8 +97,8 @@ export class Task extends State implements INextable {
     private readonly timeoutSeconds?: number;
     private readonly heartbeatSeconds?: number;
 
-    constructor(parent: cdk.Construct, id: string, props: TaskProps) {
-        super(parent, id, props);
+    constructor(scope: cdk.Construct, id: string, props: TaskProps) {
+        super(scope, id, props);
 
         this.timeoutSeconds = props.timeoutSeconds;
         this.heartbeatSeconds = props.heartbeatSeconds;

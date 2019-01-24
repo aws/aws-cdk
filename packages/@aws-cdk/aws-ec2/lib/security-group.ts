@@ -1,10 +1,17 @@
-import { Construct, ITaggable, Output, TagManager, Tags, Token } from '@aws-cdk/cdk';
+import { Construct, IConstruct, ITaggable, Output, TagManager, Tags, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
-import { VpcNetworkRef } from './vpc-ref';
+import { IVpcNetwork } from './vpc-ref';
 
-export interface SecurityGroupRefProps {
+export interface ISecurityGroup extends IConstruct, ISecurityGroupRule, IConnectable {
+  readonly securityGroupId: string;
+  addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string): void;
+  addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string): void;
+  export(): SecurityGroupImportProps;
+}
+
+export interface SecurityGroupImportProps {
   /**
    * ID of security group
    */
@@ -14,22 +21,19 @@ export interface SecurityGroupRefProps {
 /**
  * A SecurityGroup that is not created in this template
  */
-export abstract class SecurityGroupRef extends Construct implements ISecurityGroupRule, IConnectable {
-  /**
-   * Import an existing SecurityGroup
-   */
-  public static import(parent: Construct, id: string, props: SecurityGroupRefProps): SecurityGroupRef {
-    return new ImportedSecurityGroup(parent, id, props);
-  }
-
+export abstract class SecurityGroupBase extends Construct implements ISecurityGroup {
   public abstract readonly securityGroupId: string;
   public readonly canInlineRule = false;
-  public readonly connections = new Connections({ securityGroups: [this] });
+  public readonly connections: Connections = new Connections({ securityGroups: [this] });
 
   /**
    * FIXME: Where to place this??
    */
   public readonly defaultPortRange?: IPortRange;
+
+  public get uniqueId() {
+    return this.node.uniqueId;
+  }
 
   public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
     let id = `from ${peer.uniqueId}:${connection}`;
@@ -39,7 +43,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
     id = id.replace('/', '_');
 
     // Skip duplicates
-    if (this.tryFindChild(id) === undefined) {
+    if (this.node.tryFindChild(id) === undefined) {
       new CfnSecurityGroupIngress(this, id, {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleJSON(),
@@ -57,7 +61,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
     id = id.replace('/', '_');
 
     // Skip duplicates
-    if (this.tryFindChild(id) === undefined) {
+    if (this.node.tryFindChild(id) === undefined) {
       new CfnSecurityGroupEgress(this, id, {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleJSON(),
@@ -78,12 +82,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
   /**
    * Export this SecurityGroup for use in a different Stack
    */
-  public export(): SecurityGroupRefProps {
-    return {
-      securityGroupId: new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
-    };
-  }
-
+  public abstract export(): SecurityGroupImportProps;
 }
 
 export interface SecurityGroupProps {
@@ -114,7 +113,7 @@ export interface SecurityGroupProps {
   /**
    * The VPC in which to create the security group.
    */
-  vpc: VpcNetworkRef;
+  vpc: IVpcNetwork;
 
   /**
    * Whether to allow all outbound traffic by default.
@@ -131,11 +130,18 @@ export interface SecurityGroupProps {
 /**
  * Creates an Amazon EC2 security group within a VPC.
  *
- * This class has an additional optimization over SecurityGroupRef that it can also create
+ * This class has an additional optimization over imported security groups that it can also create
  * inline ingress and egress rule (which saves on the total number of resources inside
  * the template).
  */
-export class SecurityGroup extends SecurityGroupRef implements ITaggable {
+export class SecurityGroup extends SecurityGroupBase implements ITaggable {
+  /**
+   * Import an existing SecurityGroup
+   */
+  public static import(scope: Construct, id: string, props: SecurityGroupImportProps): ISecurityGroup {
+    return new ImportedSecurityGroup(scope, id, props);
+  }
+
   /**
    * An attribute that represents the security group name.
    */
@@ -162,11 +168,11 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
 
   private readonly allowAllOutbound: boolean;
 
-  constructor(parent: Construct, name: string, props: SecurityGroupProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: SecurityGroupProps) {
+    super(scope, id);
 
     this.tags = new TagManager(this, { initialTags: props.tags});
-    const groupDescription = props.description || this.path;
+    const groupDescription = props.description || this.node.path;
 
     this.allowAllOutbound = props.allowAllOutbound !== false;
 
@@ -184,6 +190,15 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
     this.vpcId = this.securityGroup.securityGroupVpcId;
 
     this.addDefaultEgressRule();
+  }
+
+  /**
+   * Export this SecurityGroup for use in a different Stack
+   */
+  public export(): SecurityGroupImportProps {
+    return {
+      securityGroupId: new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
+    };
   }
 
   public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
@@ -378,13 +393,17 @@ export interface ConnectionRule {
 /**
  * A SecurityGroup that hasn't been created here
  */
-class ImportedSecurityGroup extends SecurityGroupRef {
+class ImportedSecurityGroup extends SecurityGroupBase {
   public readonly securityGroupId: string;
 
-  constructor(parent: Construct, name: string, props: SecurityGroupRefProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, private readonly props: SecurityGroupImportProps) {
+    super(scope, id);
 
     this.securityGroupId = props.securityGroupId;
+  }
+
+  public export() {
+    return this.props;
   }
 }
 

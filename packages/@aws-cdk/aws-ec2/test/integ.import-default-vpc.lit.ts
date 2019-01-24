@@ -5,7 +5,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-import');
 
 /// !show
-const vpc = ec2.VpcNetworkRef.importFromContext(stack, 'VPC', {
+const vpc = ec2.VpcNetwork.importFromContext(stack, 'VPC', {
   // This imports the default VPC but you can also
   // specify a 'vpcName' or 'tags'.
   isDefault: true

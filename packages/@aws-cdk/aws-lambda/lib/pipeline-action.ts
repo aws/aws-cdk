@@ -1,14 +1,41 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { FunctionRef } from './lambda-ref';
+import { IFunction } from './lambda-ref';
 
 /**
  * Common properties for creating a {@link PipelineInvokeAction} -
  * either directly, through its constructor,
- * or through {@link FunctionRef#addToPipeline}.
+ * or through {@link IFunction#addToPipeline}.
  */
 export interface CommonPipelineInvokeActionProps extends codepipeline.CommonActionProps {
+  // because of @see links
+  // tslint:disable:max-line-length
+
+  /**
+   * The optional input Artifacts of the Action.
+   * A Lambda Action can have up to 5 inputs.
+   * The inputs will appear in the event passed to the Lambda,
+   * under the `'CodePipeline.job'.data.inputArtifacts` path.
+   *
+   * @default the Action will not have any inputs
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
+   */
+  inputArtifacts?: codepipeline.Artifact[];
+
+  // tslint:enable:max-line-length
+
+  /**
+   * The optional names of the output Artifacts of the Action.
+   * A Lambda Action can have up to 5 outputs.
+   * The outputs will appear in the event passed to the Lambda,
+   * under the `'CodePipeline.job'.data.outputArtifacts` path.
+   * It is the responsibility of the Lambda to upload ZIP files with the Artifact contents to the provided locations.
+   *
+   * @default the Action will not have any outputs
+   */
+  outputArtifactNames?: string[];
+
   /**
    * String to be used in the event data parameter passed to the Lambda
    * function
@@ -45,7 +72,7 @@ export interface PipelineInvokeActionProps extends CommonPipelineInvokeActionPro
   /**
    * The lambda function to invoke.
    */
-  lambda: FunctionRef;
+  lambda: IFunction;
 }
 
 /**
@@ -54,8 +81,8 @@ export interface PipelineInvokeActionProps extends CommonPipelineInvokeActionPro
  * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html
  */
 export class PipelineInvokeAction extends codepipeline.Action {
-  constructor(parent: cdk.Construct, name: string, props: PipelineInvokeActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineInvokeActionProps) {
+    super(scope, id, {
       stage: props.stage,
       runOrder: props.runOrder,
       category: codepipeline.ActionCategory.Invoke,
@@ -66,6 +93,16 @@ export class PipelineInvokeAction extends codepipeline.Action {
         UserParameters: props.userParameters
       }
     });
+
+    // handle input artifacts
+    for (const inputArtifact of props.inputArtifacts || []) {
+      this.addInputArtifact(inputArtifact);
+    }
+
+    // handle output artifacts
+    for (const outputArtifactName of props.outputArtifactNames || []) {
+      this.addOutputArtifact(outputArtifactName);
+    }
 
     // allow pipeline to list functions
     props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
@@ -84,6 +121,19 @@ export class PipelineInvokeAction extends codepipeline.Action {
         .addAllResources() // to avoid cycles (see docs)
         .addAction('codepipeline:PutJobSuccessResult')
         .addAction('codepipeline:PutJobFailureResult'));
+    }
+  }
+
+  public outputArtifacts(): codepipeline.Artifact[] {
+    return this._outputArtifacts;
+  }
+
+  public outputArtifact(artifactName: string): codepipeline.Artifact {
+    const result = this._outputArtifacts.find(a => (a.name === artifactName));
+    if (result === undefined) {
+      throw new Error(`Could not find the output Artifact with name '${artifactName}'`);
+    } else {
+      return result;
     }
   }
 }

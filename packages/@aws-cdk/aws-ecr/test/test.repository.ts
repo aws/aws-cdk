@@ -137,7 +137,7 @@ export = {
 
     // THEN
     const arnSplit = { 'Fn::Split': [ ':', { 'Fn::GetAtt': [ 'Repo02AC86CF', 'Arn' ] } ] };
-    test.deepEqual(cdk.resolve(uri), { 'Fn::Join': [ '', [
+    test.deepEqual(repo.node.resolve(uri), { 'Fn::Join': [ '', [
       { 'Fn::Select': [ 4, arnSplit ] },
       '.dkr.ecr.',
       { 'Fn::Select': [ 3, arnSplit ] },
@@ -159,11 +159,11 @@ export = {
     const repo2 = ecr.Repository.import(stack2, 'Repo', repo1.export());
 
     // THEN
-    test.deepEqual(cdk.resolve(repo2.repositoryArn), {
+    test.deepEqual(repo2.node.resolve(repo2.repositoryArn), {
       'Fn::ImportValue': 'RepoRepositoryArn7F2901C9'
     });
 
-    test.deepEqual(cdk.resolve(repo2.repositoryName), {
+    test.deepEqual(repo2.node.resolve(repo2.repositoryName), {
       'Fn::ImportValue': 'RepoRepositoryName58A7E467'
     });
 
@@ -179,9 +179,12 @@ export = {
       repositoryArn: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo'
     });
 
+    const exportImport = repo2.export();
+
     // THEN
-    test.deepEqual(cdk.resolve(repo2.repositoryArn), 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
-    test.deepEqual(cdk.resolve(repo2.repositoryName), 'foo/bar/foo/fooo');
+    test.deepEqual(repo2.node.resolve(repo2.repositoryArn), 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
+    test.deepEqual(repo2.node.resolve(repo2.repositoryName), 'foo/bar/foo/fooo');
+    test.deepEqual(repo2.node.resolve(exportImport), { repositoryArn: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo' });
 
     test.done();
   },
@@ -192,7 +195,7 @@ export = {
 
     // WHEN/THEN
     test.throws(() => ecr.Repository.import(stack, 'Repo', {
-      repositoryArn: new cdk.FnGetAtt('Boom', 'Boom').toString()
+      repositoryArn: cdk.Fn.getAtt('Boom', 'Boom').toString()
     }), /repositoryArn is a late-bound value, and therefore repositoryName is required/);
 
     test.done();
@@ -204,13 +207,13 @@ export = {
 
     // WHEN
     const repo = ecr.Repository.import(stack, 'Repo', {
-      repositoryArn: new cdk.FnGetAtt('Boom', 'Arn').toString(),
-      repositoryName: new cdk.FnGetAtt('Boom', 'Name').toString()
+      repositoryArn: cdk.Fn.getAtt('Boom', 'Arn').toString(),
+      repositoryName: cdk.Fn.getAtt('Boom', 'Name').toString()
     });
 
     // THEN
-    test.deepEqual(cdk.resolve(repo.repositoryArn), { 'Fn::GetAtt': [ 'Boom', 'Arn' ] });
-    test.deepEqual(cdk.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
+    test.deepEqual(repo.node.resolve(repo.repositoryArn), { 'Fn::GetAtt': [ 'Boom', 'Arn' ] });
+    test.deepEqual(repo.node.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
     test.done();
   },
 
@@ -224,7 +227,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(cdk.resolve(repo.repositoryArn), {
+    test.deepEqual(repo.node.resolve(repo.repositoryArn), {
       'Fn::Join': [ '', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -235,24 +238,24 @@ export = {
         ':repository/my-repo' ]
       ]
     });
-    test.deepEqual(cdk.resolve(repo.repositoryName), 'my-repo');
+    test.deepEqual(repo.node.resolve(repo.repositoryName), 'my-repo');
     test.done();
   },
 
   'arnForLocalRepository can be used to render an ARN for a local repository'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const repoName = new cdk.FnGetAtt('Boom', 'Name').toString();
+    const repoName = cdk.Fn.getAtt('Boom', 'Name').toString();
 
     // WHEN
     const repo = ecr.Repository.import(stack, 'Repo', {
-      repositoryArn: ecr.Repository.arnForLocalRepository(repoName),
+      repositoryArn: ecr.Repository.arnForLocalRepository(repoName, stack),
       repositoryName: repoName
     });
 
     // THEN
-    test.deepEqual(cdk.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
-    test.deepEqual(cdk.resolve(repo.repositoryArn), {
+    test.deepEqual(repo.node.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
+    test.deepEqual(repo.node.resolve(repo.repositoryArn), {
     'Fn::Join': [ '', [
       'arn:',
       { Ref: 'AWS::Partition' },

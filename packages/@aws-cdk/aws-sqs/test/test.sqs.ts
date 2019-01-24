@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { resolve, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import sqs = require('../lib');
 import { Queue } from '../lib';
@@ -98,13 +98,13 @@ export = {
 
     // WHEN
     const ref = queue.export();
-    const imports = sqs.QueueRef.import(stack, 'Imported', ref);
+    const imports = sqs.Queue.import(stack, 'Imported', ref);
 
     // THEN
 
-    // "import" returns a a QueueRef bound to `Fn::ImportValue`s.
-    test.deepEqual(resolve(imports.queueArn), { 'Fn::ImportValue': 'QueueQueueArn8CF496D5' });
-    test.deepEqual(resolve(imports.queueUrl), { 'Fn::ImportValue': 'QueueQueueUrlC30FF916' });
+    // "import" returns an IQueue bound to `Fn::ImportValue`s.
+    test.deepEqual(stack.node.resolve(imports.queueArn), { 'Fn::ImportValue': 'QueueQueueArn8CF496D5' });
+    test.deepEqual(stack.node.resolve(imports.queueUrl), { 'Fn::ImportValue': 'QueueQueueUrlC30FF916' });
 
     // the exporting stack has Outputs for QueueARN and QueueURL
     const outputs = stack.toCloudFormation().Outputs;
@@ -246,7 +246,7 @@ export = {
 
         const exportCustom = customKey.export();
 
-        test.deepEqual(resolve(exportCustom), {
+        test.deepEqual(stack.node.resolve(exportCustom), {
           queueArn: { 'Fn::ImportValue': 'QueueWithCustomKeyQueueArnD326BB9B' },
           queueUrl: { 'Fn::ImportValue': 'QueueWithCustomKeyQueueUrlF07DDC70' },
           keyArn: { 'Fn::ImportValue': 'QueueWithCustomKeyKeyArn537F6E42' }
@@ -294,7 +294,7 @@ export = {
 
         const exportManaged = managedKey.export();
 
-        test.deepEqual(resolve(exportManaged), {
+        test.deepEqual(stack.node.resolve(exportManaged), {
           queueArn: { 'Fn::ImportValue': 'QueueWithManagedKeyQueueArn8798A14E' },
           queueUrl: { 'Fn::ImportValue': 'QueueWithManagedKeyQueueUrlD735C981' },
           keyArn: { 'Fn::ImportValue': 'QueueWithManagedKeyKeyArn9C42A85D' }

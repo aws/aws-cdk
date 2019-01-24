@@ -1,13 +1,13 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
 import { Construct, IDependable } from '@aws-cdk/cdk';
 import { CfnTopicPolicy } from './sns.generated';
-import { TopicRef } from './topic-ref';
+import { ITopic } from './topic-ref';
 
 export interface TopicPolicyProps {
   /**
    * The set of topics this policy applies to.
    */
-  topics: TopicRef[];
+  topics: ITopic[];
 }
 
 /**
@@ -24,8 +24,8 @@ export class TopicPolicy extends Construct implements IDependable {
    */
   public readonly dependencyElements = new Array<IDependable>();
 
-  constructor(parent: Construct, name: string, props: TopicPolicyProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: TopicPolicyProps) {
+    super(scope, id);
 
     const resource = new CfnTopicPolicy(this, 'Resource', {
       policyDocument: this.document,

@@ -34,8 +34,8 @@ export class DockerImageAsset extends cdk.Construct {
    */
   private readonly directory: string;
 
-  constructor(parent: cdk.Construct, id: string, props: DockerImageAssetProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: DockerImageAssetProps) {
+    super(scope, id);
 
     // resolve full path
     this.directory = path.resolve(props.directory);
@@ -48,22 +48,22 @@ export class DockerImageAsset extends cdk.Construct {
 
     const imageNameParameter = new cdk.Parameter(this, 'ImageName', {
       type: 'String',
-      description: `ECR repository name and tag asset "${this.path}"`,
+      description: `ECR repository name and tag asset "${this.node.path}"`,
     });
 
     const asset: cxapi.ContainerImageAssetMetadataEntry = {
       packaging: 'container-image',
       path: this.directory,
-      id: this.uniqueId,
+      id: this.node.uniqueId,
       imageNameParameter: imageNameParameter.logicalId
     };
 
-    this.addMetadata(cxapi.ASSET_METADATA, asset);
+    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
 
     // parse repository name and tag from the parameter (<REPO_NAME>:<TAG>)
-    const components = new cdk.FnSplit(':', imageNameParameter.value);
-    const repositoryName = new cdk.FnSelect(0, components).toString();
-    const imageTag = new cdk.FnSelect(1, components).toString();
+    const components = cdk.Fn.split(':', imageNameParameter.valueAsString);
+    const repositoryName = cdk.Fn.select(0, components).toString();
+    const imageTag = cdk.Fn.select(1, components).toString();
 
     // Require that repository adoption happens first, so we route the
     // input ARN into the Custom Resource and then get the URI which we use to

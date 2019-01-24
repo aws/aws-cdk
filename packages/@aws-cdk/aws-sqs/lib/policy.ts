@@ -1,13 +1,13 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
 import { Construct, IDependable } from '@aws-cdk/cdk';
-import { QueueRef } from './queue-ref';
+import { IQueue } from './queue-ref';
 import { CfnQueuePolicy } from './sqs.generated';
 
 export interface QueuePolicyProps {
   /**
    * The set of queues this policy applies to.
    */
-  queues: QueueRef[];
+  queues: IQueue[];
 }
 
 /**
@@ -24,8 +24,8 @@ export class QueuePolicy extends Construct implements IDependable {
    */
   public readonly dependencyElements = new Array<IDependable>();
 
-  constructor(parent: Construct, name: string, props: QueuePolicyProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: QueuePolicyProps) {
+    super(scope, id);
 
     const resource = new CfnQueuePolicy(this, 'Resource', {
       policyDocument: this.document,

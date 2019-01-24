@@ -2,8 +2,9 @@ import cdk = require('@aws-cdk/cdk');
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { DEFAULT_SUBNET_NAME, subnetId  } from './util';
-import { SubnetType, VpcNetworkRef, VpcPlacementStrategy, VpcSubnetRef } from './vpc-ref';
+import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
+import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
+import { IVpcNetwork, IVpcSubnet, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcPlacementStrategy, VpcSubnetImportProps } from './vpc-ref';
 
 /**
  * Name tag constant
@@ -57,7 +58,11 @@ export interface VpcNetworkProps {
    * If the region has more AZs than you want to use (for example, because of EIP limits),
    * pick a lower number here. The AZs will be sorted and picked from the start of the list.
    *
-   * @default All AZs in the region
+   * If you pick a higher number than the number of AZs in the region, all AZs in
+   * the region will be selected. To use "all AZs" available to your account, use a
+   * high number (such as 99).
+   *
+   * @default 3
    */
   maxAZs?: number;
 
@@ -184,7 +189,13 @@ export interface SubnetConfiguration {
  *
  * }
  */
-export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
+export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
+  /**
+   * @returns The IPv4 CidrBlock as returned by the VPC
+   */
+  public get cidr(): string {
+    return this.resource.getAtt("CidrBlock").toString();
+  }
 
   /**
    * The default CIDR range used when creating VPCs.
@@ -210,6 +221,20 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
   ];
 
   /**
+   * Import an exported VPC
+   */
+  public static import(scope: cdk.Construct, id: string, props: VpcNetworkImportProps): IVpcNetwork {
+    return new ImportedVpcNetwork(scope, id, props);
+  }
+
+  /**
+   * Import an existing VPC from context
+   */
+  public static importFromContext(scope: cdk.Construct, id: string, props: VpcNetworkProviderProps): IVpcNetwork {
+    return VpcNetwork.import(scope, id, new VpcNetworkProvider(scope, props).vpcProps);
+  }
+
+  /**
    * Identifier for this VPC
    */
   public readonly vpcId: string;
@@ -217,17 +242,17 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
   /**
    * List of public subnets in this VPC
    */
-  public readonly publicSubnets: VpcSubnetRef[] = [];
+  public readonly publicSubnets: IVpcSubnet[] = [];
 
   /**
    * List of private subnets in this VPC
    */
-  public readonly privateSubnets: VpcSubnetRef[] = [];
+  public readonly privateSubnets: IVpcSubnet[] = [];
 
   /**
    * List of isolated subnets in this VPC
    */
-  public readonly isolatedSubnets: VpcSubnetRef[] = [];
+  public readonly isolatedSubnets: IVpcSubnet[] = [];
 
   /**
    * AZs for this VPC
@@ -265,8 +290,8 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
    * Network routing for the public subnets will be configured to allow outbound access directly via an Internet Gateway.
    * Network routing for the private subnets will be configured to allow outbound access via a set of resilient NAT Gateways (one per AZ).
    */
-  constructor(parent: cdk.Construct, name: string, props: VpcNetworkProps = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: VpcNetworkProps = {}) {
+    super(scope, id);
 
     // Can't have enabledDnsHostnames without enableDnsSupport
     if (props.enableDnsHostnames && !props.enableDnsSupport) {
@@ -274,7 +299,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     }
 
     this.tags = new cdk.TagManager(this, { initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.path, { overwrite: false });
+    this.tags.setTag(NAME_TAG, this.node.path, { overwrite: false });
 
     const cidrBlock = ifUndefined(props.cidr, VpcNetwork.DEFAULT_CIDR_RANGE);
     this.networkBuilder = new NetworkBuilder(cidrBlock);
@@ -294,9 +319,9 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
 
     this.availabilityZones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
     this.availabilityZones.sort();
-    if (props.maxAZs != null) {
-       this.availabilityZones = this.availabilityZones.slice(0, props.maxAZs);
-    }
+
+    const maxAZs = props.maxAZs !== undefined ? props.maxAZs : 3;
+    this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
     this.vpcId = this.resource.vpcId;
     this.dependencyElements.push(this.resource);
@@ -340,10 +365,23 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
   }
 
   /**
-   * @returns The IPv4 CidrBlock as returned by the VPC
+   * Export this VPC from the stack
    */
-  public get cidr(): string {
-    return this.resource.getAtt("CidrBlock").toString();
+  public export(): VpcNetworkImportProps {
+    const pub = new ExportSubnetGroup(this, 'PublicSubnetIDs', this.publicSubnets, SubnetType.Public, this.availabilityZones.length);
+    const priv = new ExportSubnetGroup(this, 'PrivateSubnetIDs', this.privateSubnets, SubnetType.Private, this.availabilityZones.length);
+    const iso = new ExportSubnetGroup(this, 'IsolatedSubnetIDs', this.isolatedSubnets, SubnetType.Isolated, this.availabilityZones.length);
+
+    return {
+      vpcId: new cdk.Output(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
+      availabilityZones: this.availabilityZones,
+      publicSubnetIds: pub.ids,
+      publicSubnetNames: pub.names,
+      privateSubnetIds: priv.ids,
+      privateSubnetNames: priv.names,
+      isolatedSubnetIds: iso.ids,
+      isolatedSubnetNames: iso.names,
+    };
   }
 
   private createNatGateways(gateways?: number, placement?: VpcPlacementStrategy): void {
@@ -485,7 +523,10 @@ export interface VpcSubnetProps {
 /**
  * Represents a new VPC subnet resource
  */
-export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
+export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggable, cdk.IDependable {
+  public static import(scope: cdk.Construct, id: string, props: VpcSubnetImportProps): IVpcSubnet {
+    return new ImportedVpcSubnet(scope, id, props);
+  }
 
   /**
    * The Availability Zone the subnet is located in
@@ -503,14 +544,19 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
   public readonly tags: cdk.TagManager;
 
   /**
+   * Parts of this VPC subnet
+   */
+  public readonly dependencyElements: cdk.IDependable[] = [];
+
+  /**
    * The routeTableId attached to this subnet.
    */
   private readonly routeTableId: string;
 
-  constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
+    super(scope, id);
     this.tags = new cdk.TagManager(this, {initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.path, {overwrite: false});
+    this.tags.setTag(NAME_TAG, this.node.path, {overwrite: false});
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -534,6 +580,13 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
     });
 
     this.dependencyElements.push(subnet, table, routeAssoc);
+  }
+
+  public export(): VpcSubnetImportProps {
+    return {
+      availabilityZone: new cdk.Output(this, 'AvailabilityZone', { value: this.availabilityZone }).makeImportValue().toString(),
+      subnetId: new cdk.Output(this, 'VpcSubnetId', { value: this.subnetId }).makeImportValue().toString(),
+    };
   }
 
   protected addDefaultRouteToNAT(natGatewayId: string) {
@@ -564,8 +617,8 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
  * Represents a public VPC subnet resource
  */
 export class VpcPublicSubnet extends VpcSubnet {
-  constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
+    super(scope, id, props);
   }
 
   /**
@@ -600,8 +653,8 @@ export class VpcPublicSubnet extends VpcSubnet {
  * Represents a private VPC subnet resource
  */
 export class VpcPrivateSubnet extends VpcSubnet {
-  constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
+    super(scope, id, props);
   }
 
   /**
@@ -614,4 +667,50 @@ export class VpcPrivateSubnet extends VpcSubnet {
 
 function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
   return value !== undefined ? value : defaultValue;
+}
+
+class ImportedVpcNetwork extends VpcNetworkBase {
+  public readonly vpcId: string;
+  public readonly publicSubnets: IVpcSubnet[];
+  public readonly privateSubnets: IVpcSubnet[];
+  public readonly isolatedSubnets: IVpcSubnet[];
+  public readonly availabilityZones: string[];
+
+  constructor(scope: cdk.Construct, id: string, private readonly props: VpcNetworkImportProps) {
+    super(scope, id);
+
+    this.vpcId = props.vpcId;
+    this.availabilityZones = props.availabilityZones;
+
+    // tslint:disable:max-line-length
+    const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, SubnetType.Public, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames');
+    const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, SubnetType.Private, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames');
+    const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, SubnetType.Isolated, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames');
+    // tslint:enable:max-line-length
+
+    this.publicSubnets = pub.import(this);
+    this.privateSubnets = priv.import(this);
+    this.isolatedSubnets = iso.import(this);
+  }
+
+  public export() {
+    return this.props;
+  }
+}
+
+class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
+  public readonly availabilityZone: string;
+  public readonly subnetId: string;
+  public readonly dependencyElements = new Array<cdk.IDependable>();
+
+  constructor(scope: cdk.Construct, id: string, private readonly props: VpcSubnetImportProps) {
+    super(scope, id);
+
+    this.subnetId = props.subnetId;
+    this.availabilityZone = props.availabilityZone;
+  }
+
+  public export() {
+    return this.props;
+  }
 }

@@ -1,12 +1,12 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { RepositoryRef } from './repository';
+import { IRepository } from './repository';
 
 /**
  * Common properties for creating {@link PipelineSourceAction} -
  * either directly, through its constructor,
- * or through {@link RepositoryRef#addToPipeline}.
+ * or through {@link IRepository#addToPipeline}.
  */
 export interface CommonPipelineSourceActionProps extends codepipeline.CommonActionProps {
   /**
@@ -39,15 +39,15 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
   /**
    * The CodeCommit repository.
    */
-  repository: RepositoryRef;
+  repository: IRepository;
 }
 
 /**
  * CodePipeline Source that is provided by an AWS CodeCommit repository.
  */
 export class PipelineSourceAction extends codepipeline.SourceAction {
-  constructor(parent: cdk.Construct, name: string, props: PipelineSourceActionProps) {
-    super(parent, name, {
+  constructor(scope: cdk.Construct, id: string, props: PipelineSourceActionProps) {
+    super(scope, id, {
       stage: props.stage,
       runOrder: props.runOrder,
       provider: 'CodeCommit',
@@ -60,7 +60,7 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
     });
 
     if (!props.pollForSourceChanges) {
-      props.repository.onCommit(props.stage.pipeline.uniqueId + 'EventRule', props.stage.pipeline, props.branch || 'master');
+      props.repository.onCommit(props.stage.pipeline.node.uniqueId + 'EventRule', props.stage.pipeline, props.branch || 'master');
     }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp

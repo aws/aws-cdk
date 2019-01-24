@@ -94,6 +94,25 @@ You can also add the Lambda to the Pipeline directly:
 fn.addToPipeline(lambdaStage, 'Lambda');
 ```
 
+The Lambda Action can have up to 5 inputs,
+and up to 5 outputs:
+
+```typescript
+const lambdaAction = fn.addToPipeline(lambdaStage, 'Lambda', {
+  inputArtifacts: [
+    sourceAction.outputArtifact,
+    buildAction.outputArtifact,
+  ],
+  outputArtifactNames: [
+    'Out1',
+    'Out2',
+  ],
+});
+
+lambdaAction.outputArtifacts(); // returns the list of output Artifacts
+lambdaAction.outputArtifact('Out2'); // returns the named output Artifact, or throws an exception if not found
+```
+
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
 on how to write a Lambda function invoked from CodePipeline.
 
@@ -126,3 +145,18 @@ const fn = new lambda.Function(this, 'MyFunction', {
 ```
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html)
 to learn more about AWS Lambda's X-Ray support.
+
+### Lambda with Reserved Concurrent Executions
+
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NodeJS810,
+    handler: 'index.handler',
+    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    reservedConcurrentExecutions: 100
+});
+```
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
+managing concurrency.

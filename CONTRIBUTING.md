@@ -134,6 +134,44 @@ You can also do that per package:
 $ lr pkglint
 ```
 
+### awslint
+
+**awslint** is a linter for the AWS Construct Library APIs. It is executed as a
+part of the build of all AWS modules in the project and enforces the [AWS
+Construct Library Design Guidelines](./design/aws-guidelines.md).
+
+For more information about this tool, see the [awslint
+README](./tools/awslint/README.md).
+
+Generally speaking, if you make any changes which violate an awslint rule, build
+will fail with appropriate messages. All rules are documented and explained in
+the [guidelines](./design/aws-guidelines.md).
+
+Here are a few useful commands:
+
+ * `npm run awslint` in every module will run __awslint__ for that module.
+ * `npm run awslint list` prints all rules (details and rationale in the guidelines doc)
+ * `lerna run awslint` will run __awslint__ in all modules.
+ * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
+   evaluate only the rule specified [awslint README](./tools/awslint/README.md)
+   for details on include/exclude rule patterns.
+
+### cfn2ts
+
+This tool is used to generate our low-level CloudFormation resources
+(L1/`CfnFoo`). It is executed as part of the build step of all modules in the
+AWS Construct Library.
+
+The tool consults the `cdk-build.cloudformation` key in `package.json` to
+determine which CloudFormation namespace this library represents (e.g.
+`AWS::EC2` is the namespace for `aws-ec2`). We maintain strict 1:1 relationship
+between those.
+
+Each module also has an npm script called `cfn2ts`:
+
+* `npm run cfn2ts`: generates L1 for a specific module
+* `lerna run cfn2ts`: generates L1 for the entire repo
+
 ## Development Workflows
 
 ### Full clean build
@@ -158,6 +196,29 @@ If you also wish to package to all languages, make sure you have all the [toolch
 
 ```
 $ ./pack.sh
+```
+
+### Full Docker build
+
+Clone the repo:
+
+```console
+$ git clone git@github.com/awslabs/aws-cdk
+$ cd aws-cdk
+```
+
+If you already have a local repo and you want a fresh build, run `git clean -fdx` from the root.
+
+Build the docker image:
+
+```console
+$ docker build -t aws-cdk .
+```
+
+This allows you to run the CDK in a CDK-compatible directory with a command like:
+
+```console
+$ docker run -v $(pwd):/app -w /app aws-cdk <CDK ARGS>
 ```
 
 ### Partial build
@@ -226,6 +287,13 @@ To build the docs even if reference docs are not present:
 $ cd docs
 $ BUILD_DOCS_DEV=1 ./build-docs.sh
 ```
+
+### Tooling Assists
+#### Jetbrains (WebStorm/IntelliJ)
+This project uses lerna and utilizes symlinks inside nested node_modules directories. You may encounter an issue during
+indexing where the IDE attempts to index these directories and keeps following links until the process runs out of
+available memory and crashes. To fix this, you can run ```node ./scripts/jetbrains-remove-node-modules.js``` to exclude
+these directories.
 
 ## Dependencies
 

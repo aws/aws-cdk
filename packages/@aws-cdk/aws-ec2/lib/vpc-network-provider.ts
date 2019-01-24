@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
-import { VpcNetworkRefProps } from './vpc-ref';
+import { VpcNetworkImportProps } from './vpc-ref';
 
 /**
  * Properties for looking up an existing VPC.
@@ -66,7 +66,7 @@ export class VpcNetworkProvider {
   /**
    * Return the VPC import props matching the filter
    */
-  public get vpcProps(): VpcNetworkRefProps {
+  public get vpcProps(): VpcNetworkImportProps {
     const ret: cxapi.VpcContextResponse = this.provider.getValue(DUMMY_VPC_PROPS);
     return ret;
   }
