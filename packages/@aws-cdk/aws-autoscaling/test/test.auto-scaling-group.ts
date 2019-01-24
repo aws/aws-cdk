@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
@@ -401,6 +401,79 @@ export = {
           PropagateAtLaunch: false,
         },
       ]
+    }));
+    test.done();
+  },
+  'allows association of public IP address'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minSize: 0,
+      maxSize: 0,
+      desiredCapacity: 0,
+      associatePublicIpAddress: true,
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+        AssociatePublicIpAddress: true,
+      }
+    ));
+    test.done();
+  },
+  'allows disassociation of public IP address'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minSize: 0,
+      maxSize: 0,
+      desiredCapacity: 0,
+      associatePublicIpAddress: false,
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+        AssociatePublicIpAddress: false,
+      }
+    ));
+    test.done();
+  },
+  'does not specify public IP address association by default'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minSize: 0,
+      maxSize: 0,
+      desiredCapacity: 0,
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", (resource: any, errors: InspectionFailure) => {
+      for (const key of Object.keys(resource)) {
+        if (key === "AssociatePublicIpAddress") {
+          errors.failureReason = "Has AssociatePublicIpAddress";
+          return false;
+        }
+      }
+      return true;
     }));
     test.done();
   },
