@@ -804,7 +804,8 @@
         "SchedulingStrategy": "REPLICA"
       },
       "DependsOn": [
-        "LBPublicListener6E1F3D94"
+        "LBPublicListener6E1F3D94",
+        "LBPublicListenerECSGroupD6A32205"
       ]
     },
     "LB8A12904C": {

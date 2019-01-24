@@ -838,7 +838,8 @@
         }
       },
       "DependsOn": [
-        "FargateServiceLBPublicListener4B4929CA"
+        "FargateServiceLBPublicListener4B4929CA",
+        "FargateServiceLBPublicListenerECSGroupBE57E081"
       ]
     },
     "FargateServiceSecurityGroup262B61DD": {

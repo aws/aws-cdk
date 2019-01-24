@@ -454,7 +454,8 @@
         }
       },
       "DependsOn": [
-        "LBPublicListener6E1F3D94"
+        "LBPublicListener6E1F3D94",
+        "LBPublicListenerFargateGroup5EE2FBAF"
       ]
     },
     "ServiceSecurityGroupC96ED6A7": {
