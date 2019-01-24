@@ -19,7 +19,7 @@ export = testCase({
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersion', {
-      Content: cdk.resolve(code.toJSON()),
+      Content: stack.node.resolve(code._toJSON()),
       CompatibleRuntimes: ['nodejs8.10']
     }));
 
@@ -37,18 +37,18 @@ export = testCase({
     });
 
     // WHEN
-    layer.grantUsage({ accountId: '123456789012' }, 'GrantUsage-123456789012');
-    layer.grantUsage({ accountId: '*', organizationId: 'o-123456' }, 'GrantUsage-o-123456');
+    layer.grantUsage('GrantUsage-123456789012', { accountId: '123456789012' });
+    layer.grantUsage('GrantUsage-o-123456',     { accountId: '*', organizationId: 'o-123456' });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
-      LayerVersionArn: cdk.resolve(layer.layerVersionArn),
+      LayerVersionArn: stack.node.resolve(layer.layerVersionArn),
       Principal: '123456789012',
     }));
     expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
-      LayerVersionArn: cdk.resolve(layer.layerVersionArn),
+      LayerVersionArn: stack.node.resolve(layer.layerVersionArn),
       Principal: '*',
       OrganizationId: 'o-123456'
     }));

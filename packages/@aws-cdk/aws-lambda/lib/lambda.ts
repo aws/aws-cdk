@@ -350,7 +350,7 @@ export class Function extends FunctionBase {
     const resource = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
-      code: new cdk.Token(() => props.code.toJSON(resource)),
+      code: new cdk.Token(() => props.code._toJSON(resource)),
       layers: new cdk.Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined),
       handler: props.handler,
       timeout: props.timeout,

@@ -7,7 +7,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-layer-version-1');
 
 // Just for the example - granting to the current account is not necessary.
-const awsAccountId = new cdk.AwsAccountId().toString();
+const awsAccountId = stack.accountId;
 
 /// !show
 const layer = new lambda.LayerVersion(stack, 'MyLayer', {
@@ -18,7 +18,7 @@ const layer = new lambda.LayerVersion(stack, 'MyLayer', {
 });
 
 // To grant usage by other AWS accounts
-layer.grantUsage({ accountId: awsAccountId }, 'remote-account-grant');
+layer.grantUsage('remote-account-grant', { accountId: awsAccountId });
 
 // To grant usage to all accounts in some AWS Ogranization
 // layer.grantUsage({ accountId: '*', organizationId });

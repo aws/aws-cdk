@@ -58,8 +58,10 @@ export abstract class Code {
   /**
    * Called during stack synthesis to render the CodePropery for the
    * Lambda function.
+   *
+   * @param resource the resource to which the code will be attached (a CfnFunction, or a CfnLayerVersion).
    */
-  public abstract toJSON(resource: CfnFunction): CfnFunction.CodeProperty;
+  public abstract _toJSON(resource?: cdk.Resource): CfnFunction.CodeProperty;
 
   /**
    * Called when the lambda or layer is initialized to allow this object to
@@ -87,7 +89,7 @@ export class S3Code extends Code {
     this.bucketName = bucket.bucketName;
   }
 
-  public toJSON(_: CfnFunction): CfnFunction.CodeProperty {
+  public _toJSON(_?: cdk.Resource): CfnFunction.CodeProperty {
     return {
       s3Bucket: this.bucketName,
       s3Key: this.key,
@@ -117,7 +119,7 @@ export class InlineCode extends Code {
     }
   }
 
-  public toJSON(_: CfnFunction): CfnFunction.CodeProperty {
+  public _toJSON(_?: cdk.Resource): CfnFunction.CodeProperty {
     return {
       zipFile: this.code
     };
@@ -167,9 +169,11 @@ export class AssetCode extends Code {
     }
   }
 
-  public toJSON(resource: CfnFunction): CfnFunction.CodeProperty {
-    // https://github.com/awslabs/aws-cdk/issues/1432
-    this.asset!.addResourceMetadata(resource, 'Code');
+  public _toJSON(resource?: cdk.Resource): CfnFunction.CodeProperty {
+    if (resource) {
+      // https://github.com/awslabs/aws-cdk/issues/1432
+      this.asset!.addResourceMetadata(resource, 'Code');
+    }
 
     return  {
       s3Bucket: this.asset!.s3BucketName,

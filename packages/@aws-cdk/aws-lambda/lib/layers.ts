@@ -11,7 +11,7 @@ export interface LayerVersionProps {
   compatibleRuntimes?: Runtime[];
 
   /**
-   * The content of this Layer. Using the *inline* code is not permitted.
+   * The content of this Layer. Using *inline* (per ``code.isInline``) code is not permitted.
    */
   code: Code;
 
@@ -22,6 +22,8 @@ export interface LayerVersionProps {
 
   /**
    * The SPDX licence identifier or URL to the license file for this layer.
+   *
+   * @default no license information will be recorded.
    */
   license?: string;
 
@@ -49,10 +51,10 @@ export interface ILayerVersion {
    * the layer (for example, a CloudFormation changeset execution role) also needs to have the
    * ``lambda:GetLayerVersion`` permission on the layer version.
    *
+   * @param id the ID of the grant in the construct tree.
    * @param grantee the identification of the grantee.
-   * @param grantId the ID of the grant in the construct tree.
    */
-  grantUsage(grantee: LayerVersionUsageGrantee, grantId: string): ILayerVersion
+  grantUsage(id: string, grantee: LayerVersionUsageGrantee): ILayerVersion
 }
 
 /**
@@ -62,12 +64,12 @@ export abstract class LayerVersionBase extends cdk.Construct implements ILayerVe
   public abstract readonly layerVersionArn: string;
   public abstract readonly compatibleRuntimes?: Runtime[];
 
-  public grantUsage(grantee: LayerVersionUsageGrantee, grantId: string): ILayerVersion {
+  public grantUsage(id: string, grantee: LayerVersionUsageGrantee): ILayerVersion {
     if (grantee.organizationId != null && grantee.accountId !== '*') {
       throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${grantee.accountId}`);
     }
 
-    new cdk.Resource(this, grantId, {
+    new cdk.Resource(this, id, {
       type: 'AWS::Lambda::LayerVersionPermission',
       properties: {
         Action: 'lambda:GetLayerVersion',
@@ -142,8 +144,8 @@ export class LayerVersion extends LayerVersionBase {
   public readonly layerVersionArn: string;
   public readonly compatibleRuntimes?: Runtime[];
 
-  constructor(parent: cdk.Construct, id: string, props: LayerVersionProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: LayerVersionProps) {
+    super(scope, id);
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
       throw new Error('Attempted to define a Lambda layer that supports no runtime!');
     }
@@ -157,7 +159,7 @@ export class LayerVersion extends LayerVersionBase {
       type: 'AWS::Lambda::LayerVersion',
       properties: {
         CompatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
-        Content: props.code.toJSON(),
+        Content: new cdk.Token(() => props.code._toJSON(resource)),
         Description: props.description,
         LayerName: props.name,
         LicenseInfo: props.license,
@@ -206,8 +208,8 @@ export interface SingletonLayerVersionProps extends LayerVersionProps {
 export class SingletonLayerVersion extends cdk.Construct implements ILayerVersion {
   private readonly layerVersion: ILayerVersion;
 
-  constructor(parent: cdk.Construct, id: string, props: SingletonLayerVersionProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: SingletonLayerVersionProps) {
+    super(scope, id);
 
     this.layerVersion = this.ensureLayerVersion(props);
   }
@@ -220,15 +222,15 @@ export class SingletonLayerVersion extends cdk.Construct implements ILayerVersio
     return this.layerVersion.compatibleRuntimes;
   }
 
-  public grantUsage(grantee: LayerVersionUsageGrantee, grantId: string): ILayerVersion {
-    this.layerVersion.grantUsage(grantee, grantId);
+  public grantUsage(id: string, grantee: LayerVersionUsageGrantee): ILayerVersion {
+    this.layerVersion.grantUsage(id, grantee);
     return this;
   }
 
   private ensureLayerVersion(props: SingletonLayerVersionProps): ILayerVersion {
     const singletonId = `SingletonLayer-${props.uuid}`;
     const stack = cdk.Stack.find(this);
-    const existing = stack.tryFindChild(singletonId);
+    const existing = stack.node.tryFindChild(singletonId);
     if (existing) {
       return existing as unknown as ILayerVersion;
     }
