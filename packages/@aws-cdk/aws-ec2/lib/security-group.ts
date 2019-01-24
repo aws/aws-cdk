@@ -2,6 +2,7 @@ import { Construct, IConstruct, ITaggable, Output, TagManager, Tags, Token } fro
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
+import { defaultName } from './vpc';
 import { IVpcNetwork } from './vpc-ref';
 
 export interface ISecurityGroup extends IConstruct, ISecurityGroupRule, IConnectable {
@@ -172,7 +173,7 @@ export class SecurityGroup extends SecurityGroupBase implements ITaggable {
     super(scope, id);
 
     this.tags = new TagManager(this, { initialTags: props.tags});
-    const groupDescription = props.description || this.node.path;
+    const groupDescription = props.description || defaultName(this);
 
     this.allowAllOutbound = props.allowAllOutbound !== false;
 

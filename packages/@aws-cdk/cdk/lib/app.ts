@@ -80,13 +80,7 @@ export class App extends Construct {
    * @param request Optional toolkit request (e.g. for tests)
    */
   constructor(id?: string, props: AppProps = {}) {
-    // For tests, we use a fresh Program every time. Right now, we configure this as
-    // an environment variable set by 'cdk-test'. If we were using Jest,
-    // we could use Jest initialization to configure testing mode.
-    const program = props.program || (process.env.CDK_TEST_MODE === '1'
-        ? new Program()
-        : Program.defaultInstance());
-
+    const program = props.program || Program.defaultInstance();
     super(program, id || DEFAULT_APP_NAME);
 
     this.env = props.env || {};
@@ -168,9 +162,10 @@ export class App extends Construct {
     const output: { [id: string]: MetadataEntry[] } = { };
 
     // Add in App metadata into every stack
-    output[PATH_SEP + this.node.path] = this.node.metadata;
+    emit(this);
+    stack.node.findAll().forEach(emit);
 
-    for (const construct of stack.node.findAll()) {
+    function emit(construct: IConstruct) {
       if (construct.node.metadata.length > 0) {
         // Make the path absolute.
         output[PATH_SEP + construct.node.path] = construct.node.metadata.map(md => construct.node.resolve(md) as MetadataEntry);

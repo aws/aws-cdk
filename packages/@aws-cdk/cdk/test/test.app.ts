@@ -27,6 +27,9 @@ function withApp(context: { [key: string]: any } | undefined, block: (app: App) 
   const response = JSON.parse(fs.readFileSync(outfile).toString());
   fs.unlinkSync(outfile);
   fs.rmdirSync(outdir);
+
+  // Be sure to not leave this environment variable set
+  delete process.env[cxapi.OUTDIR_ENV];
   return response;
 }
 

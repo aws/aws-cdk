@@ -70,10 +70,7 @@ async function main() {
     testCommand.push(args.nodeunit);
     testCommand.push(...testFiles.map(f => f.path));
 
-    await shell(testCommand, {
-      timers,
-      env: { CDK_TEST_MODE: '1' }
-    });
+    await shell(testCommand, { timers });
   }
 
   // Run integration test if the package has integ test files

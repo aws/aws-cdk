@@ -1,5 +1,4 @@
 import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
@@ -300,7 +299,7 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
     }
 
     this.tags = new cdk.TagManager(this, { initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, legacyPath(this), { overwrite: false });
+    this.tags.setTag(NAME_TAG, defaultName(this), { overwrite: false });
 
     const cidrBlock = ifUndefined(props.cidr, VpcNetwork.DEFAULT_CIDR_RANGE);
     this.networkBuilder = new NetworkBuilder(cidrBlock);
@@ -557,7 +556,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
   constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
     super(scope, id);
     this.tags = new cdk.TagManager(this, {initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, legacyPath(this), {overwrite: false});
+    this.tags.setTag(NAME_TAG, defaultName(this), {overwrite: false});
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -723,12 +722,12 @@ class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
  *
  *     MyStack/Vpc/Subnet, for production stacks
  *
- * We do a slightly complicated calculation here because we want to
- * keep the tag names that were created using previous versions of
- * the CDK stable.
+ * We do a slightly complicated calculation here (instead of just taking
+ * construct.node.path) because we want to keep the tag names that were created
+ * using previous versions of the CDK stable.
  */
-function legacyPath(construct: cdk.IConstruct): string {
-  const stack = Stack.find(construct);
+export function defaultName(construct: cdk.IConstruct): string {
+  const stack = cdk.Stack.find(construct);
   const path = construct.node.ancestors(stack).map(a => a.node.id);
   return `${stack.name}/${path.join('/')}`;
 }

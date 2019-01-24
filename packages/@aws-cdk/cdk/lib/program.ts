@@ -11,8 +11,18 @@ import { validateAndThrow } from './util/validation';
 export class Program extends Root {
   /**
    * Return the default singleton Program instance
+   *
+   * Return the same instance every time when running via the toolkit
+   * (i.e., when doing an actual app synthesis). If not, we're most
+   * likely running as a unit test, in which case we'll make a fresh
+   * Program every time.
    */
   public static defaultInstance(): Program {
+    if (process.env[cxapi.OUTDIR_ENV] === undefined) {
+      // Not running via toolkit
+      return new Program();
+    }
+
     if (Program.DefaultInstance === undefined) {
       Program.DefaultInstance = new Program();
       Program.DefaultInstance.initializeDefaultProgram();

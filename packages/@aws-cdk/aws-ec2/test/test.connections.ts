@@ -67,7 +67,7 @@ export = {
 
   'security groups added to connections after rule still gets rule'(test: Test) {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, 'TestStack');
     const vpc = new VpcNetwork(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SecurityGroup1', { vpc, allowAllOutbound: false });
     const sg2 = new SecurityGroup(stack, 'SecurityGroup2', { vpc, allowAllOutbound: false });
@@ -79,7 +79,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      GroupDescription: "SecurityGroup1",
+      GroupDescription: "TestStack/SecurityGroup1",
       SecurityGroupIngress: [
         {
           Description: "from 0.0.0.0/0:88",
@@ -92,7 +92,7 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      GroupDescription: "SecurityGroup2",
+      GroupDescription: "TestStack/SecurityGroup2",
       SecurityGroupIngress: [
         {
           Description: "from 0.0.0.0/0:88",
