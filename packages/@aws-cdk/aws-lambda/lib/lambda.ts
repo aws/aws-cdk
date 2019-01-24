@@ -7,6 +7,7 @@ import { Code } from './code';
 import { FunctionBase, FunctionImportProps, IFunction } from './lambda-ref';
 import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
+import { ILayerVersion } from './layers';
 import { Runtime } from './runtime';
 
 /**
@@ -174,6 +175,15 @@ export interface FunctionProps {
   tracing?: Tracing;
 
   /**
+   * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
+   * additional code during initialization in the form of layers. Layers are packages of libraries or other dependencies
+   * that can be used by mulitple functions.
+   *
+   * @default no layers
+   */
+  layers?: ILayerVersion[];
+
+  /**
    * The maximum of concurrent executions you want to reserve for the function.
    *
    * @default no specific limit - account limit
@@ -306,6 +316,8 @@ export class Function extends FunctionBase {
 
   protected readonly canCreatePermissions = true;
 
+  private readonly layers: ILayerVersion[] = [];
+
   /**
    * Environment variables for this function
    */
@@ -338,7 +350,8 @@ export class Function extends FunctionBase {
     const resource = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
-      code: new cdk.Token(() => props.code.toJSON(resource)),
+      code: new cdk.Token(() => props.code._toJSON(resource)),
+      layers: new cdk.Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,
@@ -360,6 +373,10 @@ export class Function extends FunctionBase {
 
     // allow code to bind to stack.
     props.code.bind(this);
+
+    for (const layer of props.layers || []) {
+      this.addLayer(layer);
+    }
   }
 
   /**
@@ -380,12 +397,32 @@ export class Function extends FunctionBase {
    * @param key The environment variable key.
    * @param value The environment variable's value.
    */
-  public addEnvironment(key: string, value: any) {
+  public addEnvironment(key: string, value: any): this {
     if (!this.environment) {
       // TODO: add metadata
-      return;
+      return this;
     }
     this.environment[key] = value;
+    return this;
+  }
+
+  /**
+   * Adds a Lambda Layer to this Lambda function.
+   *
+   * @param layer the layer to be added.
+   *
+   * @throws if there are already 5 layers on this function, or the layer is incompatible with this function's runtime.
+   */
+  public addLayer(layer: ILayerVersion): this {
+    if (this.layers.length === 5) {
+      throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
+    }
+    if (layer.compatibleRuntimes && layer.compatibleRuntimes.indexOf(this.runtime) === -1) {
+      const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
+      throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
+    }
+    this.layers.push(layer);
+    return this;
   }
 
   /**
