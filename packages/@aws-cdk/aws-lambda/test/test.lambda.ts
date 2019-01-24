@@ -1116,6 +1116,47 @@ export = {
           DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
     test.done();
   },
+
+  'using an incompatible layer'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack');
+    const layer = lambda.LayerVersion.import(stack, 'TestLayer', {
+      layerVersionArn: 'arn:aws:...',
+      compatibleRuntimes: [lambda.Runtime.NodeJS810],
+    });
+
+    // THEN
+    test.throws(() => new lambda.Function(stack, 'Function', {
+                  layers: [layer],
+                  runtime: lambda.Runtime.NodeJS610,
+                  code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
+                  handler: 'index.main'
+                }),
+                /nodejs6.10 is not in \[nodejs8.10\]/);
+
+    test.done();
+  },
+
+  'using more than 5 layers'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack');
+    const layers = new Array(6).fill(lambda.LayerVersion.import(stack, 'TestLayer', {
+      layerVersionArn: 'arn:aws:...',
+      compatibleRuntimes: [lambda.Runtime.NodeJS810],
+    }));
+
+    // THEN
+    test.throws(() => new lambda.Function(stack, 'Function', {
+                  layers,
+                  runtime: lambda.Runtime.NodeJS810,
+                  code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
+                  handler: 'index.main'
+                }),
+                /Unable to add layer:/);
+
+    test.done();
+  },
+
   'support reserved concurrent executions'(test: Test) {
     const stack = new cdk.Stack();
 
