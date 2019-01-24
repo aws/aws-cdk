@@ -1,4 +1,6 @@
 .vscode
+# VSCode extension
+/.favorites.json 
 .DS_Store
 node_modules
 lerna-debug.log

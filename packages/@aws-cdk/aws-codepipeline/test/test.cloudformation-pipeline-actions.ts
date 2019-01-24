@@ -62,7 +62,7 @@ export = {
     stage: prodStage,
     stackName,
     changeSetName,
-    role: changeSetExecRole,
+    deploymentRole: changeSetExecRole,
     templatePath: new ArtifactPath(buildAction.outputArtifact, 'template.yaml'),
     templateConfiguration: new ArtifactPath(buildAction.outputArtifact, 'templateConfig.json'),
     adminPermissions: false,
@@ -356,6 +356,59 @@ export = {
   }));
 
   test.done();
+  },
+
+  'Action service role is passed to template'(test: Test) {
+    const stack = new TestFixture();
+
+    const importedRole = Role.import(stack, 'ImportedRole', {
+      roleArn: 'arn:aws:iam::000000000000:role/action-role'
+    });
+    const freshRole = new Role(stack, 'FreshRole', {
+      assumedBy: new ServicePrincipal('magicservice')
+    });
+
+    new PipelineExecuteChangeSetAction(stack.pipeline, 'ImportedRoleAction', {
+      role: importedRole,
+      changeSetName: 'magicSet',
+      stackName: 'magicStack',
+      stage: stack.deployStage
+    });
+
+    new PipelineExecuteChangeSetAction(stack.pipeline, 'FreshRoleAction', {
+      role: freshRole,
+      changeSetName: 'magicSet',
+      stackName: 'magicStack',
+      stage: stack.deployStage
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      "Stages": [
+        {
+          "Name": "Source" /* don't care about the rest */
+        },
+        {
+          "Name": "Deploy",
+          "Actions": [
+            {
+              "Name": "ImportedRoleAction",
+              "RoleArn": "arn:aws:iam::000000000000:role/action-role"
+            },
+            {
+              "Name": "FreshRoleAction",
+              "RoleArn": {
+                "Fn::GetAtt": [
+                  "FreshRole472F6E18",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }));
+
+    test.done();
   }
 };
 

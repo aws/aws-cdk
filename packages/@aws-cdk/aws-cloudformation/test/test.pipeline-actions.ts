@@ -21,7 +21,7 @@ export = nodeunit.testCase({
         adminPermissions: false,
       });
 
-      _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
+      _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
 
       const stackArn = _stackArn('MyStack', stack);
       const changeSetCondition = { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
@@ -175,7 +175,7 @@ export = nodeunit.testCase({
     _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:UpdateStack', stackArn);
     _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteStack', stackArn);
 
-    _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
+    _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
 
     test.done();
   },
@@ -193,7 +193,7 @@ export = nodeunit.testCase({
     _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStack*', stackArn);
     _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteStack', stackArn);
 
-    _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
+    _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
 
     test.done();
   },

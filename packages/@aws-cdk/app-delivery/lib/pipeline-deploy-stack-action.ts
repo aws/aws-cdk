@@ -97,7 +97,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
   /**
    * The role used by CloudFormation for the deploy action
    */
-  public readonly role: iam.IRole;
+  public readonly deploymentRole: iam.IRole;
 
   private readonly stack: cdk.Stack;
 
@@ -127,10 +127,10 @@ export class PipelineDeployStackAction extends cdk.Construct {
       stage: props.stage,
       templatePath: props.inputArtifact.atPath(`${props.stack.name}.template.yaml`),
       adminPermissions: props.adminPermissions,
-      role: props.role,
+      deploymentRole: props.role,
       capabilities,
     });
-    this.role = changeSetAction.role;
+    this.deploymentRole = changeSetAction.deploymentRole;
 
     new cfn.PipelineExecuteChangeSetAction(this, 'Execute', {
       changeSetName,
@@ -149,8 +149,8 @@ export class PipelineDeployStackAction extends cdk.Construct {
    * `adminPermissions` you need to identify the proper statements to add to
    * this role based on the CloudFormation Resources in your stack.
    */
-  public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+  public addToDeploymentRolePolicy(statement: iam.PolicyStatement) {
+    this.deploymentRole.addToPolicy(statement);
   }
 
   protected validate(): string[] {
