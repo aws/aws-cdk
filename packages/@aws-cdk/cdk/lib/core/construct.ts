@@ -448,11 +448,13 @@ export class ConstructNode {
   }
 
   /**
-   * Return the path of components up to but excluding the root
+   * Return the path of components up to but excluding the root (if the root is Program)
    */
   public rootPath(): IConstruct[] {
     const ancestors = this.ancestors();
-    ancestors.shift();
+    if (Root.isRoot(ancestors[0])) {
+      ancestors.shift();
+    }
     return ancestors;
   }
 
@@ -536,6 +538,14 @@ export class Construct implements IConstruct {
  * No scope and no name.
  */
 export class Root extends Construct {
+  /**
+   * Return whether the given instance is a Root object
+   */
+  public static isRoot(x: IConstruct): x is Root {
+    return (x as any)._isRoot === true;
+  }
+
+  protected _isRoot = true;
   constructor() {
     // Bypass type checks
     super(undefined as any, '');

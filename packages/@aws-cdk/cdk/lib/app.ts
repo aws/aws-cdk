@@ -167,25 +167,17 @@ export class App extends Construct {
   public collectMetadata(stack: Stack) {
     const output: { [id: string]: MetadataEntry[] } = { };
 
-    visit(stack);
+    // Add in App metadata into every stack
+    output[PATH_SEP + this.node.path] = this.node.metadata;
 
-    // add app-level metadata as well
-    if (this.node.metadata.length > 0) {
-      output[PATH_SEP + this.node.path] = this.node.metadata;
+    for (const construct of stack.node.findAll()) {
+      if (construct.node.metadata.length > 0) {
+        // Make the path absolute.
+        output[PATH_SEP + construct.node.path] = construct.node.metadata.map(md => construct.node.resolve(md) as MetadataEntry);
+      }
     }
 
     return output;
-
-    function visit(node: IConstruct) {
-      if (node.node.metadata.length > 0) {
-        // Make the path absolute.
-        output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as MetadataEntry);
-      }
-
-      for (const child of node.node.children) {
-        visit(child);
-      }
-    }
   }
 
   protected prepare() {

@@ -22,6 +22,8 @@ export class Program extends Root {
 
   private static DefaultInstance?: Program;
 
+  protected _isProgram = true;
+
   constructor() {
     super();
 

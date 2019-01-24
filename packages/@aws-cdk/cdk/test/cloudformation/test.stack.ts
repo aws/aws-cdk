@@ -126,7 +126,7 @@ export = {
   },
 
   'Stack.findResource will fail if the element is not a resource'(test: Test) {
-    const stack = new Stack();
+    const stack = new Stack(undefined, 'Stack');
 
     const p = new Parameter(stack, 'MyParam', { type: 'String' });
 
@@ -135,16 +135,15 @@ export = {
   },
 
   'Stack.getByPath can be used to find any CloudFormation element (Parameter, Output, etc)'(test: Test) {
-
-    const stack = new Stack();
+    const stack = new Stack(undefined, 'Stack');
 
     const p = new Parameter(stack, 'MyParam', { type: 'String' });
     const o = new Output(stack, 'MyOutput');
     const c = new Condition(stack, 'MyCondition');
 
-    test.equal(stack.node.findChild(p.node.path), p);
-    test.equal(stack.node.findChild(o.node.path), o);
-    test.equal(stack.node.findChild(c.node.path), c);
+    test.equal(stack.node.findChild(p.stackPath), p);
+    test.equal(stack.node.findChild(o.stackPath), o);
+    test.equal(stack.node.findChild(c.stackPath), c);
 
     test.done();
   },
