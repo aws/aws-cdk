@@ -68,6 +68,7 @@
     "@aws-cdk/aws-codedeploy": "^0.22.0",
     "@aws-cdk/aws-ecr": "^0.22.0",
     "@aws-cdk/aws-lambda": "^0.22.0",
+    "@aws-cdk/alexa-ask": "^0.22.0",
     "cdk-build-tools": "^0.22.0",
     "cdk-integ-tools": "^0.22.0",
     "cfn2ts": "^0.22.0",
