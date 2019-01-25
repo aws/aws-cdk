@@ -1,0 +1,23 @@
+{
+  "$schema": "./cdk.schema.json",
+  "Resources": {
+    "OurFoo": {
+      "Type": "CDK::ecs::LoadBalancedFargateServiceApplet",
+      "Properties": {
+        "cpu": "2M",
+        "image": "hellooo"
+      }
+    },
+    "SomeThing": {
+      "Type": "CDK::sns::Topic",
+      "Properties": {
+        "displayName": "Hello, world"
+      }
+    },
+    "Foo": {
+      "Properties": {
+        "Topic": { "Ref": "SomeThing" }
+      }
+    }
+  }
+}

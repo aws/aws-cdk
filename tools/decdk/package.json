@@ -1,0 +1,43 @@
+{
+  "name": "decdk",
+  "private": true,
+  "version": "0.22.0",
+  "description": "Generate JSON schema for declarative CDK packages",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "bin": {
+    "decdk": "bin/decdk"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x bin/decdk",
+    "watch": "tsc -w"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "jsii-reflect": "^0.7.13",
+    "@aws-cdk/cfnspec": "^0.22.0",
+    "fs-extra": "^7.0.0",
+    "yargs": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^5.0.4",
+    "@types/yargs": "^8.0.3"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "engines": {
+    "node": ">= 8.10.0"
+  }
+}
