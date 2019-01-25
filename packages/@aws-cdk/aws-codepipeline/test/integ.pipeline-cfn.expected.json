@@ -173,8 +173,7 @@
                   "S3Bucket": {
                     "Ref": "PipelineBucketB967BD35"
                   },
-                  "S3ObjectKey": "key",
-                  "PollForSourceChanges": true
+                  "S3ObjectKey": "key"
                 },
                 "InputArtifacts": [],
                 "Name": "Source",

@@ -31,25 +31,29 @@ For example, to log to CloudWatch Logs
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
 const trail = new cloudtrail.CloudTrail(stack, 'CloudTrail', {
-    sendToCloudWatchLogs: true
+  sendToCloudWatchLogs: true
 });
 ```
 
-This creates the same setup as above - but also logs events to a created CloudWatch Log stream. By default, the created log group has a retention period of 365 Days, but this is also configurable.
+This creates the same setup as above - but also logs events to a created CloudWatch Log stream.
+By default, the created log group has a retention period of 365 Days, but this is also configurable.
 
-
-For using CloudTrail event selector to log specific S3 events, you can use the `CloudTrailProps` configuration object
-
-For example - this logs all ReadWriteEvents for the `magic-bucket` bucket:
+For using CloudTrail event selector to log specific S3 events,
+you can use the `CloudTrailProps` configuration object.
+Example:
 
 ```ts
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
-const trail = new cloudtrail.CloudTrail(stack, 'MyAmazingCloudTrail')
+const trail = new cloudtrail.CloudTrail(stack, 'MyAmazingCloudTrail');
 
-trail.addS3Filter("arn:aws:s3:::magic-bucket/"); // Adds an event selector to the bucket magic-bucket. By default, this includes management events and all operations (Read + Write)
+// Adds an event selector to the bucket magic-bucket.
+// By default, this includes management events and all operations (Read + Write)
+trail.addS3EventSelector(["arn:aws:s3:::magic-bucket/"]); 
 
-const configuration = { includeManagementEvents = false, readWriteType = ReadWriteType.All };
-trail.addS3Filter(["arn:aws:s3:::foo"], configuration ); // Adds an event selector to the bucket foo, with a specific configuration
+// Adds an event selector to the bucket foo, with a specific configuration
+trail.addS3EventSelector(["arn:aws:s3:::foo"], { 
+  includeManagementEvents: false,
+  readWriteType: ReadWriteType.All,
 });
 ```

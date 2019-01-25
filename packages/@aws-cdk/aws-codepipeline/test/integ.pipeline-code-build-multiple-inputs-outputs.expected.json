@@ -275,8 +275,7 @@
                   "S3Bucket": {
                     "Ref": "MyBucketF68F3FF0"
                   },
-                  "S3ObjectKey": "some/path",
-                  "PollForSourceChanges": true
+                  "S3ObjectKey": "some/path"
                 },
                 "InputArtifacts": [],
                 "Name": "Source2",

@@ -284,8 +284,7 @@
                   "S3Bucket": {
                     "Ref": "CodeDeployPipelineIntegTest9F618D61"
                   },
-                  "S3ObjectKey": "application.zip",
-                  "PollForSourceChanges": true
+                  "S3ObjectKey": "application.zip"
                 },
                 "InputArtifacts": [],
                 "Name": "S3Source",

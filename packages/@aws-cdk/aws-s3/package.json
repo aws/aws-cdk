@@ -62,6 +62,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-codepipeline-api": "^0.22.0",
+    "@aws-cdk/aws-events": "^0.22.0",
     "@aws-cdk/aws-iam": "^0.22.0",
     "@aws-cdk/aws-kms": "^0.22.0",
     "@aws-cdk/aws-s3-notifications": "^0.22.0",
@@ -70,6 +71,7 @@
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-codepipeline-api": "^0.22.0",
+    "@aws-cdk/aws-events": "^0.22.0",
     "@aws-cdk/aws-iam": "^0.22.0",
     "@aws-cdk/aws-kms": "^0.22.0",
     "@aws-cdk/aws-s3-notifications": "^0.22.0",

@@ -130,8 +130,7 @@
                   "S3Bucket": {
                     "Ref": "Bucket83908E77"
                   },
-                  "S3ObjectKey": "file.zip",
-                  "PollForSourceChanges": true
+                  "S3ObjectKey": "file.zip"
                 },
                 "InputArtifacts": [],
                 "Name": "S3",
