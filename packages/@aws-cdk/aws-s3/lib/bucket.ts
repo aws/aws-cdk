@@ -1,4 +1,5 @@
 import actions = require('@aws-cdk/aws-codepipeline-api');
+import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
@@ -171,6 +172,16 @@ export interface IBucket extends cdk.IConstruct {
    * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
    */
   grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.PolicyStatement;
+
+  /**
+   * Defines a CloudWatch Event Rule that triggers upon putting an object into the Bucket.
+   *
+   * @param name the logical ID of the newly created Event Rule
+   * @param target the optional target of the Event Rule
+   * @param path the optional path inside the Bucket that will be watched for changes
+   * @returns a new {@link events.EventRule} instance
+   */
+  onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule;
 }
 
 /**
@@ -288,6 +299,34 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
       bucket: this,
       ...props,
     });
+  }
+
+  public onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule {
+    const eventRule = new events.EventRule(this, name, {
+      eventPattern: {
+        source: [
+          'aws.s3',
+        ],
+        detailType: [
+          'AWS API Call via CloudTrail',
+        ],
+        detail: {
+          eventSource: [
+            's3.amazonaws.com',
+          ],
+          eventName: [
+            'PutObject',
+          ],
+          resources: {
+            ARN: [
+              path ? this.arnForObjects(path) : this.bucketArn,
+            ],
+          },
+        },
+      },
+    });
+    eventRule.addTarget(target);
+    return eventRule;
   }
 
   /**

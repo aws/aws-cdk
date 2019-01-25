@@ -1,3 +1,4 @@
+import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
@@ -14,11 +15,15 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
   removalPolicy: cdk.RemovalPolicy.Destroy,
 });
+const key = 'key';
+const trail = new cloudtrail.CloudTrail(stack, 'CloudTrail');
+trail.addS3EventSelector([bucket.arnForObjects(key)], cloudtrail.ReadWriteType.WriteOnly);
 new s3.PipelineSourceAction(stack, 'Source', {
   stage: sourceStage,
   outputArtifactName: 'SourceArtifact',
   bucket,
-  bucketKey: 'key',
+  bucketKey: key,
+  pollForSourceChanges: false,
 });
 
 const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
