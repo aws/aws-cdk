@@ -1,6 +1,12 @@
 {
   "$schema": "./cdk.schema.json",
   "Resources": {
+    "SomeBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "ThatShitWorksYo"
+      }
+    },
     "OurFoo": {
       "Type": "CDK::ecs::LoadBalancedFargateServiceApplet",
       "Properties": {
@@ -12,11 +18,6 @@
       "Type": "CDK::sns::Topic",
       "Properties": {
         "displayName": "Hello, world"
-      }
-    },
-    "Foo": {
-      "Properties": {
-        "Topic": { "Ref": "SomeThing" }
       }
     }
   }

@@ -13,6 +13,21 @@ export function resourceName(constructClass: jsiiReflect.ClassType) {
   return `CDK::${serviceName}::${constructClass.name}`;
 }
 
+export function parseResourceName(cfnName: string): ClassName | undefined {
+  if (!cfnName.startsWith('CDK::')) { return undefined; }
+  const parts = cfnName.split('::');
+
+  return {
+    module: `@aws-cdk/aws-${parts[1]}`,
+    className: parts[2]
+  };
+}
+
+export interface ClassName {
+  module: string;
+  className: string;
+}
+
 export function resourceSchema(construct: ConstructAndProps) {
   return {
     additionalProperties: false,

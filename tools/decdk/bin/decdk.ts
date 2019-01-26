@@ -1,6 +1,5 @@
 import jsiiReflect = require('jsii-reflect');
 import path = require('path');
-// import yargs = require('yargs');
 import { ConstructAndProps, resourceSchema } from '../lib/cfnschema';
 import { isSerializableType } from '../lib/jsii2schema';
 
