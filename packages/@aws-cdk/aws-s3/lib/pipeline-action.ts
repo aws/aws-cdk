@@ -23,11 +23,14 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
    */
   bucketKey: string;
 
-  // TODO: use CloudWatch events instead
   /**
-   * Whether or not AWS CodePipeline should poll for source changes
+   * Whether AWS CodePipeline should poll for source changes.
+   * If this is `false`, the Pipeline will use CloudWatch Events to detect source changes instead.
+   * Note that if this is `false`, you need to make sure to include the source Bucket in a CloudTrail Trail,
+   * as otherwise the CloudWatch Events will not be emitted.
    *
    * @default true
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/log-s3-data-events.html
    */
   pollForSourceChanges?: boolean;
 }
@@ -53,10 +56,15 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
       configuration: {
         S3Bucket: props.bucket.bucketName,
         S3ObjectKey: props.bucketKey,
-        PollForSourceChanges: props.pollForSourceChanges || true
+        PollForSourceChanges: props.pollForSourceChanges,
       },
       ...props,
     });
+
+    if (props.pollForSourceChanges === false) {
+      props.bucket.onPutObject(props.stage.pipeline.node.uniqueId + 'SourceEventRule',
+          props.stage.pipeline, props.bucketKey);
+    }
 
     // pipeline needs permissions to read from the S3 bucket
     props.bucket.grantRead(props.stage.pipeline.role);

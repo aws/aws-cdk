@@ -162,6 +162,15 @@ export interface ActionProps extends CommonActionProps, CommonActionConstructPro
    */
   region?: string;
 
+  /**
+   * The service role that is assumed during execution of action.
+   * This role is not mandatory, however more advanced configuration
+   * may require specifying it.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions.html
+   */
+  role?: iam.IRole;
+
   artifactBounds: ActionArtifactBounds;
   configuration?: any;
   version?: string;
@@ -206,6 +215,15 @@ export abstract class Action extends cdk.Construct {
   public readonly configuration?: any;
 
   /**
+   * The service role that is assumed during execution of action.
+   * This role is not mandatory, however more advanced configuration
+   * may require specifying it.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions.html
+   */
+  public readonly role?: iam.IRole;
+
+  /**
    * The order in which AWS CodePipeline runs this action.
    * For more information, see the AWS CodePipeline User Guide.
    *
@@ -218,6 +236,7 @@ export abstract class Action extends cdk.Construct {
 
   private readonly _actionInputArtifacts = new Array<Artifact>();
   private readonly _actionOutputArtifacts = new Array<Artifact>();
+
   private readonly artifactBounds: ActionArtifactBounds;
   private readonly stage: IStage;
 
@@ -235,6 +254,7 @@ export abstract class Action extends cdk.Construct {
     this.artifactBounds = props.artifactBounds;
     this.runOrder = props.runOrder === undefined ? 1 : props.runOrder;
     this.stage = props.stage;
+    this.role = props.role;
 
     this.stage._internal._attachAction(this);
   }
