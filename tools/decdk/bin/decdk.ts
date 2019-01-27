@@ -1,15 +1,19 @@
+import fs = require('fs');
 import jsiiReflect = require('jsii-reflect');
 import path = require('path');
 import { ConstructAndProps, resourceSchema } from '../lib/cfnschema';
-import { isSerializableType } from '../lib/jsii2schema';
+import { isSerializableTypeReference } from '../lib/jsii2schema';
 
 async function main() {
   const typeSystem = new jsiiReflect.TypeSystem();
-  const packageJson = require(path.resolve(process.cwd(), 'package.json'));
+  const packageJson = require('../package.json');
 
   for (const depName of Object.keys(packageJson.dependencies || {})) {
-    const jsiiModulePath = require.resolve(`${depName}/package.json`, { paths: [process.cwd()] });
-    await typeSystem.loadModule(path.dirname(jsiiModulePath));
+    const jsiiModuleDir = path.dirname(require.resolve(`${depName}/package.json`));
+    if (!fs.existsSync(path.resolve(jsiiModuleDir, '.jsii'))) {
+      continue;
+    }
+    await typeSystem.load(jsiiModuleDir);
   }
 
   // Find all constructs for which the props interface
@@ -20,7 +24,8 @@ async function main() {
 
   const deconstructs = constructs
     .map(unpackConstruct)
-    .filter(c => c !== undefined && isSerializableType(c.propsTypeRef)) as ConstructAndProps[];
+    .filter(c => c && !isCfnResource(c.constructClass)) // filter out L1s
+    .filter(c => c !== undefined && isSerializableTypeReference(c.propsTypeRef)) as ConstructAndProps[];
 
   const baseSchema = require('../cloudformation.schema.json');
 
@@ -39,6 +44,11 @@ function isSubclass(klass: jsiiReflect.ClassType, superClass: jsiiReflect.ClassT
   return klass.getAncestors().includes(superClass);
 }
 
+function isCfnResource(klass: jsiiReflect.ClassType) {
+  const resource = klass.system.findClass('@aws-cdk/cdk.Resource');
+  return (isSubclass(klass, resource));
+}
+
 function unpackConstruct(klass: jsiiReflect.ClassType): ConstructAndProps | undefined {
   if (!klass.initializer || klass.abstract) { return undefined; }
   if (klass.initializer.parameters.length < 3) { return undefined; }
@@ -53,6 +63,7 @@ function unpackConstruct(klass: jsiiReflect.ClassType): ConstructAndProps | unde
 }
 
 main().catch(e => {
-  process.stderr.write(e);
+  // tslint:disable-next-line:no-console
+  console.error(e);
   process.exit(1);
 });

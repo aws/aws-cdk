@@ -4,13 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "@aws-cdk/cdk": "^0.22.0",
-    "@aws-cdk/aws-ecs": "^0.22.0",
-    "@aws-cdk/aws-s3": "^0.22.0",
-    "@aws-cdk/aws-sns": "^0.22.0"
+    "test": "echo pass"
   },
   "devDependencies": {
     "decdk": "^0.22.0"

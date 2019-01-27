@@ -1,3 +1,4 @@
+import cdk = require('@aws-cdk/cdk');
 import fs = require('fs-extra');
 import path = require('path');
 import YAML = require('yaml');
@@ -16,8 +17,7 @@ async function main() {
   const filenameWithoutExtension = path.parse(args.filename!).name;
 
   // Create App and Stack to root replaced constructs under:w
-  const cdk = requireClientModule('@aws-cdk/cdk');
-  const app = new cdk.App(undefined);
+  const app = new cdk.App();
   const stack = new cdk.Stack(app, filenameWithoutExtension);
 
   // Replace every resource that starts with CDK::
@@ -29,23 +29,19 @@ async function main() {
 
     const resName = parseResourceName(rprops.Type);
     if (resName) {
-      const module = requireClientModule(resName.module);
+      const module = require(resName.module);
       const constructor = module[resName.className];
-
       new constructor(stack, logicalId, rprops.Properties);
       delete template.Resources[logicalId];
     }
   }
 
+  delete template.$schema;
+
   // Add an Include construct with what's left of the template
   new cdk.Include(stack, 'Include', { template });
 
   app.run();
-}
-
-function requireClientModule(moduleName: string): any {
-  const modulePath = require.resolve(moduleName, { paths: [process.cwd()] });
-  return require(modulePath);
 }
 
 main().catch(e => {
