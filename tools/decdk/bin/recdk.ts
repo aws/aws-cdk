@@ -4,6 +4,7 @@ import reflect = require('jsii-reflect');
 import path = require('path');
 import YAML = require('yaml');
 import { isCfnResource } from '../lib/cfnschema';
+import { isConstructReference } from '../lib/jsii2schema';
 import { loadTypeSystem } from '../lib/type-system';
 
 // tslint:disable:no-console
@@ -96,6 +97,10 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key:
     const fn = Object.keys(value)[0];
 
     if (fn === 'Ref') {
+      if (isConstructReference(typeRef)) {
+        return deconstructRef(stack, value.Ref);
+      }
+
       throw new Error(`{ Ref } is not supported, use { Fn::GetAtt }`);
     }
 
@@ -204,6 +209,14 @@ function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
     }
     return (res as any)[attribute];
   }).toString();
+}
+
+function deconstructRef(stack: cdk.Stack, id: string) {
+  const child = stack.node.tryFindChild(id);
+  if (!child) {
+    throw new Error(`Construct with ID ${id} not found (it must be defined before it is referenced)`);
+  }
+  return child;
 }
 
 function processReferences(stack: cdk.Stack) {

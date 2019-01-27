@@ -1,10 +1,29 @@
 {
   "$schema": "./cdk.schema.json",
   "Resources": {
-    "FargateService": {
-      "Type": "@aws-cdk/aws-ecs.LoadBalancedFargateServiceApplet",
+    "VPC": {
+      "Type": "@aws-cdk/aws-ec2.VpcNetwork",
       "Properties": {
-        "image": "redis"
+        "maxAZs": 1
+      }
+    },
+    "Cluster": {
+      "Type": "@aws-cdk/aws-ecs.Cluster",
+      "Properties": {
+        "vpc": { "Ref": "VPC" }
+      }
+    },
+    "MyTaskDef": {
+      "Type": "@aws-cdk/aws-ecs.Ec2TaskDefinition",
+      "Properties": {
+        "family": "redis"
+      }
+    },
+    "Service": {
+      "Type": "@aws-cdk/aws-ecs.Ec2Service",
+      "Properties": {
+        "cluster": { "Ref": "Cluster" },
+        "taskDefinition": { "Ref": "MyTaskDef" }
       }
     }
   }

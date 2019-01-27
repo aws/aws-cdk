@@ -38202,6 +38202,15 @@
                   "title": "OutputProps",
                   "additionalProperties": false,
                   "properties": {
+                    "condition": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "A condition from the \"Conditions\" section to associate with this output\nvalue. If the condition evaluates to `false`, this output value will not\nbe included in the stack."
+                    },
                     "description": {
                       "type": "string",
                       "description": "A String type that describes the output value.\nThe description can be a maximum of 4 K in length."
@@ -38447,6 +38456,15 @@
                       },
                       "description": "The list of primitives to export"
                     },
+                    "condition": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "A condition from the \"Conditions\" section to associate with this output\nvalue. If the condition evaluates to `false`, this output value will not\nbe included in the stack."
+                    },
                     "description": {
                       "type": "string",
                       "description": "A String type that describes the output value.\nThe description can be a maximum of 4 K in length."
@@ -38471,6 +38489,244 @@
                 "Type": {
                   "enum": [
                     "@aws-cdk/cdk.StringListOutput"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "PipelineDeployStackActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "adminPermissions": {
+                      "type": "boolean",
+                      "description": "Whether to grant admin permissions to CloudFormation while deploying this template.\n\nSetting this to `true` affects the defaults for `role` and `capabilities`, if you\ndon't specify any alternatives.\n\nThe default role that will be created for you will have admin (i.e., `*`)\npermissions on all resources, and the deployment will have named IAM\ncapabilities (i.e., able to create all IAM resources).\n\nThis is a shorthand that you can use if you fully trust the templates that\nare deployed in this pipeline. If you want more fine-grained permissions,\nuse `addToRolePolicy` and `capabilities` to control what the CloudFormation\ndeployment is allowed to do."
+                    },
+                    "inputArtifact": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The CodePipeline artifact that holds the synthesized app, which is the\ncontents of the ``<directory>`` when running ``cdk synth -o <directory>``."
+                    },
+                    "stack": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The CDK stack to be deployed."
+                    },
+                    "stage": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The CodePipeline stage in which to perform the deployment."
+                    },
+                    "capabilities": {
+                      "enum": [
+                        "None",
+                        "AnonymousIAM",
+                        "NamedIAM"
+                      ],
+                      "description": "Acknowledge certain changes made as part of deployment\n\nFor stacks that contain certain resources, explicit acknowledgement that AWS CloudFormation\nmight create or update those resources. For example, you must specify AnonymousIAM if your\nstack template contains AWS Identity and Access Management (IAM) resources. For more\ninformation"
+                    },
+                    "changeSetName": {
+                      "type": "string",
+                      "description": "The name to use when creating a ChangeSet for the stack."
+                    },
+                    "createChangeSetRunOrder": {
+                      "type": "number",
+                      "description": "The runOrder for the CodePipeline action creating the ChangeSet."
+                    },
+                    "executeChangeSetRunOrder": {
+                      "type": "number",
+                      "description": "The runOrder for the CodePipeline action executing the ChangeSet."
+                    },
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "IAM role to assume when deploying changes.\n\nIf not specified, a fresh role is created. The role is created with zero\npermissions unless `adminPermissions` is true, in which case the role will have\nadmin permissions."
+                    }
+                  },
+                  "required": [
+                    "adminPermissions",
+                    "inputArtifact",
+                    "stack",
+                    "stage"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/app-delivery.PipelineDeployStackAction"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "PipelineDeleteStackActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "runOrder": {
+                      "type": "number",
+                      "description": "The runOrder property for this Action.\nRunOrder determines the relative order in which multiple Actions in the same Stage execute."
+                    },
+                    "stage": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Pipeline Stage to add this Action to."
+                    },
+                    "stackName": {
+                      "type": "string",
+                      "description": "The name of the stack to apply this action to"
+                    },
+                    "outputArtifactName": {
+                      "type": "string",
+                      "description": "The name of the output artifact to generate\n\nOnly applied if `outputFileName` is set as well."
+                    },
+                    "outputFileName": {
+                      "type": "string",
+                      "description": "A name for the filename in the output artifact to store the AWS CloudFormation call's result.\n\nThe file will contain the result of the call to AWS CloudFormation (for example\nthe call to UpdateStack or CreateChangeSet).\n\nAWS CodePipeline adds the file to the output artifact after performing\nthe specified action."
+                    },
+                    "region": {
+                      "type": "string",
+                      "description": "The AWS region the given Action resides in.\nNote that a cross-region Pipeline requires replication buckets to function correctly.\nYou can provide their names with the {@link PipelineProps#crossRegionReplicationBuckets} property.\nIf you don't, the CodePipeline Construct will create new Stacks in your CDK app containing those buckets,\nthat you will need to `cdk deploy` before deploying the main, Pipeline-containing Stack."
+                    },
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The service role that is assumed during execution of action.\nThis role is not mandatory, however more advanced configuration\nmay require specifying it."
+                    },
+                    "adminPermissions": {
+                      "type": "boolean",
+                      "description": "Whether to grant full permissions to CloudFormation while deploying this template.\n\nSetting this to `true` affects the defaults for `role` and `capabilities`, if you\ndon't specify any alternatives.\n\nThe default role that will be created for you will have full (i.e., `*`)\npermissions on all resources, and the deployment will have named IAM\ncapabilities (i.e., able to create all IAM resources).\n\nThis is a shorthand that you can use if you fully trust the templates that\nare deployed in this pipeline. If you want more fine-grained permissions,\nuse `addToRolePolicy` and `capabilities` to control what the CloudFormation\ndeployment is allowed to do."
+                    },
+                    "capabilities": {
+                      "enum": [
+                        "None",
+                        "AnonymousIAM",
+                        "NamedIAM"
+                      ],
+                      "description": "Acknowledge certain changes made as part of deployment\n\nFor stacks that contain certain resources, explicit acknowledgement that AWS CloudFormation\nmight create or update those resources. For example, you must specify `AnonymousIAM` or `NamedIAM`\nif your stack template contains AWS Identity and Access Management (IAM) resources. For more\ninformation see the link below."
+                    },
+                    "deploymentRole": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "IAM role to assume when deploying changes.\n\nIf not specified, a fresh role is created. The role is created with zero\npermissions unless `adminPermissions` is true, in which case the role will have\nfull permissions."
+                    },
+                    "parameterOverrides": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object"
+                      },
+                      "description": "Additional template parameters.\n\nTemplate parameters specified here take precedence over template parameters\nfound in the artifact specified by the `templateConfiguration` property.\n\nWe recommend that you use the template configuration file to specify\nmost of your parameter values. Use parameter overrides to specify only\ndynamic parameter values (values that are unknown until you run the\npipeline).\n\nAll parameter names must be present in the stack template.\n\nNote: the entire object cannot be more than 1kB."
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "stackName",
+                    "adminPermissions"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-cloudformation.PipelineDeleteStackAction"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "PipelineExecuteChangeSetActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "runOrder": {
+                      "type": "number",
+                      "description": "The runOrder property for this Action.\nRunOrder determines the relative order in which multiple Actions in the same Stage execute."
+                    },
+                    "stage": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Pipeline Stage to add this Action to."
+                    },
+                    "stackName": {
+                      "type": "string",
+                      "description": "The name of the stack to apply this action to"
+                    },
+                    "outputArtifactName": {
+                      "type": "string",
+                      "description": "The name of the output artifact to generate\n\nOnly applied if `outputFileName` is set as well."
+                    },
+                    "outputFileName": {
+                      "type": "string",
+                      "description": "A name for the filename in the output artifact to store the AWS CloudFormation call's result.\n\nThe file will contain the result of the call to AWS CloudFormation (for example\nthe call to UpdateStack or CreateChangeSet).\n\nAWS CodePipeline adds the file to the output artifact after performing\nthe specified action."
+                    },
+                    "region": {
+                      "type": "string",
+                      "description": "The AWS region the given Action resides in.\nNote that a cross-region Pipeline requires replication buckets to function correctly.\nYou can provide their names with the {@link PipelineProps#crossRegionReplicationBuckets} property.\nIf you don't, the CodePipeline Construct will create new Stacks in your CDK app containing those buckets,\nthat you will need to `cdk deploy` before deploying the main, Pipeline-containing Stack."
+                    },
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The service role that is assumed during execution of action.\nThis role is not mandatory, however more advanced configuration\nmay require specifying it."
+                    },
+                    "changeSetName": {
+                      "type": "string",
+                      "description": "Name of the change set to execute."
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "stackName",
+                    "changeSetName"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-cloudformation.PipelineExecuteChangeSetAction"
                   ],
                   "type": "string"
                 }
@@ -38622,9 +38878,45 @@
                   "title": "PolicyProps",
                   "additionalProperties": false,
                   "properties": {
+                    "groups": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "Groups to attach this policy to.\nYou can also use `attachToGroup(group)` to attach this policy to a group."
+                    },
                     "policyName": {
                       "type": "string",
                       "description": "The name of the policy. If you specify multiple policies for an entity,\nspecify unique names. For example, if you specify a list of policies for\nan IAM role, each policy must have a unique name."
+                    },
+                    "roles": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "Roles to attach this policy to.\nYou can also use `attachToRole(role)` to attach this policy to a role."
+                    },
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "Users to attach this policy to.\nYou can also use `attachToUser(user)` to attach this policy to a user."
                     }
                   },
                   "required": []
@@ -38645,6 +38937,18 @@
                   "title": "UserProps",
                   "additionalProperties": false,
                   "properties": {
+                    "groups": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "Groups to add this user to. You can also use `addToGroup` to add this\nuser to a group."
+                    },
                     "managedPolicyArns": {
                       "type": "array",
                       "items": {
@@ -38684,12 +38988,138 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "AliasProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "aliasName": {
+                      "type": "string",
+                      "description": "Name of this alias"
+                    },
+                    "version": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Function version this alias refers to\n\nUse lambda.addVersion() to obtain a new lambda version to refer to."
+                    },
+                    "additionalVersions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "title": "VersionWeight",
+                        "additionalProperties": false,
+                        "properties": {
+                          "version": {
+                            "type": "object",
+                            "properties": {
+                              "Ref": {
+                                "type": "string"
+                              }
+                            },
+                            "description": "The version to route traffic to"
+                          },
+                          "weight": {
+                            "type": "number",
+                            "description": "How much weight to assign to this version (0..1)"
+                          }
+                        },
+                        "required": [
+                          "version",
+                          "weight"
+                        ]
+                      },
+                      "description": "Additional versions with individual weights this alias points to\n\nIndividual additional version weights specified here should add up to\n(less than) one. All remaining weight is routed to the default\nversion.\n\nFor example, the config is\n\n    version: \"1\"\n    additionalVersions: [{ version: \"2\", weight: 0.05 }]\n\nThen 5% of traffic will be routed to function version 2, while\nthe remaining 95% of traffic will be routed to function version 1."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description for the alias"
+                    }
+                  },
+                  "required": [
+                    "aliasName",
+                    "version"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-lambda.Alias"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "EventSourceMappingProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "eventSourceArn": {
+                      "type": "string",
+                      "description": "The Amazon Resource Name (ARN) of the event source. Any record added to\nthis stream can invoke the Lambda function."
+                    },
+                    "target": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The target AWS Lambda function."
+                    },
+                    "batchSize": {
+                      "type": "number",
+                      "description": "The largest number of records that AWS Lambda will retrieve from your event\nsource at the time of invoking your function. Your function receives an\nevent with all the retrieved records.\n\nValid Range: Minimum value of 1. Maximum value of 10000."
+                    },
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Set to false to disable the event source upon creation."
+                    },
+                    "startingPosition": {
+                      "enum": [
+                        "TrimHorizon",
+                        "Latest"
+                      ],
+                      "description": "The position in the DynamoDB or Kinesis stream where AWS Lambda should\nstart reading."
+                    }
+                  },
+                  "required": [
+                    "eventSourceArn",
+                    "target"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-lambda.EventSourceMapping"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "FunctionImportProps",
                   "additionalProperties": false,
                   "properties": {
                     "functionArn": {
                       "type": "string",
                       "description": "The ARN of the Lambda function.\n\nFormat: arn:<partition>:lambda:<region>:<account-id>:function:<function-name>"
+                    },
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The IAM execution role associated with this function.\n\nIf the role is not specified, any role-related operations will no-op."
                     },
                     "securityGroupId": {
                       "type": "string",
@@ -38703,6 +39133,115 @@
                 "Type": {
                   "enum": [
                     "@aws-cdk/aws-lambda.ImportedFunction"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "PipelineInvokeActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "runOrder": {
+                      "type": "number",
+                      "description": "The runOrder property for this Action.\nRunOrder determines the relative order in which multiple Actions in the same Stage execute."
+                    },
+                    "addPutJobResultPolicy": {
+                      "type": "boolean",
+                      "description": "Adds the \"codepipeline:PutJobSuccessResult\" and\n\"codepipeline:PutJobFailureResult\" for '*' resource to the Lambda\nexecution role policy.\n\nNOTE: the reason we can't add the specific pipeline ARN as a resource is\nto avoid a cyclic dependency between the pipeline and the Lambda function\n(the pipeline references) the Lambda and the Lambda needs permissions on\nthe pipeline."
+                    },
+                    "inputArtifacts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "The optional input Artifacts of the Action.\nA Lambda Action can have up to 5 inputs.\nThe inputs will appear in the event passed to the Lambda,\nunder the `'CodePipeline.job'.data.inputArtifacts` path."
+                    },
+                    "outputArtifactNames": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The optional names of the output Artifacts of the Action.\nA Lambda Action can have up to 5 outputs.\nThe outputs will appear in the event passed to the Lambda,\nunder the `'CodePipeline.job'.data.outputArtifacts` path.\nIt is the responsibility of the Lambda to upload ZIP files with the Artifact contents to the provided locations."
+                    },
+                    "userParameters": {
+                      "type": "object",
+                      "description": "String to be used in the event data parameter passed to the Lambda\nfunction\n\nSee an example JSON event in the CodePipeline documentation.\n\nhttps://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example"
+                    },
+                    "stage": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Pipeline Stage to add this Action to."
+                    },
+                    "lambda": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The lambda function to invoke."
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "lambda"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-lambda.PipelineInvokeAction"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "VersionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "lambda": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Function to get the value of"
+                    },
+                    "codeSha256": {
+                      "type": "string",
+                      "description": "SHA256 of the version of the Lambda source code\n\nSpecify to validate that you're deploying the right version."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the version"
+                    }
+                  },
+                  "required": [
+                    "lambda"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-lambda.Version"
                   ],
                   "type": "string"
                 }
@@ -38811,6 +39350,15 @@
                         "Kms"
                       ],
                       "description": "The kind of server-side encryption to apply to this bucket.\n\nIf you choose KMS, you can specify a KMS key via `encryptionKey`. If\nencryption key is not specified, a key will automatically be created."
+                    },
+                    "encryptionKey": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "External KMS key to use for bucket encryption.\n\nThe 'encryption' property must be either not specified or set to \"Kms\".\nAn error will be emitted if encryption is set to \"Unencrypted\" or\n\"Managed\"."
                     },
                     "lifecycleRules": {
                       "type": "array",
@@ -38958,6 +39506,93 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "BucketPolicyProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "bucket": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Amazon S3 bucket that the policy applies to."
+                    }
+                  },
+                  "required": [
+                    "bucket"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-s3.BucketPolicy"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "PipelineSourceActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "runOrder": {
+                      "type": "number",
+                      "description": "The runOrder property for this Action.\nRunOrder determines the relative order in which multiple Actions in the same Stage execute."
+                    },
+                    "bucketKey": {
+                      "type": "string",
+                      "description": "The key within the S3 bucket that stores the source code."
+                    },
+                    "outputArtifactName": {
+                      "type": "string",
+                      "description": "The name of the source's output artifact. Output artifacts are used by CodePipeline as\ninputs into other actions."
+                    },
+                    "pollForSourceChanges": {
+                      "type": "boolean",
+                      "description": "Whether AWS CodePipeline should poll for source changes.\nIf this is `false`, the Pipeline will use CloudWatch Events to detect source changes instead.\nNote that if this is `false`, you need to make sure to include the source Bucket in a CloudTrail Trail,\nas otherwise the CloudWatch Events will not be emitted."
+                    },
+                    "stage": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Pipeline Stage to add this Action to."
+                    },
+                    "bucket": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Amazon S3 bucket that stores the source code"
+                    }
+                  },
+                  "required": [
+                    "bucketKey",
+                    "stage",
+                    "bucket"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-s3.PipelineSourceAction"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "EncryptionKeyProps",
                   "additionalProperties": false,
                   "properties": {
@@ -38996,6 +39631,41 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "EncryptionKeyAliasProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "alias": {
+                      "type": "string",
+                      "description": "The name of the alias. The name must start with alias followed by a\nforward slash, such as alias/. You can't specify aliases that begin with\nalias/AWS. These aliases are reserved."
+                    },
+                    "key": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The ID of the key for which you are creating the alias. Specify the key's\nglobally unique identifier or Amazon Resource Name (ARN). You can't\nspecify another alias."
+                    }
+                  },
+                  "required": [
+                    "alias",
+                    "key"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-kms.EncryptionKeyAlias"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "DashboardProps",
                   "additionalProperties": false,
                   "properties": {
@@ -39009,6 +39679,55 @@
                 "Type": {
                   "enum": [
                     "@aws-cdk/aws-cloudwatch.Dashboard"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "SecurityGroupProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "vpc": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The VPC in which to create the security group."
+                    },
+                    "allowAllOutbound": {
+                      "type": "boolean",
+                      "description": "Whether to allow all outbound traffic by default.\n\nIf this is set to true, there will only be a single egress rule which allows all\noutbound traffic. If this is set to false, no outbound traffic will be allowed by\ndefault and all egress traffic must be explicitly authorized."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "A description of the security group."
+                    },
+                    "groupName": {
+                      "type": "string",
+                      "description": "The name of the security group. For valid values, see the GroupName\nparameter of the CreateSecurityGroup action in the Amazon EC2 API\nReference.\n\nIt is not recommended to use an explicit group name."
+                    },
+                    "tags": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "The AWS resource tags to associate with the security group."
+                    }
+                  },
+                  "required": [
+                    "vpc"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-ec2.SecurityGroup"
                   ],
                   "type": "string"
                 }
@@ -39269,6 +39988,45 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "CrossAccountDestinationProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The role to assume that grants permissions to write to 'target'.\n\nThe role must be assumable by 'logs.{REGION}.amazonaws.com'."
+                    },
+                    "targetArn": {
+                      "type": "string",
+                      "description": "The log destination target's ARN"
+                    },
+                    "destinationName": {
+                      "type": "string",
+                      "description": "The name of the log destination."
+                    }
+                  },
+                  "required": [
+                    "role",
+                    "targetArn"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-logs.CrossAccountDestination"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "LogGroupProps",
                   "additionalProperties": false,
                   "properties": {
@@ -39300,6 +40058,107 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "LogStreamProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "logGroup": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The log group to create a log stream for."
+                    },
+                    "logStreamName": {
+                      "type": "string",
+                      "description": "The name of the log stream to create.\n\nThe name must be unique within the log group."
+                    },
+                    "retainLogStream": {
+                      "type": "boolean",
+                      "description": "Retain the log stream if the stack or containing construct ceases to exist\n\nNormally you want to retain the log stream so you can diagnose issues\nfrom logs even after a deployment that no longer includes the log stream.\n\nThe date-based retention policy of your log group will age out the logs\nafter a certain time."
+                    }
+                  },
+                  "required": [
+                    "logGroup"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-logs.LogStream"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "MetricFilterProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "filterPattern": {
+                      "type": "object",
+                      "title": "IFilterPattern",
+                      "additionalProperties": false,
+                      "properties": {
+                        "logPatternString": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "logPatternString"
+                      ],
+                      "description": "Pattern to search for log events."
+                    },
+                    "logGroup": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The log group to create the filter on."
+                    },
+                    "metricName": {
+                      "type": "string",
+                      "description": "The name of the metric to emit."
+                    },
+                    "metricNamespace": {
+                      "type": "string",
+                      "description": "The namespace of the metric to emit."
+                    },
+                    "defaultValue": {
+                      "type": "number",
+                      "description": "The value to emit if the pattern does not match a particular event."
+                    },
+                    "metricValue": {
+                      "type": "string",
+                      "description": "The value to emit for the metric.\n\nCan either be a literal number (typically \"1\"), or the name of a field in the structure\nto take the value from the matched event. If you are using a field value, the field\nvalue must have been matched using the pattern.\n\nIf you want to specify a field from a matched JSON structure, use '$.fieldName',\nand make sure the field is in the pattern (if only as '$.fieldName = *').\n\nIf you want to specify a field from a matched space-delimited structure,\nuse '$fieldName'."
+                    }
+                  },
+                  "required": [
+                    "filterPattern",
+                    "logGroup",
+                    "metricName",
+                    "metricNamespace"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-logs.MetricFilter"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "QueueProps",
                   "additionalProperties": false,
                   "properties": {
@@ -39310,6 +40169,31 @@
                     "dataKeyReuseSec": {
                       "type": "number",
                       "description": "The length of time that Amazon SQS reuses a data key before calling KMS again.\n\nThe value must be an integer between 60 (1 minute) and 86,400 (24\nhours). The default is 300 (5 minutes)."
+                    },
+                    "deadLetterQueue": {
+                      "type": "object",
+                      "title": "DeadLetterQueue",
+                      "additionalProperties": false,
+                      "properties": {
+                        "maxReceiveCount": {
+                          "type": "number",
+                          "description": "The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue."
+                        },
+                        "queue": {
+                          "type": "object",
+                          "properties": {
+                            "Ref": {
+                              "type": "string"
+                            }
+                          },
+                          "description": "The dead-letter queue to which Amazon SQS moves messages after the value of maxReceiveCount is exceeded."
+                        }
+                      },
+                      "required": [
+                        "maxReceiveCount",
+                        "queue"
+                      ],
+                      "description": "Send messages to this queue if they were unsuccessfully dequeued a number of times."
                     },
                     "deliveryDelaySec": {
                       "type": "number",
@@ -39322,6 +40206,15 @@
                         "Kms"
                       ],
                       "description": "Whether the contents of the queue are encrypted, and by what type of key.\n\nBe aware that encryption is not available in all regions, please see the docs\nfor current availability details."
+                    },
+                    "encryptionMasterKey": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "External KMS master key to use for queue encryption.\n\nIndividual messages will be encrypted using data keys. The data keys in\nturn will be encrypted using this key, and reused for a maximum of\n`dataKeyReuseSecs` seconds.\n\nThe 'encryption' property must be either not specified or set to \"Kms\".\nAn error will be emitted if encryption is set to \"Unencrypted\" or\n\"KmsManaged\"."
                     },
                     "fifo": {
                       "type": "boolean",
@@ -39353,6 +40246,39 @@
                 "Type": {
                   "enum": [
                     "@aws-cdk/aws-sqs.Queue"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "QueuePolicyProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "queues": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "The set of queues this policy applies to."
+                    }
+                  },
+                  "required": [
+                    "queues"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-sqs.QueuePolicy"
                   ],
                   "type": "string"
                 }
@@ -39594,6 +40520,55 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "SubscriptionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "endpoint": {
+                      "type": "object",
+                      "description": "The subscription endpoint.\n\nThe meaning of this value depends on the value for 'protocol'."
+                    },
+                    "protocol": {
+                      "enum": [
+                        "Http",
+                        "Https",
+                        "Email",
+                        "EmailJson",
+                        "Sms",
+                        "Sqs",
+                        "Application",
+                        "Lambda"
+                      ],
+                      "description": "What type of subscription to add."
+                    },
+                    "topic": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The topic to subscribe to."
+                    }
+                  },
+                  "required": [
+                    "endpoint",
+                    "protocol",
+                    "topic"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-sns.Subscription"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "TopicProps",
                   "additionalProperties": false,
                   "properties": {
@@ -39621,12 +40596,130 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "TopicPolicyProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "topics": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "The set of topics this policy applies to."
+                    }
+                  },
+                  "required": [
+                    "topics"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-sns.TopicPolicy"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "PipelineBuildActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "additionalInputArtifacts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "The list of additional input Artifacts for this Action."
+                    },
+                    "additionalOutputArtifactNames": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The list of names for additional output Artifacts for this Action.\nThe resulting output artifacts can be accessed with the `additionalOutputArtifacts`\nmethod of the Action."
+                    },
+                    "runOrder": {
+                      "type": "number",
+                      "description": "The runOrder property for this Action.\nRunOrder determines the relative order in which multiple Actions in the same Stage execute."
+                    },
+                    "inputArtifact": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The source to use as input for this build."
+                    },
+                    "outputArtifactName": {
+                      "type": "string",
+                      "description": "The name of the build's output artifact."
+                    },
+                    "stage": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Pipeline Stage to add this Action to."
+                    },
+                    "project": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The build project"
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "project"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-codebuild.PipelineBuildAction"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "PipelineProjectProps",
                   "additionalProperties": false,
                   "properties": {
                     "badge": {
                       "type": "boolean",
                       "description": "Indicates whether AWS CodeBuild generates a publicly accessible URL for\nyour project's build badge. For more information, see Build Badges Sample\nin the AWS CodeBuild User Guide."
+                    },
+                    "buildScriptAsset": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Run a script from an asset as build script\n\nIf supplied together with buildSpec, the asset script will be run\n_after_ the existing commands in buildspec.\n\nThis feature can also be used without a source, to simply run an\narbitrary script in a serverless way."
                     },
                     "buildScriptAssetEntrypoint": {
                       "type": "string",
@@ -39636,6 +40729,15 @@
                       "type": "object",
                       "description": "Filename or contents of buildspec in JSON format."
                     },
+                    "cacheBucket": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Bucket to store cached source artifacts\nIf not specified, source artifacts will not be cached."
+                    },
                     "cacheDir": {
                       "type": "string",
                       "description": "Subdirectory to store cached artifacts"
@@ -39643,6 +40745,15 @@
                     "description": {
                       "type": "string",
                       "description": "A description of the project. Use the description to identify the purpose\nof the project."
+                    },
+                    "encryptionKey": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Encryption key to use to read and write artifacts\nIf not specified, a role will be created."
                     },
                     "environment": {
                       "type": "object",
@@ -39718,6 +40829,15 @@
                     "projectName": {
                       "type": "string",
                       "description": "The physical, human-readable name of the CodeBuild Project."
+                    },
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Service Role to assume while running the build.\nIf not specified, a role will be created."
                     },
                     "timeout": {
                       "type": "number",
@@ -39739,12 +40859,97 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "PipelineTestActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "additionalInputArtifacts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "The list of additional input Artifacts for this Action."
+                    },
+                    "additionalOutputArtifactNames": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The list of names for additional output Artifacts for this Action.\nThe resulting output artifacts can be accessed with the `additionalOutputArtifacts`\nmethod of the Action."
+                    },
+                    "runOrder": {
+                      "type": "number",
+                      "description": "The runOrder property for this Action.\nRunOrder determines the relative order in which multiple Actions in the same Stage execute."
+                    },
+                    "inputArtifact": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The source to use as input for this test."
+                    },
+                    "outputArtifactName": {
+                      "type": "string",
+                      "description": "The optional name of the primary output artifact.\nIf you provide a value here,\nthen the `outputArtifact` property of your Action will be non-null.\nIf you don't, `outputArtifact` will be `null`."
+                    },
+                    "stage": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Pipeline Stage to add this Action to."
+                    },
+                    "project": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The build Project."
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "project"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-codebuild.PipelineTestAction"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "ProjectProps",
                   "additionalProperties": false,
                   "properties": {
                     "badge": {
                       "type": "boolean",
                       "description": "Indicates whether AWS CodeBuild generates a publicly accessible URL for\nyour project's build badge. For more information, see Build Badges Sample\nin the AWS CodeBuild User Guide."
+                    },
+                    "buildScriptAsset": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Run a script from an asset as build script\n\nIf supplied together with buildSpec, the asset script will be run\n_after_ the existing commands in buildspec.\n\nThis feature can also be used without a source, to simply run an\narbitrary script in a serverless way."
                     },
                     "buildScriptAssetEntrypoint": {
                       "type": "string",
@@ -39754,6 +40959,15 @@
                       "type": "object",
                       "description": "Filename or contents of buildspec in JSON format."
                     },
+                    "cacheBucket": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Bucket to store cached source artifacts\nIf not specified, source artifacts will not be cached."
+                    },
                     "cacheDir": {
                       "type": "string",
                       "description": "Subdirectory to store cached artifacts"
@@ -39761,6 +40975,15 @@
                     "description": {
                       "type": "string",
                       "description": "A description of the project. Use the description to identify the purpose\nof the project."
+                    },
+                    "encryptionKey": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Encryption key to use to read and write artifacts\nIf not specified, a role will be created."
                     },
                     "environment": {
                       "type": "object",
@@ -39836,6 +41059,15 @@
                     "projectName": {
                       "type": "string",
                       "description": "The physical, human-readable name of the CodeBuild Project."
+                    },
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Service Role to assume while running the build.\nIf not specified, a role will be created."
                     },
                     "timeout": {
                       "type": "number",
@@ -39872,6 +41104,58 @@
                 "Type": {
                   "enum": [
                     "@aws-cdk/assets-docker.DockerImageAsset"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "PipelineSourceActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "runOrder": {
+                      "type": "number",
+                      "description": "The runOrder property for this Action.\nRunOrder determines the relative order in which multiple Actions in the same Stage execute."
+                    },
+                    "imageTag": {
+                      "type": "string",
+                      "description": "The image tag that will be checked for changes."
+                    },
+                    "outputArtifactName": {
+                      "type": "string",
+                      "description": "The name of the source's output artifact.\nOutput artifacts are used by CodePipeline as inputs into other actions."
+                    },
+                    "stage": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Pipeline Stage to add this Action to."
+                    },
+                    "repository": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The repository that will be watched for changes."
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "repository"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-ecr.PipelineSourceAction"
                   ],
                   "type": "string"
                 }
@@ -39956,6 +41240,61 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "PipelineSourceActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "runOrder": {
+                      "type": "number",
+                      "description": "The runOrder property for this Action.\nRunOrder determines the relative order in which multiple Actions in the same Stage execute."
+                    },
+                    "branch": {
+                      "type": "string"
+                    },
+                    "outputArtifactName": {
+                      "type": "string",
+                      "description": "The name of the source's output artifact.\nOutput artifacts are used by CodePipeline as inputs into other actions."
+                    },
+                    "pollForSourceChanges": {
+                      "type": "boolean",
+                      "description": "Whether AWS CodePipeline should poll for source changes.\nIf this is `false`, the Pipeline will use CloudWatch Events to detect source changes instead."
+                    },
+                    "stage": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Pipeline Stage to add this Action to."
+                    },
+                    "repository": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The CodeCommit repository."
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "repository"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-codecommit.PipelineSourceAction"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "RepositoryProps",
                   "additionalProperties": false,
                   "properties": {
@@ -39975,6 +41314,532 @@
                 "Type": {
                   "enum": [
                     "@aws-cdk/aws-codecommit.Repository"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "DeploymentProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "api": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Rest API to deploy."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "A description of the purpose of the API Gateway deployment."
+                    },
+                    "retainDeployments": {
+                      "type": "boolean",
+                      "description": "When an API Gateway model is updated, a new deployment will automatically be created.\nIf this is true (default), the old API Gateway Deployment resource will not be deleted.\nThis will allow manually reverting back to a previous deployment in case for example"
+                    }
+                  },
+                  "required": [
+                    "api"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-apigateway.Deployment"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "LambdaRestApiProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "handler": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The default Lambda function that handles all requests from this API.\n\nThis handler will be used as a the default integration for all methods in\nthis API, unless specified otherwise in `addMethod`."
+                    },
+                    "options": {
+                      "type": "object",
+                      "title": "RestApiProps",
+                      "additionalProperties": false,
+                      "properties": {
+                        "defaultMethodOptions": {
+                          "type": "object",
+                          "title": "MethodOptions",
+                          "additionalProperties": false,
+                          "properties": {
+                            "apiKeyRequired": {
+                              "type": "boolean",
+                              "description": "Indicates whether the method requires clients to submit a valid API key."
+                            },
+                            "authorizationType": {
+                              "enum": [
+                                "None",
+                                "IAM",
+                                "Custom",
+                                "Cognito"
+                              ],
+                              "description": "Method authorization."
+                            },
+                            "authorizerId": {
+                              "type": "string",
+                              "description": "If `authorizationType` is `Custom`, this specifies the ID of the method\nauthorizer resource.\n\nNOTE: in the future this will be replaced with an `IAuthorizer`\nconstruct."
+                            },
+                            "operationName": {
+                              "type": "string",
+                              "description": "A friendly operation name for the method. For example, you can assign the\nOperationName of ListPets for the GET /pets method."
+                            },
+                            "requestParameters": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "boolean"
+                              }
+                            }
+                          },
+                          "required": [],
+                          "description": "Method options to use as a default for all methods created within this\nAPI unless custom options are specified."
+                        },
+                        "apiKeySourceType": {
+                          "enum": [
+                            "Header",
+                            "Authorizer"
+                          ],
+                          "description": "The source of the API key for metering requests according to a usage\nplan."
+                        },
+                        "binaryMediaTypes": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "The list of binary media mine-types that are supported by the RestApi\nresource, such as \"image/png\" or \"application/octet-stream\""
+                        },
+                        "cloneFrom": {
+                          "type": "object",
+                          "properties": {
+                            "Ref": {
+                              "type": "string"
+                            }
+                          },
+                          "description": "The ID of the API Gateway RestApi resource that you want to clone."
+                        },
+                        "cloudWatchRole": {
+                          "type": "boolean",
+                          "description": "Automatically configure an AWS CloudWatch role for API Gateway."
+                        },
+                        "deploy": {
+                          "type": "boolean",
+                          "description": "Indicates if a Deployment should be automatically created for this API,\nand recreated when the API model (resources, methods) changes.\n\nSince API Gateway deployments are immutable, When this option is enabled\n(by default), an AWS::ApiGateway::Deployment resource will automatically\ncreated with a logical ID that hashes the API model (methods, resources\nand options). This means that when the model changes, the logical ID of\nthis CloudFormation resource will change, and a new deployment will be\ncreated.\n\nIf this is set, `latestDeployment` will refer to the `Deployment` object\nand `deploymentStage` will refer to a `Stage` that points to this\ndeployment. To customize the stage options, use the `deployStageOptions`\nproperty.\n\nA CloudFormation Output will also be defined with the root URL endpoint\nof this REST API."
+                        },
+                        "deployOptions": {
+                          "type": "object",
+                          "title": "StageOptions",
+                          "additionalProperties": false,
+                          "properties": {
+                            "cacheDataEncrypted": {
+                              "type": "boolean",
+                              "description": "Indicates whether the cached responses are encrypted."
+                            },
+                            "cacheTtlSeconds": {
+                              "type": "number",
+                              "description": "Specifies the time to live (TTL), in seconds, for cached responses. The\nhigher the TTL, the longer the response will be cached."
+                            },
+                            "cachingEnabled": {
+                              "type": "boolean",
+                              "description": "Specifies whether responses should be cached and returned for requests. A\ncache cluster must be enabled on the stage for responses to be cached."
+                            },
+                            "dataTraceEnabled": {
+                              "type": "boolean",
+                              "description": "Specifies whether data trace logging is enabled for this method, which\neffects the log entries pushed to Amazon CloudWatch Logs."
+                            },
+                            "loggingLevel": {
+                              "enum": [
+                                "Off",
+                                "Error",
+                                "Info"
+                              ],
+                              "description": "Specifies the logging level for this method, which effects the log\nentries pushed to Amazon CloudWatch Logs."
+                            },
+                            "metricsEnabled": {
+                              "type": "boolean",
+                              "description": "Specifies whether Amazon CloudWatch metrics are enabled for this method."
+                            },
+                            "throttlingBurstLimit": {
+                              "type": "number",
+                              "description": "Specifies the throttling burst limit."
+                            },
+                            "throttlingRateLimit": {
+                              "type": "number",
+                              "description": "Specifies the throttling rate limit."
+                            },
+                            "cacheClusterEnabled": {
+                              "type": "boolean",
+                              "description": "Indicates whether cache clustering is enabled for the stage."
+                            },
+                            "cacheClusterSize": {
+                              "type": "string",
+                              "description": "The stage's cache cluster size."
+                            },
+                            "clientCertificateId": {
+                              "type": "string",
+                              "description": "The identifier of the client certificate that API Gateway uses to call\nyour integration endpoints in the stage."
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "A description of the purpose of the stage."
+                            },
+                            "documentationVersion": {
+                              "type": "string",
+                              "description": "The version identifier of the API documentation snapshot."
+                            },
+                            "methodOptions": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "object",
+                                "title": "MethodDeploymentOptions",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "cacheDataEncrypted": {
+                                    "type": "boolean",
+                                    "description": "Indicates whether the cached responses are encrypted."
+                                  },
+                                  "cacheTtlSeconds": {
+                                    "type": "number",
+                                    "description": "Specifies the time to live (TTL), in seconds, for cached responses. The\nhigher the TTL, the longer the response will be cached."
+                                  },
+                                  "cachingEnabled": {
+                                    "type": "boolean",
+                                    "description": "Specifies whether responses should be cached and returned for requests. A\ncache cluster must be enabled on the stage for responses to be cached."
+                                  },
+                                  "dataTraceEnabled": {
+                                    "type": "boolean",
+                                    "description": "Specifies whether data trace logging is enabled for this method, which\neffects the log entries pushed to Amazon CloudWatch Logs."
+                                  },
+                                  "loggingLevel": {
+                                    "enum": [
+                                      "Off",
+                                      "Error",
+                                      "Info"
+                                    ],
+                                    "description": "Specifies the logging level for this method, which effects the log\nentries pushed to Amazon CloudWatch Logs."
+                                  },
+                                  "metricsEnabled": {
+                                    "type": "boolean",
+                                    "description": "Specifies whether Amazon CloudWatch metrics are enabled for this method."
+                                  },
+                                  "throttlingBurstLimit": {
+                                    "type": "number",
+                                    "description": "Specifies the throttling burst limit."
+                                  },
+                                  "throttlingRateLimit": {
+                                    "type": "number",
+                                    "description": "Specifies the throttling rate limit."
+                                  }
+                                },
+                                "required": []
+                              },
+                              "description": "Method deployment options for specific resources/methods. These will\noverride common options defined in `StageOptions#methodOptions`."
+                            },
+                            "stageName": {
+                              "type": "string",
+                              "description": "The name of the stage, which API Gateway uses as the first path segment\nin the invoked Uniform Resource Identifier (URI)."
+                            },
+                            "tracingEnabled": {
+                              "type": "boolean",
+                              "description": "Specifies whether Amazon X-Ray tracing is enabled for this method."
+                            },
+                            "variables": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "string"
+                              },
+                              "description": "A map that defines the stage variables. Variable names must consist of\nalphanumeric characters, and the values must match the following regular\nexpression: [A-Za-z0-9-._~:/?#&amp;=,]+."
+                            }
+                          },
+                          "required": [],
+                          "description": "Options for the API Gateway stage that will always point to the latest\ndeployment when `deploy` is enabled. If `deploy` is disabled,\nthis value cannot be set."
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "A description of the purpose of this API Gateway RestApi resource."
+                        },
+                        "endpointTypes": {
+                          "type": "array",
+                          "items": {
+                            "enum": [
+                              "Edge",
+                              "Regional",
+                              "Private"
+                            ]
+                          },
+                          "description": "A list of the endpoint types of the API. Use this property when creating\nan API."
+                        },
+                        "failOnWarnings": {
+                          "type": "boolean",
+                          "description": "Indicates whether to roll back the resource if a warning occurs while API\nGateway is creating the RestApi resource."
+                        },
+                        "minimumCompressionSize": {
+                          "type": "number",
+                          "description": "A nullable integer that is used to enable compression (with non-negative\nbetween 0 and 10485760 (10M) bytes, inclusive) or disable compression\n(when undefined) on an API. When compression is enabled, compression or\ndecompression is not applied on the payload if the payload size is\nsmaller than this value. Setting it to zero allows compression for any\npayload size."
+                        },
+                        "parameters": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          },
+                          "description": "Custom header parameters for the request."
+                        },
+                        "restApiName": {
+                          "type": "string",
+                          "description": "A name for the API Gateway RestApi resource."
+                        },
+                        "retainDeployments": {
+                          "type": "boolean",
+                          "description": "Retains old deployment resources when the API changes. This allows\nmanually reverting stages to point to old deployments via the AWS\nConsole."
+                        }
+                      },
+                      "required": [],
+                      "description": "Further customization of the REST API."
+                    },
+                    "proxy": {
+                      "type": "boolean",
+                      "description": "If true, route all requests to the Lambda Function\n\nIf set to false, you will need to explicitly define the API model using\n`addResource` and `addMethod` (or `addProxy`)."
+                    }
+                  },
+                  "required": [
+                    "handler"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-apigateway.LambdaRestApi"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "MethodProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "httpMethod": {
+                      "type": "string",
+                      "description": "The HTTP method (\"GET\", \"POST\", \"PUT\", ...) that clients use to call this method."
+                    },
+                    "resource": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The resource this method is associated with. For root resource methods,\nspecify the `RestApi` object."
+                    },
+                    "options": {
+                      "type": "object",
+                      "title": "MethodOptions",
+                      "additionalProperties": false,
+                      "properties": {
+                        "apiKeyRequired": {
+                          "type": "boolean",
+                          "description": "Indicates whether the method requires clients to submit a valid API key."
+                        },
+                        "authorizationType": {
+                          "enum": [
+                            "None",
+                            "IAM",
+                            "Custom",
+                            "Cognito"
+                          ],
+                          "description": "Method authorization."
+                        },
+                        "authorizerId": {
+                          "type": "string",
+                          "description": "If `authorizationType` is `Custom`, this specifies the ID of the method\nauthorizer resource.\n\nNOTE: in the future this will be replaced with an `IAuthorizer`\nconstruct."
+                        },
+                        "operationName": {
+                          "type": "string",
+                          "description": "A friendly operation name for the method. For example, you can assign the\nOperationName of ListPets for the GET /pets method."
+                        },
+                        "requestParameters": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "boolean"
+                          }
+                        }
+                      },
+                      "required": [],
+                      "description": "Method options."
+                    }
+                  },
+                  "required": [
+                    "httpMethod",
+                    "resource"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-apigateway.Method"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "ProxyResourceProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "defaultMethodOptions": {
+                      "type": "object",
+                      "title": "MethodOptions",
+                      "additionalProperties": false,
+                      "properties": {
+                        "apiKeyRequired": {
+                          "type": "boolean",
+                          "description": "Indicates whether the method requires clients to submit a valid API key."
+                        },
+                        "authorizationType": {
+                          "enum": [
+                            "None",
+                            "IAM",
+                            "Custom",
+                            "Cognito"
+                          ],
+                          "description": "Method authorization."
+                        },
+                        "authorizerId": {
+                          "type": "string",
+                          "description": "If `authorizationType` is `Custom`, this specifies the ID of the method\nauthorizer resource.\n\nNOTE: in the future this will be replaced with an `IAuthorizer`\nconstruct."
+                        },
+                        "operationName": {
+                          "type": "string",
+                          "description": "A friendly operation name for the method. For example, you can assign the\nOperationName of ListPets for the GET /pets method."
+                        },
+                        "requestParameters": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "boolean"
+                          }
+                        }
+                      },
+                      "required": [],
+                      "description": "Method options to use as a default for all methods created within this\nAPI unless custom options are specified."
+                    },
+                    "parent": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The parent resource of this resource. You can either pass another\n`Resource` object or a `RestApi` object here."
+                    },
+                    "anyMethod": {
+                      "type": "boolean",
+                      "description": "Adds an \"ANY\" method to this resource. If set to `false`, you will have to explicitly\nadd methods to this resource after it's created."
+                    }
+                  },
+                  "required": [
+                    "parent"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-apigateway.ProxyResource"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "ResourceProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "defaultMethodOptions": {
+                      "type": "object",
+                      "title": "MethodOptions",
+                      "additionalProperties": false,
+                      "properties": {
+                        "apiKeyRequired": {
+                          "type": "boolean",
+                          "description": "Indicates whether the method requires clients to submit a valid API key."
+                        },
+                        "authorizationType": {
+                          "enum": [
+                            "None",
+                            "IAM",
+                            "Custom",
+                            "Cognito"
+                          ],
+                          "description": "Method authorization."
+                        },
+                        "authorizerId": {
+                          "type": "string",
+                          "description": "If `authorizationType` is `Custom`, this specifies the ID of the method\nauthorizer resource.\n\nNOTE: in the future this will be replaced with an `IAuthorizer`\nconstruct."
+                        },
+                        "operationName": {
+                          "type": "string",
+                          "description": "A friendly operation name for the method. For example, you can assign the\nOperationName of ListPets for the GET /pets method."
+                        },
+                        "requestParameters": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "boolean"
+                          }
+                        }
+                      },
+                      "required": [],
+                      "description": "Method options to use as a default for all methods created within this\nAPI unless custom options are specified."
+                    },
+                    "parent": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The parent resource of this resource. You can either pass another\n`Resource` object or a `RestApi` object here."
+                    },
+                    "pathPart": {
+                      "type": "string",
+                      "description": "A path name for the resource."
+                    }
+                  },
+                  "required": [
+                    "parent",
+                    "pathPart"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-apigateway.Resource"
                   ],
                   "type": "string"
                 }
@@ -40037,6 +41902,15 @@
                         "type": "string"
                       },
                       "description": "The list of binary media mine-types that are supported by the RestApi\nresource, such as \"image/png\" or \"application/octet-stream\""
+                    },
+                    "cloneFrom": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The ID of the API Gateway RestApi resource that you want to clone."
                     },
                     "cloudWatchRole": {
                       "type": "boolean",
@@ -40228,6 +42102,781 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "StageProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "cacheDataEncrypted": {
+                      "type": "boolean",
+                      "description": "Indicates whether the cached responses are encrypted."
+                    },
+                    "cacheTtlSeconds": {
+                      "type": "number",
+                      "description": "Specifies the time to live (TTL), in seconds, for cached responses. The\nhigher the TTL, the longer the response will be cached."
+                    },
+                    "cachingEnabled": {
+                      "type": "boolean",
+                      "description": "Specifies whether responses should be cached and returned for requests. A\ncache cluster must be enabled on the stage for responses to be cached."
+                    },
+                    "dataTraceEnabled": {
+                      "type": "boolean",
+                      "description": "Specifies whether data trace logging is enabled for this method, which\neffects the log entries pushed to Amazon CloudWatch Logs."
+                    },
+                    "loggingLevel": {
+                      "enum": [
+                        "Off",
+                        "Error",
+                        "Info"
+                      ],
+                      "description": "Specifies the logging level for this method, which effects the log\nentries pushed to Amazon CloudWatch Logs."
+                    },
+                    "metricsEnabled": {
+                      "type": "boolean",
+                      "description": "Specifies whether Amazon CloudWatch metrics are enabled for this method."
+                    },
+                    "throttlingBurstLimit": {
+                      "type": "number",
+                      "description": "Specifies the throttling burst limit."
+                    },
+                    "throttlingRateLimit": {
+                      "type": "number",
+                      "description": "Specifies the throttling rate limit."
+                    },
+                    "cacheClusterEnabled": {
+                      "type": "boolean",
+                      "description": "Indicates whether cache clustering is enabled for the stage."
+                    },
+                    "cacheClusterSize": {
+                      "type": "string",
+                      "description": "The stage's cache cluster size."
+                    },
+                    "clientCertificateId": {
+                      "type": "string",
+                      "description": "The identifier of the client certificate that API Gateway uses to call\nyour integration endpoints in the stage."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "A description of the purpose of the stage."
+                    },
+                    "documentationVersion": {
+                      "type": "string",
+                      "description": "The version identifier of the API documentation snapshot."
+                    },
+                    "methodOptions": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "title": "MethodDeploymentOptions",
+                        "additionalProperties": false,
+                        "properties": {
+                          "cacheDataEncrypted": {
+                            "type": "boolean",
+                            "description": "Indicates whether the cached responses are encrypted."
+                          },
+                          "cacheTtlSeconds": {
+                            "type": "number",
+                            "description": "Specifies the time to live (TTL), in seconds, for cached responses. The\nhigher the TTL, the longer the response will be cached."
+                          },
+                          "cachingEnabled": {
+                            "type": "boolean",
+                            "description": "Specifies whether responses should be cached and returned for requests. A\ncache cluster must be enabled on the stage for responses to be cached."
+                          },
+                          "dataTraceEnabled": {
+                            "type": "boolean",
+                            "description": "Specifies whether data trace logging is enabled for this method, which\neffects the log entries pushed to Amazon CloudWatch Logs."
+                          },
+                          "loggingLevel": {
+                            "enum": [
+                              "Off",
+                              "Error",
+                              "Info"
+                            ],
+                            "description": "Specifies the logging level for this method, which effects the log\nentries pushed to Amazon CloudWatch Logs."
+                          },
+                          "metricsEnabled": {
+                            "type": "boolean",
+                            "description": "Specifies whether Amazon CloudWatch metrics are enabled for this method."
+                          },
+                          "throttlingBurstLimit": {
+                            "type": "number",
+                            "description": "Specifies the throttling burst limit."
+                          },
+                          "throttlingRateLimit": {
+                            "type": "number",
+                            "description": "Specifies the throttling rate limit."
+                          }
+                        },
+                        "required": []
+                      },
+                      "description": "Method deployment options for specific resources/methods. These will\noverride common options defined in `StageOptions#methodOptions`."
+                    },
+                    "stageName": {
+                      "type": "string",
+                      "description": "The name of the stage, which API Gateway uses as the first path segment\nin the invoked Uniform Resource Identifier (URI)."
+                    },
+                    "tracingEnabled": {
+                      "type": "boolean",
+                      "description": "Specifies whether Amazon X-Ray tracing is enabled for this method."
+                    },
+                    "variables": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "A map that defines the stage variables. Variable names must consist of\nalphanumeric characters, and the values must match the following regular\nexpression: [A-Za-z0-9-._~:/?#&amp;=,]+."
+                    },
+                    "deployment": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The deployment that this stage points to."
+                    }
+                  },
+                  "required": [
+                    "deployment"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-apigateway.Stage"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "VpcLinkProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "targets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "The network load balancers of the VPC targeted by the VPC link.\nThe network load balancers must be owned by the same AWS account of the API owner."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "The description of the VPC link."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name used to label and identify the VPC link."
+                    }
+                  },
+                  "required": [
+                    "targets"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-apigateway.VpcLink"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "ApplicationListenerProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "certificateArns": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The certificates to use on this listener"
+                    },
+                    "open": {
+                      "type": "boolean",
+                      "description": "Allow anyone to connect to this listener\n\nIf this is specified, the listener will be opened up to anyone who can reach it.\nFor internal load balancers this is anyone in the same VPC. For public load\nbalancers, this is anyone on the internet.\n\nIf you want to be more selective about who can access this load\nbalancer, set this to `false` and use the listener's `connections`\nobject to selectively grant access to the listener."
+                    },
+                    "port": {
+                      "type": "number",
+                      "description": "The port on which the listener listens for requests."
+                    },
+                    "protocol": {
+                      "enum": [
+                        "Http",
+                        "Https"
+                      ],
+                      "description": "The protocol to use"
+                    },
+                    "sslPolicy": {
+                      "enum": [
+                        "Recommended",
+                        "ForwardSecrecy",
+                        "TLS12",
+                        "TLS12Ext",
+                        "TLS11",
+                        "Legacy"
+                      ],
+                      "description": "The security policy that defines which ciphers and protocols are supported."
+                    },
+                    "loadBalancer": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The load balancer to attach this listener to"
+                    }
+                  },
+                  "required": [
+                    "loadBalancer"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-elasticloadbalancingv2.ApplicationListener"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "ApplicationListenerCertificateProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "certificateArns": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "ARNs of certificates to attach\n\nDuplicates are not allowed."
+                    },
+                    "listener": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The listener to attach the rule to"
+                    }
+                  },
+                  "required": [
+                    "certificateArns",
+                    "listener"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerCertificate"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "ApplicationListenerRuleProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "priority": {
+                      "type": "number",
+                      "description": "Priority of the rule\n\nThe rule with the lowest priority will be used for every request.\n\nPriorities must be unique."
+                    },
+                    "hostHeader": {
+                      "type": "string",
+                      "description": "Rule applies if the requested host matches the indicated host\n\nMay contain up to three '*' wildcards."
+                    },
+                    "pathPattern": {
+                      "type": "string",
+                      "description": "Rule applies if the requested path matches the given path pattern\n\nMay contain up to three '*' wildcards."
+                    },
+                    "listener": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The listener to attach the rule to"
+                    }
+                  },
+                  "required": [
+                    "priority",
+                    "listener"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerRule"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "ApplicationLoadBalancerProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "vpc": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The VPC network to place the load balancer in"
+                    },
+                    "deletionProtection": {
+                      "type": "boolean",
+                      "description": "Indicates whether deletion protection is enabled."
+                    },
+                    "internetFacing": {
+                      "type": "boolean",
+                      "description": "Whether the load balancer has an internet-routable address"
+                    },
+                    "loadBalancerName": {
+                      "type": "string",
+                      "description": "Name of the load balancer"
+                    },
+                    "vpcPlacement": {
+                      "type": "object",
+                      "title": "VpcPlacementStrategy",
+                      "additionalProperties": false,
+                      "properties": {
+                        "subnetName": {
+                          "type": "string",
+                          "description": "Place the instances in the subnets with the given name\n\n(This is the name supplied in subnetConfiguration).\n\nAt most one of `subnetsToUse` and `subnetName` can be supplied."
+                        },
+                        "subnetsToUse": {
+                          "enum": [
+                            "Isolated",
+                            "Private",
+                            "Public"
+                          ],
+                          "description": "Place the instances in the subnets of the given type\n\nAt most one of `subnetsToUse` and `subnetName` can be supplied."
+                        }
+                      },
+                      "required": [],
+                      "description": "Where in the VPC to place the load balancer"
+                    },
+                    "http2Enabled": {
+                      "type": "boolean",
+                      "description": "Indicates whether HTTP/2 is enabled."
+                    },
+                    "idleTimeoutSecs": {
+                      "type": "number",
+                      "description": "The load balancer idle timeout, in seconds"
+                    },
+                    "ipAddressType": {
+                      "enum": [
+                        "Ipv4",
+                        "DualStack"
+                      ],
+                      "description": "The type of IP addresses to use\n\nOnly applies to application load balancers."
+                    },
+                    "securityGroup": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Security group to associate with this load balancer"
+                    }
+                  },
+                  "required": [
+                    "vpc"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-elasticloadbalancingv2.ApplicationLoadBalancer"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "ApplicationTargetGroupProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "vpc": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The virtual private cloud (VPC)."
+                    },
+                    "deregistrationDelaySec": {
+                      "type": "number",
+                      "description": "The amount of time for Elastic Load Balancing to wait before deregistering a target.\n\nThe range is 0–3600 seconds."
+                    },
+                    "healthCheck": {
+                      "type": "object",
+                      "title": "HealthCheck",
+                      "additionalProperties": false,
+                      "properties": {
+                        "healthyHttpCodes": {
+                          "type": "string",
+                          "description": "HTTP code to use when checking for a successful response from a target.\n\nFor Application Load Balancers, you can specify values between 200 and\n499, and the default value is 200. You can specify multiple values (for\nexample, \"200,202\") or a range of values (for example, \"200-299\")."
+                        },
+                        "healthyThresholdCount": {
+                          "type": "number",
+                          "description": "The number of consecutive health checks successes required before considering an unhealthy target healthy.\n\nFor Application Load Balancers, the default is 5. For Network Load Balancers, the default is 3."
+                        },
+                        "intervalSecs": {
+                          "type": "number",
+                          "description": "The approximate number of seconds between health checks for an individual target."
+                        },
+                        "path": {
+                          "type": "string",
+                          "description": "The ping path destination where Elastic Load Balancing sends health check requests."
+                        },
+                        "port": {
+                          "type": "string",
+                          "description": "The port that the load balancer uses when performing health checks on the targets."
+                        },
+                        "protocol": {
+                          "enum": [
+                            "Http",
+                            "Https",
+                            "Tcp"
+                          ],
+                          "description": "The protocol the load balancer uses when performing health checks on targets.\n\nThe TCP protocol is supported only if the protocol of the target group\nis TCP."
+                        },
+                        "timeoutSeconds": {
+                          "type": "number",
+                          "description": "The amount of time, in seconds, during which no response from a target means a failed health check.\n\nFor Application Load Balancers, the range is 2–60 seconds and the\ndefault is 5 seconds. For Network Load Balancers, this is 10 seconds for\nTCP and HTTPS health checks and 6 seconds for HTTP health checks."
+                        },
+                        "unhealthyThresholdCount": {
+                          "type": "number",
+                          "description": "The number of consecutive health check failures required before considering a target unhealthy.\n\nFor Application Load Balancers, the default is 2. For Network Load\nBalancers, this value must be the same as the healthy threshold count."
+                        }
+                      },
+                      "required": [],
+                      "description": "Health check configuration"
+                    },
+                    "targetGroupName": {
+                      "type": "string",
+                      "description": "The name of the target group.\n\nThis name must be unique per region per account, can have a maximum of\n32 characters, must contain only alphanumeric characters or hyphens, and\nmust not begin or end with a hyphen."
+                    },
+                    "targetType": {
+                      "enum": [
+                        "Instance",
+                        "Ip"
+                      ],
+                      "description": "The type of targets registered to this TargetGroup, either IP or Instance.\n\nAll targets registered into the group must be of this type. If you\nregister targets to the TargetGroup in the CDK app, the TargetType is\ndetermined automatically."
+                    },
+                    "port": {
+                      "type": "number",
+                      "description": "The port on which the listener listens for requests."
+                    },
+                    "protocol": {
+                      "enum": [
+                        "Http",
+                        "Https"
+                      ],
+                      "description": "The protocol to use"
+                    },
+                    "slowStartSec": {
+                      "type": "number",
+                      "description": "The time period during which the load balancer sends a newly registered\ntarget a linearly increasing share of the traffic to the target group.\n\nThe range is 30–900 seconds (15 minutes)."
+                    },
+                    "stickinessCookieDurationSec": {
+                      "type": "number",
+                      "description": "The stickiness cookie expiration period.\n\nSetting this value enables load balancer stickiness.\n\nAfter this period, the cookie is considered stale. The minimum value is\n1 second and the maximum value is 7 days (604800 seconds)."
+                    }
+                  },
+                  "required": [
+                    "vpc"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-elasticloadbalancingv2.ApplicationTargetGroup"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "NetworkListenerProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "port": {
+                      "type": "number",
+                      "description": "The port on which the listener listens for requests."
+                    },
+                    "loadBalancer": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The load balancer to attach this listener to"
+                    }
+                  },
+                  "required": [
+                    "port",
+                    "loadBalancer"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-elasticloadbalancingv2.NetworkListener"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "NetworkLoadBalancerProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "vpc": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The VPC network to place the load balancer in"
+                    },
+                    "deletionProtection": {
+                      "type": "boolean",
+                      "description": "Indicates whether deletion protection is enabled."
+                    },
+                    "internetFacing": {
+                      "type": "boolean",
+                      "description": "Whether the load balancer has an internet-routable address"
+                    },
+                    "loadBalancerName": {
+                      "type": "string",
+                      "description": "Name of the load balancer"
+                    },
+                    "vpcPlacement": {
+                      "type": "object",
+                      "title": "VpcPlacementStrategy",
+                      "additionalProperties": false,
+                      "properties": {
+                        "subnetName": {
+                          "type": "string",
+                          "description": "Place the instances in the subnets with the given name\n\n(This is the name supplied in subnetConfiguration).\n\nAt most one of `subnetsToUse` and `subnetName` can be supplied."
+                        },
+                        "subnetsToUse": {
+                          "enum": [
+                            "Isolated",
+                            "Private",
+                            "Public"
+                          ],
+                          "description": "Place the instances in the subnets of the given type\n\nAt most one of `subnetsToUse` and `subnetName` can be supplied."
+                        }
+                      },
+                      "required": [],
+                      "description": "Where in the VPC to place the load balancer"
+                    },
+                    "crossZoneEnabled": {
+                      "type": "boolean",
+                      "description": "Indicates whether cross-zone load balancing is enabled."
+                    }
+                  },
+                  "required": [
+                    "vpc"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-elasticloadbalancingv2.NetworkLoadBalancer"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "NetworkTargetGroupProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "vpc": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The virtual private cloud (VPC)."
+                    },
+                    "deregistrationDelaySec": {
+                      "type": "number",
+                      "description": "The amount of time for Elastic Load Balancing to wait before deregistering a target.\n\nThe range is 0–3600 seconds."
+                    },
+                    "healthCheck": {
+                      "type": "object",
+                      "title": "HealthCheck",
+                      "additionalProperties": false,
+                      "properties": {
+                        "healthyHttpCodes": {
+                          "type": "string",
+                          "description": "HTTP code to use when checking for a successful response from a target.\n\nFor Application Load Balancers, you can specify values between 200 and\n499, and the default value is 200. You can specify multiple values (for\nexample, \"200,202\") or a range of values (for example, \"200-299\")."
+                        },
+                        "healthyThresholdCount": {
+                          "type": "number",
+                          "description": "The number of consecutive health checks successes required before considering an unhealthy target healthy.\n\nFor Application Load Balancers, the default is 5. For Network Load Balancers, the default is 3."
+                        },
+                        "intervalSecs": {
+                          "type": "number",
+                          "description": "The approximate number of seconds between health checks for an individual target."
+                        },
+                        "path": {
+                          "type": "string",
+                          "description": "The ping path destination where Elastic Load Balancing sends health check requests."
+                        },
+                        "port": {
+                          "type": "string",
+                          "description": "The port that the load balancer uses when performing health checks on the targets."
+                        },
+                        "protocol": {
+                          "enum": [
+                            "Http",
+                            "Https",
+                            "Tcp"
+                          ],
+                          "description": "The protocol the load balancer uses when performing health checks on targets.\n\nThe TCP protocol is supported only if the protocol of the target group\nis TCP."
+                        },
+                        "timeoutSeconds": {
+                          "type": "number",
+                          "description": "The amount of time, in seconds, during which no response from a target means a failed health check.\n\nFor Application Load Balancers, the range is 2–60 seconds and the\ndefault is 5 seconds. For Network Load Balancers, this is 10 seconds for\nTCP and HTTPS health checks and 6 seconds for HTTP health checks."
+                        },
+                        "unhealthyThresholdCount": {
+                          "type": "number",
+                          "description": "The number of consecutive health check failures required before considering a target unhealthy.\n\nFor Application Load Balancers, the default is 2. For Network Load\nBalancers, this value must be the same as the healthy threshold count."
+                        }
+                      },
+                      "required": [],
+                      "description": "Health check configuration"
+                    },
+                    "targetGroupName": {
+                      "type": "string",
+                      "description": "The name of the target group.\n\nThis name must be unique per region per account, can have a maximum of\n32 characters, must contain only alphanumeric characters or hyphens, and\nmust not begin or end with a hyphen."
+                    },
+                    "targetType": {
+                      "enum": [
+                        "Instance",
+                        "Ip"
+                      ],
+                      "description": "The type of targets registered to this TargetGroup, either IP or Instance.\n\nAll targets registered into the group must be of this type. If you\nregister targets to the TargetGroup in the CDK app, the TargetType is\ndetermined automatically."
+                    },
+                    "port": {
+                      "type": "number",
+                      "description": "The port on which the listener listens for requests."
+                    },
+                    "proxyProtocolV2": {
+                      "type": "boolean",
+                      "description": "Indicates whether Proxy Protocol version 2 is enabled."
+                    }
+                  },
+                  "required": [
+                    "vpc",
+                    "port"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-elasticloadbalancingv2.NetworkTargetGroup"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "CnameRecordProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "recordName": {
+                      "type": "string",
+                      "description": "The domain name for this record set."
+                    },
+                    "recordValue": {
+                      "type": "string",
+                      "description": "The value for this record set."
+                    },
+                    "zone": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The hosted zone in which to define the new TXT record."
+                    },
+                    "ttl": {
+                      "type": "number",
+                      "description": "The resource record cache time to live (TTL) in seconds."
+                    }
+                  },
+                  "required": [
+                    "recordName",
+                    "recordValue",
+                    "zone"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-route53.CnameRecord"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "HostedZoneProps",
                   "additionalProperties": false,
                   "properties": {
@@ -40242,6 +42891,18 @@
                     "queryLogsLogGroupArn": {
                       "type": "string",
                       "description": "The Amazon Resource Name (ARN) for the log group that you want Amazon Route 53 to send query logs to."
+                    },
+                    "vpcs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "A VPC that you want to associate with this hosted zone. When you specify\nthis property, a private hosted zone will be created.\n\nYou can associate additional VPCs to this private zone using `addVpc(vpc)`."
                     }
                   },
                   "required": [
@@ -40251,6 +42912,49 @@
                 "Type": {
                   "enum": [
                     "@aws-cdk/aws-route53.HostedZone"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "PrivateHostedZoneProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "zoneName": {
+                      "type": "string",
+                      "description": "The name of the domain. For resource record types that include a domain\nname, specify a fully qualified domain name."
+                    },
+                    "comment": {
+                      "type": "string",
+                      "description": "Any comments that you want to include about the hosted zone."
+                    },
+                    "queryLogsLogGroupArn": {
+                      "type": "string",
+                      "description": "The Amazon Resource Name (ARN) for the log group that you want Amazon Route 53 to send query logs to."
+                    },
+                    "vpc": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "A VPC that you want to associate with this hosted zone.\n\nPrivate hosted zones must be associated with at least one VPC. You can\nassociated additional VPCs using `addVpc(vpc)`."
+                    }
+                  },
+                  "required": [
+                    "zoneName",
+                    "vpc"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-route53.PrivateHostedZone"
                   ],
                   "type": "string"
                 }
@@ -40294,6 +42998,101 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "TxtRecordProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "recordName": {
+                      "type": "string",
+                      "description": "The domain name for this record set."
+                    },
+                    "recordValue": {
+                      "type": "string",
+                      "description": "The value for this record set."
+                    },
+                    "zone": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The hosted zone in which to define the new TXT record."
+                    },
+                    "ttl": {
+                      "type": "number",
+                      "description": "The resource record cache time to live (TTL) in seconds."
+                    }
+                  },
+                  "required": [
+                    "recordName",
+                    "recordValue",
+                    "zone"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-route53.TxtRecord"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "ZoneDelegationRecordProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "delegatedZoneName": {
+                      "type": "string",
+                      "description": "The name of the zone that delegation is made to."
+                    },
+                    "nameServers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The name servers to report in the delegation records."
+                    },
+                    "zone": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The zone in which this delegate is defined."
+                    },
+                    "comment": {
+                      "type": "string",
+                      "description": "Any comments that you want to include about the zone delegation records."
+                    },
+                    "ttl": {
+                      "type": "number",
+                      "description": "The TTL of the zone delegation records."
+                    }
+                  },
+                  "required": [
+                    "delegatedZoneName",
+                    "nameServers",
+                    "zone"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-route53.ZoneDelegationRecord"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "ScalableTargetProps",
                   "additionalProperties": false,
                   "properties": {
@@ -40325,6 +43124,15 @@
                         "CustomResource"
                       ],
                       "description": "The namespace of the AWS service that provides the resource or\ncustom-resource for a resource provided by your own application or\nservice.\n\nFor valid AWS service namespace values, see the RegisterScalableTarget\naction in the Application Auto Scaling API Reference."
+                    },
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Role that allows Application Auto Scaling to modify your scalable target."
                     }
                   },
                   "required": [
@@ -40338,6 +43146,263 @@
                 "Type": {
                   "enum": [
                     "@aws-cdk/aws-applicationautoscaling.ScalableTarget"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "StepScalingActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "scalingTarget": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The scalable target"
+                    },
+                    "adjustmentType": {
+                      "enum": [
+                        "ChangeInCapacity",
+                        "PercentChangeInCapacity",
+                        "ExactCapacity"
+                      ],
+                      "description": "How the adjustment numbers are interpreted"
+                    },
+                    "cooldownSec": {
+                      "type": "number",
+                      "description": "Grace period after scaling activity.\n\nFor scale out policies, multiple scale outs during the cooldown period are\nsquashed so that only the biggest scale out happens.\n\nFor scale in policies, subsequent scale ins during the cooldown period are\nignored."
+                    },
+                    "metricAggregationType": {
+                      "enum": [
+                        "Average",
+                        "Minimum",
+                        "Maximum"
+                      ],
+                      "description": "The aggregation type for the CloudWatch metrics."
+                    },
+                    "minAdjustmentMagnitude": {
+                      "type": "number",
+                      "description": "Minimum absolute number to adjust capacity with as result of percentage scaling.\n\nOnly when using AdjustmentType = PercentChangeInCapacity, this number controls\nthe minimum absolute effect size."
+                    },
+                    "policyName": {
+                      "type": "string",
+                      "description": "A name for the scaling policy"
+                    }
+                  },
+                  "required": [
+                    "scalingTarget"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-applicationautoscaling.StepScalingAction"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "TargetTrackingScalingPolicyProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "disableScaleIn": {
+                      "type": "boolean",
+                      "description": "Indicates whether scale in by the target tracking policy is disabled.\n\nIf the value is true, scale in is disabled and the target tracking policy\nwon't remove capacity from the scalable resource. Otherwise, scale in is\nenabled and the target tracking policy can remove capacity from the\nscalable resource."
+                    },
+                    "policyName": {
+                      "type": "string",
+                      "description": "A name for the scaling policy"
+                    },
+                    "scaleInCooldownSec": {
+                      "type": "number",
+                      "description": "Period after a scale in activity completes before another scale in activity can start."
+                    },
+                    "scaleOutCooldownSec": {
+                      "type": "number",
+                      "description": "Period after a scale out activity completes before another scale out activity can start."
+                    },
+                    "targetValue": {
+                      "type": "number",
+                      "description": "The target value for the metric."
+                    },
+                    "predefinedMetric": {
+                      "enum": [
+                        "DynamoDBReadCapacityUtilization",
+                        "DynamoDBWriteCapacityUtilization",
+                        "ALBRequestCountPerTarget",
+                        "RDSReaderAverageCPUUtilization",
+                        "RDSReaderAverageDatabaseConnections",
+                        "EC2SpotFleetRequestAverageCPUUtilization",
+                        "EC2SpotFleetRequestAverageNetworkIn",
+                        "EC2SpotFleetRequestAverageNetworkOut",
+                        "SageMakerVariantInvocationsPerInstance",
+                        "ECSServiceAverageCPUUtilization",
+                        "ECSServiceAverageMemoryUtilization"
+                      ],
+                      "description": "A predefined metric for application autoscaling\n\nThe metric must track utilization. Scaling out will happen if the metric is higher than\nthe target value, scaling in will happen in the metric is lower than the target value.\n\nExactly one of customMetric or predefinedMetric must be specified."
+                    },
+                    "resourceLabel": {
+                      "type": "string",
+                      "description": "Identify the resource associated with the metric type.\n\nOnly used for predefined metric ALBRequestCountPerTarget."
+                    },
+                    "scalingTarget": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "targetValue",
+                    "scalingTarget"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicy"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "LoadBalancerProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "vpc": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "VPC network of the fleet instances"
+                    },
+                    "healthCheck": {
+                      "type": "object",
+                      "title": "HealthCheck",
+                      "additionalProperties": false,
+                      "properties": {
+                        "port": {
+                          "type": "number",
+                          "description": "What port number to health check on"
+                        },
+                        "healthyThreshold": {
+                          "type": "number",
+                          "description": "After how many successful checks is an instance considered healthy"
+                        },
+                        "interval": {
+                          "type": "number",
+                          "description": "Number of seconds between health checks"
+                        },
+                        "path": {
+                          "type": "string",
+                          "description": "What path to use for HTTP or HTTPS health check (must return 200)\n\nFor SSL and TCP health checks, accepting connections is enough to be considered\nhealthy."
+                        },
+                        "protocol": {
+                          "enum": [
+                            "Tcp",
+                            "Ssl",
+                            "Http",
+                            "Https"
+                          ],
+                          "description": "What protocol to use for health checking\n\nThe protocol is automatically determined from the port if it's not supplied."
+                        },
+                        "timeout": {
+                          "type": "number",
+                          "description": "Health check timeout"
+                        },
+                        "unhealthyThreshold": {
+                          "type": "number",
+                          "description": "After how many unsuccessful checks is an instance considered unhealthy"
+                        }
+                      },
+                      "required": [
+                        "port"
+                      ],
+                      "description": "Health check settings for the load balancing targets.\n\nNot required but recommended."
+                    },
+                    "internetFacing": {
+                      "type": "boolean",
+                      "description": "Whether this is an internet-facing Load Balancer\n\nThis controls whether the LB has a public IP address assigned. It does\nnot open up the Load Balancer's security groups to public internet access."
+                    },
+                    "listeners": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "title": "LoadBalancerListener",
+                        "additionalProperties": false,
+                        "properties": {
+                          "externalPort": {
+                            "type": "number",
+                            "description": "External listening port"
+                          },
+                          "externalProtocol": {
+                            "enum": [
+                              "Tcp",
+                              "Ssl",
+                              "Http",
+                              "Https"
+                            ],
+                            "description": "What public protocol to use for load balancing\n\nEither 'tcp', 'ssl', 'http' or 'https'.\n\nMay be omitted if the external port is either 80 or 443."
+                          },
+                          "internalPort": {
+                            "type": "number",
+                            "description": "Instance listening port\n\nSame as the externalPort if not specified."
+                          },
+                          "internalProtocol": {
+                            "enum": [
+                              "Tcp",
+                              "Ssl",
+                              "Http",
+                              "Https"
+                            ],
+                            "description": "What public protocol to use for load balancing\n\nEither 'tcp', 'ssl', 'http' or 'https'.\n\nMay be omitted if the internal port is either 80 or 443.\n\nThe instance protocol is 'tcp' if the front-end protocol\nis 'tcp' or 'ssl', the instance protocol is 'http' if the\nfront-end protocol is 'https'."
+                          },
+                          "policyNames": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "SSL policy names"
+                          },
+                          "sslCertificateId": {
+                            "type": "string",
+                            "description": "ID of SSL certificate"
+                          }
+                        },
+                        "required": [
+                          "externalPort"
+                        ]
+                      },
+                      "description": "What listeners to set up for the load balancer.\n\nCan also be added by .addListener()"
+                    }
+                  },
+                  "required": [
+                    "vpc"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-elasticloadbalancing.LoadBalancer"
                   ],
                   "type": "string"
                 }
@@ -40599,6 +43664,35 @@
                           "originPath": {
                             "type": "string",
                             "description": "The relative path to the origin root to use for sources."
+                          },
+                          "s3OriginSource": {
+                            "type": "object",
+                            "title": "S3OriginConfig",
+                            "additionalProperties": false,
+                            "properties": {
+                              "s3BucketSource": {
+                                "type": "object",
+                                "properties": {
+                                  "Ref": {
+                                    "type": "string"
+                                  }
+                                },
+                                "description": "The source bucket to serve content from"
+                              },
+                              "originAccessIdentity": {
+                                "type": "object",
+                                "properties": {
+                                  "Ref": {
+                                    "type": "string"
+                                  }
+                                },
+                                "description": "The optional origin identity cloudfront will use when calling your s3 bucket."
+                              }
+                            },
+                            "required": [
+                              "s3BucketSource"
+                            ],
+                            "description": "An s3 origin source - if you're using s3 for your assets"
                           }
                         },
                         "required": [
@@ -40713,6 +43807,15 @@
                       "title": "LoggingConfiguration",
                       "additionalProperties": false,
                       "properties": {
+                        "bucket": {
+                          "type": "object",
+                          "properties": {
+                            "Ref": {
+                              "type": "string"
+                            }
+                          },
+                          "description": "Bucket to log requests to"
+                        },
                         "includeCookies": {
                           "type": "boolean",
                           "description": "Whether to include the cookies in the logs"
@@ -40800,6 +43903,15 @@
                       "type": "boolean",
                       "description": "Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account."
                     },
+                    "kmsKey": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs."
+                    },
                     "managementEvents": {
                       "enum": [
                         "ReadOnly",
@@ -40830,6 +43942,59 @@
                 "Type": {
                   "enum": [
                     "@aws-cdk/aws-cloudtrail.CloudTrail"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "PipelineDeployActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "runOrder": {
+                      "type": "number",
+                      "description": "The runOrder property for this Action.\nRunOrder determines the relative order in which multiple Actions in the same Stage execute."
+                    },
+                    "inputArtifact": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The source to use as input for deployment."
+                    },
+                    "stage": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Pipeline Stage to add this Action to."
+                    },
+                    "deploymentGroup": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The CodeDeploy Deployment Group to deploy to."
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "deploymentGroup"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-codedeploy.PipelineDeployAction"
                   ],
                   "type": "string"
                 }
@@ -40897,6 +44062,27 @@
                   "title": "ServerDeploymentGroupProps",
                   "additionalProperties": false,
                   "properties": {
+                    "alarms": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "The CloudWatch alarms associated with this Deployment Group.\nCodeDeploy will stop (and optionally roll back)\na deployment if during it any of the alarms trigger.\n\nAlarms can also be added after the Deployment Group is created using the {@link #addAlarm} method."
+                    },
+                    "application": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The CodeDeploy EC2/on-premise Application this Deployment Group belongs to.\nIf you don't provide one, a new Application will be created."
+                    },
                     "autoRollback": {
                       "type": "object",
                       "title": "AutoRollbackConfig",
@@ -40918,6 +44104,18 @@
                       "required": [],
                       "description": "The auto-rollback configuration for this Deployment Group."
                     },
+                    "autoScalingGroups": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Ref": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "description": "The auto-scaling groups belonging to this Deployment Group.\n\nAuto-scaling groups can also be added after the Deployment Group is created using the {@link #addAutoScalingGroup} method."
+                    },
                     "deploymentGroupName": {
                       "type": "string",
                       "description": "The physical, human-readable name of the CodeDeploy Deployment Group."
@@ -40929,6 +44127,15 @@
                     "installAgent": {
                       "type": "boolean",
                       "description": "If you've provided any auto-scaling groups with the {@link #autoScalingGroups} property,\nyou can set this property to add User Data that installs the CodeDeploy agent on the instances."
+                    },
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The service Role of this Deployment Group.\nIf you don't provide one, a new Role will be created."
                     }
                   },
                   "required": []
@@ -40988,9 +44195,72 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "ManualApprovalActionProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "runOrder": {
+                      "type": "number",
+                      "description": "The runOrder property for this Action.\nRunOrder determines the relative order in which multiple Actions in the same Stage execute."
+                    },
+                    "stage": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Pipeline Stage to add this Action to."
+                    },
+                    "additionalInformation": {
+                      "type": "string",
+                      "description": "Any additional information that you want to include in the notification email message."
+                    },
+                    "notificationTopic": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Optional SNS topic to send notifications to when an approval is pending."
+                    },
+                    "notifyEmails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of email addresses to subscribe to notifications when this Action is pending approval.\nIf this has been provided, but not `notificationTopic`,\na new Topic will be created."
+                    }
+                  },
+                  "required": [
+                    "stage"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-codepipeline.ManualApprovalAction"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "PipelineProps",
                   "additionalProperties": false,
                   "properties": {
+                    "artifactBucket": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The S3 bucket used by this Pipeline to store artifacts.\nIf not specified, a new S3 bucket will be created."
+                    },
                     "crossRegionReplicationBuckets": {
                       "type": "object",
                       "additionalProperties": {
@@ -41012,6 +44282,67 @@
                 "Type": {
                   "enum": [
                     "@aws-cdk/aws-codepipeline.Pipeline"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "StageProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "placement": {
+                      "type": "object",
+                      "title": "StagePlacement",
+                      "additionalProperties": false,
+                      "properties": {
+                        "atIndex": {
+                          "type": "number",
+                          "description": "Inserts the new Stage at the given index in the Pipeline,\nmoving the Stage currently at that index,\nand any subsequent ones, one index down.\nIndexing starts at 0.\nThe maximum allowed value is {@link Pipeline#stageCount},\nwhich will insert the new Stage at the end of the Pipeline."
+                        },
+                        "justAfter": {
+                          "type": "object",
+                          "properties": {
+                            "Ref": {
+                              "type": "string"
+                            }
+                          },
+                          "description": "Inserts the new Stage as a child of the given Stage\n(changing its current child Stage, if it had one)."
+                        },
+                        "rightBefore": {
+                          "type": "object",
+                          "properties": {
+                            "Ref": {
+                              "type": "string"
+                            }
+                          },
+                          "description": "Inserts the new Stage as a parent of the given Stage\n(changing its current parent Stage, if it had one)."
+                        }
+                      },
+                      "required": [],
+                      "description": "Allows specifying where should the newly created {@link Stage}\nbe placed in the Pipeline."
+                    },
+                    "pipeline": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The Pipeline to add the newly created Stage to."
+                    }
+                  },
+                  "required": [
+                    "pipeline"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-codepipeline.Stage"
                   ],
                   "type": "string"
                 }
@@ -41172,6 +44503,15 @@
                       "type": "string",
                       "description": "This option defines a multiline start pattern in Python strftime format.\n\nA log message consists of a line that matches the pattern and any\nfollowing lines that don’t match the pattern. Thus the matched line is\nthe delimiter between log messages."
                     },
+                    "logGroup": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The log group to log to"
+                    },
                     "multilinePattern": {
                       "type": "string",
                       "description": "This option defines a multiline start pattern using a regular expression.\n\nA log message consists of a line that matches the pattern and any\nfollowing lines that don’t match the pattern. Thus the matched line is\nthe delimiter between log messages."
@@ -41194,12 +44534,162 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "ClusterProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "vpc": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The VPC where your ECS instances will be running or your ENIs will be deployed"
+                    },
+                    "clusterName": {
+                      "type": "string",
+                      "description": "A name for the cluster."
+                    }
+                  },
+                  "required": [
+                    "vpc"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-ecs.Cluster"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "Ec2ServiceProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "desiredCount": {
+                      "type": "number",
+                      "description": "Number of desired copies of running tasks"
+                    },
+                    "healthCheckGracePeriodSeconds": {
+                      "type": "number",
+                      "description": "Time after startup to ignore unhealthy load balancer checks."
+                    },
+                    "maximumPercent": {
+                      "type": "number",
+                      "description": "The maximum number of tasks, specified as a percentage of the Amazon ECS\nservice's DesiredCount value, that can run in a service during a\ndeployment."
+                    },
+                    "minimumHealthyPercent": {
+                      "type": "number",
+                      "description": "The minimum number of tasks, specified as a percentage of\nthe Amazon ECS service's DesiredCount value, that must\ncontinue to run and remain healthy during a deployment."
+                    },
+                    "serviceName": {
+                      "type": "string",
+                      "description": "A name for the service."
+                    },
+                    "cluster": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Cluster where service will be deployed"
+                    },
+                    "taskDefinition": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Task Definition used for running tasks in the service"
+                    },
+                    "daemon": {
+                      "type": "boolean",
+                      "description": "Deploy exactly one task on each instance in your cluster.\n\nWhen using this strategy, do not specify a desired number of tasks or any\ntask placement strategies."
+                    },
+                    "placeOnDistinctInstances": {
+                      "type": "boolean",
+                      "description": "Whether to start services on distinct instances"
+                    },
+                    "securityGroup": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Existing security group to use for the task's ENIs\n\n(Only applicable in case the TaskDefinition is configured for AwsVpc networking)"
+                    },
+                    "vpcPlacement": {
+                      "type": "object",
+                      "title": "VpcPlacementStrategy",
+                      "additionalProperties": false,
+                      "properties": {
+                        "subnetName": {
+                          "type": "string",
+                          "description": "Place the instances in the subnets with the given name\n\n(This is the name supplied in subnetConfiguration).\n\nAt most one of `subnetsToUse` and `subnetName` can be supplied."
+                        },
+                        "subnetsToUse": {
+                          "enum": [
+                            "Isolated",
+                            "Private",
+                            "Public"
+                          ],
+                          "description": "Place the instances in the subnets of the given type\n\nAt most one of `subnetsToUse` and `subnetName` can be supplied."
+                        }
+                      },
+                      "required": [],
+                      "description": "In what subnets to place the task's ENIs\n\n(Only applicable in case the TaskDefinition is configured for AwsVpc networking)"
+                    }
+                  },
+                  "required": [
+                    "cluster",
+                    "taskDefinition"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-ecs.Ec2Service"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "Ec2TaskDefinitionProps",
                   "additionalProperties": false,
                   "properties": {
+                    "executionRole": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The IAM role assumed by the ECS agent.\n\nThe role will be used to retrieve container images from ECR and\ncreate CloudWatch log groups."
+                    },
                     "family": {
                       "type": "string",
                       "description": "Namespace for task definition versions"
+                    },
+                    "taskRole": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The IAM role assumable by your application code running inside the container"
                     },
                     "volumes": {
                       "type": "array",
@@ -41323,12 +44813,133 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "FargateServiceProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "desiredCount": {
+                      "type": "number",
+                      "description": "Number of desired copies of running tasks"
+                    },
+                    "healthCheckGracePeriodSeconds": {
+                      "type": "number",
+                      "description": "Time after startup to ignore unhealthy load balancer checks."
+                    },
+                    "maximumPercent": {
+                      "type": "number",
+                      "description": "The maximum number of tasks, specified as a percentage of the Amazon ECS\nservice's DesiredCount value, that can run in a service during a\ndeployment."
+                    },
+                    "minimumHealthyPercent": {
+                      "type": "number",
+                      "description": "The minimum number of tasks, specified as a percentage of\nthe Amazon ECS service's DesiredCount value, that must\ncontinue to run and remain healthy during a deployment."
+                    },
+                    "serviceName": {
+                      "type": "string",
+                      "description": "A name for the service."
+                    },
+                    "cluster": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Cluster where service will be deployed"
+                    },
+                    "taskDefinition": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Task Definition used for running tasks in the service"
+                    },
+                    "assignPublicIp": {
+                      "type": "boolean",
+                      "description": "Assign public IP addresses to each task"
+                    },
+                    "platformVersion": {
+                      "enum": [
+                        "Latest",
+                        "Version1_2",
+                        "Version1_1",
+                        "Version1_0"
+                      ],
+                      "description": "Fargate platform version to run this service on\n\nUnless you have specific compatibility requirements, you don't need to\nspecify this."
+                    },
+                    "securityGroup": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Existing security group to use for the tasks"
+                    },
+                    "vpcPlacement": {
+                      "type": "object",
+                      "title": "VpcPlacementStrategy",
+                      "additionalProperties": false,
+                      "properties": {
+                        "subnetName": {
+                          "type": "string",
+                          "description": "Place the instances in the subnets with the given name\n\n(This is the name supplied in subnetConfiguration).\n\nAt most one of `subnetsToUse` and `subnetName` can be supplied."
+                        },
+                        "subnetsToUse": {
+                          "enum": [
+                            "Isolated",
+                            "Private",
+                            "Public"
+                          ],
+                          "description": "Place the instances in the subnets of the given type\n\nAt most one of `subnetsToUse` and `subnetName` can be supplied."
+                        }
+                      },
+                      "required": [],
+                      "description": "In what subnets to place the task's ENIs"
+                    }
+                  },
+                  "required": [
+                    "cluster",
+                    "taskDefinition"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-ecs.FargateService"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "FargateTaskDefinitionProps",
                   "additionalProperties": false,
                   "properties": {
+                    "executionRole": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The IAM role assumed by the ECS agent.\n\nThe role will be used to retrieve container images from ECR and\ncreate CloudWatch log groups."
+                    },
                     "family": {
                       "type": "string",
                       "description": "Namespace for task definition versions"
+                    },
+                    "taskRole": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The IAM role assumable by your application code running inside the container"
                     },
                     "volumes": {
                       "type": "array",
@@ -41510,12 +45121,93 @@
               "properties": {
                 "Properties": {
                   "type": "object",
+                  "title": "BaseScalableAttributeProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "maxCapacity": {
+                      "type": "number",
+                      "description": "Maximum capacity to scale to"
+                    },
+                    "minCapacity": {
+                      "type": "number",
+                      "description": "Minimum capacity to scale to"
+                    },
+                    "dimension": {
+                      "type": "string",
+                      "description": "Scalable dimension of the attribute"
+                    },
+                    "resourceId": {
+                      "type": "string",
+                      "description": "Resource ID of the attribute"
+                    },
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "Role to use for scaling"
+                    },
+                    "serviceNamespace": {
+                      "enum": [
+                        "Ecs",
+                        "ElasticMapReduce",
+                        "Ec2",
+                        "AppStream",
+                        "DynamoDb",
+                        "Rds",
+                        "SageMaker",
+                        "CustomResource"
+                      ],
+                      "description": "Service namespace of the scalable attribute"
+                    }
+                  },
+                  "required": [
+                    "maxCapacity",
+                    "dimension",
+                    "resourceId",
+                    "role",
+                    "serviceNamespace"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-ecs.ScalableTaskCount"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
                   "title": "TaskDefinitionProps",
                   "additionalProperties": false,
                   "properties": {
+                    "executionRole": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The IAM role assumed by the ECS agent.\n\nThe role will be used to retrieve container images from ECR and\ncreate CloudWatch log groups."
+                    },
                     "family": {
                       "type": "string",
                       "description": "Namespace for task definition versions"
+                    },
+                    "taskRole": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "The IAM role assumable by your application code running inside the container"
                     },
                     "volumes": {
                       "type": "array",
@@ -41667,6 +45359,15 @@
                       ],
                       "description": "The kind of server-side encryption to apply to this stream.\n\nIf you choose KMS, you can specify a KMS key via `encryptionKey`. If\nencryption key is not specified, a key will automatically be created."
                     },
+                    "encryptionKey": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      },
+                      "description": "External KMS key to use for stream encryption.\n\nThe 'encryption' property must be set to \"Kms\"."
+                    },
                     "retentionPeriodHours": {
                       "type": "number",
                       "description": "The number of hours for the data records that are stored in shards to remain accessible."
@@ -41685,6 +45386,117 @@
                 "Type": {
                   "enum": [
                     "@aws-cdk/aws-kinesis.Stream"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "RemoteDesktopGatewayProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "adminPassword": {
+                      "type": "string"
+                    },
+                    "keyPairName": {
+                      "type": "string"
+                    },
+                    "rdgwCIDR": {
+                      "type": "string"
+                    },
+                    "vpc": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "adminUser": {
+                      "type": "string"
+                    },
+                    "domainDNSName": {
+                      "type": "string"
+                    },
+                    "numberOfRDGWHosts": {
+                      "type": "number"
+                    },
+                    "qss3BucketName": {
+                      "type": "string"
+                    },
+                    "qss3KeyPrefix": {
+                      "type": "string"
+                    },
+                    "rdgwInstanceType": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "adminPassword",
+                    "keyPairName",
+                    "rdgwCIDR",
+                    "vpc"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-quickstarts.RemoteDesktopGateway"
+                  ],
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "Properties": {
+                  "type": "object",
+                  "title": "SqlServerProps",
+                  "additionalProperties": false,
+                  "properties": {
+                    "masterPassword": {
+                      "type": "string"
+                    },
+                    "masterUsername": {
+                      "type": "string"
+                    },
+                    "vpc": {
+                      "type": "object",
+                      "properties": {
+                        "Ref": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "allocatedStorage": {
+                      "type": "number"
+                    },
+                    "engine": {
+                      "type": "string"
+                    },
+                    "engineVersion": {
+                      "type": "string"
+                    },
+                    "instanceClass": {
+                      "type": "string"
+                    },
+                    "licenseModel": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "masterPassword",
+                    "masterUsername",
+                    "vpc"
+                  ]
+                },
+                "Type": {
+                  "enum": [
+                    "@aws-cdk/aws-quickstarts.SqlServer"
                   ],
                   "type": "string"
                 }

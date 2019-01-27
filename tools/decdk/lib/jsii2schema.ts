@@ -1,5 +1,7 @@
 import jsiiReflect = require('jsii-reflect');
 
+// tslint:disable:no-console
+
 export function toSchema(type: jsiiReflect.TypeReference): any {
   if (type.primitive !== undefined) {
     switch (type.primitive) {
@@ -30,15 +32,28 @@ export function toSchema(type: jsiiReflect.TypeReference): any {
   }
 
   if (type.fqn !== undefined) {
+    if (isConstructReference(type)) {
+      return {
+        type: 'object',
+        properties: {
+          Ref: {
+            type: 'string'
+          }
+        }
+      };
+    }
+
     if (type.fqn instanceof jsiiReflect.InterfaceType) {
       const properties: any = {};
       const required = new Array<string>();
 
       for (const prop of type.fqn.getProperties(/* inherit */ true)) {
 
-        if (!isSerializableTypeReference(prop.type)) {
+        if (!isSerializableTypeReference(prop.type) && !isConstructReference(prop.type)) {
+
           // if prop is not serializable but optional, we can pass
           if (prop.type.optional) {
+            console.error(`WARNING: ${type.fqn}.${prop.name}: not serializable but optional, so it's omitted`);
             continue;
           }
 
@@ -91,8 +106,40 @@ function isSerializableType(type: jsiiReflect.Type): boolean {
 
   if (type instanceof jsiiReflect.InterfaceType) {
     return type.getMethods().length === 0
-    && type.getProperties().every(p => p.type.optional || isSerializableTypeReference(p.type))
-    && type.interfaces.every(i => isSerializableType(i));
+      && type.getProperties().every(p =>
+        isSerializableTypeReference(p.type)
+        || isConstructReference(p.type)
+        || p.type.optional)
+      && type.interfaces.every(i => isSerializableType(i));
+  }
+
+  return false;
+}
+
+export function isConstructReference(t: jsiiReflect.TypeReference): boolean {
+
+  // if it is an interface, it should extend cdk.IConstruct
+  if (t.fqn instanceof jsiiReflect.InterfaceType) {
+    const base = t.fqn.system.findFqn('@aws-cdk/cdk.IConstruct');
+    return t.fqn.interfaces.some(x => x === base);
+  }
+
+  // if it is a class, it should extend cdk.Construct
+  if (t.fqn instanceof jsiiReflect.ClassType) {
+    const base = t.fqn.system.findFqn('@aws-cdk/cdk.Construct');
+    return t.fqn.getAncestors().some(x => x === base);
+  }
+
+  if (t.arrayOfType) {
+    return isConstructReference(t.arrayOfType);
+  }
+
+  if (t.mapOfType) {
+    return isConstructReference(t.mapOfType);
+  }
+
+  if (t.unionOfTypes) {
+    return t.unionOfTypes.some(x => isConstructReference(x));
   }
 
   return false;
