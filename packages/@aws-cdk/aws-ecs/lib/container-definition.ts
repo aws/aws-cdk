@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from './base/task-definition';
-import { IContainerImage } from './container-image';
+import { ContainerImage } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver } from './log-drivers/log-driver';
@@ -17,7 +17,7 @@ export interface ContainerDefinitionProps {
    * repositories (repository-url/image:tag).
    * TODO: Update these to specify using classes of IContainerImage
    */
-  image: IContainerImage;
+  image: ContainerImage;
 
   /**
    * The CMD value to pass to the container.
