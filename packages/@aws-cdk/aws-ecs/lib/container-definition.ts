@@ -6,10 +6,7 @@ import { CfnTaskDefinition } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver } from './log-drivers/log-driver';
 
-/**
- * Properties of a container definition
- */
-export interface ContainerDefinitionProps {
+export interface ContainerDefinitionOptions {
   /**
    * The image to use for a container.
    *
@@ -174,6 +171,16 @@ export interface ContainerDefinitionProps {
 }
 
 /**
+ * Properties of a container definition
+ */
+export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
+  /**
+   * The task this container definition belongs to.
+   */
+  task: TaskDefinition;
+}
+
+/**
  * A definition for a single container in a Task
  */
 export class ContainerDefinition extends cdk.Construct {
@@ -222,14 +229,15 @@ export class ContainerDefinition extends cdk.Construct {
    */
   private readonly links = new Array<string>();
 
-  constructor(scope: cdk.Construct, id: string, taskDefinition: TaskDefinition, private readonly props: ContainerDefinitionProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
-    this.taskDefinition = taskDefinition;
+    this.taskDefinition = props.task;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
 
     props.image.bind(this);
     if (props.logging) { props.logging.bind(this); }
+    props.task._linkContainer(this);
   }
 
   /**
