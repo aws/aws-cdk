@@ -1,3 +1,96 @@
+## Tagging with the CDK
+
+Tags are implemented using `Aspects` for details on the implementation see the
+detailed sections below.
+
+### Tag Quickstart
+
+Tags can be applied to any `Construct` in the CDK. By default the Tag will
+propagate to any resource that is a child of the construct and supports tagging.
+
+For example, if you create a stack and want anything in the stack to receive a
+tag:
+
+```ts
+import cdk = require('@aws-cdk/cdk');
+
+const app = new cdk.App();
+const theBestStack = new cdk.Stack(app, 'MarketingSystem');
+theBestStack.apply(new cdk.Tag('StackType', 'TheBest'));
+
+// any resources added that support tags will get them
+```
+
+### Advanced Tagging
+
+#### Resource Type Controls
+
+If you need to apply a tag, but want to specify which CloudFormation Resource
+Types are affected you can include or exclude those in properties.
+
+```ts
+import cdk = require('@aws-cdk/cdk');
+import ec2 = require('@aws-cdk/aws-ec2');
+
+const app = new cdk.App();
+const theBestStack = new cdk.Stack(app, 'MarketingSystem');
+theBestStack.apply(new cdk.Tag('StackType', 'TheBest', {
+  includeResourceTypes: [ec2.CfnVpc.resourceType]
+  }));
+// the only resource with tags will be the VPC
+
+// or tag all but the vpc with
+theBestStack.apply(new cdk.Tag('StackType', 'TheBest', {
+  excludeResourceTypes: [ec2.CfnVpc.resourceType]
+  }));
+
+```
+
+#### Removing Tags
+
+Removing tags is accomplished by applying a `RemoveTag`. The important default
+is that remove tags override `Tag` unless specified differently.
+
+```ts
+import cdk = require('@aws-cdk/cdk');
+
+const app = new cdk.App();
+const theBestStack = new cdk.Stack(app, 'MarketingSystem');
+theBestStack.apply(new cdk.Tag('StackType', 'TheBest'));
+theBestStack.apply(new cdk.RemoveTag('StackType', 'TheBest'));
+// now nothing will be tagged
+```
+
+#### Tag Priority
+
+The final control you have is to set a priority number. Tags with highest
+priority number will always win. If tags have the same priority number the tag
+closest in tree distance to the resource will win.
+
+The default priority of `Tag` is 0. The default priority of `RemoveTag` is 1.
+
+```ts
+import cdk = require('@aws-cdk/cdk');
+import ec2 = require('@aws-cdk/aws-ec2');
+
+const app = new cdk.App();
+const theBestStack = new cdk.Stack(app, 'MarketingSystem');
+
+theBestStack.apply(new cdk.Tag('StackType', 'TheBest', {prioirty: 1}));
+
+const vpc = new ec2.VpcNetwork(marketingStack, 'MarketingVpc', {
+  maxAZs: 3, 
+});
+
+// Tag default is 0, so this has no affect
+vpc.apply(new cdk.Tag('StackType', 'TheBestVpc'));
+// RemoveTag default is 1, so this removes the tag from the VPC and children of
+// VPC (e.g. Subnet, RouteTable, NAT Gateway, etc)
+vpc.apply(new cdk.RemoveTag('StackType'));
+```
+
+You can use priority to control tagging regardless of the hierarchy of the tree.
+
 ## Aspects
 
 Aspects are a mechanism to extend the CDK without having to directly impact the
