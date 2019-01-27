@@ -95,7 +95,7 @@ You can use priority to control tagging regardless of the hierarchy of the tree.
 
 Aspects are a mechanism to extend the CDK without having to directly impact the
 class hierarchy directly. We have implemented Aspects using the [Visitor
-Pattern](https://en.wikipedia.org/wiki/Aspect-oriented_programming).
+Pattern](https://en.wikipedia.org/wiki/Visitor_pattern).
 
 ### Aspects in the CDK
 
