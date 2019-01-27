@@ -34,7 +34,17 @@ export function toSchema(type: jsiiReflect.TypeReference): any {
       const properties: any = {};
       const required = new Array<string>();
 
-      type.fqn.getProperties(/* inherit */ true).forEach(prop => {
+      for (const prop of type.fqn.getProperties(/* inherit */ true)) {
+
+        if (!isSerializableTypeReference(prop.type)) {
+          // if prop is not serializable but optional, we can pass
+          if (prop.type.optional) {
+            continue;
+          }
+
+          throw new Error(`${prop.name} is not serializable`);
+        }
+
         properties[prop.name] = {
           ...toSchema(prop.type),
           description: prop.docs.docs.comment // ¯\_(ツ)_/¯
@@ -43,7 +53,7 @@ export function toSchema(type: jsiiReflect.TypeReference): any {
         if (!prop.type.optional) {
           required.push(prop.name);
         }
-      });
+      }
 
       return {
         type: 'object',
@@ -75,18 +85,14 @@ export function isSerializableTypeReference(type: jsiiReflect.TypeReference): bo
 }
 
 function isSerializableType(type: jsiiReflect.Type): boolean {
-  if (!type) {
-    return false;
+  if (type instanceof jsiiReflect.EnumType) {
+    return true;
   }
 
   if (type instanceof jsiiReflect.InterfaceType) {
     return type.getMethods().length === 0
-    && type.getProperties().every(p => isSerializableTypeReference(p.type))
+    && type.getProperties().every(p => p.type.optional || isSerializableTypeReference(p.type))
     && type.interfaces.every(i => isSerializableType(i));
-  }
-
-  if (type instanceof jsiiReflect.EnumType) {
-    return true;
   }
 
   return false;
