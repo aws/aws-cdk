@@ -4,7 +4,7 @@ import reflect = require('jsii-reflect');
 import path = require('path');
 import YAML = require('yaml');
 import { isCfnResource } from '../lib/cfnschema';
-import { isConstructReference } from '../lib/jsii2schema';
+import { isConstruct, isEnumLikeClass } from '../lib/jsii2schema';
 import { loadTypeSystem } from '../lib/type-system';
 
 // tslint:disable:no-console
@@ -19,7 +19,7 @@ async function main() {
   const typeSystem = await loadTypeSystem();
 
   const str = await fs.readFile(args.filename!, { encoding: 'utf-8' });
-  const template = YAML.parse(str, { schema: 'yaml-1.1' });
+  const template = YAML.parse(str, { schema: 'yaml-1.1', tags: [ /*!Ref, !GetAtt*/ ] });
 
   const filenameWithoutExtension = path.parse(args.filename!).name.replace('.', '-');
 
@@ -97,7 +97,7 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key:
     const fn = Object.keys(value)[0];
 
     if (fn === 'Ref') {
-      if (isConstructReference(typeRef)) {
+      if (isConstruct(typeRef)) {
         return deconstructRef(stack, value.Ref);
       }
 
@@ -178,8 +178,72 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key:
     return enumType[value];
   }
 
+  if (isEnumLikeClass(typeRef.fqn)) {
+
+    // if the value is a string, we deconstruct it as a static property
+    if (typeof(value) === 'string') {
+      return deconstructStaticProperty(typeRef.fqn, value);
+    }
+
+    // if the value is an object, we deconstruct it as a static method
+    if (typeof(value) === 'object' && !Array.isArray(value)) {
+      return deconstructStaticMethod(typeRef.fqn, value);
+    }
+
+    throw new Error(`Invalid value for enum-like class ${typeRef.fqn}: ${JSON.stringify(value)}`);
+  }
+
   // primitives
   return value;
+}
+
+function deconstructStaticProperty(typeRef: reflect.ClassType, value: string) {
+  const typeClass = resolveType(typeRef.fqn);
+  return typeClass[value];
+}
+
+function deconstructStaticMethod(typeRef: reflect.ClassType, value: any) {
+  const typeClass = resolveType(typeRef.fqn);
+  const methods = typeRef.getMethods(true).filter(m => m.static);
+  const members = methods.map(x => x.name);
+
+  if (typeof(value) === 'object') {
+    const entries: Array<[ string, any ]> = Object.entries(value);
+    if (entries.length !== 1) {
+      throw new Error(`Value for enum-like class ${typeRef.fqn} must be an object with a single key (one of: ${members.join(',')})`);
+    }
+
+    const [ methodName, opts ] = entries[0];
+    const method = methods.find(m => m.name === methodName);
+    if (!method) {
+      throw new Error(`Invalid member "${methodName}" for enum-like class ${typeRef.fqn}. Options: ${members.join(',')}`);
+    }
+
+    if (typeof(opts) !== 'object') {
+      throw new Error(`Expecting enum-like member ${methodName} to be an object for enum-like class ${typeRef.fqn}`);
+    }
+
+    const args = new Array<any>();
+
+    method.parameters.forEach(p => {
+      const val = opts[p.name];
+
+      if (val === undefined && !p.type.optional) {
+        throw new Error(`Missing required value for ${typeRef.fqn}.${methodName}`);
+      }
+
+      if (val !== undefined) {
+        args.push(val);
+      }
+    });
+
+    const methodFn: (...args: any[]) => any = typeClass[methodName];
+    if (!methodFn) {
+      throw new Error(`Cannot find method named ${methodName} in ${typeClass.fqn}`);
+    }
+
+    return methodFn.apply(typeClass, args);
+  }
 }
 
 /**
