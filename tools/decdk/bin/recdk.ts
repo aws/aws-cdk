@@ -69,6 +69,38 @@ function resolveType(fqn: string) {
   return module[className.join('.')];
 }
 
+function tryResolveIntrinsic(value: any) {
+  if (Object.keys(value).length !== 1) {
+    return undefined;
+  }
+
+  const name = Object.keys(value)[0];
+  const val = value[name];
+  return { name, val };
+}
+
+function tryResolveRef(value: any) {
+  const fn = tryResolveIntrinsic(value);
+  if (!fn) {
+    return undefined;
+  }
+
+  if (fn.name !== 'Ref') {
+    return undefined;
+  }
+
+  return fn.val;
+}
+
+function tryResolveGetAtt(value: any) {
+  const fn = tryResolveIntrinsic(value);
+  if (!fn || fn.name !== 'Fn::GetAtt') {
+    return undefined;
+  }
+
+  return fn.val;
+}
+
 function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key: string, value: any): any {
   // console.error('====== deserializer ===================');
   // console.error(`type: ${typeRef}`);
@@ -92,35 +124,33 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key:
     return value.map((x, i) => deserializeValue(stack, typeRef.arrayOfType!, `${key}[${i}]`, x));
   }
 
-  // resolve references
-  if (typeof(value) === 'object' && Object.keys(value).length === 1) {
-    const fn = Object.keys(value)[0];
-
-    if (fn === 'Ref') {
-      if (isConstruct(typeRef)) {
-        return deconstructRef(stack, value.Ref);
-      }
-
-      throw new Error(`{ Ref } is not supported, use { Fn::GetAtt }`);
+  const asRef = tryResolveRef(value);
+  if (asRef) {
+    if (isConstruct(typeRef)) {
+      return findConstruct(stack, value.Ref);
     }
 
-    const getAtt = value['Fn::GetAtt'];
-    if (getAtt) {
-      // we only support strings at the moment since we are returning a stringied token.
-      if (typeRef.primitive !== 'string') {
-        throw new Error(`Fn::GetAtt can only be used for string primitives and ${key} is ${typeRef}`);
-      }
+    throw new Error(
+      `{ Ref } can only be used when a construct type is expected and this is ${typeRef}. ` +
+      `Use { Fn::GetAtt } to represent specific resource attributes`);
+  }
 
-      const [ id, attribute ] = getAtt;
+  const getAtt = tryResolveGetAtt(value);
+  if (getAtt) {
+    const [ logical, attr ] = getAtt;
 
+    if (isConstruct(typeRef)) {
+      const obj: any = findConstruct(stack, logical);
+      return obj[attr];
+    }
+
+    if (typeRef.primitive === 'string') {
       // return a lazy value, so we only try to find after all constructs
       // have been added to the stack.
-      return deconstructGetAtt(stack, id, attribute);
+      return deconstructGetAtt(stack, logical, attr);
     }
 
-    if (fn.startsWith('Fn::')) {
-      throw new Error(`Unsupported intrinsic function ${fn}`);
-    }
+    throw new Error(`Fn::GetAtt can only be used for string primitives and ${key} is ${typeRef}`);
   }
 
   // deserialize maps
@@ -275,7 +305,7 @@ function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
   }).toString();
 }
 
-function deconstructRef(stack: cdk.Stack, id: string) {
+function findConstruct(stack: cdk.Stack, id: string) {
   const child = stack.node.tryFindChild(id);
   if (!child) {
     throw new Error(`Construct with ID ${id} not found (it must be defined before it is referenced)`);
