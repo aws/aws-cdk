@@ -1,7 +1,9 @@
 import { Construct, IConstruct, IDependable, Output, Stack } from '@aws-cdk/cdk';
 import { CfnRole } from './iam.generated';
-import { IPrincipal, Policy } from './policy';
-import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
+import { IIdentity } from './identity-base';
+import { Policy } from './policy';
+import { PolicyDocument, PolicyStatement } from './policy-document';
+import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface RoleProps {
@@ -12,7 +14,7 @@ export interface RoleProps {
    * You can later modify the assume role policy document by accessing it via
    * the `assumeRolePolicy` property.
    */
-  assumedBy: PolicyPrincipal;
+  assumedBy: IPrincipal;
 
   /**
    * ID that the role assumer needs to provide when assuming this role
@@ -98,6 +100,8 @@ export class Role extends Construct implements IRole {
     return new ImportedRole(scope, id, props);
   }
 
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+
   /**
    * The assume role policy document associated with this role.
    */
@@ -120,14 +124,11 @@ export class Role extends Construct implements IRole {
   public readonly roleName: string;
 
   /**
-   * Returns the ARN of this role.
-   */
-  public readonly principal: PolicyPrincipal;
-
-  /**
    * Returns the role.
    */
   public readonly dependencyElements: IDependable[];
+
+  public readonly policyFragment: PrincipalPolicyFragment;
 
   private defaultPolicy?: Policy;
   private readonly managedPolicyArns: string[];
@@ -152,9 +153,9 @@ export class Role extends Construct implements IRole {
 
     this.roleId = role.roleId;
     this.roleArn = role.roleArn;
-    this.principal = new ArnPrincipal(this.roleArn);
     this.roleName = role.roleName;
     this.dependencyElements = [ role ];
+    this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
     function _flatten(policies?: { [name: string]: PolicyDocument }) {
       if (policies == null || Object.keys(policies).length === 0) {
@@ -211,7 +212,7 @@ export class Role extends Construct implements IRole {
 /**
  * A Role object
  */
-export interface IRole extends IConstruct, IPrincipal, IDependable {
+export interface IRole extends IConstruct, IIdentity, IDependable {
   /**
    * Returns the ARN of this role.
    */
@@ -234,7 +235,7 @@ export interface IRole extends IConstruct, IPrincipal, IDependable {
   export(): RoleImportProps;
 }
 
-function createAssumeRolePolicy(principal: PolicyPrincipal, externalId?: string) {
+function createAssumeRolePolicy(principal: IPrincipal, externalId?: string) {
   const statement = new PolicyStatement();
   statement
       .addPrincipal(principal)
@@ -280,8 +281,9 @@ export interface RoleImportProps {
  * A role that already exists
  */
 class ImportedRole extends Construct implements IRole {
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+  public readonly policyFragment: PrincipalPolicyFragment;
   public readonly roleArn: string;
-  public readonly principal: PolicyPrincipal;
   public readonly dependencyElements: IDependable[] = [];
 
   private readonly _roleId?: string;
@@ -290,7 +292,7 @@ class ImportedRole extends Construct implements IRole {
     super(scope, id);
     this.roleArn = props.roleArn;
     this._roleId = props.roleId;
-    this.principal = new ArnPrincipal(this.roleArn);
+    this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
   }
 
   public get roleId() {

@@ -44,3 +44,18 @@ export class AttachedPolicies {
     this.policies.push(policy);
   }
 }
+
+export function mergePrincipal(target: { [key: string]: string[] }, source: { [key: string]: string[] }) {
+  for (const key of Object.keys(source)) {
+    target[key] = target[key] || [];
+
+    const value = source[key];
+    if (!Array.isArray(value)) {
+      throw new Error(`Principal value must be an array (it will be normalized later): ${value}`);
+    }
+
+    target[key].push(...value);
+  }
+
+  return target;
+}

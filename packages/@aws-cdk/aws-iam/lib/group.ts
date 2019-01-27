@@ -1,7 +1,9 @@
 import { Construct } from '@aws-cdk/cdk';
 import { CfnGroup } from './iam.generated';
-import { IPrincipal, Policy } from './policy';
-import { ArnPrincipal, PolicyPrincipal, PolicyStatement } from './policy-document';
+import { IIdentity } from './identity-base';
+import { Policy } from './policy';
+import { PolicyStatement } from './policy-document';
+import { ArnPrincipal, PrincipalPolicyFragment } from './principals';
 import { User } from './user';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -34,7 +36,8 @@ export interface GroupProps {
   path?: string;
 }
 
-export class Group extends Construct implements IPrincipal {
+export class Group extends Construct implements IIdentity {
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
   /**
    * The runtime name of this group.
    */
@@ -45,10 +48,7 @@ export class Group extends Construct implements IPrincipal {
    */
   public readonly groupArn: string;
 
-  /**
-   * An "AWS" policy principal that represents this group.
-   */
-  public readonly principal: PolicyPrincipal;
+  public readonly policyFragment: PrincipalPolicyFragment;
 
   private readonly managedPolicies: any[];
   private readonly attachedPolicies = new AttachedPolicies();
@@ -67,7 +67,7 @@ export class Group extends Construct implements IPrincipal {
 
     this.groupName = group.groupName;
     this.groupArn = group.groupArn;
-    this.principal = new ArnPrincipal(this.groupArn);
+    this.policyFragment = new ArnPrincipal(this.groupArn).policyFragment;
   }
 
   /**
