@@ -107,25 +107,14 @@ An aspect in the CDK is defined by the interface:
  */
 export interface IAspect {
   /**
-   * Aspects invocation pattern
-   */
-  readonly visitType: AspectVisitType;
-  /**
    * All aspects can visit an IConstruct
    */
   visit(node: IConstruct): void;
 }
 ```
 
-Initially two types of aspects are supported. 
-
-1. Single visit aspects will ensure the aspect visit function is only invoked
-   one time.
-1. Multiple visit aspects will invoke the visit function as many times as
-   requested
-
 Aspects can be applied to any `Construct`. During the tree
-preparation phase the aspect will visit each construct in the tree at least one
+preparation phase the aspect will visit each construct in the tree one
 time. Aspects are invoked in the order they were added to the `Construct`,
 starting at the `App` (root of the tree) and progressing in order to the leaf
 nodes (most commonly the CloudFormation Resource). Aspect authors will implement 
