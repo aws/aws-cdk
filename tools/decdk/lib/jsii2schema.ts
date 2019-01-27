@@ -2,10 +2,11 @@ import jsiiReflect = require('jsii-reflect');
 
 export function toSchema(type: jsiiReflect.TypeReference): any {
   if (type.primitive !== undefined) {
-    if (type.primitive === 'date') {
-      return { type: 'string', format: 'date-time' };
+    switch (type.primitive) {
+      case 'date': return { type: 'string', format: 'date-time' };
+      case 'any': return { type: 'object' };
+      default: return { type: type.primitive };
     }
-    return { type: type.primitive };
   }
 
   if (type.arrayOfType !== undefined) {
@@ -24,55 +25,69 @@ export function toSchema(type: jsiiReflect.TypeReference): any {
 
   if (type.unionOfTypes !== undefined) {
     return {
-      anyOf: type.unionOfTypes.filter(isSerializableType).map(toSchema)
+      anyOf: type.unionOfTypes.filter(isSerializableTypeReference).map(toSchema)
     };
   }
 
   if (type.fqn !== undefined) {
-    const iface = type.system.findInterface(type.fqn.fqn);
+    if (type.fqn instanceof jsiiReflect.InterfaceType) {
+      const properties: any = {};
+      const required = new Array<string>();
 
-    const properties: any = {};
-    const required = new Array<string>();
-    iface.getProperties().forEach(prop => {
-      properties[prop.name] = {
-        ...toSchema(prop.type),
-        description: prop.docs.docs.comment // ¯\_(ツ)_/¯
+      type.fqn.getProperties(/* inherit */ true).forEach(prop => {
+        properties[prop.name] = {
+          ...toSchema(prop.type),
+          description: prop.docs.docs.comment // ¯\_(ツ)_/¯
+        };
+
+        if (!prop.type.optional) {
+          required.push(prop.name);
+        }
+      });
+
+      return {
+        type: 'object',
+        title: type.fqn.name,
+        additionalProperties: false,
+        properties,
+        required,
       };
+    }
 
-      if (!prop.type.optional) {
-        required.push(prop.name);
-      }
-    });
+    if (type.fqn instanceof jsiiReflect.EnumType) {
+      return {
+        enum: type.fqn.members.map(m => m.name)
+      };
+    }
 
-    return {
-      type: 'object',
-      title: iface.name,
-      additionalProperties: false,
-      properties,
-      required,
-    };
+    throw new Error(`Type '${type.fqn.fqn}' not serializable`);
   }
-
-  // return type.primitive !== undefined
-  //   || (type.arrayOfType !== undefined && isSerializableType(type.arrayOfType, typeSystem))
-  //   || (type.mapOfType !== undefined && isSerializableType(type.mapOfType, typeSystem))
-  //   || (type.fqn !== undefined && isSerializableInterface(type.fqn.fqn, typeSystem));
-
 }
 
 // Must only have properties, all of which are scalars,
 // lists or isSerializableInterface types.
-export function isSerializableType(type: jsiiReflect.TypeReference): boolean {
+export function isSerializableTypeReference(type: jsiiReflect.TypeReference): boolean {
   return type.primitive !== undefined
-    || (type.arrayOfType !== undefined && isSerializableType(type.arrayOfType))
-    || (type.mapOfType !== undefined && isSerializableType(type.mapOfType))
-    || (type.fqn !== undefined && isSerializableInterface(type.fqn))
-    || (type.unionOfTypes !== undefined && type.unionOfTypes.some(isSerializableType));
+    || (type.arrayOfType !== undefined && isSerializableTypeReference(type.arrayOfType))
+    || (type.mapOfType !== undefined && isSerializableTypeReference(type.mapOfType))
+    || (type.fqn !== undefined && isSerializableType(type.fqn))
+    || (type.unionOfTypes !== undefined && type.unionOfTypes.some(isSerializableTypeReference));
 }
 
-function isSerializableInterface(type: jsiiReflect.Type): boolean {
-  if (type === undefined || !(type instanceof jsiiReflect.InterfaceType)) { return false; }
+function isSerializableType(type: jsiiReflect.Type): boolean {
+  if (!type) {
+    return false;
+  }
 
-  return type.getMethods().length === 0
-    && type.getProperties().every(p => isSerializableType(p.type));
+  if (type instanceof jsiiReflect.InterfaceType) {
+    return type.getMethods().length === 0
+    && type.getProperties().every(p => isSerializableTypeReference(p.type))
+    && type.interfaces.every(i => isSerializableType(i));
+  }
+
+  if (type instanceof jsiiReflect.EnumType) {
+    return true;
+  }
+
+  return false;
 }

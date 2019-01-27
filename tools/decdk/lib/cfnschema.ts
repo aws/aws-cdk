@@ -7,19 +7,17 @@ export interface ConstructAndProps {
 }
 
 export function resourceName(constructClass: jsiiReflect.ClassType) {
-  const [, packageName] = constructClass.assembly.name.split('/'); // @aws-cdk/aws-ecs
-  const [, serviceName] = packageName.split('-');
-
-  return `CDK::${serviceName}::${constructClass.name}`;
+  return constructClass.fqn;
 }
 
 export function parseResourceName(cfnName: string): ClassName | undefined {
-  if (!cfnName.startsWith('CDK::')) { return undefined; }
-  const parts = cfnName.split('::');
+  if (cfnName.includes('::')) { return undefined; }
+
+  const [ module, ...className ] = cfnName.split('.');
 
   return {
-    module: `@aws-cdk/aws-${parts[1]}`,
-    className: parts[2]
+    module,
+    className: className.join('.')
   };
 }
 
