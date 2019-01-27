@@ -450,9 +450,9 @@ export class VpcNetwork extends VpcNetworkBase {
       }
 
       // These values will be used to recover the config upon provider import
-      const include = [CfnSubnet.resourceTypeName];
-      subnet.apply(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {include}));
-      subnet.apply(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {include}));
+      const includeResourceTypes = [CfnSubnet.resourceTypeName];
+      subnet.apply(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
+      subnet.apply(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
     });
   }
 }

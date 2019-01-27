@@ -381,7 +381,7 @@ export = {
       },
     });
     asg.apply( new cdk.Tag('superfood', 'acai'));
-    asg.apply( new cdk.Tag('notsuper', 'caramel', { applyToLaunchInstances: false }));
+    asg.apply( new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
 
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {

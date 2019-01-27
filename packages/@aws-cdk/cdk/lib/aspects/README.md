@@ -1,9 +1,7 @@
 ## Aspects
 
-Aspects are a mechanism to extend the CDK without having to direclty impact the
-class heirarchy directly. This is a form of [Aspect-oriented
-programming](https://en.wikipedia.org/wiki/Aspect-oriented_programming) which we
-have implemented using the [Visitor
+Aspects are a mechanism to extend the CDK without having to directly impact the
+class hierarchy directly. We have implemented Aspects using the [Visitor
 Pattern](https://en.wikipedia.org/wiki/Aspect-oriented_programming).
 
 ### Aspects in the CDK
@@ -20,7 +18,7 @@ export interface IAspect {
    */
   readonly visitType: AspectVisitType;
   /**
-   * All aspects can visit a IConstruct
+   * All aspects can visit an IConstruct
    */
   visit(node: IConstruct): void;
 }
@@ -151,54 +149,27 @@ new ecs.LoadBalancedFargateService(marketingStack, 'B2CService', {
 
 The resulting tags are as follows:
 
+> We are omitting the default tags for VPC components.
+
 | Construct Path | Tag Key | Tag Value |
 | ----------|:---------|:-----|
 |MarketingSystem/MarketingVpc|CostCenter|Platform|
-|MarketingSystem/MarketingVpc|Name|MarketingSystem/MarketingVpc|
-|MarketingSystem/MarketingVpc/PublicSubnet1| Name | Platform|MarketingSystem/MarketingVpc/PublicSubnet1|
-|MarketingSystem/MarketingVpc/PublicSubnet1| aws-cdk:subnet-name | Public|
-|MarketingSystem/MarketingVpc/PublicSubnet1| aws-cdk:subnet-type | Public|
 |MarketingSystem/MarketingVpc/PublicSubnet1| CostCenter | Platform|
 |MarketingSystem/MarketingVpc/PublicSubnet1/RouteTable| CostCenter | Platform|
-|MarketingSystem/MarketingVpc/PublicSubnet1/RouteTable|Name| MarketingSystem/MarketingVpc/PublicSubnet1|
 |MarketingSystem/MarketingVpc/PublicSubnet1/NATGateway| CostCenter | Platform|
-|MarketingSystem/MarketingVpc/PublicSubnet1/NATGateway|Name|MarketingSystem/MarketingVpc/PublicSubnet1|
-|MarketingSystem/MarketingVpc/PublicSubnet2| Name | Platform|MarketingSystem/MarketingVpc/PublicSubnet2|
-|MarketingSystem/MarketingVpc/PublicSubnet2| aws-cdk:subnet-name | Public|
-|MarketingSystem/MarketingVpc/PublicSubnet2| aws-cdk:subnet-type | Public|
 |MarketingSystem/MarketingVpc/PublicSubnet2| CostCenter | Platform|
 |MarketingSystem/MarketingVpc/PublicSubnet2/RouteTable| CostCenter | Platform|
-|MarketingSystem/MarketingVpc/PublicSubnet2/RouteTable|Name| MarketingSystem/MarketingVpc/PublicSubnet2|
 |MarketingSystem/MarketingVpc/PublicSubnet2/NATGateway| CostCenter | Platform|
-|MarketingSystem/MarketingVpc/PublicSubnet2/NATGateway|Name|MarketingSystem/MarketingVpc/PublicSubnet2|
-|MarketingSystem/MarketingVpc/PublicSubnet3| Name | Platform|MarketingSystem/MarketingVpc/PublicSubnet3|
-|MarketingSystem/MarketingVpc/PublicSubnet3| aws-cdk:subnet-name | Public|
-|MarketingSystem/MarketingVpc/PublicSubnet3| aws-cdk:subnet-type | Public|
 |MarketingSystem/MarketingVpc/PublicSubnet3| CostCenter | Platform|
 |MarketingSystem/MarketingVpc/PublicSubnet3/RouteTable| CostCenter | Platform|
-|MarketingSystem/MarketingVpc/PublicSubnet3/RouteTable|Name| MarketingSystem/MarketingVpc/PublicSubnet3|
 |MarketingSystem/MarketingVpc/PublicSubnet3/NATGateway| CostCenter | Platform|
-|MarketingSystem/MarketingVpc/PublicSubnet3/NATGateway|Name|MarketingSystem/MarketingVpc/PublicSubnet3|
-|MarketingSystem/MarketingVpc/PrivateSubnet1| Name | Platform|MarketingSystem/MarketingVpc/PrivateSubnet1|
-|MarketingSystem/MarketingVpc/PrivateSubnet1| aws-cdk:subnet-name | Private|
-|MarketingSystem/MarketingVpc/PrivateSubnet1| aws-cdk:subnet-type | Private|
 |MarketingSystem/MarketingVpc/PrivateSubnet1| CostCenter | Platform|
 |MarketingSystem/MarketingVpc/PrivateSubnet1/RouteTable| CostCenter | Platform|
-|MarketingSystem/MarketingVpc/PrivateSubnet1/RouteTable|Name| MarketingSystem/MarketingVpc/PrivateSubnet1|
-|MarketingSystem/MarketingVpc/PrivateSubnet2| Name | Platform|MarketingSystem/MarketingVpc/PrivateSubnet2|
-|MarketingSystem/MarketingVpc/PrivateSubnet2| aws-cdk:subnet-name | Private|
-|MarketingSystem/MarketingVpc/PrivateSubnet2| aws-cdk:subnet-type | Private|
 |MarketingSystem/MarketingVpc/PrivateSubnet2| CostCenter | Platform|
 |MarketingSystem/MarketingVpc/PrivateSubnet2/RouteTable| CostCenter | Platform|
-|MarketingSystem/MarketingVpc/PrivateSubnet2/RouteTable|Name| MarketingSystem/MarketingVpc/PrivateSubnet2|
-|MarketingSystem/MarketingVpc/PrivateSubnet3| Name | Platform|MarketingSystem/MarketingVpc/PrivateSubnet3|
-|MarketingSystem/MarketingVpc/PrivateSubnet3| aws-cdk:subnet-name | Private|
-|MarketingSystem/MarketingVpc/PrivateSubnet3| aws-cdk:subnet-type | Private|
 |MarketingSystem/MarketingVpc/PrivateSubnet3| CostCenter | Platform|
 |MarketingSystem/MarketingVpc/PrivateSubnet3/RouteTable| CostCenter | Platform|
-|MarketingSystem/MarketingVpc/PrivateSubnet3/RouteTable|Name| MarketingSystem/MarketingVpc/PrivateSubnet3|
 |MarketingSystem/MarketingVpc/IGW|CostCenter|Platform|
-|MarketingSystem/MarketingVpc/IGW|Name|MarketingSystem/MarketingVpc|
 |MarketingSystem/B2BService/Service/SecurityGroup/Resource|CostCenter|Marketing|
 |MarketingSystem/B2BService/LB/Resource|CostCenter|Marketing|
 |MarketingSystem/B2BService/LB/SecurityGroup/Resource|CostCenter|Marketing|

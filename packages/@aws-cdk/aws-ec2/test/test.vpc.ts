@@ -349,7 +349,7 @@ export = {
 
       const vpc = new VpcNetwork(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.apply(new Tag('BusinessUnit', 'Marketing', {include: [CfnVPC.resourceTypeName]}));
+      vpc.apply(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.resourceTypeName]}));
       vpc.apply(new Tag('VpcType', 'Good'));
       expect(stack).to(haveResource("AWS::EC2::VPC", hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];

@@ -55,7 +55,7 @@ export = {
     tagged.push(mapper);
     for (const res of tagged) {
       res.setTag('foo', 'bar');
-      res.setTag('asg', 'only', {applyToLaunchInstances: false});
+      res.setTag('asg', 'only', {applyToLaunchedInstances: false});
     }
     test.deepEqual(standard.renderTags(), [
       {key: 'foo', value: 'bar'},
@@ -69,6 +69,22 @@ export = {
       foo: 'bar',
       asg: 'only',
     });
+    test.done();
+  },
+  'tags with higher or equal priority always take precedence'(test: Test) {
+    const mgr = new TagManager(TagType.Standard);
+    mgr.setTag('key', 'myVal', {
+      priority: 2,
+    });
+    mgr.setTag('key', 'newVal', {
+      priority: 1,
+    });
+    mgr.removeTag('key', 1);
+    test.deepEqual(mgr.renderTags(), [
+      {key: 'key', value: 'myVal'},
+    ]);
+    mgr.removeTag('key', 2);
+    test.deepEqual(mgr.renderTags(), undefined);
     test.done();
   },
 };

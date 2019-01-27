@@ -115,13 +115,43 @@ export = {
     const map = new MapTaggableResource(res, 'MapFakeResource', {
       type: 'AWS::Fake::Map',
     });
-    res.apply(new Tag('foo', 'bar', {include: ['AWS::Fake::Asg']}));
+    res.apply(new Tag('foo', 'bar', {includeResourceTypes: ['AWS::Fake::Asg']}));
     root.node.prepareTree();
     test.deepEqual(res.tags.renderTags(), undefined);
     test.deepEqual(map.tags.renderTags(), undefined);
     test.deepEqual(res2.tags.renderTags(), undefined);
     test.deepEqual(asg.tags.renderTags(), [{key: 'foo', value: 'bar', propagateAtLaunch: true}]);
     test.deepEqual(map.testProperties().tags, undefined);
+    test.done();
+  },
+  'removeTag Aspects by default will override child Tag Aspects'(test: Test) {
+    const root = new Stack();
+    const res = new TaggableResource(root, 'FakeResource', {
+      type: 'AWS::Fake::Thing',
+    });
+    const res2 = new TaggableResource(res, 'FakeResource', {
+      type: 'AWS::Fake::Thing',
+    });
+    res.apply(new RemoveTag('key'));
+    res2.apply(new Tag('key', 'value'));
+    root.node.prepareTree();
+    test.deepEqual(res.tags.renderTags(), undefined);
+    test.deepEqual(res2.tags.renderTags(), undefined);
+    test.done();
+  },
+  'removeTag Aspects with priority 0 will not override child Tag Aspects'(test: Test) {
+    const root = new Stack();
+    const res = new TaggableResource(root, 'FakeResource', {
+      type: 'AWS::Fake::Thing',
+    });
+    const res2 = new TaggableResource(res, 'FakeResource', {
+      type: 'AWS::Fake::Thing',
+    });
+    res.apply(new RemoveTag('key', {priority: 0}));
+    res2.apply(new Tag('key', 'value'));
+    root.node.prepareTree();
+    test.deepEqual(res.tags.renderTags(), undefined);
+    test.deepEqual(res2.tags.renderTags(), [{key: 'key', value: 'value'}]);
     test.done();
   },
   'exclude prevents tag application to resource types in the list'(test: Test) {
@@ -139,7 +169,7 @@ export = {
     const map = new MapTaggableResource(res, 'MapFakeResource', {
       type: 'AWS::Fake::Map',
     });
-    res.apply(new Tag('foo', 'bar', {exclude: ['AWS::Fake::Asg']}));
+    res.apply(new Tag('foo', 'bar', {excludeResourceTypes: ['AWS::Fake::Asg']}));
     root.node.prepareTree();
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'bar'}]);

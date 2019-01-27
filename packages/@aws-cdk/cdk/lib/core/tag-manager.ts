@@ -12,7 +12,12 @@ export interface TagProps {
   /**
    * Handles AutoScalingGroup PropagateAtLaunch property
    */
-  applyToLaunchInstances: boolean;
+  applyToLaunchedInstances?: boolean;
+
+  /**
+   *
+   */
+  priority?: number;
 }
 
 /**
@@ -21,6 +26,8 @@ export interface TagProps {
 export class TagManager {
 
   private readonly tags: Tags = {};
+
+  private readonly removedTags: {[key: string]: number} = {};
 
   constructor(private readonly tagType: TagType) { }
 
@@ -31,8 +38,18 @@ export class TagManager {
    * @param value The value value of the tag
    * @param props A `TagProps` defaulted to applyToLaunchInstances true
    */
-  public setTag(key: string, value: string, props: TagProps = {applyToLaunchInstances: true}): void {
-    this.tags[key] = { value, props };
+  public setTag(key: string, value: string, props?: TagProps): void {
+    const tagProps: TagProps = props || {};
+    tagProps.priority = tagProps.priority === undefined ? 0 : tagProps.priority;
+
+    if (!this.hasHigherPriority(key, tagProps.priority)) {
+      // tag is blocked by a remove
+      return;
+    }
+    tagProps.applyToLaunchedInstances = tagProps.applyToLaunchedInstances !== false;
+    this.tags[key] = { value, props: tagProps };
+    // ensure nothing is left in removeTags
+    delete this.removedTags[key];
   }
 
   /**
@@ -40,8 +57,13 @@ export class TagManager {
    *
    * @param key The key of the tag to remove
    */
-  public removeTag(key: string): void {
+  public removeTag(key: string, priority: number = 0): void {
+    if (!this.hasHigherPriority(key, priority)) {
+      // tag is blocked by a remove
+      return;
+    }
     delete this.tags[key];
+    this.removedTags[key] = priority;
   }
 
   /**
@@ -63,7 +85,7 @@ export class TagManager {
           tags.push({
             key,
             value: this.tags[key].value,
-            propagateAtLaunch: this.tags[key].props.applyToLaunchInstances}
+            propagateAtLaunch: this.tags[key].props.applyToLaunchedInstances !== false}
           );
         }
         return tags.length === 0 ? undefined : tags;
@@ -79,5 +101,17 @@ export class TagManager {
         return undefined;
       }
     }
+  }
+
+  private hasHigherPriority(key: string, priority: number): boolean {
+    if (this.tags[key]) {
+      if (this.tags[key].props.priority !== undefined) {
+        return priority >= this.tags[key].props.priority!;
+      }
+    }
+    if (this.removedTags[key]) {
+      return priority >= this.removedTags[key];
+    }
+    return true;
   }
 }

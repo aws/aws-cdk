@@ -1,13 +1,9 @@
 import { ITaggable, Resource } from '../cloudformation/resource';
 import { IConstruct } from '../core/construct';
+import { TagProps } from '../core/tag-manager';
 import { AspectVisitType, IAspect } from './aspect';
 
-export interface TagAspectProps {
-  /**
-   * This applies specifically to AutoScalingGroup PropagateAtLaunch
-   */
-  applyToLaunchInstances?: boolean;
-
+export interface TagAspectProps extends TagProps {
   /**
    * An array of Resource Types that will receive this tag
    *
@@ -15,7 +11,7 @@ export interface TagAspectProps {
    * tag only to Resource types that are included in this array.
    * @default []
    */
-  include?: string[];
+  includeResourceTypes?: string[];
 
   /**
    * An array of Resource Types that will not receive this tag
@@ -25,7 +21,7 @@ export interface TagAspectProps {
    * this array.
    * @default []
    */
-  exclude?: string[];
+  excludeResourceTypes?: string[];
 }
 
 /**
@@ -39,14 +35,13 @@ export abstract class TagBase implements IAspect {
   public readonly key: string;
 
   public readonly visitType: AspectVisitType = AspectVisitType.Single;
-  private readonly include: string[];
-  private readonly exclude: string[];
+  private readonly includeResourceTypes: string[];
+  private readonly excludeResourceTypes: string[];
 
   constructor(key: string, props: TagAspectProps = {}) {
     this.key = key;
-
-    this.include = props.include || [];
-    this.exclude = props.exclude || [];
+    this.includeResourceTypes = props.includeResourceTypes || [];
+    this.excludeResourceTypes = props.excludeResourceTypes || [];
   }
 
   public visit(construct: IConstruct): void {
@@ -55,10 +50,12 @@ export abstract class TagBase implements IAspect {
     }
     const resource = construct as Resource;
     if (Resource.isTaggable(resource)) {
-      if (this.exclude.length !== 0 && this.exclude.indexOf(resource.resourceType) !== -1) {
+      if (this.excludeResourceTypes.length !== 0 &&
+        this.excludeResourceTypes.indexOf(resource.resourceType) !== -1) {
         return;
       }
-      if (this.include.length !== 0 && this.include.indexOf(resource.resourceType) === -1) {
+      if (this.includeResourceTypes.length !== 0 &&
+        this.includeResourceTypes.indexOf(resource.resourceType) === -1) {
         return;
       }
       this.applyTag(resource);
@@ -78,11 +75,13 @@ export class Tag extends TagBase {
    */
   public readonly value: string;
 
-  private readonly applyToLaunchInstances: boolean;
+  private readonly applyToLaunchedInstances: boolean;
+  private readonly priority: number;
 
   constructor(key: string, value: string, props: TagAspectProps = {}) {
     super(key, {...props});
-    this.applyToLaunchInstances = props.applyToLaunchInstances !== false;
+    this.applyToLaunchedInstances = props.applyToLaunchedInstances !== false;
+    this.priority = props.priority === undefined ? 0 : props.priority;
     if (value === undefined) {
       throw new Error('Tag must have a value');
     }
@@ -90,7 +89,10 @@ export class Tag extends TagBase {
   }
 
   protected applyTag(resource: ITaggable) {
-    resource.tags.setTag(this.key, this.value!, {applyToLaunchInstances: this.applyToLaunchInstances});
+    resource.tags.setTag(this.key, this.value!, {
+      applyToLaunchedInstances: this.applyToLaunchedInstances,
+      priority: this.priority,
+    });
   }
 }
 
@@ -99,12 +101,15 @@ export class Tag extends TagBase {
  */
 export class RemoveTag extends TagBase {
 
+  private readonly priority: number;
+
   constructor(key: string, props: TagAspectProps = {}) {
     super(key, props);
+    this.priority = props.priority === undefined ? 1 : props.priority;
   }
 
   protected applyTag(resource: ITaggable): void {
-    resource.tags.removeTag(this.key);
+    resource.tags.removeTag(this.key, this.priority);
     return;
   }
 }
