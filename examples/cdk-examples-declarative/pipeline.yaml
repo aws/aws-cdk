@@ -1,0 +1,35 @@
+---
+"$schema": "./cdk.schema.json"
+Resources:
+  Pipeline:
+    Type: "@aws-cdk/aws-codepipeline.Pipeline"
+  SourceStage:
+    Type: "@aws-cdk/aws-codepipeline.Stage"
+    Properties:
+      pipeline:
+        Ref: Pipeline
+  Repo:
+    Type: "@aws-cdk/aws-codecommit.Repository"
+    Properties:
+      repositoryName: my-first-decdk-repo
+  Code:
+    Type: "@aws-cdk/aws-codecommit.PipelineSourceAction"
+    Properties:
+      stage:
+        Ref: SourceStage
+      repository:
+        Ref: Repo
+  BuildStage:
+    Type: "@aws-cdk/aws-codepipeline.Stage"
+    Properties:
+      pipeline:
+        Ref: Pipeline
+  BuildProject:
+    Type: "@aws-cdk/aws-codebuild.PipelineProject"
+  BuildAction:
+    Type: "@aws-cdk/aws-codebuild.PipelineBuildAction"
+    Properties:
+      stage:
+        Ref: BuildStage
+      project:
+        Ref: BuildProject

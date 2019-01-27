@@ -1,0 +1,16 @@
+{
+  "$schema": "./cdk.schema.json",
+
+  "Resources": {
+    "Handler": {
+      "Type": "@aws-cdk/aws-lambda.Function",
+      "Properties": {
+        "handler": "index.handler",
+        "runtime": "NodeJS810",
+        "code": {
+          "asset": { "path": "./src" }
+        }
+      }
+    }
+  }
+}

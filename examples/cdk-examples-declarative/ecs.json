@@ -14,13 +14,29 @@
       }
     },
     "MyTaskDef": {
-      "Type": "@aws-cdk/aws-ecs.Ec2TaskDefinition",
+      "Type": "@aws-cdk/aws-ecs.TaskDefinition",
       "Properties": {
-        "family": "redis"
+        "compatibility": "Fargate",
+        "family": "redis",
+        "cpu": "1024",
+        "memoryMiB": "1GB"
+      }
+    },
+    "ContainerDef": {
+      "Type": "@aws-cdk/aws-ecs.ContainerDefinition",
+      "Properties": {
+        "task": { "Ref": "MyTaskDef" },
+        "essential": true,
+        "memoryLimitMiB": 1024,
+        "image": {
+          "fromDockerHub": {
+            "name": "redis"
+          }
+        }
       }
     },
     "Service": {
-      "Type": "@aws-cdk/aws-ecs.Ec2Service",
+      "Type": "@aws-cdk/aws-ecs.FargateService",
       "Properties": {
         "cluster": { "Ref": "Cluster" },
         "taskDefinition": { "Ref": "MyTaskDef" }
