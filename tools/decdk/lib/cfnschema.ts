@@ -10,15 +10,8 @@ export function resourceName(constructClass: jsiiReflect.ClassType) {
   return constructClass.fqn;
 }
 
-export function parseResourceName(cfnName: string): ClassName | undefined {
-  if (cfnName.includes('::')) { return undefined; }
-
-  const [ module, ...className ] = cfnName.split('.');
-
-  return {
-    module,
-    className: className.join('.')
-  };
+export function isCfnResource(resourceType: string) {
+  return resourceType.includes('::');
 }
 
 export interface ClassName {

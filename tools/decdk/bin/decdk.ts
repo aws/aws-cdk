@@ -1,20 +1,10 @@
-import fs = require('fs');
 import jsiiReflect = require('jsii-reflect');
-import path = require('path');
 import { ConstructAndProps, resourceSchema } from '../lib/cfnschema';
 import { isSerializableTypeReference } from '../lib/jsii2schema';
+import { loadTypeSystem } from '../lib/type-system';
 
 async function main() {
-  const typeSystem = new jsiiReflect.TypeSystem();
-  const packageJson = require('../package.json');
-
-  for (const depName of Object.keys(packageJson.dependencies || {})) {
-    const jsiiModuleDir = path.dirname(require.resolve(`${depName}/package.json`));
-    if (!fs.existsSync(path.resolve(jsiiModuleDir, '.jsii'))) {
-      continue;
-    }
-    await typeSystem.load(jsiiModuleDir);
-  }
+  const typeSystem = await loadTypeSystem();
 
   // Find all constructs for which the props interface
   // (transitively) only consists of JSON primitives or interfaces
@@ -30,7 +20,8 @@ async function main() {
   const baseSchema = require('../cloudformation.schema.json');
 
   for (const deco of deconstructs) {
-    baseSchema.properties.Resources.patternProperties["^[a-zA-Z0-9]+$"].anyOf.push(resourceSchema(deco));
+    const resource = resourceSchema(deco);
+    baseSchema.properties.Resources.patternProperties["^[a-zA-Z0-9]+$"].anyOf.push(resource);
   }
 
   baseSchema.properties.$schema = {
