@@ -1,0 +1,42 @@
+{
+  "$schema": "./cdk.schema.json",
+  "Resources": {
+    "HelloWorldFunction": {
+      "Type": "@aws-cdk/aws-serverless.Function",
+      "Properties": {
+        "codeUri": "src/",
+        "handler": "app.hello_handler",
+        "runtime": "python3.6",
+        "environment": {
+          "PARAM1": "VALUE"
+        },
+        "events": {
+          "HelloWorld": {
+            "type": "SQS",
+            "properties": {
+              "queueArn": { "Fn::GetAtt": [ "MyQueue", "queueArn" ] },
+              "batchSize": 10
+            }
+          },
+          "Queue2": {
+            "type": "SQS",
+            "properties": {
+              "queueArn": { "Fn::GetAtt": [ "NonCDKQueue", "Arn" ] },
+              "batchSize": 10
+            }
+          }
+        }
+      }
+    },
+    "NonCDKQueue": {
+      "Type": "AWS::SQS::Queue"
+    },
+    "MyQueue": {
+      "Type": "@aws-cdk/aws-sqs.Queue",
+      "Properties": {
+        "encryption": "Kms",
+        "fifo": true
+      }
+    }
+  }
+}

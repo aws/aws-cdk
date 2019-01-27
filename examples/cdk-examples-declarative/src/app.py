@@ -1,0 +1,2 @@
+def handler:
+    print('hi')

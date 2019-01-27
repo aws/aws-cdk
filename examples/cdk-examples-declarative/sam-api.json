@@ -1,0 +1,44 @@
+{
+  "$schema": "./cdk.schema.json",
+  "Resources": {
+    "Database": {
+      "Type": "@aws-cdk/aws-dynamodb.Table",
+      "Properties": {
+        "partitionKey": {
+          "name": "ID",
+          "type": "String"
+        }
+      }
+    },
+    "HelloWorldFunction": {
+      "Type": "@aws-cdk/aws-serverless.Function",
+      "Properties": {
+        "codeUri": "src/",
+        "handler": "app.hello_handler",
+        "runtime": "python3.6",
+        "events": {
+          "Hi": {
+            "type": "Api",
+            "properties": {
+              "path": "/hi",
+              "method": "get"
+            }
+          },
+          "HiThere": {
+            "type": "Api",
+            "properties": {
+              "path": "/hi/there",
+              "method": "post"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "HelloWorldApi": {
+      "Description": "API Gateway endpoint URL for Prod stage for Hello World function",
+      "Value": { "Fn::GetAtt": [ "HelloWorldFunction", "url" ] }
+    }
+  }
+}

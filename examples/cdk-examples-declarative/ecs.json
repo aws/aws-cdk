@@ -1,0 +1,11 @@
+{
+  "$schema": "./cdk.schema.json",
+  "Resources": {
+    "FargateService": {
+      "Type": "@aws-cdk/aws-ecs.LoadBalancedFargateServiceApplet",
+      "Properties": {
+        "image": "redis"
+      }
+    }
+  }
+}
