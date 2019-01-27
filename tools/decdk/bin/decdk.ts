@@ -3,6 +3,8 @@ import { ConstructAndProps, resourceSchema } from '../lib/cfnschema';
 import { isSerializableTypeReference } from '../lib/jsii2schema';
 import { loadTypeSystem } from '../lib/type-system';
 
+// tslint:disable:no-console
+
 async function main() {
   const typeSystem = await loadTypeSystem();
 
@@ -15,7 +17,16 @@ async function main() {
   const deconstructs = constructs
     .map(unpackConstruct)
     .filter(c => c && !isCfnResource(c.constructClass)) // filter out L1s
-    .filter(c => c !== undefined && isSerializableTypeReference(c.propsTypeRef)) as ConstructAndProps[];
+    .filter(c => {
+      if (!c) { return false; }
+      if (!isSerializableTypeReference(c.propsTypeRef)) {
+        console.error();
+        console.error(`WARNING: construct ${c.constructClass.fqn} is not serializable`);
+        isSerializableTypeReference(c.propsTypeRef, '    > ');
+        return false;
+      }
+      return true;
+    }) as ConstructAndProps[];
 
   const baseSchema = require('../cloudformation.schema.json');
 
