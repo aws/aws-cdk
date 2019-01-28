@@ -7,16 +7,9 @@ import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { renderJsonPath, State, StateType } from './state';
 
 /**
- * Properties for defining a Task state
+ * Props that are common to all tasks
  */
-export interface TaskProps {
-    /**
-     * The resource that represents the work to be executed
-     *
-     * Can be either a Lambda Function or an Activity.
-     */
-    resource: IStepFunctionsTaskResource;
-
+export interface BasicTaskProps {
     /**
      * An optional description for this state
      *
@@ -33,16 +26,6 @@ export interface TaskProps {
      * @default $
      */
     inputPath?: string;
-
-    /**
-     * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
-     *
-     * @see
-     * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
-     *
-     * @default No parameters
-     */
-    parameters?: { [name: string]: any };
 
     /**
      * JSONPath expression to select part of the state to be the output to this state.
@@ -72,6 +55,32 @@ export interface TaskProps {
      * @default 60
      */
     timeoutSeconds?: number;
+}
+
+/**
+ * Properties for defining a Task state
+ */
+export interface TaskProps extends BasicTaskProps {
+    /**
+     * The resource that represents the work to be executed
+     *
+     * Can be either a Lambda Function or an Activity.
+     */
+    resource: IStepFunctionsTaskResource;
+
+    /**
+     * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
+     *
+     * What is passed here will be merged with any default parameters
+     * configured by the `resource`. For example, a DynamoDB table target
+     * will
+     *
+     * @see
+     * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
+     *
+     * @default No parameters
+     */
+    parameters?: { [name: string]: any };
 
     /**
      * Maximum time between heart beats
@@ -88,8 +97,12 @@ export interface TaskProps {
 /**
  * Define a Task state in the state machine
  *
- * Reaching a Task state causes some work to be executed, represented
- * by the Task's resource property.
+ * Reaching a Task state causes some work to be executed, represented by the
+ * Task's resource property. Task constructs represent a generic Amazon
+ * States Language Task.
+ *
+ * For some resource types, more specific subclasses of Task may be available
+ * which are more convenient to use.
  */
 export class Task extends State implements INextable {
     public readonly endStates: INextable[];
@@ -140,10 +153,20 @@ export class Task extends State implements INextable {
      * Return the Amazon States Language object for this state
      */
     public toStateJson(): object {
+        const inOutParams = this.renderInputOutput();
+
+        // Mix resource-defined and user-supplied Parameters, user wins.
+        let Parameters;
+        if (this.resourceProps.parameters || inOutParams.Parameters) {
+            Parameters = this.resourceProps.parameters || {};
+            cdk.deepMerge(Parameters, inOutParams.Parameters || {});
+        }
+
         return {
             ...this.renderNextEnd(),
             ...this.renderRetryCatch(),
-            ...this.renderInputOutput(),
+            ...inOutParams,
+            Parameters,
             Type: StateType.Task,
             Comment: this.comment,
             Resource: this.resourceProps.resourceArn,
@@ -289,6 +312,15 @@ export interface StepFunctionsTaskResourceProps {
      * @default No policy roles
      */
     policyStatements?: iam.PolicyStatement[];
+
+    /**
+     * Parameters to pass to the Resource
+     *
+     * Will be merged with parameters that the user supplies.
+     *
+     * @default No parameters
+     */
+    parameters?: {[key: string]: any};
 
     /**
      * Prefix for singular metric names of activity actions

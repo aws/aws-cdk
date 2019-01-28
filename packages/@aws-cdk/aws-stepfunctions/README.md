@@ -327,6 +327,46 @@ const definition = stepfunctions.Chain
     // ...
 ```
 
+## Service Integrations
+
+Some packages contain specialized subclasses of `Task` that can be used to
+invoke those services as part of a workflow. The same effect can be
+achieved by using `Task` directly, but these subclasses usually make it
+easier.
+
+### Sending a message to an SNS topic
+
+Use the `PublishTask` task in the SNS library:
+
+```ts
+import sns = require('@aws-cdk/aws-sns');
+
+// ...
+
+const topic = new sns.Topic(this, 'Topic');
+const task = new sns.PublishTask(this, 'Publish', {
+    topic,
+    message: 'A message to send to the queue'
+});
+
+### Sending a message to an SQS queue
+
+Use the `SendMessageTask` task in the SQS library:
+
+```ts
+import sqs = require('@aws-cdk/aws-sqs');
+
+// ...
+
+const queue = new sns.Queue(this, 'Queue');
+const task = new sns.SendMessageTask(this, 'Send', {
+    queue,
+    messageBodyPath: '$.message',
+    // Only for FIFO queues
+    messageGroupId: '$.messageGroupId',
+});
+```
+
 ## State Machine Fragments
 
 It is possible to define reusable (or abstracted) mini-state machines by

@@ -72,6 +72,7 @@
     "@aws-cdk/aws-lambda": "^0.22.0",
     "@aws-cdk/aws-s3-notifications": "^0.22.0",
     "@aws-cdk/aws-sqs": "^0.22.0",
+    "@aws-cdk/aws-stepfunctions": "^0.22.0",
     "@aws-cdk/cdk": "^0.22.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
@@ -83,6 +84,7 @@
     "@aws-cdk/aws-lambda": "^0.22.0",
     "@aws-cdk/aws-s3-notifications": "^0.22.0",
     "@aws-cdk/aws-sqs": "^0.22.0",
+    "@aws-cdk/aws-stepfunctions": "^0.22.0",
     "@aws-cdk/cdk": "^0.22.0"
   },
   "engines": {
