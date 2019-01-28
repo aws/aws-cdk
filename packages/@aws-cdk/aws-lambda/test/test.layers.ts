@@ -19,7 +19,10 @@ export = testCase({
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersion', {
-      Content: stack.node.resolve(code._toJSON()),
+      Content: {
+        S3Bucket: stack.node.resolve(bucket.bucketName),
+        S3Key: 'ObjectKey',
+      },
       CompatibleRuntimes: ['nodejs8.10']
     }));
 
