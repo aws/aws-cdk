@@ -147,15 +147,9 @@
                   "Version": "1"
                 },
                 "Configuration": {
-                  "ClientId": {
-                    "Ref": "AlexaClientIdParameter75B42E44"
-                  },
-                  "ClientSecret": {
-                    "Ref": "AlexaClientSecretParameterDDEA523F"
-                  },
-                  "RefreshToken": {
-                    "Ref": "AlexaRefreshTokenParameter07AA5F6D"
-                  },
+                  "ClientId": "clientId",
+                  "ClientSecret": "clientSecret",
+                  "RefreshToken": "refreshToken",
                   "SkillId": "amzn1.ask.skill.12345678-1234-1234-1234-123456789012"
                 },
                 "InputArtifacts": [
@@ -190,23 +184,6 @@
           "Status": "Enabled"
         }
       }
-    }
-  },
-  "Parameters": {
-    "AlexaClientIdParameter75B42E44": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/Alexa/ClientId",
-      "NoEcho": true
-    },
-    "AlexaClientSecretParameterDDEA523F": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/Alexa/ClientSecret",
-      "NoEcho": true
-    },
-    "AlexaRefreshTokenParameter07AA5F6D": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/Alexa/RefreshToken",
-      "NoEcho": true
     }
   }
 }
