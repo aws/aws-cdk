@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
+import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
 
 export interface LayerVersionProps {
@@ -34,7 +35,7 @@ export interface LayerVersionProps {
   name?: string;
 }
 
-export interface ILayerVersion {
+export interface ILayerVersion extends cdk.IConstruct {
   /**
    * The ARN of the Lambda Layer version that this Layer defines.
    */
@@ -44,6 +45,12 @@ export interface ILayerVersion {
    * The runtimes compatible with this Layer.
    */
   readonly compatibleRuntimes?: Runtime[];
+
+  /**
+   * Exports this layer for use in another Stack. The resulting object can be passed to the ``LayerVersion.import``
+   * function to obtain an ``ILayerVersion`` in the user stack.
+   */
+  export(): LayerVersionImportProps;
 
   /**
    * Grants usage of this layer to specific entities. Usage within the same account where the layer is defined is always
@@ -69,23 +76,16 @@ export abstract class LayerVersionBase extends cdk.Construct implements ILayerVe
       throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${grantee.accountId}`);
     }
 
-    new cdk.Resource(this, id, {
-      type: 'AWS::Lambda::LayerVersionPermission',
-      properties: {
-        Action: 'lambda:GetLayerVersion',
-        LayerVersionArn: this.layerVersionArn,
-        Principal: grantee.accountId,
-        OrganizationId: grantee.organizationId,
-      }
+    new CfnLayerVersionPermission(this, id, {
+      action: 'lambda:GetLayerVersion',
+      layerVersionArn: this.layerVersionArn,
+      principal: grantee.accountId,
+      organizationId: grantee.organizationId,
     });
     return this;
   }
 
-  /**
-   * Exports this layer for use in another Stack. The resulting object can be passed to the ``LayerVersion.import``
-   * function to obtain an ``ILayerVersion`` in the user stack.
-   */
-  public export(): ImportedLayerVersionProps {
+  public export(): LayerVersionImportProps {
     return {
       layerVersionArn: new cdk.Output(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
       compatibleRuntimes: this.compatibleRuntimes,
@@ -114,7 +114,7 @@ export interface LayerVersionUsageGrantee {
 /**
  * Properties necessary to import a LayerVersion.
  */
-export interface ImportedLayerVersionProps {
+export interface LayerVersionImportProps {
   /**
    * The ARN of the LayerVersion.
    */
@@ -133,12 +133,12 @@ export class LayerVersion extends LayerVersionBase {
   /**
    * Imports a Layer that has been defined externally.
    *
-   * @param parent the parent Construct that will use the imported layer.
-   * @param id     the id of the imported layer in the construct tree.
-   * @param props  the properties of the imported layer.
+   * @param scope the parent Construct that will use the imported layer.
+   * @param id    the id of the imported layer in the construct tree.
+   * @param props the properties of the imported layer.
    */
-  public static import(parent: cdk.Construct, id: string, props: ImportedLayerVersionProps): ILayerVersion {
-    return new ImportedLayerVersion(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: LayerVersionImportProps): ILayerVersion {
+    return new ImportedLayerVersion(scope, id, props);
   }
 
   public readonly layerVersionArn: string;
@@ -155,18 +155,15 @@ export class LayerVersion extends LayerVersionBase {
     // Allow usage of the code in this context...
     props.code.bind(this);
 
-    const resource = new cdk.Resource(this, 'Resource', {
-      type: 'AWS::Lambda::LayerVersion',
-      properties: {
-        CompatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
-        Content: new cdk.Token(() => props.code._toJSON(resource)),
-        Description: props.description,
-        LayerName: props.name,
-        LicenseInfo: props.license,
-      }
+    const resource = new CfnLayerVersion(this, 'Resource', {
+      compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
+      content: new cdk.Token(() => props.code._toJSON(resource)),
+      description: props.description,
+      layerName: props.name,
+      licenseInfo: props.license,
     });
 
-    this.layerVersionArn = resource.ref;
+    this.layerVersionArn = resource.layerVersionArn;
     this.compatibleRuntimes = props.compatibleRuntimes;
   }
 }
@@ -175,7 +172,7 @@ class ImportedLayerVersion extends LayerVersionBase {
   public readonly layerVersionArn: string;
   public readonly compatibleRuntimes?: Runtime[];
 
-  public constructor(parent: cdk.Construct, id: string, props: ImportedLayerVersionProps) {
+  public constructor(parent: cdk.Construct, id: string, props: LayerVersionImportProps) {
     super(parent, id);
 
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
@@ -220,6 +217,13 @@ export class SingletonLayerVersion extends cdk.Construct implements ILayerVersio
 
   public get compatibleRuntimes(): Runtime[] | undefined {
     return this.layerVersion.compatibleRuntimes;
+  }
+
+  public export(): LayerVersionImportProps {
+    return {
+      layerVersionArn: this.layerVersionArn,
+      compatibleRuntimes: this.compatibleRuntimes,
+    };
   }
 
   public grantUsage(id: string, grantee: LayerVersionUsageGrantee): ILayerVersion {
