@@ -16,7 +16,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPoolClient', {
-      UserPoolId: pool.node.resolve(pool.poolId)
+      UserPoolId: pool.node.resolve(pool.userPoolId)
     }));
 
     test.done();

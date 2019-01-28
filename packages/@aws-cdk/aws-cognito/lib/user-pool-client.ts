@@ -1,24 +1,38 @@
 import cdk = require('@aws-cdk/cdk');
 import { CfnUserPoolClient } from './cognito.generated';
-import { UserPool } from './user-pool';
+import { IUserPool } from './user-pool';
 
+/**
+ * Types of authentication flow
+ */
 export enum AuthFlow {
-  ADMIN_NO_SRP_AUTH = 'ADMIN_NO_SRP_AUTH',
-  CUSTOM_AUTH_FLOW_ONLY = 'CUSTOM_AUTH_FLOW_ONLY',
-  USER_PASSWORD_AUTH = 'USER_PASSWORD_AUTH'
+  /**
+   * Enable flow for server-side or admin authentication (no client app)
+   */
+  AdminNoSrp = 'ADMIN_NO_SRP_AUTH',
+
+  /**
+   * Enable custom authentication flow
+   */
+  CustomFlowOnly = 'CUSTOM_AUTH_FLOW_ONLY',
+
+  /**
+   * Enable auth using username & password
+   */
+  UserPassword = 'USER_PASSWORD_AUTH'
 }
 
 export interface UserPoolClientProps {
   /**
    * Name of the application client
-   * @default unique ID
+   * @default cloudformation generated name
    */
   clientName?: string;
 
   /**
    * The UserPool resource this client will have access to
    */
-  userPool: UserPool;
+  userPool: IUserPool;
 
   /**
    * Whether to generate a client secret
@@ -42,10 +56,10 @@ export class UserPoolClient extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: UserPoolClientProps) {
     super(scope, id);
 
-    const userPoolClient = new CfnUserPoolClient(this, 'UserPoolClient', {
-      clientName: props.clientName || this.node.uniqueId,
-      generateSecret: props.generateSecret || false,
-      userPoolId: props.userPool.poolId,
+    const userPoolClient = new CfnUserPoolClient(this, 'Resource', {
+      clientName: props.clientName,
+      generateSecret: props.generateSecret,
+      userPoolId: props.userPool.userPoolId,
       explicitAuthFlows: props.enabledAuthFlows
     });
     this.clientId = userPoolClient.userPoolClientId;
