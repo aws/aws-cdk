@@ -1,6 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { Policy } from './policy';
-import { PolicyPrincipal, PolicyStatement } from './policy-document';
+import { PolicyStatement } from './policy-document';
+import { PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleImportProps, RoleProps } from './role';
 
 /**
@@ -13,6 +14,7 @@ import { IRole, Role, RoleImportProps, RoleProps } from './role';
  * not be synthesized or deployed.
  */
 export class LazyRole extends cdk.Construct implements IRole {
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
   private role?: Role;
   private readonly statements = new Array<PolicyStatement>();
   private readonly policies = new Array<Policy>();
@@ -31,11 +33,12 @@ export class LazyRole extends cdk.Construct implements IRole {
    * If there is no default policy attached to this role, it will be created.
    * @param permission The permission statement to add to the policy document
    */
-  public addToPolicy(statement: PolicyStatement): void {
+  public addToPolicy(statement: PolicyStatement): boolean {
     if (this.role) {
-      this.role.addToPolicy(statement);
+      return this.role.addToPolicy(statement);
     } else {
       this.statements.push(statement);
+      return true;
     }
   }
 
@@ -85,11 +88,8 @@ export class LazyRole extends cdk.Construct implements IRole {
     return this.instantiate().roleName;
   }
 
-  /**
-   * Returns a Principal object representing the ARN of this role.
-   */
-  public get principal(): PolicyPrincipal {
-    return this.instantiate().principal;
+  public get policyFragment(): PrincipalPolicyFragment {
+    return this.instantiate().policyFragment;
   }
 
   private instantiate(): Role {

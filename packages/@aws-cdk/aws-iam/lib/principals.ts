@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { PolicyStatement } from './policy-document';
 import { mergePrincipal } from './util';
 
 /**
@@ -16,6 +17,13 @@ export interface IPrincipal {
    * Return the policy fragment that identifies this principal in a Policy.
    */
   readonly policyFragment: PrincipalPolicyFragment;
+
+  /**
+   * Add to the policy of this principal.
+   *
+   * @returns true if the policy was added, false if the policy could not be added
+   */
+  addToPolicy(statement: PolicyStatement): boolean;
 }
 
 /**
@@ -31,6 +39,11 @@ export abstract class PrincipalBase implements IPrincipal {
    * Return the policy fragment that identifies this principal in a Policy.
    */
   public abstract policyFragment: PrincipalPolicyFragment;
+
+  public addToPolicy(_statement: PolicyStatement): boolean {
+    // None of these have a policy to add to
+    return false;
+  }
 }
 
 /**
@@ -72,6 +85,22 @@ export class ServicePrincipal extends PrincipalBase {
 
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({ Service: [ this.service ] });
+  }
+}
+
+/**
+ * A principal that represents an AWS Organization
+ */
+export class OrganizationPrincipal extends PrincipalBase {
+  constructor(public readonly organizationId: string) {
+    super();
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new PrincipalPolicyFragment(
+      { AWS: ['*'] },
+      { StringEquals: { 'aws:PrincipalOrgID': this.organizationId } }
+    );
   }
 }
 

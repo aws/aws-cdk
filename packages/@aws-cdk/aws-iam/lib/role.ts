@@ -182,13 +182,14 @@ export class Role extends Construct implements IRole {
    * If there is no default policy attached to this role, it will be created.
    * @param permission The permission statement to add to the policy document
    */
-  public addToPolicy(statement: PolicyStatement) {
+  public addToPolicy(statement: PolicyStatement): boolean {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.attachInlinePolicy(this.defaultPolicy);
       this.dependencyElements.push(this.defaultPolicy);
     }
     this.defaultPolicy.addStatement(statement);
+    return true;
   }
 
   /**
@@ -310,8 +311,9 @@ class ImportedRole extends Construct implements IRole {
     return this.props;
   }
 
-  public addToPolicy(_statement: PolicyStatement): void {
-    // FIXME: Add warning that we're ignoring this
+  public addToPolicy(_statement: PolicyStatement): boolean {
+    // Statement will be added to resource instead
+    return false;
   }
 
   public attachInlinePolicy(_policy: Policy): void {

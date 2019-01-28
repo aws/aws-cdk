@@ -503,32 +503,21 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
     return statement;
   }
 
-  private grant(identity: iam.IPrincipal | undefined,
+  private grant(principal: iam.IPrincipal | undefined,
                 bucketActions: string[],
                 keyActions: string[],
                 resourceArn: string, ...otherResourceArns: string[]) {
-
-    if (!identity) {
-      return;
-    }
-
     const resources = [ resourceArn, ...otherResourceArns ];
 
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addResources(...resources)
-      .addActions(...bucketActions));
+    iam.grant({
+      principal,
+      actions: bucketActions,
+      resourceArns: resources,
+      addToResourcePolicy: this.addToResourcePolicy.bind(this),
+    });
 
-    // grant key permissions if there's an associated key.
     if (this.encryptionKey) {
-      // KMS permissions need to be granted both directions
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.encryptionKey.keyArn)
-        .addActions(...keyActions));
-
-      this.encryptionKey.addToResourcePolicy(new iam.PolicyStatement()
-        .addAllResources()
-        .addPrincipal(identity.principal)
-        .addActions(...keyActions));
+      this.encryptionKey.grant(principal, keyActions);
     }
   }
 }

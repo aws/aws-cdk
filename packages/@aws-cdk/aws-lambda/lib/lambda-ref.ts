@@ -267,11 +267,23 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  public grantInvoke(identity?: iam.IPrincipal) {
-    if (identity) {
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addAction('lambda:InvokeFunction')
-        .addResource(this.functionArn));
+  public grantInvoke(principal?: iam.IPrincipal) {
+    const added = iam.grant({
+      principal,
+      actions: ['lambda:InvokeFunction'],
+      resourceArns: [this.functionArn],
+      // Can't use a resource policy because adding resource permissions
+      // looks different on a Lambda Function.
+      skipResourcePolicy: true
+    });
+
+    if (!added && principal) {
+      // Couldn't add permissions to the principal, so add them locally.
+      const identifier = 'Invoke' + JSON.stringify(principal!.policyFragment.principalJson);
+      this.addPermission(identifier, {
+         principal,
+         action: 'lambda:InvokeFunction',
+      });
     }
   }
 
@@ -401,11 +413,10 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     source.bind(this);
   }
 
-  private parsePermissionPrincipal(principal?: iam.PolicyPrincipal) {
+  private parsePermissionPrincipal(principal?: iam.IPrincipal) {
     if (!principal) {
       return undefined;
     }
-
     // use duck-typing, not instance of
 
     if ('accountId' in principal) {

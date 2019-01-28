@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Construct, DeletionPolicy, IConstruct, Output, TagManager, Tags } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
@@ -28,6 +29,21 @@ export interface IEncryptionKey extends IConstruct {
    * @returns a key ref which can be used in a call to `EncryptionKey.import(ref)`.
    */
   export(): EncryptionKeyImportProps;
+
+  /**
+   * Grant the indicated permissions on this key to the given principal
+   */
+  grant(principal: iam.IPrincipal | undefined, actions: string[]): void;
+
+  /**
+   * Grant decryption permisisons using this key to the given principal
+   */
+  grantDecrypt(principal: iam.IPrincipal | undefined): void;
+
+  /**
+   * Grant encryption permisisons using this key to the given principal
+   */
+  grantEncrypt(principal: iam.IPrincipal | undefined): void;
 }
 
 export interface EncryptionKeyImportProps {
@@ -75,6 +91,50 @@ export abstract class EncryptionKeyBase extends Construct {
   }
 
   public abstract export(): EncryptionKeyImportProps;
+
+  /**
+   * Grant the indicated permissions on this key to the given principal
+   *
+   * This modifies both the principal's policy as well as the resource policy,
+   * since the default CloudFormation setup for KMS keys is that the policy
+   * must not be empty and so default grants won't work.
+   */
+  public grant(principal: iam.IPrincipal | undefined, actions: string[]): void {
+    iam.grant({
+      principal,
+      actions,
+      resourceArns: [this.keyArn],
+      skipResourcePolicy: true,
+    });
+
+    if (principal) {
+      this.addToResourcePolicy(new iam.PolicyStatement()
+        .addPrincipal(principal)
+        .addActions(...actions)
+        .addAllResources());
+    }
+  }
+
+  /**
+   * Grant decryption permisisons using this key to the given principal
+   */
+  public grantDecrypt(principal: iam.IPrincipal | undefined): void {
+    return this.grant(principal, [
+      'kms:Decrypt',
+      'kms:DescribeKey',
+    ]);
+  }
+
+  /**
+   * Grant encryption permisisons using this key to the given principal
+   */
+  public grantEncrypt(principal: iam.IPrincipal | undefined): void {
+    return this.grant(principal, [
+      'kms:Encrypt',
+      'kms:ReEncrypt*',
+      'kms:GenerateDataKey*'
+    ]);
+  }
 }
 
 /**

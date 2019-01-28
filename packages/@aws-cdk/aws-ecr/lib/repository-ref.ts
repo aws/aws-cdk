@@ -212,26 +212,27 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
-  public grant(identity?: iam.IPrincipal, ...actions: string[]) {
-    if (!identity) {
-      return;
-    }
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.repositoryArn)
-      .addActions(...actions));
+  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
+    iam.grant({
+      principal,
+      actions,
+      resourceArns: [this.repositoryArn],
+      addToResourcePolicy: this.addToResourcePolicy.bind(this),
+    });
   }
 
   /**
    * Grant the given identity permissions to use the images in this repository
    */
-  public grantPull(identity?: iam.IPrincipal) {
-    this.grant(identity, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
+  public grantPull(principal?: iam.IPrincipal) {
+    this.grant(principal, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
 
-    if (identity) {
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addActions("ecr:GetAuthorizationToken", "logs:CreateLogStream", "logs:PutLogEvents")
-        .addAllResources());
-    }
+    iam.grant({
+      principal,
+      actions: ["ecr:GetAuthorizationToken", "logs:CreateLogStream", "logs:PutLogEvents"],
+      resourceArns: ['*'],
+      skipResourcePolicy: true,
+    });
   }
 
   /**

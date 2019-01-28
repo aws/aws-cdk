@@ -260,17 +260,16 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    * Grant the actions defined in queueActions to the identity Principal given
    * on this SQS queue resource.
    *
-   * @param identity Principal to grant right to
-   * @param queueActions The actions to grant
+   * @param principal Principal to grant right to
+   * @param actions The actions to grant
    */
-  public grant(identity?: iam.IPrincipal, ...queueActions: string[]) {
-      if (!identity) {
-        return;
-      }
-
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.queueArn)
-        .addActions(...queueActions));
+  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
+    iam.grant({
+      principal,
+      actions,
+      resourceArns: [this.queueArn],
+      addToResourcePolicy: this.addToResourcePolicy.bind(this),
+    });
   }
 }
 

@@ -255,14 +255,14 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
     return dest.logSubscriptionDestination(sourceLogGroup);
   }
 
-  private grant(identity: iam.IPrincipal, actions: { streamActions: string[], keyActions: string[] }) {
-    identity.addToPolicy(new iam.PolicyStatement()
+  private grant(principal: iam.IPrincipal, actions: { streamActions: string[], keyActions: string[] }) {
+    principal.addToPolicy(new iam.PolicyStatement()
       .addResource(this.streamArn)
       .addActions(...actions.streamActions));
 
     // grant key permissions if there's an associated key.
     if (this.encryptionKey) {
-      identity.addToPolicy(new iam.PolicyStatement()
+      principal.addToPolicy(new iam.PolicyStatement()
         .addResource(this.encryptionKey.keyArn)
         .addActions(...actions.keyActions));
     }

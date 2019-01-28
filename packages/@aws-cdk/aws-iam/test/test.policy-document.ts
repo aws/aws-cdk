@@ -281,6 +281,7 @@ export = {
     const arrayPrincipal: PrincipalBase = {
       assumeRoleAction: 'sts:AssumeRole',
       policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
+      addToPolicy() { return false; }
     };
     const s = new PolicyStatement().addAccountRootPrincipal()
                                    .addPrincipal(arrayPrincipal);

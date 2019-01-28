@@ -7,6 +7,7 @@ export * from './group';
 export * from './lazy-role';
 export * from './principals';
 export * from './identity-base';
+export * from './grant';
 
 // AWS::IAM CloudFormation Resources:
 export * from './iam.generated';

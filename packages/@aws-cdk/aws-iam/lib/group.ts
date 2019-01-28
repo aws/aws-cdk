@@ -97,12 +97,13 @@ export class Group extends Construct implements IIdentity {
   /**
    * Adds an IAM statement to the default policy.
    */
-  public addToPolicy(statement: PolicyStatement) {
+  public addToPolicy(statement: PolicyStatement): boolean {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.defaultPolicy.attachToGroup(this);
     }
 
     this.defaultPolicy.addStatement(statement);
+    return true;
   }
 }
