@@ -36,42 +36,42 @@ export interface UserPoolTriggers {
   /**
    * Creates an authentication challenge.
    */
-  createAuthChallenge?: lambda.Function;
+  createAuthChallenge?: lambda.IFunction;
 
   /**
    * A custom Message AWS Lambda trigger.
    */
-  customMessage?: lambda.Function;
+  customMessage?: lambda.IFunction;
 
   /**
    * Defines the authentication challenge.
    */
-  defineAuthChallenge?: lambda.Function;
+  defineAuthChallenge?: lambda.IFunction;
 
   /**
    * A post-authentication AWS Lambda trigger.
    */
-  postAuthentication?: lambda.Function;
+  postAuthentication?: lambda.IFunction;
 
   /**
    * A post-confirmation AWS Lambda trigger.
    */
-  postConfirmation?: lambda.Function;
+  postConfirmation?: lambda.IFunction;
 
   /**
    * A pre-authentication AWS Lambda trigger.
    */
-  preAuthentication?: lambda.Function;
+  preAuthentication?: lambda.IFunction;
 
   /**
    * A pre-registration AWS Lambda trigger.
    */
-  preSignUp?: lambda.Function;
+  preSignUp?: lambda.IFunction;
 
   /**
    * Verifies the authentication challenge response.
    */
-  verifyAuthChallengeResponse?: lambda.Function;
+  verifyAuthChallengeResponse?: lambda.IFunction;
 }
 
 export interface UserPoolProps {
@@ -122,21 +122,21 @@ export class UserPool extends cdk.Construct {
 
     const triggers = props.lambdaTriggers || { };
 
-    let aliasAttributes: Attribute[]|undefined;
-    let usernameAttributes: Attribute[]|undefined;
+    let aliasAttributes: Attribute[] | undefined;
+    let usernameAttributes: Attribute[] | undefined;
 
-    if (typeof props.usernameAliasAttributes !== 'undefined' && props.signInType !== SignInType.USERNAME) {
+    if (props.usernameAliasAttributes != null && props.signInType !== SignInType.USERNAME) {
       throw new Error(`'usernameAliasAttributes' can only be set with a signInType of 'USERNAME'`);
     }
 
-    if (typeof props.usernameAliasAttributes !== 'undefined'
+    if (props.usernameAliasAttributes
       && !props.usernameAliasAttributes.every(a => {
         return a === Attribute.EMAIL || a === Attribute.PHONE_NUMBER || a === Attribute.PREFERRED_USERNAME;
       })) {
       throw new Error(`'usernameAliasAttributes' can only include EMAIL, PHONE_NUMBER, or PREFERRED_USERNAME`);
     }
 
-    if (typeof props.autoVerifiedAttributes !== 'undefined'
+    if (props.autoVerifiedAttributes
       && !props.autoVerifiedAttributes.every(a => a === Attribute.EMAIL || a === Attribute.PHONE_NUMBER)) {
       throw new Error(`'autoVerifiedAttributes' can only include EMAIL or PHONE_NUMBER`);
     }
@@ -169,14 +169,14 @@ export class UserPool extends cdk.Construct {
       aliasAttributes,
       autoVerifiedAttributes: props.autoVerifiedAttributes,
       lambdaConfig: {
-        createAuthChallenge: triggers.createAuthChallenge ? triggers.createAuthChallenge.functionArn : undefined,
-        customMessage: triggers.customMessage ? triggers.customMessage.functionArn : undefined,
-        defineAuthChallenge: triggers.defineAuthChallenge ? triggers.defineAuthChallenge.functionArn : undefined,
-        postAuthentication: triggers.postAuthentication ? triggers.postAuthentication.functionArn : undefined,
-        postConfirmation: triggers.postConfirmation ? triggers.postConfirmation.functionArn : undefined,
-        preAuthentication: triggers.preAuthentication ? triggers.preAuthentication.functionArn : undefined,
-        preSignUp: triggers.preSignUp ? triggers.preSignUp.functionArn : undefined,
-        verifyAuthChallengeResponse: triggers.verifyAuthChallengeResponse ? triggers.verifyAuthChallengeResponse.functionArn : undefined
+        createAuthChallenge: triggers.createAuthChallenge && triggers.createAuthChallenge.functionArn,
+        customMessage: triggers.customMessage && triggers.customMessage.functionArn,
+        defineAuthChallenge: triggers.defineAuthChallenge && triggers.defineAuthChallenge.functionArn,
+        postAuthentication: triggers.postAuthentication && triggers.postAuthentication.functionArn,
+        postConfirmation: triggers.postConfirmation && triggers.postConfirmation.functionArn,
+        preAuthentication: triggers.preAuthentication && triggers.preAuthentication.functionArn,
+        preSignUp: triggers.preSignUp && triggers.preSignUp.functionArn,
+        verifyAuthChallengeResponse: triggers.verifyAuthChallengeResponse && triggers.verifyAuthChallengeResponse.functionArn
       }
     });
     this.poolId = userPool.userPoolId;
