@@ -5,7 +5,7 @@ Here is a minimal deployable DynamoDB table definition:
 ```ts
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 
-const table = new dynamodb.Table(stack, 'Table', {
+const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.String }
 });
 ```
@@ -24,7 +24,7 @@ DynamoDB supports two billing modes:
 ```ts
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 
-const table = new dynamodb.Table(stack, 'Table', {
+const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.String },
   billingMode: dynamodb.BillingMode.PayPerRequest
 });

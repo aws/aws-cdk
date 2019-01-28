@@ -34,7 +34,7 @@ example:
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
 
-const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
+const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
   cidr: '10.0.0.0/21',
   subnetConfiguration: [
     {
@@ -98,7 +98,7 @@ distributed for the application.
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
 
-const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
+const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
   cidr: '10.0.0.0/16',
   natGateways: 1,
   subnetConfiguration: [
@@ -144,7 +144,7 @@ traffic. This can be accomplished with a single parameter configuration:
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
 
-const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
+const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
   cidr: '10.0.0.0/16',
   natGateways: 1,
   natGatewayPlacement: {subnetName: 'Public'},

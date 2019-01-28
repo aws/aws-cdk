@@ -5,7 +5,7 @@ Add an SNS Topic to your stack:
 ```ts
 import sns = require('@aws-cdk/aws-sns');
 
-const topic = new sns.Topic(stack, 'Topic', {
+const topic = new sns.Topic(this, 'Topic', {
     displayName: 'Customer subscription topic'
 });
 ```
@@ -18,7 +18,7 @@ topic.
 Add an HTTPS Subscription to your topic:
 
 ```ts
-const myTopic = new sns.Topic(stack, 'MyTopic');
+const myTopic = new sns.Topic(this, 'MyTopic');
 
 myTopic.subscribeUrl('MyHttpsSubscription', 'https://foobar.com/');
 ```
