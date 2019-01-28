@@ -16,21 +16,22 @@ export interface OutputProps {
   value?: any;
 
   /**
-   * The name used to export the value of this output across stacks. To import
-   * the value from another stack, use `FnImportValue(export)`. You can create
-   * an import value token by calling `output.makeImportValue()`.
+   * The name used to export the value of this output across stacks.
    *
-   * @default The default behavior is to automatically allocate an export name
-   * for outputs based on the stack name and the output's logical ID. To
-   * create an output without an export, set `disableExport: true`.
+   * To import the value from another stack, use `FnImportValue(export)`. You
+   * can create an import value token by calling `output.makeImportValue()`.
+   *
+   * @default Automatically allocate a name when `makeImportValue()`  is
+   * called.
    */
   export?: string;
 
   /**
    * Disables the automatic allocation of an export name for this output.
    *
-   * @default false, which means that an export name is either explicitly
-   * specified or allocated based on the output's logical ID and stack name.
+   * This disables use of `makeImportValue()` if `export` is  not given.
+   *
+   * @default false
    */
   disableExport?: boolean;
 
@@ -52,8 +53,10 @@ export class Output extends StackElement {
   /**
    * The name of the resource output to be exported for a cross-stack reference.
    * By default, the logical ID of the Output element is used as it's export name.
+   *
+   * May be undefined if the Output hasn't been exported yet.
    */
-  public readonly export?: string;
+  public export?: string;
 
   /**
    * A condition from the "Conditions" section to associate with this output
@@ -63,6 +66,8 @@ export class Output extends StackElement {
   public readonly condition?: Condition;
 
   private _value?: any;
+
+  private disableExport: boolean;
 
   /**
    * Creates an Output value for this stack.
@@ -76,16 +81,16 @@ export class Output extends StackElement {
     this._value = props.value;
     this.condition = props.condition;
 
+    this.disableExport = props.disableExport !== undefined ? props.disableExport : false;
+
+    if (props.export && this.disableExport) {
+      throw new Error('Cannot set `disableExport` and specify an export name');
+    }
+
+    this.export = props.export;
+
     if (props.export) {
-      if (props.disableExport) {
-        throw new Error('Cannot set `disableExport` and specify an export name');
-      }
       this.export = props.export;
-    } else if (!props.disableExport) {
-      // prefix export name with stack name since exports are global within account + region.
-      const stackName = require('./stack').Stack.find(this).node.id;
-      this.export = stackName ? stackName + ':' : '';
-      this.export += this.logicalId;
     }
   }
 
@@ -102,8 +107,11 @@ export class Output extends StackElement {
    * Returns an FnImportValue bound to this export name.
    */
   public makeImportValue() {
+    if (!this.export && this.disableExport) {
+      throw new Error('Cannot create an ImportValue; `disableExport` has been set.');
+    }
     if (!this.export) {
-      throw new Error('Cannot create an ImportValue without an export name');
+      this.export = this.uniqueOutputName();
     }
     return fn().importValue(this.export);
   }
@@ -123,6 +131,19 @@ export class Output extends StackElement {
 
   public get ref(): string {
     throw new Error('Outputs cannot be referenced');
+  }
+
+  /**
+   * Automatically determine an output name for use with FnImportValue
+   *
+   * This gets called in case the user hasn't specified an export name but is
+   * taking an action that requires exporting. We namespace with the stack name
+   * to reduce chances of collissions between CDK apps.
+   */
+  private uniqueOutputName() {
+    // prefix export name with stack name since exports are global within account + region.
+    const stackName = require('./stack').Stack.find(this).name;
+    return (stackName ? stackName + ':' : '') + this.logicalId;
   }
 }
 
