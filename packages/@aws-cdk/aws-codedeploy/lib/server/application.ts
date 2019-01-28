@@ -1,0 +1,99 @@
+import cdk = require('@aws-cdk/cdk');
+import { CfnApplication } from '../codedeploy.generated';
+import { ComputePlatform } from '../config';
+import { applicationNameToArn } from '../utils';
+
+export interface IServerApplication {
+  readonly applicationArn: string;
+  readonly applicationName: string;
+
+  /**
+   * The compute platform of the Application, is always Server.
+   */
+  readonly computePlatform: ComputePlatform.Server;
+
+  export(): ServerApplicationImportProps;
+}
+
+/**
+ * Construction properties for {@link ServerApplication}.
+ */
+export interface ServerApplicationProps {
+  /**
+   * The physical, human-readable name of the CodeDeploy Application.
+   *
+   * @default an auto-generated name will be used
+   */
+  readonly applicationName?: string;
+}
+
+/**
+ * A CodeDeploy Application that deploys to EC2/on-premise instances.
+ */
+export class ServerApplication extends cdk.Construct implements IServerApplication {
+  public static import(scope: cdk.Construct, id: string, props: ServerApplicationImportProps) {
+    return new ImportedServerApplication(scope, id, props);
+  }
+
+  public readonly applicationArn: string;
+  public readonly applicationName: string;
+  public readonly computePlatform: ComputePlatform.Server;
+
+  constructor(scope: cdk.Construct, id: string, props: ServerApplicationProps = {}) {
+    super(scope, id);
+
+    const resource = new CfnApplication(this, 'Resource', {
+      applicationName: props.applicationName,
+      computePlatform: ComputePlatform.Server,
+    });
+
+    this.computePlatform = ComputePlatform.Server;
+    this.applicationName = resource.ref;
+    this.applicationArn = applicationNameToArn(this.applicationName, this);
+  }
+
+  public export(): ServerApplicationImportProps {
+    return {
+      applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString(),
+      computePlatform: this.computePlatform
+    };
+  }
+}
+
+/**
+ * Properties of a reference to a CodeDeploy Application.
+ *
+ * @see Application#import
+ * @see Application#export
+ */
+export interface ServerApplicationImportProps {
+  /**
+   * The physical, human-readable name of the CodeDeploy EC2/on-premise Application we're referencing.
+   * The Application must be in the same account and region as the root Stack.
+   */
+  applicationName: string;
+
+  /**
+   * The compute platform of the Server application, is always Server.
+   *
+   * TODO: this is a breaking change
+   */
+  computePlatform: ComputePlatform.Server;
+}
+
+export class ImportedServerApplication extends cdk.Construct implements IServerApplication {
+  public readonly applicationArn: string;
+  public readonly applicationName: string;
+  public readonly computePlatform: ComputePlatform.Server;
+
+  constructor(scope: cdk.Construct, id: string, private readonly props: ServerApplicationImportProps) {
+    super(scope, id);
+    this.applicationName = props.applicationName;
+    this.applicationArn = applicationNameToArn(this.applicationName, this);
+    this.computePlatform = ComputePlatform.Server;
+  }
+
+  public export(): ServerApplicationImportProps {
+    return this.props;
+  }
+}

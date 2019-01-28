@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { CfnDeploymentConfig } from './codedeploy.generated';
+import { CfnDeploymentConfig } from '../codedeploy.generated';
 
 /**
  * The Deployment Configuration of an EC2/on-premise Deployment Group.

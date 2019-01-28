@@ -5,12 +5,13 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import codedeploy = require('../lib');
+import codedeploy = require('../../lib');
+import { ComputePlatform } from '../../lib';
 
 // tslint:disable:object-literal-key-quotes
 
 export = {
-  'CodeDeploy Deployment Group': {
+  'CodeDeploy Server Deployment Group': {
     "can be created by explicitly passing an Application"(test: Test) {
       const stack = new cdk.Stack();
 
@@ -33,6 +34,7 @@ export = {
 
       const application = codedeploy.ServerApplication.import(stack, 'MyApp', {
         applicationName: 'MyApp',
+        computePlatform: ComputePlatform.Server,
       });
       const deploymentGroup = codedeploy.ServerDeploymentGroup.import(stack, 'MyDG', {
         application,
