@@ -3,6 +3,16 @@ import { CfnApplication } from '../codedeploy.generated';
 import { ComputePlatform } from '../config';
 import { applicationNameToArn } from '../utils';
 
+/**
+ * Represents a reference to a CodeDeploy Application deploying to EC2/on-premise instances.
+ *
+ * If you're managing the Application alongside the rest of your CDK resources,
+ * use the {@link ServerApplication} class.
+ *
+ * If you want to reference an already existing Application,
+ * or one defined in a different CDK Stack,
+ * use the {@link #import} method.
+ */
 export interface IServerApplication {
   readonly applicationArn: string;
   readonly applicationName: string;
@@ -63,8 +73,8 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
 /**
  * Properties of a reference to a CodeDeploy Application.
  *
- * @see Application#import
- * @see Application#export
+ * @see ServerApplication#import
+ * @see ServerApplication#export
  */
 export interface ServerApplicationImportProps {
   /**
@@ -75,10 +85,8 @@ export interface ServerApplicationImportProps {
 
   /**
    * The compute platform of the Server application, is always Server.
-   *
-   * TODO: this is a breaking change
    */
-  computePlatform: ComputePlatform.Server;
+  computePlatform?: ComputePlatform.Server;
 }
 
 export class ImportedServerApplication extends cdk.Construct implements IServerApplication {

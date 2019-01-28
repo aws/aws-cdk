@@ -3,7 +3,17 @@ import { CfnApplication } from "../codedeploy.generated";
 import { ComputePlatform } from "../config";
 import { applicationNameToArn } from "../utils";
 
-export interface ILambdaAppliction {
+/**
+ * Represents a reference to a CodeDeploy Application deploying to AWS Lambda.
+ *
+ * If you're managing the Application alongside the rest of your CDK resources,
+ * use the {@link LambdaApplication} class.
+ *
+ * If you want to reference an already existing Application,
+ * or one defined in a different CDK Stack,
+ * use the {@link #import} method.
+ */
+export interface ILambdaApplication {
   readonly applicationArn: string;
   readonly applicationName: string;
   readonly computePlatform: ComputePlatform.Lambda;
@@ -11,12 +21,23 @@ export interface ILambdaAppliction {
   export(): LambdaApplicationImportProps;
 }
 
+/**
+ * Construction properties for {@link LambdaApplication}.
+ */
 export interface LambdaApplicationProps {
+  /**
+   * The physical, human-readable name of the CodeDeploy Application.
+   *
+   * @default an auto-generated name will be used
+   */
   applicationName?: string;
 }
 
-export class LambdaApplication extends cdk.Construct implements ILambdaAppliction {
-  public static import(scope: cdk.Construct, id: string, props: LambdaApplicationImportProps): ILambdaAppliction {
+/**
+ * A CodeDeploy Application that deploys to an AWS Lambda function.
+ */
+export class LambdaApplication extends cdk.Construct implements ILambdaApplication {
+  public static import(scope: cdk.Construct, id: string, props: LambdaApplicationImportProps): ILambdaApplication {
     return new ImportedLambdaApplication(scope, id, props);
   }
   public readonly applicationArn: string;
@@ -47,23 +68,23 @@ export class LambdaApplication extends cdk.Construct implements ILambdaApplictio
 /**
  * Properties of a reference to a CodeDeploy Application.
  *
- * @see Application#import
- * @see Application#export
+ * @see LambdaApplication#import
+ * @see LambdaApplication#export
  */
 export interface LambdaApplicationImportProps {
   /**
-   * The physical, human-readable name of the CodeDeploy EC2/on-premise Application we're referencing.
+   * The physical, human-readable name of the Lambda Application we're referencing.
    * The Application must be in the same account and region as the root Stack.
    */
   applicationName: string;
 
   /**
-   * The compute platform of the Server application, is always Server.
+   * The compute platform of the application, is always Lambda.
    */
-  computePlatform: ComputePlatform.Lambda;
+  computePlatform?: ComputePlatform.Lambda;
 }
 
-class ImportedLambdaApplication extends cdk.Construct implements ILambdaAppliction {
+class ImportedLambdaApplication extends cdk.Construct implements ILambdaApplication {
   public readonly applicationArn: string;
   public readonly applicationName: string;
   public readonly computePlatform: any;

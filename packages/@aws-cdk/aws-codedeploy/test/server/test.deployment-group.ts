@@ -6,7 +6,6 @@ import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codedeploy = require('../../lib');
-import { ComputePlatform } from '../../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -34,7 +33,6 @@ export = {
 
       const application = codedeploy.ServerApplication.import(stack, 'MyApp', {
         applicationName: 'MyApp',
-        computePlatform: ComputePlatform.Server,
       });
       const deploymentGroup = codedeploy.ServerDeploymentGroup.import(stack, 'MyDG', {
         application,
