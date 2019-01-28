@@ -173,8 +173,7 @@
                   "S3Bucket": {
                     "Ref": "PipelineBucketB967BD35"
                   },
-                  "S3ObjectKey": "key",
-                  "PollForSourceChanges": true
+                  "S3ObjectKey": "key"
                 },
                 "InputArtifacts": [],
                 "Name": "Source",
@@ -207,7 +206,8 @@
                       "CfnChangeSetRole6F05F6FC",
                       "Arn"
                     ]
-                  }
+                  },
+                  "ParameterOverrides": "{\"BucketName\":{\"Fn::GetArtifactAtt\":[\"SourceArtifact\",\"BucketName\"]},\"ObjectKey\":{\"Fn::GetArtifactAtt\":[\"SourceArtifact\",\"ObjectKey\"]},\"Url\":{\"Fn::GetArtifactAtt\":[\"SourceArtifact\",\"URL\"]},\"OtherParam\":{\"Fn::GetParam\":[\"SourceArtifact\",\"params.json\",\"OtherParam\"]}}"
                 },
                 "InputArtifacts": [
                   {

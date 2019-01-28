@@ -103,7 +103,7 @@ function makeSuperObjectPredicate(obj: any, allowValueExtension: boolean) {
   };
 }
 
-interface InspectionFailure {
+export interface InspectionFailure {
   resource: any;
   failureReason: string;
 }
