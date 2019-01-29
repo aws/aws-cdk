@@ -19,10 +19,17 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
     debug(`Reading SSM parameter ${account}:${region}:${parameterName}`);
 
     const ssm = await this.aws.ssm(account, region, Mode.ForReading);
-    const response = await ssm.getParameter({ Name: parameterName }).promise();
-    if (!response.Parameter || response.Parameter.Value === undefined) {
-      throw new Error(`SSM parameter not available in account ${account}, region ${region}: ${parameterName}`);
+    try {
+      const response = await ssm.getParameter({ Name: parameterName }).promise();
+      if (!response.Parameter || response.Parameter.Value === undefined) {
+        throw new Error(`SSM parameter not available in account ${account}, region ${region}: ${parameterName}`);
+      }
+      return response.Parameter.Value;
+    } catch (e) {
+      if (e.code === 'ParameterNotFound') {
+        throw new Error(`No SSM Parameter named '${parameterName}' was found in ${account}/${region}`);
+      }
+      throw e;
     }
-    return response.Parameter.Value;
   }
 }
