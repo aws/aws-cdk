@@ -1,6 +1,6 @@
 ## The CDK Construct Library for AWS CodeDeploy
 
-### Applications
+### EC2/On-Premise Applications
 
 To create a new CodeDeploy Application that deploys to EC2/on-premise instances:
 
@@ -20,7 +20,7 @@ const application = codedeploy.ServerApplication.import(this, 'ExistingCodeDeplo
 });
 ```
 
-### Deployment Groups
+### EC2/On-Premise Deployment Groups
 
 To create a new CodeDeploy Deployment Group that deploys to EC2/on-premise instances:
 
@@ -183,4 +183,70 @@ You can also add the Deployment Group to the Pipeline directly:
 ```ts
 // equivalent to the code above:
 deploymentGroup.addToPipeline(deployStage, 'CodeDeploy');
+```
+
+### Lambda Applications
+
+To create a new CodeDeploy application that deploys to a Lambda function:
+
+```ts
+import codedeploy = require('@aws-cdk/aws-codedeploy');
+
+const application = new codedeploy.LambdaApplication(this, 'CodeDeployApplication', {
+    applicationName: 'MyApplication', // optional property
+});
+```
+
+To import an already existing Application:
+
+```ts
+const application = codedeploy.LambdaApplication.import(this, 'ExistingCodeDeployApplication', {
+    applicationName: 'MyExistingApplication',
+});
+```
+
+### Lambda Deployment Groups
+
+To create a new CodeDeploy Deployment Group that deploys to a Lambda function:
+
+```ts
+import codedeploy = require('@aws-cdk/aws-codedeploy');
+import lambda = require('@aws-cdk/aws-lambda');
+
+const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+    application,
+    // Alias of function to manage deployment to
+    alias: new lambda.Alias(..),
+    // Deployment config (all at once, linear x percent, canary x percent, etc.)
+    deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
+
+    // Functions to run before/after deployment
+    preHook: new lambda.Function(..),
+    postHook: new lambda.Function(..),
+
+     // CloudWatch alarms to trigger rollback on failure
+    alarms: [
+        new cloudwatch.Alarm(/* ... */),
+    ],
+    // whether to ignore failure to fetch the status of alarms from CloudWatch
+    // default: false
+    ignorePollAlarmsFailure: false,
+    // auto-rollback configuration
+    autoRollback: {
+        failedDeployment: true, // default: true
+        stoppedDeployment: true, // default: false
+        deploymentInAlarm: true, // default: true if you provided any alarms, false otherwise
+    },
+});
+```
+
+Creating the deployment group will modify the `lambda.Alias`'s UpdatePolicy to trigger a deployment on update. For example, incrementing the `lambda.Version` and deploying the stack will update the alias according to your deployment config (blue/green, pre/post hooks, alarms, etc.).
+
+To import an already existing Deployment Group:
+
+```ts
+const deploymentGroup = codedeploy.LambdaDeploymentGroup.import(this, 'ExistingCodeDeployDeploymentGroup', {
+    application,
+    deploymentGroupName: 'MyExistingDeploymentGroup',
+});
 ```
