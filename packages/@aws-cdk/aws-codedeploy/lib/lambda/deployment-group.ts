@@ -4,9 +4,10 @@ import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 
 import { CfnDeploymentGroup } from '../codedeploy.generated';
-import { DeploymentOption, DeploymentType, TrafficShiftConfig as TrafficShiftingConfig } from '../config';
+import { AutoRollbackConfig, DeploymentOption, DeploymentType } from '../config';
 import { deploymentGroupNameToArn, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
 import { ILambdaApplication, LambdaApplication } from './application';
+import { LambdaDeploymentConfig } from './deployment-config';
 
 export interface ILambdaDeploymentGroup extends cdk.IConstruct {
   readonly application: ILambdaApplication;
@@ -19,7 +20,8 @@ export interface ILambdaDeploymentGroup extends cdk.IConstruct {
 export interface LambdaDeploymentGroupProps {
   application: LambdaApplication;
   deploymentGroupName?: string;
-  trafficShiftingConfig: TrafficShiftingConfig;
+  deploymentConfig: LambdaDeploymentConfig;
+
   alarms?: cloudwatch.Alarm[];
 
   serviceRole?: iam.Role;
@@ -27,6 +29,18 @@ export interface LambdaDeploymentGroupProps {
 
   preHook?: lambda.IFunction;
   postHook?: lambda.IFunction;
+
+  /**
+   * Whether to continue a deployment even if fetching the alarm status from CloudWatch failed.
+   *
+   * @default false
+   */
+  ignorePollAlarmsFailure?: boolean;
+
+  /**
+   * The auto-rollback configuration for this Deployment Group.
+   */
+  autoRollback?: AutoRollbackConfig;
 }
 export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeploymentGroup {
   /**
@@ -69,16 +83,16 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
       applicationName: props.application.applicationName,
       serviceRoleArn: serviceRole.roleArn,
       deploymentGroupName: props.deploymentGroupName,
-      deploymentConfigName: `CodeDeployDefault.Lambda${props.trafficShiftingConfig}`,
+      deploymentConfigName: `CodeDeployDefault.Lambda${props.deploymentConfig}`,
       deploymentStyle: {
-        deploymentType: props.trafficShiftingConfig === TrafficShiftingConfig.AllAtOnce ?
+        deploymentType: props.deploymentConfig === LambdaDeploymentConfig.AllAtOnce ?
           DeploymentType.InPlace : DeploymentType.BlueGreen,
-        deploymentOption: props.trafficShiftingConfig === TrafficShiftingConfig.AllAtOnce ?
+        deploymentOption: props.deploymentConfig === LambdaDeploymentConfig.AllAtOnce ?
           DeploymentOption.WithoutTrafficControl : DeploymentOption.WithTrafficControl
       },
 
-      alarmConfiguration: new cdk.Token(() => renderAlarmConfiguration(alarms)),
-      autoRollbackConfiguration: new cdk.Token(() => renderAutoRollbackConfiguration(alarms)),
+      alarmConfiguration: new cdk.Token(() => renderAlarmConfiguration(alarms, props.ignorePollAlarmsFailure)),
+      autoRollbackConfiguration: new cdk.Token(() => renderAutoRollbackConfiguration(alarms, props.autoRollback)),
     });
 
     this.application = props.application;

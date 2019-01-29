@@ -29,7 +29,7 @@ const inPlaceAlias = makeAlias('in-place');
 new codedeploy.LambdaDeploymentGroup(stack, 'InPlaceDeployment', {
   alias: inPlaceAlias,
   application,
-  trafficShiftingConfig: codedeploy.TrafficShiftConfig.AllAtOnce,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.AllAtOnce,
   alarms: [
     new cloudwatch.Alarm(stack, 'InPlaceErrors', {
       comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
@@ -46,7 +46,7 @@ const blueGreenAlias = makeAlias('blue-green');
 new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
   alias: blueGreenAlias,
   application,
-  trafficShiftingConfig: codedeploy.TrafficShiftConfig.Canary10Percent10Minutes,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.Canary10Percent10Minutes,
   alarms: [
     new cloudwatch.Alarm(stack, 'BlueGreenErrors', {
       comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,

@@ -5,7 +5,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codedeploy = require('../../lib');
-import { TrafficShiftConfig } from '../../lib';
+import { LambdaDeploymentConfig } from '../../lib';
 
 function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
@@ -32,7 +32,7 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        trafficShiftingConfig: TrafficShiftConfig.AllAtOnce
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
@@ -110,7 +110,7 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        trafficShiftingConfig: TrafficShiftConfig.AllAtOnce,
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
         deploymentGroupName: 'test'
       });
 
@@ -131,7 +131,7 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        trafficShiftingConfig: TrafficShiftConfig.AllAtOnce,
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
         serviceRole
       });
 
@@ -167,7 +167,7 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        trafficShiftingConfig: TrafficShiftConfig.Linear10PercentEvery1Minute
+        deploymentConfig: LambdaDeploymentConfig.Linear10PercentEvery1Minute
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
@@ -202,7 +202,7 @@ export = {
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
         application,
         alias,
-        trafficShiftingConfig: codedeploy.TrafficShiftConfig.AllAtOnce,
+        deploymentConfig: codedeploy.LambdaDeploymentConfig.AllAtOnce,
         alarms: [new cloudwatch.Alarm(stack, 'Failures', {
           metric: alias.metricErrors(),
           comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
@@ -239,7 +239,7 @@ export = {
         application,
         alias,
         preHook: mockFunction(stack, 'PreHook'),
-        trafficShiftingConfig: TrafficShiftConfig.AllAtOnce
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
       });
 
       expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
@@ -268,7 +268,7 @@ export = {
         application,
         alias,
         postHook: mockFunction(stack, 'PostHook'),
-        trafficShiftingConfig: TrafficShiftConfig.AllAtOnce
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
       });
 
       expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
@@ -286,6 +286,128 @@ export = {
           }
         }
       }, ResourcePart.CompleteDefinition));
+
+      test.done();
+    },
+    "can disable rollback when alarm polling fails"(test: Test) {
+      const stack = new cdk.Stack();
+      const application = new codedeploy.LambdaApplication(stack, 'MyApp');
+      const alias = mockAlias(stack);
+      new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+        application,
+        alias,
+        postHook: mockFunction(stack, 'PostHook'),
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
+        ignorePollAlarmsFailure: true,
+        alarms: [new cloudwatch.Alarm(stack, 'Failures', {
+          metric: alias.metricErrors(),
+          comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+          threshold: 1,
+          evaluationPeriods: 1
+        })]
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+        AlarmConfiguration: {
+          Alarms: [{
+            Name: {
+              Ref: "Failures8A3E1A2F"
+            }
+          }],
+          Enabled: true,
+          IgnorePollAlarmFailure: true
+        },
+      }));
+
+      test.done();
+    },
+    "can disable rollback when deployment fails"(test: Test) {
+      const stack = new cdk.Stack();
+      const application = new codedeploy.LambdaApplication(stack, 'MyApp');
+      const alias = mockAlias(stack);
+      new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+        application,
+        alias,
+        postHook: mockFunction(stack, 'PostHook'),
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
+        autoRollback: {
+          failedDeployment: false
+        }
+      });
+
+      expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+        ApplicationName: {
+          Ref: "MyApp3CE31C26"
+        },
+        ServiceRoleArn: {
+          "Fn::GetAtt": [
+            "MyDGServiceRole5E94FD88",
+            "Arn"
+          ]
+        },
+        DeploymentConfigName: "CodeDeployDefault.LambdaAllAtOnce",
+        DeploymentStyle: {
+          DeploymentOption: "WITHOUT_TRAFFIC_CONTROL",
+          DeploymentType: "IN_PLACE"
+        }
+      }));
+
+      test.done();
+    },
+    "can enable rollback when deployment stops"(test: Test) {
+      const stack = new cdk.Stack();
+      const application = new codedeploy.LambdaApplication(stack, 'MyApp');
+      const alias = mockAlias(stack);
+      new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+        application,
+        alias,
+        postHook: mockFunction(stack, 'PostHook'),
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
+        autoRollback: {
+          stoppedDeployment: true
+        }
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+        AutoRollbackConfiguration: {
+          Enabled: true,
+          Events: [
+            "DEPLOYMENT_FAILURE",
+            "DEPLOYMENT_STOP_ON_REQUEST"
+          ]
+        },
+      }));
+
+      test.done();
+    },
+    "can disable rollback when alarm in failure state"(test: Test) {
+      const stack = new cdk.Stack();
+      const application = new codedeploy.LambdaApplication(stack, 'MyApp');
+      const alias = mockAlias(stack);
+      new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+        application,
+        alias,
+        postHook: mockFunction(stack, 'PostHook'),
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
+        autoRollback: {
+          deploymentInAlarm: false
+        },
+        alarms: [new cloudwatch.Alarm(stack, 'Failures', {
+          metric: alias.metricErrors(),
+          comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+          threshold: 1,
+          evaluationPeriods: 1
+        })]
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+        AutoRollbackConfiguration: {
+          Enabled: true,
+          Events: [
+            "DEPLOYMENT_FAILURE",
+          ]
+        },
+      }));
 
       test.done();
     },
