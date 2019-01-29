@@ -75,7 +75,23 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
         assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com')
       });
     }
-    serviceRole.attachManagedPolicy('arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda');
+    serviceRole.addToPolicy(new iam.PolicyStatement()
+      .addResource('arn:aws:s3:::*/CodeDeploy/*')
+      .addActions('s3:GetObject', 's3:GetObjectVersion'));
+    serviceRole.addToPolicy(new iam.PolicyStatement()
+      .addResource('*')
+      .addCondition('StringEquals', {
+        's3:ExistingObjectTag/UseWithCodeDeploy': 'true'
+      })
+      .addActions('s3:GetObject', 's3:GetObjectVersion'));
+    serviceRole.addToPolicy(new iam.PolicyStatement()
+      .addResource(props.alias.functionArn)
+      .addActions('lambda:UpdateAlias', 'lambda:GetAlias'));
+    if (props.alarms) {
+      serviceRole.addToPolicy(new iam.PolicyStatement()
+        .addResources(...props.alarms.map(alarm => alarm.alarmArn))
+        .addAction('cloudwatch:DescribeAlarms'));
+    }
 
     const alarms = props.alarms || [];
 

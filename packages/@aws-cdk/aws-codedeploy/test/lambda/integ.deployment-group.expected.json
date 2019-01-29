@@ -275,10 +275,7 @@
             }
           ],
           "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
-        ]
+        }
       }
     },
     "InPlaceDeploymentServiceRoleDefaultPolicy1C2862F9": {
@@ -286,6 +283,47 @@
       "Properties": {
         "PolicyDocument": {
           "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:s3:::*/CodeDeploy/*"
+            },
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "s3:ExistingObjectTag/UseWithCodeDeploy": "true"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "lambda:UpdateAlias",
+                "lambda:GetAlias"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "Aliasinplace522E83EC"
+              }
+            },
+            {
+              "Action": "cloudwatch:DescribeAlarms",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "InPlaceErrors807304D2",
+                  "Arn"
+                ]
+              }
+            },
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
@@ -470,10 +508,7 @@
             }
           ],
           "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
-        ]
+        }
       }
     },
     "BlueGreenDeploymentServiceRoleDefaultPolicy7008FB0A": {
@@ -481,6 +516,47 @@
       "Properties": {
         "PolicyDocument": {
           "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+              ],
+              "Effect": "Allow",
+              "Resource": "arn:aws:s3:::*/CodeDeploy/*"
+            },
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "s3:ExistingObjectTag/UseWithCodeDeploy": "true"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "lambda:UpdateAlias",
+                "lambda:GetAlias"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "Aliasbluegreen351D4B71"
+              }
+            },
+            {
+              "Action": "cloudwatch:DescribeAlarms",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "BlueGreenErrors60C27452",
+                  "Arn"
+                ]
+              }
+            },
             {
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",

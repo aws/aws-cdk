@@ -94,11 +94,49 @@ export = {
             }
           }],
           Version: "2012-10-17"
-        },
-        ManagedPolicyArns: [
-          // TODO: remove this guy
-          'arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
-        ]
+        }
+      }));
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyName: "MyDGServiceRoleDefaultPolicy65E8E1EA",
+        Roles: [{
+          Ref: 'MyDGServiceRole5E94FD88'
+        }],
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+              ],
+              Effect: "Allow",
+              Resource: "arn:aws:s3:::*/CodeDeploy/*"
+            },
+            {
+              Action: [
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+              ],
+              Condition: {
+                StringEquals: {
+                  "s3:ExistingObjectTag/UseWithCodeDeploy": "true"
+                }
+              },
+              Effect: "Allow",
+              Resource: "*"
+            },
+            {
+              Action: [
+                "lambda:UpdateAlias",
+                "lambda:GetAlias"
+              ],
+              Effect: "Allow",
+              Resource: {
+                Ref: "Alias325C5727"
+              }
+            }
+          ],
+          Version: "2012-10-17"
+        }
       }));
 
       test.done();
@@ -151,11 +189,7 @@ export = {
             }
           }],
           Version: "2012-10-17"
-        },
-        ManagedPolicyArns: [
-          // TODO: remove this guy?
-          'arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
-        ]
+        }
       }));
 
       test.done();
@@ -227,6 +261,59 @@ export = {
             "DEPLOYMENT_STOP_ON_ALARM"
           ]
         },
+      }));
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyName: "MyDGServiceRoleDefaultPolicy65E8E1EA",
+        Roles: [{
+          Ref: 'MyDGServiceRole5E94FD88'
+        }],
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+              ],
+              Effect: "Allow",
+              Resource: "arn:aws:s3:::*/CodeDeploy/*"
+            },
+            {
+              Action: [
+                "s3:GetObject",
+                "s3:GetObjectVersion"
+              ],
+              Condition: {
+                StringEquals: {
+                  "s3:ExistingObjectTag/UseWithCodeDeploy": "true"
+                }
+              },
+              Effect: "Allow",
+              Resource: "*"
+            },
+            {
+              Action: [
+                "lambda:UpdateAlias",
+                "lambda:GetAlias"
+              ],
+              Effect: "Allow",
+              Resource: {
+                Ref: "Alias325C5727"
+              }
+            },
+            {
+              Action: 'cloudwatch:DescribeAlarms',
+              Effect: 'Allow',
+              Resource: {
+                "Fn::GetAtt": [
+                  "Failures8A3E1A2F",
+                  "Arn"
+                ]
+              }
+            },
+          ],
+          Version: "2012-10-17"
+        }
       }));
 
       test.done();
