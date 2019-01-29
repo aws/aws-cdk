@@ -364,41 +364,81 @@ export class UserPool extends cdk.Construct implements IUserPool {
     this.userPoolProviderUrl = userPool.userPoolProviderUrl;
   }
 
+  /**
+   * Attach 'Create Auth Challenge' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @param fn the lambda function to attach
+   */
   public onCreateAuthChallenge(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn);
     this.triggers.createAuthChallenge = fn.functionArn;
   }
 
+  /**
+   * Attach 'Custom Message' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @param fn the lambda function to attach
+   */
   public onCustomMessage(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn);
     this.triggers.customMessage = fn.functionArn;
   }
 
+  /**
+   * Attach 'Define Auth Challenge' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @param fn the lambda function to attach
+   */
   public onDefineAuthChallenge(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn);
     this.triggers.defineAuthChallenge = fn.functionArn;
   }
 
+  /**
+   * Attach 'Post Authentication' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @param fn the lambda function to attach
+   */
   public onPostAuthentication(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn);
     this.triggers.postAuthentication = fn.functionArn;
   }
 
+  /**
+   * Attach 'Post Confirmation' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @param fn the lambda function to attach
+   */
   public onPostConfirmation(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn);
     this.triggers.postConfirmation = fn.functionArn;
   }
 
+  /**
+   * Attach 'Pre Authentication' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @param fn the lambda function to attach
+   */
   public onPreAuthentication(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn);
     this.triggers.preAuthentication = fn.functionArn;
   }
 
+  /**
+   * Attach 'Pre Sign Up' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @param fn the lambda function to attach
+   */
   public onPreSignUp(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn);
     this.triggers.preSignUp = fn.functionArn;
   }
 
+  /**
+   * Attach 'Verify Auth Challenge Response' trigger
+   * Grants access from cognito-idp.amazonaws.com to the lambda
+   * @param fn the lambda function to attach
+   */
   public onVerifyAuthChallengeResponse(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn);
     this.triggers.verifyAuthChallengeResponse = fn.functionArn;
