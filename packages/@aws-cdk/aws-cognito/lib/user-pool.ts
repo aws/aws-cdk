@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import { CfnUserPool } from './cognito.generated';
@@ -248,10 +249,19 @@ export interface IUserPool extends cdk.IConstruct {
    */
   readonly userPoolId: string;
 
+  /**
+   * The ARN of this user pool resource
+   */
   readonly userPoolArn: string;
 
+  /**
+   * The provider name of this user pool resource
+   */
   readonly userPoolProviderName: string;
 
+  /**
+   * The provider URL of this user pool resource
+   */
   readonly userPoolProviderUrl: string;
 
   /**
@@ -295,10 +305,10 @@ export class UserPool extends cdk.Construct implements IUserPool {
    */
   public readonly userPoolProviderUrl: string;
 
+  private triggers: CfnUserPool.LambdaConfigProperty = { };
+
   constructor(scope: cdk.Construct, id: string, props: UserPoolProps) {
     super(scope, id);
-
-    const triggers = props.lambdaTriggers || { };
 
     let aliasAttributes: UserPoolAttribute[] | undefined;
     let usernameAttributes: UserPoolAttribute[] | undefined;
@@ -346,16 +356,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
       usernameAttributes,
       aliasAttributes,
       autoVerifiedAttributes: props.autoVerifiedAttributes,
-      lambdaConfig: {
-        createAuthChallenge: triggers.createAuthChallenge && triggers.createAuthChallenge.functionArn,
-        customMessage: triggers.customMessage && triggers.customMessage.functionArn,
-        defineAuthChallenge: triggers.defineAuthChallenge && triggers.defineAuthChallenge.functionArn,
-        postAuthentication: triggers.postAuthentication && triggers.postAuthentication.functionArn,
-        postConfirmation: triggers.postConfirmation && triggers.postConfirmation.functionArn,
-        preAuthentication: triggers.preAuthentication && triggers.preAuthentication.functionArn,
-        preSignUp: triggers.preSignUp && triggers.preSignUp.functionArn,
-        verifyAuthChallengeResponse: triggers.verifyAuthChallengeResponse && triggers.verifyAuthChallengeResponse.functionArn
-      }
+      lambdaConfig: new cdk.Token(() => this.triggers)
     });
     this.userPoolId = userPool.userPoolId;
     this.userPoolArn = userPool.userPoolArn;
@@ -363,13 +364,60 @@ export class UserPool extends cdk.Construct implements IUserPool {
     this.userPoolProviderUrl = userPool.userPoolProviderUrl;
   }
 
+  public onCreateAuthChallenge(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn);
+    this.triggers.createAuthChallenge = fn.functionArn;
+  }
+
+  public onCustomMessage(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn);
+    this.triggers.customMessage = fn.functionArn;
+  }
+
+  public onDefineAuthChallenge(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn);
+    this.triggers.defineAuthChallenge = fn.functionArn;
+  }
+
+  public onPostAuthentication(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn);
+    this.triggers.postAuthentication = fn.functionArn;
+  }
+
+  public onPostConfirmation(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn);
+    this.triggers.postConfirmation = fn.functionArn;
+  }
+
+  public onPreAuthentication(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn);
+    this.triggers.preAuthentication = fn.functionArn;
+  }
+
+  public onPreSignUp(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn);
+    this.triggers.preSignUp = fn.functionArn;
+  }
+
+  public onVerifyAuthChallengeResponse(fn: lambda.IFunction): void {
+    this.addLambdaPermission(fn);
+    this.triggers.verifyAuthChallengeResponse = fn.functionArn;
+  }
+
   public export(): UserPoolImportProps {
     return {
       userPoolId: new cdk.Output(this, 'UserPoolId', { value: this.userPoolId }).makeImportValue().toString(),
-      userPoolArn: new cdk.Output(this, 'UserPoolArn', { value: this.userPoolArn}).makeImportValue().toString(),
-      userPoolProviderName: new cdk.Output(this, 'UserPoolProviderName', { value: this.userPoolProviderName}).makeImportValue().toString(),
-      userPoolProviderUrl: new cdk.Output(this, 'UserPoolProviderUrl', { value: this.userPoolProviderUrl}).makeImportValue().toString()
+      userPoolArn: new cdk.Output(this, 'UserPoolArn', { value: this.userPoolArn }).makeImportValue().toString(),
+      userPoolProviderName: new cdk.Output(this, 'UserPoolProviderName', { value: this.userPoolProviderName }).makeImportValue().toString(),
+      userPoolProviderUrl: new cdk.Output(this, 'UserPoolProviderUrl', { value: this.userPoolProviderUrl }).makeImportValue().toString()
     };
+  }
+
+  private addLambdaPermission(fn: lambda.IFunction): void {
+    fn.addPermission('Cognito', {
+      principal: new iam.ServicePrincipal('cognito-idp.amazonaws.com'),
+      sourceArn: this.userPoolArn
+    });
   }
 }
 
