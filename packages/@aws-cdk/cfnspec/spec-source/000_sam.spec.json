@@ -1,5 +1,22 @@
 {
     "PropertyTypes": {
+        "AWS::Serverless::Application.ApplicationLocation": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+            "Properties": {
+                "ApplicationId": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "SemanticVersion": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Api.S3Location": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object",
             "Properties": {
@@ -375,6 +392,50 @@
     "ResourceSpecificationTransform": "AWS::Serverless-2016-10-31",
     "ResourceSpecificationVersion": "2016-10-31",
     "ResourceTypes": {
+        "AWS::Serverless::Application": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+            "Properties": {
+                "Location": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveTypes": [
+                        "String"
+                    ],
+                    "Types": [
+                        "ApplicationLocation"
+                    ],
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "Parameters": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "Map",
+                    "UpdateType": "Immutable"
+                },
+                "NotificationArns": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveType": "Json",
+                    "Required": false,
+                    "Type": "List",
+                    "PrimitiveItemType": "String",
+                    "UpdateType": "Mutable"
+                },
+                "Tags": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveItemType": "String",
+                    "Required": false,
+                    "Type": "Map",
+                    "UpdateType": "Mutable"
+                },
+                "TimeoutInMinutes": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Mutable"
+                }
+            }
+        },
         "AWS::Serverless::Api": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
             "Properties": {

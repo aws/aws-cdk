@@ -3504,6 +3504,18 @@
         "description": "Set RefKind of AWS::SageMaker::NotebookInstanceLifecycleConfig to Arn"
       }
     },
+    "AWS::Serverless::Application": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::Serverless::Application to Name"
+      }
+    },
     "AWS::Serverless::Api": {
       "patch": {
         "operations": [
