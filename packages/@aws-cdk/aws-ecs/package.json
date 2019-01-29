@@ -78,6 +78,7 @@
     "@aws-cdk/aws-logs": "^0.22.0",
     "@aws-cdk/aws-route53": "^0.22.0",
     "@aws-cdk/aws-sns": "^0.22.0",
+    "@aws-cdk/aws-stepfunctions": "^0.22.0",
     "@aws-cdk/cdk": "^0.22.0",
     "@aws-cdk/cx-api": "^0.22.0"
   },
@@ -95,6 +96,7 @@
     "@aws-cdk/aws-iam": "^0.22.0",
     "@aws-cdk/aws-logs": "^0.22.0",
     "@aws-cdk/aws-route53": "^0.22.0",
+    "@aws-cdk/aws-stepfunctions": "^0.22.0",
     "@aws-cdk/cdk": "^0.22.0"
   },
   "engines": {
