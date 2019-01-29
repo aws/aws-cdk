@@ -25,8 +25,8 @@ export interface LambdaDeploymentGroupProps {
   serviceRole?: iam.Role;
   alias: lambda.Alias;
 
-  preHook?: lambda.Function;
-  postHook?: lambda.Function;
+  preHook?: lambda.IFunction;
+  postHook?: lambda.IFunction;
 }
 export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeploymentGroup {
   /**
