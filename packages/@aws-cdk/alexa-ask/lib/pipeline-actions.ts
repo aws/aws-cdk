@@ -30,7 +30,7 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
   /**
    * The source artifact containing the voice model and skill manifest
    */
-  inputArtifact: codepipeline.Artifact;
+  inputArtifact?: codepipeline.Artifact;
 
   /**
    * An optional artifact containing overrides for the skill manifest
@@ -44,13 +44,11 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
 export class AlexaSkillDeployAction extends codepipeline.DeployAction {
   constructor(scope: cdk.Construct, id: string, props: AlexaSkillDeployActionProps) {
     super(scope, id, {
-      stage: props.stage,
-      runOrder: props.runOrder,
       artifactBounds: {
         minInputs: 1,
         maxInputs: 2,
         minOutputs: 0,
-        maxOutputs: 1,
+        maxOutputs: 0,
       },
       owner: 'ThirdParty',
       provider: 'AlexaSkillsKit',
@@ -60,7 +58,7 @@ export class AlexaSkillDeployAction extends codepipeline.DeployAction {
         RefreshToken: props.refreshToken,
         SkillId: props.skillId,
       },
-      inputArtifact: props.inputArtifact,
+      ...props,
     });
     if (props.overrideArtifact) {
       this.addInputArtifact(props.overrideArtifact);

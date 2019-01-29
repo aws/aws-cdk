@@ -39,10 +39,6 @@ const executeChangeSetAction = new PipelineExecuteChangeSetAction(this, 'Execute
   outputArtifactName: 'CloudFormation',
 });
 
-const clientId = new SecretParameter(this, 'AlexaClientId', {ssmParameter: '/Alexa/ClientId'});
-const clientSecret = new SecretParameter(this, 'AlexaClientSecret', {ssmParameter: '/Alexa/ClientSecret'});
-const refreshToken = new SecretParameter(this, 'AlexaRefreshToken', {ssmParameter: '/Alexa/RefreshToken'});
-
 // Provide CFN output as manifest overrides
 new AlexaSkillDeployAction(this, 'DeploySkill', {
   stage: deployStage,

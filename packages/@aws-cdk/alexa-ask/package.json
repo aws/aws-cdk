@@ -61,12 +61,12 @@
     "pkglint": "^0.22.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.22.0",
-    "@aws-cdk/aws-codepipeline-api": "^0.22.0"
+    "@aws-cdk/aws-codepipeline-api": "^0.22.0",
+    "@aws-cdk/cdk": "^0.22.0"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.22.0",
-    "@aws-cdk/aws-codepipeline-api": "^0.22.0"
+    "@aws-cdk/aws-codepipeline-api": "^0.22.0",
+    "@aws-cdk/cdk": "^0.22.0"
   },
   "engines": {
     "node": ">= 8.10.0"
