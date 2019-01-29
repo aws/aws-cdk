@@ -68,6 +68,15 @@ export interface AlarmProps {
    * @default true
    */
   actionsEnabled?: boolean;
+
+  /**
+   * The number of datapoints that must be breaching to trigger the alarm. This is used only if you are setting an "M
+   * out of N" alarm. In that case, this value is the M. For more information, see Evaluating an Alarm in the Amazon
+   * CloudWatch User Guide.
+   *
+   * @default ``evaluationPeriods``
+   */
+  datapointsToAlarm?: number;
 }
 
 /**
@@ -153,6 +162,7 @@ export class Alarm extends Construct {
       // Evaluation
       comparisonOperator,
       threshold: props.threshold,
+      datapointsToAlarm: props.datapointsToAlarm,
       evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
       evaluationPeriods: props.evaluationPeriods,
       treatMissingData: props.treatMissingData,

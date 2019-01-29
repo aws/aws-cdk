@@ -17,13 +17,15 @@ export = {
     new Alarm(stack, 'Alarm', {
       metric: testMetric,
       threshold: 1000,
-      evaluationPeriods: 2
+      evaluationPeriods: 3,
+      datapointsToAlarm: 2,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
       ComparisonOperator: "GreaterThanOrEqualToThreshold",
-      EvaluationPeriods: 2,
+      EvaluationPeriods: 3,
+      DatapointsToAlarm: 2,
       MetricName: "Metric",
       Namespace: "CDK/Test",
       Period: 300,

@@ -157,6 +157,7 @@ export class Metric {
       alarmName: props.alarmName,
       alarmDescription: props.alarmDescription,
       comparisonOperator: props.comparisonOperator,
+      datapointsToAlarm: props.datapointsToAlarm,
       threshold: props.threshold,
       evaluationPeriods: props.evaluationPeriods,
       evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
@@ -372,6 +373,15 @@ export interface NewAlarmProps {
    * @default true
    */
   actionsEnabled?: boolean;
+
+  /**
+   * The number of datapoints that must be breaching to trigger the alarm. This is used only if you are setting an "M
+   * out of N" alarm. In that case, this value is the M. For more information, see Evaluating an Alarm in the Amazon
+   * CloudWatch User Guide.
+   *
+   * @default ``evaluationPeriods``
+   */
+  datapointsToAlarm?: number;
 }
 
 function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {
