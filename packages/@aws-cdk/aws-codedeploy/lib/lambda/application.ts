@@ -37,9 +37,19 @@ export interface LambdaApplicationProps {
  * A CodeDeploy Application that deploys to an AWS Lambda function.
  */
 export class LambdaApplication extends cdk.Construct implements ILambdaApplication {
+  /**
+   * Import an Application defined either outside the CDK,
+   * or in a different CDK Stack and exported using the {@link #export} method.
+   *
+   * @param parent the parent Construct for this new Construct
+   * @param id the logical ID of this new Construct
+   * @param props the properties of the referenced Application
+   * @returns a Construct representing a reference to an existing Application
+   */
   public static import(scope: cdk.Construct, id: string, props: LambdaApplicationImportProps): ILambdaApplication {
     return new ImportedLambdaApplication(scope, id, props);
   }
+
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
@@ -69,7 +79,7 @@ export class LambdaApplication extends cdk.Construct implements ILambdaApplicati
  * Properties of a reference to a CodeDeploy Application.
  *
  * @see LambdaApplication#import
- * @see LambdaApplication#export
+ * @see ILambdaApplication#export
  */
 export interface LambdaApplicationImportProps {
   /**

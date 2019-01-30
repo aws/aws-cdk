@@ -13,7 +13,7 @@ import { applicationNameToArn } from '../utils';
  * or one defined in a different CDK Stack,
  * use the {@link #import} method.
  */
-export interface IServerApplication {
+export interface IServerApplication extends cdk.IConstruct {
   readonly applicationArn: string;
   readonly applicationName: string;
 
@@ -34,14 +34,23 @@ export interface ServerApplicationProps {
    *
    * @default an auto-generated name will be used
    */
-  readonly applicationName?: string;
+  applicationName?: string;
 }
 
 /**
  * A CodeDeploy Application that deploys to EC2/on-premise instances.
  */
 export class ServerApplication extends cdk.Construct implements IServerApplication {
-  public static import(scope: cdk.Construct, id: string, props: ServerApplicationImportProps) {
+  /**
+   * Import an Application defined either outside the CDK,
+   * or in a different CDK Stack and exported using the {@link #export} method.
+   *
+   * @param parent the parent Construct for this new Construct
+   * @param id the logical ID of this new Construct
+   * @param props the properties of the referenced Application
+   * @returns a Construct representing a reference to an existing Application
+   */
+  public static import(scope: cdk.Construct, id: string, props: ServerApplicationImportProps): IServerApplication {
     return new ImportedServerApplication(scope, id, props);
   }
 

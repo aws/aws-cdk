@@ -75,6 +75,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
         assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com')
       });
     }
+    // Narrow re-implementation of arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda
     serviceRole.addToPolicy(new iam.PolicyStatement()
       .addResource('arn:aws:s3:::*/CodeDeploy/*')
       .addActions('s3:GetObject', 's3:GetObjectVersion'));
@@ -101,10 +102,8 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
       deploymentGroupName: props.deploymentGroupName,
       deploymentConfigName: `CodeDeployDefault.Lambda${props.deploymentConfig}`,
       deploymentStyle: {
-        deploymentType: props.deploymentConfig === LambdaDeploymentConfig.AllAtOnce ?
-          DeploymentType.InPlace : DeploymentType.BlueGreen,
-        deploymentOption: props.deploymentConfig === LambdaDeploymentConfig.AllAtOnce ?
-          DeploymentOption.WithoutTrafficControl : DeploymentOption.WithTrafficControl
+        deploymentType: DeploymentType.BlueGreen,
+        deploymentOption: DeploymentOption.WithTrafficControl
       },
 
       alarmConfiguration: new cdk.Token(() => renderAlarmConfiguration(alarms, props.ignorePollAlarmsFailure)),

@@ -53,8 +53,8 @@ export = {
         },
         DeploymentConfigName: "CodeDeployDefault.LambdaAllAtOnce",
         DeploymentStyle: {
-          DeploymentOption: "WITHOUT_TRAFFIC_CONTROL",
-          DeploymentType: "IN_PLACE"
+          DeploymentOption: "WITH_TRAFFIC_CONTROL",
+          DeploymentType: "BLUE_GREEN"
         }
       }));
 
@@ -434,8 +434,8 @@ export = {
         },
         DeploymentConfigName: "CodeDeployDefault.LambdaAllAtOnce",
         DeploymentStyle: {
-          DeploymentOption: "WITHOUT_TRAFFIC_CONTROL",
-          DeploymentType: "IN_PLACE"
+          DeploymentOption: "WITH_TRAFFIC_CONTROL",
+          DeploymentType: "BLUE_GREEN"
         }
       }));
 
