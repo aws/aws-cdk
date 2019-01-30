@@ -83,7 +83,9 @@ async function parseCommandLineArguments() {
     ].join('\n\n'))
     .argv;
 }
-// tslint:enable:no-shadowed-variable max-line-length
+if (!process.stdout.isTTY) {
+  colors.disable();
+}
 
 async function initCommandLine() {
   const argv = await parseCommandLineArguments();
