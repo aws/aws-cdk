@@ -20,6 +20,35 @@ export interface IServerApplication extends cdk.IConstruct {
 }
 
 /**
+ * Properties of a reference to a CodeDeploy Application.
+ *
+ * @see ServerApplication#import
+ * @see ServerApplication#export
+ */
+export interface ServerApplicationImportProps {
+  /**
+   * The physical, human-readable name of the CodeDeploy EC2/on-premise Application we're referencing.
+   * The Application must be in the same account and region as the root Stack.
+   */
+  applicationName: string;
+}
+
+export class ImportedServerApplication extends cdk.Construct implements IServerApplication {
+  public readonly applicationArn: string;
+  public readonly applicationName: string;
+
+  constructor(scope: cdk.Construct, id: string, private readonly props: ServerApplicationImportProps) {
+    super(scope, id);
+    this.applicationName = props.applicationName;
+    this.applicationArn = applicationNameToArn(this.applicationName, this);
+  }
+
+  public export(): ServerApplicationImportProps {
+    return this.props;
+  }
+}
+
+/**
  * Construction properties for {@link ServerApplication}.
  */
 export interface ServerApplicationProps {
@@ -67,34 +96,5 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
     return {
       applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
     };
-  }
-}
-
-/**
- * Properties of a reference to a CodeDeploy Application.
- *
- * @see ServerApplication#import
- * @see ServerApplication#export
- */
-export interface ServerApplicationImportProps {
-  /**
-   * The physical, human-readable name of the CodeDeploy EC2/on-premise Application we're referencing.
-   * The Application must be in the same account and region as the root Stack.
-   */
-  applicationName: string;
-}
-
-export class ImportedServerApplication extends cdk.Construct implements IServerApplication {
-  public readonly applicationArn: string;
-  public readonly applicationName: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: ServerApplicationImportProps) {
-    super(scope, id);
-    this.applicationName = props.applicationName;
-    this.applicationArn = applicationNameToArn(this.applicationName, this);
-  }
-
-  public export(): ServerApplicationImportProps {
-    return this.props;
   }
 }
