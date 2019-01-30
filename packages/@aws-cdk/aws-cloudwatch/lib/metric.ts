@@ -148,7 +148,7 @@ export class Metric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public newAlarm(scope: cdk.Construct, id: string, props: NewAlarmProps): Alarm {
+  public newAlarm(scope: cdk.Construct, id: string, props: MetricAarmProps): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         statistic: props.statistic,
@@ -294,9 +294,9 @@ export interface MetricCustomization {
 }
 
 /**
- * Properties to make an alarm from a metric
+ * Properties needed to make an alarm from a metric
  */
-export interface NewAlarmProps {
+export interface MetricAarmProps {
   /**
    * The period over which the specified statistic is applied.
    *
@@ -380,6 +380,8 @@ export interface NewAlarmProps {
    * CloudWatch User Guide.
    *
    * @default ``evaluationPeriods``
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarm-evaluation
    */
   datapointsToAlarm?: number;
 }
