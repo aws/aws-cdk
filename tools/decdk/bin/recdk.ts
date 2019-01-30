@@ -3,8 +3,7 @@ import fs = require('fs-extra');
 import reflect = require('jsii-reflect');
 import path = require('path');
 import YAML = require('yaml');
-import { isCfnResource } from '../lib/cfnschema';
-import { isConstruct, isEnumLikeClass } from '../lib/jsii2schema';
+import { isConstruct, isEnumLikeClass, isSerializableInterface, schemaForType } from '../lib/jsii2schema';
 import { loadTypeSystem } from '../lib/type-system';
 
 // tslint:disable:no-console
@@ -34,7 +33,7 @@ async function main() {
       throw new Error('Resource is missing type: ' + JSON.stringify(resourceProps));
     }
 
-    if (isCfnResource(rprops.Type)) {
+    if (isCfnResourceType(rprops.Type)) {
       continue;
     }
 
@@ -184,22 +183,15 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key:
     throw new ValidationError(`Failed to deserialize union. Errors: \n  ${errors.map(e => e.message).join('\n  ')}`);
   }
 
+  const enm = deconstructEnum(stack, typeRef, key, value);
+  if (enm) {
+    return enm;
+  }
+
   // if this is an interface, deserialize each property
-  if (typeRef.fqn instanceof reflect.InterfaceType) {
-    const out: any = { };
-    for (const prop of typeRef.fqn.getProperties(true)) {
-      const propValue = value[prop.name];
-      if (!propValue) {
-        if (!prop.type.optional) {
-          throw new ValidationError(`Missing required property ${key}.${prop.name} in ${typeRef}`);
-        }
-        continue;
-      }
-
-      out[prop.name] = deserializeValue(stack, prop.type, `${key}.${prop.name}`, propValue);
-    }
-
-    return out;
+  const ifc = deconstructInterface(stack, typeRef, key, value);
+  if (ifc) {
+    return ifc;
   }
 
   // if this is an enum type, use the name to dereference
@@ -208,23 +200,114 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key:
     return enumType[value];
   }
 
-  if (isEnumLikeClass(typeRef.fqn)) {
-
-    // if the value is a string, we deconstruct it as a static property
-    if (typeof(value) === 'string') {
-      return deconstructStaticProperty(typeRef.fqn, value);
-    }
-
-    // if the value is an object, we deconstruct it as a static method
-    if (typeof(value) === 'object' && !Array.isArray(value)) {
-      return deconstructStaticMethod(typeRef.fqn, value);
-    }
-
-    throw new Error(`Invalid value for enum-like class ${typeRef.fqn}: ${JSON.stringify(value)}`);
+  if (typeRef.primitive) {
+    return value;
   }
 
-  // primitives
-  return value;
+  const enumLike = deconstructEnumLike(stack, typeRef, value);
+  if (enumLike) {
+    return enumLike;
+  }
+
+  const asType = deconstructType(stack, typeRef, value);
+  if (asType) {
+    return asType;
+  }
+
+  throw new Error(`Unable to deconstruct "${JSON.stringify(value)}" for type ref ${typeRef}`);
+}
+
+function deconstructEnum(_stack: cdk.Stack, typeRef: reflect.TypeReference, _key: string, value: any) {
+  if (!(typeRef.fqn instanceof reflect.EnumType)) {
+    return undefined;
+  }
+
+  const enumType = resolveType(typeRef.fqn.fqn);
+  return enumType[value];
+}
+
+function deconstructInterface(stack: cdk.Stack, typeRef: reflect.TypeReference, key: string, value: any) {
+  if (!isSerializableInterface(typeRef.fqn)) {
+    return undefined;
+  }
+
+  const out: any = { };
+  for (const prop of typeRef.fqn.getProperties(true)) {
+    const propValue = value[prop.name];
+    if (!propValue) {
+      if (!prop.type.optional) {
+        throw new ValidationError(`Missing required property ${key}.${prop.name} in ${typeRef}`);
+      }
+      continue;
+    }
+
+    out[prop.name] = deserializeValue(stack, prop.type, `${key}.${prop.name}`, propValue);
+  }
+
+  return out;
+}
+
+function deconstructEnumLike(stack: cdk.Stack, typeRef: reflect.TypeReference, value: any) {
+  if (!isEnumLikeClass(typeRef.fqn)) {
+    return undefined;
+  }
+
+  // if the value is a string, we deconstruct it as a static property
+  if (typeof(value) === 'string') {
+    return deconstructStaticProperty(typeRef.fqn, value);
+  }
+
+  // if the value is an object, we deconstruct it as a static method
+  if (typeof(value) === 'object' && !Array.isArray(value)) {
+    return deconstructStaticMethod(stack, typeRef.fqn, value);
+  }
+
+  throw new Error(`Invalid value for enum-like class ${typeRef.fqn}: ${JSON.stringify(value)}`);
+}
+
+function deconstructType(stack: cdk.Stack, typeRef: reflect.TypeReference, value: any) {
+  const schemaDefs: any = { };
+  const schemaRef = schemaForType(typeRef.fqn, schemaDefs);
+  if (!schemaRef) {
+    return undefined;
+  }
+
+  const def = findDefinition(schemaDefs, schemaRef.$ref);
+
+  const keys = Object.keys(value);
+  if (keys.length !== 1) {
+    throw new ValidationError(`Cannot parse class type ${typeRef} with value ${value}`);
+  }
+
+  const className = keys[0];
+
+  // now we need to check if it's an enum or a normal class
+  const schema = def.anyOf.find((x: any) => x.properties && x.properties[className]);
+  if (!schema) {
+    throw new ValidationError(`Cannot find schema for ${className}`);
+  }
+
+  const def2 = findDefinition(schemaDefs, schema.properties[className].$ref);
+  const methodFqn = def2.comment;
+
+  const parts = methodFqn.split('.');
+  const last = parts[parts.length - 1];
+  if (last !== '<initializer>') {
+    throw new Error(`Expectring an initializer`);
+  }
+
+  const classFqn = parts.slice(0, parts.length - 1).join('.');
+  const method = typeRef.system.findClass(classFqn).initializer;
+  if (!method) {
+    throw new Error(`Cannot find the initializer for ${classFqn}`);
+  }
+
+  return invokeMethod(stack, method, value[className]);
+}
+
+function findDefinition(defs: any, $ref: string) {
+  const k = $ref.split('/').slice(2).join('/');
+  return defs[k];
 }
 
 function deconstructStaticProperty(typeRef: reflect.ClassType, value: string) {
@@ -232,8 +315,7 @@ function deconstructStaticProperty(typeRef: reflect.ClassType, value: string) {
   return typeClass[value];
 }
 
-function deconstructStaticMethod(typeRef: reflect.ClassType, value: any) {
-  const typeClass = resolveType(typeRef.fqn);
+function deconstructStaticMethod(stack: cdk.Stack, typeRef: reflect.ClassType, value: any) {
   const methods = typeRef.getMethods(true).filter(m => m.static);
   const members = methods.map(x => x.name);
 
@@ -243,37 +325,46 @@ function deconstructStaticMethod(typeRef: reflect.ClassType, value: any) {
       throw new Error(`Value for enum-like class ${typeRef.fqn} must be an object with a single key (one of: ${members.join(',')})`);
     }
 
-    const [ methodName, opts ] = entries[0];
+    const [ methodName, args ] = entries[0];
     const method = methods.find(m => m.name === methodName);
     if (!method) {
       throw new Error(`Invalid member "${methodName}" for enum-like class ${typeRef.fqn}. Options: ${members.join(',')}`);
     }
 
-    if (typeof(opts) !== 'object') {
+    if (typeof(args) !== 'object') {
       throw new Error(`Expecting enum-like member ${methodName} to be an object for enum-like class ${typeRef.fqn}`);
     }
 
-    const args = new Array<any>();
+    return invokeMethod(stack, method, args);
+  }
+}
 
-    method.parameters.forEach(p => {
-      const val = opts[p.name];
+function invokeMethod(stack: cdk.Stack, method: reflect.Method, parameters: any) {
+  const typeClass = resolveType(method.parentType.fqn);
+  const args = new Array<any>();
 
-      if (val === undefined && !p.type.optional) {
-        throw new Error(`Missing required value for ${typeRef.fqn}.${methodName}`);
-      }
+  method.parameters.forEach(p => {
+    const val = parameters[p.name];
 
-      if (val !== undefined) {
-        args.push(val);
-      }
-    });
-
-    const methodFn: (...args: any[]) => any = typeClass[methodName];
-    if (!methodFn) {
-      throw new Error(`Cannot find method named ${methodName} in ${typeClass.fqn}`);
+    if (val === undefined && !p.type.optional) {
+      throw new Error(`Missing required parameter '${p.name}' for ${method.parentType.fqn}.${method.name}`);
     }
 
-    return methodFn.apply(typeClass, args);
+    if (val !== undefined) {
+      args.push(deserializeValue(stack, p.type, p.name, val));
+    }
+  });
+
+  if (method.initializer) {
+    return new typeClass(...args);
   }
+
+  const methodFn: (...args: any[]) => any = typeClass[method.name];
+  if (!methodFn) {
+    throw new Error(`Cannot find method named ${method.name} in ${typeClass.fqn}`);
+  }
+
+  return methodFn.apply(typeClass, args);
 }
 
 /**
@@ -340,6 +431,10 @@ function processReferences(stack: cdk.Stack) {
 
     return value;
   }
+}
+
+function isCfnResourceType(resourceType: string) {
+  return resourceType.includes('::');
 }
 
 class ValidationError extends Error { }

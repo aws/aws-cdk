@@ -1,6 +1,5 @@
 import jsiiReflect = require('jsii-reflect');
-import { ConstructAndProps, resourceSchema } from '../lib/cfnschema';
-import { extendsType, isSerializableTypeReference } from '../lib/jsii2schema';
+import { definitionOf, extendsType, schemaForTypeReference } from '../lib/jsii2schema';
 import { loadTypeSystem } from '../lib/type-system';
 
 // tslint:disable:no-console
@@ -16,25 +15,17 @@ async function main() {
 
   const deconstructs = constructs
     .map(unpackConstruct)
-    .filter(c => c && !isCfnResource(c.constructClass)) // filter out L1s
-    .filter(c => {
-      if (!c) { return false; }
-
-      if (!isSerializableTypeReference(c.propsTypeRef)) {
-        console.error();
-        console.error(`WARNING: construct ${c.constructClass.fqn} is not serializable`);
-        isSerializableTypeReference(c.propsTypeRef, '    > ');
-        return false;
-      }
-      
-      return true;
-    }) as ConstructAndProps[];
+    .filter(c => c && !isCfnResource(c.constructClass)) as ConstructAndProps[];
 
   const baseSchema = require('../cloudformation.schema.json');
 
+  const definitions = baseSchema.definitions || { };
+
   for (const deco of deconstructs) {
-    const resource = resourceSchema(deco);
-    baseSchema.properties.Resources.patternProperties["^[a-zA-Z0-9]+$"].anyOf.push(resource);
+    const resource = schemaForResource(deco, definitions);
+    if (resource) {
+      baseSchema.properties.Resources.patternProperties["^[a-zA-Z0-9]+$"].anyOf.push(resource);
+    }
   }
 
   baseSchema.properties.$schema = {
@@ -42,6 +33,26 @@ async function main() {
   };
 
   process.stdout.write(JSON.stringify(baseSchema, undefined, 2));
+}
+
+export function schemaForResource(construct: ConstructAndProps, definitions: { [fqn: string]: any }) {
+  return definitionOf(definitions, construct.constructClass.fqn, () => {
+    const propsSchema = schemaForTypeReference(construct.propsTypeRef, definitions);
+    if (!propsSchema) {
+      return undefined;
+    }
+
+    return {
+      additionalProperties: false,
+      properties: {
+        Properties: propsSchema,
+        Type: {
+          enum: [ construct.constructClass.fqn ],
+          type: "string"
+        }
+      }
+    };
+  });
 }
 
 function isCfnResource(klass: jsiiReflect.ClassType) {
@@ -61,6 +72,11 @@ function unpackConstruct(klass: jsiiReflect.ClassType): ConstructAndProps | unde
     constructClass: klass,
     propsTypeRef: klass.initializer.parameters[2].type
   };
+}
+
+export interface ConstructAndProps {
+  constructClass: jsiiReflect.ClassType;
+  propsTypeRef: jsiiReflect.TypeReference;
 }
 
 main().catch(e => {
