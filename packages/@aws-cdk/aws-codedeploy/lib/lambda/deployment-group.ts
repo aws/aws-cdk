@@ -4,7 +4,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 
 import { CfnDeploymentGroup } from '../codedeploy.generated';
-import { AutoRollbackConfig } from '../config';
+import { AutoRollbackConfig } from '../rollback-config';
 import { deploymentGroupNameToArn, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
 import { ILambdaApplication, LambdaApplication } from './application';
 import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-config';

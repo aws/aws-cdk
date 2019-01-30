@@ -1,4 +1,4 @@
-export * from './config';
+export * from './rollback-config';
 export * from './lambda';
 export * from './pipeline-action';
 export * from './server';

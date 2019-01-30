@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { CfnDeploymentGroup } from './codedeploy.generated';
-import { AutoRollbackConfig } from './config';
+import { AutoRollbackConfig } from './rollback-config';
 
 export function applicationNameToArn(applicationName: string, scope: cdk.IConstruct): string {
   return cdk.Stack.find(scope).formatArn({
