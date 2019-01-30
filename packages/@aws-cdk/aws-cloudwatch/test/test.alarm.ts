@@ -17,13 +17,40 @@ export = {
     new Alarm(stack, 'Alarm', {
       metric: testMetric,
       threshold: 1000,
-      evaluationPeriods: 2
+      evaluationPeriods: 3,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
       ComparisonOperator: "GreaterThanOrEqualToThreshold",
-      EvaluationPeriods: 2,
+      EvaluationPeriods: 3,
+      MetricName: "Metric",
+      Namespace: "CDK/Test",
+      Period: 300,
+      Statistic: 'Average',
+      Threshold: 1000,
+    }));
+
+    test.done();
+  },
+
+  'can set DatapointsToAlarm'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      threshold: 1000,
+      evaluationPeriods: 3,
+      datapointsToAlarm: 2,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: "GreaterThanOrEqualToThreshold",
+      EvaluationPeriods: 3,
+      DatapointsToAlarm: 2,
       MetricName: "Metric",
       Namespace: "CDK/Test",
       Period: 300,
