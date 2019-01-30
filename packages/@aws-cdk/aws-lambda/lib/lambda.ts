@@ -4,6 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
+import { IEventSource } from './event-source';
 import { FunctionBase, FunctionImportProps, IFunction } from './lambda-ref';
 import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
@@ -190,6 +191,13 @@ export interface FunctionProps {
    * @see https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html
    */
   reservedConcurrentExecutions?: number;
+
+  /**
+   * Event sources for this function.
+   *
+   * You can also add event sources using `addEventSource`.
+   */
+  events?: IEventSource[];
 }
 
 /**
@@ -376,6 +384,10 @@ export class Function extends FunctionBase {
 
     for (const layer of props.layers || []) {
       this.addLayer(layer);
+    }
+
+    for (const event of props.events || []) {
+      this.addEventSource(event);
     }
   }
 
