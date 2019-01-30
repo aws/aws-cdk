@@ -1,8 +1,3 @@
-export enum ComputePlatform {
-  Lambda = 'Lambda',
-  Server = 'Server',
-}
-
 export enum DeploymentType {
   InPlace = 'IN_PLACE',
   BlueGreen = 'BLUE_GREEN'

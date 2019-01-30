@@ -7,27 +7,91 @@ import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig, DeploymentOption, DeploymentType } from '../config';
 import { deploymentGroupNameToArn, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
 import { ILambdaApplication, LambdaApplication } from './application';
-import { LambdaDeploymentConfig } from './deployment-config';
+import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-config';
 
+/**
+ * Interface for a Lambda deployment groups.
+ */
 export interface ILambdaDeploymentGroup extends cdk.IConstruct {
+  /**
+   * The reference to the CodeDeploy Lambda Application that this Deployment Group belongs to.
+   */
   readonly application: ILambdaApplication;
+
+  /**
+   * The physical name of the CodeDeploy Deployment Group.
+   */
   readonly deploymentGroupName: string;
+
+  /**
+   * The ARN of this Deployment Group.
+   */
   readonly deploymentGroupArn: string;
 
+  /**
+   * Export this Deployment Group for use in another stack or application.
+   */
   export(): LambdaDeploymentGroupImportProps;
 }
 
+/**
+ * Construction properties for {@link LambdaDeploymentGroup}.
+ */
 export interface LambdaDeploymentGroupProps {
-  application: LambdaApplication;
-  deploymentGroupName?: string;
-  deploymentConfig: LambdaDeploymentConfig;
+  /**
+   * The reference to the CodeDeploy Lambda Application that this Deployment Group belongs to.
+   *
+   * @default one will be created for you
+   */
+  application?: LambdaApplication;
 
+  /**
+   * The physical, human-readable name of the CodeDeploy Deployment Group.
+   *
+   * @default an auto-generated name will be used
+   */
+  deploymentGroupName?: string;
+
+  /**
+   * The Deployment Configuration this Deployment Group uses.
+   *
+   * @default LambdaDeploymentConfig#AllAtOnce
+   */
+  deploymentConfig?: ILambdaDeploymentConfig;
+
+  /**
+   * The CloudWatch alarms associated with this Deployment Group.
+   * CodeDeploy will stop (and optionally roll back)
+   * a deployment if during it any of the alarms trigger.
+   *
+   * Alarms can also be added after the Deployment Group is created using the {@link #addAlarm} method.
+   *
+   * @default []
+   * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
+   */
   alarms?: cloudwatch.Alarm[];
 
-  serviceRole?: iam.Role;
+  /**
+   * The service Role of this Deployment Group.
+   *
+   * @default a new Role will be created.
+   */
+  role?: iam.Role;
+
+  /**
+   * Lambda Alias to shift traffic. Updating the version
+   * of the alias will trigger a CodeDeploy deployment.
+   */
   alias: lambda.Alias;
 
+  /**
+   * The Lambda function to run before traffic routing starts.
+   */
   preHook?: lambda.IFunction;
+
+  /**
+   * The Lambda function to run after traffic routing starts.
+   */
   postHook?: lambda.IFunction;
 
   /**
@@ -42,6 +106,7 @@ export interface LambdaDeploymentGroupProps {
    */
   autoRollback?: AutoRollbackConfig;
 }
+
 export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeploymentGroup {
   /**
    * Import an Lambda Deployment Group defined either outside the CDK,
@@ -60,10 +125,17 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
 
+  private readonly serviceRole: iam.Role;
+  private readonly alarms: cloudwatch.Alarm[];
+  private preHook?: lambda.IFunction;
+  private postHook?: lambda.IFunction;
+
   constructor(scope: cdk.Construct, id: string, props: LambdaDeploymentGroupProps) {
     super(scope, id);
+    this.application = props.application || new LambdaApplication(this, 'Application');
+    this.alarms = props.alarms || [];
 
-    let serviceRole: iam.Role | undefined = props.serviceRole;
+    let serviceRole: iam.Role | undefined = props.role;
     if (serviceRole) {
       if (serviceRole.assumeRolePolicy) {
         serviceRole.assumeRolePolicy.addStatement(new iam.PolicyStatement()
@@ -75,62 +147,77 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
         assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com')
       });
     }
-    // Narrow re-implementation of arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda
-    serviceRole.addToPolicy(new iam.PolicyStatement()
-      .addResource('arn:aws:s3:::*/CodeDeploy/*')
-      .addActions('s3:GetObject', 's3:GetObjectVersion'));
-    serviceRole.addToPolicy(new iam.PolicyStatement()
-      .addResource('*')
-      .addCondition('StringEquals', {
-        's3:ExistingObjectTag/UseWithCodeDeploy': 'true'
-      })
-      .addActions('s3:GetObject', 's3:GetObjectVersion'));
-    serviceRole.addToPolicy(new iam.PolicyStatement()
-      .addResource(props.alias.functionArn)
-      .addActions('lambda:UpdateAlias', 'lambda:GetAlias'));
-    if (props.alarms) {
-      serviceRole.addToPolicy(new iam.PolicyStatement()
-        .addResources(...props.alarms.map(alarm => alarm.alarmArn))
-        .addAction('cloudwatch:DescribeAlarms'));
-    }
-
-    const alarms = props.alarms || [];
+    serviceRole.attachManagedPolicy('arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda');
+    this.serviceRole = serviceRole;
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
-      applicationName: props.application.applicationName,
+      applicationName: this.application.applicationName,
       serviceRoleArn: serviceRole.roleArn,
       deploymentGroupName: props.deploymentGroupName,
-      deploymentConfigName: `CodeDeployDefault.Lambda${props.deploymentConfig}`,
+      deploymentConfigName: (props.deploymentConfig || LambdaDeploymentConfig.AllAtOnce).deploymentConfigName,
       deploymentStyle: {
         deploymentType: DeploymentType.BlueGreen,
         deploymentOption: DeploymentOption.WithTrafficControl
       },
-
-      alarmConfiguration: new cdk.Token(() => renderAlarmConfiguration(alarms, props.ignorePollAlarmsFailure)),
-      autoRollbackConfiguration: new cdk.Token(() => renderAutoRollbackConfiguration(alarms, props.autoRollback)),
+      alarmConfiguration: new cdk.Token(() => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure)),
+      autoRollbackConfiguration: new cdk.Token(() => renderAutoRollbackConfiguration(this.alarms, props.autoRollback)),
     });
 
-    this.application = props.application;
     this.deploymentGroupName = resource.deploymentGroupName;
     this.deploymentGroupArn = deploymentGroupNameToArn(this.application.applicationName, this.deploymentGroupName, this);
 
     if (props.preHook) {
-      this.grantPutLifecycleEventHookExecutionStatus(props.preHook.role);
-      props.preHook.grantInvoke(serviceRole);
+      this.onPreHook(props.preHook);
     }
     if (props.postHook) {
-      this.grantPutLifecycleEventHookExecutionStatus(props.postHook.role);
-      props.postHook.grantInvoke(serviceRole);
+      this.onPostHook(props.postHook);
     }
 
     (props.alias.node.findChild('Resource') as lambda.CfnAlias).options.updatePolicy = {
       codeDeployLambdaAliasUpdate: {
-        applicationName: props.application.applicationName,
+        applicationName: this.application.applicationName,
         deploymentGroupName: resource.deploymentGroupName,
-        beforeAllowTrafficHook: props.preHook === undefined ? undefined : props.preHook.functionName,
-        afterAllowTrafficHook: props.postHook === undefined ? undefined : props.postHook.functionName
+        beforeAllowTrafficHook: new cdk.Token(() => this.preHook === undefined ? undefined : this.preHook.functionName).toString(),
+        afterAllowTrafficHook: new cdk.Token(() => this.postHook === undefined ? undefined : this.postHook.functionName).toString()
       }
     };
+  }
+
+  /**
+   * Associates an additional alarm with this Deployment Group.
+   *
+   * @param alarm the alarm to associate with this Deployment Group
+   */
+  public addAlarm(alarm: cloudwatch.Alarm) {
+    this.alarms.push(alarm);
+  }
+
+  /**
+   * Associate a function to run before deployment begins.
+   * @param preHook function to run before deployment beings
+   * @throws an error if a pre-hook function is already configured
+   */
+  public onPreHook(preHook: lambda.IFunction) {
+    if (this.preHook !== undefined) {
+      throw new Error('A pre-hook function is already defined for this deployment group');
+    }
+    this.preHook = preHook;
+    this.grantPutLifecycleEventHookExecutionStatus(this.preHook.role);
+    this.preHook.grantInvoke(this.serviceRole);
+  }
+
+  /**
+   * Associate a function to run after deployment completes.
+   * @param preHook function to run after deployment completes
+   * @throws an error if a post-hook function is already configured
+   */
+  public onPostHook(postHook: lambda.IFunction) {
+    if (this.postHook !== undefined) {
+      throw new Error('A post-hook function is already defined for this deployment group');
+    }
+    this.postHook = postHook;
+    this.grantPutLifecycleEventHookExecutionStatus(this.postHook.role);
+    this.postHook.grantInvoke(this.serviceRole);
   }
 
   /**

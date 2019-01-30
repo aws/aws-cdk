@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { CfnDeploymentConfig } from '../codedeploy.generated';
+import { arnForDeploymentConfigName } from '../utils';
 
 /**
  * The Deployment Configuration of an EC2/on-premise Deployment Group.
@@ -154,13 +155,4 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
       value: props.minHealthyHostCount !== undefined  ? props.minHealthyHostCount : props.minHealthyHostPercentage!,
     };
   }
-}
-
-function arnForDeploymentConfigName(name: string, scope: cdk.IConstruct): string {
-  return cdk.Stack.find(scope).formatArn({
-    service: 'codedeploy',
-    resource: 'deploymentconfig',
-    resourceName: name,
-    sep: ':',
-  });
 }

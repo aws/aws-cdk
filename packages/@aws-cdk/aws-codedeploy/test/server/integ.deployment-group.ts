@@ -42,4 +42,10 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   },
 });
 
+new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
+  // deploymentConfig: codedeploy.ServerDeploymentConfig.AllAtOnce,
+  // autoScalingGroups: [asg],
+  // loadBalancer: elb,
+});
+
 app.run();

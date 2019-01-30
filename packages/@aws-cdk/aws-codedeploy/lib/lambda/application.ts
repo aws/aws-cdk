@@ -1,6 +1,5 @@
 import cdk = require("@aws-cdk/cdk");
 import { CfnApplication } from "../codedeploy.generated";
-import { ComputePlatform } from "../config";
 import { applicationNameToArn } from "../utils";
 
 /**
@@ -13,10 +12,9 @@ import { applicationNameToArn } from "../utils";
  * or one defined in a different CDK Stack,
  * use the {@link #import} method.
  */
-export interface ILambdaApplication {
+export interface ILambdaApplication extends cdk.IConstruct {
   readonly applicationArn: string;
   readonly applicationName: string;
-  readonly computePlatform: ComputePlatform.Lambda;
 
   export(): LambdaApplicationImportProps;
 }
@@ -53,24 +51,20 @@ export class LambdaApplication extends cdk.Construct implements ILambdaApplicati
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  public readonly computePlatform: ComputePlatform.Lambda;
-
   constructor(scope: cdk.Construct, id: string, props: LambdaApplicationProps = {}) {
     super(scope, id);
     const resource = new CfnApplication(this, 'Resource', {
       applicationName: props.applicationName,
-      computePlatform: ComputePlatform.Lambda,
+      computePlatform: 'Lambda'
     });
 
-    this.computePlatform = ComputePlatform.Lambda;
     this.applicationName = resource.ref;
     this.applicationArn = applicationNameToArn(this.applicationName, this);
   }
 
   public export(): LambdaApplicationImportProps {
     return {
-      applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString(),
-      computePlatform: this.computePlatform
+      applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
     };
   }
 }
@@ -87,22 +81,15 @@ export interface LambdaApplicationImportProps {
    * The Application must be in the same account and region as the root Stack.
    */
   applicationName: string;
-
-  /**
-   * The compute platform of the application, is always Lambda.
-   */
-  computePlatform?: ComputePlatform.Lambda;
 }
 
 class ImportedLambdaApplication extends cdk.Construct implements ILambdaApplication {
   public readonly applicationArn: string;
   public readonly applicationName: string;
-  public readonly computePlatform: any;
   constructor(scope: cdk.Construct, id: string, private readonly props: LambdaApplicationImportProps) {
     super(scope, id);
     this.applicationName = props.applicationName;
     this.applicationArn = applicationNameToArn(props.applicationName, this);
-    this.computePlatform = ComputePlatform.Lambda;
   }
   public export(): LambdaApplicationImportProps {
     return this.props;

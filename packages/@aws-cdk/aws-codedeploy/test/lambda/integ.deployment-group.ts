@@ -3,50 +3,36 @@ import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import codedeploy = require('../../lib');
 
+import path = require('path');
+
 const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-lambda');
 
-const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-server-dg');
-
-function makeAlias(id: string) {
-  const func = new lambda.Function(stack, `Func${id}`, {
-    code: lambda.Code.inline('exports.handler = function(){ return "test"; };'),
-    handler: 'index.handler',
-    runtime: lambda.Runtime.NodeJS810
-  });
-  return new lambda.Alias(stack, `Alias${id}`, {
-    aliasName: `alias-${id}`,
-    version: new lambda.Version(stack, `Version${id}`, {
-      lambda: func
-    })
-  });
-}
-
-const preHook = makeAlias('pre-hook');
-const postHook = makeAlias('post-hook');
-
-const application = new codedeploy.LambdaApplication(stack, 'App');
-const inPlaceAlias = makeAlias('in-place');
-new codedeploy.LambdaDeploymentGroup(stack, 'InPlaceDeployment', {
-  alias: inPlaceAlias,
-  application,
-  deploymentConfig: codedeploy.LambdaDeploymentConfig.AllAtOnce,
-  alarms: [
-    new cloudwatch.Alarm(stack, 'InPlaceErrors', {
-      comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
-      threshold: 1,
-      evaluationPeriods: 1,
-      metric: inPlaceAlias.metricErrors()
-    })
-  ],
-  preHook,
-  postHook
+const handler = new lambda.Function(stack, `Handler`, {
+  code: lambda.Code.asset(path.join(__dirname, 'handler')),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NodeJS810,
+});
+const version = handler.addVersion('1');
+const blueGreenAlias = new lambda.Alias(stack, `Alias`, {
+  aliasName: `alias`,
+  version
 });
 
-const blueGreenAlias = makeAlias('blue-green');
+const preHook = new lambda.Function(stack, `PreHook`, {
+  code: lambda.Code.asset(path.join(__dirname, 'preHook')),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NodeJS810
+});
+const postHook = new lambda.Function(stack, `PostHook`, {
+  code: lambda.Code.asset(path.join(__dirname, 'postHook')),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NodeJS810
+});
+
 new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
   alias: blueGreenAlias,
-  application,
-  deploymentConfig: codedeploy.LambdaDeploymentConfig.Canary10Percent10Minutes,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
   alarms: [
     new cloudwatch.Alarm(stack, 'BlueGreenErrors', {
       comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,

@@ -1,6 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
 import { CfnApplication } from '../codedeploy.generated';
-import { ComputePlatform } from '../config';
 import { applicationNameToArn } from '../utils';
 
 /**
@@ -16,11 +15,6 @@ import { applicationNameToArn } from '../utils';
 export interface IServerApplication extends cdk.IConstruct {
   readonly applicationArn: string;
   readonly applicationName: string;
-
-  /**
-   * The compute platform of the Application, is always Server.
-   */
-  readonly computePlatform: ComputePlatform.Server;
 
   export(): ServerApplicationImportProps;
 }
@@ -56,25 +50,22 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
 
   public readonly applicationArn: string;
   public readonly applicationName: string;
-  public readonly computePlatform: ComputePlatform.Server;
 
   constructor(scope: cdk.Construct, id: string, props: ServerApplicationProps = {}) {
     super(scope, id);
 
     const resource = new CfnApplication(this, 'Resource', {
       applicationName: props.applicationName,
-      computePlatform: ComputePlatform.Server,
+      computePlatform: 'Server',
     });
 
-    this.computePlatform = ComputePlatform.Server;
     this.applicationName = resource.ref;
     this.applicationArn = applicationNameToArn(this.applicationName, this);
   }
 
   public export(): ServerApplicationImportProps {
     return {
-      applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString(),
-      computePlatform: this.computePlatform
+      applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
     };
   }
 }
@@ -91,23 +82,16 @@ export interface ServerApplicationImportProps {
    * The Application must be in the same account and region as the root Stack.
    */
   applicationName: string;
-
-  /**
-   * The compute platform of the Server application, is always Server.
-   */
-  computePlatform?: ComputePlatform.Server;
 }
 
 export class ImportedServerApplication extends cdk.Construct implements IServerApplication {
   public readonly applicationArn: string;
   public readonly applicationName: string;
-  public readonly computePlatform: ComputePlatform.Server;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: ServerApplicationImportProps) {
     super(scope, id);
     this.applicationName = props.applicationName;
     this.applicationArn = applicationNameToArn(this.applicationName, this);
-    this.computePlatform = ComputePlatform.Server;
   }
 
   public export(): ServerApplicationImportProps {

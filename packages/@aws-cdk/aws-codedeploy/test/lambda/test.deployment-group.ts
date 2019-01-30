@@ -94,49 +94,8 @@ export = {
             }
           }],
           Version: "2012-10-17"
-        }
-      }));
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
-        PolicyName: "MyDGServiceRoleDefaultPolicy65E8E1EA",
-        Roles: [{
-          Ref: 'MyDGServiceRole5E94FD88'
-        }],
-        PolicyDocument: {
-          Statement: [
-            {
-              Action: [
-                "s3:GetObject",
-                "s3:GetObjectVersion"
-              ],
-              Effect: "Allow",
-              Resource: "arn:aws:s3:::*/CodeDeploy/*"
-            },
-            {
-              Action: [
-                "s3:GetObject",
-                "s3:GetObjectVersion"
-              ],
-              Condition: {
-                StringEquals: {
-                  "s3:ExistingObjectTag/UseWithCodeDeploy": "true"
-                }
-              },
-              Effect: "Allow",
-              Resource: "*"
-            },
-            {
-              Action: [
-                "lambda:UpdateAlias",
-                "lambda:GetAlias"
-              ],
-              Effect: "Allow",
-              Resource: {
-                Ref: "Alias325C5727"
-              }
-            }
-          ],
-          Version: "2012-10-17"
-        }
+        },
+        ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda']
       }));
 
       test.done();
@@ -170,7 +129,7 @@ export = {
         application,
         alias,
         deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
-        serviceRole
+        role: serviceRole
       });
 
       expect(stack).to(haveResource('AWS::IAM::Role', {
@@ -189,7 +148,8 @@ export = {
             }
           }],
           Version: "2012-10-17"
-        }
+        },
+        ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda']
       }));
 
       test.done();
@@ -263,59 +223,28 @@ export = {
         },
       }));
 
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
-        PolicyName: "MyDGServiceRoleDefaultPolicy65E8E1EA",
-        Roles: [{
-          Ref: 'MyDGServiceRole5E94FD88'
-        }],
-        PolicyDocument: {
-          Statement: [
-            {
-              Action: [
-                "s3:GetObject",
-                "s3:GetObjectVersion"
-              ],
-              Effect: "Allow",
-              Resource: "arn:aws:s3:::*/CodeDeploy/*"
-            },
-            {
-              Action: [
-                "s3:GetObject",
-                "s3:GetObjectVersion"
-              ],
-              Condition: {
-                StringEquals: {
-                  "s3:ExistingObjectTag/UseWithCodeDeploy": "true"
-                }
-              },
-              Effect: "Allow",
-              Resource: "*"
-            },
-            {
-              Action: [
-                "lambda:UpdateAlias",
-                "lambda:GetAlias"
-              ],
-              Effect: "Allow",
-              Resource: {
-                Ref: "Alias325C5727"
-              }
-            },
-            {
-              Action: 'cloudwatch:DescribeAlarms',
-              Effect: 'Allow',
-              Resource: {
-                "Fn::GetAtt": [
-                  "Failures8A3E1A2F",
-                  "Arn"
-                ]
-              }
-            },
-          ],
-          Version: "2012-10-17"
-        }
-      }));
-
+      test.done();
+    },
+    "onPreHook throws error if pre-hook already defined"(test: Test) {
+      const stack = new cdk.Stack();
+      const alias = mockAlias(stack);
+      const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+        alias,
+        preHook: mockFunction(stack, 'PreHook'),
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
+      });
+      test.throws(() => group.onPreHook(mockFunction(stack, 'PreHook2')));
+      test.done();
+    },
+    "onPostHook throws error if post-hook already defined"(test: Test) {
+      const stack = new cdk.Stack();
+      const alias = mockAlias(stack);
+      const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+        alias,
+        postHook: mockFunction(stack, 'PostHook'),
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
+      });
+      test.throws(() => group.onPostHook(mockFunction(stack, 'PostHook2')));
       test.done();
     },
     "can run pre hook lambda function before deployment"(test: Test) {
@@ -339,11 +268,80 @@ export = {
               Ref: "MyDGC350BD3F"
             },
             BeforeAllowTrafficHook: {
-              Ref: 'PreHook8B53F672'
+              Ref: "PreHook8B53F672"
             }
           }
         }
       }, ResourcePart.CompleteDefinition));
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyName: "MyDGServiceRoleDefaultPolicy65E8E1EA",
+        Roles: [{
+          Ref: 'MyDGServiceRole5E94FD88'
+        }],
+        PolicyDocument: {
+          Statement: [{
+            Action: 'lambda:InvokeFunction',
+            Resource: {
+              "Fn::GetAtt": [
+                "PreHook8B53F672",
+                "Arn"
+              ]
+            },
+            Effect: 'Allow'
+          }],
+          Version: "2012-10-17"
+        }
+      }));
+
+      test.done();
+    },
+    "can add pre hook lambda function after creating the deployment group"(test: Test) {
+      const stack = new cdk.Stack();
+      const application = new codedeploy.LambdaApplication(stack, 'MyApp');
+      const alias = mockAlias(stack);
+      const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+        application,
+        alias,
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
+      });
+      group.onPreHook(mockFunction(stack, 'PreHook'));
+
+      expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
+        UpdatePolicy: {
+          CodeDeployLambdaAliasUpdate: {
+            ApplicationName: {
+              Ref: "MyApp3CE31C26"
+            },
+            DeploymentGroupName: {
+              Ref: "MyDGC350BD3F"
+            },
+            BeforeAllowTrafficHook: {
+              Ref: "PreHook8B53F672"
+            }
+          }
+        }
+      }, ResourcePart.CompleteDefinition));
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyName: "MyDGServiceRoleDefaultPolicy65E8E1EA",
+        Roles: [{
+          Ref: 'MyDGServiceRole5E94FD88'
+        }],
+        PolicyDocument: {
+          Statement: [{
+            Action: 'lambda:InvokeFunction',
+            Resource: {
+              "Fn::GetAtt": [
+                "PreHook8B53F672",
+                "Arn"
+              ]
+            },
+            Effect: 'Allow'
+          }],
+          Version: "2012-10-17"
+        }
+      }));
 
       test.done();
     },
@@ -373,6 +371,75 @@ export = {
           }
         }
       }, ResourcePart.CompleteDefinition));
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyName: "MyDGServiceRoleDefaultPolicy65E8E1EA",
+        Roles: [{
+          Ref: 'MyDGServiceRole5E94FD88'
+        }],
+        PolicyDocument: {
+          Statement: [{
+            Action: 'lambda:InvokeFunction',
+            Resource: {
+              "Fn::GetAtt": [
+                "PostHookF2E49B30",
+                "Arn"
+              ]
+            },
+            Effect: 'Allow'
+          }],
+          Version: "2012-10-17"
+        },
+      }));
+
+      test.done();
+    },
+    "can add post hook lambda function after creating the deployment group"(test: Test) {
+      const stack = new cdk.Stack();
+      const application = new codedeploy.LambdaApplication(stack, 'MyApp');
+      const alias = mockAlias(stack);
+      const group = new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
+        application,
+        alias,
+        deploymentConfig: LambdaDeploymentConfig.AllAtOnce
+      });
+      group.onPostHook(mockFunction(stack, 'PostHook'));
+
+      expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
+        UpdatePolicy: {
+          CodeDeployLambdaAliasUpdate: {
+            ApplicationName: {
+              Ref: "MyApp3CE31C26"
+            },
+            DeploymentGroupName: {
+              Ref: "MyDGC350BD3F"
+            },
+            AfterAllowTrafficHook: {
+              Ref: 'PostHookF2E49B30'
+            }
+          }
+        }
+      }, ResourcePart.CompleteDefinition));
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyName: "MyDGServiceRoleDefaultPolicy65E8E1EA",
+        Roles: [{
+          Ref: 'MyDGServiceRole5E94FD88'
+        }],
+        PolicyDocument: {
+          Statement: [{
+            Action: 'lambda:InvokeFunction',
+            Resource: {
+              "Fn::GetAtt": [
+                "PostHookF2E49B30",
+                "Arn"
+              ]
+            },
+            Effect: 'Allow'
+          }],
+          Version: "2012-10-17"
+        },
+      }));
 
       test.done();
     },

@@ -21,6 +21,15 @@ export function deploymentGroupNameToArn(applicationName: string, deploymentGrou
   });
 }
 
+export function arnForDeploymentConfigName(name: string, scope: cdk.IConstruct): string {
+  return cdk.Stack.find(scope).formatArn({
+    service: 'codedeploy',
+    resource: 'deploymentconfig',
+    resourceName: name,
+    sep: ':',
+  });
+}
+
 export function renderAlarmConfiguration(alarms: cloudwatch.Alarm[], ignorePollAlarmFailure?: boolean):
       CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
   return alarms.length === 0
