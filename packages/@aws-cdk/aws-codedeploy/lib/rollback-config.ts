@@ -1,19 +1,3 @@
-export enum DeploymentType {
-  InPlace = 'IN_PLACE',
-  BlueGreen = 'BLUE_GREEN'
-}
-
-export enum DeploymentOption {
-  WithTrafficControl = 'WITH_TRAFFIC_CONTROL',
-  WithoutTrafficControl = 'WITHOUT_TRAFFIC_CONTROL',
-}
-
-export enum AutoRollbackEvent {
-  DeploymentFailure = 'DEPLOYMENT_FAILURE',
-  DeploymentStopOnAlarm = 'DEPLOYMENT_STOP_ON_ALARM',
-  DeploymentStopOnRequest = 'DEPLOYMENT_STOP_ON_REQUEST'
-}
-
 /**
  * The configuration for automatically rolling back deployments in a given Deployment Group.
  */

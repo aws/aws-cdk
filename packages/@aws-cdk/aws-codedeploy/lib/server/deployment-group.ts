@@ -7,7 +7,7 @@ import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { CfnDeploymentGroup } from '../codedeploy.generated';
-import { AutoRollbackConfig, DeploymentOption } from '../config';
+import { AutoRollbackConfig } from '../config';
 import { CommonPipelineDeployActionProps, PipelineDeployAction } from '../pipeline-action';
 import { deploymentGroupNameToArn, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
 import { IServerApplication, ServerApplication } from './application';
@@ -309,7 +309,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       deploymentStyle: props.loadBalancer === undefined
         ? undefined
         : {
-          deploymentOption: DeploymentOption.WithTrafficControl,
+          deploymentOption: 'WITH_TRAFFIC_CONTROL',
         },
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),

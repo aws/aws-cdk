@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { CfnDeploymentGroup } from './codedeploy.generated';
-import { AutoRollbackConfig, AutoRollbackEvent } from './config';
+import { AutoRollbackConfig } from './config';
 
 export function applicationNameToArn(applicationName: string, scope: cdk.IConstruct): string {
   return cdk.Stack.find(scope).formatArn({
@@ -39,6 +39,12 @@ export function renderAlarmConfiguration(alarms: cloudwatch.Alarm[], ignorePollA
       enabled: true,
       ignorePollAlarmFailure,
     };
+}
+
+enum AutoRollbackEvent {
+  DeploymentFailure = 'DEPLOYMENT_FAILURE',
+  DeploymentStopOnAlarm = 'DEPLOYMENT_STOP_ON_ALARM',
+  DeploymentStopOnRequest = 'DEPLOYMENT_STOP_ON_REQUEST'
 }
 
 export function renderAutoRollbackConfiguration(alarms: cloudwatch.Alarm[], autoRollbackConfig: AutoRollbackConfig = {}):

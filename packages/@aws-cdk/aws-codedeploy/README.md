@@ -2,7 +2,7 @@
 
 AWS CodeDeploy is a deployment service that automates application deployments to Amazon EC2 instances, on-premises instances, serverless Lambda functions, or Amazon ECS services.
 
-The CDK currently supports EC2/on-premise and Lambda applications.
+The CDK currently supports Amazon EC2, on-premise and AWS Lambda applications.
 
 ### EC2/on-premise Deployment Groups
 
@@ -181,18 +181,21 @@ import lambda = require('@aws-cdk/aws-lambda');
 
 const func = new lambda.Function(..);
 const version = func.addVersion('1');
-const alias = new lambda.Alias({
+const version1Alias = new lambda.Alias({
   aliasName: 'prod',
   version
 });
 
 const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
-  alias: alias,
+  alias: version1Alias,
   deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
 });
 ```
 
-Creating the deployment group will modify the `lambda.Alias`'s UpdatePolicy to trigger a deployment on update. Incrementing the version, e.g. `const version = func.addVersion('2')`, and re-deploying the stack will have CodeDeploy safely shift traffic between the versions.
+In order to deploy a new version of this function:
+1. Increment the version, e.g. `const version = func.addVersion('2')`.
+2. Re-deploy the stack (this will trigger a deployment).
+3. Monitor the CodeDeploy deployment as traffic shifts between the versions.
 
 #### Rollbacks and Alarms
 
@@ -227,18 +230,18 @@ deploymentGroup.addAlarm(new cloudwatch.Alarm(stack, 'BlueGreenErrors', {
 CodeDeploy allows you to run an arbitrary Lambda function before traffic shifting actually starts (PreTraffic Hook) and after it completes (PostTraffic Hook). With either hook, you have the opportunity to run logic that determines whether the deployment must succeed or fail. For example, with PreTraffic hook you could run integration tests against the newly created Lambda version (but not serving traffic). With PostTraffic hook, you could run end-to-end validation checks.
 
 ```ts
-const preHook = new lambda.Function(..);
-const postHook = new lambda.Function(..);
+const warmUpUserCache = new lambda.Function(..);
+const endToEndValidation = new lambda.Function(..);
 
 // pass a hook whe creating the deployment group
 const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
   alias: alias,
   deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
-  preHook,
+  preHook: warmUpUserCache,
 });
 
 // or configure one on an existing deployment group
-deploymentGroup.onPostHook(postHook);
+deploymentGroup.onPostHook(endToEndValidation);
 ```
 
 #### Import an existing Deployment Group

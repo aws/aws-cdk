@@ -4,7 +4,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 
 import { CfnDeploymentGroup } from '../codedeploy.generated';
-import { AutoRollbackConfig, DeploymentOption, DeploymentType } from '../config';
+import { AutoRollbackConfig } from '../config';
 import { deploymentGroupNameToArn, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
 import { ILambdaApplication, LambdaApplication } from './application';
 import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-config';
@@ -156,8 +156,8 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
       deploymentGroupName: props.deploymentGroupName,
       deploymentConfigName: (props.deploymentConfig || LambdaDeploymentConfig.AllAtOnce).deploymentConfigName,
       deploymentStyle: {
-        deploymentType: DeploymentType.BlueGreen,
-        deploymentOption: DeploymentOption.WithTrafficControl
+        deploymentType: 'BLUE_GREEN',
+        deploymentOption: 'WITH_TRAFFIC_CONTROL'
       },
       alarmConfiguration: new cdk.Token(() => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure)),
       autoRollbackConfiguration: new cdk.Token(() => renderAutoRollbackConfiguration(this.alarms, props.autoRollback)),
