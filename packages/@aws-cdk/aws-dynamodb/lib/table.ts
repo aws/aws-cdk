@@ -110,7 +110,7 @@ export interface TableProps {
    * Partition key attribute definition. This is eventually required, but you
    * can also use `addPartitionKey` to specify the partition key at a later stage.
    */
-  partitionKey?: Attribute;
+  partitionKey: Attribute;
 
   /**
    * Table sort key attribute definition. You can also use `addSortKey` to set
@@ -214,7 +214,7 @@ export class Table extends Construct {
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
 
-  constructor(scope: Construct, id: string, props: TableProps = {}) {
+  constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
     this.billingMode = props.billingMode || BillingMode.Provisioned;
@@ -247,24 +247,13 @@ export class Table extends Construct {
     this.scalingRole = this.makeScalingRole();
 
     if (props.partitionKey) {
-      this.addPartitionKey(props.partitionKey);
+      this.addKey(props.partitionKey, HASH_KEY_TYPE);
+      this.tablePartitionKey = props.partitionKey;
     }
 
     if (props.sortKey) {
       this.addSortKey(props.sortKey);
     }
-  }
-
-  /**
-   * Add a partition key of table.
-   *
-   * @param attribute the partition key attribute of table
-   * @returns a reference to this object so that method calls can be chained together
-   */
-  public addPartitionKey(attribute: Attribute): this {
-    this.addKey(attribute, HASH_KEY_TYPE);
-    this.tablePartitionKey = attribute;
-    return this;
   }
 
   /**
