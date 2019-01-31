@@ -1,9 +1,11 @@
+import ec2 = require('@aws-cdk/aws-ec2');
+
 /**
  * Used internally to bootstrap the worker nodes
  * This sets the max pods based on the instanceType created
  * ref: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI
  */
-export const maxPods = Object.freeze(
+const MAX_PODS = Object.freeze(
   new Map([
     ['c4.large', 29],
     ['c4.xlarge', 58],
@@ -63,50 +65,10 @@ export const maxPods = Object.freeze(
   ]),
 );
 
-/**
- * Whether the worker nodes should support GPU or just normal instances
- */
-export const enum NodeType {
-  Normal = 'Normal',
-  GPU = 'GPUSupport',
-}
-
-/**
- * Select AMI to use based on the AWS Region being deployed
- *
- * TODO: Create dynamic mappign by searching SSM Store
- */
-export const nodeAmi = Object.freeze({
-  Normal: {
-    ['us-east-1']: 'ami-0440e4f6b9713faf6',
-    ['us-west-2']: 'ami-0a54c984b9f908c81',
-    ['eu-west-1']: 'ami-0c7a4976cb6fafd3a',
-  },
-  GPUSupport: {
-    ['us-east-1']: 'ami-058bfb8c236caae89',
-    ['us-west-2']: 'ami-0731694d53ef9604b',
-    ['eu-west-1']: 'ami-0706dc8a5eed2eed9',
-  },
-});
-
-/**
- * The type of update to perform on instances in this AutoScalingGroup
- */
-export enum UpdateType {
-  /**
-   * Don't do anything
-   */
-  None = 'None',
-
-  /**
-   * Replace the entire AutoScalingGroup
-   *
-   * Builds a new AutoScalingGroup first, then delete the old one.
-   */
-  ReplacingUpdate = 'Replace',
-
-  /**
-   * Replace the instances in the AutoScalingGroup.
-   */
-  RollingUpdate = 'RollingUpdate',
+export function maxPodsForInstanceType(instanceType: ec2.InstanceType) {
+  const num = MAX_PODS.get(instanceType.toString());
+  if (num === undefined) {
+    throw new Error(`Instance type not supported for EKS: ${instanceType.toString()}. Please pick a different instance type.`);
+  }
+  return num;
 }
