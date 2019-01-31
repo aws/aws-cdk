@@ -315,8 +315,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
     });
   }
 
-  public addToPipelineAsDeploy(stage: actions.IStage, name: string, props: CommonPipelineDeployActionProps = {}):
-      PipelineDeployAction {
+  public addToPipelineAsDeploy(stage: actions.IStage, name: string, props: CommonPipelineDeployActionProps = {}): PipelineDeployAction {
     return new PipelineDeployAction(this, name, {
       stage,
       bucket: this,
