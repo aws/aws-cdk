@@ -1,5 +1,6 @@
+import colors = require('colors/safe');
 import jsiiReflect = require('jsii-reflect');
-import { definitionOf, extendsType, schemaForTypeReference } from '../lib/jsii2schema';
+import { extendsType, SchemaContext, schemaForTypeReference } from '../lib/jsii2schema';
 import { loadTypeSystem } from '../lib/type-system';
 
 // tslint:disable:no-console
@@ -19,10 +20,10 @@ async function main() {
 
   const baseSchema = require('../cloudformation.schema.json');
 
-  const definitions = baseSchema.definitions || { };
+  const ctx = SchemaContext.root(baseSchema.definitions);
 
   for (const deco of deconstructs) {
-    const resource = schemaForResource(deco, definitions);
+    const resource = schemaForResource(deco, ctx);
     if (resource) {
       baseSchema.properties.Resources.patternProperties["^[a-zA-Z0-9]+$"].anyOf.push(resource);
     }
@@ -32,16 +33,44 @@ async function main() {
     type: 'string'
   };
 
+  printWarnings(ctx);
+
   process.stdout.write(JSON.stringify(baseSchema, undefined, 2));
 }
 
-export function schemaForResource(construct: ConstructAndProps, definitions: { [fqn: string]: any }) {
-  return definitionOf(definitions, construct.constructClass.fqn, () => {
-    const propsSchema = schemaForTypeReference(construct.propsTypeRef, definitions);
-    if (!propsSchema) {
-      return undefined;
-    }
+function printWarnings(node: SchemaContext, indent = '') {
+  if (!node.hasWarningsOrErrors) {
+    return;
+  }
 
+  console.error(indent + node.name);
+
+  for (const warning of node.warnings) {
+    console.error(colors.yellow(indent + '  ' + warning));
+  }
+
+  for (const error of node.errors) {
+    console.error(colors.red(indent + '  ' + error));
+  }
+
+  if (!node.root) {
+    indent += '  ';
+  }
+
+  for (const child of node.children) {
+    printWarnings(child, indent);
+  }
+}
+
+export function schemaForResource(construct: ConstructAndProps, ctx: SchemaContext) {
+  ctx = ctx.child('resource', construct.constructClass.fqn);
+
+  const propsSchema = schemaForTypeReference(construct.propsTypeRef, ctx);
+  if (!propsSchema) {
+    return undefined;
+  }
+
+  return ctx.definitionOf(construct.constructClass.fqn, () => {
     return {
       additionalProperties: false,
       properties: {

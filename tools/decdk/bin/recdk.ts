@@ -3,7 +3,7 @@ import fs = require('fs-extra');
 import reflect = require('jsii-reflect');
 import path = require('path');
 import YAML = require('yaml');
-import { isConstruct, isEnumLikeClass, isSerializableInterface, schemaForType } from '../lib/jsii2schema';
+import { isConstruct, isEnumLikeClass, isSerializableInterface, schemaForPolymorphic } from '../lib/jsii2schema';
 import { loadTypeSystem } from '../lib/type-system';
 
 // tslint:disable:no-console
@@ -267,7 +267,7 @@ function deconstructEnumLike(stack: cdk.Stack, typeRef: reflect.TypeReference, v
 
 function deconstructType(stack: cdk.Stack, typeRef: reflect.TypeReference, value: any) {
   const schemaDefs: any = { };
-  const schemaRef = schemaForType(typeRef.fqn, schemaDefs);
+  const schemaRef = schemaForPolymorphic(typeRef.fqn, schemaDefs);
   if (!schemaRef) {
     return undefined;
   }
