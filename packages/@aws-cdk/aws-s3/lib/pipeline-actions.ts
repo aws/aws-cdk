@@ -38,8 +38,7 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
 /**
  * Construction properties of the {@link PipelineSourceAction S3 source Action}.
  */
-export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps,
-    codepipeline.CommonActionConstructProps {
+export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps, codepipeline.CommonActionConstructProps {
   /**
    * The Amazon S3 bucket that stores the source code
    */
