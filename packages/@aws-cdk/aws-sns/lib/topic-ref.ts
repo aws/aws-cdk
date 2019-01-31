@@ -169,14 +169,18 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    * @param queue The target queue
    */
   public subscribeQueue(queue: sqs.IQueue): Subscription {
-    const subscriptionName = queue.node.id + 'Subscription';
-    if (this.node.tryFindChild(subscriptionName)) {
+    if (!cdk.Construct.isConstruct(queue)) {
+      throw new Error(`The supplied Queue object must be an instance of Construct`);
+    }
+
+    const subscriptionName = this.node.id + 'Subscription';
+    if (queue.node.tryFindChild(subscriptionName)) {
       throw new Error(`A subscription between the topic ${this.node.id} and the queue ${queue.node.id} already exists`);
     }
 
     // we use the queue name as the subscription's. there's no meaning to subscribing
     // the same queue twice on the same topic.
-    const sub = new Subscription(this, subscriptionName, {
+    const sub = new Subscription(queue, subscriptionName, {
       topic: this,
       endpoint: queue.queueArn,
       protocol: SubscriptionProtocol.Sqs
@@ -203,13 +207,17 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    * @param lambdaFunction The Lambda function to invoke
    */
   public subscribeLambda(lambdaFunction: lambda.IFunction): Subscription {
-    const subscriptionName = lambdaFunction.id + 'Subscription';
+    if (!cdk.Construct.isConstruct(lambdaFunction)) {
+      throw new Error(`The supplied lambda Function object must be an instance of Construct`);
+    }
 
-    if (this.node.tryFindChild(subscriptionName)) {
+    const subscriptionName = this.node.id + 'Subscription';
+
+    if (lambdaFunction.node.tryFindChild(subscriptionName)) {
       throw new Error(`A subscription between the topic ${this.node.id} and the lambda ${lambdaFunction.id} already exists`);
     }
 
-    const sub = new Subscription(this, subscriptionName, {
+    const sub = new Subscription(lambdaFunction, subscriptionName, {
       topic: this,
       endpoint: lambdaFunction.functionArn,
       protocol: SubscriptionProtocol.Lambda
