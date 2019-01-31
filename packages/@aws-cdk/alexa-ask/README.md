@@ -44,7 +44,7 @@ new AlexaSkillDeployAction(this, 'DeploySkill', {
   stage: deployStage,
   runOrder: 1,
   inputArtifact: sourceAction.outputArtifact,
-  overrideArtifact: executeChangeSetAction.outputArtifact,
+  parameterOverridesArtifact: executeChangeSetAction.outputArtifact,
   clientId: clientId.value,
   clientSecret: clientSecret.value,
   refreshToken: refreshToken.value,

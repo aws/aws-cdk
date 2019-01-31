@@ -35,7 +35,7 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
   /**
    * An optional artifact containing overrides for the skill manifest
    */
-  overrideArtifact?: codepipeline.Artifact;
+  parameterOverridesArtifact?: codepipeline.Artifact;
 }
 
 /**
@@ -60,8 +60,8 @@ export class AlexaSkillDeployAction extends codepipeline.DeployAction {
       },
       ...props,
     });
-    if (props.overrideArtifact) {
-      this.addInputArtifact(props.overrideArtifact);
+    if (props.parameterOverridesArtifact) {
+      this.addInputArtifact(props.parameterOverridesArtifact);
     }
   }
 }
