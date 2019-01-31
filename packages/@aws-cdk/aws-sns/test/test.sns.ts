@@ -149,7 +149,7 @@ export = {
           "TopicName": "topicName"
           }
         },
-        "MyQueueMyTopicSubscriptionEB66AD1B": {
+        "MyTopicMyQueueSubscription3245B11E": {
           "Type": "AWS::SNS::Subscription",
           "Properties": {
           "Endpoint": {
@@ -233,7 +233,7 @@ export = {
           "TopicName": "topicName"
           }
         },
-        "MyFuncMyTopicSubscription708A6535": {
+        "MyTopicMyFuncSubscriptionEAF54A3F": {
           "Type": "AWS::SNS::Subscription",
           "Properties": {
           "Endpoint": {
@@ -368,7 +368,7 @@ export = {
               "TopicName": "topicName"
             }
           },
-          "MyQueueMyTopicSubscriptionEB66AD1B": {
+          "MyTopicMyQueueSubscription3245B11E": {
             "Type": "AWS::SNS::Subscription",
             "Properties": {
               "Endpoint": {
@@ -383,7 +383,7 @@ export = {
               }
             }
           },
-          "MyFuncMyTopicSubscription708A6535": {
+          "MyTopicMyFuncSubscriptionEAF54A3F": {
             "Type": "AWS::SNS::Subscription",
             "Properties": {
               "Endpoint": {
