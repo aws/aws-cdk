@@ -76,8 +76,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param props the optional properties of the new Action
    * @returns the newly created {@link PipelineDeployAction}
    */
-  addToPipelineAsDeploy(stage: actions.IStage, name: string, props?: CommonPipelineDeployActionProps):
-      PipelineDeployAction;
+  addToPipelineAsDeploy(stage: actions.IStage, name: string, props?: CommonPipelineDeployActionProps): PipelineDeployAction;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
