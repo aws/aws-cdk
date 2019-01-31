@@ -153,20 +153,10 @@ export class Task extends State implements INextable {
      * Return the Amazon States Language object for this state
      */
     public toStateJson(): object {
-        const inOutParams = this.renderInputOutput();
-
-        // Mix resource-defined and user-supplied Parameters, user wins.
-        let Parameters;
-        if (this.resourceProps.parameters || inOutParams.Parameters) {
-            Parameters = this.resourceProps.parameters || {};
-            cdk.deepMerge(Parameters, inOutParams.Parameters || {});
-        }
-
         return {
             ...this.renderNextEnd(),
             ...this.renderRetryCatch(),
-            ...inOutParams,
-            Parameters,
+            ...this.renderInputOutput(),
             Type: StateType.Task,
             Comment: this.comment,
             Resource: this.resourceProps.resourceArn,
@@ -312,15 +302,6 @@ export interface StepFunctionsTaskResourceProps {
      * @default No policy roles
      */
     policyStatements?: iam.PolicyStatement[];
-
-    /**
-     * Parameters to pass to the Resource
-     *
-     * Will be merged with parameters that the user supplies.
-     *
-     * @default No parameters
-     */
-    parameters?: {[key: string]: any};
 
     /**
      * Prefix for singular metric names of activity actions

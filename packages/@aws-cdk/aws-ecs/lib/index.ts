@@ -13,6 +13,7 @@ export * from './ec2/ec2-run-task';
 
 export * from './fargate/fargate-service';
 export * from './fargate/fargate-task-definition';
+export * from './fargate/fargate-run-task';
 
 export * from './linux-parameters';
 export * from './load-balanced-service-base';

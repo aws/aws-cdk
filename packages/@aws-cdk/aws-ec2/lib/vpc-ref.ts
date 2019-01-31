@@ -63,7 +63,7 @@ export interface IVpcNetwork extends IConstruct, IDependable {
   /**
    * Return the subnets appropriate for the placement strategy
    */
-  subnets(placement?: VpcPlacementStrategy): IVpcSubnet[];
+  subnets(placement?: VpcPlacementStrategy, required?: SubnetQuery): IVpcSubnet[];
 
   /**
    * Return whether the given subnet is one of this VPC's public subnets.
@@ -90,7 +90,7 @@ export enum SubnetType {
    * This can be good for subnets with RDS or
    * Elasticache endpoints
    */
-  Isolated = 1,
+  Isolated = 'Isolated',
 
   /**
    * Subnet that routes to the internet, but not vice versa.
@@ -104,7 +104,7 @@ export enum SubnetType {
    * experimental cost conscious accounts or accounts where HA outbound
    * traffic is not needed.
    */
-  Private = 2,
+  Private = 'Private',
 
   /**
    * Subnet connected to the Internet
@@ -116,7 +116,7 @@ export enum SubnetType {
    *
    * Public subnets route outbound traffic via an Internet Gateway.
    */
-  Public = 3
+  Public = 'Public'
 }
 
 /**
@@ -192,7 +192,7 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   /**
    * Return the subnets appropriate for the placement strategy
    */
-  public subnets(placement: VpcPlacementStrategy = {}): IVpcSubnet[] {
+  public subnets(placement: VpcPlacementStrategy = {}, required = SubnetQuery.Required): IVpcSubnet[] {
     if (placement.subnetsToUse !== undefined && placement.subnetName !== undefined) {
       throw new Error('At most one of subnetsToUse and subnetName can be supplied');
     }
@@ -210,11 +210,17 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
     // Select by type
     if (placement.subnetsToUse === undefined) { return this.privateSubnets; }
 
-    return {
+    const selected = {
       [SubnetType.Isolated]: this.isolatedSubnets,
       [SubnetType.Private]: this.privateSubnets,
       [SubnetType.Public]: this.publicSubnets,
     }[placement.subnetsToUse];
+
+    if (required === SubnetQuery.Required && selected.length === 0) {
+      throw new Error(`No subnets in this VPC match ${JSON.stringify(placement)}. Please select a different set of subnets.`);
+    }
+
+    return selected;
   }
 
   /**
@@ -334,4 +340,19 @@ class DependencyList implements IDependable {
   public get dependencyElements(): IDependable[] {
     return this.dependenclyElements;
   }
+}
+
+/**
+ * Options for querying subnets
+ */
+export enum SubnetQuery {
+  /**
+   * Require at least one subnet
+   */
+  Required = 'Required',
+
+  /**
+   * Allow a subnet query to match no subnets
+   */
+  AllowNone = 'AllowNone'
 }

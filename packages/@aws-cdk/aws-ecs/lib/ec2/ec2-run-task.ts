@@ -1,16 +1,13 @@
-import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
-import { BaseService, BaseServiceProps } from '../base/base-service';
-import { NetworkMode, TaskDefinition } from '../base/task-definition';
+import { BaseRunTask, BaseRunTaskProps } from '../base/base-run-task';
+import { NetworkMode } from '../base/task-definition';
 import { ICluster } from '../cluster';
-import { CfnService } from '../ecs.generated';
 import { isEc2Compatible } from '../util';
-import { BaseRunTaskProps } from '../base/base-run-task';
+import { BinPackResource, BuiltInAttributes } from './ec2-service';
 
 /**
- * Properties to define an ECS service
+ * Properties to run an ECS task on EC2 in StepFunctionsan ECS
  */
 export interface Ec2RunTaskProps extends BaseRunTaskProps {
   /**
@@ -34,63 +31,37 @@ export interface Ec2RunTaskProps extends BaseRunTaskProps {
   /**
    * Whether to start services on distinct instances
    *
-   * @default true
-   */
-  placeOnDistinctInstances?: boolean;
-
-  /**
-   * Deploy exactly one task on each instance in your cluster.
-   *
-   * When using this strategy, do not specify a desired number of tasks or any
-   * task placement strategies.
-   *
    * @default false
    */
-  daemon?: boolean;
+  placeOnDistinctInstances?: boolean;
 }
 
 /**
- * Start a service on an ECS cluster
+ * Run an ECS/EC2 Task in a StepFunctions workflow
  */
-export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
-  /**
-   * Name of the cluster
-   */
-  public readonly clusterName: string;
-
-  private readonly constraints: CfnService.PlacementConstraintProperty[];
-  private readonly strategies: CfnService.PlacementStrategyProperty[];
-  private readonly daemon: boolean;
+export class Ec2RunTask extends BaseRunTask {
+  private readonly constraints: any[];
+  private readonly strategies: any[];
   private readonly cluster: ICluster;
 
-  constructor(scope: cdk.Construct, id: string, props: Ec2ServiceProps) {
-    if (props.daemon && props.desiredCount !== undefined) {
-      throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
-    }
-
+  constructor(scope: cdk.Construct, id: string, props: Ec2RunTaskProps) {
     if (!isEc2Compatible(props.taskDefinition.compatibility)) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
-    super(scope, id, {
-      ...props,
-      // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
-      desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
-    },
-    {
-      cluster: props.cluster.clusterName,
-      taskDefinition: props.taskDefinition.taskDefinitionArn,
-      launchType: 'EC2',
-      placementConstraints: new cdk.Token(() => this.constraints),
-      placementStrategies: new cdk.Token(() => this.strategies),
-      schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
-    }, props.cluster.clusterName, props.taskDefinition);
+    if (!props.taskDefinition.defaultContainer) {
+      throw new Error('A TaskDefinition must have at least one essential container');
+    }
+
+    super(scope, id, props);
 
     this.cluster = props.cluster;
-    this.clusterName = props.cluster.clusterName;
     this.constraints = [];
     this.strategies = [];
-    this.daemon = props.daemon || false;
+
+    this._parameters.LaunchType = 'EC2';
+    this._parameters.PlacementConstraints = new cdk.Token(() => this.constraints.length > 0 ? this.constraints : undefined);
+    this._parameters.PlacementStrategy = new cdk.Token(() => this.constraints.length > 0 ? this.strategies : undefined);
 
     if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
       this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcPlacement, props.securityGroup);
@@ -100,17 +71,20 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       this.connections.addSecurityGroup(...props.cluster.connections.securityGroups);
     }
 
+    // False for now because I'm getting the error
+    // StateMachine (StateMachine2E01A3A5) Invalid State Machine Definition:
+    // 'SCHEMA_VALIDATION_FAILED: The value for 'PlacementConstraintType' must
+    // be one of the values: [distinctInstance, memberOf] but was
+    // 'distinctInstance' at /States/RunEc2/Parameters' (Service:
+    // AWSStepFunctions; Status Code: 400; Error Code: InvalidDefinition;
+    // Request ID: ad672a90-2558-11e9-ae36-d99a98e3de72)
     if (props.placeOnDistinctInstances) {
-      this.constraints.push({ type: 'distinctInstance' });
-    }
-
-    if (!this.taskDefinition.defaultContainer) {
-      throw new Error('A TaskDefinition must have at least one essential container');
+      this.constraints.push({ Type: 'distinctInstance' });
     }
   }
 
   /**
-   * Place services only on instances matching the given query expression
+   * Place task only on instances matching the given query expression
    *
    * You can specify multiple expressions in one call. The tasks will only
    * be placed on instances matching all expressions.
@@ -119,7 +93,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    */
   public placeOnMemberOf(...expressions: string[]) {
     for (const expression of expressions) {
-      this.constraints.push({ type: 'memberOf', expression });
+      this.constraints.push({ Type: 'memberOf', expression });
     }
   }
 
@@ -133,15 +107,11 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    * @default attributes instanceId
    */
   public placeSpreadAcross(...fields: string[]) {
-    if (this.daemon) {
-      throw new Error("Can't configure spreading placement for a service with daemon=true");
-    }
-
     if (fields.length === 0) {
       fields = [BuiltInAttributes.InstanceId];
     }
     for (const field of fields) {
-      this.strategies.push({ type: 'spread', field });
+      this.strategies.push({ Type: 'spread', Field: field });
     }
   }
 
@@ -151,72 +121,14 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    * This ensures the total consumption of this resource is lowest.
    */
   public placePackedBy(resource: BinPackResource) {
-    if (this.daemon) {
-      throw new Error("Can't configure packing placement for a service with daemon=true");
-    }
-
-    this.strategies.push({ type: 'binpack', field: resource });
+    this.strategies.push({ Type: 'binpack', Field: resource });
   }
 
   /**
    * Place tasks randomly across the available instances.
    */
   public placeRandomly() {
-    if (this.daemon) {
-      throw new Error("Can't configure random placement for a service with daemon=true");
-    }
-
-    this.strategies.push({ type: 'random' });
-  }
-
-  /**
-   * Register this service as the target of a Classic Load Balancer
-   *
-   * Don't call this. Call `loadBalancer.addTarget()` instead.
-   */
-  public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
-      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead.");
-    }
-    if (this.taskDefinition.networkMode === NetworkMode.None) {
-      throw new Error("Cannot use a load balancer if NetworkMode is None. Use Host or AwsVpc instead.");
-    }
-
-    this.loadBalancers.push({
-      loadBalancerName: loadBalancer.loadBalancerName,
-      containerName: this.taskDefinition.defaultContainer!.node.id,
-      containerPort: this.taskDefinition.defaultContainer!.containerPort,
-    });
-  }
-
-  /**
-   * Return the given named metric for this Service
-   */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/ECS',
-      metricName,
-      dimensions: { ClusterName: this.clusterName, ServiceName: this.serviceName },
-      ...props
-    });
-  }
-
-  /**
-   * Metric for cluster Memory utilization
-   *
-   * @default average over 5 minutes
-   */
-  public metricMemoryUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('MemoryUtilization', props );
-  }
-
-  /**
-   * Metric for cluster CPU utilization
-   *
-   * @default average over 5 minutes
-   */
-  public metricCpuUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('CPUUtilization', props);
+    this.strategies.push({ Type: 'random' });
   }
 
   /**
@@ -234,56 +146,8 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
 /**
  * Validate combinations of networking arguments
  */
-function validateNoNetworkingProps(props: Ec2ServiceProps) {
+function validateNoNetworkingProps(props: Ec2RunTaskProps) {
   if (props.vpcPlacement !== undefined || props.securityGroup !== undefined) {
     throw new Error('vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
   }
 }
-
-/**
- * Built-in container instance attributes
- */
-export class BuiltInAttributes {
-  /**
-   * The Instance ID of the instance
-   */
-  public static readonly InstanceId = 'instanceId';
-
-  /**
-   * The AZ where the instance is running
-   */
-  public static readonly AvailabilityZone = 'attribute:ecs.availability-zone';
-
-  /**
-   * The AMI ID of the instance
-   */
-  public static readonly AmiId = 'attribute:ecs.ami-id';
-
-  /**
-   * The instance type
-   */
-  public static readonly InstanceType = 'attribute:ecs.instance-type';
-
-  /**
-   * The OS type
-   *
-   * Either 'linux' or 'windows'.
-   */
-  public static readonly OsType = 'attribute:ecs.os-type';
-}
-
-/**
- * Instance resource used for bin packing
- */
-export enum BinPackResource {
-  /**
-   * Fill up hosts' CPU allocations first
-   */
-  Cpu = 'cpu',
-
-  /**
-   * Fill up hosts' memory allocations first
-   */
-  Memory = 'memory',
-}
-

@@ -18,7 +18,9 @@ new ec2.SecurityGroup(stack, 'SecurityGroup', {
 });
 
 // Try subnet selection
-new cdk.Output(stack, 'PublicSubnets', { value: 'ids:' + vpc.subnets({ subnetsToUse: ec2.SubnetType.Public }).map(s => s.subnetId).join(',') });
-new cdk.Output(stack, 'PrivateSubnets', { value: 'ids:' + vpc.subnets({ subnetsToUse: ec2.SubnetType.Private }).map(s => s.subnetId).join(',') });
+// tslint:disable-next-line:max-line-length
+new cdk.Output(stack, 'PublicSubnets', { value: 'ids:' + vpc.subnets({ subnetsToUse: ec2.SubnetType.Public }, ec2.SubnetQuery.AllowNone).map(s => s.subnetId).join(',') });
+// tslint:disable-next-line:max-line-length
+new cdk.Output(stack, 'PrivateSubnets', { value: 'ids:' + vpc.subnets({ subnetsToUse: ec2.SubnetType.Private }, ec2.SubnetQuery.AllowNone).map(s => s.subnetId).join(',') });
 
 app.run();

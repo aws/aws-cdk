@@ -680,34 +680,6 @@ export = {
             test.done();
         },
     },
-
-    'Task Parameters': {
-        'Combine task and resource parameters, user wins'(test: Test) {
-            // GIVEN
-            const stack = new cdk.Stack();
-            const task = new stepfunctions.Task(stack, 'Task', {
-                resource: new FakeResource({ param1: 'Value1', param3: 'ResourceValue' }),
-                parameters: {
-                    param2: 'Value2',
-                    param3: 'UserValue',
-                }
-            });
-
-            test.deepEqual(render(task), {
-                StartAt: 'Task',
-                States: {
-                    Task: {
-                        End: true,
-                        Parameters: { param1: 'Value1', param2: 'Value2', param3: 'UserValue' },
-                        Type: 'Task',
-                        Resource: 'resource'
-                    }
-                }
-            });
-
-            test.done();
-        },
-    },
 };
 
 class ReusableStateMachine extends stepfunctions.StateMachineFragment {
@@ -749,14 +721,8 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
 }
 
 class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
-    constructor(private readonly parameters?: {[key: string]: any}) {
-    }
-
     public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
-        return {
-            resourceArn: 'resource',
-            parameters: this.parameters,
-        };
+        return { resourceArn: 'resource' };
     }
 }
 

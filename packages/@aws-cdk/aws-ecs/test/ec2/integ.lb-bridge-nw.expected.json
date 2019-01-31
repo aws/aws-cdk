@@ -799,7 +799,11 @@
             }
           }
         ],
-        "PlacementConstraints": [],
+        "PlacementConstraints": [
+          {
+            "Type": "distinctInstance"
+          }
+        ],
         "PlacementStrategies": [],
         "SchedulingStrategy": "REPLICA"
       },

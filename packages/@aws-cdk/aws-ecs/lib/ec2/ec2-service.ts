@@ -41,7 +41,7 @@ export interface Ec2ServiceProps extends BaseServiceProps {
   securityGroup?: ec2.ISecurityGroup;
 
   /**
-   * Whether to start services on distinct instances
+   * Whether to start tasks on distinct instances
    *
    * @default true
    */
@@ -109,7 +109,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       this.connections.addSecurityGroup(...props.cluster.connections.securityGroups);
     }
 
-    if (props.placeOnDistinctInstances) {
+    if (props.placeOnDistinctInstances !== false) {
       this.constraints.push({ type: 'distinctInstance' });
     }
 
@@ -119,7 +119,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   }
 
   /**
-   * Place services only on instances matching the given query expression
+   * Place tasks only on instances matching the given query expression
    *
    * You can specify multiple expressions in one call. The tasks will only
    * be placed on instances matching all expressions.

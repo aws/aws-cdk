@@ -83,6 +83,8 @@ export class Cluster extends cdk.Construct implements ICluster {
       minSize: options.minCapacity,
       maxSize: options.maxCapacity,
       desiredCapacity: options.instanceCount,
+      associatePublicIpAddress: options.associatePublicIpAddress,
+      vpcPlacement: options.vpcPlacement,
     });
 
     this.addAutoScalingGroupCapacity(autoScalingGroup, options);
@@ -399,4 +401,19 @@ export interface AddDefaultAutoScalingGroupOptions extends AddAutoScalingGroupCa
    * @default Same as instanceCount
    */
   minCapacity?: number;
+
+  /**
+   * Whether instances in the Auto Scaling Group should have public
+   * IP addresses associated with them.
+   *
+   * @default Use subnet settings
+   */
+  associatePublicIpAddress?: boolean;
+
+  /**
+   * Where to place instances within the VPC
+   *
+   * @default Private subnets
+   */
+  vpcPlacement?: ec2.VpcPlacementStrategy;
 }

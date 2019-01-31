@@ -391,6 +391,10 @@ export class PolicyStatement extends cdk.Token {
         return undefined;
       }
 
+      if (cdk.unresolved(values)) {
+        return values;
+      }
+
       if (Array.isArray(values)) {
         if (!values || values.length === 0) {
           return undefined;

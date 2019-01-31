@@ -348,6 +348,7 @@ const task = new sns.PublishTask(this, 'Publish', {
     topic,
     message: 'A message to send to the queue'
 });
+```
 
 ### Sending a message to an SQS queue
 
@@ -365,6 +366,28 @@ const task = new sns.SendMessageTask(this, 'Send', {
     // Only for FIFO queues
     messageGroupId: '$.messageGroupId',
 });
+```
+
+### Running an ECS task
+
+Use the `FargateRunTask` or `Ec2RunTask` tasks in the ECS library:
+
+```ts
+const task = new ecs.FargateRunTask(stack, 'RunFargate', {
+  cluster,
+  taskDefinition,
+  containerOverrides: [
+    {
+      containerName: 'TheContainer',
+      environment: [
+        {
+          name: 'CONTAINER_INPUT',
+          valuePath: '$.valueFromStateData'
+        }
+      ]
+    }
+  ]
+}));
 ```
 
 ## State Machine Fragments

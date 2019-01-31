@@ -22,14 +22,14 @@ export interface FargateServiceProps extends BaseServiceProps {
   /**
    * Assign public IP addresses to each task
    *
-   * @default false
+   * @default Use subnet default
    */
   assignPublicIp?: boolean;
 
   /**
    * In what subnets to place the task's ENIs
    *
-   * @default Private subnet if assignPublicIp, public subnets otherwise
+   * @default Private subnets
    */
   vpcPlacement?: ec2.VpcPlacementStrategy;
 
