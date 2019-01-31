@@ -29,6 +29,7 @@
     "@aws-cdk/aws-dynamodb": "^0.22.0",
     "@aws-cdk/aws-ec2": "^0.22.0",
     "@aws-cdk/aws-ecs": "^0.22.0",
+    "@aws-cdk/aws-eks": "^0.22.0",
     "@aws-cdk/aws-elasticloadbalancing": "^0.22.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "^0.22.0",
     "@aws-cdk/aws-iam": "^0.22.0",
