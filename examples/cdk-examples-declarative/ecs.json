@@ -19,7 +19,8 @@
         "compatibility": "Fargate",
         "family": "redis",
         "cpu": "1024",
-        "memoryMiB": "1GB"
+        "memoryMiB": "1GB",
+        "networkMode": "Bridge"
       }
     },
     "ContainerDef": {

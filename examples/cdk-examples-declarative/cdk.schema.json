@@ -38887,6 +38887,23 @@
       ],
       "comment": "@aws-cdk/aws-iam.PolicyPrincipal"
     },
+    "@aws-cdk.aws-iam.CompositePrincipal.<initializer>": {
+      "type": "object",
+      "properties": {
+        "principal": {
+          "$ref": "#/definitions/@aws-cdk.aws-iam.PolicyPrincipal"
+        },
+        "additionalPrincipals": {
+          "$ref": "#/definitions/@aws-cdk.aws-iam.PolicyPrincipal"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "principal",
+        "additionalPrincipals"
+      ],
+      "comment": "@aws-cdk/aws-iam.CompositePrincipal.<initializer>"
+    },
     "@aws-cdk.aws-iam.PolicyDocument.<initializer>": {
       "type": "object",
       "properties": {
@@ -40474,9 +40491,6 @@
     "@aws-cdk.aws-iam.IPrincipal": {
       "anyOf": [
         {
-          "$ref": "#/definitions/@aws-cdk.aws-iam.Group"
-        },
-        {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -40484,9 +40498,6 @@
               "$ref": "#/definitions/@aws-cdk.aws-iam.Group.<initializer>"
             }
           }
-        },
-        {
-          "$ref": "#/definitions/@aws-cdk.aws-iam.LazyRole"
         },
         {
           "type": "object",
@@ -40498,9 +40509,6 @@
           }
         },
         {
-          "$ref": "#/definitions/@aws-cdk.aws-iam.Role"
-        },
-        {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -40508,9 +40516,6 @@
               "$ref": "#/definitions/@aws-cdk.aws-iam.Role.<initializer>"
             }
           }
-        },
-        {
-          "$ref": "#/definitions/@aws-cdk.aws-iam.User"
         },
         {
           "type": "object",
@@ -41675,9 +41680,6 @@
     },
     "@aws-cdk.aws-logs.ILogSubscriptionDestination": {
       "anyOf": [
-        {
-          "$ref": "#/definitions/@aws-cdk.aws-logs.CrossAccountDestination"
-        },
         {
           "type": "object",
           "additionalProperties": false,
@@ -45774,9 +45776,6 @@
           }
         },
         {
-          "$ref": "#/definitions/@aws-cdk.cdk.Secret"
-        },
-        {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -45804,9 +45803,6 @@
           }
         },
         {
-          "$ref": "#/definitions/@aws-cdk.aws-iam.PolicyDocument"
-        },
-        {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -45814,9 +45810,6 @@
               "$ref": "#/definitions/@aws-cdk.aws-iam.PolicyDocument.<initializer>"
             }
           }
-        },
-        {
-          "$ref": "#/definitions/@aws-cdk.aws-iam.PolicyStatement"
         },
         {
           "type": "object",
@@ -46991,9 +46984,6 @@
     "@aws-cdk.aws-autoscaling.IAutoScalingGroup": {
       "anyOf": [
         {
-          "$ref": "#/definitions/@aws-cdk.aws-autoscaling.AutoScalingGroup"
-        },
-        {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -47873,9 +47863,6 @@
     "@aws-cdk.aws-elasticloadbalancing.ILoadBalancerTarget": {
       "anyOf": [
         {
-          "$ref": "#/definitions/@aws-cdk.aws-autoscaling.AutoScalingGroup"
-        },
-        {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -48271,9 +48258,6 @@
     "@aws-cdk.aws-codedeploy.IServerDeploymentConfig": {
       "anyOf": [
         {
-          "$ref": "#/definitions/@aws-cdk.aws-codedeploy.ServerDeploymentConfig"
-        },
-        {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -48346,9 +48330,6 @@
     },
     "@aws-cdk.aws-codedeploy-api.ILoadBalancer": {
       "anyOf": [
-        {
-          "$ref": "#/definitions/@aws-cdk.aws-elasticloadbalancing.LoadBalancer"
-        },
         {
           "type": "object",
           "additionalProperties": false,
