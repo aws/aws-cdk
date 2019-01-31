@@ -324,3 +324,21 @@ export interface StepFunctionsTaskResourceProps {
      */
     metricDimensions?: cloudwatch.DimensionHash;
 }
+
+/**
+ * Generic Task Resource
+ *
+ * Can be used to integrate with resource types for which there is no
+ * specialized CDK class available yet.
+ */
+export class GenericTaskResource implements IStepFunctionsTaskResource {
+    constructor(private readonly arn: string, private readonly policyStatements?: iam.PolicyStatement[]) {
+    }
+
+    public asStepFunctionsTaskResource(_callingTask: Task): StepFunctionsTaskResourceProps {
+        return {
+            resourceArn: this.arn,
+            policyStatements: this.policyStatements
+        };
+    }
+}

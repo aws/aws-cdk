@@ -210,6 +210,11 @@ export interface IStateMachine extends cdk.IConstruct {
     readonly stateMachineArn: string;
 
     /**
+     * The name of the state machine
+     */
+    readonly stateMachineName: string;
+
+    /**
      * Export this state machine
      */
     export(): StateMachineImportProps;
@@ -227,9 +232,12 @@ export interface StateMachineImportProps {
 
 class ImportedStateMachine extends cdk.Construct implements IStateMachine {
     public readonly stateMachineArn: string;
+    public readonly stateMachineName: string;
+
     constructor(scope: cdk.Construct, id: string, private readonly props: StateMachineImportProps) {
         super(scope, id);
         this.stateMachineArn = props.stateMachineArn;
+        this.stateMachineName = cdk.Stack.find(this).parseArn(props.stateMachineArn).resourceName!;
     }
 
     public export() {

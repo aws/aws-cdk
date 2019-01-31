@@ -1,4 +1,5 @@
 export * from './activity';
+export * from './activity-task';
 export * from './types';
 export * from './condition';
 export * from './state-machine';

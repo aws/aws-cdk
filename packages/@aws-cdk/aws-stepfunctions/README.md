@@ -11,16 +11,16 @@ example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
-const submitJob = new stepfunctions.Task(this, 'Submit Job', {
-    resource: submitLambda,
+const submitJob = new lambda.FunctionTask(this, 'Submit Job', {
+    function: submitLambda,
     // Put Lambda's result here in the execution's state object
     resultPath: '$.guid',
 });
 
 const waitX = new stepfunctions.Wait(this, 'Wait X Seconds', { secondsPath: '$.wait_time' });
 
-const getStatus = new stepfunctions.Task(this, 'Get Job Status', {
-    resource: getStatusLambda,
+const getStatus = new lambda.FunctionTask(this, 'Get Job Status', {
+    function: getStatusLambda,
     // Pass just the field named "guid" into the Lambda, put the
     // Lambda's result in a field called "status"
     inputPath: '$.guid',
@@ -32,8 +32,8 @@ const jobFailed = new stepfunctions.Fail(this, 'Job Failed', {
     error: 'DescribeJob returned FAILED',
 });
 
-const finalStatus = new stepfunctions.Task(this, 'Get Final Job Status', {
-    resource: getStatusLambda,
+const finalStatus = new lambda.FunctionTask(this, 'Get Final Job Status', {
+    function: getStatusLambda,
     // Use "guid" field as input, output of the Lambda becomes the
     // entire state machine output.
     inputPath: '$.guid',
@@ -67,9 +67,9 @@ var getStatusLambda = new Function(this, "CheckLambda", new FunctionProps
     // ...
 });
 
-var submitJob = new Task(this, "Submit Job", new TaskProps
+var submitJob = new FunctionTask(this, "Submit Job", new TaskProps
 {
-    Resource = submitLambda,
+    Function = submitLambda,
     ResultPath = "$.guid"
 });
 
@@ -78,9 +78,9 @@ var waitX = new Wait(this, "Wait X Seconds", new WaitProps
     SecondsPath = "$.wait_time"
 });
 
-var getStatus = new Task(this, "Get Job Status", new TaskProps
+var getStatus = new FunctionTask(this, "Get Job Status", new TaskProps
 {
-    Resource = getStatusLambda,
+    Function = getStatusLambda,
     InputPath = "$.guid",
     ResultPath = "$.status"
 });
@@ -91,9 +91,9 @@ var jobFailed = new Fail(this, "Job Failed", new FailProps
     Error = "DescribeJob returned FAILED"
 });
 
-var finalStatus = new Task(this, "Get Final Job Status", new TaskProps
+var finalStatus = new FunctionTask(this, "Get Final Job Status", new TaskProps
 {
-    Resource = getStatusLambda,
+    Function = getStatusLambda,
     // Use "guid" field as input, output of the Lambda becomes the
     // entire state machine output.
     InputPath = "$.guid"
@@ -140,7 +140,7 @@ This library comes with a set of classes that model the [Amazon States
 Language](https://states-language.net/spec.html). The following State classes
 are supported:
 
-* `Task`
+* `Task` (with subclasses for every specific task, see below)
 * `Pass`
 * `Wait`
 * `Choice`
@@ -154,13 +154,21 @@ information, see the States Language spec.
 
 ### Task
 
-A `Task` represents some work that needs to be done. It takes a `resource`
-property that is either a Lambda `Function` or a Step Functions `Activity`
-(A Lambda Function runs your task's code on AWS Lambda, whereas an `Activity`
-is used to run your task's code on an arbitrary compute fleet you manage).
+A `Task` represents some work that needs to be done. There are specific
+subclasses of `Task` which represent integrations with other AWS services
+that Step Functions supports. For example:
+
+* `lambda.FunctionTask` -- call a Lambda Function
+* `stepfunctions.ActivityTask` -- start an Activity (Activities represent a work
+  queue that you poll on a compute fleet you manage yourself)
+* `sns.PublishTask` -- publish a message to an SNS topic
+* `sqs.SendMessageTask` -- send a message to an SQS queue
+* `ecs.FargateRunTask`/`ecs.Ec2RunTask` -- run a container task
+
+#### Lambda example
 
 ```ts
-const task = new stepfunctions.Task(this, 'Invoke The Lambda', {
+const task = new lambda.FunctionTask(this, 'Invoke The Lambda', {
     resource: myLambda,
     inputPath: '$.input',
     timeoutSeconds: 300,
@@ -177,6 +185,60 @@ task.addCatch(errorHandlerState);
 
 // Set the next state
 task.next(nextState);
+```
+
+#### SNS example
+
+```ts
+import sns = require('@aws-cdk/aws-sns');
+
+// ...
+
+const topic = new sns.Topic(this, 'Topic');
+const task = new sns.PublishTask(this, 'Publish', {
+    topic,
+    message: 'A message to send to the queue'
+});
+```
+
+#### SQS example
+
+```ts
+import sqs = require('@aws-cdk/aws-sqs');
+
+// ...
+
+const queue = new sns.Queue(this, 'Queue');
+const task = new sns.SendMessageTask(this, 'Send', {
+    queue,
+    messageBodyPath: '$.message',
+    // Only for FIFO queues
+    messageGroupId: '$.messageGroupId',
+});
+```
+
+#### ECS example
+
+```ts
+import ecs = require('@aws-cdk/aws-ecs');
+
+// See examples in ECS library for initialization of 'cluster' and 'taskDefinition'
+
+const task = new ecs.FargateRunTask(stack, 'RunFargate', {
+  cluster,
+  taskDefinition,
+  containerOverrides: [
+    {
+      containerName: 'TheContainer',
+      environment: [
+        {
+          name: 'CONTAINER_INPUT',
+          valuePath: '$.valueFromStateData'
+        }
+      ]
+    }
+  ]
+}));
 ```
 
 ### Pass
@@ -327,68 +389,6 @@ const definition = stepfunctions.Chain
     // ...
 ```
 
-## Service Integrations
-
-Some packages contain specialized subclasses of `Task` that can be used to
-invoke those services as part of a workflow. The same effect can be
-achieved by using `Task` directly, but these subclasses usually make it
-easier.
-
-### Sending a message to an SNS topic
-
-Use the `PublishTask` task in the SNS library:
-
-```ts
-import sns = require('@aws-cdk/aws-sns');
-
-// ...
-
-const topic = new sns.Topic(this, 'Topic');
-const task = new sns.PublishTask(this, 'Publish', {
-    topic,
-    message: 'A message to send to the queue'
-});
-```
-
-### Sending a message to an SQS queue
-
-Use the `SendMessageTask` task in the SQS library:
-
-```ts
-import sqs = require('@aws-cdk/aws-sqs');
-
-// ...
-
-const queue = new sns.Queue(this, 'Queue');
-const task = new sns.SendMessageTask(this, 'Send', {
-    queue,
-    messageBodyPath: '$.message',
-    // Only for FIFO queues
-    messageGroupId: '$.messageGroupId',
-});
-```
-
-### Running an ECS task
-
-Use the `FargateRunTask` or `Ec2RunTask` tasks in the ECS library:
-
-```ts
-const task = new ecs.FargateRunTask(stack, 'RunFargate', {
-  cluster,
-  taskDefinition,
-  containerOverrides: [
-    {
-      containerName: 'TheContainer',
-      environment: [
-        {
-          name: 'CONTAINER_INPUT',
-          valuePath: '$.valueFromStateData'
-        }
-      ]
-    }
-  ]
-}));
-```
 
 ## State Machine Fragments
 

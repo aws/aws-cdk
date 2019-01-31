@@ -15,7 +15,7 @@ export interface ActivityProps {
 /**
  * Define a new StepFunctions activity
  */
-export class Activity extends cdk.Construct implements IStepFunctionsTaskResource {
+export class Activity extends cdk.Construct implements IActivity {
     public readonly activityArn: string;
     public readonly activityName: string;
 
@@ -143,4 +143,16 @@ export class Activity extends cdk.Construct implements IStepFunctionsTaskResourc
         }
         return name;
     }
+}
+
+export interface IActivity extends cdk.IConstruct, IStepFunctionsTaskResource {
+    /**
+     * The ARN of the activity
+     */
+    readonly activityArn: string;
+
+    /**
+     * The name of the activity
+     */
+    readonly activityName: string;
 }
