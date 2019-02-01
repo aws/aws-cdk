@@ -44,6 +44,7 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
 export class AlexaSkillDeployAction extends codepipeline.DeployAction {
   constructor(scope: cdk.Construct, id: string, props: AlexaSkillDeployActionProps) {
     super(scope, id, {
+      ...props,
       artifactBounds: {
         minInputs: 1,
         maxInputs: 2,
@@ -58,7 +59,6 @@ export class AlexaSkillDeployAction extends codepipeline.DeployAction {
         RefreshToken: props.refreshToken,
         SkillId: props.skillId,
       },
-      ...props,
     });
     if (props.parameterOverridesArtifact) {
       this.addInputArtifact(props.parameterOverridesArtifact);
