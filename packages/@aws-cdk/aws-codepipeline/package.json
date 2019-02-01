@@ -60,6 +60,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-cdk/alexa-ask": "^0.22.0",
     "@aws-cdk/assert": "^0.22.0",
     "@aws-cdk/aws-cloudformation": "^0.22.0",
     "@aws-cdk/aws-cloudtrail": "^0.22.0",
