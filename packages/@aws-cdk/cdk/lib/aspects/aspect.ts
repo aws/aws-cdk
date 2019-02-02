@@ -5,7 +5,7 @@ import { IConstruct } from '../core/construct';
  */
 export interface IAspect {
   /**
-   * All aspects can visit a IConstruct
+   * All aspects can visit an IConstruct
    */
   visit(node: IConstruct): void;
 }

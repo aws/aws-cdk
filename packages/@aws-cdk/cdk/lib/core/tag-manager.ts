@@ -15,7 +15,12 @@ export interface TagProps {
   applyToLaunchedInstances?: boolean;
 
   /**
+   * Higher or equal priority tags will take precedence
    *
+   * Setting priority will enable the user to control tags when they need to not
+   * follow the default precedence pattern of last applied and closest to the
+   * construct in the tree.
+   * @default 0 for Tag 1 for Remove Tag
    */
   priority?: number;
 }
