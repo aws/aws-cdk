@@ -530,8 +530,8 @@
         "booksapibooksGETA776447A",
         "booksapibooksPOSTF6C6559D",
         "booksapibooksbookid5264BCA2",
-        "booksapibooksbookidGETCCE21986",
-        "booksapibooksbookidDELETE214F4059"
+        "booksapibooksbookidDELETE214F4059",
+        "booksapibooksbookidGETCCE21986"
       ]
     },
     "booksapiDeploymentStageprod55D8E03E": {
@@ -837,7 +837,9 @@
               "Ref": "AWS::Region"
             },
             ".",
-            { "Ref": "AWS::URLSuffix" },
+            {
+              "Ref": "AWS::URLSuffix"
+            },
             "/",
             {
               "Ref": "booksapiDeploymentStageprod55D8E03E"
