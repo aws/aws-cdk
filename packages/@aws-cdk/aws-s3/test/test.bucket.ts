@@ -201,10 +201,10 @@ export = {
     test.done();
   },
 
-  'bucket with block public access set to true'(test: Test) {
+  'bucket with block public access set to BlockAll'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: true,
+      blockPublicAccess: s3.BlockPublicAccess.BlockAll,
     });
 
     expect(stack).toMatch({
@@ -216,6 +216,51 @@ export = {
               "BlockPublicAcls": true,
               "BlockPublicPolicy": true,
               "IgnorePublicAcls": true,
+              "RestrictPublicBuckets": true,
+            }
+          },
+        "DeletionPolicy": "Retain",
+        }
+      }
+    });
+    test.done();
+  },
+
+  'bucket with block public access set to BlockAcls'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      blockPublicAccess: s3.BlockPublicAccess.BlockAcls,
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "PublicAccessBlockConfiguration": {
+              "BlockPublicAcls": true,
+              "IgnorePublicAcls": true,
+            }
+          },
+        "DeletionPolicy": "Retain",
+        }
+      }
+    });
+    test.done();
+  },
+
+  'bucket with custom block public access setting'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true })
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "PublicAccessBlockConfiguration": {
               "RestrictPublicBuckets": true,
             }
           },
@@ -1203,15 +1248,15 @@ export = {
       test.done();
     },
 
-    'throws when blockPublicAccess is set to true'(test: Test) {
+    'throws when blockPublicPolicy is set to true'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', {
-        blockPublicAccess: true
+        blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true })
       });
 
       // THEN
-      test.throws(() => bucket.grantPublicAccess(), /blockPublicAccess/);
+      test.throws(() => bucket.grantPublicAccess(), /blockPublicPolicy/);
 
       test.done();
     }
