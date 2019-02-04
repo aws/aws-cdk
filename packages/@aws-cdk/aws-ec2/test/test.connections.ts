@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 
 import {
@@ -8,7 +8,7 @@ import {
   SecurityGroup,
   TcpAllPorts,
   TcpPort,
-  VpcNetwork
+  VpcNetwork,
 } from "../lib";
 
 export = {
@@ -162,6 +162,40 @@ export = {
 
     test.done();
   },
+
+  'can establish cross stack Security Group connections'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    const stack1 = new Stack(app, 'Stack1');
+    const vpc1 = new VpcNetwork(stack1, 'VPC');
+    const sg1 = new SecurityGroup(stack1, 'SecurityGroup', { vpc: vpc1, allowAllOutbound: false });
+
+    const stack2 = new Stack(app, 'Stack2');
+    const vpc2 = new VpcNetwork(stack2, 'VPC');
+    const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
+
+    // WHEN
+    sg2.connections.allowFrom(sg1, new TcpPort(100));
+
+    // THEN -- both rules are in Stack2
+    app.node.prepareTree();
+
+    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: "tcp",
+      Description: "from Stack1SecurityGroupE469094D:100",
+      FromPort: 100,
+      GroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+      SourceSecurityGroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },
+      ToPort: 100
+    }));
+
+    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      bier: 'lekker'
+    }));
+
+    test.done();
+  }
 };
 
 class SomethingConnectable implements IConnectable {
