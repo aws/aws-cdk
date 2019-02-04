@@ -33,8 +33,9 @@ export = {
     const output = new Output(stack, 'MyOutput');
     const child = new Construct(stack, 'MyConstruct');
     const output2 = new Output(child, 'MyOutput2');
-    test.equal(output.export, 'MyStack:MyOutput');
-    test.equal(output2.export, 'MyStack:MyConstructMyOutput255322D15');
+
+    test.equal(stack.node.resolve(output.export), 'MyStack:MyOutput');
+    test.equal(stack.node.resolve(output2.export), 'MyStack:MyConstructMyOutput255322D15');
     test.done();
   },
 
@@ -53,10 +54,10 @@ export = {
     test.done();
   },
 
-  'is stack name is undefined, we will only use the logical ID for the export name'(test: Test) {
+  'if stack name is undefined, we will only use the logical ID for the export name'(test: Test) {
     const stack = new Stack();
     const output = new Output(stack, 'MyOutput');
-    test.equal(output.export, 'MyOutput');
+    test.equal(stack.node.resolve(output.export), 'MyOutput');
     test.done();
   },
 

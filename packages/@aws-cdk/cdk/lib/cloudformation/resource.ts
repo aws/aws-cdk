@@ -117,7 +117,7 @@ export class Resource extends Referenceable {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`, this);
+    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.node.path.replace('/', '.')}.${attributeName}`, this);
   }
 
   /**

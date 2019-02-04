@@ -173,7 +173,7 @@ export class Stack extends Construct {
 
       // merge in all CloudFormation fragments collected from the tree
       for (const fragment of fragments) {
-        merge(template, fragment);
+        this.merge(template, fragment);
       }
 
       // resolve all tokens and remove all empties
@@ -466,23 +466,25 @@ export class Stack extends Construct {
     }
     return false;
   }
-}
 
-function merge(template: any, part: any) {
-  for (const section of Object.keys(part)) {
-    const src = part[section];
+  private merge(template: any, part: any) {
+    part = this.node.resolve(part);
+    // console.error({ merge: { part: JSON.stringify(part) }});
+    for (const section of Object.keys(part)) {
+      const src = part[section];
 
-    // create top-level section if it doesn't exist
-    let dest = template[section];
-    if (!dest) {
-      template[section] = dest = src;
-    } else {
-      // add all entities from source section to destination section
-      for (const id of Object.keys(src)) {
-        if (id in dest) {
-          throw new Error(`section '${section}' already contains '${id}'`);
+      // create top-level section if it doesn't exist
+      let dest = template[section];
+      if (!dest) {
+        template[section] = dest = src;
+      } else {
+        // add all entities from source section to destination section
+        for (const id of Object.keys(src)) {
+          if (id in dest) {
+            throw new Error(`section '${section}' already contains '${id}'`);
+          }
+          dest[id] = src[id];
         }
-        dest[id] = src[id];
       }
     }
   }
@@ -522,9 +524,8 @@ export interface TemplateOptions {
  * @returns The same array as is being collected into
  */
 function stackElements(node: IConstruct, into: StackElement[] = []): StackElement[] {
-  const element = StackElement._asStackElement(node);
-  if (element) {
-    into.push(element);
+  if (StackElement.isStackElement(node)) {
+    into.push(node);
   }
 
   for (const child of node.node.children) {

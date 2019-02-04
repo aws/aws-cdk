@@ -44,8 +44,8 @@ export = {
     const res1 = new Resource(level1, 'childoflevel1', { type: 'MyResourceType1' });
     const res2 = new Resource(level3, 'childoflevel3', { type: 'MyResourceType2' });
 
-    test.equal(withoutHash(res1.logicalId), 'level1childoflevel1');
-    test.equal(withoutHash(res2.logicalId), 'level1level2level3childoflevel3');
+    test.equal(withoutHash(stack.node.resolve(res1.logicalId)), 'level1childoflevel1');
+    test.equal(withoutHash(stack.node.resolve(res2.logicalId)), 'level1level2level3childoflevel3');
 
     test.done();
   },
@@ -327,10 +327,10 @@ export = {
         MyResource:
          { Type: 'R',
          DependsOn:
-          [ 'MyC1R1FB2A562F',
-          'MyC1R2AE2B5066',
-          'MyC2R3809EEAD6',
-          'MyC3C2R38CE6F9F7' ] } } });
+          [ 'MyC1R2AE2B5066',
+            'MyC1R1FB2A562F',
+            'MyC2R3809EEAD6',
+            'MyC3C2R38CE6F9F7' ] } } });
     test.done();
   },
 

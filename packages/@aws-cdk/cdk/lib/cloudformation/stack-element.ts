@@ -1,4 +1,5 @@
 import { Construct, IConstruct, PATH_SEP } from "../core/construct";
+import { Token } from '../core/tokens';
 
 const LOGICAL_ID_MD = 'aws:cdk:logicalId';
 
@@ -15,23 +16,16 @@ export abstract class StackElement extends Construct {
    *
    * @returns The construct as a stack element or undefined if it is not a stack element.
    */
-  public static _asStackElement(construct: IConstruct): StackElement | undefined {
-    if ('logicalId' in construct && 'toCloudFormation' in construct) {
-      return construct as StackElement;
-    } else {
-      return undefined;
-    }
+  public static isStackElement(construct: IConstruct): construct is StackElement {
+    return ('logicalId' in construct && 'toCloudFormation' in construct);
   }
-
-  /**
-   * The logical ID for this CloudFormation stack element
-   */
-  public readonly logicalId: string;
 
   /**
    * The stack this Construct has been made a part of
    */
   protected stack: Stack;
+
+  private _logicalId: string;
 
   /**
    * Creates an entity and binds it to a tree.
@@ -50,7 +44,28 @@ export abstract class StackElement extends Construct {
 
     this.node.addMetadata(LOGICAL_ID_MD, new (require("../core/tokens/token").Token)(() => this.logicalId), this.constructor);
 
-    this.logicalId = this.stack.logicalIds.getLogicalId(this);
+    this._logicalId = this.stack.logicalIds.getLogicalId(this);
+  }
+
+  /**
+   * The logical ID for this CloudFormation stack element. The logical ID of the element
+   * is calculated from the path of the resource node in the construct tree.
+   *
+   * To override this value, use `overrideLogicalId(newLogicalId)`.
+   *
+   * @returns the logical ID as a stringified token. This value will only get
+   * resolved during synthesis.
+   */
+  public get logicalId(): string {
+    return new Token(() => this._logicalId).toString();
+  }
+
+  /**
+   * Overrides the auto-generated logical ID with a specific ID.
+   * @param newLogicalId The new logical ID to use for this stack element.
+   */
+  public overrideLogicalId(newLogicalId: string) {
+    this._logicalId = newLogicalId;
   }
 
   /**
@@ -127,7 +142,7 @@ import { CfnReference } from "./cfn-tokens";
  */
 export class Ref extends CfnReference {
   constructor(element: StackElement) {
-    super({ Ref: element.logicalId }, `${element.logicalId}.Ref`, element);
+    super({ Ref: element.logicalId }, `${element.node.path.replace('/', '.')}.Ref`, element);
   }
 }
 
