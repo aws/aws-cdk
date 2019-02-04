@@ -1,4 +1,4 @@
-import { Construct, IConstruct, Stack } from "@aws-cdk/cdk";
+import { Construct, IConstruct, IDependable, Stack } from "@aws-cdk/cdk";
 import { subnetName } from './util';
 
 export interface IVpcSubnet extends IConstruct {
@@ -11,6 +11,11 @@ export interface IVpcSubnet extends IConstruct {
    * The subnetId for this particular subnet
    */
   readonly subnetId: string;
+
+  /**
+   * Dependable that can be depended upon to force internet connectivity established on the VPC
+   */
+  readonly internetConnectivityEstablished: IDependable;
 
   /**
    * Exports this subnet to another stack.
@@ -48,28 +53,6 @@ export interface IVpcNetwork extends IConstruct {
    * Region where this VPC is located
    */
   readonly vpcRegion: string;
-
-  /**
-   * Take a dependency on internet connectivity having been added to this VPC
-   *
-   * Take a dependency on these if your constructs need an Internet Gateway
-   * added to the VPC before they can be constructed.
-   *
-   * This method is for construct authors; application builders should not
-   * need to call this.
-   */
-  readonly internetDependencies: IConstruct[];
-
-  /**
-   * Constructs that will ensure NAT connectivity has been added to the VPC
-   *
-   * Take a dependency on these if your constructs in private subnets need
-   * internet connectivity before they can be constructed.
-   *
-   * This method is for construct authors; application builders should not
-   * need to call this.
-   */
-  readonly natDependencies: IConstruct[];
 
   /**
    * Return the subnets appropriate for the placement strategy

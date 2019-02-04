@@ -173,14 +173,14 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   public healthCheck: HealthCheck;
 
   /**
-   * List of constructs that need to be depended on to ensure the TargetGroup is associated to a load balancer
-   */
-  public readonly loadBalancerDependencies = new Array<cdk.IConstruct>();
-
-  /**
    * Default port configured for members of this target group
    */
   protected readonly defaultPort: string;
+
+  /**
+   * Configurable dependable with all resources that lead to load balancer attachment
+   */
+  protected readonly loadBalancerAttachedDependencies = new cdk.ConcreteDependable();
 
   /**
    * Attributes of this target group
@@ -240,6 +240,13 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
     this.targetGroupName = this.resource.targetGroupName;
     this.defaultPort = `${additionalProps.port}`;
+  }
+
+  /**
+   * List of constructs that need to be depended on to ensure the TargetGroup is associated to a load balancer
+   */
+  public get loadBalancerAttached(): cdk.IDependable {
+    return this.loadBalancerAttachedDependencies;
   }
 
   /**
@@ -327,7 +334,7 @@ export interface ITargetGroup extends cdk.IConstruct {
   /**
    * Return an object to depend on the listeners added to this target group
    */
-  readonly loadBalancerDependencies: cdk.IConstruct[];
+  readonly loadBalancerAttached: cdk.IDependable;
 
   /**
    * Export this target group

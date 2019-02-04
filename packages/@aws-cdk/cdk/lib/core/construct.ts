@@ -1,6 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
 import { makeUniqueId } from '../util/uniqueid';
+import { IDependable } from './dependency';
 import { Token, unresolved } from './tokens';
 import { resolve } from './tokens/resolve';
 export const PATH_SEP = '/';
@@ -8,7 +9,7 @@ export const PATH_SEP = '/';
 /**
  * Represents a construct.
  */
-export interface IConstruct {
+export interface IConstruct extends IDependable {
   /**
    * The construct node in the scope tree.
    */
@@ -38,7 +39,7 @@ export class ConstructNode {
   private readonly context: { [key: string]: any } = { };
   private readonly _metadata = new Array<MetadataEntry>();
   private readonly references = new Set<Token>();
-  private readonly dependencies = new Set<IConstruct>();
+  private readonly dependencies = new Set<IDependable>();
 
   /**
    * If this is set to 'true'. addChild() calls for this construct and any child
@@ -454,7 +455,7 @@ export class ConstructNode {
    * All constructs in the dependency's scope will be deployed before any
    * construct in this construct's scope.
    */
-  public addDependency(...dependencies: IConstruct[]) {
+  public addDependency(...dependencies: IDependable[]) {
     for (const dependency of dependencies) {
       this.dependencies.add(dependency);
     }
@@ -468,13 +469,15 @@ export class ConstructNode {
     const ret = new Array<Dependency>();
 
     for (const source of this.findAll()) {
-      for (const target of source.node.dependencies) {
-        let foundTargets = found.get(source);
-        if (!foundTargets) { found.set(source, foundTargets = new Set()); }
+      for (const dependable of source.node.dependencies) {
+        for (const target of dependable.dependencyRoots) {
+          let foundTargets = found.get(source);
+          if (!foundTargets) { found.set(source, foundTargets = new Set()); }
 
-        if (!foundTargets.has(target)) {
-          ret.push({ source, target });
-          foundTargets.add(target);
+          if (!foundTargets.has(target)) {
+            ret.push({ source, target });
+            foundTargets.add(target);
+          }
         }
       }
     }
@@ -518,6 +521,14 @@ export class Construct implements IConstruct {
    * Construct node.
    */
   public readonly node: ConstructNode;
+
+  /**
+   * The set of constructs that form the root of this dependable
+   *
+   * All resources under all returned constructs are included in the ordering
+   * dependency.
+   */
+  public readonly dependencyRoots: IConstruct[] = [this];
 
   /**
    * Creates a new construct node.

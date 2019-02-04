@@ -147,13 +147,8 @@ export = {
 };
 
 class ResourceWithLBDependency extends cdk.Resource {
-  constructor(scope: cdk.Construct, id: string, private readonly targetGroup: elbv2.ITargetGroup) {
+  constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
     super(scope, id, { type: 'Test::Resource' });
-  }
-
-  protected prepare() {
-    this.node.addDependency(...this.targetGroup.loadBalancerDependencies);
-
-    super.prepare();
+    this.node.addDependency(targetGroup.loadBalancerAttached);
   }
 }

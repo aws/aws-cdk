@@ -75,7 +75,7 @@ export class NetworkTargetGroup extends TargetGroupBase {
    * Don't call this directly. It will be called by listeners.
    */
   public registerListener(listener: INetworkListener) {
-    this.loadBalancerDependencies.push(listener);
+    this.loadBalancerAttachedDependencies.add(listener);
     this.listeners.push(listener);
   }
 

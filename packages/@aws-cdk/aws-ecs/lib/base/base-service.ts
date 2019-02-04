@@ -87,7 +87,6 @@ export abstract class BaseService extends cdk.Construct
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
-  private targetGroups = new Array<elbv2.ITargetGroup>();
 
   constructor(scope: cdk.Construct,
               id: string,
@@ -197,14 +196,6 @@ export abstract class BaseService extends cdk.Construct
     };
   }
 
-  protected prepare() {
-    // Service creation can only happen after the load balancer has
-    // been associated with our target group(s), so add ordering dependency.
-    for (const targetGroup of this.targetGroups) {
-      this.resource.node.addDependency(...targetGroup.loadBalancerDependencies);
-    }
-  }
-
   /**
    * Shared logic for attaching to an ELBv2
    */
@@ -219,7 +210,9 @@ export abstract class BaseService extends cdk.Construct
       containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
 
-    this.targetGroups.push(targetGroup);
+    // Service creation can only happen after the load balancer has
+    // been associated with our target group(s), so add ordering dependency.
+    this.resource.node.addDependency(targetGroup.loadBalancerAttached);
 
     const targetType = this.taskDefinition.networkMode === NetworkMode.AwsVpc ? elbv2.TargetType.Ip : elbv2.TargetType.Instance;
     return { targetType };

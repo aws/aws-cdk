@@ -147,7 +147,7 @@ export class ApplicationTargetGroup extends TargetGroupBase {
       listener.registerConnectable(member.connectable, member.portRange);
     }
     this.listeners.push(listener);
-    this.loadBalancerDependencies.push(associatingConstruct || listener);
+    this.loadBalancerAttachedDependencies.add(associatingConstruct || listener);
   }
 
   /**

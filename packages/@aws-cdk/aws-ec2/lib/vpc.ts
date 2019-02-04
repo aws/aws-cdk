@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { ConcreteDependable, IDependable } from '@aws-cdk/cdk';
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
@@ -548,6 +549,8 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
    */
   private readonly routeTableId: string;
 
+  private readonly internetDependencies = new ConcreteDependable();
+
   constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
     super(scope, id);
     this.tags = new cdk.TagManager(this, {initialTags: props.tags});
@@ -582,12 +585,17 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
     };
   }
 
+  public get internetConnectivityEstablished(): IDependable {
+    return this.internetDependencies;
+  }
+
   protected addDefaultRouteToNAT(natGatewayId: string) {
-    new CfnRoute(this, `DefaultRoute`, {
+    const route = new CfnRoute(this, `DefaultRoute`, {
       routeTableId: this.routeTableId,
       destinationCidrBlock: '0.0.0.0/0',
       natGatewayId
     });
+    this.internetDependencies.add(route);
   }
 
   /**
@@ -603,6 +611,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
       gatewayId: gateway.ref
     });
     route.node.addDependency(gatewayAttachment);
+    this.internetDependencies.add(route);
   }
 }
 
@@ -610,6 +619,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
  * Represents a public VPC subnet resource
  */
 export class VpcPublicSubnet extends VpcSubnet {
+
   constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
     super(scope, id, props);
   }
@@ -692,6 +702,7 @@ class ImportedVpcNetwork extends VpcNetworkBase {
 }
 
 class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
+  public readonly internetConnectivityEstablished: cdk.IDependable = new cdk.ConcreteDependable();
   public readonly availabilityZone: string;
   public readonly subnetId: string;
 

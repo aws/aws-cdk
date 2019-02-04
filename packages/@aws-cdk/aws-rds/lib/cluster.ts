@@ -207,11 +207,9 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
         dbSubnetGroupName: subnetGroup.ref,
       });
 
-      if (publiclyAccessible) {
-        // We must have a dependency on the NAT gateway provider here to create
-        // things in the right order.
-        instance.node.addDependency(...props.instanceProps.vpc.natDependencies);
-      }
+      // We must have a dependency on the NAT gateway provider here to create
+      // things in the right order.
+      instance.node.addDependency(...subnets.map(s => s.internetConnectivityEstablished));
 
       this.instanceIdentifiers.push(instance.ref);
       this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort));

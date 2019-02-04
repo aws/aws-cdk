@@ -223,6 +223,7 @@ export class RestApi extends cdk.Construct implements IRestApi {
 
     // configure the "root" resource
     this.root = {
+      get dependencyRoots() { return [this]; },
       node: this.node,
       addResource: (pathPart: string, options?: ResourceOptions) => {
         return new Resource(this, pathPart, { parent: this.root, pathPart, ...options });
