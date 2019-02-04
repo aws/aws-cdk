@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **apig:** Move 'selectionPattern` to `integrationResponses` ([#1636](https://github.com/awslabs/aws-cdk/issues/1636)) ([7cdbcec](https://github.com/awslabs/aws-cdk/commit/7cdbcec)), closes [#1608](https://github.com/awslabs/aws-cdk/issues/1608)
+* **apig:** Move `selectionPattern` to `integrationResponses` ([#1636](https://github.com/awslabs/aws-cdk/issues/1636)) ([7cdbcec](https://github.com/awslabs/aws-cdk/commit/7cdbcec)), closes [#1608](https://github.com/awslabs/aws-cdk/issues/1608)
 * **aws-cdk:** Improvements to IAM diff rendering ([#1542](https://github.com/awslabs/aws-cdk/issues/1542)) ([3270b47](https://github.com/awslabs/aws-cdk/commit/3270b47)), closes [#1458](https://github.com/awslabs/aws-cdk/issues/1458) [#1495](https://github.com/awslabs/aws-cdk/issues/1495) [#1549](https://github.com/awslabs/aws-cdk/issues/1549)
 * **aws-cdk:** Java init template works on Windows ([#1503](https://github.com/awslabs/aws-cdk/issues/1503)) ([24f521a](https://github.com/awslabs/aws-cdk/commit/24f521a))
 * **sns:** create subscription object under subscriber ([5c4a9e5](https://github.com/awslabs/aws-cdk/commit/5c4a9e5)), closes [#1643](https://github.com/awslabs/aws-cdk/issues/1643) [#1534](https://github.com/awslabs/aws-cdk/issues/1534)
