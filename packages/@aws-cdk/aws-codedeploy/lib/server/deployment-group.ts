@@ -1,15 +1,17 @@
-import autoscaling = require("@aws-cdk/aws-autoscaling");
-import cloudwatch = require("@aws-cdk/aws-cloudwatch");
-import codedeploylb = require("@aws-cdk/aws-codedeploy-api");
-import codepipeline = require("@aws-cdk/aws-codepipeline-api");
-import ec2 = require("@aws-cdk/aws-ec2");
+import autoscaling = require('@aws-cdk/aws-autoscaling');
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import codedeploylb = require('@aws-cdk/aws-codedeploy-api');
+import codepipeline = require('@aws-cdk/aws-codepipeline-api');
+import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import s3 = require("@aws-cdk/aws-s3");
-import cdk = require("@aws-cdk/cdk");
-import { IServerApplication, ServerApplication } from "./application";
-import { CfnDeploymentGroup } from './codedeploy.generated';
-import { IServerDeploymentConfig, ServerDeploymentConfig } from "./deployment-config";
-import { CommonPipelineDeployActionProps, PipelineDeployAction } from "./pipeline-action";
+import s3 = require('@aws-cdk/aws-s3');
+import cdk = require('@aws-cdk/cdk');
+import { CfnDeploymentGroup } from '../codedeploy.generated';
+import { CommonPipelineDeployActionProps, PipelineDeployAction } from '../pipeline-action';
+import { AutoRollbackConfig } from '../rollback-config';
+import { deploymentGroupNameToArn, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
+import { IServerApplication, ServerApplication } from './application';
+import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
 
 export interface IServerDeploymentGroup extends cdk.IConstruct {
   readonly application: IServerApplication;
@@ -149,33 +151,6 @@ export class InstanceTagSet {
 }
 
 /**
- * The configuration for automatically rolling back deployments in a given Deployment Group.
- */
-export interface AutoRollbackConfig {
-  /**
-   * Whether to automatically roll back a deployment that fails.
-   *
-   * @default true
-   */
-  failedDeployment?: boolean;
-
-  /**
-   * Whether to automatically roll back a deployment that was manually stopped.
-   *
-   * @default false
-   */
-  stoppedDeployment?: boolean;
-
-  /**
-   * Whether to automatically roll back a deployment during which one of the configured
-   * CloudWatch alarms for this Deployment Group went off.
-   *
-   * @default true if you've provided any Alarms with the `alarms` property, false otherwise
-   */
-  deploymentInAlarm?: boolean;
-}
-
-/**
  * Construction properties for {@link ServerDeploymentGroup}.
  */
 export interface ServerDeploymentGroupProps {
@@ -279,7 +254,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    * Import an EC2/on-premise Deployment Group defined either outside the CDK,
    * or in a different CDK Stack and exported using the {@link #export} method.
    *
-   * @param parent the parent Construct for this new Construct
+   * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
    * @param props the properties of the referenced Deployment Group
    * @returns a Construct representing a reference to an existing Deployment Group
@@ -338,8 +313,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
         },
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
-      alarmConfiguration: new cdk.Token(() => this.renderAlarmConfiguration(props.ignorePollAlarmsFailure)),
-      autoRollbackConfiguration: new cdk.Token(() => this.renderAutoRollbackConfiguration(props.autoRollback)),
+      alarmConfiguration: new cdk.Token(() => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure)),
+      autoRollbackConfiguration: new cdk.Token(() => renderAutoRollbackConfiguration(this.alarms, props.autoRollback)),
     });
 
     this.deploymentGroupName = resource.deploymentGroupName;
@@ -513,58 +488,4 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     }
     return tagsInGroup;
   }
-
-  private renderAlarmConfiguration(ignorePollAlarmFailure?: boolean):
-      CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
-    return this.alarms.length === 0
-      ? undefined
-      : {
-        alarms: this.alarms.map(a => ({ name: a.alarmName })),
-        enabled: true,
-        ignorePollAlarmFailure,
-      };
-  }
-
-  private renderAutoRollbackConfiguration(autoRollbackConfig: AutoRollbackConfig = {}):
-      CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
-    const events = new Array<string>();
-
-    // we roll back failed deployments by default
-    if (autoRollbackConfig.failedDeployment !== false) {
-      events.push('DEPLOYMENT_FAILURE');
-    }
-
-    // we _do not_ roll back stopped deployments by default
-    if (autoRollbackConfig.stoppedDeployment === true) {
-      events.push('DEPLOYMENT_STOP_ON_REQUEST');
-    }
-
-    // we _do not_ roll back alarm-triggering deployments by default
-    // unless the Deployment Group has at least one alarm
-    if (autoRollbackConfig.deploymentInAlarm !== false) {
-      if (this.alarms.length > 0) {
-        events.push('DEPLOYMENT_STOP_ON_ALARM');
-      } else if (autoRollbackConfig.deploymentInAlarm === true) {
-        throw new Error(
-          "The auto-rollback setting 'deploymentInAlarm' does not have any effect unless you associate " +
-          "at least one CloudWatch alarm with the Deployment Group");
-      }
-    }
-
-    return events.length > 0
-      ? {
-        enabled: true,
-        events,
-      }
-      : undefined;
-  }
-}
-
-function deploymentGroupNameToArn(applicationName: string, deploymentGroupName: string, scope: cdk.IConstruct): string {
-  return cdk.Stack.find(scope).formatArn({
-    service: 'codedeploy',
-    resource: 'deploymentgroup',
-    resourceName: `${applicationName}/${deploymentGroupName}`,
-    sep: ':',
-  });
 }

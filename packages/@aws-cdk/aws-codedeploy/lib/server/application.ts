@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
-import { CfnApplication } from './codedeploy.generated';
+import { CfnApplication } from '../codedeploy.generated';
+import { applicationNameToArn } from '../utils';
 
 /**
  * Represents a reference to a CodeDeploy Application deploying to EC2/on-premise instances.
@@ -13,7 +14,6 @@ import { CfnApplication } from './codedeploy.generated';
  */
 export interface IServerApplication extends cdk.IConstruct {
   readonly applicationArn: string;
-
   readonly applicationName: string;
 
   export(): ServerApplicationImportProps;
@@ -44,7 +44,7 @@ class ImportedServerApplication extends cdk.Construct implements IServerApplicat
     this.applicationArn = applicationNameToArn(this.applicationName, this);
   }
 
-  public export() {
+  public export(): ServerApplicationImportProps {
     return this.props;
   }
 }
@@ -69,7 +69,7 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
    * Import an Application defined either outside the CDK,
    * or in a different CDK Stack and exported using the {@link #export} method.
    *
-   * @param parent the parent Construct for this new Construct
+   * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
    * @param props the properties of the referenced Application
    * @returns a Construct representing a reference to an existing Application
@@ -81,11 +81,11 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
-  constructor(scope: cdk.Construct, id: string, props?: ServerApplicationProps) {
+  constructor(scope: cdk.Construct, id: string, props: ServerApplicationProps = {}) {
     super(scope, id);
 
     const resource = new CfnApplication(this, 'Resource', {
-      applicationName: props && props.applicationName,
+      applicationName: props.applicationName,
       computePlatform: 'Server',
     });
 
@@ -98,13 +98,4 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
       applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
     };
   }
-}
-
-function applicationNameToArn(applicationName: string, scope: cdk.IConstruct): string {
-  return cdk.Stack.find(scope).formatArn({
-    service: 'codedeploy',
-    resource: 'application',
-    resourceName: applicationName,
-    sep: ':',
-  });
 }
