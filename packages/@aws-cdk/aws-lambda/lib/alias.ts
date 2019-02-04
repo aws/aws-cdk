@@ -85,7 +85,7 @@ export class Alias extends FunctionBase {
 
     this.underlyingLambda = props.version.lambda;
 
-    const alias = new CfnAlias(this, 'Resource', {
+    new CfnAlias(this, 'Resource', {
       name: props.aliasName,
       description: props.description,
       functionName: this.underlyingLambda.functionName,
@@ -95,8 +95,8 @@ export class Alias extends FunctionBase {
 
     // Not actually the name, but an ARN can be used in all places
     // where the name is expected, and an ARN can refer to an Alias.
-    this.functionName = alias.ref;
-    this.functionArn = alias.aliasArn;
+    this.functionName = `${props.version.lambda.functionArn}:${props.aliasName}`;
+    this.functionArn = `${props.version.lambda.functionArn}:${props.aliasName}`;
   }
 
   public export(): FunctionImportProps {

@@ -69,6 +69,7 @@
     "@aws-cdk/aws-codedeploy-api": "^0.23.0",
     "@aws-cdk/aws-codepipeline-api": "^0.23.0",
     "@aws-cdk/aws-iam": "^0.23.0",
+    "@aws-cdk/aws-lambda": "^0.23.0",
     "@aws-cdk/aws-s3": "^0.23.0",
     "@aws-cdk/cdk": "^0.23.0"
   },
@@ -79,6 +80,7 @@
     "@aws-cdk/aws-codedeploy-api": "^0.23.0",
     "@aws-cdk/aws-codepipeline-api": "^0.23.0",
     "@aws-cdk/aws-iam": "^0.23.0",
+    "@aws-cdk/aws-lambda": "^0.23.0",
     "@aws-cdk/cdk": "^0.23.0"
   },
   "engines": {

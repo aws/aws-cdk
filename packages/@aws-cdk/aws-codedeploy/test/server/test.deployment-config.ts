@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import codedeploy = require('../lib');
+import codedeploy = require('../../lib');
 
 // tslint:disable:object-literal-key-quotes
 
