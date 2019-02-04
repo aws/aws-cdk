@@ -294,6 +294,11 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
   protected abstract autoCreatePolicy = false;
 
   /**
+   * Whether all block public access settings are enabled
+   */
+  protected abstract publicAccessBlocked?: boolean;
+
+  /**
    * Exports this bucket from the stack.
    */
   public abstract export(): BucketImportProps;
@@ -514,6 +519,10 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
    */
   public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]): iam.PolicyStatement {
+    if (this.publicAccessBlocked) {
+      throw new Error('Cannot grant public access when block public access settings are enabled');
+    }
+
     allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
 
     const statement = new iam.PolicyStatement()
@@ -623,6 +632,13 @@ export interface BucketProps {
    * Similar to calling `bucket.grantPublicAccess()`
    */
   publicReadAccess?: boolean;
+
+  /**
+   * Enables all block public access settings on the bucket.
+   *
+   * @default false
+   */
+  blockPublicAccess?: boolean;
 }
 
 /**
@@ -652,6 +668,7 @@ export class Bucket extends BucketBase {
   public readonly encryptionKey?: kms.IEncryptionKey;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
+  protected publicAccessBlocked?: boolean;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
@@ -666,7 +683,15 @@ export class Bucket extends BucketBase {
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: new cdk.Token(() => this.parseLifecycleConfiguration()),
-      websiteConfiguration: this.renderWebsiteConfiguration(props)
+      websiteConfiguration: this.renderWebsiteConfiguration(props),
+      publicAccessBlockConfiguration: props.blockPublicAccess
+        ? {
+          blockPublicAcls: true,
+          blockPublicPolicy: true,
+          ignorePublicAcls: true,
+          restrictPublicBuckets: true
+        }
+        : undefined
     });
 
     cdk.applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : cdk.RemovalPolicy.Orphan);
@@ -1042,6 +1067,8 @@ class ImportedBucket extends BucketBase {
   public policy?: BucketPolicy;
   protected autoCreatePolicy: boolean;
 
+  protected publicAccessBlocked: boolean;
+
   constructor(scope: cdk.Construct, id: string, private readonly props: BucketImportProps) {
     super(scope, id);
 
@@ -1059,6 +1086,7 @@ class ImportedBucket extends BucketBase {
       ? false
       : props.bucketWebsiteNewUrlFormat;
     this.policy = undefined;
+    this.publicAccessBlocked = false;
   }
 
   /**

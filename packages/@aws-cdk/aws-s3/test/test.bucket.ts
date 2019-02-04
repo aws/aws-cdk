@@ -201,6 +201,31 @@ export = {
     test.done();
   },
 
+  'bucket with block public access set to true'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      blockPublicAccess: true,
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "PublicAccessBlockConfiguration": {
+              "BlockPublicAcls": true,
+              "BlockPublicPolicy": true,
+              "IgnorePublicAcls": true,
+              "RestrictPublicBuckets": true,
+            }
+          },
+        "DeletionPolicy": "Retain",
+        }
+      }
+    });
+    test.done();
+  },
+
   'permissions': {
 
     'addPermission creates a bucket policy'(test: Test) {
