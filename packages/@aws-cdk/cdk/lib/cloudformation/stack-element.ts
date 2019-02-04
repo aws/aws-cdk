@@ -142,7 +142,7 @@ import { CfnReference } from "./cfn-tokens";
  */
 export class Ref extends CfnReference {
   constructor(element: StackElement) {
-    super({ Ref: element.logicalId }, `${element.node.path.replace('/', '.')}.Ref`, element);
+    super({ Ref: element.logicalId }, 'Ref', element);
   }
 }
 

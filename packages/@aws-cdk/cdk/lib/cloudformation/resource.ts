@@ -117,7 +117,7 @@ export class Resource extends Referenceable {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.node.path.replace('/', '.')}.${attributeName}`, this);
+    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, attributeName, this);
   }
 
   /**
@@ -305,6 +305,7 @@ export function deepMerge(target: any, source: any) {
 
   return target;
 }
+
 function sortedSet<T>(xs: Set<T>): T[] {
   const ret = Array.from(xs);
   ret.sort();
