@@ -31,7 +31,7 @@ class ResourceOverridesExample extends cdk.Stack {
         // This is how to specify resource options such as dependencies, metadata, update policy
         //
 
-        bucketResource.addDependency(otherBucket.node.findChild('Resource') as cdk.Resource);
+        bucketResource.node.addDependency(otherBucket.node.findChild('Resource') as cdk.Resource);
         bucketResource.options.metadata = { MetadataKey: 'MetadataValue' };
         bucketResource.options.updatePolicy = {
             autoScalingRollingUpdate: {

@@ -1,4 +1,4 @@
-import { Construct, IDependable, Token } from '@aws-cdk/cdk';
+import { Construct, Token } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
@@ -83,7 +83,7 @@ export interface PolicyProps {
  * Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
-export class Policy extends Construct implements IDependable {
+export class Policy extends Construct {
   /**
    * The policy document.
    */
@@ -93,11 +93,6 @@ export class Policy extends Construct implements IDependable {
    * The name of this policy.
    */
   public readonly policyName: string;
-
-  /**
-   * Lists all the elements consumers should "depend-on".
-   */
-  public readonly dependencyElements: IDependable[];
 
   private readonly roles = new Array<IRole>();
   private readonly users = new Array<User>();
@@ -118,7 +113,6 @@ export class Policy extends Construct implements IDependable {
     // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
     // that shouod be sufficient to ensure uniqueness within a principal.
     this.policyName = props.policyName || generatePolicyName(resource.logicalId);
-    this.dependencyElements = [ resource ];
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));
