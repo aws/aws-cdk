@@ -105,7 +105,7 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
    * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK,
    * or in a different CDK Stack and exported using the {@link #export} method.
    *
-   * @param parent the parent Construct for this new Construct
+   * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
    * @param props the properties of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration

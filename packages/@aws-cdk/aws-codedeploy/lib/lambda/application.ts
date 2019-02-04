@@ -39,7 +39,7 @@ export class LambdaApplication extends cdk.Construct implements ILambdaApplicati
    * Import an Application defined either outside the CDK,
    * or in a different CDK Stack and exported using the {@link ILambdaApplication#export} method.
    *
-   * @param parent the parent Construct for this new Construct
+   * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
    * @param props the properties of the referenced Application
    * @returns a Construct representing a reference to an existing Application

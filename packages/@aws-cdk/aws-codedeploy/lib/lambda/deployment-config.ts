@@ -80,7 +80,7 @@ export class LambdaDeploymentConfig {
   /**
    * Import a custom Deployment Configuration for a Lambda Deployment Group defined outside the CDK.
    *
-   * @param parent the parent Construct for this new Construct
+   * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
    * @param props the properties of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
