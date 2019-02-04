@@ -231,7 +231,7 @@ const bucket = new Bucket(this, 'MyBlockedBucket', {
 Alternatively, specify the settings manually:
 ```ts
 const bucket = new Bucket(this, 'MyBlockedBucket', {
-    blockPublicAccess: new BlockPublicAcces({ blockPublicPolicy: true })
+    blockPublicAccess: new BlockPublicAccess({ blockPublicPolicy: true })
 });
 ```
 
