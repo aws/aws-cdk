@@ -232,7 +232,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       associatePublicIpAddress: props.associatePublicIpAddress,
     });
 
-    launchConfig.addDependency(this.role);
+    launchConfig.node.addDependency(this.role);
 
     const desiredCapacity =
         (props.desiredCapacity !== undefined ? props.desiredCapacity :
@@ -388,9 +388,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       ...props
     });
 
-    // Target tracking policy can only be created after the load balancer has been
-    // attached to the targetgroup (because we need its ARN).
-    policy.addDependency(this.albTargetGroup.loadBalancerDependency());
+    policy.node.addDependency(this.albTargetGroup.loadBalancerAttached);
     return policy;
   }
 

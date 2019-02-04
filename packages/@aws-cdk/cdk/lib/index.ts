@@ -4,6 +4,7 @@ export * from './aspects/tag-aspect';
 export * from './core/construct';
 export * from './core/tokens';
 export * from './core/tag-manager';
+export * from './core/dependency';
 
 export * from './cloudformation/cloudformation-json';
 export * from './cloudformation/cfn-tokens';

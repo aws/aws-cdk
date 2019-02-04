@@ -222,7 +222,7 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
     });
     if (props.internetFacing) {
-      this.elb.addDependency(props.vpc.internetDependency());
+      this.elb.node.addDependency(...subnets.map(s => s.internetConnectivityEstablished));
     }
 
     ifUndefined(props.listeners, []).forEach(b => this.addListener(b));

@@ -1,11 +1,11 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Construct } from '../core/construct';
+import { Construct, IConstruct } from '../core/construct';
 import { TagManager } from '../core/tag-manager';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CfnReference } from './cfn-tokens';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { IDependable, Referenceable, StackElement } from './stack-element';
+import { Referenceable } from './stack-element';
 
 export interface ResourceProps {
   /**
@@ -46,17 +46,17 @@ export class Resource extends Referenceable {
   }
 
   /**
-   * determines if the reosurce is taggable
+   * Check whether the given construct is a Resource
    */
-  public static isTaggable(resource: any): resource is ITaggable {
-    return resource.tags !== undefined;
+  public static isResource(construct: IConstruct): construct is Resource {
+    return (construct as any).resourceType !== undefined;
   }
 
   /**
-   * determines if the reosurce is taggable
+   * Check whether the given construct is Taggable
    */
-  public static isResource(resource: any): resource is Resource {
-    return resource.resourceType !== undefined;
+  public static isTaggable(construct: IConstruct): construct is ITaggable {
+    return (construct as any).tags !== undefined;
   }
 
   /**
@@ -93,7 +93,12 @@ export class Resource extends Referenceable {
    */
   private readonly rawOverrides: any = { };
 
-  private dependsOn = new Array<IDependable>();
+  /**
+   * Logical IDs of dependencies.
+   *
+   * Is filled during prepare().
+   */
+  private readonly dependsOn = new Set<string>();
 
   /**
    * Creates a resource construct.
@@ -127,14 +132,6 @@ export class Resource extends Referenceable {
    */
   public getAtt(attributeName: string) {
     return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`, this);
-  }
-
-  /**
-   * Adds a dependency on another resource.
-   * @param other The other resource.
-   */
-  public addDependency(...other: IDependable[]) {
-    this.dependsOn.push(...other);
   }
 
   /**
@@ -196,6 +193,10 @@ export class Resource extends Referenceable {
     this.addPropertyOverride(propertyPath, undefined);
   }
 
+  public addDependsOn(resource: Resource) {
+    this.dependsOn.add(resource.logicalId);
+  }
+
   /**
    * Emits CloudFormation for this resource.
    */
@@ -213,7 +214,8 @@ export class Resource extends Referenceable {
           [this.logicalId]: deepMerge({
             Type: this.resourceType,
             Properties: ignoreEmpty(this, properties),
-            DependsOn: ignoreEmpty(this, this.renderDependsOn()),
+            // Return a sorted set of dependencies to be consistent across tests
+            DependsOn: ignoreEmpty(this, sortedSet(this.dependsOn)),
             CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
             UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.options.updateReplacePolicy),
@@ -239,30 +241,6 @@ export class Resource extends Referenceable {
     return properties;
   }
 
-  private renderDependsOn() {
-    const logicalIDs = new Set<string>();
-    for (const d of this.dependsOn) {
-      addDependency(d);
-    }
-
-    return Array.from(logicalIDs);
-
-    function addDependency(d: IDependable) {
-      d.dependencyElements.forEach(dep => {
-        const logicalId = (dep as StackElement).logicalId;
-        if (logicalId) {
-          logicalIDs.add(logicalId);
-        }
-      });
-
-      // break if dependencyElements include only 'd', which means we reached a terminal.
-      if (d.dependencyElements.length === 1 && d.dependencyElements[0] === d) {
-        return;
-      } else {
-        d.dependencyElements.forEach(dep => addDependency(dep));
-      }
-    }
-  }
 }
 
 export enum TagType {
@@ -351,4 +329,9 @@ export function deepMerge(target: any, source: any) {
   }
 
   return target;
+}
+function sortedSet<T>(xs: Set<T>): T[] {
+  const ret = Array.from(xs);
+  ret.sort();
+  return ret;
 }

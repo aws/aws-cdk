@@ -41,6 +41,7 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
     propertyDiffs = diffKeyedEntities(oldValue!.Properties,
                       newValue!.Properties,
                       (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
+
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;
   }
