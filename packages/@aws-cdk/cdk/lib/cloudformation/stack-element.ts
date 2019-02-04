@@ -21,6 +21,17 @@ export abstract class StackElement extends Construct {
   }
 
   /**
+   * The logical ID for this CloudFormation stack element. The logical ID of the element
+   * is calculated from the path of the resource node in the construct tree.
+   *
+   * To override this value, use `overrideLogicalId(newLogicalId)`.
+   *
+   * @returns the logical ID as a stringified token. This value will only get
+   * resolved during synthesis.
+   */
+  public readonly logicalId: string;
+
+  /**
    * The stack this Construct has been made a part of
    */
   protected stack: Stack;
@@ -45,19 +56,7 @@ export abstract class StackElement extends Construct {
     this.node.addMetadata(LOGICAL_ID_MD, new (require("../core/tokens/token").Token)(() => this.logicalId), this.constructor);
 
     this._logicalId = this.stack.logicalIds.getLogicalId(this);
-  }
-
-  /**
-   * The logical ID for this CloudFormation stack element. The logical ID of the element
-   * is calculated from the path of the resource node in the construct tree.
-   *
-   * To override this value, use `overrideLogicalId(newLogicalId)`.
-   *
-   * @returns the logical ID as a stringified token. This value will only get
-   * resolved during synthesis.
-   */
-  public get logicalId(): string {
-    return new Token(() => this._logicalId).toString();
+    this.logicalId = new Token(() => this._logicalId).toString();
   }
 
   /**

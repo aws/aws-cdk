@@ -152,6 +152,39 @@ export = {
     test.done();
   },
 
+  'if addDependency is called multiple times with the same resource, it will only appear once'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const r1 = new Counter(stack, 'Counter1', { Count: 1 });
+    const dependent = new Resource(stack, 'Dependent', { type: 'R' });
+
+    // WHEN
+    dependent.addDependsOn(r1);
+    dependent.addDependsOn(r1);
+    dependent.addDependsOn(r1);
+    dependent.addDependsOn(r1);
+    dependent.addDependsOn(r1);
+
+    // THEN
+    test.deepEqual(stack.toCloudFormation(), {
+      Resources: {
+        Counter1: {
+          Type: "My::Counter",
+          Properties: {
+            Count: 1
+          }
+        },
+        Dependent: {
+          Type: "R",
+          DependsOn: [
+            "Counter1"
+          ]
+        }
+      }
+    });
+    test.done();
+  },
+
   'conditions can be attached to a resource'(test: Test) {
     const stack = new Stack();
     const r1 = new Resource(stack, 'Resource', { type: 'Type' });
@@ -327,10 +360,10 @@ export = {
         MyResource:
          { Type: 'R',
          DependsOn:
-          [ 'MyC1R2AE2B5066',
-            'MyC1R1FB2A562F',
-            'MyC2R3809EEAD6',
-            'MyC3C2R38CE6F9F7' ] } } });
+          [ 'MyC1R1FB2A562F',
+          'MyC1R2AE2B5066',
+          'MyC2R3809EEAD6',
+          'MyC3C2R38CE6F9F7' ] } } });
     test.done();
   },
 
