@@ -3,27 +3,6 @@ import { IConstruct } from '../core/construct';
 import { TagProps } from '../core/tag-manager';
 import { IAspect } from './aspect';
 
-export interface TagAspectProps extends TagProps {
-  /**
-   * An array of Resource Types that will receive this tag
-   *
-   * An empty array will match any Resource. A non-empty array will apply this
-   * tag only to Resource types that are included in this array.
-   * @default []
-   */
-  includeResourceTypes?: string[];
-
-  /**
-   * An array of Resource Types that will not receive this tag
-   *
-   * An empty array will allow this tag to be applied to all resources. A
-   * non-empty array will apply this tag only if the Resource type is not in
-   * this array.
-   * @default []
-   */
-  excludeResourceTypes?: string[];
-}
-
 /**
  * The common functionality for Tag and Remove Tag Aspects
  */
@@ -37,7 +16,7 @@ export abstract class TagBase implements IAspect {
   private readonly includeResourceTypes: string[];
   private readonly excludeResourceTypes: string[];
 
-  constructor(key: string, props: TagAspectProps = {}) {
+  constructor(key: string, props: TagProps = {}) {
     this.key = key;
     this.includeResourceTypes = props.includeResourceTypes || [];
     this.excludeResourceTypes = props.excludeResourceTypes || [];
@@ -77,7 +56,7 @@ export class Tag extends TagBase {
   private readonly applyToLaunchedInstances: boolean;
   private readonly priority: number;
 
-  constructor(key: string, value: string, props: TagAspectProps = {}) {
+  constructor(key: string, value: string, props: TagProps = {}) {
     super(key, {...props});
     this.applyToLaunchedInstances = props.applyToLaunchedInstances !== false;
     this.priority = props.priority === undefined ? 0 : props.priority;
@@ -102,7 +81,7 @@ export class RemoveTag extends TagBase {
 
   private readonly priority: number;
 
-  constructor(key: string, props: TagAspectProps = {}) {
+  constructor(key: string, props: TagProps = {}) {
     super(key, props);
     this.priority = props.priority === undefined ? 1 : props.priority;
   }
