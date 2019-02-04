@@ -6,6 +6,8 @@ import { Environment } from './environment';
 import { Program } from './program';
 import { validateAndThrow } from './util/validation';
 
+const isAppSymbol = Symbol.for('aws-cdk:isApp');
+
 /**
  * Properties for an App
  */
@@ -51,7 +53,7 @@ export class App extends Construct {
    * True if the given construct is an App object
    */
   public static isApp(construct: IConstruct): construct is App {
-    return (construct as any).defaultAppName !== undefined;
+    return (construct as any)[isAppSymbol] === true;
   }
 
   /**
@@ -87,6 +89,8 @@ export class App extends Construct {
     this.defaultAppName = id === undefined;
     this.validated = false;
     this.prepared = false;
+
+    Object.defineProperty(this, isAppSymbol, { value: true });
   }
 
   private get stacks() {
