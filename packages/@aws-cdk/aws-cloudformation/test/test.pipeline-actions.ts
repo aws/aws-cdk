@@ -309,6 +309,7 @@ class PipelineDouble extends cdk.Construct implements cpapi.IPipeline {
 }
 
 class StageDouble implements cpapi.IStage, cpapi.IInternalStage {
+  public readonly dependencyRoots: cdk.IConstruct[] = [this];
   public readonly name: string;
   public readonly pipeline: cpapi.IPipeline;
   public readonly _internal = this;

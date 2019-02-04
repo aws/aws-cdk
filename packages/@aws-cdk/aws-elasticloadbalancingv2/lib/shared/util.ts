@@ -1,4 +1,3 @@
-import cdk = require('@aws-cdk/cdk');
 import { ApplicationProtocol } from "./enums";
 
 export type Attributes = {[key: string]: string | undefined};
@@ -67,16 +66,4 @@ export function determineProtocolAndPort(protocol: ApplicationProtocol | undefin
  */
 export function ifUndefined<T>(x: T | undefined, def: T) {
   return x !== undefined ? x : def;
-}
-
-/**
- * Allow lazy evaluation of a list of dependables
- */
-export class LazyDependable implements cdk.IDependable {
-  constructor(private readonly depList: cdk.IDependable[]) {
-  }
-
-  public get dependencyElements(): cdk.IDependable[] {
-    return this.depList;
-  }
 }

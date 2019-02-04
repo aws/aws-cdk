@@ -118,7 +118,7 @@ export class Resource extends cdk.Construct implements IRestApiResource {
 
     const deployment = props.parent.resourceApi.latestDeployment;
     if (deployment) {
-      deployment.addDependency(resource);
+      deployment.node.addDependency(resource);
       deployment.addToLogicalId({ resource: resourceProps });
     }
 

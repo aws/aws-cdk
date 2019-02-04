@@ -710,7 +710,9 @@
         ]
       },
       "DependsOn": [
-        "VPCIGWB7E252D3"
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet2DefaultRouteB7481BBA",
+        "VPCPublicSubnet3DefaultRouteA0D29D46"
       ]
     }
   }

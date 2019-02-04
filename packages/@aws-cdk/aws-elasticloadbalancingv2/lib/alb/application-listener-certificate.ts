@@ -22,20 +22,13 @@ export interface ApplicationListenerCertificateProps {
 /**
  * Add certificates to a listener
  */
-export class ApplicationListenerCertificate extends cdk.Construct implements cdk.IDependable {
-  /**
-   * The elements of this resou rce to add ordering dependencies on
-   */
-  public readonly dependencyElements: cdk.IDependable[] = [];
-
+export class ApplicationListenerCertificate extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: ApplicationListenerCertificateProps) {
     super(scope, id);
 
-    const resource = new CfnListenerCertificate(this, 'Resource', {
+    new CfnListenerCertificate(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
       certificates: props.certificateArns.map(certificateArn => ({ certificateArn })),
     });
-
-    this.dependencyElements.push(resource);
   }
 }

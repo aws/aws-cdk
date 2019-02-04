@@ -1,7 +1,7 @@
 import { Construct, IConstruct, IDependable, Stack } from "@aws-cdk/cdk";
 import { subnetName } from './util';
 
-export interface IVpcSubnet extends IConstruct, IDependable {
+export interface IVpcSubnet extends IConstruct {
   /**
    * The Availability Zone the subnet is located in
    */
@@ -13,12 +13,17 @@ export interface IVpcSubnet extends IConstruct, IDependable {
   readonly subnetId: string;
 
   /**
+   * Dependable that can be depended upon to force internet connectivity established on the VPC
+   */
+  readonly internetConnectivityEstablished: IDependable;
+
+  /**
    * Exports this subnet to another stack.
    */
   export(): VpcSubnetImportProps;
 }
 
-export interface IVpcNetwork extends IConstruct, IDependable {
+export interface IVpcNetwork extends IConstruct {
   /**
    * Identifier for this VPC
    */
@@ -48,17 +53,6 @@ export interface IVpcNetwork extends IConstruct, IDependable {
    * Region where this VPC is located
    */
   readonly vpcRegion: string;
-
-  /**
-   * Take a dependency on internet connectivity having been added to this VPC
-   *
-   * Take a dependency on this if your constructs need an Internet Gateway
-   * added to the VPC before they can be constructed.
-   *
-   * This method is for construct authors; application builders should not
-   * need to call this.
-   */
-  internetDependency(): IDependable;
 
   /**
    * Return the subnets appropriate for the placement strategy
@@ -180,14 +174,14 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   public abstract readonly availabilityZones: string[];
 
   /**
-   * Parts of the VPC that constitute full construction
-   */
-  public readonly dependencyElements: IDependable[] = [];
-
-  /**
    * Dependencies for internet connectivity
    */
-  public readonly internetDependencies = new Array<IDependable>();
+  public readonly internetDependencies = new Array<IConstruct>();
+
+  /**
+   * Dependencies for NAT connectivity
+   */
+  public readonly natDependencies = new Array<IConstruct>();
 
   /**
    * Return the subnets appropriate for the placement strategy
@@ -231,19 +225,6 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
    */
   public isPublicSubnet(subnet: IVpcSubnet) {
     return this.publicSubnets.indexOf(subnet) > -1;
-  }
-
-  /**
-   * Take a dependency on internet connectivity having been added to this VPC
-   *
-   * Take a dependency on this if your constructs need an Internet Gateway
-   * added to the VPC before they can be constructed.
-   *
-   * This method is for construct authors; application builders should not
-   * need to call this.
-   */
-  public internetDependency(): IDependable {
-    return new DependencyList(this.internetDependencies);
   }
 
   /**
@@ -322,16 +303,4 @@ export interface VpcSubnetImportProps {
    * The subnetId for this particular subnet
    */
   subnetId: string;
-}
-
-/**
- * Allows using an array as a list of dependables.
- */
-class DependencyList implements IDependable {
-  constructor(private readonly dependenclyElements: IDependable[]) {
-  }
-
-  public get dependencyElements(): IDependable[] {
-    return this.dependenclyElements;
-  }
 }

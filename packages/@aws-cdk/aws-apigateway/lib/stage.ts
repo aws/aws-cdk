@@ -133,9 +133,8 @@ export interface MethodDeploymentOptions {
   cacheDataEncrypted?: boolean;
 }
 
-export class Stage extends cdk.Construct implements cdk.IDependable {
+export class Stage extends cdk.Construct {
   public readonly stageName: string;
-  public readonly dependencyElements = new Array<cdk.IDependable>();
 
   private readonly restApi: IRestApi;
 
@@ -170,7 +169,6 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
 
     this.stageName = resource.ref;
     this.restApi = props.deployment.api;
-    this.dependencyElements.push(resource);
   }
 
   /**

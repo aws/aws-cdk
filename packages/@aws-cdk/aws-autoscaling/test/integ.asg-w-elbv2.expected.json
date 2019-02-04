@@ -544,7 +544,8 @@
         }
       },
       "DependsOn": [
-        "LBListener49E825B4"
+        "LBListener49E825B4",
+        "LBListenerTargetGroupF04FCF6D"
       ]
     },
     "LB8A12904C": {
@@ -571,7 +572,8 @@
         "Type": "application"
       },
       "DependsOn": [
-        "VPCIGWB7E252D3"
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet2DefaultRouteB7481BBA"
       ]
     },
     "LBSecurityGroup8A41EA2B": {

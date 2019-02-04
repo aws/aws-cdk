@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { ConcreteDependable, IDependable } from '@aws-cdk/cdk';
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
@@ -324,7 +325,6 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
     this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
     this.vpcId = this.resource.vpcId;
-    this.dependencyElements.push(this.resource);
 
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, VpcNetwork.DEFAULT_SUBNETS);
     // subnetConfiguration and natGateways must be set before calling createSubnets
@@ -343,7 +343,6 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
         internetGatewayId: igw.ref,
         vpcId: this.resource.ref
       });
-      this.dependencyElements.push(igw, att);
 
       (this.publicSubnets as VpcPublicSubnet[]).forEach(publicSubnet => {
         publicSubnet.addDefaultIGWRouteEntry(igw, att);
@@ -406,7 +405,9 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
 
     natSubnets = natSubnets.slice(0, natCount);
     for (const sub of natSubnets) {
-      this.natGatewayByAZ[sub.availabilityZone] = sub.addNatGateway();
+      const gateway = sub.addNatGateway();
+      this.natGatewayByAZ[sub.availabilityZone] = gateway.natGatewayId;
+      this.natDependencies.push(gateway);
     }
   }
 
@@ -523,7 +524,7 @@ export interface VpcSubnetProps {
 /**
  * Represents a new VPC subnet resource
  */
-export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggable, cdk.IDependable {
+export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggable {
   public static import(scope: cdk.Construct, id: string, props: VpcSubnetImportProps): IVpcSubnet {
     return new ImportedVpcSubnet(scope, id, props);
   }
@@ -544,14 +545,11 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
   public readonly tags: cdk.TagManager;
 
   /**
-   * Parts of this VPC subnet
-   */
-  public readonly dependencyElements: cdk.IDependable[] = [];
-
-  /**
    * The routeTableId attached to this subnet.
    */
   private readonly routeTableId: string;
+
+  private readonly internetDependencies = new ConcreteDependable();
 
   constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
     super(scope, id);
@@ -574,12 +572,10 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
     this.routeTableId = table.ref;
 
     // Associate the public route table for this subnet, to this subnet
-    const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
+    new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
       routeTableId: table.ref
     });
-
-    this.dependencyElements.push(subnet, table, routeAssoc);
   }
 
   public export(): VpcSubnetImportProps {
@@ -589,12 +585,17 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
     };
   }
 
+  public get internetConnectivityEstablished(): IDependable {
+    return this.internetDependencies;
+  }
+
   protected addDefaultRouteToNAT(natGatewayId: string) {
-    new CfnRoute(this, `DefaultRoute`, {
+    const route = new CfnRoute(this, `DefaultRoute`, {
       routeTableId: this.routeTableId,
       destinationCidrBlock: '0.0.0.0/0',
       natGatewayId
     });
+    this.internetDependencies.add(route);
   }
 
   /**
@@ -609,7 +610,11 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
       destinationCidrBlock: '0.0.0.0/0',
       gatewayId: gateway.ref
     });
-    route.addDependency(gatewayAttachment);
+    route.node.addDependency(gatewayAttachment);
+
+    // Since the 'route' depends on the gateway attachment, just
+    // depending on the route is enough.
+    this.internetDependencies.add(route);
   }
 }
 
@@ -617,6 +622,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
  * Represents a public VPC subnet resource
  */
 export class VpcPublicSubnet extends VpcSubnet {
+
   constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
     super(scope, id, props);
   }
@@ -645,7 +651,7 @@ export class VpcPublicSubnet extends VpcSubnet {
       }).eipAllocationId,
       tags: new cdk.TagManager(this),
     });
-    return ngw.natGatewayId;
+    return ngw;
   }
 }
 
@@ -699,9 +705,9 @@ class ImportedVpcNetwork extends VpcNetworkBase {
 }
 
 class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
+  public readonly internetConnectivityEstablished: cdk.IDependable = new cdk.ConcreteDependable();
   public readonly availabilityZone: string;
   public readonly subnetId: string;
-  public readonly dependencyElements = new Array<cdk.IDependable>();
 
   constructor(scope: cdk.Construct, id: string, private readonly props: VpcSubnetImportProps) {
     super(scope, id);

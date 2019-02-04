@@ -16,8 +16,7 @@ interface DemoResourceProps {
   failCreate?: boolean;
 }
 
-class DemoResource extends cdk.Construct implements cdk.IDependable {
-  public readonly dependencyElements: cdk.IDependable[];
+class DemoResource extends cdk.Construct {
   public readonly response: string;
 
   constructor(scope: cdk.Construct, id: string, props: DemoResourceProps) {
@@ -36,7 +35,6 @@ class DemoResource extends cdk.Construct implements cdk.IDependable {
     });
 
     this.response = resource.getAtt('Response').toString();
-    this.dependencyElements = [resource];
   }
 }
 
@@ -91,7 +89,7 @@ class FailAfterCreatingStack extends cdk.Stack {
     });
 
     // Make sure the rollback gets triggered only after the custom resource has been fully created.
-    bucket.addDependency(resource);
+    bucket.node.addDependency(resource);
   }
 }
 

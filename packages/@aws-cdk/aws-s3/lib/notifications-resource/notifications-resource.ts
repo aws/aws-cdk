@@ -63,7 +63,7 @@ export class BucketNotifications extends cdk.Construct {
     // for example, the SNS topic policy must be created /before/ the notification resource.
     // otherwise, S3 won't be able to confirm the subscription.
     if (targetProps.dependencies) {
-      resource.addDependency(...targetProps.dependencies);
+      resource.node.addDependency(...targetProps.dependencies);
     }
 
     // based on the target type, add the the correct configurations array

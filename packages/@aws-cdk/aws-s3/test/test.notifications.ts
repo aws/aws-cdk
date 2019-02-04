@@ -288,6 +288,7 @@ export = {
 
     bucket.onObjectCreated(dest);
 
+    stack.node.prepareTree();
     test.deepEqual(stack.toCloudFormation().Resources.BucketNotifications8F2E257D, {
       Type: 'Custom::S3BucketNotifications',
       Properties: {

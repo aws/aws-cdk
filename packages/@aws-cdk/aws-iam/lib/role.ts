@@ -1,4 +1,4 @@
-import { Construct, IConstruct, IDependable, Output, Stack } from '@aws-cdk/cdk';
+import { Construct, IConstruct, Output, Stack } from '@aws-cdk/cdk';
 import { CfnRole } from './iam.generated';
 import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
@@ -124,11 +124,6 @@ export class Role extends Construct implements IRole {
    */
   public readonly principal: PolicyPrincipal;
 
-  /**
-   * Returns the role.
-   */
-  public readonly dependencyElements: IDependable[];
-
   private defaultPolicy?: Policy;
   private readonly managedPolicyArns: string[];
   private readonly attachedPolicies = new AttachedPolicies();
@@ -154,7 +149,6 @@ export class Role extends Construct implements IRole {
     this.roleArn = role.roleArn;
     this.principal = new ArnPrincipal(this.roleArn);
     this.roleName = role.roleName;
-    this.dependencyElements = [ role ];
 
     function _flatten(policies?: { [name: string]: PolicyDocument }) {
       if (policies == null || Object.keys(policies).length === 0) {
@@ -185,7 +179,6 @@ export class Role extends Construct implements IRole {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.attachInlinePolicy(this.defaultPolicy);
-      this.dependencyElements.push(this.defaultPolicy);
     }
     this.defaultPolicy.addStatement(statement);
   }
@@ -231,7 +224,7 @@ export class Role extends Construct implements IRole {
 /**
  * A Role object
  */
-export interface IRole extends IConstruct, IPrincipal, IDependable {
+export interface IRole extends IConstruct, IPrincipal {
   /**
    * Returns the ARN of this role.
    */
@@ -302,7 +295,6 @@ export interface RoleImportProps {
 class ImportedRole extends Construct implements IRole {
   public readonly roleArn: string;
   public readonly principal: PolicyPrincipal;
-  public readonly dependencyElements: IDependable[] = [];
 
   private readonly _roleId?: string;
 

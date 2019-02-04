@@ -43,8 +43,8 @@
         }
       },
       "DependsOn": [
-        "MyQueuePolicy6BBEDDAC",
-        "EncryptedQueuePolicy8AEB1708"
+        "EncryptedQueuePolicy8AEB1708",
+        "MyQueuePolicy6BBEDDAC"
       ]
     },
     "MyQueueE6CA6235": {
