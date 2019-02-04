@@ -10,6 +10,7 @@ To create a new CodeDeploy Application that deploys to EC2/on-premise instances:
 
 ```ts
 import codedeploy = require('@aws-cdk/aws-codedeploy');
+
 const application = new codedeploy.ServerApplication(this, 'CodeDeployApplication', {
     applicationName: 'MyApplication', // optional property
 });
@@ -188,9 +189,31 @@ You can also add the Deployment Group to the Pipeline directly:
 deploymentGroup.addToPipeline(deployStage, 'CodeDeploy');
 ```
 
+### Lambda Applications
+
+To create a new CodeDeploy Application that deploys to a Lambda function:
+
+```ts
+import codedeploy = require('@aws-cdk/aws-codedeploy');
+
+const application = new codedeploy.LambdaApplication(this, 'CodeDeployApplication', {
+    applicationName: 'MyApplication', // optional property
+});
+```
+
+To import an already existing Application:
+
+```ts
+const application = codedeploy.LambdaApplication.import(this, 'ExistingCodeDeployApplication', {
+    applicationName: 'MyExistingApplication',
+});
+```
+
 ### Lambda Deployment Groups
 
-To enable traffic shifting deployments for Lambda functions, CodeDeploy uses Lambda Aliases, which can balance incoming traffic between two different versions of your function. Before deployment, the alias sends 100% of invokes to the version used in production. When you publish a new version of the function to your stack, CodeDeploy will send a small percentage of traffic to the new version, monitor, and validate before shifting 100% of traffic to the new version.
+To enable traffic shifting deployments for Lambda functions, CodeDeploy uses Lambda Aliases, which can balance incoming traffic between two different versions of your function.
+Before deployment, the alias sends 100% of invokes to the version used in production.
+When you publish a new version of the function to your stack, CodeDeploy will send a small percentage of traffic to the new version, monitor, and validate before shifting 100% of traffic to the new version.
 
 To create a new CodeDeploy Deployment Group that deploys to a Lambda function:
 
@@ -198,6 +221,7 @@ To create a new CodeDeploy Deployment Group that deploys to a Lambda function:
 import codedeploy = require('@aws-cdk/aws-codedeploy');
 import lambda = require('@aws-cdk/aws-lambda');
 
+const myApplication = new codedeploy.LambdaApplication(..);
 const func = new lambda.Function(..);
 const version = func.addVersion('1');
 const version1Alias = new lambda.Alias({
@@ -206,6 +230,7 @@ const version1Alias = new lambda.Alias({
 });
 
 const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
+  application: myApplication, // optional property: one will be created for you if not provided
   alias: version1Alias,
   deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
 });
@@ -222,7 +247,7 @@ CodeDeploy will roll back if the deployment fails. You can optionally trigger a 
 
 ```ts
 const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
-  alias: alias,
+  alias,
   deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
   alarms: [
     // pass some alarms when constructing the deployment group
@@ -246,7 +271,9 @@ deploymentGroup.addAlarm(new cloudwatch.Alarm(stack, 'BlueGreenErrors', {
 
 #### Pre and Post Hooks
 
-CodeDeploy allows you to run an arbitrary Lambda function before traffic shifting actually starts (PreTraffic Hook) and after it completes (PostTraffic Hook). With either hook, you have the opportunity to run logic that determines whether the deployment must succeed or fail. For example, with PreTraffic hook you could run integration tests against the newly created Lambda version (but not serving traffic). With PostTraffic hook, you could run end-to-end validation checks.
+CodeDeploy allows you to run an arbitrary Lambda function before traffic shifting actually starts (PreTraffic Hook) and after it completes (PostTraffic Hook).
+With either hook, you have the opportunity to run logic that determines whether the deployment must succeed or fail.
+For example, with PreTraffic hook you could run integration tests against the newly created Lambda version (but not serving traffic). With PostTraffic hook, you could run end-to-end validation checks.
 
 ```ts
 const warmUpUserCache = new lambda.Function(..);

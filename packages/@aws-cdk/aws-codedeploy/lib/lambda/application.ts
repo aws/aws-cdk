@@ -87,6 +87,7 @@ export interface LambdaApplicationImportProps {
 class ImportedLambdaApplication extends cdk.Construct implements ILambdaApplication {
   public readonly applicationArn: string;
   public readonly applicationName: string;
+
   constructor(scope: cdk.Construct, id: string, private readonly props: LambdaApplicationImportProps) {
     super(scope, id);
 

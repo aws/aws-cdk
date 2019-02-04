@@ -189,7 +189,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
    *
    * @param alarm the alarm to associate with this Deployment Group
    */
-  public addAlarm(alarm: cloudwatch.Alarm) {
+  public addAlarm(alarm: cloudwatch.Alarm): void {
     this.alarms.push(alarm);
   }
 
@@ -198,7 +198,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
    * @param preHook function to run before deployment beings
    * @throws an error if a pre-hook function is already configured
    */
-  public onPreHook(preHook: lambda.IFunction) {
+  public onPreHook(preHook: lambda.IFunction): void {
     if (this.preHook !== undefined) {
       throw new Error('A pre-hook function is already defined for this deployment group');
     }
@@ -212,7 +212,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
    * @param preHook function to run after deployment completes
    * @throws an error if a post-hook function is already configured
    */
-  public onPostHook(postHook: lambda.IFunction) {
+  public onPostHook(postHook: lambda.IFunction): void {
     if (this.postHook !== undefined) {
       throw new Error('A post-hook function is already defined for this deployment group');
     }
@@ -226,7 +226,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
    * on this deployment group resource.
    * @param principal to grant permission to
    */
-  public grantPutLifecycleEventHookExecutionStatus(principal?: iam.IPrincipal) {
+  public grantPutLifecycleEventHookExecutionStatus(principal?: iam.IPrincipal): void {
     if (principal) {
       principal.addToPolicy(new iam.PolicyStatement()
         .addResource(this.deploymentGroupArn)
