@@ -177,8 +177,8 @@ The following example will configure API Gateway to emit logs and data traces to
 AWS CloudWatch for all API calls:
 
 > By default, an IAM role will be created and associated with API Gateway to
-allow it to write logs and metrics to AWS CloudWatch `cloudWatchRole` is set to
-`false`.
+allow it to write logs and metrics to AWS CloudWatch unless `cloudWatchRole` is
+set to `false`.
 
 ```ts
 const api = new apigateway.RestApi(this, 'books', {
