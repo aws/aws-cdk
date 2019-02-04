@@ -29,7 +29,8 @@ export interface OutputProps {
   /**
    * Disables the automatic allocation of an export name for this output.
    *
-   * This disables use of `makeImportValue()` if `export` is  not given.
+   * This prohibits exporting this value, either by specifying `export` or
+   * by calling `makeImportValue()`.
    *
    * @default false
    */
@@ -107,13 +108,7 @@ export class Output extends StackElement {
    * Returns an FnImportValue bound to this export name.
    */
   public makeImportValue() {
-    if (!this.export && this.disableExport) {
-      throw new Error('Cannot create an ImportValue; `disableExport` has been set.');
-    }
-    if (!this.export) {
-      this.export = this.uniqueOutputName();
-    }
-    return fn().importValue(this.export);
+    return fn().importValue(this.obtainExportName());
   }
 
   public toCloudFormation(): object {
@@ -131,6 +126,19 @@ export class Output extends StackElement {
 
   public get ref(): string {
     throw new Error('Outputs cannot be referenced');
+  }
+
+  /**
+   * Allocate an export name for this `Output` if not already done.
+   */
+  public obtainExportName(): string {
+    if (!this.export && this.disableExport) {
+      throw new Error('Cannot create an ImportValue; `disableExport` has been set.');
+    }
+    if (!this.export) {
+      this.export = this.uniqueOutputName();
+    }
+    return this.export;
   }
 
   /**
