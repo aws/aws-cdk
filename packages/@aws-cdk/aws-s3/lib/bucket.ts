@@ -296,7 +296,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
   /**
    * Whether all block public access settings are enabled
    */
-  protected abstract publicAccessBlocked?: boolean;
+  protected abstract disallowPublicAccess?: boolean;
 
   /**
    * Exports this bucket from the stack.
@@ -519,8 +519,8 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
    */
   public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]): iam.PolicyStatement {
-    if (this.publicAccessBlocked) {
-      throw new Error('Cannot grant public access when block public access settings are enabled');
+    if (this.disallowPublicAccess) {
+      throw new Error("Cannot grant public access when 'blockPublicAccess' is enabled");
     }
 
     allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
@@ -637,6 +637,7 @@ export interface BucketProps {
    * Enables all block public access settings on the bucket.
    *
    * @default false
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
    */
   blockPublicAccess?: boolean;
 }
@@ -668,7 +669,7 @@ export class Bucket extends BucketBase {
   public readonly encryptionKey?: kms.IEncryptionKey;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
-  protected publicAccessBlocked?: boolean;
+  protected disallowPublicAccess?: boolean;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
@@ -1067,7 +1068,7 @@ class ImportedBucket extends BucketBase {
   public policy?: BucketPolicy;
   protected autoCreatePolicy: boolean;
 
-  protected publicAccessBlocked: boolean;
+  protected disallowPublicAccess: boolean;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: BucketImportProps) {
     super(scope, id);
@@ -1086,7 +1087,7 @@ class ImportedBucket extends BucketBase {
       ? false
       : props.bucketWebsiteNewUrlFormat;
     this.policy = undefined;
-    this.publicAccessBlocked = false;
+    this.disallowPublicAccess = false;
   }
 
   /**

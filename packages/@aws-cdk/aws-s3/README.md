@@ -208,3 +208,16 @@ bucket.onEvent(s3.EventType.ObjectRemoved, myQueue, { prefix: 'foo/', suffix: '.
 ```
 
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
+
+
+### Block Public Access
+
+Use `blockPublicAccess` to enable all [block public access settings] on the bucket:
+
+```ts
+const bucket = new Bucket(this, 'MyBlockedBucket', {
+    blockPublicAccess: true
+});
+```
+
+[block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
