@@ -190,12 +190,12 @@ Intrinsic Functions
 Pseudo Parameters
 -----------------
 
-.. NEEDS SOME INTRO TEXT
+.. CloudFormation has pseudo parameters that can be used to reference things like the current AWS region, account ID, or stack name. You can add these pseduo parameters in a CDK stack using the `cdk.Aws()` accessor:
 
 .. code-block:: js
 
     import cdk = require('@aws-cdk/cdk');
-    new cdk.AwsRegion()
+    new cdk.Aws(this).region
 
 .. Add a new topic in "Advanced Topics" about integrating
    cdk synch > mytemplate
