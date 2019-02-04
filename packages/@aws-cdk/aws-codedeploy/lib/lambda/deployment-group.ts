@@ -245,20 +245,20 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
 }
 
 /**
- * Properties of a reference to a CodeDeploy EC2/on-premise Deployment Group.
+ * Properties of a reference to a CodeDeploy Lambda Deployment Group.
  *
- * @see ServerDeploymentGroup#import
- * @see IServerDeploymentGroup#export
+ * @see LambdaDeploymentGroup#import
+ * @see ILambdaDeploymentGroup#export
  */
 export interface LambdaDeploymentGroupImportProps {
   /**
-   * The reference to the CodeDeploy EC2/on-premise Application
+   * The reference to the CodeDeploy Lambda Application
    * that this Deployment Group belongs to.
    */
   application: ILambdaApplication;
 
   /**
-   * The physical, human-readable name of the CodeDeploy EC2/on-premise Deployment Group
+   * The physical, human-readable name of the CodeDeploy Lambda Deployment Group
    * that we are referencing.
    */
   deploymentGroupName: string;
