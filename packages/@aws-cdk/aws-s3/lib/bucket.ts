@@ -704,6 +704,7 @@ export class Bucket extends BucketBase {
     this.domainName = resource.bucketDomainName;
     this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
     this.dualstackDomainName = resource.bucketDualStackDomainName;
+    this.disallowPublicAccess = props.blockPublicAccess;
 
     // Add all lifecycle rules
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));

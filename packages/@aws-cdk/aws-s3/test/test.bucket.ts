@@ -1201,6 +1201,19 @@ export = {
         }
       }));
       test.done();
+    },
+
+    'throws when blockPublicAccess is set to true'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: true
+      });
+
+      // THEN
+      test.throws(() => bucket.grantPublicAccess(), /blockPublicAccess/);
+
+      test.done();
     }
   },
 
