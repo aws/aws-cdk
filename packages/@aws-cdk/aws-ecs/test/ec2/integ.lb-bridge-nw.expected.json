@@ -832,7 +832,8 @@
         "Type": "application"
       },
       "DependsOn": [
-        "VpcIGWD7BA715C"
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet2DefaultRoute97F91067"
       ]
     },
     "LBSecurityGroup8A41EA2B": {

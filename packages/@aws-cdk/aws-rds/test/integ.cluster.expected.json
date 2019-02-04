@@ -500,8 +500,8 @@
         "PubliclyAccessible": true
       },
       "DependsOn": [
-        "VPCPublicSubnet1NATGatewayE0556630",
-        "VPCPublicSubnet2NATGateway3C070193"
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet2DefaultRouteB7481BBA"
       ]
     },
     "DatabaseInstance2AA380DEE": {
@@ -518,8 +518,8 @@
         "PubliclyAccessible": true
       },
       "DependsOn": [
-        "VPCPublicSubnet1NATGatewayE0556630",
-        "VPCPublicSubnet2NATGateway3C070193"
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet2DefaultRouteB7481BBA"
       ]
     }
   }

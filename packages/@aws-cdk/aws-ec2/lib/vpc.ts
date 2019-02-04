@@ -611,6 +611,9 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
       gatewayId: gateway.ref
     });
     route.node.addDependency(gatewayAttachment);
+
+    // Since the 'route' depends on the gateway attachment, just
+    // depending on the route is enough.
     this.internetDependencies.add(route);
   }
 }
