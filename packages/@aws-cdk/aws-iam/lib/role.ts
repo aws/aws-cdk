@@ -199,6 +199,26 @@ export class Role extends Construct implements IRole {
     this.attachedPolicies.attach(policy);
     policy.attachToRole(this);
   }
+
+  /**
+   * Grant the actions defined in actions to the identity Principal on this resource.
+   */
+  public grant(identity?: IPrincipal, ...actions: string[]) {
+      if (!identity) {
+        return;
+      }
+
+      identity.addToPolicy(new PolicyStatement()
+        .addResource(this.roleArn)
+        .addActions(...actions));
+  }
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  public grantPassRole(identity?: IPrincipal) {
+    this.grant(identity, 'iam:PassRole');
+  }
 }
 
 /**
