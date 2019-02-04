@@ -93,5 +93,28 @@
         "Value": "Initial parameter value A,Initial parameter value B"
       }
     }
+  },
+  "Outputs": {
+    "StringListOutput": {
+      "Value": {
+        "Fn::Join": [
+          "+",
+          {
+            "Fn::Split": [
+              ",",
+              {
+                "Fn::GetAtt": [
+                  "StringListParameterFAC8EDDC",
+                  "Value"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "Export": {
+        "Name": "SSM-Parameter:StringListOutput"
+      }
+    }
   }
 }

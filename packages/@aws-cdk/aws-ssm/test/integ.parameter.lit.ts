@@ -22,12 +22,16 @@ const param = new ssm.StringParameter(stack, 'StringParameter', {
 param.grantRead(role);
 
 // Create a new SSM Parameter holding a StringList
-new ssm.StringListParameter(stack, 'StringListParameter', {
+const listParameter = new ssm.StringListParameter(stack, 'StringListParameter', {
   // description: 'Some user-friendly description',
   // name: 'ParameterName',
   value: ['Initial parameter value A', 'Initial parameter value B'],
   // allowedPattern: '.*',
 });
 /// !hide
+
+new cdk.Output(stack, 'StringListOutput', {
+  value: cdk.Fn.join('+', listParameter.parameterValue),
+});
 
 app.run();
