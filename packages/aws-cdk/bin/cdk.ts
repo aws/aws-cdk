@@ -56,7 +56,7 @@ async function parseCommandLineArguments() {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
       .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
       .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory' })
-      .option('numbered', { type: 'boolean', alias: 'n', desc: 'Prefix filenames with numbers to indicate deployment ordering' }))
+      .option('numbered', { type: 'boolean', alias: 'n', desc: 'prefix filenames with numbers to indicate deployment ordering' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment')
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
@@ -83,7 +83,9 @@ async function parseCommandLineArguments() {
     ].join('\n\n'))
     .argv;
 }
-// tslint:enable:no-shadowed-variable max-line-length
+if (!process.stdout.isTTY) {
+  colors.disable();
+}
 
 async function initCommandLine() {
   const argv = await parseCommandLineArguments();
@@ -246,7 +248,7 @@ async function initCommandLine() {
                                doInteractive: boolean,
                                outputDir: string|undefined,
                                json: boolean,
-                               numbered: boolean): Promise<void> {
+                               numbered: boolean): Promise<any> {
     const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
     renames.validateSelectedStacks(stacks);
 
@@ -257,13 +259,27 @@ async function initCommandLine() {
       return await interactive(stacks[0], argv.verbose, (stack) => appStacks.synthesizeStack(stack));
     }
 
-    if (stacks.length > 1 && outputDir == null) {
+    // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.
+    // This is to make it so that we can support multi-stack integ test expectations, without so drastically
+    // having to change the synthesis format that we have to rerun all integ tests.
+    //
+    // Because this feature is not useful to consumers (the output is missing
+    // the stack names), it's not exposed as a CLI flag. Instead, it's hidden
+    // behind an environment variable.
+    const isIntegMode = process.env.CDK_INTEG_MODE === '1';
+
+    if (stacks.length > 1 && outputDir == null && !isIntegMode) {
       // tslint:disable-next-line:max-line-length
       throw new Error(`Multiple stacks selected (${listStackNames(stacks)}), but output is directed to stdout. Either select one stack, or use --output to send templates to a directory.`);
     }
 
     if (outputDir == null) {
-      return stacks[0].template;  // Will be printed in main()
+      // What we return here will be printed in 'main'
+      if (stacks.length > 1) {
+        // Only possible in integ mode
+        return stacks.map(s => s.template);
+      }
+      return stacks[0].template;
     }
 
     fs.mkdirpSync(outputDir);

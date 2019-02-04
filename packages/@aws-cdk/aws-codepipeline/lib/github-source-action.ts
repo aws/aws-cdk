@@ -58,8 +58,7 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps,
 export class GitHubSourceAction extends actions.SourceAction {
   constructor(scope: cdk.Construct, id: string, props: GitHubSourceActionProps) {
     super(scope, id, {
-      stage: props.stage,
-      runOrder: props.runOrder,
+      ...props,
       owner: 'ThirdParty',
       provider: 'GitHub',
       configuration: {

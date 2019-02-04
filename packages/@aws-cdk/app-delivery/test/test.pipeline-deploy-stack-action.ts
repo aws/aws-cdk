@@ -188,7 +188,7 @@ export = nodeunit.testCase({
       adminPermissions: false,
       role
     });
-    test.same(deployAction.role, role);
+    test.same(deployAction.deploymentRole, role);
     test.done();
   },
   'users can specify IAM permissions for the deploy action'(test: nodeunit.Test) {
@@ -211,7 +211,7 @@ export = nodeunit.testCase({
       adminPermissions: false,
     });
     // we might need to add permissions
-    deployAction.addToRolePolicy( new iam.PolicyStatement().
+    deployAction.addToDeploymentRolePolicy( new iam.PolicyStatement().
       addActions(
         'ec2:AuthorizeSecurityGroupEgress',
         'ec2:AuthorizeSecurityGroupIngress',

@@ -216,6 +216,7 @@ export class Resource extends Referenceable {
             DependsOn: ignoreEmpty(this, this.renderDependsOn()),
             CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
             UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
+            UpdateReplacePolicy: capitalizePropertyNames(this, this.options.updateReplacePolicy),
             DeletionPolicy: capitalizePropertyNames(this, this.options.deletionPolicy),
             Metadata: ignoreEmpty(this, this.options.metadata),
             Condition: this.options.condition && this.options.condition.logicalId
@@ -301,6 +302,12 @@ export interface ResourceOptions {
    * scheduled action is associated with the Auto Scaling group.
    */
   updatePolicy?: UpdatePolicy;
+
+  /**
+   * Use the UpdateReplacePolicy attribute to retain or (in some cases) backup the existing physical instance of a resource
+   * when it is replaced during a stack update operation.
+   */
+  updateReplacePolicy?: DeletionPolicy;
 
   /**
    * Metadata associated with the CloudFormation resource. This is not the same as the construct metadata which can be added

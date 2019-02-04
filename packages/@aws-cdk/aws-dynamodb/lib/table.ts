@@ -18,6 +18,12 @@ const READ_DATA_ACTIONS = [
   'dynamodb:Scan'
 ];
 
+const READ_STREAM_DATA_ACTIONS = [
+  "dynamodb:DescribeStream",
+  "dynamodb:GetRecords",
+  "dynamodb:GetShardIterator",
+];
+
 const WRITE_DATA_ACTIONS = [
   'dynamodb:BatchWriteItem',
   'dynamodb:PutItem',
@@ -168,6 +174,18 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
  * Provides a DynamoDB table.
  */
 export class Table extends Construct {
+  /**
+   * Permits an IAM Principal to list all DynamoDB Streams.
+   * @param principal The principal (no-op if undefined)
+   */
+  public static grantListStreams(principal?: iam.IPrincipal): void {
+    if (principal) {
+      principal.addToPolicy(new iam.PolicyStatement()
+        .addAction('dynamodb:ListStreams')
+        .addResource("*"));
+    }
+  }
+
   public readonly tableArn: string;
   public readonly tableName: string;
   public readonly tableStreamArn: string;
@@ -422,7 +440,22 @@ export class Table extends Construct {
       return;
     }
     principal.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.tableArn)
+      .addResources(this.tableArn, new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : new cdk.Aws().noValue).toString())
+      .addActions(...actions));
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this table's stream to an
+   * IAM principal's policy.
+   * @param principal The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   */
+  public grantStream(principal?: iam.IPrincipal, ...actions: string[]) {
+    if (!principal) {
+      return;
+    }
+    principal.addToPolicy(new iam.PolicyStatement()
+      .addResource(this.tableStreamArn)
       .addActions(...actions));
   }
 
@@ -433,6 +466,16 @@ export class Table extends Construct {
    */
   public grantReadData(principal?: iam.IPrincipal) {
     this.grant(principal, ...READ_DATA_ACTIONS);
+  }
+
+  /**
+   * Permis an IAM principal all stream data read operations for this
+   * table's stream:
+   * DescribeStream, GetRecords, GetShardIterator, ListStreams.
+   * @param principal The principal to grant access to
+   */
+  public grantStreamRead(principal?: iam.IPrincipal) {
+    this.grantStream(principal, ...READ_STREAM_DATA_ACTIONS);
   }
 
   /**
@@ -614,6 +657,13 @@ export class Table extends Construct {
         resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
       })
     });
+  }
+
+  /**
+   * Whether this table has indexes
+   */
+  private get hasIndex(): boolean {
+    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
   }
 }
 

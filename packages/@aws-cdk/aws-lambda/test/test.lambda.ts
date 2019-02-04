@@ -1115,6 +1115,83 @@ export = {
           Runtime: 'ruby2.5' },
           DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
     test.done();
+  },
+
+  'using an incompatible layer'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack');
+    const layer = lambda.LayerVersion.import(stack, 'TestLayer', {
+      layerVersionArn: 'arn:aws:...',
+      compatibleRuntimes: [lambda.Runtime.NodeJS810],
+    });
+
+    // THEN
+    test.throws(() => new lambda.Function(stack, 'Function', {
+                  layers: [layer],
+                  runtime: lambda.Runtime.NodeJS610,
+                  code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
+                  handler: 'index.main'
+                }),
+                /nodejs6.10 is not in \[nodejs8.10\]/);
+
+    test.done();
+  },
+
+  'using more than 5 layers'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack');
+    const layers = new Array(6).fill(lambda.LayerVersion.import(stack, 'TestLayer', {
+      layerVersionArn: 'arn:aws:...',
+      compatibleRuntimes: [lambda.Runtime.NodeJS810],
+    }));
+
+    // THEN
+    test.throws(() => new lambda.Function(stack, 'Function', {
+                  layers,
+                  runtime: lambda.Runtime.NodeJS810,
+                  code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
+                  handler: 'index.main'
+                }),
+                /Unable to add layer:/);
+
+    test.done();
+  },
+
+  'support reserved concurrent executions'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS,
+      reservedConcurrentExecutions: 10
+    });
+
+    expect(stack).toMatch({ Resources:
+      { MyLambdaServiceRole4539ECB6:
+          { Type: 'AWS::IAM::Role',
+          Properties:
+          { AssumeRolePolicyDocument:
+            { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Version: '2012-10-17' },
+          ManagedPolicyArns:
+          // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+            // tslint:disable-next-line:max-line-length
+            [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
+          }},
+        MyLambdaCCE802FB:
+          { Type: 'AWS::Lambda::Function',
+          Properties:
+          { Code: { ZipFile: 'foo' },
+          Handler: 'index.handler',
+          ReservedConcurrentExecutions: 10,
+          Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
+          Runtime: 'nodejs' },
+          DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
+    test.done();
   }
 };
 

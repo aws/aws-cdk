@@ -143,6 +143,14 @@ export interface AutoScalingGroupProps {
    * @default 300 (5 minutes)
    */
   cooldownSeconds?: number;
+
+  /**
+   * Whether instances in the Auto Scaling Group should have public
+   * IP addresses associated with them.
+   *
+   * @default Use subnet setting
+   */
+  associatePublicIpAddress?: boolean;
 }
 
 /**
@@ -220,7 +228,8 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       instanceType: props.instanceType.toString(),
       securityGroups: securityGroupsToken,
       iamInstanceProfile: iamProfile.ref,
-      userData: userDataToken
+      userData: userDataToken,
+      associatePublicIpAddress: props.associatePublicIpAddress,
     });
 
     launchConfig.addDependency(this.role);
