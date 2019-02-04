@@ -208,3 +208,33 @@ bucket.onEvent(s3.EventType.ObjectRemoved, myQueue, { prefix: 'foo/', suffix: '.
 ```
 
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
+
+
+### Block Public Access
+
+Use `blockPublicAccess` to specify [block public access settings] on the bucket.
+
+Enable all block public access settings:
+```ts
+const bucket = new Bucket(this, 'MyBlockedBucket', {
+    blockPublicAccess: BlockPublicAccess.BlockAll
+});
+```
+
+Block and ignore public ACLs:
+```ts
+const bucket = new Bucket(this, 'MyBlockedBucket', {
+    blockPublicAccess: BlockPublicAccess.BlockAcls
+});
+```
+
+Alternatively, specify the settings manually:
+```ts
+const bucket = new Bucket(this, 'MyBlockedBucket', {
+    blockPublicAccess: new BlockPublicAccess({ blockPublicPolicy: true })
+});
+```
+
+When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
+
+[block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
