@@ -386,8 +386,8 @@
         "Runtime": "nodejs8.10"
       },
       "DependsOn": [
-        "PostHookServiceRoleE8A6AAC2",
-        "PostHookServiceRoleDefaultPolicy82AEE758"
+        "PostHookServiceRoleDefaultPolicy82AEE758",
+        "PostHookServiceRoleE8A6AAC2"
       ]
     },
     "BlueGreenErrors60C27452": {

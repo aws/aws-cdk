@@ -104,7 +104,7 @@ export class Method extends cdk.Construct {
 
     const deployment = props.resource.resourceApi.latestDeployment;
     if (deployment) {
-      deployment.addDependency(resource);
+      deployment.node.addDependency(resource);
       deployment.addToLogicalId({ method: methodProps });
     }
   }

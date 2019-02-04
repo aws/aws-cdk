@@ -57,16 +57,11 @@ export interface ApplicationListenerRuleProps extends BaseApplicationListenerRul
 /**
  * Define a new listener rule
  */
-export class ApplicationListenerRule extends cdk.Construct implements cdk.IDependable {
+export class ApplicationListenerRule extends cdk.Construct {
   /**
    * The ARN of this rule
    */
   public readonly listenerRuleArn: string;
-
-  /**
-   * The elements of this rule to add ordering dependencies on
-   */
-  public readonly dependencyElements: cdk.IDependable[] = [];
 
   private readonly conditions: {[key: string]: string[] | undefined} = {};
 
@@ -98,7 +93,6 @@ export class ApplicationListenerRule extends cdk.Construct implements cdk.IDepen
 
     (props.targetGroups || []).forEach(this.addTargetGroup.bind(this));
 
-    this.dependencyElements.push(resource);
     this.listenerRuleArn = resource.ref;
   }
 

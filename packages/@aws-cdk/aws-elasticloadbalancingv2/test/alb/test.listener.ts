@@ -365,8 +365,7 @@ export = {
     const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
 
     // WHEN
-    const resource = new cdk.Resource(stack, 'SomeResource', { type: 'Test::Resource' });
-    resource.addDependency(group.loadBalancerDependency());
+    new ResourceWithLBDependency(stack, 'SomeResource', group);
 
     loadBalancer.addListener('Listener', {
       port: 80,
@@ -443,8 +442,7 @@ export = {
     });
 
     // WHEN
-    const resource = new cdk.Resource(stack, 'SomeResource', { type: 'Test::Resource' });
-    resource.addDependency(group2.loadBalancerDependency());
+    new ResourceWithLBDependency(stack, 'SomeResource', group2);
 
     listener.addTargetGroups('SecondGroup', {
       pathPattern: '/bla',
@@ -465,3 +463,10 @@ export = {
     test.done();
   },
 };
+
+class ResourceWithLBDependency extends cdk.Resource {
+  constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
+    super(scope, id, { type: 'Test::Resource' });
+    this.node.addDependency(targetGroup.loadBalancerAttached);
+  }
+}

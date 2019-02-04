@@ -93,16 +93,11 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   autoScalingGroup: IAutoScalingGroup;
 }
 
-export class TargetTrackingScalingPolicy extends cdk.Construct implements cdk.IDependable {
+export class TargetTrackingScalingPolicy extends cdk.Construct {
   /**
    * ARN of the scaling policy
    */
   public readonly scalingPolicyArn: string;
-
-  /**
-   * Inner objects of this policy
-   */
-  public readonly dependencyElements: cdk.IDependable[];
 
   /**
    * The resource object
@@ -145,14 +140,6 @@ export class TargetTrackingScalingPolicy extends cdk.Construct implements cdk.ID
     });
 
     this.scalingPolicyArn = this.resource.scalingPolicyArn;
-    this.dependencyElements = [this.resource];
-  }
-
-  /**
-   * Add a dependency on the given dependenable
-   */
-  public addDependency(...other: cdk.IDependable[]) {
-    this.resource.addDependency(...other);
   }
 }
 

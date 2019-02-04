@@ -639,8 +639,8 @@
         }
       },
       "DependsOn": [
-        "ASGInstanceRoleE263A41B",
-        "ASGInstanceRoleDefaultPolicy7636D8BF"
+        "ASGInstanceRoleDefaultPolicy7636D8BF",
+        "ASGInstanceRoleE263A41B"
       ]
     },
     "ASG46ED3070": {

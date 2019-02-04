@@ -134,6 +134,13 @@ export class TaskDefinition extends cdk.Construct {
   public compatibility: Compatibility;
 
   /**
+   * Execution role for this task definition
+   *
+   * May not exist, will be created as needed.
+   */
+  public executionRole?: iam.IRole;
+
+  /**
    * All containers
    */
   protected readonly containers = new Array<ContainerDefinition>();
@@ -142,13 +149,6 @@ export class TaskDefinition extends cdk.Construct {
    * All volumes
    */
   private readonly volumes: Volume[] = [];
-
-  /**
-   * Execution role for this task definition
-   *
-   * Will be created as needed.
-   */
-  private executionRole?: iam.Role;
 
   /**
    * Placement constraints for task instances
