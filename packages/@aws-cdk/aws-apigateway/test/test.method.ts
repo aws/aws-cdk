@@ -302,5 +302,51 @@ export = {
     // THEN
     test.throws(() => api.root.addMethod('GET', integration), /cannot set 'vpcLink' where 'connectionType' is INTERNET/);
     test.done();
+  },
+
+  'multiple integration responses can be used'(test: Test) { // @see https://github.com/awslabs/aws-cdk/issues/1608
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    api.root.addMethod('GET', new apigateway.AwsIntegration({
+      service: 'foo-service',
+      action: 'BarAction',
+      options: {
+        integrationResponses: [
+          {
+            statusCode: '200',
+            responseTemplates: { 'application/json': JSON.stringify({ success: true }) },
+          },
+          {
+            selectionPattern: 'Invalid',
+            statusCode: '503',
+            responseTemplates: { 'application/json': JSON.stringify({ success: false, message: 'Invalid Request' }) },
+          }
+        ],
+      }
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      Integration: {
+        IntegrationHttpMethod: 'POST',
+        IntegrationResponses: [
+          {
+            ResponseTemplates: { 'application/json': '{"success":true}' },
+            StatusCode: '200',
+          },
+          {
+            ResponseTemplates: { 'application/json': '{"success":false,"message":"Invalid Request"}' },
+            SelectionPattern: 'Invalid',
+            StatusCode: '503',
+          }
+        ],
+        Type: 'AWS',
+        Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']]}
+      }
+    }));
+    test.done();
   }
 };
