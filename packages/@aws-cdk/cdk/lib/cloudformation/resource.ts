@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Construct } from '../core/construct';
+import { Construct, IConstruct } from '../core/construct';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CfnReference } from './cfn-tokens';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { IDependable, Referenceable, StackElement } from './stack-element';
+import { Referenceable } from './stack-element';
 
 export interface ResourceProps {
   /**
@@ -36,6 +36,13 @@ export class Resource extends Referenceable {
         }
       });
     };
+  }
+
+  /**
+   * Check whether the given construct is a Resource
+   */
+  public static isResource(construct: IConstruct): construct is Resource {
+    return (construct as any).resourceType !== undefined;
   }
 
   /**
@@ -72,7 +79,12 @@ export class Resource extends Referenceable {
    */
   private readonly rawOverrides: any = { };
 
-  private dependsOn = new Array<IDependable>();
+  /**
+   * Logical IDs of dependencies.
+   *
+   * Is filled during prepare().
+   */
+  private readonly dependsOn = new Set<string>();
 
   /**
    * Creates a resource construct.
@@ -106,14 +118,6 @@ export class Resource extends Referenceable {
    */
   public getAtt(attributeName: string) {
     return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`, this);
-  }
-
-  /**
-   * Adds a dependency on another resource.
-   * @param other The other resource.
-   */
-  public addDependency(...other: IDependable[]) {
-    this.dependsOn.push(...other);
   }
 
   /**
@@ -175,6 +179,10 @@ export class Resource extends Referenceable {
     this.addPropertyOverride(propertyPath, undefined);
   }
 
+  public addDependsOn(resource: Resource) {
+    this.dependsOn.add(resource.logicalId);
+  }
+
   /**
    * Emits CloudFormation for this resource.
    */
@@ -188,9 +196,11 @@ export class Resource extends Referenceable {
           [this.logicalId]: deepMerge({
             Type: this.resourceType,
             Properties: ignoreEmpty(this, properties),
-            DependsOn: ignoreEmpty(this, this.renderDependsOn()),
+            // Return a sorted set of dependencies to be consistent across tests
+            DependsOn: ignoreEmpty(this, sortedSet(this.dependsOn)),
             CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
             UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
+            UpdateReplacePolicy: capitalizePropertyNames(this, this.options.updateReplacePolicy),
             DeletionPolicy: capitalizePropertyNames(this, this.options.deletionPolicy),
             Metadata: ignoreEmpty(this, this.options.metadata),
             Condition: this.options.condition && this.options.condition.logicalId
@@ -213,30 +223,6 @@ export class Resource extends Referenceable {
     return properties;
   }
 
-  private renderDependsOn() {
-    const logicalIDs = new Set<string>();
-    for (const d of this.dependsOn) {
-      addDependency(d);
-    }
-
-    return Array.from(logicalIDs);
-
-    function addDependency(d: IDependable) {
-      d.dependencyElements.forEach(dep => {
-        const logicalId = (dep as StackElement).logicalId;
-        if (logicalId) {
-          logicalIDs.add(logicalId);
-        }
-      });
-
-      // break if dependencyElements include only 'd', which means we reached a terminal.
-      if (d.dependencyElements.length === 1 && d.dependencyElements[0] === d) {
-        return;
-      } else {
-        d.dependencyElements.forEach(dep => addDependency(dep));
-      }
-    }
-  }
 }
 
 export interface ResourceOptions {
@@ -269,6 +255,12 @@ export interface ResourceOptions {
    * scheduled action is associated with the Auto Scaling group.
    */
   updatePolicy?: UpdatePolicy;
+
+  /**
+   * Use the UpdateReplacePolicy attribute to retain or (in some cases) backup the existing physical instance of a resource
+   * when it is replaced during a stack update operation.
+   */
+  updateReplacePolicy?: DeletionPolicy;
 
   /**
    * Metadata associated with the CloudFormation resource. This is not the same as the construct metadata which can be added
@@ -312,4 +304,9 @@ export function deepMerge(target: any, source: any) {
   }
 
   return target;
+}
+function sortedSet<T>(xs: Set<T>): T[] {
+  const ret = Array.from(xs);
+  ret.sort();
+  return ret;
 }

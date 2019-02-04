@@ -18,7 +18,7 @@ export class CfnReference extends Token {
   /**
    * Check whether this is actually a CfnReference
    */
-  public static isInstance(x: Token): x is CfnReference {
+  public static isCfnReference(x: Token): x is CfnReference {
     return (x as any).consumeFromStack !== undefined;
   }
 

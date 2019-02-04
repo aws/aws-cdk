@@ -167,7 +167,7 @@ export = {
     const dep = new cdk.Resource(stack, 'MyResource', { type: 'foo' });
 
     // WHEN
-    deployment.addDependency(dep);
+    deployment.node.addDependency(dep);
 
     expect(stack).to(haveResource('AWS::ApiGateway::Deployment', {
       DependsOn: [ "MyResource" ],

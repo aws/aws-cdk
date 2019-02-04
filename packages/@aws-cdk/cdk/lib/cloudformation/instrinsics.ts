@@ -37,7 +37,15 @@ export function isIntrinsic(x: any) {
   const keys = Object.keys(x);
   if (keys.length !== 1) { return false; }
 
-  return keys[0] === 'Ref' || keys[0].startsWith('Fn::');
+  return keys[0] === 'Ref' || isNameOfCloudFormationIntrinsic(keys[0]);
+}
+
+export function isNameOfCloudFormationIntrinsic(name: string): boolean {
+  if (!name.startsWith('Fn::')) {
+    return false;
+  }
+  // these are 'fake' intrinsics, only usable inside the parameter overrides of a CFN CodePipeline Action
+  return name !== 'Fn::GetArtifactAtt' && name !== 'Fn::GetParam';
 }
 
 /**

@@ -1,8 +1,11 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import ec2 = require('@aws-cdk/aws-ec2');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
+import { ConnectionType } from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -254,4 +257,96 @@ export = {
     test.throws(() => api.root.addMethod('GET', integration), /'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
     test.done();
   },
+
+  'integration connectionType VpcLink requires vpcLink to be set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    const integration = new apigateway.Integration({
+      type: apigateway.IntegrationType.HttpProxy,
+      integrationHttpMethod: 'ANY',
+      options: {
+        connectionType: ConnectionType.VpcLink,
+      }
+    });
+
+    // THEN
+    test.throws(() => api.root.addMethod('GET', integration), /'connectionType' of VPC_LINK requires 'vpcLink' prop to be set/);
+    test.done();
+  },
+
+  'connectionType of INTERNET and vpcLink are mutually exclusive'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      vpc
+    });
+    const link = new apigateway.VpcLink(stack, 'link', {
+      targets: [nlb]
+    });
+
+    // WHEN
+    const integration = new apigateway.Integration({
+      type: apigateway.IntegrationType.HttpProxy,
+      integrationHttpMethod: 'ANY',
+      options: {
+        connectionType: ConnectionType.Internet,
+        vpcLink: link
+      }
+    });
+
+    // THEN
+    test.throws(() => api.root.addMethod('GET', integration), /cannot set 'vpcLink' where 'connectionType' is INTERNET/);
+    test.done();
+  },
+
+  'multiple integration responses can be used'(test: Test) { // @see https://github.com/awslabs/aws-cdk/issues/1608
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    api.root.addMethod('GET', new apigateway.AwsIntegration({
+      service: 'foo-service',
+      action: 'BarAction',
+      options: {
+        integrationResponses: [
+          {
+            statusCode: '200',
+            responseTemplates: { 'application/json': JSON.stringify({ success: true }) },
+          },
+          {
+            selectionPattern: 'Invalid',
+            statusCode: '503',
+            responseTemplates: { 'application/json': JSON.stringify({ success: false, message: 'Invalid Request' }) },
+          }
+        ],
+      }
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      Integration: {
+        IntegrationHttpMethod: 'POST',
+        IntegrationResponses: [
+          {
+            ResponseTemplates: { 'application/json': '{"success":true}' },
+            StatusCode: '200',
+          },
+          {
+            ResponseTemplates: { 'application/json': '{"success":false,"message":"Invalid Request"}' },
+            SelectionPattern: 'Invalid',
+            StatusCode: '503',
+          }
+        ],
+        Type: 'AWS',
+        Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']]}
+      }
+    }));
+    test.done();
+  }
 };

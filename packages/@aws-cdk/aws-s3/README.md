@@ -112,75 +112,64 @@ const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
 });
 ```
 
-### Importing and Exporting Buckets
+By default, the Pipeline will poll the Bucket to detect changes.
+You can change that behavior to use CloudWatch Events by setting the `pollForSourceChanges`
+property to `false` (it's `true` by default).
+If you do that, make sure the source Bucket is part of an AWS CloudTrail Trail -
+otherwise, the CloudWatch Events will not be emitted,
+and your Pipeline will not react to changes in the Bucket.
+You can do it through the CDK:
 
-You can create a `Bucket` construct that represents an external/existing/unowned bucket by using the `Bucket.import` factory method.
+```typescript
+import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
-This method accepts an object that adheres to `BucketRef` which basically include tokens to bucket's attributes.
+const key = 'some/key.zip';
+const trail = new cloudtrail.CloudTrail(this, 'CloudTrail');
+trail.addS3EventSelector([sourceBucket.arnForObjects(key)], cloudtrail.ReadWriteType.WriteOnly);
+const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
+  bucketKey: key,
+  pollForSourceChanges: false, // default: true
+});
+```
 
-This means that you can define a `BucketRef` using token literals:
+### Buckets as deploy targets in CodePipeline
+
+This package also defines an Action that allows you to use a
+Bucket as a deployment target in CodePipeline:
+
+```ts
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import s3 = require('@aws-cdk/aws-s3');
+
+const targetBucket = new s3.Bucket(this, 'MyBucket', {});
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const deployStage = pipeline.addStage('Deploy');
+const deployAction = new s3.PipelineDeployAction(this, 'S3Deploy', {
+    stage: deployStage,
+    bucket: targetBucket,
+    inputArtifact: sourceAction.outputArtifact,
+});
+```
+
+### Sharing buckets between stacks
+
+To use a bucket in a different stack in the same CDK application, pass the object to the other stack:
+
+[sharing bucket between stacks](test/integ.bucket-sharing.lit.ts)
+
+### Importing existing buckets
+
+To import an existing bucket into your CDK application, use the `Bucket.import` factory method.  This method accepts a
+`BucketImportProps` which describes the properties of the already existing bucket:
 
 ```ts
 const bucket = Bucket.import(this, {
-    bucketArn: new BucketArn('arn:aws:s3:::my-bucket')
+    bucketArn: 'arn:aws:s3:::my-bucket'
 });
 
 // now you can just call methods on the bucket
 bucket.grantReadWrite(user);
-```
-
-The `bucket.export()` method can be used to "export" the bucket from the current stack. It returns a `BucketRef` object that can later be used in a call to `Bucket.import` in another stack.
-
-Here's an example.
-
-Let's define a stack with an S3 bucket and export it using `bucket.export()`.
-
-```ts
-class Producer extends Stack {
-    public readonly myBucketRef: BucketRef;
-
-    constructor(parent: App, name: string) {
-        super(parent, name);
-
-        const bucket = new Bucket(this, 'MyBucket');
-        this.myBucketRef = bucket.export();
-    }
-}
-```
-
-Now let's define a stack that requires a BucketRef as an input and uses
-`Bucket.import` to create a `Bucket` object that represents this external
-bucket. Grant a user principal created within this consuming stack read/write
-permissions to this bucket and contents.
-
-```ts
-interface ConsumerProps {
-    public userBucketRef: BucketRef;
-}
-
-class Consumer extends Stack {
-    constructor(parent: App, name: string, props: ConsumerProps) {
-        super(parent, name);
-
-        const user = new User(this, 'MyUser');
-        const userBucket = Bucket.import(this, props.userBucketRef);
-        userBucket.grantReadWrite(user);
-    }
-}
-```
-
-Now, let's define our CDK app to bind these together:
-
-```ts
-const app = new App();
-
-const producer = new Producer(app, 'produce');
-
-new Consumer(app, 'consume', {
-    userBucketRef: producer.myBucketRef
-});
-
-app.run();
 ```
 
 ### Bucket Notifications

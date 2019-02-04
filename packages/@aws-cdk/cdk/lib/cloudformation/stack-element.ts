@@ -3,20 +3,9 @@ import { Construct, IConstruct, PATH_SEP } from "../core/construct";
 const LOGICAL_ID_MD = 'aws:cdk:logicalId';
 
 /**
- * Represents a construct that can be "depended on" via `addDependency`.
- */
-export interface IDependable {
-  /**
-   * Returns the set of all stack elements (resources, parameters, conditions)
-   * that should be added when a resource "depends on" this construct.
-   */
-  readonly dependencyElements: IDependable[];
-}
-
-/**
  * An element of a CloudFormation stack.
  */
-export abstract class StackElement extends Construct implements IDependable {
+export abstract class StackElement extends Construct {
   /**
    * Returns `true` if a construct is a stack element (i.e. part of the
    * synthesized cloudformation template).
@@ -93,10 +82,6 @@ export abstract class StackElement extends Construct implements IDependable {
     return this.node.ancestors(this.stack).map(c => c.node.id).join(PATH_SEP);
   }
 
-  public get dependencyElements(): IDependable[] {
-    return [ this ];
-  }
-
   /**
    * Returns the CloudFormation 'snippet' for this entity. The snippet will only be merged
    * at the root level to ensure there are no identity conflicts.
@@ -128,10 +113,7 @@ export abstract class StackElement extends Construct implements IDependable {
       // This does make the assumption that the error will not be rectified,
       // but the error will be thrown later on anyway. If the error doesn't
       // get thrown down the line, we may miss references.
-      this.node.recordReference(...findTokens(this.toCloudFormation(), {
-        scope: this,
-        prefix: []
-      }));
+      this.node.recordReference(...findTokens(this, () => this.toCloudFormation()));
     } catch (e) {
       if (e.type !== 'CfnSynthesisError') { throw e; }
     }
@@ -148,9 +130,6 @@ export class Ref extends CfnReference {
     super({ Ref: element.logicalId }, `${element.logicalId}.Ref`, element);
   }
 }
-
-import { findTokens } from "../core/tokens/resolve";
-import { Stack } from "./stack";
 
 /**
  * Base class for referenceable CloudFormation constructs which are not Resources
@@ -170,3 +149,6 @@ export abstract class Referenceable extends StackElement {
     return new Ref(this).toString();
   }
 }
+
+import { findTokens } from "../core/tokens/resolve";
+import { Stack } from "./stack";

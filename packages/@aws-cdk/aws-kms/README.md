@@ -16,30 +16,26 @@ key.addAlias('alias/foo');
 key.addAlias('alias/bar');
 ```
 
-### Importing and exporting keys
+### Sharing keys between stacks
 
-To use a KMS key that is not defined within this stack, use the
-`EncryptionKey.import(parent, name, ref)` factory method:
+To use a KMS key in a different stack in the same CDK application,
+pass the construct to the other stack:
+
+[sharing key between stacks](test/integ.key-sharing.lit.ts)
+
+
+### Importing existing keys
+
+To use a KMS key that is not defined in this CDK app, but is created through other means, use
+`EncryptionKey.import(parent, name, ref)`:
 
 ```ts
-const key = EncryptionKey.import(this, 'MyImportedKey', {
-    keyArn: new KeyArn('arn:aws:...')
+const myKeyImported = EncryptionKey.import(this, 'MyImportedKey', {
+    keyArn: 'arn:aws:...'
 });
 
 // you can do stuff with this imported key.
 key.addAlias('alias/foo');
-```
-
-To export a key from a stack and import it in another stack, use `key.export`
-which returns an `EncryptionKeyRef`, which can later be used to import:
-
-```ts
-// in stackA
-const myKey = new EncryptionKey(stackA, 'MyKey');
-const myKeyRef = myKey.export();
-
-// meanwhile in stackB
-const myKeyImported = EncryptionKey.import(stackB, 'MyKeyImported', myKeyRef);
 ```
 
 Note that a call to `.addToPolicy(statement)` on `myKeyImported` will not have
