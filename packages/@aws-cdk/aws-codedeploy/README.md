@@ -4,6 +4,25 @@ AWS CodeDeploy is a deployment service that automates application deployments to
 
 The CDK currently supports Amazon EC2, on-premise and AWS Lambda applications.
 
+### EC2/on-premise Applications
+
+To create a new CodeDeploy Application that deploys to EC2/on-premise instances:
+
+```ts
+import codedeploy = require('@aws-cdk/aws-codedeploy');
+const application = new codedeploy.ServerApplication(this, 'CodeDeployApplication', {
+    applicationName: 'MyApplication', // optional property
+});
+```
+
+To import an already existing Application:
+
+```ts
+const application = codedeploy.ServerApplication.import(this, 'ExistingCodeDeployApplication', {
+    applicationName: 'MyExistingApplication',
+});
+```
+
 ### EC2/on-premise Deployment Groups
 
 To create a new CodeDeploy Deployment Group that deploys to EC2/on-premise instances:

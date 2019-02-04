@@ -20,7 +20,7 @@ export interface IServerApplication extends cdk.IConstruct {
 }
 
 /**
- * Properties of a reference to a CodeDeploy Application.
+ * Properties of a reference to a CodeDeploy EC2/on-premise Application.
  *
  * @see ServerApplication#import
  * @see ServerApplication#export
@@ -33,12 +33,13 @@ export interface ServerApplicationImportProps {
   applicationName: string;
 }
 
-export class ImportedServerApplication extends cdk.Construct implements IServerApplication {
+class ImportedServerApplication extends cdk.Construct implements IServerApplication {
   public readonly applicationArn: string;
   public readonly applicationName: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: ServerApplicationImportProps) {
     super(scope, id);
+
     this.applicationName = props.applicationName;
     this.applicationArn = applicationNameToArn(this.applicationName, this);
   }

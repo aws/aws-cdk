@@ -10,7 +10,7 @@ import { applicationNameToArn } from "../utils";
  *
  * If you want to reference an already existing Application,
  * or one defined in a different CDK Stack,
- * use the {@link #import} method.
+ * use the {@link LambdaApplication#import} method.
  */
 export interface ILambdaApplication extends cdk.IConstruct {
   readonly applicationArn: string;
@@ -37,7 +37,7 @@ export interface LambdaApplicationProps {
 export class LambdaApplication extends cdk.Construct implements ILambdaApplication {
   /**
    * Import an Application defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
+   * or in a different CDK Stack and exported using the {@link ILambdaApplication#export} method.
    *
    * @param parent the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
@@ -53,6 +53,7 @@ export class LambdaApplication extends cdk.Construct implements ILambdaApplicati
 
   constructor(scope: cdk.Construct, id: string, props: LambdaApplicationProps = {}) {
     super(scope, id);
+
     const resource = new CfnApplication(this, 'Resource', {
       applicationName: props.applicationName,
       computePlatform: 'Lambda'
@@ -88,9 +89,11 @@ class ImportedLambdaApplication extends cdk.Construct implements ILambdaApplicat
   public readonly applicationName: string;
   constructor(scope: cdk.Construct, id: string, private readonly props: LambdaApplicationImportProps) {
     super(scope, id);
+
     this.applicationName = props.applicationName;
     this.applicationArn = applicationNameToArn(props.applicationName, this);
   }
+
   public export(): LambdaApplicationImportProps {
     return this.props;
   }

@@ -124,14 +124,15 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
   public readonly application: ILambdaApplication;
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
+  public readonly role: iam.Role;
 
-  private readonly serviceRole: iam.Role;
   private readonly alarms: cloudwatch.Alarm[];
   private preHook?: lambda.IFunction;
   private postHook?: lambda.IFunction;
 
   constructor(scope: cdk.Construct, id: string, props: LambdaDeploymentGroupProps) {
     super(scope, id);
+
     this.application = props.application || new LambdaApplication(this, 'Application');
     this.alarms = props.alarms || [];
 
@@ -148,7 +149,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
       });
     }
     serviceRole.attachManagedPolicy('arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda');
-    this.serviceRole = serviceRole;
+    this.role = serviceRole;
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
@@ -203,7 +204,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
     }
     this.preHook = preHook;
     this.grantPutLifecycleEventHookExecutionStatus(this.preHook.role);
-    this.preHook.grantInvoke(this.serviceRole);
+    this.preHook.grantInvoke(this.role);
   }
 
   /**
@@ -217,7 +218,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
     }
     this.postHook = postHook;
     this.grantPutLifecycleEventHookExecutionStatus(this.postHook.role);
-    this.postHook.grantInvoke(this.serviceRole);
+    this.postHook.grantInvoke(this.role);
   }
 
   /**

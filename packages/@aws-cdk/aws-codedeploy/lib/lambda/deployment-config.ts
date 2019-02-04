@@ -59,15 +59,6 @@ class ImportedLambdaDeploymentConfig extends cdk.Construct implements ILambdaDep
   }
 }
 
-export interface LambdaDeploymentConfigProps {
-  /**
-   * The physical, human-readable name of the Deployment Configuration.
-   *
-   * @default a name will be auto-generated
-   */
-  deploymentConfigName?: string;
-}
-
 /**
  * A custom Deployment Configuration for a Lambda Deployment Group.
  *
@@ -87,7 +78,7 @@ export class LambdaDeploymentConfig {
   public static readonly Linear10PercentEvery3Minutes: ILambdaDeploymentConfig = new DefaultLambdaDeploymentConfig('Linear10PercentEvery3Minutes');
 
   /**
-   * Import a custom Deployment Configuration for a Lambda Deployment Group defined either outside the CDK.
+   * Import a custom Deployment Configuration for a Lambda Deployment Group defined outside the CDK.
    *
    * @param parent the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
@@ -98,5 +89,7 @@ export class LambdaDeploymentConfig {
     return new ImportedLambdaDeploymentConfig(scope, id, props);
   }
 
-  private constructor() {}
+  private constructor() {
+    // nothing to do until CFN supports custom lambda deployment configurations
+  }
 }
