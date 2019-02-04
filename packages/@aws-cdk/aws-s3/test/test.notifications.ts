@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
@@ -300,5 +300,93 @@ export = {
     });
 
     test.done();
-  }
+  },
+
+  'CloudWatch Events': {
+    'onPutItem contains the Bucket ARN itself when path is undefined'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.import(stack, 'Bucket', {
+        bucketName: 'MyBucket',
+      });
+      bucket.onPutObject('PutRule');
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        "EventPattern": {
+          "source": [
+            "aws.s3",
+          ],
+          "detail": {
+            "eventSource": [
+              "s3.amazonaws.com",
+            ],
+            "eventName": [
+              "PutObject",
+            ],
+            "resources": {
+              "ARN": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::MyBucket",
+                    ],
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        "State": "ENABLED",
+      }));
+
+      test.done();
+    },
+
+    "onPutItem contains the path when it's provided"(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.import(stack, 'Bucket', {
+        bucketName: 'MyBucket',
+      });
+      bucket.onPutObject('PutRule', undefined, 'my/path.zip');
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        "EventPattern": {
+          "source": [
+            "aws.s3",
+          ],
+          "detail": {
+            "eventSource": [
+              "s3.amazonaws.com",
+            ],
+            "eventName": [
+              "PutObject",
+            ],
+            "resources": {
+              "ARN": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::MyBucket/my/path.zip"
+                    ],
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        "State": "ENABLED",
+      }));
+
+      test.done();
+    },
+  },
 };

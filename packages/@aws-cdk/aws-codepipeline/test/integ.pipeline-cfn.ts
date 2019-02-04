@@ -36,9 +36,15 @@ new cfn.PipelineCreateReplaceChangeSetAction(stack, 'DeployCFN', {
   stage: cfnStage,
   changeSetName,
   stackName,
-  role,
+  deploymentRole: role,
   templatePath: source.outputArtifact.atPath('test.yaml'),
   adminPermissions: false,
+  parameterOverrides: {
+    BucketName: source.outputArtifact.bucketName,
+    ObjectKey: source.outputArtifact.objectKey,
+    Url: source.outputArtifact.url,
+    OtherParam: source.outputArtifact.getParam('params.json', 'OtherParam'),
+  },
 });
 
 app.run();

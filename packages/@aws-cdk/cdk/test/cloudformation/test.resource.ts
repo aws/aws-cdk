@@ -166,7 +166,7 @@ export = {
     test.done();
   },
 
-  'creation/update/deletion policies can be set on a resource'(test: Test) {
+  'creation/update/updateReplace/deletion policies can be set on a resource'(test: Test) {
     const stack = new Stack();
     const r1 = new Resource(stack, 'Resource', { type: 'Type' });
 
@@ -182,6 +182,7 @@ export = {
       },
     };
     r1.options.deletionPolicy = DeletionPolicy.Retain;
+    r1.options.updateReplacePolicy = DeletionPolicy.Snapshot;
 
     test.deepEqual(stack.toCloudFormation(), {
       Resources: {
@@ -197,7 +198,8 @@ export = {
               BeforeAllowTrafficHook: 'lambda1',
             },
           },
-          DeletionPolicy: 'Retain'
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Snapshot'
         }
       }
     });
