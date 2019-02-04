@@ -294,9 +294,9 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
   protected abstract autoCreatePolicy = false;
 
   /**
-   * The block public access configuration of this bucket.
+   * Whether to disallow public access
    */
-  protected abstract blockPublicAccess?: BlockPublicAccess;
+  protected abstract disallowPublicAccess?: boolean;
 
   /**
    * Exports this bucket from the stack.
@@ -519,7 +519,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
    */
   public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]): iam.PolicyStatement {
-    if (this.blockPublicAccess && this.blockPublicAccess.blockPublicPolicy) {
+    if (this.disallowPublicAccess) {
       throw new Error("Cannot grant public access when 'blockPublicPolicy' is enabled");
     }
 
@@ -724,7 +724,7 @@ export class Bucket extends BucketBase {
   public readonly encryptionKey?: kms.IEncryptionKey;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
-  protected blockPublicAccess?: BlockPublicAccess;
+  protected disallowPublicAccess?: boolean;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
@@ -752,7 +752,7 @@ export class Bucket extends BucketBase {
     this.domainName = resource.bucketDomainName;
     this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
     this.dualstackDomainName = resource.bucketDualStackDomainName;
-    this.blockPublicAccess = props.blockPublicAccess;
+    this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
 
     // Add all lifecycle rules
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
@@ -1117,7 +1117,7 @@ class ImportedBucket extends BucketBase {
   public policy?: BucketPolicy;
   protected autoCreatePolicy: boolean;
 
-  protected blockPublicAccess?: BlockPublicAccess;
+  protected disallowPublicAccess?: boolean;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: BucketImportProps) {
     super(scope, id);
@@ -1136,7 +1136,7 @@ class ImportedBucket extends BucketBase {
       ? false
       : props.bucketWebsiteNewUrlFormat;
     this.policy = undefined;
-    this.blockPublicAccess = undefined;
+    this.disallowPublicAccess = false;
   }
 
   /**
