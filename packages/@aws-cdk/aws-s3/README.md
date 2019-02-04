@@ -112,6 +112,46 @@ const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
 });
 ```
 
+By default, the Pipeline will poll the Bucket to detect changes.
+You can change that behavior to use CloudWatch Events by setting the `pollForSourceChanges`
+property to `false` (it's `true` by default).
+If you do that, make sure the source Bucket is part of an AWS CloudTrail Trail -
+otherwise, the CloudWatch Events will not be emitted,
+and your Pipeline will not react to changes in the Bucket.
+You can do it through the CDK:
+
+```typescript
+import cloudtrail = require('@aws-cdk/aws-cloudtrail');
+
+const key = 'some/key.zip';
+const trail = new cloudtrail.CloudTrail(this, 'CloudTrail');
+trail.addS3EventSelector([sourceBucket.arnForObjects(key)], cloudtrail.ReadWriteType.WriteOnly);
+const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
+  bucketKey: key,
+  pollForSourceChanges: false, // default: true
+});
+```
+
+### Buckets as deploy targets in CodePipeline
+
+This package also defines an Action that allows you to use a
+Bucket as a deployment target in CodePipeline:
+
+```ts
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import s3 = require('@aws-cdk/aws-s3');
+
+const targetBucket = new s3.Bucket(this, 'MyBucket', {});
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const deployStage = pipeline.addStage('Deploy');
+const deployAction = new s3.PipelineDeployAction(this, 'S3Deploy', {
+    stage: deployStage,
+    bucket: targetBucket,
+    inputArtifact: sourceAction.outputArtifact,
+});
+```
+
 ### Sharing buckets between stacks
 
 To use a bucket in a different stack in the same CDK application, pass the object to the other stack:

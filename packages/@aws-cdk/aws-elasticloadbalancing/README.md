@@ -10,7 +10,7 @@ balancer, set up listeners and a health check, and supply the fleet(s) you want
 to load balance to in the `targets` property.
 
 ```ts
-const lb = new elb.LoadBalancer(stack, 'LB', {
+const lb = new elb.LoadBalancer(this, 'LB', {
     vpc,
     internetFacing: true,
     healthCheck: {

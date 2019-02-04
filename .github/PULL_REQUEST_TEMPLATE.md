@@ -5,7 +5,7 @@
 
 * [ ] Testing
   - Unit test added
-  - __CLI change?:__ manually run [integration tests](https://github.com/awslabs/aws-cdk/blob/master/packages/aws-cdk/integ-tests/test.sh) and paste output as a PR comment
+  - __CLI change?:__ coordinate update of integration tests with team
   - __cdk-init template change?:__ coordinated update of integration tests with team
 * [ ] Docs
   - __jsdocs__: All public APIs documented
