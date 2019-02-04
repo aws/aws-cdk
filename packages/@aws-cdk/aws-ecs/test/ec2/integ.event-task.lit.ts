@@ -31,7 +31,7 @@ class EventStack extends cdk.Stack {
     });
 
     // Use Ec2TaskEventRuleTarget as the target of the EventRule
-    const target = new ecs.Ec2TaskEventRuleTarget(this, 'EventTarget', {
+    const target = new ecs.Ec2EventRuleTarget(this, 'EventTarget', {
       cluster,
       taskDefinition,
       taskCount: 1

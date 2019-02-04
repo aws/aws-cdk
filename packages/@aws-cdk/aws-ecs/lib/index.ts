@@ -8,7 +8,7 @@ export * from './cluster';
 
 export * from './ec2/ec2-service';
 export * from './ec2/ec2-task-definition';
-export * from './ec2/ec2-task-event-rule-target';
+export * from './ec2/ec2-event-rule-target';
 
 export * from './fargate/fargate-service';
 export * from './fargate/fargate-task-definition';

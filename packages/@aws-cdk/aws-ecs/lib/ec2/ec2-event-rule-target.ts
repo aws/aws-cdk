@@ -8,7 +8,7 @@ import { isEc2Compatible } from '../util';
 /**
  * Properties to define an EC2 Event Task
  */
-export interface Ec2EventTaskProps {
+export interface Ec2EventRuleTargetProps {
   /**
    * Cluster where service will be deployed
    */
@@ -30,12 +30,12 @@ export interface Ec2EventTaskProps {
 /**
  * Start a service on an EC2 cluster
  */
-export class Ec2TaskEventRuleTarget extends cdk.Construct implements events.IEventRuleTarget {
+export class Ec2EventRuleTarget extends cdk.Construct implements events.IEventRuleTarget {
   private readonly cluster: ICluster;
   private readonly taskDefinition: TaskDefinition;
   private readonly taskCount: number;
 
-  constructor(scope: cdk.Construct, id: string, props: Ec2EventTaskProps) {
+  constructor(scope: cdk.Construct, id: string, props: Ec2EventRuleTargetProps) {
     super(scope, id);
 
     if (!isEc2Compatible(props.taskDefinition.compatibility)) {
