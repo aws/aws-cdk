@@ -1,7 +1,7 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Resource, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal } from '../lib';
+import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 export = {
   'default role'(test: Test) {
@@ -21,6 +21,32 @@ export = {
               Effect: 'Allow',
               Principal: { Service: 'sns.amazonaws.com' } } ],
              Version: '2012-10-17' } } } } });
+    test.done();
+  },
+
+  'a role can grant PassRole permissions'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('henk.amazonaws.com') });
+    const user = new User(stack, 'User');
+
+    // WHEN
+    role.grantPassRole(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "iam:PassRole",
+            Effect: "Allow",
+            Resource: { "Fn::GetAtt": [ "Role1ABCC5F0", "Arn" ] }
+          }
+        ],
+        Version: "2012-10-17"
+      },
+    }));
+
     test.done();
   },
 
