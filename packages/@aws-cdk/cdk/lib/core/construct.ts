@@ -673,10 +673,25 @@ export enum ConstructOrder {
    */
   BreadthFirst,
 
-    /**
-     * Depth first
-     */
-    DepthFirst
+  /**
+   * Depth first
+   */
+  DepthFirst
+}
+
+/**
+ * A single dependency
+ */
+export interface Dependency {
+  /**
+   * Source the dependency
+   */
+  source: IConstruct;
+
+  /**
+   * Target of the dependency
+   */
+  target: IConstruct;
 }
 
 /**
