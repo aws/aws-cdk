@@ -1,8 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { applyRemovalPolicy, Condition, Construct, DeletionPolicy,
-    Fn, HashedAddressingScheme, IDependable,
-    RemovalPolicy, Resource, Root, Stack } from '../../lib';
+import { App, applyRemovalPolicy, Condition, Construct,
+    DeletionPolicy, Fn, HashedAddressingScheme, RemovalPolicy,
+    Resource, Root, Stack } from '../../lib';
 
 export = {
   'all resources derive from Resource, which derives from Entity'(test: Test) {
@@ -127,9 +127,10 @@ export = {
     const r1 = new Counter(stack, 'Counter1', { Count: 1 });
     const r2 = new Counter(stack, 'Counter2', { Count: 1 });
     const r3 = new Resource(stack, 'Resource3', { type: 'MyResourceType' });
-    r2.addDependency(r1);
-    r2.addDependency(r3);
+    r2.node.addDependency(r1);
+    r2.node.addDependency(r3);
 
+    stack.node.prepareTree();
     test.deepEqual(stack.toCloudFormation(), {
       Resources: {
         Counter1: {
@@ -165,7 +166,7 @@ export = {
     test.done();
   },
 
-  'creation/update/deletion policies can be set on a resource'(test: Test) {
+  'creation/update/updateReplace/deletion policies can be set on a resource'(test: Test) {
     const stack = new Stack();
     const r1 = new Resource(stack, 'Resource', { type: 'Type' });
 
@@ -181,6 +182,7 @@ export = {
       },
     };
     r1.options.deletionPolicy = DeletionPolicy.Retain;
+    r1.options.updateReplacePolicy = DeletionPolicy.Snapshot;
 
     test.deepEqual(stack.toCloudFormation(), {
       Resources: {
@@ -196,7 +198,8 @@ export = {
               BeforeAllowTrafficHook: 'lambda1',
             },
           },
-          DeletionPolicy: 'Retain'
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Snapshot'
         }
       }
     });
@@ -274,55 +277,35 @@ export = {
 
   'addDependency adds all dependencyElements of dependent constructs'(test: Test) {
 
-    class C1 extends Construct implements IDependable {
+    class C1 extends Construct {
       public readonly r1: Resource;
       public readonly r2: Resource;
-      public readonly r3: Resource;
 
       constructor(scope: Construct, id: string) {
         super(scope, id);
 
         this.r1 = new Resource(this, 'R1', { type: 'T1' });
         this.r2 = new Resource(this, 'R2', { type: 'T2' });
-        this.r3 = new Resource(this, 'R3', { type: 'T3' });
-      }
-
-      get dependencyElements() {
-        return [ this.r1, this.r2 ];
       }
     }
 
-    class C2 extends Construct implements IDependable {
-      public readonly r1: Resource;
-      public readonly r2: Resource;
+    class C2 extends Construct {
       public readonly r3: Resource;
 
       constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        this.r1 = new Resource(this, 'R1', { type: 'T1' });
-        this.r2 = new Resource(this, 'R2', { type: 'T2' });
         this.r3 = new Resource(this, 'R3', { type: 'T3' });
-      }
-
-      get dependencyElements() {
-        return [ this.r3 ];
       }
     }
 
     // C3 returns [ c2 ] for it's dependency elements
     // this should result in 'flattening' the list of elements.
-    class C3 extends Construct implements IDependable {
-      private readonly c2: C2;
-
+    class C3 extends Construct {
       constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        this.c2 = new C2(this, 'C2');
-      }
-
-      get dependencyElements() {
-        return [ this.c2 ];
+        new C2(this, 'C2');
       }
     }
 
@@ -332,18 +315,14 @@ export = {
     const c3 = new C3(stack, 'MyC3');
 
     const dependingResource = new Resource(stack, 'MyResource', { type: 'R' });
-    dependingResource.addDependency(c1, c2);
-    dependingResource.addDependency(c3);
+    dependingResource.node.addDependency(c1, c2);
+    dependingResource.node.addDependency(c3);
 
+    stack.node.prepareTree();
     test.deepEqual(stack.toCloudFormation(), { Resources:
       { MyC1R1FB2A562F: { Type: 'T1' },
         MyC1R2AE2B5066: { Type: 'T2' },
-        MyC1R374967D02: { Type: 'T3' },
-        MyC2R13C9A618D: { Type: 'T1' },
-        MyC2R25330F905: { Type: 'T2' },
         MyC2R3809EEAD6: { Type: 'T3' },
-        MyC3C2R1C64551A7: { Type: 'T1' },
-        MyC3C2R2F213BD26: { Type: 'T2' },
         MyC3C2R38CE6F9F7: { Type: 'T3' },
         MyResource:
          { Type: 'R',
@@ -602,7 +581,33 @@ export = {
            Metadata: { [cxapi.PATH_METADATA_KEY]: 'Parent/MyResource' } } } });
 
     test.done();
-  }
+  },
+
+  'cross-stack construct dependencies are not rendered but turned into stack dependencies'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stackA = new Stack(app, 'StackA');
+    const resA = new Resource(stackA, 'Resource', { type: 'R' });
+    const stackB = new Stack(app, 'StackB');
+    const resB = new Resource(stackB, 'Resource', { type: 'R' });
+
+    // WHEN
+    resB.node.addDependency(resA);
+
+    // THEN
+    app.node.prepareTree();
+    test.deepEqual(stackB.toCloudFormation(), {
+      Resources: {
+        Resource: {
+          Type: 'R'
+          // Notice absence of 'DependsOn'
+        }
+      }
+    });
+    test.deepEqual(stackB.dependencies().map(s => s.node.id), ['StackA']);
+
+    test.done();
+  },
 };
 
 interface CounterProps {
