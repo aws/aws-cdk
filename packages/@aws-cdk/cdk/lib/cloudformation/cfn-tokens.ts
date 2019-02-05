@@ -102,7 +102,7 @@ export class CfnReference extends Token {
 
     // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
     // so construct one in-place.
-    return new Token({ 'Fn::ImportValue': output.export });
+    return new Token({ 'Fn::ImportValue': output.obtainExportName() });
   }
 
 }
