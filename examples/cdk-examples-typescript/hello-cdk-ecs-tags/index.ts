@@ -19,7 +19,7 @@ class MarketingDepartmentStack extends cdk.Stack {
 
     // Create a load-balanced Fargate service and make it public
     const b2b = new ecs.LoadBalancedFargateService(this, 'B2BService', {
-      cluster: cluster,  // Required
+      cluster,  // Required
       cpu: '512', // Default is 256
       desiredCount: 6,  // Default is 1
       image: ecs.ContainerImage.fromDockerHub('amazon/amazon-ecs-sample'), // Required
@@ -29,7 +29,7 @@ class MarketingDepartmentStack extends cdk.Stack {
 
     // Create a load-balanced Fargate service and make it public
     const b2c = new ecs.LoadBalancedFargateService(this, 'B2CService', {
-      cluster: cluster,  // Required
+      cluster,  // Required
       cpu: '512', // Default is 256
       desiredCount: 6,  // Default is 1
       image: ecs.ContainerImage.fromDockerHub('amazon/amazon-ecs-sample'), // Required
