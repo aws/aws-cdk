@@ -201,7 +201,7 @@ export class Resource extends Referenceable {
             Type: this.resourceType,
             Properties: ignoreEmpty(this, properties),
             // Return a sorted set of dependencies to be consistent across tests
-            DependsOn: ignoreEmpty(this, sortedSet(this.dependsOn).map(r => r.logicalId)),
+            DependsOn: ignoreEmpty(this, Array.from(this.dependsOn).map(r => r.logicalId).sort()),
             CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
             UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.options.updateReplacePolicy),
@@ -308,10 +308,4 @@ export function deepMerge(target: any, source: any) {
   }
 
   return target;
-}
-
-function sortedSet<T>(xs: Set<T>): T[] {
-  const ret = Array.from(xs);
-  ret.sort();
-  return ret;
 }
