@@ -82,7 +82,7 @@ export abstract class SecurityGroupBase extends Construct implements ISecurityGr
       description = `from ${peer.uniqueId}:${connection}`;
     }
 
-    const [scope, id] = determineRuleParent(this, peer, connection, 'from', remoteRule);
+    const [scope, id] = determineRuleScope(this, peer, connection, 'from', remoteRule);
 
     // Skip duplicates
     if (scope.node.tryFindChild(id) === undefined) {
@@ -100,7 +100,7 @@ export abstract class SecurityGroupBase extends Construct implements ISecurityGr
       description = `to ${peer.uniqueId}:${connection}`;
     }
 
-    const [scope, id] = determineRuleParent(this, peer, connection, 'to', remoteRule);
+    const [scope, id] = determineRuleScope(this, peer, connection, 'to', remoteRule);
 
     // Skip duplicates
     if (scope.node.tryFindChild(id) === undefined) {
@@ -175,7 +175,7 @@ export abstract class SecurityGroupBase extends Construct implements ISecurityGr
  *   ║                     └───────────┘ ║
  *   ╚═══════════════════════════════════╝
  */
-function determineRuleParent(
+function determineRuleScope(
       group: SecurityGroupBase,
       peer: ISecurityGroupRule,
       connection: IPortRange,
@@ -185,9 +185,9 @@ function determineRuleParent(
   if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(group, peer)) {
     // Reversed
     const reversedFromTo = fromTo === 'from' ? 'to' : 'from';
-    return [peer, `${group.uniqueId}:${connection} ${reversedFromTo}`.replace('/', '_')];
+    return [peer, `${group.uniqueId}:${connection} ${reversedFromTo}`];
   } else {
-    // Regular
+    // Regular (do old ID escaping to in order to not disturb existing deployments)
     return [group, `${fromTo} ${peer.uniqueId}:${connection}`.replace('/', '_')];
   }
 }
