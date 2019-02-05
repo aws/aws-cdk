@@ -239,7 +239,6 @@ export class Stack extends Construct {
    * Rename a generated logical identities
    */
   public renameLogical(oldId: string, newId: string) {
-    // tslint:disable-next-line:no-console
     if (this.node.children.length > 0) {
       throw new Error("All renames must be set up before adding elements to the stack");
     }
@@ -469,7 +468,6 @@ export class Stack extends Construct {
 }
 
 function merge(template: any, part: any) {
-  // console.error({ merge: { part: JSON.stringify(part) }});
   for (const section of Object.keys(part)) {
     const src = part[section];
 
