@@ -675,9 +675,6 @@
           "L3LB212FC0E0",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:L3LoadBalancerDNSC6CB4A70"
       }
     }
   }

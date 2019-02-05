@@ -18,16 +18,10 @@
   },
   "Outputs": {
     "PublicSubnets": {
-      "Value": "ids:subnet-e19455ca,subnet-e0c24797,subnet-ccd77395",
-      "Export": {
-        "Name": "aws-cdk-ec2-import:PublicSubnets"
-      }
+      "Value": "ids:subnet-e19455ca,subnet-e0c24797,subnet-ccd77395"
     },
     "PrivateSubnets": {
-      "Value": "ids:",
-      "Export": {
-        "Name": "aws-cdk-ec2-import:PrivateSubnets"
-      }
+      "Value": "ids:"
     }
   }
 }

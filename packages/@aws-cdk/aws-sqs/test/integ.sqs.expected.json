@@ -28,9 +28,6 @@
     "QueueUrl": {
       "Value": {
         "Ref": "Queue4A7E3555"
-      },
-      "Export": {
-        "Name": "aws-cdk-sqs:QueueUrl"
       }
     }
   }
