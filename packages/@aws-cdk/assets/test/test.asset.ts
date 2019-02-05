@@ -37,7 +37,7 @@ export = {
   'verify that the app resolves tokens in metadata'(test: Test) {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'my-stack');
-    const dirPath = path.join(__dirname, 'sample-asset-directory');
+    const dirPath = path.resolve(__dirname, 'sample-asset-directory');
 
     new ZipDirectoryAsset(stack, 'MyAsset', {
       path: dirPath
@@ -46,7 +46,7 @@ export = {
     const synth = app.synthesizeStack(stack.name);
 
     test.deepEqual(synth.metadata['/my-stack/MyAsset'][0].data, {
-      path: "/Users/benisrae/code/cdk/aws-cdk/packages/@aws-cdk/assets/test/sample-asset-directory",
+      path: dirPath,
       id: "mystackMyAssetD6B1B593",
       packaging: "zip",
       s3BucketParameter: "MyAssetS3Bucket68C9B344",
