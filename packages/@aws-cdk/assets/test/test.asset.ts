@@ -18,6 +18,9 @@ export = {
     // the correct information
     const entry = asset.node.metadata.find(m => m.type === 'aws:cdk:asset');
     test.ok(entry, 'found metadata entry');
+
+    // console.error(JSON.stringify(stack.node.resolve(entry!.data)));
+
     test.deepEqual(stack.node.resolve(entry!.data), {
       path: dirPath,
       id: 'MyAsset',
