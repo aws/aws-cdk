@@ -5,13 +5,18 @@ class HelloCDK extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const table = new dynamodb.Table(this, 'Table', {
+    new dynamodb.Table(this, 'Table', {
       readCapacity: 1,
-      writeCapacity: 1
+      writeCapacity: 1,
+      partitionKey: {
+        name: 'ID',
+        type: dynamodb.AttributeType.String
+      },
+      sortKey: {
+        name: 'Timestamp',
+        type: dynamodb.AttributeType.Number
+      }
     });
-
-    table.addPartitionKey({ name: 'ID', type: dynamodb.AttributeType.String });
-    table.addSortKey({ name: 'Timestamp', type: dynamodb.AttributeType.Number });
   }
 }
 
