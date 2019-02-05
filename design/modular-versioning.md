@@ -19,7 +19,7 @@ library, which is a transitive dependency of nearly all the construct libraries.
 
 ### Maintainer Experience
 Patching a previous major version (for example due to a security disclosure) creates it's own
-challenge. As any package may need to issue a patch release independent from the others, maitnaing
+challenge. As any package may need to issue a patch release independent from the others, maintaining
 packages in a [mono-repo][awslabs/aws-cdk] creates a need to have a release process able to isolate
 a specific package for publishing. The situation becomes worse if two packages have to be
 simultaneously patched, but the *origin* version of both packages are in different commits: the
