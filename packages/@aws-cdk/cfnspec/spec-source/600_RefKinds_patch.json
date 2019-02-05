@@ -3540,6 +3540,18 @@
         "description": "Set RefKind of AWS::Serverless::Function to Name"
       }
     },
+    "AWS::Serverless::LayerVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Serverless::LayerVersion to Arn"
+      }
+    },
     "AWS::Serverless::SimpleTable": {
       "patch": {
         "operations": [

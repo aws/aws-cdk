@@ -1,3 +1,34 @@
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+* AWS::Serverless::Application
+* AWS::Serverless::LayerVersion
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api Auth (__added__)
+* AWS::Serverless::Api BinaryMediaTypes (__added__)
+* AWS::Serverless::Api Cors (__added__)
+* AWS::Serverless::Api EndpointConfiguration (__added__)
+* AWS::Serverless::Function AutoPublishAlias (__added__)
+* AWS::Serverless::Function DeploymentPreference (__added__)
+* AWS::Serverless::Function Layers (__added__)
+* AWS::Serverless::Function ReservedConcurrentExecutions (__added__)
+* AWS::Serverless::SimpleTable SSESpecification (__added__)
+* AWS::Serverless::SimpleTable TableName (__added__)
+* AWS::Serverless::SimpleTable Tags (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.Auth (__added__)
+* AWS::Serverless::Function.DeploymentPreference (__added__)
+* AWS::Serverless::SimpleTable.SSESpecification (__added__)
+
+
 
 # CloudFormation Resource Specification v2.21.0
 
