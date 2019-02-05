@@ -116,7 +116,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     });
 
     // this will produce a DependsOn for both the role and the policy resources.
-    codePipeline.addDependency(this.role);
+    codePipeline.node.addDependency(this.role);
 
     this.artifactBucket.grantReadWrite(this.role);
 

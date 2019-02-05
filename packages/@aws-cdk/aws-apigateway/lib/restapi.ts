@@ -154,7 +154,7 @@ export interface RestApiProps extends ResourceOptions {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi {
+export class RestApi extends cdk.Construct implements IRestApi {
   /**
    * Imports an existing REST API resource.
    * @param parent Parent construct
@@ -176,11 +176,6 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
    * This will be undefined if `deploy` is false.
    */
   public latestDeployment?: Deployment;
-
-  /**
-   * Allows taking a dependency on this construct.
-   */
-  public readonly dependencyElements = new Array<cdk.IDependable>();
 
   /**
    * API Gateway stage that points to the latest deployment (if defined).
@@ -224,14 +219,6 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
     const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
     if (cloudWatchRole) {
       this.configureCloudWatchRole(resource);
-    }
-
-    this.dependencyElements.push(resource);
-    if (this.latestDeployment) {
-      this.dependencyElements.push(this.latestDeployment);
-    }
-    if (this.deploymentStage) {
-      this.dependencyElements.push(this.deploymentStage);
     }
 
     this.root = new RootResource(this, props, resource.restApiRootResourceId);
@@ -355,7 +342,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
       cloudWatchRoleArn: role.roleArn
     });
 
-    resource.addDependency(apiResource);
+    resource.node.addDependency(apiResource);
   }
 }
 
@@ -412,6 +399,7 @@ class RootResource extends ResourceBase {
 
   constructor(api: RestApi, props: RestApiProps, resourceId: string) {
     super(api, 'Default');
+
     this.parentResource = undefined;
     this.defaultIntegration = props.defaultIntegration;
     this.defaultMethodOptions = props.defaultMethodOptions;

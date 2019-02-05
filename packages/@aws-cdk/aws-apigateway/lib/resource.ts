@@ -126,6 +126,10 @@ export abstract class ResourceBase extends cdk.Construct implements IRestApiReso
 
   private readonly children: { [pathPart: string]: Resource } = { };
 
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+  }
+
   public addResource(pathPart: string, options?: ResourceOptions): Resource {
     return new Resource(this, pathPart, { parent: this, pathPart, ...options });
   }
@@ -211,7 +215,7 @@ export class Resource extends ResourceBase {
 
     const deployment = props.parent.resourceApi.latestDeployment;
     if (deployment) {
-      deployment.addDependency(resource);
+      deployment.node.addDependency(resource);
       deployment.addToLogicalId({ resource: resourceProps });
     }
 

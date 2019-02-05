@@ -500,9 +500,8 @@
         "PubliclyAccessible": true
       },
       "DependsOn": [
-        "VPCB9E5F0B4",
-        "VPCIGWB7E252D3",
-        "VPCVPCGW99B986DC"
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet2DefaultRouteB7481BBA"
       ]
     },
     "DatabaseInstance2AA380DEE": {
@@ -519,9 +518,8 @@
         "PubliclyAccessible": true
       },
       "DependsOn": [
-        "VPCB9E5F0B4",
-        "VPCIGWB7E252D3",
-        "VPCVPCGW99B986DC"
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet2DefaultRouteB7481BBA"
       ]
     }
   }
