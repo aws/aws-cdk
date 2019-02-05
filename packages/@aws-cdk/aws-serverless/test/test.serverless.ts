@@ -1,9 +1,41 @@
-import { Test, testCase } from 'nodeunit';
-import {} from '../lib';
+import {expect} from '@aws-cdk/assert';
+import cdk = require('@aws-cdk/cdk');
+import { Test } from 'nodeunit';
+import { CfnApplication } from '../lib';
 
-export = testCase({
-  notTested(test: Test) {
-    test.ok(true, 'No tests are specified for this package.');
+export = {
+  'construct an AWS::Serverless::Application'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new CfnApplication(stack, 'App', {
+      location: {
+        applicationId: 'arn:aws:serverlessrepo:us-east-1:077246666028:applications/aws-serverless-twitter-event-source',
+        semanticVersion: '2.0.0'
+      },
+      parameters: {
+        SearchText: '#serverless -filter:nativeretweets',
+        TweetProcessorFunctionName: 'test'
+      }
+    });
+
+    expect(stack).toMatch({
+      Resources: {
+        App: {
+          Type: 'AWS::Serverless::Application',
+          Properties: {
+            Location: {
+              ApplicationId: 'arn:aws:serverlessrepo:us-east-1:077246666028:applications/aws-serverless-twitter-event-source',
+              SemanticVersion: '2.0.0'
+            },
+            Parameters: {
+              SearchText: '#serverless -filter:nativeretweets',
+              TweetProcessorFunctionName: 'test'
+            }
+          }
+        }
+      }
+    });
+
     test.done();
   }
-});
+};
