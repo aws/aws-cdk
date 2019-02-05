@@ -4,19 +4,19 @@ import { TagManager } from '../../lib/core/tag-manager';
 
 export = {
   '#setTag() supports setting a tag regardless of Type'(test: Test) {
-    const notTaggable = new TagManager(TagType.NotTaggable, '');
+    const notTaggable = new TagManager(TagType.NotTaggable, 'AWS::Resource::Type');
     notTaggable.setTag('key', 'value');
     test.deepEqual(notTaggable.renderTags(), undefined);
     test.done();
   },
   'when a tag does not exist': {
     '#removeTag() does not throw an error'(test: Test) {
-      const mgr = new TagManager(TagType.Standard, '');
+      const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
       test.doesNotThrow(() => (mgr.removeTag('dne')));
       test.done();
     },
     '#setTag() creates the tag'(test: Test) {
-      const mgr = new TagManager(TagType.Standard, '');
+      const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
       mgr.setTag('dne', 'notanymore');
       test.deepEqual(mgr.renderTags(), [{key: 'dne', value: 'notanymore'}]);
       test.done();
@@ -24,14 +24,14 @@ export = {
   },
   'when a tag does exist': {
     '#removeTag() deletes the tag'(test: Test) {
-      const mgr = new TagManager(TagType.Standard, '');
+      const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
       mgr.setTag('dne', 'notanymore');
       mgr.removeTag('dne');
       test.deepEqual(mgr.renderTags(), undefined);
       test.done();
     },
     '#setTag() overwrites the tag'(test: Test) {
-      const mgr = new TagManager(TagType.Standard, '');
+      const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
       mgr.setTag('dne', 'notanymore');
       mgr.setTag('dne', 'iwin');
       test.deepEqual(mgr.renderTags(), [{key: 'dne', value: 'iwin'}]);
@@ -40,16 +40,16 @@ export = {
   },
   'when there are no tags': {
     '#renderTags() returns undefined'(test: Test) {
-      const mgr = new TagManager(TagType.Standard, '');
+      const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
       test.deepEqual(mgr.renderTags(), undefined );
       test.done();
     },
   },
   '#renderTags() handles standard, map, and ASG tag formats'(test: Test) {
     const tagged: TagManager[] = [];
-    const standard = new TagManager(TagType.Standard, '');
-    const asg = new TagManager(TagType.AutoScalingGroup, '');
-    const mapper = new TagManager(TagType.Map, '');
+    const standard = new TagManager(TagType.Standard, 'AWS::Resource::Type');
+    const asg = new TagManager(TagType.AutoScalingGroup, 'AWS::Resource::Type');
+    const mapper = new TagManager(TagType.Map, 'AWS::Resource::Type');
     tagged.push(standard);
     tagged.push(asg);
     tagged.push(mapper);
@@ -72,7 +72,7 @@ export = {
     test.done();
   },
   'tags with higher or equal priority always take precedence'(test: Test) {
-    const mgr = new TagManager(TagType.Standard, '');
+    const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
     mgr.setTag('key', 'myVal', {
       priority: 2,
     });
