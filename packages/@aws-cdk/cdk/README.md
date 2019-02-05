@@ -6,29 +6,30 @@ the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) (AWS CDK).
 ## Aspects
 
 Aspects are a mechanism to extend the CDK without having to directly impact the
-class hierarchy. We have implemented Aspects using the [Visitor
+class hierarchy. We have implemented aspects using the [Visitor
 Pattern](https://en.wikipedia.org/wiki/Visitor_pattern).
 
 An aspect in the CDK is defined by this [interface](lib/aspects/aspect.ts)
 
 Aspects can be applied to any construct. During the tree
-preparation phase the aspect will visit each construct in the tree one
-time. Aspects are invoked in the order they were added to the construct,
-starting at the `App` (root of the tree) and progressing in order to the leaf
-nodes (most commonly the CloudFormation Resource). Aspect authors will implement 
-the `visit(IConstruct)` function and can inspect the `Construct` for specific characteristics.
-Such as, is this construct a CloudFormation Resource?
+"prepare" phase the aspect will visit each construct in the tree once.
+Aspects are invoked in the order they were added to the construct. They
+traverse the construct tree in a breadth first order starting at the `App`
+ending at the leaf nodes (most commonly the CloudFormation Resource). Aspect 
+authors implement the `visit(IConstruct)` function and can inspect the 
+`Construct` for specific characteristics. Such as, is this construct a 
+CloudFormation Resource?
 
 ## Tagging
 
-Tags are implemented using Aspects.
+Tags are implemented using aspects.
 
 Tags can be applied to any construct. Tags are inherited, based on the scope. If
 you tag construct A, and A contains construct B, construct B inherits the tag.
 The Tag API supports: 
 
- * Add (apply) a tag, either to specific resources or all but specific resources
- * Remove a tag, again either from specific resources or all but specific resources
+ * `Tag` add (apply) a tag, either to specific resources or all but specific resources
+ * `RemoveTag` remove a tag, again either from specific resources or all but specific resources
 
 A simple example, if you create a stack and want anything in the stack to receive a
 tag:
@@ -43,11 +44,11 @@ theBestStack.apply(new cdk.Tag('StackType', 'TheBest'));
 // any resources added that support tags will get them
 ```
 
-The goal was to enable the ability to define tags in one place and have them 
-applied consistently for all resources that support tagging. In addition 
-the developer should not have to know if the resource supports tags. The
-developer defines the tagging intents for all resources within a path. 
-If the resources support tags they are added, else no action is taken.
+> The goal was to enable the ability to define tags in one place and have them 
+> applied consistently for all resources that support tagging. In addition 
+> the developer should not have to know if the resource supports tags. The
+> developer defines the tagging intents for all resources within a path. 
+> If the resources support tags they are added, else no action is taken.
 
 ### Tag Example with ECS
 
@@ -118,7 +119,7 @@ has a few features that are covered later to explain how this works.
 
 In order to enable additional controls a Tags can specifically include or
 exclude a CloudFormation Resource Type, propagate tags for an autoscaling group,
-and use priority to override the default precedence. See the `TagAspectProps` 
+and use priority to override the default precedence. See the `TagProps` 
 interface for more details. 
 
 #### applyToLaunchedInstances
@@ -127,12 +128,26 @@ This property is a boolean that defaults to `true`. When `true` and the aspect
 visits an AutoScalingGroup resource the `PropagateAtLaunch` property is set to
 true. If false the property is set accordingly.
 
+```ts
+// ... snip
+const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
+vpc.apply(new cdk.Tag('MyKey', 'MyValue', { applyToLaunchedInstances: false }));
+// ... snip
+```
+
 #### includeResourceTypes
 
 Include is an array property that contains strings of CloudFormation Resource
 Types. As the aspect visits nodes it only takes action if node is one of the
 resource types in the array. By default the array is empty and an empty array is
 interpreted as apply to any resource type.
+
+```ts
+// ... snip
+const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
+vpc.apply(new cdk.Tag('MyKey', 'MyValue', { includeResourceTypes: ['AWS::EC2::Subnet']}));
+// ... snip
+```
 
 #### excludeResourceTypes 
 
@@ -142,6 +157,13 @@ one of the resource types in the array. By default the array is empty and an
 empty array is interpreted to match no resource type. Exclude takes precedence
 over include in the event of a collision.
 
+```ts
+// ... snip
+const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
+vpc.apply(new cdk.Tag('MyKey', 'MyValue', { exludeResourceTypes: ['AWS::EC2::Subnet']}));
+// ... snip
+```
+
 #### priority 
 
 Priority is used to control precedence when the default pattern does not work.
@@ -149,3 +171,9 @@ In general users should try to avoid using priority, but in some situations it
 is required. In the example above, this is how `RemoveTag` works. The default
 setting for removing tags uses a higher priority than the standard tag. 
 
+```ts
+// ... snip
+const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
+vpc.apply(new cdk.Tag('MyKey', 'MyValue', { priority: 2 }));
+// ... snip
+```

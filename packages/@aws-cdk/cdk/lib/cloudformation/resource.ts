@@ -55,7 +55,7 @@ export class Resource extends Referenceable {
   /**
    * Check whether the given construct is Taggable
    */
-  public static isTaggable(construct: IConstruct): construct is ITaggable {
+  public static isTaggable(construct: any): construct is ITaggable {
     return (construct as any).tags !== undefined;
   }
 

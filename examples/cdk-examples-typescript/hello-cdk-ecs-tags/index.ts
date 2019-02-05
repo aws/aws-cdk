@@ -4,7 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 
 const COST_CENTER_KEY = 'CostCenter';
 
-class MarketingFargate extends cdk.Stack {
+class MarketingDepartmentStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -48,6 +48,6 @@ const app = new cdk.App();
 // by default bill everything to marketing overrides are in the stack
 app.apply(new cdk.Tag(COST_CENTER_KEY, 'Marketing'));
 
-new MarketingFargate(app, 'Bonjour');
+new MarketingDepartmentStack(app, 'Bonjour');
 
 app.run();
