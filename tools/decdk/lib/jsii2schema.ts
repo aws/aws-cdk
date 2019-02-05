@@ -268,7 +268,7 @@ function schemaForConstructRef(type: jsiiReflect.TypeReference) {
   };
 }
 
-function schemaForInterface(type: jsiiReflect.Type | undefined, ctx: SchemaContext) {
+export function schemaForInterface(type: jsiiReflect.Type | undefined, ctx: SchemaContext) {
   if (!type || !(type instanceof jsiiReflect.InterfaceType)) {
     return undefined; // skip
   }
