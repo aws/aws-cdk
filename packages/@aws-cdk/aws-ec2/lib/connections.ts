@@ -124,7 +124,7 @@ export class Connections implements IConnectable {
   public allowTo(other: IConnectable, portRange: IPortRange, description?: string) {
     if (this.skip) { return; }
 
-    const remoteRule = this.remoteRule;
+    const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
     this._securityGroups.forEachAndForever(securityGroup => {
       other.connections._securityGroupRules.forEachAndForever(rule => {
         securityGroup.addEgressRule(rule, portRange, description, remoteRule);
@@ -147,7 +147,7 @@ export class Connections implements IConnectable {
   public allowFrom(other: IConnectable, portRange: IPortRange, description?: string) {
     if (this.skip) { return; }
 
-    const remoteRule = this.remoteRule;
+    const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
     this._securityGroups.forEachAndForever(securityGroup => {
       other.connections._securityGroupRules.forEachAndForever(rule => {
         securityGroup.addIngressRule(rule, portRange, description, remoteRule);
