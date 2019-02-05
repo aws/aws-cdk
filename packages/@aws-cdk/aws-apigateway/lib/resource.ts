@@ -142,7 +142,7 @@ export abstract class ResourceBase extends cdk.Construct implements IRestApiReso
     return new ProxyResource(this, '{proxy+}', { parent: this, ...options });
   }
 
-  public getResource(pathPart: string): Resource | undefined {
+  public getResource(pathPart: string): IRestApiResource | undefined {
     return this.children[pathPart];
   }
 
