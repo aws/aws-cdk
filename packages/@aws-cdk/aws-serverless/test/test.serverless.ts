@@ -19,6 +19,7 @@ export = {
     });
 
     expect(stack).toMatch({
+      Transform: 'AWS::Serverless-2016-10-31',
       Resources: {
         App: {
           Type: 'AWS::Serverless::Application',

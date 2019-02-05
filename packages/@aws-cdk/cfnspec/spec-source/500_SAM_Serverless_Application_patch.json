@@ -8,6 +8,7 @@
                     "path": "/AWS::Serverless::Application",
                     "value": {
                         "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
+                        "RequiredTransform": "AWS::Serverless-2016-10-31",
                         "Properties": {
                             "Location": {
                                 "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
