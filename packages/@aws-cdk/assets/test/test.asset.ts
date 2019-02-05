@@ -18,7 +18,7 @@ export = {
     // the correct information
     const entry = asset.node.metadata.find(m => m.type === 'aws:cdk:asset');
     test.ok(entry, 'found metadata entry');
-    test.deepEqual(entry!.data, {
+    test.deepEqual(stack.node.resolve(entry!.data), {
       path: dirPath,
       id: 'MyAsset',
       packaging: 'zip',
@@ -34,13 +34,35 @@ export = {
     test.done();
   },
 
+  'verify that the app resolves tokens in metadata'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const dirPath = path.join(__dirname, 'sample-asset-directory');
+
+    new ZipDirectoryAsset(stack, 'MyAsset', {
+      path: dirPath
+    });
+
+    const synth = app.synthesizeStack(stack.name);
+
+    test.deepEqual(synth.metadata['/my-stack/MyAsset'][0].data, {
+      path: "/Users/benisrae/code/cdk/aws-cdk/packages/@aws-cdk/assets/test/sample-asset-directory",
+      id: "mystackMyAssetD6B1B593",
+      packaging: "zip",
+      s3BucketParameter: "MyAssetS3Bucket68C9B344",
+      s3KeyParameter: "MyAssetS3VersionKey68E1A45D"
+    });
+
+    test.done();
+  },
+
   '"file" assets'(test: Test) {
     const stack = new cdk.Stack();
     const filePath = path.join(__dirname, 'file-asset.txt');
     const asset = new FileAsset(stack, 'MyAsset', { path: filePath });
     const entry = asset.node.metadata.find(m => m.type === 'aws:cdk:asset');
     test.ok(entry, 'found metadata entry');
-    test.deepEqual(entry!.data, {
+    test.deepEqual(stack.node.resolve(entry!.data), {
       path: filePath,
       packaging: 'file',
       id: 'MyAsset',
