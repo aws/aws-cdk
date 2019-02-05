@@ -42,6 +42,7 @@
     "cloudformation": "AWS::Lambda"
   },
   "nyc": {
+    "statements": 75,
     "lines": 75
   },
   "keywords": [

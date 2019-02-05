@@ -11,6 +11,7 @@
     "package": "cdk-package"
   },
   "nyc": {
+    "statements": 50,
     "lines": 50
   },
   "pkglint": {
