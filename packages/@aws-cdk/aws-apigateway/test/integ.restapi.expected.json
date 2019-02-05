@@ -610,9 +610,6 @@
             "/"
           ]
         ]
-      },
-      "Export": {
-        "Name": "test-apigateway-restapi:myapiEndpoint3628AFE3"
       }
     }
   }

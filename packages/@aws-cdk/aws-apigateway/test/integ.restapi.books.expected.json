@@ -845,9 +845,6 @@
             "/"
           ]
         ]
-      },
-      "Export": {
-        "Name": "restapi-books-example:booksapiEndpointE230E8D5"
       }
     }
   }

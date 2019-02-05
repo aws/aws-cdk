@@ -134,9 +134,6 @@ export = {
             "/"
           ]
           ]
-        },
-        Export: {
-          Name: "myapiEndpoint3628AFE3"
         }
         }
       }

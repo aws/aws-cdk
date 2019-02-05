@@ -666,9 +666,6 @@
           "LB8A12904C",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:LoadBalancerDNS"
       }
     }
   }

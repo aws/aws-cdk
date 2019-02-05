@@ -1000,9 +1000,6 @@
           "FargateServiceLBB353E155",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:FargateServiceLoadBalancerDNS9433D5F6"
       }
     },
     "LoadBalancerDNS": {
@@ -1011,9 +1008,6 @@
           "FargateServiceLBB353E155",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:LoadBalancerDNS"
       }
     }
   }
