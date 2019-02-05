@@ -42,6 +42,7 @@
     "cloudformation": "AWS::CodeCommit"
   },
   "nyc": {
+    "statements": 30,
     "lines": 30,
     "branches": 40
   },
