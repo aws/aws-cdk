@@ -20,6 +20,7 @@
     "pkglint": "pkglint -f"
   },
   "nyc": {
+    "statements": 0,
     "lines": 0,
     "branches": 0
   },
