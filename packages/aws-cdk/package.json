@@ -21,6 +21,7 @@
     ]
   },
   "nyc": {
+    "statements": 8,
     "lines": 8,
     "branches": 3
   },

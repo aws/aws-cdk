@@ -1,13 +1,42 @@
-import { Construct, IConstruct, Output, Token } from '@aws-cdk/cdk';
+import { Construct, IConstruct, Output, Stack, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
 import { IVpcNetwork } from './vpc-ref';
 
+const isSecurityGroupSymbol = Symbol.for('aws-cdk:isSecurityGroup');
+
 export interface ISecurityGroup extends IConstruct, ISecurityGroupRule, IConnectable {
+  /**
+   * ID for the current security group
+   */
   readonly securityGroupId: string;
-  addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string): void;
-  addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string): void;
+
+  /**
+   * Add an ingress rule for the current security group
+   *
+   * `remoteRule` controls where the Rule object is created if the peer is also a
+   * securityGroup and they are in different stack. If false (default) the
+   * rule object is created under the current SecurityGroup object. If true and the
+   * peer is also a SecurityGroup, the rule object is created under the remote
+   * SecurityGroup object.
+   */
+  addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean): void;
+
+  /**
+   * Add an egress rule for the current security group
+   *
+   * `remoteRule` controls where the Rule object is created if the peer is also a
+   * securityGroup and they are in different stack. If false (default) the
+   * rule object is created under the current SecurityGroup object. If true and the
+   * peer is also a SecurityGroup, the rule object is created under the remote
+   * SecurityGroup object.
+   */
+  addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean): void;
+
+  /**
+   * Export the security group
+   */
   export(): SecurityGroupImportProps;
 }
 
@@ -22,6 +51,13 @@ export interface SecurityGroupImportProps {
  * A SecurityGroup that is not created in this template
  */
 export abstract class SecurityGroupBase extends Construct implements ISecurityGroup {
+  /**
+   * Return whether the indicated object is a security group
+   */
+  public static isSecurityGroup(construct: any): construct is SecurityGroupBase {
+    return (construct as any)[isSecurityGroupSymbol] === true;
+  }
+
   public abstract readonly securityGroupId: string;
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
@@ -31,20 +67,26 @@ export abstract class SecurityGroupBase extends Construct implements ISecurityGr
    */
   public readonly defaultPortRange?: IPortRange;
 
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    Object.defineProperty(this, isSecurityGroupSymbol, { value: true });
+  }
+
   public get uniqueId() {
     return this.node.uniqueId;
   }
 
-  public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
-    let id = `from ${peer.uniqueId}:${connection}`;
+  public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
     if (description === undefined) {
-      description = id;
+      description = `from ${peer.uniqueId}:${connection}`;
     }
-    id = id.replace('/', '_');
+
+    const [scope, id] = determineRuleScope(this, peer, connection, 'from', remoteRule);
 
     // Skip duplicates
-    if (this.node.tryFindChild(id) === undefined) {
-      new CfnSecurityGroupIngress(this, id, {
+    if (scope.node.tryFindChild(id) === undefined) {
+      new CfnSecurityGroupIngress(scope, id, {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleJSON(),
         ...connection.toRuleJSON(),
@@ -53,16 +95,16 @@ export abstract class SecurityGroupBase extends Construct implements ISecurityGr
     }
   }
 
-  public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
-    let id = `to ${peer.uniqueId}:${connection}`;
+  public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
     if (description === undefined) {
-      description = id;
+      description = `to ${peer.uniqueId}:${connection}`;
     }
-    id = id.replace('/', '_');
+
+    const [scope, id] = determineRuleScope(this, peer, connection, 'to', remoteRule);
 
     // Skip duplicates
-    if (this.node.tryFindChild(id) === undefined) {
-      new CfnSecurityGroupEgress(this, id, {
+    if (scope.node.tryFindChild(id) === undefined) {
+      new CfnSecurityGroupEgress(scope, id, {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleJSON(),
         ...connection.toRuleJSON(),
@@ -83,6 +125,75 @@ export abstract class SecurityGroupBase extends Construct implements ISecurityGr
    * Export this SecurityGroup for use in a different Stack
    */
   public abstract export(): SecurityGroupImportProps;
+}
+
+/**
+ * Determine where to parent a new ingress/egress rule
+ *
+ * A SecurityGroup rule is parented under the group it's related to, UNLESS
+ * we're in a cross-stack scenario with another Security Group. In that case,
+ * we respect the 'remoteRule' flag and will parent under the other security
+ * group.
+ *
+ * This is necessary to avoid cyclic dependencies between stacks, since both
+ * ingress and egress rules will reference both security groups, and a naive
+ * parenting will lead to the following situation:
+ *
+ *   ╔════════════════════╗         ╔════════════════════╗
+ *   ║  ┌───────────┐     ║         ║    ┌───────────┐   ║
+ *   ║  │  GroupA   │◀────╬─┐   ┌───╬───▶│  GroupB   │   ║
+ *   ║  └───────────┘     ║ │   │   ║    └───────────┘   ║
+ *   ║        ▲           ║ │   │   ║          ▲         ║
+ *   ║        │           ║ │   │   ║          │         ║
+ *   ║        │           ║ │   │   ║          │         ║
+ *   ║  ┌───────────┐     ║ └───┼───╬────┌───────────┐   ║
+ *   ║  │  EgressA  │─────╬─────┘   ║    │ IngressB  │   ║
+ *   ║  └───────────┘     ║         ║    └───────────┘   ║
+ *   ║                    ║         ║                    ║
+ *   ╚════════════════════╝         ╚════════════════════╝
+ *
+ * By having the ability to switch the parent, we avoid the cyclic reference by
+ * keeping all rules in a single stack.
+ *
+ * If this happens, we also have to change the construct ID, because
+ * otherwise we might have two objects with the same ID if we have
+ * multiple reversed security group relationships.
+ *
+ *   ╔═══════════════════════════════════╗
+ *   ║┌───────────┐                      ║
+ *   ║│  GroupB   │                      ║
+ *   ║└───────────┘                      ║
+ *   ║      ▲                            ║
+ *   ║      │              ┌───────────┐ ║
+ *   ║      ├────"from A"──│ IngressB  │ ║
+ *   ║      │              └───────────┘ ║
+ *   ║      │              ┌───────────┐ ║
+ *   ║      ├─────"to B"───│  EgressA  │ ║
+ *   ║      │              └───────────┘ ║
+ *   ║      │              ┌───────────┐ ║
+ *   ║      └─────"to B"───│  EgressC  │ ║  <-- oops
+ *   ║                     └───────────┘ ║
+ *   ╚═══════════════════════════════════╝
+ */
+function determineRuleScope(
+      group: SecurityGroupBase,
+      peer: ISecurityGroupRule,
+      connection: IPortRange,
+      fromTo: 'from' | 'to',
+      remoteRule?: boolean): [SecurityGroupBase, string] {
+
+  if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(group, peer)) {
+    // Reversed
+    const reversedFromTo = fromTo === 'from' ? 'to' : 'from';
+    return [peer, `${group.uniqueId}:${connection} ${reversedFromTo}`];
+  } else {
+    // Regular (do old ID escaping to in order to not disturb existing deployments)
+    return [group, `${fromTo} ${peer.uniqueId}:${connection}`.replace('/', '_')];
+  }
+}
+
+function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
+  return Stack.find(group1) !== Stack.find(group2);
 }
 
 export interface SecurityGroupProps {
@@ -189,9 +300,9 @@ export class SecurityGroup extends SecurityGroupBase {
     };
   }
 
-  public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
+  public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
     if (!peer.canInlineRule || !connection.canInlineRule) {
-      super.addIngressRule(peer, connection, description);
+      super.addIngressRule(peer, connection, description, remoteRule);
       return;
     }
 
@@ -206,7 +317,7 @@ export class SecurityGroup extends SecurityGroupBase {
     });
   }
 
-  public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
+  public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
     if (this.allowAllOutbound) {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
@@ -220,7 +331,7 @@ export class SecurityGroup extends SecurityGroupBase {
     }
 
     if (!peer.canInlineRule || !connection.canInlineRule) {
-      super.addEgressRule(peer, connection, description);
+      super.addEgressRule(peer, connection, description, remoteRule);
       return;
     }
 
