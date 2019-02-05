@@ -17,10 +17,10 @@
           "nodejs8.10"
         ],
         "Content": {
-          "s3Bucket": {
+          "S3Bucket": {
             "Ref": "MyLayerCodeS3Bucket20DB8EB9"
           },
-          "s3Key": {
+          "S3Key": {
             "Fn::Join": [
               "",
               [

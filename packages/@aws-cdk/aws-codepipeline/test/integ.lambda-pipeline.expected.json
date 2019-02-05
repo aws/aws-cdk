@@ -503,8 +503,8 @@
         "Runtime": "nodejs6.10"
       },
       "DependsOn": [
-        "LambdaFunServiceRoleF0979767",
-        "LambdaFunServiceRoleDefaultPolicy217FED83"
+        "LambdaFunServiceRoleDefaultPolicy217FED83",
+        "LambdaFunServiceRoleF0979767"
       ]
     }
   }

@@ -132,6 +132,26 @@ const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
 });
 ```
 
+### Buckets as deploy targets in CodePipeline
+
+This package also defines an Action that allows you to use a
+Bucket as a deployment target in CodePipeline:
+
+```ts
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import s3 = require('@aws-cdk/aws-s3');
+
+const targetBucket = new s3.Bucket(this, 'MyBucket', {});
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const deployStage = pipeline.addStage('Deploy');
+const deployAction = new s3.PipelineDeployAction(this, 'S3Deploy', {
+    stage: deployStage,
+    bucket: targetBucket,
+    inputArtifact: sourceAction.outputArtifact,
+});
+```
+
 ### Sharing buckets between stacks
 
 To use a bucket in a different stack in the same CDK application, pass the object to the other stack:
@@ -188,3 +208,33 @@ bucket.onEvent(s3.EventType.ObjectRemoved, myQueue, { prefix: 'foo/', suffix: '.
 ```
 
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
+
+
+### Block Public Access
+
+Use `blockPublicAccess` to specify [block public access settings] on the bucket.
+
+Enable all block public access settings:
+```ts
+const bucket = new Bucket(this, 'MyBlockedBucket', {
+    blockPublicAccess: BlockPublicAccess.BlockAll
+});
+```
+
+Block and ignore public ACLs:
+```ts
+const bucket = new Bucket(this, 'MyBlockedBucket', {
+    blockPublicAccess: BlockPublicAccess.BlockAcls
+});
+```
+
+Alternatively, specify the settings manually:
+```ts
+const bucket = new Bucket(this, 'MyBlockedBucket', {
+    blockPublicAccess: new BlockPublicAccess({ blockPublicPolicy: true })
+});
+```
+
+When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
+
+[block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html

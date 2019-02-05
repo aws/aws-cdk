@@ -461,6 +461,38 @@ export = {
       test.done();
     }
   },
+
+  'rule can be disabled'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new EventRule(stack, 'Rule', {
+      scheduleExpression: 'foom',
+      enabled: false
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      "State": "DISABLED"
+    }));
+
+    test.done();
+  },
+
+  'fails if multiple targets with the same id are added'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const rule = new EventRule(stack, 'Rule', {
+      scheduleExpression: 'foom',
+      enabled: false
+    });
+    rule.addTarget(new SomeTarget());
+
+    // THEN
+    test.throws(() => rule.addTarget(new SomeTarget()), /Duplicate event rule target with ID/);
+    test.done();
+  }
 };
 
 class SomeTarget implements IEventRuleTarget {
