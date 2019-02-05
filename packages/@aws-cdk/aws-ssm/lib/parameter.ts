@@ -182,7 +182,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       throw new Error('Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.');
     }
 
-    if (props.allowedPattern) {
+    if (props.allowedPattern && !cdk.unresolved(props.value)) {
       props.value.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
