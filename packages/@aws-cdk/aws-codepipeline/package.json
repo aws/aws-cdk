@@ -42,6 +42,7 @@
     "cloudformation": "AWS::CodePipeline"
   },
   "nyc": {
+    "statements": 66,
     "lines": 66
   },
   "keywords": [

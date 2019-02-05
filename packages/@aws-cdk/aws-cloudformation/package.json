@@ -42,6 +42,7 @@
     "cloudformation": "AWS::CloudFormation"
   },
   "nyc": {
+    "statements": 50,
     "lines": 50,
     "branches": 20
   },

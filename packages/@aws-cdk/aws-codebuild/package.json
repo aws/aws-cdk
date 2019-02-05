@@ -42,6 +42,7 @@
     "cloudformation": "AWS::CodeBuild"
   },
   "nyc": {
+    "statements": 74,
     "lines": 74
   },
   "keywords": [

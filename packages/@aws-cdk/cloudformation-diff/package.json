@@ -13,6 +13,7 @@
     "package": "cdk-package"
   },
   "nyc": {
+    "statements": 45,
     "lines": 45,
     "branches": 44
   },

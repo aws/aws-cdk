@@ -44,6 +44,7 @@
     "awslint": "cdk-awslint"
   },
   "nyc": {
+    "statements": 55,
     "lines": 55,
     "branches": 35
   },
