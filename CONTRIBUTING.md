@@ -18,7 +18,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
       single commit, so you can use that to frame your scope.
 1. Create a commit with the proposed change changes:
     * Commit title and message (and PR title and description) must adhere to [conventionalcommits].
-    * The title must begin with `feat(module): title`, `fix(module): title`, `reactor(module): title` or
+    * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
       `chore(module): title`.
     * Title should be lowercase.
     * No period at the end of the title.
