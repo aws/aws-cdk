@@ -126,5 +126,31 @@ export = {
     }));
 
     test.done();
+  },
+
+  'fails if the directory does not exist'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new DockerImageAsset(stack, 'MyAsset', {
+        directory: `/does/not/exist/${Math.floor(Math.random() * 9999)}`;
+      });
+    }, /Cannot find image directory at/);
+    test.done();
+  },
+
+  'fails if the directory does not contain a Dockerfile'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new DockerImageAsset(stack, 'Asset', {
+        directory: __dirname
+      });
+    }, /No 'Dockerfile' found in/);
+    test.done();
   }
 };
