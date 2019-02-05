@@ -201,7 +201,7 @@ export class Resource extends Referenceable {
             Type: this.resourceType,
             Properties: ignoreEmpty(this, properties),
             // Return a sorted set of dependencies to be consistent across tests
-            DependsOn: ignoreEmpty(this, Array.from(this.dependsOn).map(r => r.logicalId).sort()),
+            DependsOn: ignoreEmpty(this, renderDependsOn(this.dependsOn)),
             CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
             UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.options.updateReplacePolicy),
@@ -220,6 +220,15 @@ export class Resource extends Referenceable {
       e.stack = `${e.message}\n  ${creationStack}\n  --- problem discovered at ---${problemTrace}`;
       // Re-throw
       throw e;
+    }
+
+    // returns the set of logical ID (tokens) this resource depends on
+    // sorted by construct paths to ensure test determinism
+    function renderDependsOn(dependsOn: Set<Resource>) {
+      return Array
+        .from(dependsOn)
+        .sort((x, y) => x.node.path.localeCompare(y.node.path))
+        .map(r => r.logicalId);
     }
   }
 
