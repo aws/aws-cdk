@@ -135,7 +135,7 @@ export = {
     // THEN
     test.throws(() => {
       new DockerImageAsset(stack, 'MyAsset', {
-        directory: `/does/not/exist/${Math.floor(Math.random() * 9999)}`;
+        directory: `/does/not/exist/${Math.floor(Math.random() * 9999)}`
       });
     }, /Cannot find image directory at/);
     test.done();
