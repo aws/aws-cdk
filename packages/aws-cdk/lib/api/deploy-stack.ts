@@ -71,7 +71,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     TemplateURL: bodyParameter.TemplateURL,
     Parameters: params,
     RoleARN: options.roleArn,
-    Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM' ]
+    Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ]
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);

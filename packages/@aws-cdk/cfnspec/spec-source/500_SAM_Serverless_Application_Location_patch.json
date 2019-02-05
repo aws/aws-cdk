@@ -1,0 +1,20 @@
+{
+    "ResourceTypes": {
+        "AWS::Serverless::Application": {
+            "patch": {
+                "description": "Renames PrimitiveType in AWS::Serverless::Application#Location to PrimitiveTypes",
+                "operations": [
+                    {
+                        "op": "remove",
+                        "path": "/Properties/Location/PrimitiveType"
+                    },
+                    {
+                        "op": "add",
+                        "path": "/Properties/Location/PrimitiveTypes",
+                        "value": [ "String" ]
+                    }
+                ]
+            }
+        }
+    }
+}
