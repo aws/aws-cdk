@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ssm",
-  "version": "0.22.0",
+  "version": "0.23.0",
   "description": "The CDK Construct Library for AWS::SSM",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -54,19 +54,36 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.22.0",
-    "cdk-build-tools": "^0.22.0",
-    "cfn2ts": "^0.22.0",
-    "pkglint": "^0.22.0"
+    "@aws-cdk/aws-iam": "^0.23.0",
+    "@aws-cdk/assert": "^0.23.0",
+    "cdk-build-tools": "^0.23.0",
+    "cdk-integ-tools": "^0.23.0",
+    "cfn2ts": "^0.23.0",
+    "pkglint": "^0.23.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.22.0"
+    "@aws-cdk/cdk": "^0.23.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.22.0"
+    "@aws-cdk/aws-iam": "^0.23.0",
+    "@aws-cdk/cdk": "^0.23.0"
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "export:@aws-cdk/aws-ssm.IParameter",
+      "import-props-interface:@aws-cdk/aws-ssm.ParameterImportProps",
+      "resource-attribute:@aws-cdk/aws-ssm.IParameter.parameterValue",
+
+      "*:@aws-cdk/aws-ssm.Association",
+      "*:@aws-cdk/aws-ssm.Document",
+      "*:@aws-cdk/aws-ssm.MaintenanceWindow",
+      "*:@aws-cdk/aws-ssm.MaintenanceWindowTask",
+      "*:@aws-cdk/aws-ssm.PatchBaseline",
+      "*:@aws-cdk/aws-ssm.ResourceDataSync"
+    ]
   }
 }

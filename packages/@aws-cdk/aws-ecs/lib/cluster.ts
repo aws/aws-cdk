@@ -147,6 +147,7 @@ export class Cluster extends cdk.Construct implements ICluster {
   public export(): ClusterImportProps {
     return {
       clusterName: new cdk.Output(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
+      clusterArn: this.clusterArn,
       vpc: this.vpc.export(),
       securityGroups: this.connections.securityGroups.map(sg => sg.export()),
       hasEc2Capacity: this.hasEc2Capacity,
@@ -234,6 +235,11 @@ export interface ICluster extends cdk.IConstruct {
   readonly clusterName: string;
 
   /**
+   * The ARN of this cluster
+   */
+  readonly clusterArn: string;
+
+  /**
    * VPC that the cluster instances are running in
    */
   readonly vpc: ec2.IVpcNetwork;
@@ -264,6 +270,13 @@ export interface ClusterImportProps {
   clusterName: string;
 
   /**
+   * ARN of the cluster
+   *
+   * @default Derived from clusterName
+   */
+  clusterArn?: string;
+
+  /**
    * VPC that the cluster instances are running in
    */
   vpc: ec2.VpcNetworkImportProps;
@@ -291,6 +304,11 @@ class ImportedCluster extends cdk.Construct implements ICluster {
   public readonly clusterName: string;
 
   /**
+   * ARN of the cluster
+   */
+  public readonly clusterArn: string;
+
+  /**
    * VPC that the cluster instances are running in
    */
   public readonly vpc: ec2.IVpcNetwork;
@@ -310,6 +328,12 @@ class ImportedCluster extends cdk.Construct implements ICluster {
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
+
+    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : cdk.Stack.find(this).formatArn({
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: props.clusterName,
+    });
 
     let i = 1;
     for (const sgProps of props.securityGroups) {

@@ -110,7 +110,9 @@
               "Ref": "AWS::Region"
             },
             ".",
-            { "Ref": "AWS::URLSuffix" },
+            {
+              "Ref": "AWS::URLSuffix"
+            },
             "/",
             {
               "Ref": "myapiDeploymentStageprod298F01AF"
@@ -118,9 +120,6 @@
             "/"
           ]
         ]
-      },
-      "Export": {
-        "Name": "test-apigateway-restapi-defaults:myapiEndpoint3628AFE3"
       }
     }
   }
