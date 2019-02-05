@@ -5,22 +5,22 @@
     "metrics": [
       {
         "name": "Throttles",
-        "description": "How often this Lambda is throttled",
-        "isEventCount": true
+        "documentation": "How often this Lambda is throttled",
+        "type": "count"
       },
       {
         "name": "Invocations",
-        "description": "How often this Lambda is invoked",
-        "isEventCount": true
+        "documentation": "How often this Lambda is invoked",
+        "type": "count"
       },
       {
         "name": "Errors",
-        "description": "How many invocations of this Lambda fail",
-        "isEventCount": true
+        "documentation": "How many invocations of this Lambda fail",
+        "type": "count"
       },
       {
         "name": "Duration",
-        "description": "How long execution of this Lambda takes"
+        "documentation": "How long execution of this Lambda takes"
       }
     ]
   }

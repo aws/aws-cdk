@@ -103,14 +103,32 @@ export class AugmentationGenerator {
     this.code.line(`/**`);
     this.code.line(` * ${metric.documentation}`);
     this.code.line(` *`);
-    this.code.line(` * ${metric.isEventCount ? 'Sum' : 'Average'} over 5 minutes`);
+    this.code.line(` * ${metricStatistic(metric)} over 5 minutes`);
     this.code.line(` */`);
-    this.code.line(`metric${metric.name}(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;`);
+    this.code.line(`metric${metricFunctionName(metric)}(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;`);
   }
 
   private emitSpecificMetricFunction(className: string, metric: schema.ResourceMetric) {
-    this.code.line(`${className}.prototype.metric${metric.name} = function(props?: cloudwatch.MetricCustomization) {`);
-    this.code.line(`  return this.metric('${metric.name}', { ${metric.isEventCount ? "statistic: 'sum', " : ""}...props });`);
+    this.code.line(`${className}.prototype.metric${metricFunctionName(metric)} = function(props?: cloudwatch.MetricCustomization) {`);
+    this.code.line(`  return this.metric('${metric.name}', { statistic: '${metricStatistic(metric)}', ...props });`);
     this.code.line('};');
+  }
+}
+
+function metricFunctionName(metric: schema.ResourceMetric) {
+  return metric.name.replace(/[^a-zA-Z0-9]/g, '');
+}
+
+function metricStatistic(metric: schema.ResourceMetric) {
+  switch (metric.type) {
+    case schema.MetricType.Attrib:
+    case undefined:
+      return 'Average';
+
+    case schema.MetricType.Count:
+      return 'Sum';
+
+    case schema.MetricType.Gauge:
+      return 'Maximum';
   }
 }
