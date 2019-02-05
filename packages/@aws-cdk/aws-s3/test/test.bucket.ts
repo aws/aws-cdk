@@ -989,9 +989,7 @@ export = {
             "WebsiteURL"
           ]
         },
-        "Export": {
-          "Name": "MyBucketWebsiteURL9C222788"
-        }
+        "Export": {"Name": "MyBucketWebsiteURL9C222788"}
       }
       }
     });
@@ -1083,9 +1081,6 @@ export = {
           ]
         ]
         },
-        "Export": {
-        "Name": "BucketURL"
-        }
       },
       "MyFileURL": {
         "Value": {
@@ -1107,9 +1102,6 @@ export = {
           "/my/file.txt"
           ]
         ]
-        },
-        "Export": {
-        "Name": "MyFileURL"
         }
       },
       "YourFileURL": {
@@ -1133,9 +1125,6 @@ export = {
           ]
         ]
         },
-        "Export": {
-        "Name": "YourFileURL"
-        }
       }
       }
     });

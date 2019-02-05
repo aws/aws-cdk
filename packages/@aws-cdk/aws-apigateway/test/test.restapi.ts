@@ -92,8 +92,7 @@ export = {
               { Ref: "myapiDeploymentStageprod298F01AF" },
               "/"
             ]]
-          },
-          Export: { Name: "myapiEndpoint3628AFE3" }
+          }
         }
       }
     });
