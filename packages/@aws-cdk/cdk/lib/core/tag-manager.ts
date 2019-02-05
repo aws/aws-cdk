@@ -15,12 +15,31 @@ export interface TagProps {
   applyToLaunchedInstances?: boolean;
 
   /**
+   * An array of Resource Types that will not receive this tag
+   *
+   * An empty array will allow this tag to be applied to all resources. A
+   * non-empty array will apply this tag only if the Resource type is not in
+   * this array.
+   * @default []
+   */
+  excludeResourceTypes?: string[];
+
+  /**
+   * An array of Resource Types that will receive this tag
+   *
+   * An empty array will match any Resource. A non-empty array will apply this
+   * tag only to Resource types that are included in this array.
+   * @default []
+   */
+  includeResourceTypes?: string[];
+
+  /**
    * Higher or equal priority tags will take precedence
    *
    * Setting priority will enable the user to control tags when they need to not
    * follow the default precedence pattern of last applied and closest to the
    * construct in the tree.
-   * @default 0 for Tag 1 for Remove Tag
+   * @default 0 for Tag 1 for RemoveTag
    */
   priority?: number;
 }
@@ -34,7 +53,7 @@ export class TagManager {
 
   private readonly removedTags: {[key: string]: number} = {};
 
-  constructor(private readonly tagType: TagType) { }
+  constructor(private readonly tagType: TagType, private readonly resourceTypeName: string) { }
 
   /**
    * Adds the specified tag to the array of tags
@@ -45,9 +64,8 @@ export class TagManager {
    */
   public setTag(key: string, value: string, props?: TagProps): void {
     const tagProps: TagProps = props || {};
-    tagProps.priority = tagProps.priority === undefined ? 0 : tagProps.priority;
 
-    if (!this.hasHigherPriority(key, tagProps.priority)) {
+    if (!this.canApplyTag(key, tagProps)) {
       // tag is blocked by a remove
       return;
     }
@@ -62,8 +80,10 @@ export class TagManager {
    *
    * @param key The key of the tag to remove
    */
-  public removeTag(key: string, priority: number = 0): void {
-    if (!this.hasHigherPriority(key, priority)) {
+  public removeTag(key: string, props?: TagProps): void {
+    const tagProps = props || {};
+    const priority = tagProps.priority === undefined ? 0 : tagProps.priority;
+    if (!this.canApplyTag(key, tagProps)) {
       // tag is blocked by a remove
       return;
     }
@@ -108,7 +128,18 @@ export class TagManager {
     }
   }
 
-  private hasHigherPriority(key: string, priority: number): boolean {
+  private canApplyTag(key: string, props: TagProps): boolean {
+    const include = props.includeResourceTypes || [];
+    const exclude = props.excludeResourceTypes || [];
+    const priority = props.priority === undefined ? 0 : props.priority;
+    if (exclude.length !== 0 &&
+      exclude.indexOf(this.resourceTypeName) !== -1) {
+      return false;
+    }
+    if (include.length !== 0 &&
+      include.indexOf(this.resourceTypeName) === -1) {
+      return false;
+    }
     if (this.tags[key]) {
       if (this.tags[key].props.priority !== undefined) {
         return priority >= this.tags[key].props.priority!;

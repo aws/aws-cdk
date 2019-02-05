@@ -188,10 +188,11 @@ export default class CodeGenerator {
     // Static inspectors.
     //
 
+    const resourceTypeName = `${JSON.stringify(resourceName.specName!.fqn)}`;
     this.code.line('/**');
     this.code.line(` * The CloudFormation resource type name for this resource class.`);
     this.code.line(' */');
-    this.code.line(`public static readonly resourceTypeName = ${JSON.stringify(resourceName.specName!.fqn)};`);
+    this.code.line(`public static readonly resourceTypeName = ${resourceTypeName};`);
 
     if (spec.RequiredTransform) {
       this.code.line('/**');
@@ -242,10 +243,10 @@ export default class CodeGenerator {
       this.code.line(' *');
       this.code.line(' * Tags should be managed either passing them as properties during');
       this.code.line(' * initiation or by calling methods on this object. If both techniques are');
-      this.code.line(' * used only the tags from the TagManager will be used. ``TagAspects``');
+      this.code.line(' * used only the tags from the TagManager will be used. ``Tag`` (aspect)');
       this.code.line(' * will use the manager.');
       this.code.line(' */');
-      this.code.line(`public readonly tags = new ${TAG_MANAGER}(${tagEnum});`);
+      this.code.line(`public readonly tags = new ${TAG_MANAGER}(${tagEnum}, ${resourceTypeName});`);
     }
 
     //

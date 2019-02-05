@@ -13,13 +13,11 @@ export abstract class TagBase implements IAspect {
    */
   public readonly key: string;
 
-  private readonly includeResourceTypes: string[];
-  private readonly excludeResourceTypes: string[];
+  protected readonly props: TagProps;
 
   constructor(key: string, props: TagProps = {}) {
     this.key = key;
-    this.includeResourceTypes = props.includeResourceTypes || [];
-    this.excludeResourceTypes = props.excludeResourceTypes || [];
+    this.props = props;
   }
 
   public visit(construct: IConstruct): void {
@@ -28,14 +26,6 @@ export abstract class TagBase implements IAspect {
     }
     const resource = construct as Resource;
     if (Resource.isTaggable(resource)) {
-      if (this.excludeResourceTypes.length !== 0 &&
-        this.excludeResourceTypes.indexOf(resource.resourceType) !== -1) {
-        return;
-      }
-      if (this.includeResourceTypes.length !== 0 &&
-        this.includeResourceTypes.indexOf(resource.resourceType) === -1) {
-        return;
-      }
       this.applyTag(resource);
     }
   }
@@ -53,13 +43,10 @@ export class Tag extends TagBase {
    */
   public readonly value: string;
 
-  private readonly applyToLaunchedInstances: boolean;
-  private readonly priority: number;
-
   constructor(key: string, value: string, props: TagProps = {}) {
-    super(key, {...props});
-    this.applyToLaunchedInstances = props.applyToLaunchedInstances !== false;
-    this.priority = props.priority === undefined ? 0 : props.priority;
+    super(key, props);
+    this.props.applyToLaunchedInstances = props.applyToLaunchedInstances !== false;
+    this.props.priority = props.priority === undefined ? 0 : props.priority;
     if (value === undefined) {
       throw new Error('Tag must have a value');
     }
@@ -67,10 +54,7 @@ export class Tag extends TagBase {
   }
 
   protected applyTag(resource: ITaggable) {
-    resource.tags.setTag(this.key, this.value!, {
-      applyToLaunchedInstances: this.applyToLaunchedInstances,
-      priority: this.priority,
-    });
+    resource.tags.setTag(this.key, this.value!, this.props);
   }
 }
 
@@ -79,15 +63,13 @@ export class Tag extends TagBase {
  */
 export class RemoveTag extends TagBase {
 
-  private readonly priority: number;
-
   constructor(key: string, props: TagProps = {}) {
     super(key, props);
-    this.priority = props.priority === undefined ? 1 : props.priority;
+    this.props.priority = props.priority === undefined ? 1 : props.priority;
   }
 
   protected applyTag(resource: ITaggable): void {
-    resource.tags.removeTag(this.key, this.priority);
+    resource.tags.removeTag(this.key, this.props);
     return;
   }
 }

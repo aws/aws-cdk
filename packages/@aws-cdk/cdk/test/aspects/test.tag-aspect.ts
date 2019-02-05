@@ -2,18 +2,18 @@ import { Test } from 'nodeunit';
 import { RemoveTag, Resource, Stack, Tag, TagManager, TagType } from '../../lib';
 
 class TaggableResource extends Resource {
-  public readonly tags = new TagManager(TagType.Standard);
+  public readonly tags = new TagManager(TagType.Standard, 'AWS::Fake::Resource');
   public testProperties() {
     return this.properties;
   }
 }
 
 class AsgTaggableResource extends TaggableResource {
-  public readonly tags = new TagManager(TagType.AutoScalingGroup);
+  public readonly tags = new TagManager(TagType.AutoScalingGroup, 'AWS::Fake::Resource');
 }
 
 class MapTaggableResource extends TaggableResource {
-  public readonly tags = new TagManager(TagType.Map);
+  public readonly tags = new TagManager(TagType.Map, 'AWS::Fake::Resource');
 }
 
 export = {
@@ -100,30 +100,6 @@ export = {
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.done();
   },
-  'include restricts tag application to resources types in the list'(test: Test) {
-    const root = new Stack();
-    const res = new TaggableResource(root, 'FakeResource', {
-      type: 'AWS::Fake::Thing',
-    });
-    const res2 = new TaggableResource(res, 'FakeResource', {
-      type: 'AWS::Fake::Thing',
-    });
-    const asg = new AsgTaggableResource(res, 'AsgFakeResource', {
-      type: 'AWS::Fake::Asg',
-    });
-
-    const map = new MapTaggableResource(res, 'MapFakeResource', {
-      type: 'AWS::Fake::Map',
-    });
-    res.apply(new Tag('foo', 'bar', {includeResourceTypes: ['AWS::Fake::Asg']}));
-    root.node.prepareTree();
-    test.deepEqual(res.tags.renderTags(), undefined);
-    test.deepEqual(map.tags.renderTags(), undefined);
-    test.deepEqual(res2.tags.renderTags(), undefined);
-    test.deepEqual(asg.tags.renderTags(), [{key: 'foo', value: 'bar', propagateAtLaunch: true}]);
-    test.deepEqual(map.testProperties().tags, undefined);
-    test.done();
-  },
   'removeTag Aspects by default will override child Tag Aspects'(test: Test) {
     const root = new Stack();
     const res = new TaggableResource(root, 'FakeResource', {
@@ -152,29 +128,6 @@ export = {
     root.node.prepareTree();
     test.deepEqual(res.tags.renderTags(), undefined);
     test.deepEqual(res2.tags.renderTags(), [{key: 'key', value: 'value'}]);
-    test.done();
-  },
-  'exclude prevents tag application to resource types in the list'(test: Test) {
-    const root = new Stack();
-    const res = new TaggableResource(root, 'FakeResource', {
-      type: 'AWS::Fake::Thing',
-    });
-    const res2 = new TaggableResource(res, 'FakeResource', {
-      type: 'AWS::Fake::Thing',
-    });
-    const asg = new AsgTaggableResource(res, 'AsgFakeResource', {
-      type: 'AWS::Fake::Asg',
-    });
-
-    const map = new MapTaggableResource(res, 'MapFakeResource', {
-      type: 'AWS::Fake::Map',
-    });
-    res.apply(new Tag('foo', 'bar', {excludeResourceTypes: ['AWS::Fake::Asg']}));
-    root.node.prepareTree();
-    test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
-    test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
-    test.deepEqual(asg.tags.renderTags(), undefined);
-    test.deepEqual(map.tags.renderTags(), {foo: 'bar'});
     test.done();
   },
   'Aspects are mutually exclusive with tags created by L1 Constructor'(test: Test) {
