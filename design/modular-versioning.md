@@ -2,10 +2,19 @@
 ## Motivation
 The AWS Cloud Development Kit is a complex project composed of over `100` packages. The vast
 majority of those packages is made of construct libraries that expose each individual AWS services'
-surface area to developers. Those libraries need to be allowed to mature (at reach *GA*) at their
+surface area to developers. Those libraries need to be allowed to mature (and reach *GA*) at their
 own pace, in particular as the intention is to eventually transfer ownership of those to the service
 teams. This means CDK packages need to be versioned individually (in other words: in a modular way).
 Individual modules might also eventually be split out of the [awslabs/aws-cdk] mono-repo.
+
+## Requirements
+In no particular order:
+
+* Modules can reach *GA* independent of other modules
+* Module owners can decide when to issue a new major version without significant coordination effort
+* Modules can live in the [mono-repo][awslabs/aws-cdk] or in their own repository
+* New versions are automatically released on a daily basis
+* Pre-`1.0.0` packages may continue to use a uniform `0.x.y` version
 
 ## Challenges
 ### Customer / Developer Experience
