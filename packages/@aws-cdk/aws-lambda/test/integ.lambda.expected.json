@@ -68,8 +68,8 @@
         "Runtime": "nodejs6.10"
       },
       "DependsOn": [
-        "MyLambdaServiceRole4539ECB6",
-        "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+        "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+        "MyLambdaServiceRole4539ECB6"
       ]
     },
     "MyLambdaVersion16CDE3C40": {

@@ -95,7 +95,7 @@ export = {
           Handler: 'index.handler',
           Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
           Runtime: 'nodejs6.10' },
-         DependsOn: [ 'MyLambdaServiceRole4539ECB6', 'MyLambdaServiceRoleDefaultPolicy5BBC6F68' ] } } } );
+         DependsOn: [ 'MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6' ] } } } );
     test.done();
 
   },
@@ -429,8 +429,8 @@ export = {
             "FunctionName": "OneFunctionToRuleThemAll"
           },
           "DependsOn": [
-            "MyLambdaServiceRole4539ECB6",
-            "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6"
           ]
           }
         }
@@ -539,8 +539,8 @@ export = {
             }
           },
           "DependsOn": [
-            "MyLambdaServiceRole4539ECB6",
-            "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6"
           ]
           }
         }
@@ -717,8 +717,8 @@ export = {
             }
           },
           "DependsOn": [
-            "MyLambdaServiceRole4539ECB6",
-            "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6"
           ]
           }
         }
@@ -827,8 +827,8 @@ export = {
           }
           },
           "DependsOn": [
-          "MyLambdaServiceRole4539ECB6",
-          "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6",
           ]
         }
         }
@@ -906,8 +906,8 @@ export = {
       }
     },
     "DependsOn": [
+      "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
       "MyLambdaServiceRole4539ECB6",
-      "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
     ]
     }, ResourcePart.CompleteDefinition));
 
@@ -964,8 +964,8 @@ export = {
       }
     },
     "DependsOn": [
+      "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
       "MyLambdaServiceRole4539ECB6",
-      "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
     ]
     }, ResourcePart.CompleteDefinition));
 
