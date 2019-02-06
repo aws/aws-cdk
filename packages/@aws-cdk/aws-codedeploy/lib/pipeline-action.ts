@@ -1,7 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { IServerDeploymentGroup } from './deployment-group';
+import { IServerDeploymentGroup } from './server';
 
 /**
  * Common properties for creating a {@link PipelineDeployAction},
@@ -31,8 +31,7 @@ export interface PipelineDeployActionProps extends CommonPipelineDeployActionPro
 export class PipelineDeployAction extends codepipeline.DeployAction {
   constructor(scope: cdk.Construct, id: string, props: PipelineDeployActionProps) {
     super(scope, id, {
-      stage: props.stage,
-      runOrder: props.runOrder,
+      ...props,
       artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 },
       provider: 'CodeDeploy',
       inputArtifact: props.inputArtifact,

@@ -18,7 +18,7 @@ export class CfnReference extends Token {
   /**
    * Check whether this is actually a CfnReference
    */
-  public static isInstance(x: Token): x is CfnReference {
+  public static isCfnReference(x: Token): x is CfnReference {
     return (x as any).consumeFromStack !== undefined;
   }
 
@@ -102,7 +102,7 @@ export class CfnReference extends Token {
 
     // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
     // so construct one in-place.
-    return new Token({ 'Fn::ImportValue': output.export });
+    return new Token({ 'Fn::ImportValue': output.obtainExportName() });
   }
 
 }

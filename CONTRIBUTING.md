@@ -198,6 +198,29 @@ If you also wish to package to all languages, make sure you have all the [toolch
 $ ./pack.sh
 ```
 
+### Full Docker build
+
+Clone the repo:
+
+```console
+$ git clone git@github.com/awslabs/aws-cdk
+$ cd aws-cdk
+```
+
+If you already have a local repo and you want a fresh build, run `git clean -fdx` from the root.
+
+Build the docker image:
+
+```console
+$ docker build -t aws-cdk .
+```
+
+This allows you to run the CDK in a CDK-compatible directory with a command like:
+
+```console
+$ docker run -v $(pwd):/app -w /app aws-cdk <CDK ARGS>
+```
+
 ### Partial build
 
 In many cases, you don't really need to build the entire project. Say you want to work on the `@aws-cdk/aws-ec2` module:
@@ -264,6 +287,13 @@ To build the docs even if reference docs are not present:
 $ cd docs
 $ BUILD_DOCS_DEV=1 ./build-docs.sh
 ```
+
+### Tooling Assists
+#### Jetbrains (WebStorm/IntelliJ)
+This project uses lerna and utilizes symlinks inside nested node_modules directories. You may encounter an issue during
+indexing where the IDE attempts to index these directories and keeps following links until the process runs out of
+available memory and crashes. To fix this, you can run ```node ./scripts/jetbrains-remove-node-modules.js``` to exclude
+these directories.
 
 ## Dependencies
 

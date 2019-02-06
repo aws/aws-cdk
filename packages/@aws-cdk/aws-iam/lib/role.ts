@@ -1,4 +1,4 @@
-import { Construct, IConstruct, IDependable, Output } from '@aws-cdk/cdk';
+import { Construct, IConstruct, Output, Stack } from '@aws-cdk/cdk';
 import { CfnRole } from './iam.generated';
 import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
@@ -124,11 +124,6 @@ export class Role extends Construct implements IRole {
    */
   public readonly principal: PolicyPrincipal;
 
-  /**
-   * Returns the role.
-   */
-  public readonly dependencyElements: IDependable[];
-
   private defaultPolicy?: Policy;
   private readonly managedPolicyArns: string[];
   private readonly attachedPolicies = new AttachedPolicies();
@@ -154,7 +149,6 @@ export class Role extends Construct implements IRole {
     this.roleArn = role.roleArn;
     this.principal = new ArnPrincipal(this.roleArn);
     this.roleName = role.roleName;
-    this.dependencyElements = [ role ];
 
     function _flatten(policies?: { [name: string]: PolicyDocument }) {
       if (policies == null || Object.keys(policies).length === 0) {
@@ -185,7 +179,6 @@ export class Role extends Construct implements IRole {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.attachInlinePolicy(this.defaultPolicy);
-      this.dependencyElements.push(this.defaultPolicy);
     }
     this.defaultPolicy.addStatement(statement);
   }
@@ -206,12 +199,32 @@ export class Role extends Construct implements IRole {
     this.attachedPolicies.attach(policy);
     policy.attachToRole(this);
   }
+
+  /**
+   * Grant the actions defined in actions to the identity Principal on this resource.
+   */
+  public grant(identity?: IPrincipal, ...actions: string[]) {
+      if (!identity) {
+        return;
+      }
+
+      identity.addToPolicy(new PolicyStatement()
+        .addResource(this.roleArn)
+        .addActions(...actions));
+  }
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  public grantPassRole(identity?: IPrincipal) {
+    this.grant(identity, 'iam:PassRole');
+  }
 }
 
 /**
  * A Role object
  */
-export interface IRole extends IConstruct, IPrincipal, IDependable {
+export interface IRole extends IConstruct, IPrincipal {
   /**
    * Returns the ARN of this role.
    */
@@ -222,6 +235,11 @@ export interface IRole extends IConstruct, IPrincipal, IDependable {
    * AIDAJQABLZS4A3QDU576Q.
    */
   readonly roleId: string;
+
+  /**
+   * Returns the name of this role.
+   */
+  readonly roleName: string;
 
   /**
    * Export this role to another stack.
@@ -277,7 +295,6 @@ export interface RoleImportProps {
 class ImportedRole extends Construct implements IRole {
   public readonly roleArn: string;
   public readonly principal: PolicyPrincipal;
-  public readonly dependencyElements: IDependable[] = [];
 
   private readonly _roleId?: string;
 
@@ -293,6 +310,10 @@ class ImportedRole extends Construct implements IRole {
       throw new Error(`No roleId specified for imported role`);
     }
     return this._roleId;
+  }
+
+  public get roleName() {
+    return Stack.find(this).parseArn(this.roleArn).resourceName!;
   }
 
   public export() {

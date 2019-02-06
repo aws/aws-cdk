@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
-import Table = require('cli-table');
 import colors = require('colors/safe');
 import { format } from 'util';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
+import { formatTable } from './format-table';
 import { IamChanges } from './iam/iam-changes';
 import { SecurityGroupChanges } from './network/security-group-changes';
 
@@ -96,12 +96,12 @@ class Formatter {
       collection: DifferenceCollection<V, T>,
       formatter: (type: string, id: string, diff: T) => void = this.formatDifference.bind(this)) {
 
-    if (collection.count === 0) {
+    if (collection.differenceCount === 0) {
       return;
     }
 
     this.printSectionHeader(title);
-    collection.forEach((id, diff) => formatter(entryType, id, diff));
+    collection.forEachDifference((id, diff) => formatter(entryType, id, diff));
     this.printSectionFooter();
   }
 
@@ -120,7 +120,7 @@ class Formatter {
    * @param diff the difference to be rendered.
    */
   public formatDifference(type: string, logicalId: string, diff: Difference<any> | undefined) {
-    if (!diff) { return; }
+    if (!diff || !diff.isDifferent) { return; }
 
     let value;
 
@@ -144,16 +144,19 @@ class Formatter {
    * @param diff      the change to be rendered.
    */
   public formatResourceDifference(_type: string, logicalId: string, diff: ResourceDifference) {
+    if (!diff.isDifferent) { return; }
+
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // tslint:disable-next-line:max-line-length
     this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, colors.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {
+      const differenceCount = diff.differenceCount;
       let processedCount = 0;
-      diff.forEach((_, name, values) => {
+      diff.forEachDifference((_, name, values) => {
         processedCount += 1;
-        this.formatTreeDiff(name, values, processedCount === diff.count);
+        this.formatTreeDiff(name, values, processedCount === differenceCount);
       });
     }
   }
@@ -186,13 +189,14 @@ class Formatter {
     case ResourceImpact.MAY_REPLACE:
       return colors.italic(colors.yellow('may be replaced'));
     case ResourceImpact.WILL_REPLACE:
-      return colors.italic(colors.bold(colors.yellow('replace')));
+      return colors.italic(colors.bold(colors.red('replace')));
     case ResourceImpact.WILL_DESTROY:
       return colors.italic(colors.bold(colors.red('destroy')));
     case ResourceImpact.WILL_ORPHAN:
       return colors.italic(colors.yellow('orphan'));
     case ResourceImpact.WILL_UPDATE:
     case ResourceImpact.WILL_CREATE:
+    case ResourceImpact.NO_CHANGE:
       return ''; // no extra info is gained here
     }
   }
@@ -352,12 +356,12 @@ class Formatter {
 
     if (changes.statements.hasChanges) {
       this.printSectionHeader('IAM Statement Changes');
-      this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarizeStatements())));
+      this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeStatements()), this.stream.columns));
     }
 
     if (changes.managedPolicies.hasChanges) {
       this.printSectionHeader('IAM Policy Changes');
-      this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies())));
+      this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies()), this.stream.columns));
     }
   }
 
@@ -365,7 +369,7 @@ class Formatter {
     if (!changes.hasChanges) { return; }
 
     this.printSectionHeader('Security Group Changes');
-    this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarize())));
+    this.print(formatTable(this.deepSubstituteBracedLogicalIds(changes.summarize()), this.stream.columns));
   }
 
   public deepSubstituteBracedLogicalIds(rows: string[][]): string[][] {
@@ -379,47 +383,6 @@ class Formatter {
     return source.replace(/\$\{([^.}]+)(.[^}]+)?\}/ig, (_match, logId, suffix) => {
       return '${' + (this.normalizedLogicalIdPath(logId) || logId) + (suffix || '') + '}';
   });
-  }
-}
-
-/**
- * Render a two-dimensional array to a visually attractive table
- *
- * First row is considered the table header.
- */
-function renderTable(cells: string[][]): string {
-  const head = cells.splice(0, 1)[0];
-
-  const table = new Table({ head, style: { head: [] } });
-  table.push(...cells);
-  return stripHorizontalLines(table.toString()).trimRight();
-}
-
-/**
- * Strip horizontal lines in the table rendering if the second-column values are the same
- *
- * We couldn't find a table library that BOTH does newlines-in-cells correctly AND
- * has an option to enable/disable separator lines on a per-row basis. So we're
- * going to do some character post-processing on the table instead.
- */
-function stripHorizontalLines(tableRendering: string) {
-  const lines = tableRendering.split('\n');
-
-  let i = 3;
-  while (i < lines.length - 3) {
-    if (secondColumnValue(lines[i]) === secondColumnValue(lines[i + 2])) {
-      lines.splice(i + 1, 1);
-      i += 1;
-    } else {
-      i += 2;
-    }
-  }
-
-  return lines.join('\n');
-
-  function secondColumnValue(line: string) {
-    const cols = colors.stripColors(line).split('│').filter(x => x !== '');
-    return cols[1];
   }
 }
 

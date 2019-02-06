@@ -46,7 +46,7 @@ class HaveResourceAssertion extends Assertion<StackInspector> {
   }
 
   public assertUsing(inspector: StackInspector): boolean {
-    for (const logicalId of Object.keys(inspector.value.Resources)) {
+    for (const logicalId of Object.keys(inspector.value.Resources || {})) {
       const resource = inspector.value.Resources[logicalId];
       if (resource.Type === this.resourceType) {
         const propsToCheck = this.part === ResourcePart.Properties ? resource.Properties : resource;
@@ -103,7 +103,7 @@ function makeSuperObjectPredicate(obj: any, allowValueExtension: boolean) {
   };
 }
 
-interface InspectionFailure {
+export interface InspectionFailure {
   resource: any;
   failureReason: string;
 }

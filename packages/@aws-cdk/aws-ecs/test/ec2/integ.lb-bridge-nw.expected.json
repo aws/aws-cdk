@@ -804,7 +804,8 @@
         "SchedulingStrategy": "REPLICA"
       },
       "DependsOn": [
-        "LBPublicListener6E1F3D94"
+        "LBPublicListener6E1F3D94",
+        "LBPublicListenerECSGroupD6A32205"
       ]
     },
     "LB8A12904C": {
@@ -831,7 +832,8 @@
         "Type": "application"
       },
       "DependsOn": [
-        "VpcIGWD7BA715C"
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet2DefaultRoute97F91067"
       ]
     },
     "LBSecurityGroup8A41EA2B": {
@@ -914,9 +916,6 @@
           "LB8A12904C",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ-ecs:LoadBalancerDNS"
       }
     }
   }

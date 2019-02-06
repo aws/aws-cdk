@@ -2,6 +2,121 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.23.0](https://github.com/awslabs/aws-cdk/compare/v0.22.0...v0.23.0) (2019-02-04)
+
+
+### Bug Fixes
+
+* **apig:** Move `selectionPattern` to `integrationResponses` ([#1636](https://github.com/awslabs/aws-cdk/issues/1636)) ([7cdbcec](https://github.com/awslabs/aws-cdk/commit/7cdbcec)), closes [#1608](https://github.com/awslabs/aws-cdk/issues/1608)
+* **aws-cdk:** Improvements to IAM diff rendering ([#1542](https://github.com/awslabs/aws-cdk/issues/1542)) ([3270b47](https://github.com/awslabs/aws-cdk/commit/3270b47)), closes [#1458](https://github.com/awslabs/aws-cdk/issues/1458) [#1495](https://github.com/awslabs/aws-cdk/issues/1495) [#1549](https://github.com/awslabs/aws-cdk/issues/1549)
+* **aws-cdk:** Java init template works on Windows ([#1503](https://github.com/awslabs/aws-cdk/issues/1503)) ([24f521a](https://github.com/awslabs/aws-cdk/commit/24f521a))
+* **sns:** create subscription object under subscriber ([5c4a9e5](https://github.com/awslabs/aws-cdk/commit/5c4a9e5)), closes [#1643](https://github.com/awslabs/aws-cdk/issues/1643) [#1534](https://github.com/awslabs/aws-cdk/issues/1534)
+* Improve error message in SSMParameterProvider ([#1630](https://github.com/awslabs/aws-cdk/issues/1630)) ([6a8e010](https://github.com/awslabs/aws-cdk/commit/6a8e010)), closes [#1621](https://github.com/awslabs/aws-cdk/issues/1621)
+* **aws-ec2:** CfnNetworkAclEntry.CidrBlock should be optional ([#1565](https://github.com/awslabs/aws-cdk/issues/1565)) ([4af7c0d](https://github.com/awslabs/aws-cdk/commit/4af7c0d)), closes [#1517](https://github.com/awslabs/aws-cdk/issues/1517)
+* **aws-ec2:** change maxAZs default for VPCs to 3 ([#1543](https://github.com/awslabs/aws-cdk/issues/1543)) ([32a4b29](https://github.com/awslabs/aws-cdk/commit/32a4b29)), closes [#996](https://github.com/awslabs/aws-cdk/issues/996)
+* **aws-events:** ergonomics improvements to CloudWatch Events ([#1570](https://github.com/awslabs/aws-cdk/issues/1570)) ([5e91a0a](https://github.com/awslabs/aws-cdk/commit/5e91a0a)), closes [#1514](https://github.com/awslabs/aws-cdk/issues/1514) [#1198](https://github.com/awslabs/aws-cdk/issues/1198) [#1275](https://github.com/awslabs/aws-cdk/issues/1275)
+* **aws-s3-deployment:** clean up tempfiles after deployment ([#1367](https://github.com/awslabs/aws-cdk/issues/1367)) ([e291d37](https://github.com/awslabs/aws-cdk/commit/e291d37))
+* **dynamodb:** grant also gives access to indexes ([#1564](https://github.com/awslabs/aws-cdk/issues/1564)) ([33c2a6d](https://github.com/awslabs/aws-cdk/commit/33c2a6d)), closes [#1540](https://github.com/awslabs/aws-cdk/issues/1540)
+* Report stack metadata in assertions ([#1547](https://github.com/awslabs/aws-cdk/issues/1547)) ([c2d17f5](https://github.com/awslabs/aws-cdk/commit/c2d17f5))
+
+
+### Features
+
+* **alexa-ask:** Add deploy action for Alexa ([#1613](https://github.com/awslabs/aws-cdk/issues/1613)) ([0deea61](https://github.com/awslabs/aws-cdk/commit/0deea61))
+* **apigateway:** support function alias in LambdaIntegration ([9f8bfa5](https://github.com/awslabs/aws-cdk/commit/9f8bfa5))
+* **app:** add source map support to TS app template ([#1581](https://github.com/awslabs/aws-cdk/issues/1581)) ([5df22d9](https://github.com/awslabs/aws-cdk/commit/5df22d9)), closes [#1579](https://github.com/awslabs/aws-cdk/issues/1579)
+* **autoscaling:** Support AssociatePublicIpAddress ([#1604](https://github.com/awslabs/aws-cdk/issues/1604)) ([23c9afc](https://github.com/awslabs/aws-cdk/commit/23c9afc)), closes [#1603](https://github.com/awslabs/aws-cdk/issues/1603)
+* **aws-codepipeline:** support setting a Role for a CFN Action ([#1449](https://github.com/awslabs/aws-cdk/issues/1449)) ([77fe077](https://github.com/awslabs/aws-cdk/commit/77fe077))
+* **aws-ecs:** add additional configuration to Volume ([#1357](https://github.com/awslabs/aws-cdk/issues/1357)) ([ff96f3f](https://github.com/awslabs/aws-cdk/commit/ff96f3f))
+* **aws-ecs:** add support for Event Targets ([#1571](https://github.com/awslabs/aws-cdk/issues/1571)) ([aa68db5](https://github.com/awslabs/aws-cdk/commit/aa68db5)), closes [#1370](https://github.com/awslabs/aws-cdk/issues/1370)
+* **aws-ecs:** ECS service scaling on ALB RequestCount ([#1574](https://github.com/awslabs/aws-cdk/issues/1574)) ([2b491d4](https://github.com/awslabs/aws-cdk/commit/2b491d4))
+* **aws-s3:** add the option to not poll to the CodePipeline Action. ([#1260](https://github.com/awslabs/aws-cdk/issues/1260)) ([876b26d](https://github.com/awslabs/aws-cdk/commit/876b26d))
+* **cdk:** Support UpdateReplacePolicy on Resources ([#1610](https://github.com/awslabs/aws-cdk/issues/1610)) ([f49c33b](https://github.com/awslabs/aws-cdk/commit/f49c33b))
+* **cdk:** treat the "fake" CFN intrinsics (Fn::GetArtifactAtt, Fn::GetParam) specially when stringifying JSON. ([#1605](https://github.com/awslabs/aws-cdk/issues/1605)) ([2af2426](https://github.com/awslabs/aws-cdk/commit/2af2426)), closes [#1588](https://github.com/awslabs/aws-cdk/issues/1588)
+* **cfnspec:** Upgrade to CFN Resource Specification v2.21.0 ([#1622](https://github.com/awslabs/aws-cdk/issues/1622)) ([21a5529](https://github.com/awslabs/aws-cdk/commit/21a5529))
+* **cloudwatch:** Support 'datapointsToAlarm' on Alarms ([#1631](https://github.com/awslabs/aws-cdk/issues/1631)) ([828ac20](https://github.com/awslabs/aws-cdk/commit/828ac20)), closes [#1626](https://github.com/awslabs/aws-cdk/issues/1626)
+* **core:** Generalization of dependencies ([#1583](https://github.com/awslabs/aws-cdk/issues/1583)) ([53e68257](https://github.com/awslabs/aws-cdk/commit/53e68257))
+* **ecs:** environment variables for LoadBalancedXxxService ([#1537](https://github.com/awslabs/aws-cdk/issues/1537)) ([b633505](https://github.com/awslabs/aws-cdk/commit/b633505))
+* **ecs:** VPC link for API Gatweay and ECS services ([#1541](https://github.com/awslabs/aws-cdk/issues/1541)) ([6642ca2](https://github.com/awslabs/aws-cdk/commit/6642ca2))
+* **iam:** Make `roleName` available on `IRole` ([#1589](https://github.com/awslabs/aws-cdk/issues/1589)) ([9128390](https://github.com/awslabs/aws-cdk/commit/9128390))
+* **lambda:** reserved concurrent executions ([#1560](https://github.com/awslabs/aws-cdk/issues/1560)) ([f7469c1](https://github.com/awslabs/aws-cdk/commit/f7469c1))
+* **lambda:** Support AWS Lambda Layers ([#1411](https://github.com/awslabs/aws-cdk/issues/1411)) ([036cfdf](https://github.com/awslabs/aws-cdk/commit/036cfdf))
+* **s3:** Add DeployAction for codepipeline ([#1596](https://github.com/awslabs/aws-cdk/issues/1596)) ([8f1a5e8](https://github.com/awslabs/aws-cdk/commit/8f1a5e8))
+* **s3:** export bucket websiteURL ([#1521](https://github.com/awslabs/aws-cdk/issues/1521)) ([#1544](https://github.com/awslabs/aws-cdk/issues/1544)) ([4e46d3c](https://github.com/awslabs/aws-cdk/commit/4e46d3c))
+* **s3:** imported bucket format option for website URL format ([#1550](https://github.com/awslabs/aws-cdk/issues/1550)) ([28a423d](https://github.com/awslabs/aws-cdk/commit/28a423d))
+* **toolkit:** disable colors if a terminal is not attached to stdout ([#1641](https://github.com/awslabs/aws-cdk/issues/1641)) ([58b4685](https://github.com/awslabs/aws-cdk/commit/58b4685))
+
+
+### BREAKING CHANGES
+
+* **aws-codepipeline:** the `role` property in the CloudFormation Actions has been renamed to `deploymentRole`.
+* **aws-codepipeline:** the `role` property in the `app-delivery` package has been renamed to `deploymentRole`.
+
+
+
+## [0.22.0](https://github.com/awslabs/aws-cdk/compare/v0.21.0...v0.22.0) (2019-01-10)
+
+This is a major release with multiple breaking changes in the core layers.
+Please consult the __breaking changes__ section below for details.
+
+We are focusing these days on finalizing the common patterns and APIs of the CDK
+framework and the AWS Construct Library, which is why you are seeing all these
+breaking changes. Expect a few more releases with changes of that nature as we
+stabilize these APIs, so you might want to hold off with upgrading. We will
+communicate when this foundational work is complete.
+
+### Bug Fixes
+
+* **core:** automatic cross-stack refs for CFN resources ([#1510](https://github.com/awslabs/aws-cdk/issues/1510)) ([ca5ee35](https://github.com/awslabs/aws-cdk/commit/ca5ee35))
+* **ecs:** correct typo and other minor mistakes in ecs readme ([#1448](https://github.com/awslabs/aws-cdk/issues/1448)) ([9c91b20](https://github.com/awslabs/aws-cdk/commit/9c91b20))
+* **elbv2:** unable to specify load balancer name ([#1486](https://github.com/awslabs/aws-cdk/issues/1486)) ([5b24583](https://github.com/awslabs/aws-cdk/commit/5b24583)), closes [#973](https://github.com/awslabs/aws-cdk/issues/973) [#1481](https://github.com/awslabs/aws-cdk/issues/1481)
+* **lambda:** use IRole instead of Role to allow imports ([#1509](https://github.com/awslabs/aws-cdk/issues/1509)) ([b909dcd](https://github.com/awslabs/aws-cdk/commit/b909dcd))
+* **toolkit:** fix typo in --rename option description ([#1438](https://github.com/awslabs/aws-cdk/issues/1438)) ([1dd56d4](https://github.com/awslabs/aws-cdk/commit/1dd56d4))
+* **toolkit:** support multiple toolkit stacks in the same environment ([#1427](https://github.com/awslabs/aws-cdk/issues/1427)) ([095da14](https://github.com/awslabs/aws-cdk/commit/095da14)), closes [#1416](https://github.com/awslabs/aws-cdk/issues/1416)
+
+### Features
+
+* **apigateway:** add tracingEnabled property to APIGW Stage ([#1482](https://github.com/awslabs/aws-cdk/issues/1482)) ([fefa764](https://github.com/awslabs/aws-cdk/commit/fefa764))
+* **assets:** enable local tooling scenarios such as lambda debugging ([#1433](https://github.com/awslabs/aws-cdk/issues/1433)) ([0d2b633](https://github.com/awslabs/aws-cdk/commit/0d2b633)), closes [#1432](https://github.com/awslabs/aws-cdk/issues/1432)
+* **aws-cdk:** better stack dependency handling ([#1511](https://github.com/awslabs/aws-cdk/issues/1511)) ([b4bbaf0](https://github.com/awslabs/aws-cdk/commit/b4bbaf0)), closes [#1508](https://github.com/awslabs/aws-cdk/issues/1508) [#1505](https://github.com/awslabs/aws-cdk/issues/1505)
+* **aws-codepipeline:** jenkins build and test actions ([#1216](https://github.com/awslabs/aws-cdk/issues/1216)) ([471e8eb](https://github.com/awslabs/aws-cdk/commit/471e8eb))
+* **aws-codepipeline:** support notifications on the ManualApprovalAction ([#1368](https://github.com/awslabs/aws-cdk/issues/1368)) ([068fa46](https://github.com/awslabs/aws-cdk/commit/068fa46)), closes [#1222](https://github.com/awslabs/aws-cdk/issues/1222)
+* **aws-ecs:** add support Amazon Linux 2 ([#1484](https://github.com/awslabs/aws-cdk/issues/1484)) ([82ec0ff](https://github.com/awslabs/aws-cdk/commit/82ec0ff)), closes [#1483](https://github.com/awslabs/aws-cdk/issues/1483)
+* **aws-kms:** allow tagging kms keys ([#1485](https://github.com/awslabs/aws-cdk/issues/1485)) ([f43b4d4](https://github.com/awslabs/aws-cdk/commit/f43b4d4))
+* **aws-lambda:** add input and output artifacts to the CodePipeline action ([#1390](https://github.com/awslabs/aws-cdk/issues/1390)) ([fbd7728](https://github.com/awslabs/aws-cdk/commit/fbd7728)), closes [#1384](https://github.com/awslabs/aws-cdk/issues/1384)
+* **cdk:** transparently use constructs from another stack ([d7371f0](https://github.com/awslabs/aws-cdk/commit/d7371f0)), closes [#1324](https://github.com/awslabs/aws-cdk/issues/1324)
+* **cli:** allow specifying options using env vars ([#1447](https://github.com/awslabs/aws-cdk/issues/1447)) ([7cd84a0](https://github.com/awslabs/aws-cdk/commit/7cd84a0))
+* aws resource api linting (breaking changes) ([#1434](https://github.com/awslabs/aws-cdk/issues/1434)) ([8c17ca7](https://github.com/awslabs/aws-cdk/commit/8c17ca7)), closes [#742](https://github.com/awslabs/aws-cdk/issues/742) [#1428](https://github.com/awslabs/aws-cdk/issues/1428)
+* **core:** cloudformation condition chaining ([#1494](https://github.com/awslabs/aws-cdk/issues/1494)) ([2169015](https://github.com/awslabs/aws-cdk/commit/2169015)), closes [#1457](https://github.com/awslabs/aws-cdk/issues/1457)
+* **diff:** better diff of arbitrary json objects ([#1488](https://github.com/awslabs/aws-cdk/issues/1488)) ([607f997](https://github.com/awslabs/aws-cdk/commit/607f997))
+* **route53:** support cname records ([#1487](https://github.com/awslabs/aws-cdk/issues/1487)) ([17eddd1](https://github.com/awslabs/aws-cdk/commit/17eddd1)), closes [#1420](https://github.com/awslabs/aws-cdk/issues/1420)
+* **step-functions:** support parameters option ([#1492](https://github.com/awslabs/aws-cdk/issues/1492)) ([935054a](https://github.com/awslabs/aws-cdk/commit/935054a)), closes [#1480](https://github.com/awslabs/aws-cdk/issues/1480)
+* **core:** construct base class changes (breaking) ([#1444](https://github.com/awslabs/aws-cdk/issues/1444)) ([fb22a32](https://github.com/awslabs/aws-cdk/commit/fb22a32)), closes [#1431](https://github.com/awslabs/aws-cdk/issues/1431) [#1441](https://github.com/awslabs/aws-cdk/issues/1441) [#189](https://github.com/awslabs/aws-cdk/issues/189) [#1441](https://github.com/awslabs/aws-cdk/issues/1441) [#1431](https://github.com/awslabs/aws-cdk/issues/1431)
+* **core:** idiomize cloudformation intrinsics functions ([#1428](https://github.com/awslabs/aws-cdk/issues/1428)) ([04217a5](https://github.com/awslabs/aws-cdk/commit/04217a5)), closes [#202](https://github.com/awslabs/aws-cdk/issues/202)
+* **cloudformation:** no more generated attribute types in CFN layer (L1) ([#1489](https://github.com/awslabs/aws-cdk/issues/1489)) ([4d6d5ca](https://github.com/awslabs/aws-cdk/commit/4d6d5ca)), closes [#1455](https://github.com/awslabs/aws-cdk/issues/1455) [#1406](https://github.com/awslabs/aws-cdk/issues/1406)
+* **cloudformation:** stop generating legacy cloudformation resources ([#1493](https://github.com/awslabs/aws-cdk/issues/1493)) ([81b4174](https://github.com/awslabs/aws-cdk/commit/81b4174))
+
+
+### BREAKING CHANGES
+
+* **Cross-stack references:** if you are using `export()` and `import()` to share constructs between stacks, you can stop doing that, instead of `FooImportProps` accept an `IFoo` directly on the consuming stack, and use that object as usual.
+* `ArnUtils.fromComponents()` and `ArnUtils.parse()` have been moved onto `Stack`.
+* All CloudFormation pseudo-parameter (such as `AWS::AccountId` etc) are now also accessible via `Stack`, as `stack.accountId` etc.
+* All CloudFormation intrinsic functions are now represented as static methods under the `Fn` class (e.g. `Fn.join(...)` instead of `new FnJoin(...).toString()`)
+* `resolve()` has been moved to `this.node.resolve()`.
+* `CloudFormationJSON.stringify()` has been moved to `this.node.stringifyJson()`. `validate()` now should be `protected`.
+* The deprecated `cloudformation.XxxResource` classes have been removed. Use the `CfnXxx` classes instead.
+* Any `CfnXxx` resource attributes that represented a list of strings are now typed as `string[]`s (via #1144). Attributes that represent strings, are still typed as `string` (#712) and all other attribute types are represented as `cdk.Token`.
+* **route53:** The `route53.TXTRecord` class was renamed to `route53.TxtRecord`.
+* **route53:** record classes now require a `zone` when created (not assuming zone is the parent construct).
+* **lambda:** the static "metric" methods moved from `lambda.FunctionRef` to `lambda.Function`.
+* Many AWS resource classes have been changed to conform to API guidelines:
+  - `XxxRef` abstract classes are now `IXxx` interfaces
+  - `XxxRefProps` are now `XxxImportProps`
+  - `XxxRef.import(...)` are now `Xxx.import(...)` accept `XxxImportProps` and return `IXxx`
+  - `export(): XxxImportProps` is now defined in `IXxx` and implemented by imported resources
+
+
 # [0.21.0](https://github.com/awslabs/aws-cdk/compare/v0.20.0...v0.21.0) (2018-12-20)
 
 

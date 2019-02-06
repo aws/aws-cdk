@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-lambda",
-  "version": "0.21.0",
+  "version": "0.23.0",
   "description": "CDK Constructs for AWS Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -42,6 +42,7 @@
     "cloudformation": "AWS::Lambda"
   },
   "nyc": {
+    "statements": 75,
     "lines": 75
   },
   "keywords": [
@@ -57,41 +58,41 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.21.0",
-    "cdk-build-tools": "^0.21.0",
-    "cdk-integ-tools": "^0.21.0",
-    "cfn2ts": "^0.21.0",
-    "pkglint": "^0.21.0"
+    "@aws-cdk/assert": "^0.23.0",
+    "cdk-build-tools": "^0.23.0",
+    "cdk-integ-tools": "^0.23.0",
+    "cfn2ts": "^0.23.0",
+    "pkglint": "^0.23.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^0.21.0",
-    "@aws-cdk/aws-cloudwatch": "^0.21.0",
-    "@aws-cdk/aws-codepipeline-api": "^0.21.0",
-    "@aws-cdk/aws-ec2": "^0.21.0",
-    "@aws-cdk/aws-events": "^0.21.0",
-    "@aws-cdk/aws-iam": "^0.21.0",
-    "@aws-cdk/aws-logs": "^0.21.0",
-    "@aws-cdk/aws-s3": "^0.21.0",
-    "@aws-cdk/aws-s3-notifications": "^0.21.0",
-    "@aws-cdk/aws-sqs": "^0.21.0",
-    "@aws-cdk/aws-stepfunctions": "^0.21.0",
-    "@aws-cdk/cdk": "^0.21.0",
-    "@aws-cdk/cx-api": "^0.21.0"
+    "@aws-cdk/assets": "^0.23.0",
+    "@aws-cdk/aws-cloudwatch": "^0.23.0",
+    "@aws-cdk/aws-codepipeline-api": "^0.23.0",
+    "@aws-cdk/aws-ec2": "^0.23.0",
+    "@aws-cdk/aws-events": "^0.23.0",
+    "@aws-cdk/aws-iam": "^0.23.0",
+    "@aws-cdk/aws-logs": "^0.23.0",
+    "@aws-cdk/aws-s3": "^0.23.0",
+    "@aws-cdk/aws-s3-notifications": "^0.23.0",
+    "@aws-cdk/aws-sqs": "^0.23.0",
+    "@aws-cdk/aws-stepfunctions": "^0.23.0",
+    "@aws-cdk/cdk": "^0.23.0",
+    "@aws-cdk/cx-api": "^0.23.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^0.21.0",
-    "@aws-cdk/aws-cloudwatch": "^0.21.0",
-    "@aws-cdk/aws-codepipeline-api": "^0.21.0",
-    "@aws-cdk/aws-ec2": "^0.21.0",
-    "@aws-cdk/aws-events": "^0.21.0",
-    "@aws-cdk/aws-iam": "^0.21.0",
-    "@aws-cdk/aws-logs": "^0.21.0",
-    "@aws-cdk/aws-s3": "^0.21.0",
-    "@aws-cdk/aws-s3-notifications": "^0.21.0",
-    "@aws-cdk/aws-sqs": "^0.21.0",
-    "@aws-cdk/aws-stepfunctions": "^0.21.0",
-    "@aws-cdk/cdk": "^0.21.0"
+    "@aws-cdk/assets": "^0.23.0",
+    "@aws-cdk/aws-cloudwatch": "^0.23.0",
+    "@aws-cdk/aws-codepipeline-api": "^0.23.0",
+    "@aws-cdk/aws-ec2": "^0.23.0",
+    "@aws-cdk/aws-events": "^0.23.0",
+    "@aws-cdk/aws-iam": "^0.23.0",
+    "@aws-cdk/aws-logs": "^0.23.0",
+    "@aws-cdk/aws-s3": "^0.23.0",
+    "@aws-cdk/aws-s3-notifications": "^0.23.0",
+    "@aws-cdk/aws-sqs": "^0.23.0",
+    "@aws-cdk/aws-stepfunctions": "^0.23.0",
+    "@aws-cdk/cdk": "^0.23.0"
   },
   "engines": {
     "node": ">= 8.10.0"
