@@ -460,8 +460,8 @@
         }
       },
       "DependsOn": [
-        "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863",
-        "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80"
+        "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80",
+        "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
       ]
     },
     "EcsClusterDefaultAutoScalingGroupASGC1A785DB": {
@@ -611,8 +611,8 @@
         "Timeout": 310
       },
       "DependsOn": [
-        "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA",
-        "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396"
+        "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396",
+        "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
       ]
     },
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicE6B1EBA6": {
@@ -688,8 +688,8 @@
         }
       },
       "DependsOn": [
-        "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B",
-        "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy75002F88"
+        "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy75002F88",
+        "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B"
       ]
     },
     "TaskDefTaskRole1EDB4A67": {
@@ -803,8 +803,8 @@
         "SchedulingStrategy": "REPLICA"
       },
       "DependsOn": [
-        "LBPublicListener6E1F3D94",
-        "LBPublicListenerECSGroupD6A32205"
+        "LBPublicListenerECSGroupD6A32205",
+        "LBPublicListener6E1F3D94"
       ]
     },
     "ServiceSecurityGroupC96ED6A7": {
