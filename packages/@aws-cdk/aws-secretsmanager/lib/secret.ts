@@ -32,7 +32,7 @@ export interface ISecret extends cdk.IConstruct {
    * @param versionStages the version stages the grant is limited to. If not specified, no restriction on the version
    *                      stages is applied.
    */
-  grantRead(grantee: iam.IPrincipal, versionStages?: string[]): ISecret;
+  grantRead(grantee: iam.IPrincipal, versionStages?: string[]): void;
 }
 
 /**
@@ -103,7 +103,7 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
     };
   }
 
-  public grantRead(grantee: iam.IPrincipal, versionStages?: string[]): ISecret {
+  public grantRead(grantee: iam.IPrincipal, versionStages?: string[]): void {
     const statement = new iam.PolicyStatement()
       .allow()
       .addAction('secretsmanager:GetSecretValue')
@@ -125,7 +125,6 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
           'kms:ViaService': `secretsmanager.${cdk.Stack.find(this).region}.amazonaws.com`
         }));
     }
-    return this;
   }
 }
 
