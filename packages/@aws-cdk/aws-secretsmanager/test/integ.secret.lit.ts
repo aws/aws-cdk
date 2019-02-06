@@ -7,9 +7,7 @@ const stack = new cdk.Stack(app, 'Integ-SecretsManager-Secret');
 const role = new iam.Role(stack, 'TestRole', { assumedBy: new iam.AccountRootPrincipal() });
 
 /// !show
-const secret = new secretsManager.Secret(stack, 'Secret', {
-  generateSecretString: {}
-});
+const secret = new secretsManager.Secret(stack, 'Secret');
 secret.grantRead(role);
 /// !hide
 

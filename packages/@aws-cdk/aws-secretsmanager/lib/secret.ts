@@ -8,8 +8,8 @@ import secretsmanager = require('./secretsmanager.generated');
  */
 export interface ISecret extends cdk.IConstruct {
   /**
-   * The customer-managed encryption key that is used to encrypt this secret, if any. When ``unknown``, the default KMS
-   * key for the account and region is being used.
+   * The customer-managed encryption key that is used to encrypt this secret, if any. When not specified, the default
+   * KMS key for the account and region is being used.
    */
   readonly encryptionKey?: kms.IEncryptionKey;
 
@@ -52,16 +52,10 @@ export interface SecretProps {
   encryptionKey?: kms.IEncryptionKey;
 
   /**
-   * The value of the secret. Either this or ``generateSecretString`` must be specified, but not both.
+   * Configuration for how to generate a secret value.
    *
-   * @default a secret is generated using ``generateSecretString`` configuration.
-   */
-  secretString?: string;
-
-  /**
-   * Configuration for how to generate a secret value. Either this or ``secretString`` must be specified, but not both.
-   *
-   * @default the secret value specified in ``secretString`` is used.
+   * @default 32 characters with upper-case letters, lower-case letters, punctuation and numbers (at least one from each
+   *          category), per the default values of ``SecretStringGenerator``.
    */
   generateSecretString?: SecretStringGenerator;
 
@@ -96,14 +90,10 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
   public abstract readonly encryptionKey?: kms.IEncryptionKey;
   public abstract readonly secretArn: string;
 
-  public export(): SecretImportProps {
-    return {
-      encryptionKey: this.encryptionKey,
-      secretArn: this.secretArn,
-    };
-  }
+  public abstract export(): SecretImportProps;
 
   public grantRead(grantee: iam.IPrincipal, versionStages?: string[]): void {
+    // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
     const statement = new iam.PolicyStatement()
       .allow()
       .addAction('secretsmanager:GetSecretValue')
@@ -116,6 +106,7 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
     grantee.addToPolicy(statement);
 
     if (this.encryptionKey) {
+      // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.addToResourcePolicy(new iam.PolicyStatement()
         .allow()
         .addPrincipal(grantee.principal)
@@ -146,23 +137,25 @@ export class Secret extends SecretBase {
   public readonly encryptionKey?: kms.IEncryptionKey;
   public readonly secretArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: SecretProps) {
+  constructor(scope: cdk.Construct, id: string, props: SecretProps = {}) {
     super(scope, id);
-
-    if ((props.secretString == null) === (props.generateSecretString == null)) {
-      throw new Error('Either secretString or generateSecretString must be specified, but not both.');
-    }
 
     const resource = new secretsmanager.CfnSecret(this, 'Resource', {
       description: props.description,
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
-      secretString: props.secretString,
       generateSecretString: props.generateSecretString,
       name: props.name,
     });
 
     this.encryptionKey = props.encryptionKey;
     this.secretArn = resource.secretArn;
+  }
+
+  public export(): SecretImportProps {
+    return {
+      encryptionKey: this.encryptionKey,
+      secretArn: this.secretArn,
+    };
   }
 }
 
@@ -250,10 +243,14 @@ class ImportedSecret extends SecretBase {
   public readonly encryptionKey?: kms.IEncryptionKey;
   public readonly secretArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: SecretImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: SecretImportProps) {
     super(scope, id);
 
     this.encryptionKey = props.encryptionKey;
     this.secretArn = props.secretArn;
+  }
+
+  public export() {
+    return this.props;
   }
 }
