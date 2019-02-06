@@ -347,6 +347,12 @@ export class Function extends FunctionBase {
       this.role.addToPolicy(statement);
     }
 
+    const stack = cdk.Stack.find(this);
+    const isChina = stack.env.region && stack.env.region.startsWith('cn-');
+    if (isChina && props.environment && Object.keys(props.environment).length > 0) {
+      throw new Error(`Environment variables are not supported in this region (${stack.env.region}); please use tags or SSM parameters instead`);
+    }
+
     const resource = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
