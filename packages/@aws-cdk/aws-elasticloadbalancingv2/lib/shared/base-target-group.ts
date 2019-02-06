@@ -213,7 +213,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     this.targetType = baseProps.targetType;
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
-      targetGroupName: baseProps.targetGroupName,
+      name: baseProps.targetGroupName,
       targetGroupAttributes: new cdk.Token(() => renderAttributes(this.attributes)),
       targetType: new cdk.Token(() => this.targetType),
       targets: new cdk.Token(() => this.targetsJson),

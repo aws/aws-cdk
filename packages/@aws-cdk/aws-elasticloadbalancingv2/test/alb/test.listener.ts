@@ -114,6 +114,26 @@ export = {
     test.done();
   },
 
+  'Can configure name on TargetGroups'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      port: 80,
+      targetGroupName: 'foo'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Name: 'foo'
+    }));
+
+    test.done();
+  },
+
   'Can add target groups with and without conditions'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
