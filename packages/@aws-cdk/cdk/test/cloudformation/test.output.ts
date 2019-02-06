@@ -43,7 +43,7 @@ export = {
     test.done();
   },
 
-  'is stack name is undefined, we will only use the logical ID for the export name'(test: Test) {
+  'if stack name is undefined, we will only use the logical ID for the export name'(test: Test) {
     const stack = new Stack();
     const output = new Output(stack, 'MyOutput');
     test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyOutput' });

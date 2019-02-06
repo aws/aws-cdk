@@ -44,8 +44,8 @@ export = {
     const res1 = new Resource(level1, 'childoflevel1', { type: 'MyResourceType1' });
     const res2 = new Resource(level3, 'childoflevel3', { type: 'MyResourceType2' });
 
-    test.equal(withoutHash(res1.logicalId), 'level1childoflevel1');
-    test.equal(withoutHash(res2.logicalId), 'level1level2level3childoflevel3');
+    test.equal(withoutHash(stack.node.resolve(res1.logicalId)), 'level1childoflevel1');
+    test.equal(withoutHash(stack.node.resolve(res2.logicalId)), 'level1level2level3childoflevel3');
 
     test.done();
   },
@@ -149,6 +149,39 @@ export = {
       }
     });
 
+    test.done();
+  },
+
+  'if addDependency is called multiple times with the same resource, it will only appear once'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const r1 = new Counter(stack, 'Counter1', { Count: 1 });
+    const dependent = new Resource(stack, 'Dependent', { type: 'R' });
+
+    // WHEN
+    dependent.addDependsOn(r1);
+    dependent.addDependsOn(r1);
+    dependent.addDependsOn(r1);
+    dependent.addDependsOn(r1);
+    dependent.addDependsOn(r1);
+
+    // THEN
+    test.deepEqual(stack.toCloudFormation(), {
+      Resources: {
+        Counter1: {
+          Type: "My::Counter",
+          Properties: {
+            Count: 1
+          }
+        },
+        Dependent: {
+          Type: "R",
+          DependsOn: [
+            "Counter1"
+          ]
+        }
+      }
+    });
     test.done();
   },
 

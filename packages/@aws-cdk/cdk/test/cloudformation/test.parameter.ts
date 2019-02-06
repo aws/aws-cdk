@@ -16,14 +16,14 @@ export = {
 
     test.deepEqual(stack.toCloudFormation(), {
       Parameters: {
-        [param.logicalId]: {
+        ChildMyParam3161BF5D: {
           Default: 10,
           Type: 'Integer',
           Description: 'My first parameter' } },
       Resources: {
         Resource: {
           Type: 'Type',
-          Properties: { ReferenceToParam: { Ref: param.logicalId } } } } });
+          Properties: { ReferenceToParam: { Ref: 'ChildMyParam3161BF5D' } } } } });
 
     test.done();
   },

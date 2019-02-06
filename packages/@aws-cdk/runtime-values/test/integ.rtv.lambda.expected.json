@@ -105,8 +105,8 @@
         }
       },
       "DependsOn": [
-        "MyFunctionServiceRole3C357FF2",
-        "MyFunctionServiceRoleDefaultPolicyB705ABD4"
+        "MyFunctionServiceRoleDefaultPolicyB705ABD4",
+        "MyFunctionServiceRole3C357FF2"
       ]
     },
     "MyQueueURLParameterA4918D6E": {

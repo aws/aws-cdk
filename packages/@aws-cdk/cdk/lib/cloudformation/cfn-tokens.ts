@@ -38,6 +38,10 @@ export class CfnReference extends Token {
     if (typeof(value) === 'function') {
         throw new Error('CfnReference can only hold CloudFormation intrinsics (not a function)');
     }
+    // prepend scope path to display name
+    if (displayName && scope) {
+      displayName = `${scope.node.path}.${displayName}`;
+    }
     super(value, displayName);
     this.replacementTokens = new Map<Stack, Token>();
     this.isReference = true;

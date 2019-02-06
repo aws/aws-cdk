@@ -253,8 +253,8 @@
         "Runtime": "nodejs8.10"
       },
       "DependsOn": [
-        "PreHookServiceRoleC724B9BA",
-        "PreHookServiceRoleDefaultPolicy65358F76"
+        "PreHookServiceRoleDefaultPolicy65358F76",
+        "PreHookServiceRoleC724B9BA"
       ]
     },
     "PostHookServiceRoleE8A6AAC2": {

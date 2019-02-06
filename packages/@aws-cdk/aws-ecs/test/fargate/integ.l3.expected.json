@@ -525,8 +525,8 @@
         }
       },
       "DependsOn": [
-        "L3LBPublicListener156FFC0F",
-        "L3LBPublicListenerECSGroup648EEA11"
+        "L3LBPublicListenerECSGroup648EEA11",
+        "L3LBPublicListener156FFC0F"
       ]
     },
     "L3ServiceSecurityGroup677B0897": {

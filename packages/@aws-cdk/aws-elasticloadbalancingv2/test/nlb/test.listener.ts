@@ -133,10 +133,10 @@ export = {
         MyResource: {
           Type: "Test::Resource",
           DependsOn: [
-            "LBListener49E825B4",
             // 2nd dependency is there because of the structure of the construct tree.
             // It does not harm.
-            "LBListenerGroupGroup79B304FF"
+            "LBListenerGroupGroup79B304FF",
+            "LBListener49E825B4",
           ]
         }
       }
