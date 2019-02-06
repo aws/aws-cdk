@@ -238,8 +238,8 @@
         }
       },
       "DependsOn": [
-        "MyPipelineRoleC0D47CA4",
-        "MyPipelineRoleDefaultPolicy34F09EFA"
+        "MyPipelineRoleDefaultPolicy34F09EFA",
+        "MyPipelineRoleC0D47CA4"
       ]
     },
     "ActionRole60B0EDF7": {
