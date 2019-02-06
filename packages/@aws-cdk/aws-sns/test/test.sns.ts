@@ -786,5 +786,30 @@ export = {
     });
 
     test.done();
+  },
+
+  'test metrics'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // THEN
+    test.deepEqual(stack.node.resolve(topic.metricNumberOfMessagesPublished()), {
+      dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
+      namespace: 'AWS/SNS',
+      metricName: 'NumberOfMessagesPublished',
+      periodSec: 300,
+      statistic: 'Sum'
+    });
+
+    test.deepEqual(stack.node.resolve(topic.metricPublishSize()), {
+      dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
+      namespace: 'AWS/SNS',
+      metricName: 'PublishSize',
+      periodSec: 300,
+      statistic: 'Average'
+    });
+
+    test.done();
   }
 };
