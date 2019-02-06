@@ -19,6 +19,13 @@ export interface ISecret extends cdk.IConstruct {
   readonly secretArn: string;
 
   /**
+   * Exports this secret.
+   *
+   * @return import props that can be passed back to ``Secret.import``.
+   */
+  export(): SecretImportProps;
+
+  /**
    * Grants reading the secret value to some role.
    *
    * @param grantee       the principal being granted permission.
@@ -88,6 +95,13 @@ export interface SecretImportProps {
 export abstract class SecretBase extends cdk.Construct implements ISecret {
   public abstract readonly encryptionKey?: kms.IEncryptionKey;
   public abstract readonly secretArn: string;
+
+  public export(): SecretImportProps {
+    return {
+      encryptionKey: this.encryptionKey,
+      secretArn: this.secretArn,
+    };
+  }
 
   public grantRead(grantee: iam.IPrincipal, versionStages?: string[]): ISecret {
     const statement = new iam.PolicyStatement()
