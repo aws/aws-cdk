@@ -522,7 +522,7 @@
     "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25": {
       "Type": "AWS::SNS::Topic"
     },
-    "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicFunctionSubscription4313BD38": {
+    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicSubscriptionDA5F8A10": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Endpoint": {

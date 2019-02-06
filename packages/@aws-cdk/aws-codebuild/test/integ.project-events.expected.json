@@ -345,7 +345,7 @@
     "MyTopic86869434": {
       "Type": "AWS::SNS::Topic"
     },
-    "MyTopicMyQueueSubscription3245B11E": {
+    "MyQueueMyTopicSubscriptionEB66AD1B": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Endpoint": {
