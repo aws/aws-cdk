@@ -98,7 +98,7 @@ export class Resource extends Referenceable {
    *
    * Is filled during prepare().
    */
-  private readonly dependsOn = new Set<string>();
+  private readonly dependsOn = new Set<Resource>();
 
   /**
    * Creates a resource construct.
@@ -131,7 +131,7 @@ export class Resource extends Referenceable {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`, this);
+    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, attributeName, this);
   }
 
   /**
@@ -193,8 +193,12 @@ export class Resource extends Referenceable {
     this.addPropertyOverride(propertyPath, undefined);
   }
 
+  /**
+   * Indicates that this resource depends on another resource and cannot be provisioned
+   * unless the other resource has been successfully provisioned.
+   */
   public addDependsOn(resource: Resource) {
-    this.dependsOn.add(resource.logicalId);
+    this.dependsOn.add(resource);
   }
 
   /**
@@ -215,7 +219,7 @@ export class Resource extends Referenceable {
             Type: this.resourceType,
             Properties: ignoreEmpty(this, properties),
             // Return a sorted set of dependencies to be consistent across tests
-            DependsOn: ignoreEmpty(this, sortedSet(this.dependsOn)),
+            DependsOn: ignoreEmpty(this, renderDependsOn(this.dependsOn)),
             CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
             UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.options.updateReplacePolicy),
@@ -234,6 +238,15 @@ export class Resource extends Referenceable {
       e.stack = `${e.message}\n  ${creationStack}\n  --- problem discovered at ---${problemTrace}`;
       // Re-throw
       throw e;
+    }
+
+    // returns the set of logical ID (tokens) this resource depends on
+    // sorted by construct paths to ensure test determinism
+    function renderDependsOn(dependsOn: Set<Resource>) {
+      return Array
+        .from(dependsOn)
+        .sort((x, y) => x.node.path.localeCompare(y.node.path))
+        .map(r => r.logicalId);
     }
   }
 
@@ -329,9 +342,4 @@ export function deepMerge(target: any, source: any) {
   }
 
   return target;
-}
-function sortedSet<T>(xs: Set<T>): T[] {
-  const ret = Array.from(xs);
-  ret.sort();
-  return ret;
 }

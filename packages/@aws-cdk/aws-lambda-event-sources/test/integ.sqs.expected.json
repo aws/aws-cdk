@@ -81,8 +81,8 @@
         "Runtime": "nodejs8.10"
       },
       "DependsOn": [
-        "FServiceRole3AC82EE1",
-        "FServiceRoleDefaultPolicy17A19BFA"
+        "FServiceRoleDefaultPolicy17A19BFA",
+        "FServiceRole3AC82EE1"
       ]
     },
     "FSqsEventSourcelambdaeventsourcesqsQ67DE9201754EC819": {

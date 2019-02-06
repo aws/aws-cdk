@@ -95,13 +95,8 @@ export class TokenMap {
 
   private register(token: Token, representationHint?: string): string {
     const counter = Object.keys(this.tokenMap).length;
-    const representation = representationHint || `TOKEN`;
-
+    const representation = (representationHint || `TOKEN`).replace(new RegExp(`[^${VALID_KEY_CHARS}]`, 'g'), '.');
     const key = `${representation}.${counter}`;
-    if (new RegExp(`[^${VALID_KEY_CHARS}]`).exec(key)) {
-      throw new Error(`Invalid characters in token representation: ${key}`);
-    }
-
     this.tokenMap[key] = token;
     return key;
   }
