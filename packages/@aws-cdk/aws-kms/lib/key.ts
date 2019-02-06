@@ -118,7 +118,7 @@ export interface EncryptionKeyProps {
    *
    * @default true
    */
-  retainKey?: boolean;
+  retain?: boolean;
 }
 
 /**
@@ -168,7 +168,7 @@ export class EncryptionKey extends EncryptionKeyBase {
     });
 
     this.keyArn = resource.keyArn;
-    resource.options.deletionPolicy = props.retainKey === false
+    resource.options.deletionPolicy = props.retain === false
                                     ? DeletionPolicy.Delete
                                     : DeletionPolicy.Retain;
   }
