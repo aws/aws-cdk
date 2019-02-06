@@ -1,5 +1,6 @@
 import cfnSpec = require('@aws-cdk/cfnspec');
 import fs = require('fs-extra');
+import { AugmentationGenerator } from './augmentation-generator';
 import CodeGenerator from './codegen';
 import { packageName } from './genspec';
 
@@ -14,6 +15,9 @@ export default async function(scope: string, outPath: string) {
 
   const generator = new CodeGenerator(name, spec);
   generator.emitCode();
-
   await generator.save(outPath);
+
+  const augs = new AugmentationGenerator(name, spec);
+  augs.emitCode();
+  await augs.save(outPath);
 }
