@@ -24,6 +24,18 @@ export function resourceSpecification(typeName: string): schema.ResourceType {
 }
 
 /**
+ * Get the resource augmentations for a given type
+ */
+export function resourceAugmentation(typeName: string): schema.ResourceAugmentation {
+  const fileName = typeName.replace(/::/g, '_');
+  try {
+    return require(`./augmentations/${fileName}.json`);
+  } catch (e) {
+    return {};
+  }
+}
+
+/**
  * Return the property specification for the given resource's property
  */
 export function propertySpecification(typeName: string, propertyName: string): schema.Property {

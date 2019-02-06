@@ -1,7 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { IFunction } from './lambda-ref';
+import { IFunction } from './function-base';
 
 /**
  * Common properties for creating a {@link PipelineInvokeAction} -

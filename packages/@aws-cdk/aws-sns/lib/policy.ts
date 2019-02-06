@@ -1,7 +1,7 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/cdk';
 import { CfnTopicPolicy } from './sns.generated';
-import { ITopic } from './topic-ref';
+import { ITopic } from './topic-base';
 
 export interface TopicPolicyProps {
   /**

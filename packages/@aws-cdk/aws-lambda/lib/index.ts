@@ -1,6 +1,6 @@
 export * from './alias';
-export * from './lambda-ref';
-export * from './lambda';
+export * from './function-base';
+export * from './function';
 export * from './layers';
 export * from './permission';
 export * from './pipeline-action';
@@ -13,3 +13,5 @@ export * from './event-source-mapping';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';
+
+import './lambda-augmentations.generated';

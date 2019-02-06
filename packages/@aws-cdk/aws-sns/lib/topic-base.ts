@@ -82,39 +82,6 @@ export interface ITopic extends
    * Grant topic publishing permissions to the given identity
    */
   grantPublish(identity?: iam.IPrincipal): void;
-
-  /**
-   * Construct a Metric object for the current topic for the given metric
-   */
-  metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-
-  /**
-   * Metric for the size of messages published through this topic
-   *
-   * @default average over 5 minutes
-   */
-  metricPublishSize(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-
-  /**
-   * Metric for the number of messages published through this topic
-   *
-   * @default sum over 5 minutes
-   */
-  metricNumberOfMessagesPublished(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-
-  /**
-   * Metric for the number of messages that failed to publish through this topic
-   *
-   * @default sum over 5 minutes
-   */
-  metricNumberOfMessagesFailed(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-
-  /**
-   * Metric for the number of messages that were successfully delivered through this topic
-   *
-   * @default sum over 5 minutes
-   */
-  metricNumberOfMessagesDelivered(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
 }
 
 /**
@@ -327,54 +294,6 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
 
   public get alarmActionArn(): string {
     return this.topicArn;
-  }
-
-  /**
-   * Construct a Metric object for the current topic for the given metric
-   */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/SNS',
-      dimensions: { TopicName: this.topicName },
-      metricName,
-      ...props
-    });
-  }
-
-  /**
-   * Metric for the size of messages published through this topic
-   *
-   * @default average over 5 minutes
-   */
-  public metricPublishSize(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('PublishSize', props);
-  }
-
-  /**
-   * Metric for the number of messages published through this topic
-   *
-   * @default sum over 5 minutes
-   */
-  public metricNumberOfMessagesPublished(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('NumberOfMessagesPublished', { statistic: 'sum', ...props });
-  }
-
-  /**
-   * Metric for the number of messages that failed to publish through this topic
-   *
-   * @default sum over 5 minutes
-   */
-  public metricNumberOfMessagesFailed(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('NumberOfMessagesFailed', { statistic: 'sum', ...props });
-  }
-
-  /**
-   * Metric for the number of messages that were successfully delivered through this topic
-   *
-   * @default sum over 5 minutes
-   */
-  public metricNumberOfMessagesDelivered(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('NumberOfMessagesDelivered', { statistic: 'sum', ...props });
   }
 
   /**

@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { CfnSubscription } from './sns.generated';
-import { ITopic } from './topic-ref';
+import { ITopic } from './topic-base';
 
 /**
  * Properties for creating a new subscription

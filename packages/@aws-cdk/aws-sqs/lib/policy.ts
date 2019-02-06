@@ -1,6 +1,6 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/cdk';
-import { IQueue } from './queue-ref';
+import { IQueue } from './queue-base';
 import { CfnQueuePolicy } from './sqs.generated';
 
 export interface QueuePolicyProps {

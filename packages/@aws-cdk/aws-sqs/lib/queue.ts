@@ -1,6 +1,6 @@
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
-import { IQueue, QueueBase, QueueImportProps } from './queue-ref';
+import { IQueue, QueueBase, QueueImportProps } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
 
@@ -341,6 +341,7 @@ interface EncryptionProps {
 class ImportedQueue extends QueueBase {
   public readonly queueArn: string;
   public readonly queueUrl: string;
+  public readonly queueName: string;
   public readonly encryptionMasterKey?: kms.IEncryptionKey;
 
   protected readonly autoCreatePolicy = false;
@@ -349,6 +350,7 @@ class ImportedQueue extends QueueBase {
     super(scope, id);
     this.queueArn = props.queueArn;
     this.queueUrl = props.queueUrl;
+    this.queueName = cdk.Stack.find(this).parseArn(props.queueArn).resource;
 
     if (props.keyArn) {
       this.encryptionMasterKey = kms.EncryptionKey.import(this, 'Key', {

@@ -1058,6 +1058,27 @@ export = {
     test.done();
   },
 
+  'Can use metricErrors on a lambda Function'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+
+    // THEN
+    test.deepEqual(stack.node.resolve(fn.metricErrors()), {
+      dimensions: { FunctionName: { Ref: 'Function76856677' }},
+      namespace: 'AWS/Lambda',
+      metricName: 'Errors',
+      periodSec: 300,
+      statistic: 'Sum',
+    });
+
+    test.done();
+  },
+
   'addEventSource calls bind'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

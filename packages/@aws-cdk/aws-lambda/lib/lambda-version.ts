@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/cdk';
-import { IFunction } from './lambda-ref';
+import { IFunction } from './function-base';
 import { CfnVersion } from './lambda.generated';
 
 /**

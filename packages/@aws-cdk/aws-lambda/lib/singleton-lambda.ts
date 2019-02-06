@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Function as LambdaFunction, FunctionProps } from './lambda';
-import { FunctionBase, FunctionImportProps, IFunction } from './lambda-ref';
+import { Function as LambdaFunction, FunctionProps } from './function';
+import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
 import { Permission } from './permission';
 
 /**

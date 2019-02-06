@@ -64,6 +64,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling-api": "^0.23.0",
+    "@aws-cdk/aws-cloudwatch": "^0.23.0",
     "@aws-cdk/aws-iam": "^0.23.0",
     "@aws-cdk/aws-kms": "^0.23.0",
     "@aws-cdk/aws-s3-notifications": "^0.23.0",
@@ -72,6 +73,7 @@
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-autoscaling-api": "^0.23.0",
+    "@aws-cdk/aws-cloudwatch": "^0.23.0",
     "@aws-cdk/aws-iam": "^0.23.0",
     "@aws-cdk/aws-kms": "^0.23.0",
     "@aws-cdk/aws-s3-notifications": "^0.23.0",

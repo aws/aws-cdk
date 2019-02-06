@@ -72,13 +72,6 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
 
   /**
-   * Metric for the Errors executing this Lambda
-   *
-   * @default sum over 5 minutes
-   */
-  metricErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-
-  /**
    * Metric for the Duration of this Lambda
    *
    * @default average over 5 minutes
@@ -273,54 +266,6 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
         .addAction('lambda:InvokeFunction')
         .addResource(this.functionArn));
     }
-  }
-
-  /**
-   * Return the given named metric for this Lambda
-   */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/Lambda',
-      metricName,
-      dimensions: { FunctionName: this.functionName },
-      ...props
-    });
-  }
-
-  /**
-   * Metric for the Errors executing this Lambda
-   *
-   * @default sum over 5 minutes
-   */
-  public metricErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('Errors', { statistic: 'sum', ...props });
-  }
-
-  /**
-   * Metric for the Duration of this Lambda
-   *
-   * @default average over 5 minutes
-   */
-  public metricDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('Duration', props);
-  }
-
-  /**
-   * Metric for the number of invocations of this Lambda
-   *
-   * @default sum over 5 minutes
-   */
-  public metricInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('Invocations', { statistic: 'sum', ...props });
-  }
-
-  /**
-   * Metric for the number of throttled invocations of this Lambda
-   *
-   * @default sum over 5 minutes
-   */
-  public metricThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('Throttles', { statistic: 'sum', ...props });
   }
 
   public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {

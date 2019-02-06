@@ -17,6 +17,11 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
   readonly queueUrl: string;
 
   /**
+   * The name of this queue
+   */
+  readonly queueName: string;
+
+  /**
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
   readonly encryptionMasterKey?: kms.IEncryptionKey;
@@ -104,6 +109,11 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    * The URL of this queue
    */
   public abstract readonly queueUrl: string;
+
+  /**
+   * The name of this queue
+   */
+  public abstract readonly queueName: string;
 
   /**
    * If this queue is server-side encrypted, this is the KMS encryption key.

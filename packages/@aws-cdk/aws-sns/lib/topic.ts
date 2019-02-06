@@ -1,6 +1,6 @@
 import { Construct, Output } from '@aws-cdk/cdk';
 import { CfnTopic } from './sns.generated';
-import { ITopic, TopicBase, TopicImportProps } from './topic-ref';
+import { ITopic, TopicBase, TopicImportProps } from './topic-base';
 
 /**
  * Properties for a new SNS topic

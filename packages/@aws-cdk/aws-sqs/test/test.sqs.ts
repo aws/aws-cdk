@@ -158,7 +158,7 @@ export = {
     'grants also work on imported queues'(test: Test) {
       const stack = new Stack();
       const queue = Queue.import(stack, 'Import', {
-        queueArn: 'imported-queue-arn',
+        queueArn: 'arn:aws:sqs:us-east-1:123456789012:queue1',
         queueUrl: 'https://queue-url'
       });
 
@@ -176,7 +176,7 @@ export = {
                 "sqs:GetQueueUrl"
               ],
               "Effect": "Allow",
-              "Resource": "imported-queue-arn"
+              "Resource": "arn:aws:sqs:us-east-1:123456789012:queue1"
             }
           ],
           "Version": "2012-10-17"
@@ -484,6 +484,31 @@ export = {
       test.done();
     }
 
+  },
+
+  'test metrics'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const topic = new Queue(stack, 'Queue');
+
+    // THEN
+    test.deepEqual(stack.node.resolve(topic.metricNumberOfMessagesSent()), {
+      dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
+      namespace: 'AWS/SQS',
+      metricName: 'NumberOfMessagesSent',
+      periodSec: 300,
+      statistic: 'Sum'
+    });
+
+    test.deepEqual(stack.node.resolve(topic.metricSentMessageSize()), {
+      dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
+      namespace: 'AWS/SQS',
+      metricName: 'SentMessageSize',
+      periodSec: 300,
+      statistic: 'Average'
+    });
+
+    test.done();
   }
 };
 

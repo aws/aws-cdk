@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { IFunction } from './lambda-ref';
+import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
 export interface EventSourceMappingProps {
