@@ -6,7 +6,7 @@ const app = new App();
 
 const stack = new Stack(app, `aws-cdk-kms-1`);
 
-const key = new EncryptionKey(stack, 'MyKey');
+const key = new EncryptionKey(stack, 'MyKey', { retainKey: false });
 
 key.addToResourcePolicy(new PolicyStatement()
   .addAllResources()

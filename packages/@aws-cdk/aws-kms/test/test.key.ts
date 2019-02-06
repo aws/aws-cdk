@@ -65,6 +65,66 @@ export = {
     test.done();
   },
 
+  'default with no retention'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    new EncryptionKey(stack, 'MyKey', { retainKey: false });
+
+    expect(app.synthesizeStack(stack.name)).to(exactlyMatchTemplate({
+      Resources: {
+      MyKey6AB29FA6: {
+        Type: "AWS::KMS::Key",
+        Properties: {
+        KeyPolicy: {
+          Statement: [
+          {
+            Action: [
+            "kms:Create*",
+            "kms:Describe*",
+            "kms:Enable*",
+            "kms:List*",
+            "kms:Put*",
+            "kms:Update*",
+            "kms:Revoke*",
+            "kms:Disable*",
+            "kms:Get*",
+            "kms:Delete*",
+            "kms:ScheduleKeyDeletion",
+            "kms:CancelKeyDeletion"
+            ],
+            Effect: "Allow",
+            Principal: {
+            AWS: {
+              "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                Ref: "AWS::Partition"
+                },
+                ":iam::",
+                {
+                Ref: "AWS::AccountId"
+                },
+                ":root"
+              ]
+              ]
+            }
+            },
+            Resource: "*"
+          }
+          ],
+          Version: "2012-10-17"
+        }
+        },
+        DeletionPolicy: "Delete",
+      }
+      }
+    }));
+    test.done();
+  },
+
   'default with some permission'(test: Test) {
     const app = new App();
     const stack = new Stack(app, 'Test');

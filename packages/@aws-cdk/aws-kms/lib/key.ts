@@ -111,6 +111,14 @@ export interface EncryptionKeyProps {
    * The AWS resource tags to associate with the KMS key.
    */
   tags?: Tags;
+
+  /**
+   * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
+   * retain access to data that was encrypted with a key that is being retired.
+   *
+   * @default true
+   */
+  retainKey?: boolean;
 }
 
 /**
@@ -168,7 +176,9 @@ export class EncryptionKey extends EncryptionKeyBase {
     });
 
     this.keyArn = resource.keyArn;
-    resource.options.deletionPolicy = DeletionPolicy.Retain;
+    resource.options.deletionPolicy = props.retainKey === false
+                                    ? DeletionPolicy.Delete
+                                    : DeletionPolicy.Retain;
   }
 
   /**
