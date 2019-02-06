@@ -6,6 +6,7 @@
     "branches": 50,
     "reporter": [
         "html",
+        "lcov",
         "text-summary"
     ],
     "cache": true,
