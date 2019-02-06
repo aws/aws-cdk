@@ -179,7 +179,8 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
     }
 
     // we use the queue name as the subscription's. there's no meaning to subscribing
-    // the same queue twice on the same topic.
+    // the same queue twice on the same topic. Create subscription under *consuming*
+    // construct to make sure it ends up in the correct stack in cases of cross-stack subscriptions.
     const sub = new Subscription(queue, subscriptionName, {
       topic: this,
       endpoint: queue.queueArn,
@@ -217,6 +218,8 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
       throw new Error(`A subscription between the topic ${this.node.id} and the lambda ${lambdaFunction.id} already exists`);
     }
 
+    // Create subscription under *consuming* construct to make sure it ends up
+    // in the correct stack in cases of cross-stack subscriptions.
     const sub = new Subscription(lambdaFunction, subscriptionName, {
       topic: this,
       endpoint: lambdaFunction.functionArn,
