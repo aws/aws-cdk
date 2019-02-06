@@ -104,7 +104,7 @@ export abstract class BaseService extends cdk.Construct
       loadBalancers: new cdk.Token(() => this.loadBalancers),
       deploymentConfiguration: {
         maximumPercent: props.maximumPercent || 200,
-        minimumHealthyPercent: props.minimumHealthyPercent || 50
+        minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
       },
       healthCheckGracePeriodSeconds: props.healthCheckGracePeriodSeconds,
       /* role: never specified, supplanted by Service Linked Role */
