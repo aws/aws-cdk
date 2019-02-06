@@ -608,6 +608,12 @@
             }
           }
         },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ],
         "Timeout": 310
       },
       "DependsOn": [

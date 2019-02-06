@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack, Tag } from '@aws-cdk/cdk';
 import { Attribute, AttributeType, ProjectionType, StreamViewType, Table } from '../lib';
 
 // CDK parameters
@@ -48,10 +48,10 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   pitrEnabled: true,
   sseEnabled: true,
   streamSpecification: StreamViewType.KeysOnly,
-  tags: { Environment: 'Production' },
   ttlAttributeName: 'timeToLive'
 });
 
+tableWithGlobalAndLocalSecondaryIndex.apply(new Tag('Environment', 'Production'));
 tableWithGlobalAndLocalSecondaryIndex.addPartitionKey(TABLE_PARTITION_KEY);
 tableWithGlobalAndLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({

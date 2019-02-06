@@ -49,11 +49,6 @@ export interface VpcNetworkProps {
   defaultInstanceTenancy?: DefaultInstanceTenancy;
 
   /**
-   * The AWS resource tags to associate with the VPC.
-   */
-  tags?: cdk.Tags;
-
-  /**
    * Define the maximum number of AZs to use in this region
    *
    * If the region has more AZs than you want to use (for example, because of EIP limits),
@@ -163,11 +158,6 @@ export interface SubnetConfiguration {
    * availability zone.
    */
   name: string;
-
-  /**
-   * The AWS resource tags to associate with the resource.
-   */
-  tags?: cdk.Tags;
 }
 
 /**
@@ -190,7 +180,7 @@ export interface SubnetConfiguration {
  *
  * }
  */
-export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
+export class VpcNetwork extends VpcNetworkBase {
   /**
    * @returns The IPv4 CidrBlock as returned by the VPC
    */
@@ -261,11 +251,6 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
   public readonly availabilityZones: string[];
 
   /**
-   * Manage tags for this construct and children
-   */
-  public readonly tags: cdk.TagManager;
-
-  /**
    * The VPC resource
    */
   private resource: CfnVPC;
@@ -299,9 +284,6 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
       throw new Error('To use DNS Hostnames, DNS Support must be enabled, however, it was explicitly disabled.');
     }
 
-    this.tags = new cdk.TagManager(this, { initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.node.path, { overwrite: false });
-
     const cidrBlock = ifUndefined(props.cidr, VpcNetwork.DEFAULT_CIDR_RANGE);
     this.networkBuilder = new NetworkBuilder(cidrBlock);
 
@@ -315,8 +297,9 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
       enableDnsHostnames,
       enableDnsSupport,
       instanceTenancy,
-      tags: this.tags,
     });
+
+    this.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
     this.availabilityZones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
     this.availabilityZones.sort();
@@ -336,7 +319,6 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
     // Create an Internet Gateway and attach it if necessary
     if (allowOutbound) {
       const igw = new CfnInternetGateway(this, 'IGW', {
-        tags: new cdk.TagManager(this),
       });
       this.internetDependencies.push(igw);
       const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
@@ -445,7 +427,6 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
         vpcId: this.vpcId,
         cidrBlock: this.networkBuilder.addSubnet(cidrMask),
         mapPublicIpOnLaunch: (subnetConfig.subnetType === SubnetType.Public),
-        tags: subnetConfig.tags,
       };
 
       let subnet: VpcSubnet;
@@ -462,7 +443,6 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
           break;
         case SubnetType.Isolated:
           const isolatedSubnet = new VpcPrivateSubnet(this, name, subnetProps);
-          isolatedSubnet.tags.setTag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType));
           this.isolatedSubnets.push(isolatedSubnet);
           subnet = isolatedSubnet;
           break;
@@ -471,8 +451,9 @@ export class VpcNetwork extends VpcNetworkBase implements cdk.ITaggable {
       }
 
       // These values will be used to recover the config upon provider import
-      subnet.tags.setTag(SUBNETNAME_TAG, subnetConfig.name, { propagate: false });
-      subnet.tags.setTag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { propagate: false });
+      const includeResourceTypes = [CfnSubnet.resourceTypeName];
+      subnet.apply(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
+      subnet.apply(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
     });
   }
 }
@@ -514,17 +495,12 @@ export interface VpcSubnetProps {
    * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
    */
   mapPublicIpOnLaunch?: boolean;
-
-  /**
-   * The AWS resource tags to associate with the Subnet
-   */
-  tags?: cdk.Tags;
 }
 
 /**
  * Represents a new VPC subnet resource
  */
-export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggable {
+export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
   public static import(scope: cdk.Construct, id: string, props: VpcSubnetImportProps): IVpcSubnet {
     return new ImportedVpcSubnet(scope, id, props);
   }
@@ -540,9 +516,9 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
   public readonly subnetId: string;
 
   /**
-   * Manage tags for Construct and propagate to children
+   * Parts of this VPC subnet
    */
-  public readonly tags: cdk.TagManager;
+  public readonly dependencyElements: cdk.IDependable[] = [];
 
   /**
    * The routeTableId attached to this subnet.
@@ -553,8 +529,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
 
   constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
     super(scope, id);
-    this.tags = new cdk.TagManager(this, {initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.node.path, {overwrite: false});
+    this.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -562,12 +537,10 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet, cdk.ITaggabl
       cidrBlock: props.cidrBlock,
       availabilityZone: props.availabilityZone,
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
-      tags: this.tags,
     });
     this.subnetId = subnet.subnetId;
     const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
-      tags: new cdk.TagManager(this),
     });
     this.routeTableId = table.ref;
 
@@ -649,7 +622,6 @@ export class VpcPublicSubnet extends VpcSubnet {
       allocationId: new CfnEIP(this, `EIP`, {
         domain: 'vpc'
       }).eipAllocationId,
-      tags: new cdk.TagManager(this),
     });
     return ngw;
   }

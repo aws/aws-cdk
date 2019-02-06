@@ -1,5 +1,5 @@
 import { Documented, PrimitiveType } from './base-types';
-import { Property } from './property';
+import { isTagProperty, Property, TagProperty } from './property';
 
 export interface ResourceType extends Documented {
   /**
@@ -28,6 +28,13 @@ export interface ResourceType extends Documented {
   ScrutinyType?: ResourceScrutinyType;
 }
 
+export interface TaggableResource extends ResourceType {
+  Properties: {
+    Tags: TagProperty;
+    [name: string]: Property;
+  }
+}
+
 export type Attribute = PrimitiveAttribute | ListAttribute;
 
 export interface PrimitiveAttribute {
@@ -44,6 +51,20 @@ export interface PrimitiveListAttribute {
 export interface ComplexListAttribute {
   Type: 'List';
   ItemType: string;
+}
+
+/**
+ * Determine if the resource supports tags
+ *
+ * This function combined with isTagProperty determines if the `cdk.TagManager`
+ * and `cdk.TaggableResource` can process these tags. If not, standard code
+ * generation of properties will be used.
+ */
+export function isTaggableResource(spec: ResourceType): spec is TaggableResource {
+  if (spec.Properties && spec.Properties.Tags) {
+    return isTagProperty(spec.Properties.Tags);
+  }
+  return false;
 }
 
 export function isPrimitiveAttribute(spec: Attribute): spec is PrimitiveAttribute {
