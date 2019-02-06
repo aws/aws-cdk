@@ -1,6 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
+import { SecretString } from './secret-string';
 import secretsmanager = require('./secretsmanager.generated');
 
 /**
@@ -17,6 +18,12 @@ export interface ISecret extends cdk.IConstruct {
    * The ARN of the secret in AWS Secrets Manager.
    */
   readonly secretArn: string;
+
+  /**
+   * Returns a SecretString corresponding to this secret, so that the secret value can be referred to from other parts
+   * of the application (such as an RDS instance's master user password property).
+   */
+  asSecretString(): SecretString;
 
   /**
    * Exports this secret.
@@ -90,7 +97,14 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
   public abstract readonly encryptionKey?: kms.IEncryptionKey;
   public abstract readonly secretArn: string;
 
+  private secretString?: SecretString;
+
   public abstract export(): SecretImportProps;
+
+  public asSecretString() {
+    this.secretString = this.secretString || new SecretString(this, 'SecretString', { secretId: this.secretArn });
+    return this.secretString;
+  }
 
   public grantRead(grantee: iam.IPrincipal, versionStages?: string[]): void {
     // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
@@ -143,7 +157,7 @@ export class Secret extends SecretBase {
     const resource = new secretsmanager.CfnSecret(this, 'Resource', {
       description: props.description,
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
-      generateSecretString: props.generateSecretString,
+      generateSecretString: props.generateSecretString || {},
       name: props.name,
     });
 
