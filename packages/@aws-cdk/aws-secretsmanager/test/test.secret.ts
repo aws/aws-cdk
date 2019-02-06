@@ -214,7 +214,7 @@ export = {
     test.done();
   },
 
-  'asSecretString'(test: Test) {
+  'toSecretString'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const key = new kms.EncryptionKey(stack, 'KMS');
@@ -224,7 +224,7 @@ export = {
     new cdk.Resource(stack, 'FakeResource', {
       type: 'CDK::Phony::Resource',
       properties: {
-        value: secret.asSecretString().value
+        value: secret.toSecretString().value
       }
     });
 

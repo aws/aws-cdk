@@ -23,7 +23,7 @@ export interface ISecret extends cdk.IConstruct {
    * Returns a SecretString corresponding to this secret, so that the secret value can be referred to from other parts
    * of the application (such as an RDS instance's master user password property).
    */
-  asSecretString(): SecretString;
+  toSecretString(): SecretString;
 
   /**
    * Exports this secret.
@@ -101,17 +101,12 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
 
   public abstract export(): SecretImportProps;
 
-  public asSecretString() {
-    this.secretString = this.secretString || new SecretString(this, 'SecretString', { secretId: this.secretArn });
-    return this.secretString;
-  }
-
   public grantRead(grantee: iam.IPrincipal, versionStages?: string[]): void {
     // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
     const statement = new iam.PolicyStatement()
-      .allow()
-      .addAction('secretsmanager:GetSecretValue')
-      .addResource(this.secretArn);
+    .allow()
+    .addAction('secretsmanager:GetSecretValue')
+    .addResource(this.secretArn);
     if (versionStages != null) {
       statement.addCondition('ForAnyValue:StringEquals', {
         'secretsmanager:VersionStage': versionStages
@@ -122,14 +117,19 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
     if (this.encryptionKey) {
       // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.addToResourcePolicy(new iam.PolicyStatement()
-        .allow()
-        .addPrincipal(grantee.principal)
-        .addAction('kms:Decrypt')
-        .addAllResources()
-        .addCondition('StringEquals', {
-          'kms:ViaService': `secretsmanager.${cdk.Stack.find(this).region}.amazonaws.com`
-        }));
+      .allow()
+      .addPrincipal(grantee.principal)
+      .addAction('kms:Decrypt')
+      .addAllResources()
+      .addCondition('StringEquals', {
+        'kms:ViaService': `secretsmanager.${cdk.Stack.find(this).region}.amazonaws.com`
+      }));
     }
+  }
+
+  public toSecretString() {
+    this.secretString = this.secretString || new SecretString(this, 'SecretString', { secretId: this.secretArn });
+    return this.secretString;
   }
 }
 
