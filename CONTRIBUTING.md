@@ -172,6 +172,33 @@ Each module also has an npm script called `cfn2ts`:
 * `npm run cfn2ts`: generates L1 for a specific module
 * `lerna run cfn2ts`: generates L1 for the entire repo
 
+### scripts/foreach.sh
+
+The script `scripts/foreach.sh` emits a bash script to stdout which executes COMMAND for each module in the repo, in topological order
+this can be useful if you are performing large scale refactors and wish to continue from where you left off
+yes, there are better ways to do this, but this is A WAY...
+
+Usage:
+
+```console
+$ scripts/foreach.sh COMMAND... > a.sh
+$ chmod +x ./a.sh
+$ ./a.sh
+```
+
+For example, to emit a script to run all tests:
+
+```console
+$ scripts/foreach.sh npm test > /tmp/test-all.sh
+$ chmod +x /tmp/test-all.sh
+$ /tmp/test-all.sh
+....runs tests...
+FAIL!
+$ # fix test
+$ # edit /tmp/test-all.sh and delete all lines until the offening module
+$ /tmp/test-all.sh # continue from where you left off
+```
+
 ## Development Workflows
 
 ### Full clean build
