@@ -608,6 +608,12 @@
             }
           }
         },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ],
         "Timeout": 310
       },
       "DependsOn": [
@@ -953,9 +959,6 @@
           "LB8A12904C",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:LoadBalancerDNS"
       }
     }
   }

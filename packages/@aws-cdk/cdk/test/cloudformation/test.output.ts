@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Construct, Output, Ref, Resource, Stack } from '../../lib';
+import { Output, Ref, Resource, Stack } from '../../lib';
 
 export = {
   'outputs can be added to the stack'(test: Test) {
@@ -57,7 +57,7 @@ export = {
   'if stack name is undefined, we will only use the logical ID for the export name'(test: Test) {
     const stack = new Stack();
     const output = new Output(stack, 'MyOutput');
-    test.equal(stack.node.resolve(output.export), 'MyOutput');
+    test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyOutput' });
     test.done();
   },
 
@@ -65,6 +65,33 @@ export = {
     const stack = new Stack(undefined, 'MyStack');
     const output = new Output(stack, 'MyOutput');
     test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyStack:MyOutput' });
+
+    test.deepEqual(stack.toCloudFormation(), {
+      Outputs: {
+        MyOutput: {
+          Export: { Name: 'MyStack:MyOutput' }
+        }
+      }
+    });
     test.done();
-  }
+  },
+
+  'No export is created by default'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Output(stack, 'SomeOutput', { value: 'x' });
+
+    // THEN
+    test.deepEqual(stack.toCloudFormation(), {
+      Outputs: {
+        SomeOutput: {
+          Value: 'x'
+        }
+      }
+    });
+
+    test.done();
+  },
 };

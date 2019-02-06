@@ -1,4 +1,4 @@
-import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
+import { expect, haveResource, MatchStyle, } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';

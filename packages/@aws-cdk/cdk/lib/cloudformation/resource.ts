@@ -1,5 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct, IConstruct } from '../core/construct';
+import { TagManager } from '../core/tag-manager';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CfnReference } from './cfn-tokens';
 import { Condition } from './condition';
@@ -18,6 +19,12 @@ export interface ResourceProps {
   properties?: any;
 }
 
+export interface ITaggable {
+  /**
+   * TagManager to set, remove and format tags
+   */
+  readonly tags: TagManager;
+}
 /**
  * Represents a CloudFormation resource.
  */
@@ -46,6 +53,13 @@ export class Resource extends Referenceable {
   }
 
   /**
+   * Check whether the given construct is Taggable
+   */
+  public static isTaggable(construct: any): construct is ITaggable {
+    return (construct as any).tags !== undefined;
+  }
+
+  /**
    * Options for this resource, such as condition, update policy etc.
    */
   public readonly options: ResourceOptions = {};
@@ -54,6 +68,13 @@ export class Resource extends Referenceable {
    * AWS resource type.
    */
   public readonly resourceType: string;
+
+  /**
+   * AWS resource properties.
+   *
+   * This object is rendered via a call to "renderProperties(this.properties)".
+   */
+  protected readonly properties: any;
 
   /**
    * AWS resource property overrides.
@@ -66,13 +87,6 @@ export class Resource extends Referenceable {
    * a public property called `propertyOverrides`.
    */
   protected readonly untypedPropertyOverrides: any = { };
-
-  /**
-   * AWS resource properties.
-   *
-   * This object is rendered via a call to "renderProperties(this.properties)".
-   */
-  protected readonly properties: any;
 
   /**
    * An object to be merged on top of the entire resource definition.
@@ -192,6 +206,10 @@ export class Resource extends Referenceable {
    */
   public toCloudFormation(): object {
     try {
+      if (Resource.isTaggable(this)) {
+        const tags = this.tags.renderTags();
+        this.properties.tags = tags === undefined ? this.properties.tags : tags;
+      }
       // merge property overrides onto properties and then render (and validate).
       const properties = this.renderProperties(deepMerge(this.properties || { }, this.untypedPropertyOverrides));
 
@@ -236,6 +254,13 @@ export class Resource extends Referenceable {
     return properties;
   }
 
+}
+
+export enum TagType {
+  Standard = 'StandardTag',
+  AutoScalingGroup = 'AutoScalingGroupTag',
+  Map = 'StringToStringMap',
+  NotTaggable = 'NotTaggable',
 }
 
 export interface ResourceOptions {
