@@ -28,17 +28,6 @@ export = {
     test.done();
   },
 
-  'outputs have a default unique export name'(test: Test) {
-    const stack = new Stack(undefined, 'MyStack');
-    const output = new Output(stack, 'MyOutput');
-    const child = new Construct(stack, 'MyConstruct');
-    const output2 = new Output(child, 'MyOutput2');
-
-    test.equal(stack.node.resolve(output.export), 'MyStack:MyOutput');
-    test.equal(stack.node.resolve(output2.export), 'MyStack:MyConstructMyOutput255322D15');
-    test.done();
-  },
-
   'disableExport can be used to disable the auto-export behavior'(test: Test) {
     const stack = new Stack();
     const output = new Output(stack, 'MyOutput', { disableExport: true });
