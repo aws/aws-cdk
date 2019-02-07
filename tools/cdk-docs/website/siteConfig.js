@@ -38,7 +38,7 @@ const siteConfig = {
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
-    {doc: 'doc1', label: 'API Reference'},
+    {doc: 'aws-amazonmq-readme', label: 'Docs'},
     {href: 'https://docs.aws.amazon.com/CDK/latest/userguide', label: 'User Guide'},
     {href: 'https://github.com/aws-samples/aws-cdk-examples', label: 'Examples'},
   ],
@@ -56,6 +56,8 @@ const siteConfig = {
     primaryColor: '#de741c',
     secondaryColor: '#205C3B',
   },
+
+  docsSideNavCollapsible: true,
 
   /* Custom fonts for website */
   /*

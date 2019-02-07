@@ -1,19 +1,754 @@
 {
   "docs": {
-    "Docusaurus": ["doc1"],
-    
-    "First Category": [
-      "doc2",
-      {
-        "type": "subcategory",
-        "label": "My Example Subcategory",
-        "ids": [
-          "doc3"
-        ]
-      }
+    "aws-amazonmq": [
+      "aws-amazonmq-readme",
+      "CfnBroker",
+      "CfnConfiguration",
+      "CfnConfigurationAssociation"
+    ],
+    "aws-apigateway": [
+      "aws-apigateway-readme",
+      "CfnAccount",
+      "CfnApiKey",
+      "CfnAuthorizer",
+      "CfnBasePathMapping",
+      "CfnClientCertificate",
+      "CfnDeployment",
+      "CfnDocumentationPart",
+      "CfnDocumentationVersion",
+      "CfnDomainName",
+      "CfnGatewayResponse",
+      "CfnMethod",
+      "CfnModel",
+      "CfnRequestValidator",
+      "CfnResource",
+      "CfnRestApi",
+      "CfnStage",
+      "CfnUsagePlan",
+      "CfnUsagePlanKey",
+      "CfnVpcLink",
+      "Deployment",
+      "LambdaRestApi",
+      "Method",
+      "ProxyResource",
+      "Resource",
+      "RestApi",
+      "Stage",
+      "VpcLink"
+    ],
+    "aws-applicationautoscaling": [
+      "aws-applicationautoscaling-readme",
+      "BaseScalableAttribute",
+      "CfnScalableTarget",
+      "CfnScalingPolicy",
+      "ScalableTarget",
+      "StepScalingAction",
+      "StepScalingPolicy",
+      "TargetTrackingScalingPolicy"
+    ],
+    "aws-appstream": [
+      "aws-appstream-readme",
+      "CfnDirectoryConfig",
+      "CfnFleet",
+      "CfnImageBuilder",
+      "CfnStack",
+      "CfnStackFleetAssociation",
+      "CfnStackUserAssociation",
+      "CfnUser"
+    ],
+    "aws-appsync": [
+      "aws-appsync-readme",
+      "CfnApiKey",
+      "CfnDataSource",
+      "CfnFunctionConfiguration",
+      "CfnGraphQLApi",
+      "CfnGraphQLSchema",
+      "CfnResolver"
+    ],
+    "aws-athena": [
+      "aws-athena-readme",
+      "CfnNamedQuery"
+    ],
+    "aws-autoscaling": [
+      "aws-autoscaling-readme",
+      "AutoScalingGroup",
+      "CfnAutoScalingGroup",
+      "CfnLaunchConfiguration",
+      "CfnLifecycleHook",
+      "CfnScalingPolicy",
+      "CfnScheduledAction",
+      "LifecycleHook",
+      "ScheduledAction",
+      "StepScalingAction",
+      "StepScalingPolicy",
+      "TargetTrackingScalingPolicy"
+    ],
+    "aws-autoscalingplans": [
+      "aws-autoscalingplans-readme",
+      "CfnScalingPlan"
+    ],
+    "aws-batch": [
+      "aws-batch-readme",
+      "CfnComputeEnvironment",
+      "CfnJobDefinition",
+      "CfnJobQueue"
+    ],
+    "aws-budgets": [
+      "aws-budgets-readme",
+      "CfnBudget"
+    ],
+    "aws-certificatemanager": [
+      "aws-certificatemanager-readme",
+      "Certificate",
+      "CfnCertificate"
+    ],
+    "aws-cloud9": [
+      "aws-cloud9-readme",
+      "CfnEnvironmentEC2"
+    ],
+    "aws-cloudformation": [
+      "aws-cloudformation-readme",
+      "CfnCustomResource",
+      "CfnMacro",
+      "CfnStack",
+      "CfnWaitCondition",
+      "CfnWaitConditionHandle",
+      "CustomResource",
+      "PipelineCloudFormationAction",
+      "PipelineCloudFormationDeployAction",
+      "PipelineCreateReplaceChangeSetAction",
+      "PipelineCreateUpdateStackAction",
+      "PipelineDeleteStackAction",
+      "PipelineExecuteChangeSetAction"
+    ],
+    "aws-cloudfront": [
+      "aws-cloudfront-readme",
+      "CfnCloudFrontOriginAccessIdentity",
+      "CfnDistribution",
+      "CfnStreamingDistribution",
+      "CloudFrontWebDistribution"
+    ],
+    "aws-cloudtrail": [
+      "aws-cloudtrail-readme",
+      "CfnTrail",
+      "CloudTrail"
+    ],
+    "aws-cloudwatch": [
+      "aws-cloudwatch-readme",
+      "Alarm",
+      "CfnAlarm",
+      "CfnDashboard",
+      "Dashboard"
+    ],
+    "aws-codebuild": [
+      "aws-codebuild-readme",
+      "CfnProject",
+      "PipelineBuildAction",
+      "PipelineProject",
+      "PipelineTestAction",
+      "Project",
+      "ProjectBase"
+    ],
+    "aws-codecommit": [
+      "aws-codecommit-readme",
+      "CfnRepository",
+      "PipelineSourceAction",
+      "Repository",
+      "RepositoryBase"
+    ],
+    "aws-codedeploy": [
+      "aws-codedeploy-readme",
+      "CfnApplication",
+      "CfnDeploymentConfig",
+      "CfnDeploymentGroup",
+      "PipelineDeployAction",
+      "ServerApplication",
+      "ServerDeploymentConfig",
+      "ServerDeploymentGroup",
+      "ServerDeploymentGroupBase"
+    ],
+    "aws-codepipeline-api": [
+      "aws-codepipeline-api-readme",
+      "Action",
+      "Artifact",
+      "BuildAction",
+      "DeployAction",
+      "SourceAction",
+      "TestAction"
+    ],
+    "aws-codepipeline": [
+      "aws-codepipeline-readme",
+      "BaseJenkinsProvider",
+      "CfnCustomActionType",
+      "CfnPipeline",
+      "CfnWebhook",
+      "CrossRegionScaffoldStack",
+      "GitHubSourceAction",
+      "JenkinsBuildAction",
+      "JenkinsProvider",
+      "JenkinsTestAction",
+      "ManualApprovalAction",
+      "Pipeline",
+      "Stage"
+    ],
+    "aws-cognito": [
+      "aws-cognito-readme",
+      "CfnIdentityPool",
+      "CfnIdentityPoolRoleAttachment",
+      "CfnUserPool",
+      "CfnUserPoolClient",
+      "CfnUserPoolGroup",
+      "CfnUserPoolUser",
+      "CfnUserPoolUserToGroupAttachment"
+    ],
+    "aws-config": [
+      "aws-config-readme",
+      "CfnAggregationAuthorization",
+      "CfnConfigRule",
+      "CfnConfigurationAggregator",
+      "CfnConfigurationRecorder",
+      "CfnDeliveryChannel"
+    ],
+    "aws-datapipeline": [
+      "aws-datapipeline-readme",
+      "CfnPipeline"
+    ],
+    "aws-dax": [
+      "aws-dax-readme",
+      "CfnCluster",
+      "CfnParameterGroup",
+      "CfnSubnetGroup"
+    ],
+    "aws-directoryservice": [
+      "aws-directoryservice-readme",
+      "CfnMicrosoftAD",
+      "CfnSimpleAD"
+    ],
+    "aws-dlm": [
+      "aws-dlm-readme",
+      "CfnLifecyclePolicy"
+    ],
+    "aws-dms": [
+      "aws-dms-readme",
+      "CfnCertificate",
+      "CfnEndpoint",
+      "CfnEventSubscription",
+      "CfnReplicationInstance",
+      "CfnReplicationSubnetGroup",
+      "CfnReplicationTask"
+    ],
+    "aws-docdb": [
+      "aws-docdb-readme",
+      "CfnDBCluster",
+      "CfnDBClusterParameterGroup",
+      "CfnDBInstance",
+      "CfnDBSubnetGroup"
+    ],
+    "aws-dynamodb": [
+      "aws-dynamodb-readme",
+      "CfnTable",
+      "Table"
+    ],
+    "aws-ec2": [
+      "aws-ec2-readme",
+      "CfnCustomerGateway",
+      "CfnDHCPOptions",
+      "CfnEC2Fleet",
+      "CfnEIP",
+      "CfnEIPAssociation",
+      "CfnEgressOnlyInternetGateway",
+      "CfnFlowLog",
+      "CfnHost",
+      "CfnInstance",
+      "CfnInternetGateway",
+      "CfnLaunchTemplate",
+      "CfnNatGateway",
+      "CfnNetworkAcl",
+      "CfnNetworkAclEntry",
+      "CfnNetworkInterface",
+      "CfnNetworkInterfaceAttachment",
+      "CfnNetworkInterfacePermission",
+      "CfnPlacementGroup",
+      "CfnRoute",
+      "CfnRouteTable",
+      "CfnSecurityGroup",
+      "CfnSecurityGroupEgress",
+      "CfnSecurityGroupIngress",
+      "CfnSpotFleet",
+      "CfnSubnet",
+      "CfnSubnetCidrBlock",
+      "CfnSubnetNetworkAclAssociation",
+      "CfnSubnetRouteTableAssociation",
+      "CfnTransitGateway",
+      "CfnTransitGatewayAttachment",
+      "CfnTransitGatewayRoute",
+      "CfnTransitGatewayRouteTable",
+      "CfnTransitGatewayRouteTableAssociation",
+      "CfnTransitGatewayRouteTablePropagation",
+      "CfnTrunkInterfaceAssociation",
+      "CfnVPC",
+      "CfnVPCCidrBlock",
+      "CfnVPCDHCPOptionsAssociation",
+      "CfnVPCEndpoint",
+      "CfnVPCEndpointConnectionNotification",
+      "CfnVPCEndpointServicePermissions",
+      "CfnVPCGatewayAttachment",
+      "CfnVPCPeeringConnection",
+      "CfnVPNConnection",
+      "CfnVPNConnectionRoute",
+      "CfnVPNGateway",
+      "CfnVPNGatewayRoutePropagation",
+      "CfnVolume",
+      "CfnVolumeAttachment",
+      "SecurityGroup",
+      "SecurityGroupBase",
+      "VpcNetwork",
+      "VpcNetworkBase",
+      "VpcPrivateSubnet",
+      "VpcPublicSubnet",
+      "VpcSubnet"
+    ],
+    "aws-ecr": [
+      "aws-ecr-readme",
+      "CfnRepository",
+      "PipelineSourceAction",
+      "Repository",
+      "RepositoryBase"
+    ],
+    "aws-ecs": [
+      "aws-ecs-readme",
+      "AssetImage",
+      "AwsLogDriver",
+      "BaseService",
+      "CfnCluster",
+      "CfnService",
+      "CfnTaskDefinition",
+      "Cluster",
+      "ContainerDefinition",
+      "Ec2EventRuleTarget",
+      "Ec2Service",
+      "Ec2TaskDefinition",
+      "FargateService",
+      "FargateTaskDefinition",
+      "LoadBalancedEc2Service",
+      "LoadBalancedFargateService",
+      "LoadBalancedFargateServiceApplet",
+      "LoadBalancedServiceBase",
+      "LogDriver",
+      "ScalableTaskCount",
+      "TaskDefinition"
+    ],
+    "aws-efs": [
+      "aws-efs-readme",
+      "CfnFileSystem",
+      "CfnMountTarget"
+    ],
+    "aws-eks": [
+      "aws-eks-readme",
+      "CfnCluster"
+    ],
+    "aws-elasticache": [
+      "aws-elasticache-readme",
+      "CfnCacheCluster",
+      "CfnParameterGroup",
+      "CfnReplicationGroup",
+      "CfnSecurityGroup",
+      "CfnSecurityGroupIngress",
+      "CfnSubnetGroup"
+    ],
+    "aws-elasticbeanstalk": [
+      "aws-elasticbeanstalk-readme",
+      "CfnApplication",
+      "CfnApplicationVersion",
+      "CfnConfigurationTemplate",
+      "CfnEnvironment"
+    ],
+    "aws-elasticloadbalancing": [
+      "aws-elasticloadbalancing-readme",
+      "CfnLoadBalancer",
+      "LoadBalancer"
+    ],
+    "aws-elasticloadbalancingv2": [
+      "aws-elasticloadbalancingv2-readme",
+      "ApplicationListener",
+      "ApplicationListenerCertificate",
+      "ApplicationListenerRule",
+      "ApplicationLoadBalancer",
+      "ApplicationTargetGroup",
+      "BaseListener",
+      "BaseLoadBalancer",
+      "CfnListener",
+      "CfnListenerCertificate",
+      "CfnListenerRule",
+      "CfnLoadBalancer",
+      "CfnTargetGroup",
+      "NetworkListener",
+      "NetworkLoadBalancer",
+      "NetworkTargetGroup",
+      "TargetGroupBase"
+    ],
+    "aws-elasticsearch": [
+      "aws-elasticsearch-readme",
+      "CfnDomain"
+    ],
+    "aws-emr": [
+      "aws-emr-readme",
+      "CfnCluster",
+      "CfnInstanceFleetConfig",
+      "CfnInstanceGroupConfig",
+      "CfnSecurityConfiguration",
+      "CfnStep"
+    ],
+    "aws-events": [
+      "aws-events-readme",
+      "CfnEventBusPolicy",
+      "CfnRule",
+      "EventRule"
+    ],
+    "aws-gamelift": [
+      "aws-gamelift-readme",
+      "CfnAlias",
+      "CfnBuild",
+      "CfnFleet"
+    ],
+    "aws-glue": [
+      "aws-glue-readme",
+      "CfnClassifier",
+      "CfnConnection",
+      "CfnCrawler",
+      "CfnDatabase",
+      "CfnDevEndpoint",
+      "CfnJob",
+      "CfnPartition",
+      "CfnTable",
+      "CfnTrigger"
+    ],
+    "aws-guardduty": [
+      "aws-guardduty-readme",
+      "CfnDetector",
+      "CfnFilter",
+      "CfnIPSet",
+      "CfnMaster",
+      "CfnMember",
+      "CfnThreatIntelSet"
+    ],
+    "aws-iam": [
+      "aws-iam-readme",
+      "CfnAccessKey",
+      "CfnGroup",
+      "CfnInstanceProfile",
+      "CfnManagedPolicy",
+      "CfnPolicy",
+      "CfnRole",
+      "CfnServiceLinkedRole",
+      "CfnUser",
+      "CfnUserToGroupAddition",
+      "Group",
+      "LazyRole",
+      "Policy",
+      "Role",
+      "User"
+    ],
+    "aws-inspector": [
+      "aws-inspector-readme",
+      "CfnAssessmentTarget",
+      "CfnAssessmentTemplate",
+      "CfnResourceGroup"
+    ],
+    "aws-iot1click": [
+      "aws-iot1click-readme",
+      "CfnDevice",
+      "CfnPlacement",
+      "CfnProject"
+    ],
+    "aws-iot": [
+      "aws-iot-readme",
+      "CfnCertificate",
+      "CfnPolicy",
+      "CfnPolicyPrincipalAttachment",
+      "CfnThing",
+      "CfnThingPrincipalAttachment",
+      "CfnTopicRule"
+    ],
+    "aws-iotanalytics": [
+      "aws-iotanalytics-readme",
+      "CfnChannel",
+      "CfnDataset",
+      "CfnDatastore",
+      "CfnPipeline"
+    ],
+    "aws-kinesis": [
+      "aws-kinesis-readme",
+      "CfnStream",
+      "CfnStreamConsumer",
+      "Stream",
+      "StreamBase"
+    ],
+    "aws-kinesisanalytics": [
+      "aws-kinesisanalytics-readme",
+      "CfnApplication",
+      "CfnApplicationOutput",
+      "CfnApplicationReferenceDataSource"
+    ],
+    "aws-kinesisfirehose": [
+      "aws-kinesisfirehose-readme",
+      "CfnDeliveryStream"
+    ],
+    "aws-kms": [
+      "aws-kms-readme",
+      "CfnAlias",
+      "CfnKey",
+      "EncryptionKey",
+      "EncryptionKeyAlias",
+      "EncryptionKeyBase"
+    ],
+    "aws-lambda": [
+      "aws-lambda-readme",
+      "Alias",
+      "CfnAlias",
+      "CfnEventSourceMapping",
+      "CfnFunction",
+      "CfnLayerVersion",
+      "CfnLayerVersionPermission",
+      "CfnPermission",
+      "CfnVersion",
+      "EventSourceMapping",
+      "Function",
+      "FunctionBase",
+      "ImportedFunction",
+      "LayerVersion",
+      "LayerVersionBase",
+      "PipelineInvokeAction",
+      "SingletonFunction",
+      "SingletonLayerVersion",
+      "Version"
+    ],
+    "aws-logs": [
+      "aws-logs-readme",
+      "CfnDestination",
+      "CfnLogGroup",
+      "CfnLogStream",
+      "CfnMetricFilter",
+      "CfnSubscriptionFilter",
+      "CrossAccountDestination",
+      "LogGroup",
+      "LogGroupBase",
+      "LogStream",
+      "MetricFilter",
+      "SubscriptionFilter"
+    ],
+    "aws-neptune": [
+      "aws-neptune-readme",
+      "CfnDBCluster",
+      "CfnDBClusterParameterGroup",
+      "CfnDBInstance",
+      "CfnDBParameterGroup",
+      "CfnDBSubnetGroup"
+    ],
+    "aws-opsworks": [
+      "aws-opsworks-readme",
+      "CfnApp",
+      "CfnElasticLoadBalancerAttachment",
+      "CfnInstance",
+      "CfnLayer",
+      "CfnStack",
+      "CfnUserProfile",
+      "CfnVolume"
+    ],
+    "aws-opsworkscm": [
+      "aws-opsworkscm-readme",
+      "CfnServer"
+    ],
+    "aws-quickstarts": [
+      "aws-quickstarts-readme",
+      "RemoteDesktopGateway",
+      "SqlServer"
+    ],
+    "aws-rds": [
+      "aws-rds-readme",
+      "CfnDBCluster",
+      "CfnDBClusterParameterGroup",
+      "CfnDBInstance",
+      "CfnDBParameterGroup",
+      "CfnDBSecurityGroup",
+      "CfnDBSecurityGroupIngress",
+      "CfnDBSubnetGroup",
+      "CfnEventSubscription",
+      "CfnOptionGroup",
+      "ClusterParameterGroup",
+      "DatabaseCluster",
+      "DatabaseInstance"
+    ],
+    "aws-redshift": [
+      "aws-redshift-readme",
+      "CfnCluster",
+      "CfnClusterParameterGroup",
+      "CfnClusterSecurityGroup",
+      "CfnClusterSecurityGroupIngress",
+      "CfnClusterSubnetGroup"
+    ],
+    "aws-route53": [
+      "aws-route53-readme",
+      "AliasRecord",
+      "CfnHealthCheck",
+      "CfnHostedZone",
+      "CfnRecordSet",
+      "CfnRecordSetGroup",
+      "CnameRecord",
+      "HostedZone",
+      "PrivateHostedZone",
+      "PublicHostedZone",
+      "TxtRecord",
+      "ZoneDelegationRecord"
+    ],
+    "aws-route53resolver": [
+      "aws-route53resolver-readme",
+      "CfnResolverEndpoint",
+      "CfnResolverRule",
+      "CfnResolverRuleAssociation"
+    ],
+    "aws-s3-deployment": [
+      "aws-s3-deployment-readme",
+      "BucketDeployment"
+    ],
+    "aws-s3": [
+      "aws-s3-readme",
+      "Bucket",
+      "BucketBase",
+      "BucketPolicy",
+      "CfnBucket",
+      "CfnBucketPolicy",
+      "PipelineDeployAction",
+      "PipelineSourceAction"
+    ],
+    "aws-sagemaker": [
+      "aws-sagemaker-readme",
+      "CfnEndpoint",
+      "CfnEndpointConfig",
+      "CfnModel",
+      "CfnNotebookInstance",
+      "CfnNotebookInstanceLifecycleConfig"
+    ],
+    "aws-sdb": [
+      "aws-sdb-readme",
+      "CfnDomain"
+    ],
+    "aws-secretsmanager": [
+      "aws-secretsmanager-readme",
+      "CfnResourcePolicy",
+      "CfnRotationSchedule",
+      "CfnSecret",
+      "CfnSecretTargetAttachment",
+      "SecretString"
+    ],
+    "aws-serverless": [
+      "aws-serverless-readme",
+      "CfnApi",
+      "CfnFunction",
+      "CfnSimpleTable"
+    ],
+    "aws-servicecatalog": [
+      "aws-servicecatalog-readme",
+      "CfnAcceptedPortfolioShare",
+      "CfnCloudFormationProduct",
+      "CfnCloudFormationProvisionedProduct",
+      "CfnLaunchNotificationConstraint",
+      "CfnLaunchRoleConstraint",
+      "CfnLaunchTemplateConstraint",
+      "CfnPortfolio",
+      "CfnPortfolioPrincipalAssociation",
+      "CfnPortfolioProductAssociation",
+      "CfnPortfolioShare",
+      "CfnTagOption",
+      "CfnTagOptionAssociation"
+    ],
+    "aws-servicediscovery": [
+      "aws-servicediscovery-readme",
+      "CfnHttpNamespace",
+      "CfnInstance",
+      "CfnPrivateDnsNamespace",
+      "CfnPublicDnsNamespace",
+      "CfnService"
+    ],
+    "aws-ses": [
+      "aws-ses-readme",
+      "CfnConfigurationSet",
+      "CfnConfigurationSetEventDestination",
+      "CfnReceiptFilter",
+      "CfnReceiptRule",
+      "CfnReceiptRuleSet",
+      "CfnTemplate"
+    ],
+    "aws-sns": [
+      "aws-sns-readme",
+      "CfnSubscription",
+      "CfnTopic",
+      "CfnTopicPolicy",
+      "Subscription",
+      "Topic",
+      "TopicBase",
+      "TopicPolicy"
+    ],
+    "aws-sqs": [
+      "aws-sqs-readme",
+      "CfnQueue",
+      "CfnQueuePolicy",
+      "Queue",
+      "QueueBase",
+      "QueuePolicy"
+    ],
+    "aws-ssm": [
+      "aws-ssm-readme",
+      "CfnAssociation",
+      "CfnDocument",
+      "CfnMaintenanceWindow",
+      "CfnMaintenanceWindowTask",
+      "CfnParameter",
+      "CfnPatchBaseline",
+      "CfnResourceDataSync",
+      "ParameterStoreSecureString",
+      "ParameterStoreString"
+    ],
+    "aws-stepfunctions": [
+      "aws-stepfunctions-readme",
+      "Activity",
+      "CfnActivity",
+      "CfnStateMachine",
+      "Choice",
+      "Fail",
+      "Parallel",
+      "Pass",
+      "State",
+      "StateMachine",
+      "StateMachineFragment",
+      "Succeed",
+      "Task",
+      "Wait"
+    ],
+    "aws-waf": [
+      "aws-waf-readme",
+      "CfnByteMatchSet",
+      "CfnIPSet",
+      "CfnRule",
+      "CfnSizeConstraintSet",
+      "CfnSqlInjectionMatchSet",
+      "CfnWebACL",
+      "CfnXssMatchSet"
+    ],
+    "aws-wafregional": [
+      "aws-wafregional-readme",
+      "CfnByteMatchSet",
+      "CfnIPSet",
+      "CfnRule",
+      "CfnSizeConstraintSet",
+      "CfnSqlInjectionMatchSet",
+      "CfnWebACL",
+      "CfnWebACLAssociation",
+      "CfnXssMatchSet"
+    ],
+    "aws-workspaces": [
+      "aws-workspaces-readme",
+      "CfnWorkspace"
     ]
-  },
-  "docs-other": {
-    "First Category": ["doc4", "doc5"]
   }
 }
