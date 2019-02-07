@@ -5,753 +5,1186 @@
     ],
     "aws-amazonmq": [
       "aws-amazonmq-readme",
-      "CfnBroker",
-      "CfnConfiguration",
-      "CfnConfigurationAssociation"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-amazonmq.CfnBroker",
+          "@aws-cdk_aws-amazonmq.CfnConfiguration",
+          "@aws-cdk_aws-amazonmq.CfnConfigurationAssociation"
+        ]
+      }
     ],
     "aws-apigateway": [
       "aws-apigateway-readme",
-      "CfnAccount",
-      "CfnApiKey",
-      "CfnAuthorizer",
-      "CfnBasePathMapping",
-      "CfnClientCertificate",
-      "CfnDeployment",
-      "CfnDocumentationPart",
-      "CfnDocumentationVersion",
-      "CfnDomainName",
-      "CfnGatewayResponse",
-      "CfnMethod",
-      "CfnModel",
-      "CfnRequestValidator",
-      "CfnResource",
-      "CfnRestApi",
-      "CfnStage",
-      "CfnUsagePlan",
-      "CfnUsagePlanKey",
-      "CfnVpcLink",
-      "Deployment",
-      "LambdaRestApi",
-      "Method",
-      "ProxyResource",
-      "Resource",
-      "RestApi",
-      "Stage",
-      "VpcLink"
+      "@aws-cdk_aws-apigateway.Deployment",
+      "@aws-cdk_aws-apigateway.LambdaRestApi",
+      "@aws-cdk_aws-apigateway.Method",
+      "@aws-cdk_aws-apigateway.ProxyResource",
+      "@aws-cdk_aws-apigateway.Resource",
+      "@aws-cdk_aws-apigateway.RestApi",
+      "@aws-cdk_aws-apigateway.Stage",
+      "@aws-cdk_aws-apigateway.VpcLink",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-apigateway.CfnAccount",
+          "@aws-cdk_aws-apigateway.CfnApiKey",
+          "@aws-cdk_aws-apigateway.CfnAuthorizer",
+          "@aws-cdk_aws-apigateway.CfnBasePathMapping",
+          "@aws-cdk_aws-apigateway.CfnClientCertificate",
+          "@aws-cdk_aws-apigateway.CfnDeployment",
+          "@aws-cdk_aws-apigateway.CfnDocumentationPart",
+          "@aws-cdk_aws-apigateway.CfnDocumentationVersion",
+          "@aws-cdk_aws-apigateway.CfnDomainName",
+          "@aws-cdk_aws-apigateway.CfnGatewayResponse",
+          "@aws-cdk_aws-apigateway.CfnMethod",
+          "@aws-cdk_aws-apigateway.CfnModel",
+          "@aws-cdk_aws-apigateway.CfnRequestValidator",
+          "@aws-cdk_aws-apigateway.CfnResource",
+          "@aws-cdk_aws-apigateway.CfnRestApi",
+          "@aws-cdk_aws-apigateway.CfnStage",
+          "@aws-cdk_aws-apigateway.CfnUsagePlan",
+          "@aws-cdk_aws-apigateway.CfnUsagePlanKey",
+          "@aws-cdk_aws-apigateway.CfnVpcLink"
+        ]
+      }
     ],
     "aws-applicationautoscaling": [
       "aws-applicationautoscaling-readme",
-      "BaseScalableAttribute",
-      "CfnScalableTarget",
-      "CfnScalingPolicy",
-      "ScalableTarget",
-      "StepScalingAction",
-      "StepScalingPolicy",
-      "TargetTrackingScalingPolicy"
+      "@aws-cdk_aws-applicationautoscaling.ScalableTarget",
+      "@aws-cdk_aws-applicationautoscaling.StepScalingAction",
+      "@aws-cdk_aws-applicationautoscaling.StepScalingPolicy",
+      "@aws-cdk_aws-applicationautoscaling.TargetTrackingScalingPolicy",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-applicationautoscaling.CfnScalableTarget",
+          "@aws-cdk_aws-applicationautoscaling.CfnScalingPolicy"
+        ]
+      }
     ],
     "aws-appstream": [
       "aws-appstream-readme",
-      "CfnDirectoryConfig",
-      "CfnFleet",
-      "CfnImageBuilder",
-      "CfnStack",
-      "CfnStackFleetAssociation",
-      "CfnStackUserAssociation",
-      "CfnUser"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-appstream.CfnDirectoryConfig",
+          "@aws-cdk_aws-appstream.CfnFleet",
+          "@aws-cdk_aws-appstream.CfnImageBuilder",
+          "@aws-cdk_aws-appstream.CfnStack",
+          "@aws-cdk_aws-appstream.CfnStackFleetAssociation",
+          "@aws-cdk_aws-appstream.CfnStackUserAssociation",
+          "@aws-cdk_aws-appstream.CfnUser"
+        ]
+      }
     ],
     "aws-appsync": [
       "aws-appsync-readme",
-      "CfnApiKey",
-      "CfnDataSource",
-      "CfnFunctionConfiguration",
-      "CfnGraphQLApi",
-      "CfnGraphQLSchema",
-      "CfnResolver"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-appsync.CfnApiKey",
+          "@aws-cdk_aws-appsync.CfnDataSource",
+          "@aws-cdk_aws-appsync.CfnFunctionConfiguration",
+          "@aws-cdk_aws-appsync.CfnGraphQLApi",
+          "@aws-cdk_aws-appsync.CfnGraphQLSchema",
+          "@aws-cdk_aws-appsync.CfnResolver"
+        ]
+      }
     ],
     "aws-athena": [
       "aws-athena-readme",
-      "CfnNamedQuery"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-athena.CfnNamedQuery"
+        ]
+      }
     ],
     "aws-autoscaling": [
       "aws-autoscaling-readme",
-      "AutoScalingGroup",
-      "CfnAutoScalingGroup",
-      "CfnLaunchConfiguration",
-      "CfnLifecycleHook",
-      "CfnScalingPolicy",
-      "CfnScheduledAction",
-      "LifecycleHook",
-      "ScheduledAction",
-      "StepScalingAction",
-      "StepScalingPolicy",
-      "TargetTrackingScalingPolicy"
+      "@aws-cdk_aws-autoscaling.AutoScalingGroup",
+      "@aws-cdk_aws-autoscaling.LifecycleHook",
+      "@aws-cdk_aws-autoscaling.ScheduledAction",
+      "@aws-cdk_aws-autoscaling.StepScalingAction",
+      "@aws-cdk_aws-autoscaling.StepScalingPolicy",
+      "@aws-cdk_aws-autoscaling.TargetTrackingScalingPolicy",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-autoscaling.CfnAutoScalingGroup",
+          "@aws-cdk_aws-autoscaling.CfnLaunchConfiguration",
+          "@aws-cdk_aws-autoscaling.CfnLifecycleHook",
+          "@aws-cdk_aws-autoscaling.CfnScalingPolicy",
+          "@aws-cdk_aws-autoscaling.CfnScheduledAction"
+        ]
+      }
     ],
     "aws-autoscalingplans": [
       "aws-autoscalingplans-readme",
-      "CfnScalingPlan"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-autoscalingplans.CfnScalingPlan"
+        ]
+      }
     ],
     "aws-batch": [
       "aws-batch-readme",
-      "CfnComputeEnvironment",
-      "CfnJobDefinition",
-      "CfnJobQueue"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-batch.CfnComputeEnvironment",
+          "@aws-cdk_aws-batch.CfnJobDefinition",
+          "@aws-cdk_aws-batch.CfnJobQueue"
+        ]
+      }
     ],
     "aws-budgets": [
       "aws-budgets-readme",
-      "CfnBudget"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-budgets.CfnBudget"
+        ]
+      }
     ],
     "aws-certificatemanager": [
       "aws-certificatemanager-readme",
-      "Certificate",
-      "CfnCertificate"
+      "@aws-cdk_aws-certificatemanager.Certificate",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-certificatemanager.CfnCertificate"
+        ]
+      }
     ],
     "aws-cloud9": [
       "aws-cloud9-readme",
-      "CfnEnvironmentEC2"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-cloud9.CfnEnvironmentEC2"
+        ]
+      }
     ],
     "aws-cloudformation": [
       "aws-cloudformation-readme",
-      "CfnCustomResource",
-      "CfnMacro",
-      "CfnStack",
-      "CfnWaitCondition",
-      "CfnWaitConditionHandle",
-      "CustomResource",
-      "PipelineCloudFormationAction",
-      "PipelineCloudFormationDeployAction",
-      "PipelineCreateReplaceChangeSetAction",
-      "PipelineCreateUpdateStackAction",
-      "PipelineDeleteStackAction",
-      "PipelineExecuteChangeSetAction"
+      "@aws-cdk_aws-cloudformation.CustomResource",
+      "@aws-cdk_aws-cloudformation.PipelineCreateReplaceChangeSetAction",
+      "@aws-cdk_aws-cloudformation.PipelineCreateUpdateStackAction",
+      "@aws-cdk_aws-cloudformation.PipelineDeleteStackAction",
+      "@aws-cdk_aws-cloudformation.PipelineExecuteChangeSetAction",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-cloudformation.CfnCustomResource",
+          "@aws-cdk_aws-cloudformation.CfnMacro",
+          "@aws-cdk_aws-cloudformation.CfnStack",
+          "@aws-cdk_aws-cloudformation.CfnWaitCondition"
+        ]
+      }
     ],
     "aws-cloudfront": [
       "aws-cloudfront-readme",
-      "CfnCloudFrontOriginAccessIdentity",
-      "CfnDistribution",
-      "CfnStreamingDistribution",
-      "CloudFrontWebDistribution"
+      "@aws-cdk_aws-cloudfront.CloudFrontWebDistribution",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-cloudfront.CfnCloudFrontOriginAccessIdentity",
+          "@aws-cdk_aws-cloudfront.CfnDistribution",
+          "@aws-cdk_aws-cloudfront.CfnStreamingDistribution"
+        ]
+      }
     ],
     "aws-cloudtrail": [
       "aws-cloudtrail-readme",
-      "CfnTrail",
-      "CloudTrail"
+      "@aws-cdk_aws-cloudtrail.CloudTrail",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-cloudtrail.CfnTrail"
+        ]
+      }
     ],
     "aws-cloudwatch": [
       "aws-cloudwatch-readme",
-      "Alarm",
-      "CfnAlarm",
-      "CfnDashboard",
-      "Dashboard"
+      "@aws-cdk_aws-cloudwatch.Alarm",
+      "@aws-cdk_aws-cloudwatch.Dashboard",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-cloudwatch.CfnAlarm",
+          "@aws-cdk_aws-cloudwatch.CfnDashboard"
+        ]
+      }
     ],
     "aws-codebuild": [
       "aws-codebuild-readme",
-      "CfnProject",
-      "PipelineBuildAction",
-      "PipelineProject",
-      "PipelineTestAction",
-      "Project",
-      "ProjectBase"
+      "@aws-cdk_aws-codebuild.PipelineBuildAction",
+      "@aws-cdk_aws-codebuild.PipelineProject",
+      "@aws-cdk_aws-codebuild.PipelineTestAction",
+      "@aws-cdk_aws-codebuild.Project",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-codebuild.CfnProject"
+        ]
+      }
     ],
     "aws-codecommit": [
       "aws-codecommit-readme",
-      "CfnRepository",
-      "PipelineSourceAction",
-      "Repository",
-      "RepositoryBase"
+      "@aws-cdk_aws-codecommit.PipelineSourceAction",
+      "@aws-cdk_aws-codecommit.Repository",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-codecommit.CfnRepository"
+        ]
+      }
     ],
     "aws-codedeploy": [
       "aws-codedeploy-readme",
-      "CfnApplication",
-      "CfnDeploymentConfig",
-      "CfnDeploymentGroup",
-      "PipelineDeployAction",
-      "ServerApplication",
-      "ServerDeploymentConfig",
-      "ServerDeploymentGroup",
-      "ServerDeploymentGroupBase"
+      "@aws-cdk_aws-codedeploy.PipelineDeployAction",
+      "@aws-cdk_aws-codedeploy.ServerApplication",
+      "@aws-cdk_aws-codedeploy.ServerDeploymentConfig",
+      "@aws-cdk_aws-codedeploy.ServerDeploymentGroup",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-codedeploy.CfnApplication",
+          "@aws-cdk_aws-codedeploy.CfnDeploymentConfig",
+          "@aws-cdk_aws-codedeploy.CfnDeploymentGroup"
+        ]
+      }
     ],
     "aws-codepipeline": [
       "aws-codepipeline-readme",
-      "BaseJenkinsProvider",
-      "CfnCustomActionType",
-      "CfnPipeline",
-      "CfnWebhook",
-      "CrossRegionScaffoldStack",
-      "GitHubSourceAction",
-      "JenkinsBuildAction",
-      "JenkinsProvider",
-      "JenkinsTestAction",
-      "ManualApprovalAction",
-      "Pipeline",
-      "Stage"
-    ],
-    "aws-codepipeline-api": [
-      "aws-codepipeline-api-readme",
-      "Action",
-      "Artifact",
-      "BuildAction",
-      "DeployAction",
-      "SourceAction",
-      "TestAction"
+      "@aws-cdk_aws-codepipeline.GitHubSourceAction",
+      "@aws-cdk_aws-codepipeline.JenkinsBuildAction",
+      "@aws-cdk_aws-codepipeline.JenkinsProvider",
+      "@aws-cdk_aws-codepipeline.JenkinsTestAction",
+      "@aws-cdk_aws-codepipeline.ManualApprovalAction",
+      "@aws-cdk_aws-codepipeline.Pipeline",
+      "@aws-cdk_aws-codepipeline.Stage",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-codepipeline.CfnCustomActionType",
+          "@aws-cdk_aws-codepipeline.CfnPipeline",
+          "@aws-cdk_aws-codepipeline.CfnWebhook"
+        ]
+      }
     ],
     "aws-cognito": [
       "aws-cognito-readme",
-      "CfnIdentityPool",
-      "CfnIdentityPoolRoleAttachment",
-      "CfnUserPool",
-      "CfnUserPoolClient",
-      "CfnUserPoolGroup",
-      "CfnUserPoolUser",
-      "CfnUserPoolUserToGroupAttachment"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-cognito.CfnIdentityPool",
+          "@aws-cdk_aws-cognito.CfnIdentityPoolRoleAttachment",
+          "@aws-cdk_aws-cognito.CfnUserPool",
+          "@aws-cdk_aws-cognito.CfnUserPoolClient",
+          "@aws-cdk_aws-cognito.CfnUserPoolGroup",
+          "@aws-cdk_aws-cognito.CfnUserPoolUser",
+          "@aws-cdk_aws-cognito.CfnUserPoolUserToGroupAttachment"
+        ]
+      }
     ],
     "aws-config": [
       "aws-config-readme",
-      "CfnAggregationAuthorization",
-      "CfnConfigRule",
-      "CfnConfigurationAggregator",
-      "CfnConfigurationRecorder",
-      "CfnDeliveryChannel"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-config.CfnAggregationAuthorization",
+          "@aws-cdk_aws-config.CfnConfigRule",
+          "@aws-cdk_aws-config.CfnConfigurationAggregator",
+          "@aws-cdk_aws-config.CfnConfigurationRecorder",
+          "@aws-cdk_aws-config.CfnDeliveryChannel"
+        ]
+      }
     ],
     "aws-datapipeline": [
       "aws-datapipeline-readme",
-      "CfnPipeline"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-datapipeline.CfnPipeline"
+        ]
+      }
     ],
     "aws-dax": [
       "aws-dax-readme",
-      "CfnCluster",
-      "CfnParameterGroup",
-      "CfnSubnetGroup"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-dax.CfnCluster",
+          "@aws-cdk_aws-dax.CfnParameterGroup",
+          "@aws-cdk_aws-dax.CfnSubnetGroup"
+        ]
+      }
     ],
     "aws-directoryservice": [
       "aws-directoryservice-readme",
-      "CfnMicrosoftAD",
-      "CfnSimpleAD"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-directoryservice.CfnMicrosoftAD",
+          "@aws-cdk_aws-directoryservice.CfnSimpleAD"
+        ]
+      }
     ],
     "aws-dlm": [
       "aws-dlm-readme",
-      "CfnLifecyclePolicy"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-dlm.CfnLifecyclePolicy"
+        ]
+      }
     ],
     "aws-dms": [
       "aws-dms-readme",
-      "CfnCertificate",
-      "CfnEndpoint",
-      "CfnEventSubscription",
-      "CfnReplicationInstance",
-      "CfnReplicationSubnetGroup",
-      "CfnReplicationTask"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-dms.CfnCertificate",
+          "@aws-cdk_aws-dms.CfnEndpoint",
+          "@aws-cdk_aws-dms.CfnEventSubscription",
+          "@aws-cdk_aws-dms.CfnReplicationInstance",
+          "@aws-cdk_aws-dms.CfnReplicationSubnetGroup",
+          "@aws-cdk_aws-dms.CfnReplicationTask"
+        ]
+      }
     ],
     "aws-docdb": [
       "aws-docdb-readme",
-      "CfnDBCluster",
-      "CfnDBClusterParameterGroup",
-      "CfnDBInstance",
-      "CfnDBSubnetGroup"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-docdb.CfnDBCluster",
+          "@aws-cdk_aws-docdb.CfnDBClusterParameterGroup",
+          "@aws-cdk_aws-docdb.CfnDBInstance",
+          "@aws-cdk_aws-docdb.CfnDBSubnetGroup"
+        ]
+      }
     ],
     "aws-dynamodb": [
       "aws-dynamodb-readme",
-      "CfnTable",
-      "Table"
+      "@aws-cdk_aws-dynamodb.Table",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-dynamodb.CfnTable"
+        ]
+      }
     ],
     "aws-ec2": [
       "aws-ec2-readme",
-      "CfnCustomerGateway",
-      "CfnDHCPOptions",
-      "CfnEC2Fleet",
-      "CfnEIP",
-      "CfnEIPAssociation",
-      "CfnEgressOnlyInternetGateway",
-      "CfnFlowLog",
-      "CfnHost",
-      "CfnInstance",
-      "CfnInternetGateway",
-      "CfnLaunchTemplate",
-      "CfnNatGateway",
-      "CfnNetworkAcl",
-      "CfnNetworkAclEntry",
-      "CfnNetworkInterface",
-      "CfnNetworkInterfaceAttachment",
-      "CfnNetworkInterfacePermission",
-      "CfnPlacementGroup",
-      "CfnRoute",
-      "CfnRouteTable",
-      "CfnSecurityGroup",
-      "CfnSecurityGroupEgress",
-      "CfnSecurityGroupIngress",
-      "CfnSpotFleet",
-      "CfnSubnet",
-      "CfnSubnetCidrBlock",
-      "CfnSubnetNetworkAclAssociation",
-      "CfnSubnetRouteTableAssociation",
-      "CfnTransitGateway",
-      "CfnTransitGatewayAttachment",
-      "CfnTransitGatewayRoute",
-      "CfnTransitGatewayRouteTable",
-      "CfnTransitGatewayRouteTableAssociation",
-      "CfnTransitGatewayRouteTablePropagation",
-      "CfnTrunkInterfaceAssociation",
-      "CfnVPC",
-      "CfnVPCCidrBlock",
-      "CfnVPCDHCPOptionsAssociation",
-      "CfnVPCEndpoint",
-      "CfnVPCEndpointConnectionNotification",
-      "CfnVPCEndpointServicePermissions",
-      "CfnVPCGatewayAttachment",
-      "CfnVPCPeeringConnection",
-      "CfnVPNConnection",
-      "CfnVPNConnectionRoute",
-      "CfnVPNGateway",
-      "CfnVPNGatewayRoutePropagation",
-      "CfnVolume",
-      "CfnVolumeAttachment",
-      "SecurityGroup",
-      "SecurityGroupBase",
-      "VpcNetwork",
-      "VpcNetworkBase",
-      "VpcPrivateSubnet",
-      "VpcPublicSubnet",
-      "VpcSubnet"
+      "@aws-cdk_aws-ec2.SecurityGroup",
+      "@aws-cdk_aws-ec2.VpcNetwork",
+      "@aws-cdk_aws-ec2.VpcPrivateSubnet",
+      "@aws-cdk_aws-ec2.VpcPublicSubnet",
+      "@aws-cdk_aws-ec2.VpcSubnet",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-ec2.CfnCustomerGateway",
+          "@aws-cdk_aws-ec2.CfnDHCPOptions",
+          "@aws-cdk_aws-ec2.CfnEC2Fleet",
+          "@aws-cdk_aws-ec2.CfnEgressOnlyInternetGateway",
+          "@aws-cdk_aws-ec2.CfnEIP",
+          "@aws-cdk_aws-ec2.CfnEIPAssociation",
+          "@aws-cdk_aws-ec2.CfnFlowLog",
+          "@aws-cdk_aws-ec2.CfnHost",
+          "@aws-cdk_aws-ec2.CfnInstance",
+          "@aws-cdk_aws-ec2.CfnInternetGateway",
+          "@aws-cdk_aws-ec2.CfnLaunchTemplate",
+          "@aws-cdk_aws-ec2.CfnNatGateway",
+          "@aws-cdk_aws-ec2.CfnNetworkAcl",
+          "@aws-cdk_aws-ec2.CfnNetworkAclEntry",
+          "@aws-cdk_aws-ec2.CfnNetworkInterface",
+          "@aws-cdk_aws-ec2.CfnNetworkInterfaceAttachment",
+          "@aws-cdk_aws-ec2.CfnNetworkInterfacePermission",
+          "@aws-cdk_aws-ec2.CfnPlacementGroup",
+          "@aws-cdk_aws-ec2.CfnRoute",
+          "@aws-cdk_aws-ec2.CfnRouteTable",
+          "@aws-cdk_aws-ec2.CfnSecurityGroup",
+          "@aws-cdk_aws-ec2.CfnSecurityGroupEgress",
+          "@aws-cdk_aws-ec2.CfnSecurityGroupIngress",
+          "@aws-cdk_aws-ec2.CfnSpotFleet",
+          "@aws-cdk_aws-ec2.CfnSubnet",
+          "@aws-cdk_aws-ec2.CfnSubnetCidrBlock",
+          "@aws-cdk_aws-ec2.CfnSubnetNetworkAclAssociation",
+          "@aws-cdk_aws-ec2.CfnSubnetRouteTableAssociation",
+          "@aws-cdk_aws-ec2.CfnTransitGateway",
+          "@aws-cdk_aws-ec2.CfnTransitGatewayAttachment",
+          "@aws-cdk_aws-ec2.CfnTransitGatewayRoute",
+          "@aws-cdk_aws-ec2.CfnTransitGatewayRouteTable",
+          "@aws-cdk_aws-ec2.CfnTransitGatewayRouteTableAssociation",
+          "@aws-cdk_aws-ec2.CfnTransitGatewayRouteTablePropagation",
+          "@aws-cdk_aws-ec2.CfnTrunkInterfaceAssociation",
+          "@aws-cdk_aws-ec2.CfnVolume",
+          "@aws-cdk_aws-ec2.CfnVolumeAttachment",
+          "@aws-cdk_aws-ec2.CfnVPC",
+          "@aws-cdk_aws-ec2.CfnVPCCidrBlock",
+          "@aws-cdk_aws-ec2.CfnVPCDHCPOptionsAssociation",
+          "@aws-cdk_aws-ec2.CfnVPCEndpoint",
+          "@aws-cdk_aws-ec2.CfnVPCEndpointConnectionNotification",
+          "@aws-cdk_aws-ec2.CfnVPCEndpointServicePermissions",
+          "@aws-cdk_aws-ec2.CfnVPCGatewayAttachment",
+          "@aws-cdk_aws-ec2.CfnVPCPeeringConnection",
+          "@aws-cdk_aws-ec2.CfnVPNConnection",
+          "@aws-cdk_aws-ec2.CfnVPNConnectionRoute",
+          "@aws-cdk_aws-ec2.CfnVPNGateway",
+          "@aws-cdk_aws-ec2.CfnVPNGatewayRoutePropagation"
+        ]
+      }
     ],
     "aws-ecr": [
       "aws-ecr-readme",
-      "CfnRepository",
-      "PipelineSourceAction",
-      "Repository",
-      "RepositoryBase"
+      "@aws-cdk_aws-ecr.PipelineSourceAction",
+      "@aws-cdk_aws-ecr.Repository",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-ecr.CfnRepository"
+        ]
+      }
     ],
     "aws-ecs": [
       "aws-ecs-readme",
-      "AssetImage",
-      "AwsLogDriver",
-      "BaseService",
-      "CfnCluster",
-      "CfnService",
-      "CfnTaskDefinition",
-      "Cluster",
-      "ContainerDefinition",
-      "Ec2EventRuleTarget",
-      "Ec2Service",
-      "Ec2TaskDefinition",
-      "FargateService",
-      "FargateTaskDefinition",
-      "LoadBalancedEc2Service",
-      "LoadBalancedFargateService",
-      "LoadBalancedFargateServiceApplet",
-      "LoadBalancedServiceBase",
-      "LogDriver",
-      "ScalableTaskCount",
-      "TaskDefinition"
+      "@aws-cdk_aws-ecs.AssetImage",
+      "@aws-cdk_aws-ecs.AwsLogDriver",
+      "@aws-cdk_aws-ecs.Cluster",
+      "@aws-cdk_aws-ecs.Ec2EventRuleTarget",
+      "@aws-cdk_aws-ecs.Ec2Service",
+      "@aws-cdk_aws-ecs.Ec2TaskDefinition",
+      "@aws-cdk_aws-ecs.FargateService",
+      "@aws-cdk_aws-ecs.FargateTaskDefinition",
+      "@aws-cdk_aws-ecs.LoadBalancedEc2Service",
+      "@aws-cdk_aws-ecs.LoadBalancedFargateService",
+      "@aws-cdk_aws-ecs.LoadBalancedFargateServiceApplet",
+      "@aws-cdk_aws-ecs.ScalableTaskCount",
+      "@aws-cdk_aws-ecs.TaskDefinition",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-ecs.CfnCluster",
+          "@aws-cdk_aws-ecs.CfnService",
+          "@aws-cdk_aws-ecs.CfnTaskDefinition"
+        ]
+      }
     ],
     "aws-efs": [
       "aws-efs-readme",
-      "CfnFileSystem",
-      "CfnMountTarget"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-efs.CfnFileSystem",
+          "@aws-cdk_aws-efs.CfnMountTarget"
+        ]
+      }
     ],
     "aws-eks": [
       "aws-eks-readme",
-      "CfnCluster"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-eks.CfnCluster"
+        ]
+      }
     ],
     "aws-elasticache": [
       "aws-elasticache-readme",
-      "CfnCacheCluster",
-      "CfnParameterGroup",
-      "CfnReplicationGroup",
-      "CfnSecurityGroup",
-      "CfnSecurityGroupIngress",
-      "CfnSubnetGroup"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-elasticache.CfnCacheCluster",
+          "@aws-cdk_aws-elasticache.CfnParameterGroup",
+          "@aws-cdk_aws-elasticache.CfnReplicationGroup",
+          "@aws-cdk_aws-elasticache.CfnSecurityGroup",
+          "@aws-cdk_aws-elasticache.CfnSecurityGroupIngress",
+          "@aws-cdk_aws-elasticache.CfnSubnetGroup"
+        ]
+      }
     ],
     "aws-elasticbeanstalk": [
       "aws-elasticbeanstalk-readme",
-      "CfnApplication",
-      "CfnApplicationVersion",
-      "CfnConfigurationTemplate",
-      "CfnEnvironment"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-elasticbeanstalk.CfnApplication",
+          "@aws-cdk_aws-elasticbeanstalk.CfnApplicationVersion",
+          "@aws-cdk_aws-elasticbeanstalk.CfnConfigurationTemplate",
+          "@aws-cdk_aws-elasticbeanstalk.CfnEnvironment"
+        ]
+      }
     ],
     "aws-elasticloadbalancing": [
       "aws-elasticloadbalancing-readme",
-      "CfnLoadBalancer",
-      "LoadBalancer"
+      "@aws-cdk_aws-elasticloadbalancing.LoadBalancer",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-elasticloadbalancing.CfnLoadBalancer"
+        ]
+      }
     ],
     "aws-elasticloadbalancingv2": [
       "aws-elasticloadbalancingv2-readme",
-      "ApplicationListener",
-      "ApplicationListenerCertificate",
-      "ApplicationListenerRule",
-      "ApplicationLoadBalancer",
-      "ApplicationTargetGroup",
-      "BaseListener",
-      "BaseLoadBalancer",
-      "CfnListener",
-      "CfnListenerCertificate",
-      "CfnListenerRule",
-      "CfnLoadBalancer",
-      "CfnTargetGroup",
-      "NetworkListener",
-      "NetworkLoadBalancer",
-      "NetworkTargetGroup",
-      "TargetGroupBase"
+      "@aws-cdk_aws-elasticloadbalancingv2.ApplicationListener",
+      "@aws-cdk_aws-elasticloadbalancingv2.ApplicationListenerCertificate",
+      "@aws-cdk_aws-elasticloadbalancingv2.ApplicationListenerRule",
+      "@aws-cdk_aws-elasticloadbalancingv2.ApplicationLoadBalancer",
+      "@aws-cdk_aws-elasticloadbalancingv2.ApplicationTargetGroup",
+      "@aws-cdk_aws-elasticloadbalancingv2.NetworkListener",
+      "@aws-cdk_aws-elasticloadbalancingv2.NetworkLoadBalancer",
+      "@aws-cdk_aws-elasticloadbalancingv2.NetworkTargetGroup",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-elasticloadbalancingv2.CfnListener",
+          "@aws-cdk_aws-elasticloadbalancingv2.CfnListenerCertificate",
+          "@aws-cdk_aws-elasticloadbalancingv2.CfnListenerRule",
+          "@aws-cdk_aws-elasticloadbalancingv2.CfnLoadBalancer",
+          "@aws-cdk_aws-elasticloadbalancingv2.CfnTargetGroup"
+        ]
+      }
     ],
     "aws-elasticsearch": [
       "aws-elasticsearch-readme",
-      "CfnDomain"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-elasticsearch.CfnDomain"
+        ]
+      }
     ],
     "aws-emr": [
       "aws-emr-readme",
-      "CfnCluster",
-      "CfnInstanceFleetConfig",
-      "CfnInstanceGroupConfig",
-      "CfnSecurityConfiguration",
-      "CfnStep"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-emr.CfnCluster",
+          "@aws-cdk_aws-emr.CfnInstanceFleetConfig",
+          "@aws-cdk_aws-emr.CfnInstanceGroupConfig",
+          "@aws-cdk_aws-emr.CfnSecurityConfiguration",
+          "@aws-cdk_aws-emr.CfnStep"
+        ]
+      }
     ],
     "aws-events": [
       "aws-events-readme",
-      "CfnEventBusPolicy",
-      "CfnRule",
-      "EventRule"
+      "@aws-cdk_aws-events.EventRule",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-events.CfnEventBusPolicy",
+          "@aws-cdk_aws-events.CfnRule"
+        ]
+      }
     ],
     "aws-gamelift": [
       "aws-gamelift-readme",
-      "CfnAlias",
-      "CfnBuild",
-      "CfnFleet"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-gamelift.CfnAlias",
+          "@aws-cdk_aws-gamelift.CfnBuild",
+          "@aws-cdk_aws-gamelift.CfnFleet"
+        ]
+      }
     ],
     "aws-glue": [
       "aws-glue-readme",
-      "CfnClassifier",
-      "CfnConnection",
-      "CfnCrawler",
-      "CfnDatabase",
-      "CfnDevEndpoint",
-      "CfnJob",
-      "CfnPartition",
-      "CfnTable",
-      "CfnTrigger"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-glue.CfnClassifier",
+          "@aws-cdk_aws-glue.CfnConnection",
+          "@aws-cdk_aws-glue.CfnCrawler",
+          "@aws-cdk_aws-glue.CfnDatabase",
+          "@aws-cdk_aws-glue.CfnDevEndpoint",
+          "@aws-cdk_aws-glue.CfnJob",
+          "@aws-cdk_aws-glue.CfnPartition",
+          "@aws-cdk_aws-glue.CfnTable",
+          "@aws-cdk_aws-glue.CfnTrigger"
+        ]
+      }
     ],
     "aws-guardduty": [
       "aws-guardduty-readme",
-      "CfnDetector",
-      "CfnFilter",
-      "CfnIPSet",
-      "CfnMaster",
-      "CfnMember",
-      "CfnThreatIntelSet"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-guardduty.CfnDetector",
+          "@aws-cdk_aws-guardduty.CfnFilter",
+          "@aws-cdk_aws-guardduty.CfnIPSet",
+          "@aws-cdk_aws-guardduty.CfnMaster",
+          "@aws-cdk_aws-guardduty.CfnMember",
+          "@aws-cdk_aws-guardduty.CfnThreatIntelSet"
+        ]
+      }
     ],
     "aws-iam": [
       "aws-iam-readme",
-      "CfnAccessKey",
-      "CfnGroup",
-      "CfnInstanceProfile",
-      "CfnManagedPolicy",
-      "CfnPolicy",
-      "CfnRole",
-      "CfnServiceLinkedRole",
-      "CfnUser",
-      "CfnUserToGroupAddition",
-      "Group",
-      "LazyRole",
-      "Policy",
-      "Role",
-      "User"
+      "@aws-cdk_aws-iam.Group",
+      "@aws-cdk_aws-iam.LazyRole",
+      "@aws-cdk_aws-iam.Policy",
+      "@aws-cdk_aws-iam.Role",
+      "@aws-cdk_aws-iam.User",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-iam.CfnAccessKey",
+          "@aws-cdk_aws-iam.CfnGroup",
+          "@aws-cdk_aws-iam.CfnInstanceProfile",
+          "@aws-cdk_aws-iam.CfnManagedPolicy",
+          "@aws-cdk_aws-iam.CfnPolicy",
+          "@aws-cdk_aws-iam.CfnRole",
+          "@aws-cdk_aws-iam.CfnServiceLinkedRole",
+          "@aws-cdk_aws-iam.CfnUser",
+          "@aws-cdk_aws-iam.CfnUserToGroupAddition"
+        ]
+      }
     ],
     "aws-inspector": [
       "aws-inspector-readme",
-      "CfnAssessmentTarget",
-      "CfnAssessmentTemplate",
-      "CfnResourceGroup"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-inspector.CfnAssessmentTarget",
+          "@aws-cdk_aws-inspector.CfnAssessmentTemplate",
+          "@aws-cdk_aws-inspector.CfnResourceGroup"
+        ]
+      }
     ],
     "aws-iot": [
       "aws-iot-readme",
-      "CfnCertificate",
-      "CfnPolicy",
-      "CfnPolicyPrincipalAttachment",
-      "CfnThing",
-      "CfnThingPrincipalAttachment",
-      "CfnTopicRule"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-iot.CfnCertificate",
+          "@aws-cdk_aws-iot.CfnPolicy",
+          "@aws-cdk_aws-iot.CfnPolicyPrincipalAttachment",
+          "@aws-cdk_aws-iot.CfnThing",
+          "@aws-cdk_aws-iot.CfnThingPrincipalAttachment",
+          "@aws-cdk_aws-iot.CfnTopicRule"
+        ]
+      }
     ],
     "aws-iot1click": [
       "aws-iot1click-readme",
-      "CfnDevice",
-      "CfnPlacement",
-      "CfnProject"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-iot1click.CfnDevice",
+          "@aws-cdk_aws-iot1click.CfnPlacement",
+          "@aws-cdk_aws-iot1click.CfnProject"
+        ]
+      }
     ],
     "aws-iotanalytics": [
       "aws-iotanalytics-readme",
-      "CfnChannel",
-      "CfnDataset",
-      "CfnDatastore",
-      "CfnPipeline"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-iotanalytics.CfnChannel",
+          "@aws-cdk_aws-iotanalytics.CfnDataset",
+          "@aws-cdk_aws-iotanalytics.CfnDatastore",
+          "@aws-cdk_aws-iotanalytics.CfnPipeline"
+        ]
+      }
     ],
     "aws-kinesis": [
       "aws-kinesis-readme",
-      "CfnStream",
-      "CfnStreamConsumer",
-      "Stream",
-      "StreamBase"
+      "@aws-cdk_aws-kinesis.Stream",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-kinesis.CfnStream",
+          "@aws-cdk_aws-kinesis.CfnStreamConsumer"
+        ]
+      }
     ],
     "aws-kinesisanalytics": [
       "aws-kinesisanalytics-readme",
-      "CfnApplication",
-      "CfnApplicationOutput",
-      "CfnApplicationReferenceDataSource"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-kinesisanalytics.CfnApplication",
+          "@aws-cdk_aws-kinesisanalytics.CfnApplicationOutput",
+          "@aws-cdk_aws-kinesisanalytics.CfnApplicationReferenceDataSource"
+        ]
+      }
     ],
     "aws-kinesisfirehose": [
       "aws-kinesisfirehose-readme",
-      "CfnDeliveryStream"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-kinesisfirehose.CfnDeliveryStream"
+        ]
+      }
     ],
     "aws-kms": [
       "aws-kms-readme",
-      "CfnAlias",
-      "CfnKey",
-      "EncryptionKey",
-      "EncryptionKeyAlias",
-      "EncryptionKeyBase"
+      "@aws-cdk_aws-kms.EncryptionKey",
+      "@aws-cdk_aws-kms.EncryptionKeyAlias",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-kms.CfnAlias",
+          "@aws-cdk_aws-kms.CfnKey"
+        ]
+      }
     ],
     "aws-lambda": [
       "aws-lambda-readme",
-      "Alias",
-      "CfnAlias",
-      "CfnEventSourceMapping",
-      "CfnFunction",
-      "CfnLayerVersion",
-      "CfnLayerVersionPermission",
-      "CfnPermission",
-      "CfnVersion",
-      "EventSourceMapping",
-      "Function",
-      "FunctionBase",
-      "ImportedFunction",
-      "LayerVersion",
-      "LayerVersionBase",
-      "PipelineInvokeAction",
-      "SingletonFunction",
-      "SingletonLayerVersion",
-      "Version"
+      "@aws-cdk_aws-lambda.Alias",
+      "@aws-cdk_aws-lambda.EventSourceMapping",
+      "@aws-cdk_aws-lambda.Function",
+      "@aws-cdk_aws-lambda.ImportedFunction",
+      "@aws-cdk_aws-lambda.LayerVersion",
+      "@aws-cdk_aws-lambda.PipelineInvokeAction",
+      "@aws-cdk_aws-lambda.SingletonFunction",
+      "@aws-cdk_aws-lambda.SingletonLayerVersion",
+      "@aws-cdk_aws-lambda.Version",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-lambda.CfnAlias",
+          "@aws-cdk_aws-lambda.CfnEventSourceMapping",
+          "@aws-cdk_aws-lambda.CfnFunction",
+          "@aws-cdk_aws-lambda.CfnLayerVersion",
+          "@aws-cdk_aws-lambda.CfnLayerVersionPermission",
+          "@aws-cdk_aws-lambda.CfnPermission",
+          "@aws-cdk_aws-lambda.CfnVersion"
+        ]
+      }
     ],
     "aws-logs": [
       "aws-logs-readme",
-      "CfnDestination",
-      "CfnLogGroup",
-      "CfnLogStream",
-      "CfnMetricFilter",
-      "CfnSubscriptionFilter",
-      "CrossAccountDestination",
-      "LogGroup",
-      "LogGroupBase",
-      "LogStream",
-      "MetricFilter",
-      "SubscriptionFilter"
+      "@aws-cdk_aws-logs.CrossAccountDestination",
+      "@aws-cdk_aws-logs.LogGroup",
+      "@aws-cdk_aws-logs.LogStream",
+      "@aws-cdk_aws-logs.MetricFilter",
+      "@aws-cdk_aws-logs.SubscriptionFilter",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-logs.CfnDestination",
+          "@aws-cdk_aws-logs.CfnLogGroup",
+          "@aws-cdk_aws-logs.CfnLogStream",
+          "@aws-cdk_aws-logs.CfnMetricFilter",
+          "@aws-cdk_aws-logs.CfnSubscriptionFilter"
+        ]
+      }
     ],
     "aws-neptune": [
       "aws-neptune-readme",
-      "CfnDBCluster",
-      "CfnDBClusterParameterGroup",
-      "CfnDBInstance",
-      "CfnDBParameterGroup",
-      "CfnDBSubnetGroup"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-neptune.CfnDBCluster",
+          "@aws-cdk_aws-neptune.CfnDBClusterParameterGroup",
+          "@aws-cdk_aws-neptune.CfnDBInstance",
+          "@aws-cdk_aws-neptune.CfnDBParameterGroup",
+          "@aws-cdk_aws-neptune.CfnDBSubnetGroup"
+        ]
+      }
     ],
     "aws-opsworks": [
       "aws-opsworks-readme",
-      "CfnApp",
-      "CfnElasticLoadBalancerAttachment",
-      "CfnInstance",
-      "CfnLayer",
-      "CfnStack",
-      "CfnUserProfile",
-      "CfnVolume"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-opsworks.CfnApp",
+          "@aws-cdk_aws-opsworks.CfnElasticLoadBalancerAttachment",
+          "@aws-cdk_aws-opsworks.CfnInstance",
+          "@aws-cdk_aws-opsworks.CfnLayer",
+          "@aws-cdk_aws-opsworks.CfnStack",
+          "@aws-cdk_aws-opsworks.CfnUserProfile",
+          "@aws-cdk_aws-opsworks.CfnVolume"
+        ]
+      }
     ],
     "aws-opsworkscm": [
       "aws-opsworkscm-readme",
-      "CfnServer"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-opsworkscm.CfnServer"
+        ]
+      }
     ],
     "aws-quickstarts": [
       "aws-quickstarts-readme",
-      "RemoteDesktopGateway",
-      "SqlServer"
+      "@aws-cdk_aws-quickstarts.RemoteDesktopGateway",
+      "@aws-cdk_aws-quickstarts.SqlServer",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": []
+      }
     ],
     "aws-rds": [
       "aws-rds-readme",
-      "CfnDBCluster",
-      "CfnDBClusterParameterGroup",
-      "CfnDBInstance",
-      "CfnDBParameterGroup",
-      "CfnDBSecurityGroup",
-      "CfnDBSecurityGroupIngress",
-      "CfnDBSubnetGroup",
-      "CfnEventSubscription",
-      "CfnOptionGroup",
-      "ClusterParameterGroup",
-      "DatabaseCluster",
-      "DatabaseInstance"
+      "@aws-cdk_aws-rds.ClusterParameterGroup",
+      "@aws-cdk_aws-rds.DatabaseCluster",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-rds.CfnDBCluster",
+          "@aws-cdk_aws-rds.CfnDBClusterParameterGroup",
+          "@aws-cdk_aws-rds.CfnDBInstance",
+          "@aws-cdk_aws-rds.CfnDBParameterGroup",
+          "@aws-cdk_aws-rds.CfnDBSecurityGroup",
+          "@aws-cdk_aws-rds.CfnDBSecurityGroupIngress",
+          "@aws-cdk_aws-rds.CfnDBSubnetGroup",
+          "@aws-cdk_aws-rds.CfnEventSubscription",
+          "@aws-cdk_aws-rds.CfnOptionGroup"
+        ]
+      }
     ],
     "aws-redshift": [
       "aws-redshift-readme",
-      "CfnCluster",
-      "CfnClusterParameterGroup",
-      "CfnClusterSecurityGroup",
-      "CfnClusterSecurityGroupIngress",
-      "CfnClusterSubnetGroup"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-redshift.CfnCluster",
+          "@aws-cdk_aws-redshift.CfnClusterParameterGroup",
+          "@aws-cdk_aws-redshift.CfnClusterSecurityGroup",
+          "@aws-cdk_aws-redshift.CfnClusterSecurityGroupIngress",
+          "@aws-cdk_aws-redshift.CfnClusterSubnetGroup"
+        ]
+      }
     ],
     "aws-route53": [
       "aws-route53-readme",
-      "AliasRecord",
-      "CfnHealthCheck",
-      "CfnHostedZone",
-      "CfnRecordSet",
-      "CfnRecordSetGroup",
-      "CnameRecord",
-      "HostedZone",
-      "PrivateHostedZone",
-      "PublicHostedZone",
-      "TxtRecord",
-      "ZoneDelegationRecord"
+      "@aws-cdk_aws-route53.AliasRecord",
+      "@aws-cdk_aws-route53.CnameRecord",
+      "@aws-cdk_aws-route53.HostedZone",
+      "@aws-cdk_aws-route53.PrivateHostedZone",
+      "@aws-cdk_aws-route53.PublicHostedZone",
+      "@aws-cdk_aws-route53.TxtRecord",
+      "@aws-cdk_aws-route53.ZoneDelegationRecord",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-route53.CfnHealthCheck",
+          "@aws-cdk_aws-route53.CfnHostedZone",
+          "@aws-cdk_aws-route53.CfnRecordSet",
+          "@aws-cdk_aws-route53.CfnRecordSetGroup"
+        ]
+      }
     ],
     "aws-route53resolver": [
       "aws-route53resolver-readme",
-      "CfnResolverEndpoint",
-      "CfnResolverRule",
-      "CfnResolverRuleAssociation"
-    ],
-    "aws-s3": [
-      "aws-s3-readme",
-      "Bucket",
-      "BucketBase",
-      "BucketPolicy",
-      "CfnBucket",
-      "CfnBucketPolicy",
-      "PipelineDeployAction",
-      "PipelineSourceAction"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-route53resolver.CfnResolverEndpoint",
+          "@aws-cdk_aws-route53resolver.CfnResolverRule",
+          "@aws-cdk_aws-route53resolver.CfnResolverRuleAssociation"
+        ]
+      }
     ],
     "aws-s3-deployment": [
       "aws-s3-deployment-readme",
-      "BucketDeployment"
+      "@aws-cdk_aws-s3-deployment.BucketDeployment",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": []
+      }
+    ],
+    "aws-s3": [
+      "aws-s3-readme",
+      "@aws-cdk_aws-s3.Bucket",
+      "@aws-cdk_aws-s3.BucketPolicy",
+      "@aws-cdk_aws-s3.PipelineDeployAction",
+      "@aws-cdk_aws-s3.PipelineSourceAction",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-s3.CfnBucket",
+          "@aws-cdk_aws-s3.CfnBucketPolicy"
+        ]
+      }
     ],
     "aws-sagemaker": [
       "aws-sagemaker-readme",
-      "CfnEndpoint",
-      "CfnEndpointConfig",
-      "CfnModel",
-      "CfnNotebookInstance",
-      "CfnNotebookInstanceLifecycleConfig"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-sagemaker.CfnEndpoint",
+          "@aws-cdk_aws-sagemaker.CfnEndpointConfig",
+          "@aws-cdk_aws-sagemaker.CfnModel",
+          "@aws-cdk_aws-sagemaker.CfnNotebookInstance",
+          "@aws-cdk_aws-sagemaker.CfnNotebookInstanceLifecycleConfig"
+        ]
+      }
     ],
     "aws-sdb": [
       "aws-sdb-readme",
-      "CfnDomain"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-sdb.CfnDomain"
+        ]
+      }
     ],
     "aws-secretsmanager": [
       "aws-secretsmanager-readme",
-      "CfnResourcePolicy",
-      "CfnRotationSchedule",
-      "CfnSecret",
-      "CfnSecretTargetAttachment",
-      "SecretString"
+      "@aws-cdk_aws-secretsmanager.SecretString",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-secretsmanager.CfnResourcePolicy",
+          "@aws-cdk_aws-secretsmanager.CfnRotationSchedule",
+          "@aws-cdk_aws-secretsmanager.CfnSecret",
+          "@aws-cdk_aws-secretsmanager.CfnSecretTargetAttachment"
+        ]
+      }
     ],
     "aws-serverless": [
       "aws-serverless-readme",
-      "CfnApi",
-      "CfnFunction",
-      "CfnSimpleTable"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-serverless.CfnApi",
+          "@aws-cdk_aws-serverless.CfnFunction",
+          "@aws-cdk_aws-serverless.CfnSimpleTable"
+        ]
+      }
     ],
     "aws-servicecatalog": [
       "aws-servicecatalog-readme",
-      "CfnAcceptedPortfolioShare",
-      "CfnCloudFormationProduct",
-      "CfnCloudFormationProvisionedProduct",
-      "CfnLaunchNotificationConstraint",
-      "CfnLaunchRoleConstraint",
-      "CfnLaunchTemplateConstraint",
-      "CfnPortfolio",
-      "CfnPortfolioPrincipalAssociation",
-      "CfnPortfolioProductAssociation",
-      "CfnPortfolioShare",
-      "CfnTagOption",
-      "CfnTagOptionAssociation"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-servicecatalog.CfnAcceptedPortfolioShare",
+          "@aws-cdk_aws-servicecatalog.CfnCloudFormationProduct",
+          "@aws-cdk_aws-servicecatalog.CfnCloudFormationProvisionedProduct",
+          "@aws-cdk_aws-servicecatalog.CfnLaunchNotificationConstraint",
+          "@aws-cdk_aws-servicecatalog.CfnLaunchRoleConstraint",
+          "@aws-cdk_aws-servicecatalog.CfnLaunchTemplateConstraint",
+          "@aws-cdk_aws-servicecatalog.CfnPortfolio",
+          "@aws-cdk_aws-servicecatalog.CfnPortfolioPrincipalAssociation",
+          "@aws-cdk_aws-servicecatalog.CfnPortfolioProductAssociation",
+          "@aws-cdk_aws-servicecatalog.CfnPortfolioShare",
+          "@aws-cdk_aws-servicecatalog.CfnTagOption",
+          "@aws-cdk_aws-servicecatalog.CfnTagOptionAssociation"
+        ]
+      }
     ],
     "aws-servicediscovery": [
       "aws-servicediscovery-readme",
-      "CfnHttpNamespace",
-      "CfnInstance",
-      "CfnPrivateDnsNamespace",
-      "CfnPublicDnsNamespace",
-      "CfnService"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-servicediscovery.CfnHttpNamespace",
+          "@aws-cdk_aws-servicediscovery.CfnInstance",
+          "@aws-cdk_aws-servicediscovery.CfnPrivateDnsNamespace",
+          "@aws-cdk_aws-servicediscovery.CfnPublicDnsNamespace",
+          "@aws-cdk_aws-servicediscovery.CfnService"
+        ]
+      }
     ],
     "aws-ses": [
       "aws-ses-readme",
-      "CfnConfigurationSet",
-      "CfnConfigurationSetEventDestination",
-      "CfnReceiptFilter",
-      "CfnReceiptRule",
-      "CfnReceiptRuleSet",
-      "CfnTemplate"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-ses.CfnConfigurationSet",
+          "@aws-cdk_aws-ses.CfnConfigurationSetEventDestination",
+          "@aws-cdk_aws-ses.CfnReceiptFilter",
+          "@aws-cdk_aws-ses.CfnReceiptRule",
+          "@aws-cdk_aws-ses.CfnReceiptRuleSet",
+          "@aws-cdk_aws-ses.CfnTemplate"
+        ]
+      }
     ],
     "aws-sns": [
       "aws-sns-readme",
-      "CfnSubscription",
-      "CfnTopic",
-      "CfnTopicPolicy",
-      "Subscription",
-      "Topic",
-      "TopicBase",
-      "TopicPolicy"
+      "@aws-cdk_aws-sns.Subscription",
+      "@aws-cdk_aws-sns.Topic",
+      "@aws-cdk_aws-sns.TopicPolicy",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-sns.CfnSubscription",
+          "@aws-cdk_aws-sns.CfnTopic",
+          "@aws-cdk_aws-sns.CfnTopicPolicy"
+        ]
+      }
     ],
     "aws-sqs": [
       "aws-sqs-readme",
-      "CfnQueue",
-      "CfnQueuePolicy",
-      "Queue",
-      "QueueBase",
-      "QueuePolicy"
+      "@aws-cdk_aws-sqs.Queue",
+      "@aws-cdk_aws-sqs.QueuePolicy",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-sqs.CfnQueue",
+          "@aws-cdk_aws-sqs.CfnQueuePolicy"
+        ]
+      }
     ],
     "aws-ssm": [
       "aws-ssm-readme",
-      "CfnAssociation",
-      "CfnDocument",
-      "CfnMaintenanceWindow",
-      "CfnMaintenanceWindowTask",
-      "CfnParameter",
-      "CfnPatchBaseline",
-      "CfnResourceDataSync",
-      "ParameterStoreSecureString",
-      "ParameterStoreString"
+      "@aws-cdk_aws-ssm.ParameterStoreSecureString",
+      "@aws-cdk_aws-ssm.ParameterStoreString",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-ssm.CfnAssociation",
+          "@aws-cdk_aws-ssm.CfnDocument",
+          "@aws-cdk_aws-ssm.CfnMaintenanceWindow",
+          "@aws-cdk_aws-ssm.CfnMaintenanceWindowTask",
+          "@aws-cdk_aws-ssm.CfnParameter",
+          "@aws-cdk_aws-ssm.CfnPatchBaseline",
+          "@aws-cdk_aws-ssm.CfnResourceDataSync"
+        ]
+      }
     ],
     "aws-stepfunctions": [
       "aws-stepfunctions-readme",
-      "Activity",
-      "CfnActivity",
-      "CfnStateMachine",
-      "Choice",
-      "Fail",
-      "Parallel",
-      "Pass",
-      "State",
-      "StateMachine",
-      "StateMachineFragment",
-      "Succeed",
-      "Task",
-      "Wait"
+      "@aws-cdk_aws-stepfunctions.Activity",
+      "@aws-cdk_aws-stepfunctions.Choice",
+      "@aws-cdk_aws-stepfunctions.Fail",
+      "@aws-cdk_aws-stepfunctions.Parallel",
+      "@aws-cdk_aws-stepfunctions.Pass",
+      "@aws-cdk_aws-stepfunctions.StateMachine",
+      "@aws-cdk_aws-stepfunctions.Succeed",
+      "@aws-cdk_aws-stepfunctions.Task",
+      "@aws-cdk_aws-stepfunctions.Wait",
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-stepfunctions.CfnActivity",
+          "@aws-cdk_aws-stepfunctions.CfnStateMachine"
+        ]
+      }
     ],
     "aws-waf": [
       "aws-waf-readme",
-      "CfnByteMatchSet",
-      "CfnIPSet",
-      "CfnRule",
-      "CfnSizeConstraintSet",
-      "CfnSqlInjectionMatchSet",
-      "CfnWebACL",
-      "CfnXssMatchSet"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-waf.CfnByteMatchSet",
+          "@aws-cdk_aws-waf.CfnIPSet",
+          "@aws-cdk_aws-waf.CfnRule",
+          "@aws-cdk_aws-waf.CfnSizeConstraintSet",
+          "@aws-cdk_aws-waf.CfnSqlInjectionMatchSet",
+          "@aws-cdk_aws-waf.CfnWebACL",
+          "@aws-cdk_aws-waf.CfnXssMatchSet"
+        ]
+      }
     ],
     "aws-wafregional": [
       "aws-wafregional-readme",
-      "CfnByteMatchSet",
-      "CfnIPSet",
-      "CfnRule",
-      "CfnSizeConstraintSet",
-      "CfnSqlInjectionMatchSet",
-      "CfnWebACL",
-      "CfnWebACLAssociation",
-      "CfnXssMatchSet"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-wafregional.CfnByteMatchSet",
+          "@aws-cdk_aws-wafregional.CfnIPSet",
+          "@aws-cdk_aws-wafregional.CfnRule",
+          "@aws-cdk_aws-wafregional.CfnSizeConstraintSet",
+          "@aws-cdk_aws-wafregional.CfnSqlInjectionMatchSet",
+          "@aws-cdk_aws-wafregional.CfnWebACL",
+          "@aws-cdk_aws-wafregional.CfnWebACLAssociation",
+          "@aws-cdk_aws-wafregional.CfnXssMatchSet"
+        ]
+      }
     ],
     "aws-workspaces": [
       "aws-workspaces-readme",
-      "CfnWorkspace"
+      {
+        "type": "subcategory",
+        "label": "CloudFormation Resources",
+        "ids": [
+          "@aws-cdk_aws-workspaces.CfnWorkspace"
+        ]
+      }
     ]
   },
   "frameworkDocs": {
