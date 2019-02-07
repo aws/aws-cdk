@@ -1,6 +1,9 @@
 import jsiiReflect = require('jsii-reflect');
 import YAML = require('yaml');
 
+const BADGE_OPTIONAL = '![Optional](https://img.shields.io/badge/-Optional-inactive.svg)';
+const BADGE_REQUIRED = '![Required](https://img.shields.io/badge/-Required-important.svg)';
+
 export function assemblyOverview(assembly: jsiiReflect.Assembly, id: string): string {
   const markdown = assembly.readme && assembly.readme.markdown || 'Oops!';
   return _addFrontMatter(markdown, { id, hide_title: true, sidebar_label: 'Overview' });
@@ -13,31 +16,29 @@ export function resourcePage(resource: jsiiReflect.ClassType, id: string): strin
   const markdown = [
     resource.docs.docs && resource.docs.docs.comment || '',
     '## Properties',
-    '### Summary',
-    'Name | Type',
-    '-----|-----',
+    'Name | Required | Type',
+    '-----|:--------:|-----',
     ...properties.map(_propertiesTableLine),
-    '',
-    '### Details',
     ...properties.map(_propertyDetail),
   ].join('\n');
   return _addFrontMatter(markdown, { id, title: resource.name });
 
   function _propertiesTableLine(property: jsiiReflect.Property) {
-    const badge = property.type.optional
-      ? '![Optional](https://img.shields.io/badge/-Optional-inactive.svg)'
-      : '![Required](https://img.shields.io/badge/-Required-important.svg)';
+    const badge = property.type.optional ? BADGE_OPTIONAL : BADGE_REQUIRED;
     return [
-      `${badge} \`${property.name}\``,
+      `\`${property.name}\``,
+      badge,
       _formatType(property.type, resource.assembly),
     ].join('|');
   }
 
   function _propertyDetail(property: jsiiReflect.Property) {
     return [
-      `#### \`${property.name}\``,
-      property.docs.docs.comment && `**Description:** ${property.docs.docs.comment}\n`,
-      property.docs.docs.default && `**Default Value:** ${property.docs.docs.default}\n`,
+      '\n---',
+      `### \`${property.name}${property.type.optional ? '?' : ''}\``,
+      property.docs.docs.comment && `${property.docs.docs.comment.split('\n').map(l => `> ${l}`).join('\n')}\n`,
+      `*${property.type.optional ? 'Optional' : 'Required'}* ${_formatType(property.type, resource.assembly)}`,
+      property.docs.docs.default && `, *default:* ${property.docs.docs.default}`,
     ].join('\n');
   }
 }
@@ -62,7 +63,7 @@ function _formatType(reference: jsiiReflect.TypeReference, relativeTo: jsiiRefle
   } else if (reference.arrayOfType) {
     return _quoted(`Array<${_formatType(reference.arrayOfType, relativeTo, false)}>`);
   } else if (reference.mapOfType) {
-    return _quoted(`Map<String, ${_formatType(reference.mapOfType, relativeTo, false)}>`);
+    return _quoted(`Map<string, ${_formatType(reference.mapOfType, relativeTo, false)}>`);
   }
   const type = reference.fqn!;
   return type.assembly.name === relativeTo.name
