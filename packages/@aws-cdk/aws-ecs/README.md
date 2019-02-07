@@ -1,4 +1,4 @@
-## Amazon Elastic Container Service (Amazon ECS) Construct Library
+## Amazon ECS
 
 This package contains constructs for working with **Amazon Elastic Container
 Service** (Amazon ECS).
