@@ -1,6 +1,6 @@
 {
   "name": "cdk-examples-typescript",
-  "version": "0.24.0",
+  "version": "0.24.1",
   "description": "A bunch of CDK examples",
   "private": true,
   "scripts": {
@@ -18,29 +18,29 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "aws-cdk": "^0.24.0",
-    "cdk-build-tools": "^0.24.0",
-    "pkglint": "^0.24.0"
+    "aws-cdk": "^0.24.1",
+    "cdk-build-tools": "^0.24.1",
+    "pkglint": "^0.24.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling": "^0.24.0",
-    "@aws-cdk/aws-cloudformation": "^0.24.0",
-    "@aws-cdk/aws-cognito": "^0.24.0",
-    "@aws-cdk/aws-dynamodb": "^0.24.0",
-    "@aws-cdk/aws-ec2": "^0.24.0",
-    "@aws-cdk/aws-ecs": "^0.24.0",
-    "@aws-cdk/aws-elasticloadbalancing": "^0.24.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.24.0",
-    "@aws-cdk/aws-events": "^0.24.0",
-    "@aws-cdk/aws-iam": "^0.24.0",
-    "@aws-cdk/aws-lambda": "^0.24.0",
-    "@aws-cdk/aws-neptune": "^0.24.0",
-    "@aws-cdk/aws-rds": "^0.24.0",
-    "@aws-cdk/aws-s3": "^0.24.0",
-    "@aws-cdk/aws-sns": "^0.24.0",
-    "@aws-cdk/aws-sqs": "^0.24.0",
-    "@aws-cdk/cdk": "^0.24.0",
-    "@aws-cdk/runtime-values": "^0.24.0"
+    "@aws-cdk/aws-autoscaling": "^0.24.1",
+    "@aws-cdk/aws-cloudformation": "^0.24.1",
+    "@aws-cdk/aws-cognito": "^0.24.1",
+    "@aws-cdk/aws-dynamodb": "^0.24.1",
+    "@aws-cdk/aws-ec2": "^0.24.1",
+    "@aws-cdk/aws-ecs": "^0.24.1",
+    "@aws-cdk/aws-elasticloadbalancing": "^0.24.1",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^0.24.1",
+    "@aws-cdk/aws-events": "^0.24.1",
+    "@aws-cdk/aws-iam": "^0.24.1",
+    "@aws-cdk/aws-lambda": "^0.24.1",
+    "@aws-cdk/aws-neptune": "^0.24.1",
+    "@aws-cdk/aws-rds": "^0.24.1",
+    "@aws-cdk/aws-s3": "^0.24.1",
+    "@aws-cdk/aws-sns": "^0.24.1",
+    "@aws-cdk/aws-sqs": "^0.24.1",
+    "@aws-cdk/cdk": "^0.24.1",
+    "@aws-cdk/runtime-values": "^0.24.1"
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
