@@ -5,6 +5,15 @@ Thanks for your interest in contributing to the AWS CDK! ❤️
 This document describes how to set up a development environment and submit your contributions. Please read it carefully
 and let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
+## Development Environment
+
+The AWS CDK is primarily written in TypeScript, but packaged using [jsii](https://github.com/awslabs/jsii) to multiple programming languages. A full build of the repo is likely to be quite overwhelming and requires a broad set of compilation tools.
+
+Our build pipeline uses the [superchain](https://github.com/awslabs/aws-delivlib/tree/master/superchain) docker image. See the superchain [README](https://github.com/awslabs/aws-delivlib/tree/master/superchain/README.md) for instructions on how to create the superchain image on your local machine and use it to build locally.
+
+When you first clone the repo, it is recommended that you perform at least one full build to ensure you have all the generated files in place 
+
+
 ## Pull Requests
 
 1. If there isn't one already, open an issue describing what you intend to contribute. It's useful to communicate in
@@ -225,29 +234,6 @@ If you also wish to package to all languages, make sure you have all the [toolch
 $ ./pack.sh
 ```
 
-### Full Docker build
-
-Clone the repo:
-
-```console
-$ git clone git@github.com/awslabs/aws-cdk
-$ cd aws-cdk
-```
-
-If you already have a local repo and you want a fresh build, run `git clean -fdx` from the root.
-
-Build the docker image:
-
-```console
-$ docker build -t aws-cdk .
-```
-
-This allows you to run the CDK in a CDK-compatible directory with a command like:
-
-```console
-$ docker run -v $(pwd):/app -w /app aws-cdk <CDK ARGS>
-```
-
 ### Partial build
 
 In many cases, you don't really need to build the entire project. Say you want to work on the `@aws-cdk/aws-ec2` module:
@@ -280,6 +266,8 @@ $ cd packages/@aws-cdk/aws-iam
 $ nodeunit test/test.*.js
 <BOOM>
 ```
+
+
 
 ### Running integration tests in parallel
 
@@ -316,7 +304,7 @@ $ BUILD_DOCS_DEV=1 ./build-docs.sh
 ```
 
 ### Tooling Assists
-#### Jetbrains (WebStorm/IntelliJ)
+### Jetbrains (WebStorm/IntelliJ)
 This project uses lerna and utilizes symlinks inside nested node_modules directories. You may encounter an issue during
 indexing where the IDE attempts to index these directories and keeps following links until the process runs out of
 available memory and crashes. To fix this, you can run ```node ./scripts/jetbrains-remove-node-modules.js``` to exclude
