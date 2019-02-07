@@ -1,4 +1,4 @@
-## Amazon ECS
+# Amazon ECS
 
 This package contains constructs for working with **Amazon Elastic Container
 Service** (Amazon ECS).
@@ -34,7 +34,7 @@ const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
 });
 ```
 
-### AWS Fargate vs Amazon ECS
+## AWS Fargate vs Amazon ECS
 
 There are two sets of constructs in this library; one to run tasks on Amazon ECS and
 one to run tasks on AWS Fargate.
@@ -60,7 +60,7 @@ For more information on Amazon EC2 vs AWS Fargate and networking see the AWS Doc
 [AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html) and
 [Task Networking](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking.html).
 
-### Clusters
+## Clusters
 
 A `Cluster` defines the infrastructure to run your
 tasks on. You can run many tasks on a single cluster.
@@ -108,7 +108,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 cluster.addAutoScalingGroupCapacity(autoScalingGroup);
 ```
 
-### Task definitions
+## Task definitions
 
 A task Definition describes what a single copy of a **task** should look like.
 A task definition has one or more containers; typically, it has one
@@ -178,7 +178,7 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
 });
 ```
 
-#### Images
+### Images
 
 Images supply the software that runs inside the container. Images can be
 obtained from either DockerHub or from ECR repositories, or built directly from a local Dockerfile.
@@ -190,7 +190,7 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
 * `ecs.ContainerImage.fromAsset(this, 'Image', { directory: './image' })`: build and upload an
   image directly from a `Dockerfile` in your source directory.
 
-### Service
+## Service
 
 A `Service` instantiates a `TaskDefinition` on a `Cluster` a given number of
 times, optionally associating them with a load balancer.
@@ -207,7 +207,7 @@ const service = new ecs.FargateService(this, 'Service', {
 });
 ```
 
-#### Include a load balancer
+### Include a load balancer
 
 `Services` are load balancing targets and can be directly attached to load
 balancers:
@@ -230,7 +230,7 @@ There are two higher-level constructs available which include a load balancer fo
 * `LoadBalancedFargateService`
 * `LoadBalancedEc2Service`
 
-### Task Auto-Scaling
+## Task Auto-Scaling
 
 You can configure the task count of a service to match demand. Task auto-scaling is
 configured by calling `autoScaleTaskCount()`:
@@ -250,7 +250,7 @@ scaling.scaleOnRequestCount('RequestScaling', {
 Task auto-scaling is powered by *Application Auto-Scaling*.
 See that section for details.
 
-### Instance Auto-Scaling
+## Instance Auto-Scaling
 
 If you're running on AWS Fargate, AWS manages the physical machines that your
 containers are running on for you. If you're running an Amazon ECS cluster however,
@@ -282,7 +282,7 @@ autoScalingGroup.scaleOnCpuUtilization('KeepCpuHalfwayLoaded', {
 See the `@aws-cdk/aws-autoscaling` library for more autoscaling options
 you can configure on your instances.
 
-### Integration with CloudWatch Events
+## Integration with CloudWatch Events
 
 To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
 `Ec2TaskEventRuleTarget` instead of an `Ec2Service`:
@@ -291,7 +291,7 @@ To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
 
 > Note: it is currently not possible to start AWS Fargate tasks in this way.
 
-### Roadmap
+## Roadmap
 
 - [ ] Service Discovery Integration
 - [ ] Private registry authentication
