@@ -60,10 +60,14 @@
     "pkglint": "^0.24.1"
   },
   "dependencies": {
+    "@aws-cdk/aws-ec2": "^0.24.1",
+    "@aws-cdk/aws-route53": "^0.24.1",
     "@aws-cdk/cdk": "^0.24.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-ec2": "^0.24.1",
+    "@aws-cdk/aws-route53": "^0.24.1",
     "@aws-cdk/cdk": "^0.24.1"
   },
   "engines": {
