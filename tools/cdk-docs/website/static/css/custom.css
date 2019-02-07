@@ -14,3 +14,17 @@
 
 @media only screen and (min-width: 1500px) {
 }
+
+/**
+ * Headers don't need a bottom margin, and they might be empty
+ */
+.postHeader {
+    margin-bottom: 0px !important;
+}
+
+/**
+ * Make headers in an article not have a top margin
+ */
+.post article h2:first-child, .post article h1:first-child {
+    margin-top: 0px !important;
+}
