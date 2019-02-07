@@ -64,9 +64,8 @@ class HomeSplash extends React.Component {
         <div className="inner">
           <ProjectTitle siteConfig={siteConfig} />
           <PromoSection>
-            <Button href="#try">Try It Out</Button>
-            <Button href={docUrl('doc1.html')}>Example Link</Button>
-            <Button href={docUrl('doc2.html')}>Example Link 2</Button>
+            <Button href={docUrl('doc1.html')}>API Reference</Button>
+            <Button href="https://docs.aws.amazon.com/CDK/latest/userguide">User Guide</Button>
           </PromoSection>
         </div>
       </SplashContainer>
@@ -145,16 +144,16 @@ class Index extends React.Component {
       <Block layout="fourColumn">
         {[
           {
-            content: 'This is the content of my feature',
+            title: 'Fantastic',
+            content: 'The CDK is the best.',
             image: `${baseUrl}img/docusaurus.svg`,
             imageAlign: 'top',
-            title: 'Feature One',
           },
           {
-            content: 'The content of my second feature',
+            title: 'Expressive',
+            content: 'Mine is shorter than yours.',
             image: `${baseUrl}img/docusaurus.svg`,
             imageAlign: 'top',
-            title: 'Feature Two',
           },
         ]}
       </Block>
@@ -191,14 +190,17 @@ class Index extends React.Component {
 
     return (
       <div>
+        <div style={{height: '100px'}}> </div>
         <HomeSplash siteConfig={siteConfig} language={language} />
         <div className="mainContainer">
+            {/*
           <Features />
           <FeatureCallout />
           <LearnHow />
           <TryOut />
           <Description />
           <Showcase />
+        */}
         </div>
       </div>
     );
