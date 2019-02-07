@@ -1,3 +1,32 @@
+# [0.24.0](https://github.com/awslabs/aws-cdk/compare/v0.23.0...v0.24.0) (2019-02-06)
+
+
+### Bug Fixes
+
+* **aws-ecs:** correctly sets MinimumHealthyPercentage to 0 ([#1661](https://github.com/awslabs/aws-cdk/issues/1661)) ([ce5966f](https://github.com/awslabs/aws-cdk/commit/ce5966f)), closes [#1660](https://github.com/awslabs/aws-cdk/issues/1660)
+* **cdk:** only make Outputs Exports when necessary ([#1624](https://github.com/awslabs/aws-cdk/issues/1624)) ([ebb8aa1](https://github.com/awslabs/aws-cdk/commit/ebb8aa1)), closes [#903](https://github.com/awslabs/aws-cdk/issues/903) [#1611](https://github.com/awslabs/aws-cdk/issues/1611)
+* **elbv2:** fix specifying TargetGroup name ([#1684](https://github.com/awslabs/aws-cdk/issues/1684)) ([1d7198a](https://github.com/awslabs/aws-cdk/commit/1d7198a)), closes [#1674](https://github.com/awslabs/aws-cdk/issues/1674)
+* **sns:** create subscription object under subscriber ([#1645](https://github.com/awslabs/aws-cdk/issues/1645)) ([0cc11ca](https://github.com/awslabs/aws-cdk/commit/0cc11ca)), closes [#1643](https://github.com/awslabs/aws-cdk/issues/1643) [#1534](https://github.com/awslabs/aws-cdk/issues/1534)
+
+
+### Features
+
+* **aws-s3:** add option to specify block public access settings ([#1664](https://github.com/awslabs/aws-cdk/issues/1664)) ([299fb6a](https://github.com/awslabs/aws-cdk/commit/299fb6a))
+* **cdk:** aspect framework and tag implementation ([#1451](https://github.com/awslabs/aws-cdk/issues/1451)) ([f7c8531](https://github.com/awslabs/aws-cdk/commit/f7c8531)), closes [#1136](https://github.com/awslabs/aws-cdk/issues/1136) [#1497](https://github.com/awslabs/aws-cdk/issues/1497) [#360](https://github.com/awslabs/aws-cdk/issues/360)
+* **cdk:** metric functions now automatically generated ([#1617](https://github.com/awslabs/aws-cdk/issues/1617)) ([36cfca8](https://github.com/awslabs/aws-cdk/commit/36cfca8))
+* **cognito:** Implement user pool and user pool client constructs  ([#1615](https://github.com/awslabs/aws-cdk/issues/1615)) ([8e03ed6](https://github.com/awslabs/aws-cdk/commit/8e03ed6))
+* **core:** overrideLogicalId: override IDs of CFN elements ([#1670](https://github.com/awslabs/aws-cdk/issues/1670)) ([823a1e8](https://github.com/awslabs/aws-cdk/commit/823a1e8)), closes [#1594](https://github.com/awslabs/aws-cdk/issues/1594)
+* **secretsmanager:** L2 construct for Secret ([#1686](https://github.com/awslabs/aws-cdk/issues/1686)) ([8da9115](https://github.com/awslabs/aws-cdk/commit/8da9115))
+* **serverless:** add AWS::Serverless::Application to CFN spec ([#1634](https://github.com/awslabs/aws-cdk/issues/1634)) ([bfa40b1](https://github.com/awslabs/aws-cdk/commit/bfa40b1))
+* **ssm:** Add L2 resource for SSM Parameters ([#1515](https://github.com/awslabs/aws-cdk/issues/1515)) ([9858a64](https://github.com/awslabs/aws-cdk/commit/9858a64))
+
+
+### BREAKING CHANGES
+
+* **cdk:** if you are using TagManager the API for this object has completely changed. You should no longer use TagManager directly, but instead replace this with Tag Aspects. `cdk.Tag` has been renamed to `cdk.CfnTag` to enable `cdk.Tag` to be the Tag Aspect.
+
+
+
 # Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
