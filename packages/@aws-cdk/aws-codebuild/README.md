@@ -222,7 +222,7 @@ new codebuild.PipelineTestAction(this, 'IntegrationTest', {
   stage: buildStage,
   project,
   // outputArtifactName is optional - if you don't specify it,
-  // the Action has an undefined `outputArtifact` property
+  // the Action will have an undefined `outputArtifact` property
   outputArtifactName: 'IntegrationTestOutput',
 });
 
