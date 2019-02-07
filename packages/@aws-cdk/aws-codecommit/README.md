@@ -49,7 +49,7 @@ const sourceAction = repo.addToPipeline(sourceStage, 'CodeCommit');
 
 ## Events
 
-AWS CodeCommit repositories emit Amazon CloudWatch events for certain activity.
+AWS CodeCommit repositories emit Amazon CloudWatch events for certain activities.
 Use the `repo.onXxx` methods to define rules that trigger on these events
 and invoke targets as a result:
 
