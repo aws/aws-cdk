@@ -1,4 +1,8 @@
-# [0.24.0](https://github.com/awslabs/aws-cdk/compare/v0.23.0...v0.24.0) (2019-02-06)
+# Change Log
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [0.24.0](https://github.com/awslabs/aws-cdk/compare/v0.23.0...v0.24.0) (2019-02-06)
 
 
 ### Bug Fixes
@@ -24,12 +28,6 @@
 ### BREAKING CHANGES
 
 * **cdk:** if you are using TagManager the API for this object has completely changed. You should no longer use TagManager directly, but instead replace this with Tag Aspects. `cdk.Tag` has been renamed to `cdk.CfnTag` to enable `cdk.Tag` to be the Tag Aspect.
-
-
-
-# Change Log
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 ## [0.23.0](https://github.com/awslabs/aws-cdk/compare/v0.22.0...v0.23.0) (2019-02-04)
 
