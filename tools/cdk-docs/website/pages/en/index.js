@@ -64,7 +64,7 @@ class HomeSplash extends React.Component {
         <div className="inner">
           <ProjectTitle siteConfig={siteConfig} />
           <PromoSection>
-            <Button href={docUrl('doc1.html')}>API Reference</Button>
+            <Button href={docUrl('service-reference.html')}>See all AWS Services you can use</Button>
             <Button href="https://docs.aws.amazon.com/CDK/latest/userguide">User Guide</Button>
           </PromoSection>
         </div>

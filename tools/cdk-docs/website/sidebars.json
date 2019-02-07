@@ -1,5 +1,8 @@
 {
   "docs": {
+    "Overview": [
+      "service-reference"
+    ],
     "aws-amazonmq": [
       "aws-amazonmq-readme",
       "CfnBroker",
@@ -167,15 +170,6 @@
       "ServerDeploymentGroup",
       "ServerDeploymentGroupBase"
     ],
-    "aws-codepipeline-api": [
-      "aws-codepipeline-api-readme",
-      "Action",
-      "Artifact",
-      "BuildAction",
-      "DeployAction",
-      "SourceAction",
-      "TestAction"
-    ],
     "aws-codepipeline": [
       "aws-codepipeline-readme",
       "BaseJenkinsProvider",
@@ -190,6 +184,15 @@
       "ManualApprovalAction",
       "Pipeline",
       "Stage"
+    ],
+    "aws-codepipeline-api": [
+      "aws-codepipeline-api-readme",
+      "Action",
+      "Artifact",
+      "BuildAction",
+      "DeployAction",
+      "SourceAction",
+      "TestAction"
     ],
     "aws-cognito": [
       "aws-cognito-readme",
@@ -455,12 +458,6 @@
       "CfnAssessmentTemplate",
       "CfnResourceGroup"
     ],
-    "aws-iot1click": [
-      "aws-iot1click-readme",
-      "CfnDevice",
-      "CfnPlacement",
-      "CfnProject"
-    ],
     "aws-iot": [
       "aws-iot-readme",
       "CfnCertificate",
@@ -469,6 +466,12 @@
       "CfnThing",
       "CfnThingPrincipalAttachment",
       "CfnTopicRule"
+    ],
+    "aws-iot1click": [
+      "aws-iot1click-readme",
+      "CfnDevice",
+      "CfnPlacement",
+      "CfnProject"
     ],
     "aws-iotanalytics": [
       "aws-iotanalytics-readme",
@@ -607,10 +610,6 @@
       "CfnResolverRule",
       "CfnResolverRuleAssociation"
     ],
-    "aws-s3-deployment": [
-      "aws-s3-deployment-readme",
-      "BucketDeployment"
-    ],
     "aws-s3": [
       "aws-s3-readme",
       "Bucket",
@@ -620,6 +619,10 @@
       "CfnBucketPolicy",
       "PipelineDeployAction",
       "PipelineSourceAction"
+    ],
+    "aws-s3-deployment": [
+      "aws-s3-deployment-readme",
+      "BucketDeployment"
     ],
     "aws-sagemaker": [
       "aws-sagemaker-readme",
@@ -749,6 +752,11 @@
     "aws-workspaces": [
       "aws-workspaces-readme",
       "CfnWorkspace"
+    ]
+  },
+  "frameworkDocs": {
+    "Overview": [
+      "framework-reference"
     ]
   }
 }

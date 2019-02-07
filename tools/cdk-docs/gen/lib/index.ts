@@ -13,9 +13,14 @@ type Category = string | {
 };
 
 async function main() {
-  // load all .jsii files into the type system
-  for (const file of fs.readdirSync('./jsii')) {
-    await ts.load(path.join('./jsii', file));
+  // load all JSII from all dependencies
+  const packageJson = require('../package.json');
+  for (const depName of Object.keys(packageJson.dependencies || {})) {
+    const jsiiModuleDir = path.dirname(require.resolve(`${depName}/package.json`));
+    if (!fs.existsSync(path.resolve(jsiiModuleDir, '.jsii'))) {
+      continue;
+    }
+    await ts.loadFile(path.resolve(jsiiModuleDir, '.jsii'));
   }
 
   // ready to explore!
@@ -45,8 +50,23 @@ ${c.assembly.readme.markdown}`);
       services[serviceName].push(c.name);
     });
 
+  fs.writeFileSync('../docs/framework-reference.md', `---
+title: Framework Reference
+id: framework-reference
+---
+Here's the Framework reference.
+`);
+
+  fs.writeFileSync('../docs/service-reference.md', `---
+title: Service Reference
+id: service-reference
+---
+Here's the Service reference.
+`);
+
   fs.writeFileSync(`../website/sidebars.json`, JSON.stringify({
-    docs: services
+    docs: {Overview: ['service-reference'], ...services},
+    frameworkDocs: {Overview: ['framework-reference']},
   }, null, 2));
 }
 

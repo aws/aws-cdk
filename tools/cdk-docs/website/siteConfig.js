@@ -38,7 +38,8 @@ const siteConfig = {
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
-    {doc: 'api-reference', label: 'API Reference'},
+    {doc: 'service-reference', label: 'Service Reference'},
+    {doc: 'framework-reference', label: 'Framework Reference'},
     {href: 'https://docs.aws.amazon.com/CDK/latest/userguide', label: 'User Guide'},
     {href: 'https://github.com/aws-samples/aws-cdk-examples', label: 'Examples'},
   ],
