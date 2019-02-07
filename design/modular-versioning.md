@@ -60,5 +60,20 @@ not possible due to the possibility that a release is made to patch a non-*curre
 will cause a profusion of tags to be created in the [mono-repo][awslabs/aws-cdk] and the GitHub
 release page might become difficult to navigate.
 
+## Proposals
+- 1.0.0 everyting at the same time
+- Tag constructs as @stable or @experimental, experimental is not semver
+  - Stable means breaking change implies major bump
+  - At GA, L1 should be "stable"
+- Report maturity on documentation
+- Have execution mode that prevents use of experimental features
+- Model L2 coverage index in documentation
+- Maybe consider NOT migrating things out of the mono-repo
+- Breaking change guard?
+  - Have GitHub checks that no breaking change is introduced in non-experimental APIs.
+  - PR review is authoritative
+
+Peer dependencies across the board?
+
 <!-- References: -->
 [awslabs/aws-cdk]: https://github.com/awslabs/aws-cdk
