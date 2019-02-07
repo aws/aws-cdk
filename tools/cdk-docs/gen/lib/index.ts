@@ -2,6 +2,8 @@ import fs = require('fs');
 import jsiiReflect = require('jsii-reflect');
 import path = require('path');
 
+import render = require('./render');
+
 const ts = new jsiiReflect.TypeSystem();
 // tslint:disable:no-console
 
@@ -12,7 +14,7 @@ type Category = string | {
   ids?: string[];
 };
 
-async function main() {
+export async function main() {
   // load all JSII from all dependencies
   const packageJson = require('../package.json');
   for (const depName of Object.keys(packageJson.dependencies || {})) {
@@ -42,16 +44,7 @@ async function main() {
         const readmeName = `${serviceName}-readme`;
         services[displayName] = [readmeName];
         resources[displayName] = [];
-        if (c.assembly.readme) {
-          fs.writeFileSync(`../docs/${readmeName}.md`, `---
-hide_title: true
-sidebar_label: Overview
-id: ${readmeName}
----
-${c.assembly.readme.markdown}`);
-        } else {
-          fs.writeFileSync(`../docs/${readmeName}.md`, 'OOPS');
-        }
+        fs.writeFileSync(`../docs/${readmeName}.md`, render.assemblyOverview(c.assembly, readmeName));
       }
 
       const resourceName = c.fqn.replace('/', '_');
@@ -61,46 +54,11 @@ ${c.assembly.readme.markdown}`);
         services[displayName].push(resourceName);
       }
 
-      const props = c.initializer!.parameters[2].type.fqn as jsiiReflect.InterfaceType;
-      const table = props.getProperties(true).map(prop => {
-        const typeName = prop.type.toString().replace(/\|/g, ',');
-        const description = (prop.docs.docs.comment || '').replace(/``/g, '`');
-        const required = prop.type.optional ? (props.docs.docs.default || 'Optional') : 'Required';
-        // tslint:disable-next-line:max-line-length
-        return `${prop.name} | \`${typeName}\` | ${description} | ${required}`;
-      }).join('\n');
-
-      fs.writeFileSync(`../docs/${resourceName}.md`, `---
-title: ${c.name}
-id: ${resourceName}
----
-
-# ${resourceName}
-Name|Type|Description|Default
-----|----|-----------|-------
-${table}
-`);
+      fs.writeFileSync(`../docs/${resourceName}.md`, render.resourcePage(c, resourceName));
     });
 
-  fs.writeFileSync('../docs/framework-reference.md', `---
-title: Framework Reference
-id: framework-reference
-sidebar_label: Overview
----
-Here's the Framework reference.
-
-(ALL PACKAGES HERE)
-`);
-
-  fs.writeFileSync('../docs/service-reference.md', `---
-title: Service Reference
-id: service-reference
-sidebar_label: Overview
----
-Here's the Service reference.
-
-(ALL PACKAGES HERE)
-`);
+  fs.writeFileSync('../docs/framework-reference.md', render.frameworkReferencePage('framework-reference'));
+  fs.writeFileSync('../docs/service-reference.md', render.serviceReferencePage('service-reference'));
 
   const sidebars: any = {
     'Service Reference': ['service-reference']
@@ -125,12 +83,12 @@ Here's the Service reference.
   }, null, 2));
 }
 
-export function packageDisplayName(serviceName: string) {
+function packageDisplayName(serviceName: string) {
   serviceName = serviceName.replace(/^aws-/, '');
   return serviceName.substr(0, 1).toUpperCase() + serviceName.substr(1);
 }
 
-export function extendsType(derived: jsiiReflect.Type, base: jsiiReflect.Type) {
+function extendsType(derived: jsiiReflect.Type, base: jsiiReflect.Type) {
   if (derived === base) {
     return true;
   }
@@ -145,8 +103,3 @@ export function extendsType(derived: jsiiReflect.Type, base: jsiiReflect.Type) {
 
   return false;
 }
-
-main().catch(e => {
-  console.error(e);
-  process.exit(1);
-});

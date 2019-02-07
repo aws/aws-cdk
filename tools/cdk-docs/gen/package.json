@@ -10,13 +10,13 @@
     "url": "https://github.com/awslabs/aws-cdk.git"
   },
   "bin": {
-    "decdk": "bin/decdk",
-    "decdk-schema": "bin/recdk-schema"
+    "gen": "bin/gen"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod a+x bin/gen",
     "watch": "tsc -w",
-    "test": "jest"
+    "test": "jest",
+    "gen": "bin/gen"
   },
   "author": {
     "name": "Amazon Web Services",
