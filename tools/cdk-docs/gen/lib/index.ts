@@ -37,10 +37,11 @@ async function main() {
     .sort((a, b) => a.fqn.localeCompare(b.fqn))
     .forEach(c => {
       const [, serviceName] = c.assembly.name.split('/');
-      if (!services[serviceName]) {
+      const displayName = packageDisplayName(serviceName);
+      if (!services[displayName]) {
         const readmeName = `${serviceName}-readme`;
-        services[serviceName] = [readmeName];
-        resources[serviceName] = [];
+        services[displayName] = [readmeName];
+        resources[displayName] = [];
         if (c.assembly.readme) {
           fs.writeFileSync(`../docs/${readmeName}.md`, `---
 hide_title: true
@@ -52,11 +53,12 @@ ${c.assembly.readme.markdown}`);
           fs.writeFileSync(`../docs/${readmeName}.md`, 'OOPS');
         }
       }
+
       const resourceName = c.fqn.replace('/', '_');
       if (c.name.startsWith('Cfn')) {
-        resources[serviceName].push(resourceName);
+        resources[displayName].push(resourceName);
       } else {
-        services[serviceName].push(resourceName);
+        services[displayName].push(resourceName);
       }
 
       const props = c.initializer!.parameters[2].type.fqn as jsiiReflect.InterfaceType;
@@ -83,25 +85,31 @@ ${table}
   fs.writeFileSync('../docs/framework-reference.md', `---
 title: Framework Reference
 id: framework-reference
+sidebar_label: Overview
 ---
 Here's the Framework reference.
+
+(ALL PACKAGES HERE)
 `);
 
   fs.writeFileSync('../docs/service-reference.md', `---
 title: Service Reference
 id: service-reference
+sidebar_label: Overview
 ---
 Here's the Service reference.
+
+(ALL PACKAGES HERE)
 `);
 
   const sidebars: any = {
-    Overview: ['service-reference']
+    'Service Reference': ['service-reference']
   };
-  for (const serviceName of Object.keys(services)) {
-    const service = services[serviceName];
-    const resourceIds = resources[serviceName];
+  for (const displayName of Object.keys(services)) {
+    const service = services[displayName];
+    const resourceIds = resources[displayName];
 
-    sidebars[serviceName] = [
+    sidebars[displayName] = [
       ...service,
       {
         type: "subcategory",
@@ -113,8 +121,13 @@ Here's the Service reference.
 
   fs.writeFileSync(`../website/sidebars.json`, JSON.stringify({
     docs: sidebars,
-    frameworkDocs: {Overview: ['framework-reference'] }
+    frameworkDocs: {'Framework Reference': ['framework-reference'] }
   }, null, 2));
+}
+
+export function packageDisplayName(serviceName: string) {
+  serviceName = serviceName.replace(/^aws-/, '');
+  return serviceName.substr(0, 1).toUpperCase() + serviceName.substr(1);
 }
 
 export function extendsType(derived: jsiiReflect.Type, base: jsiiReflect.Type) {

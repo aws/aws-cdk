@@ -1,9 +1,9 @@
 {
   "docs": {
-    "Overview": [
+    "Service Reference": [
       "service-reference"
     ],
-    "aws-amazonmq": [
+    "Amazonmq": [
       "aws-amazonmq-readme",
       {
         "type": "subcategory",
@@ -15,7 +15,7 @@
         ]
       }
     ],
-    "aws-apigateway": [
+    "Apigateway": [
       "aws-apigateway-readme",
       "@aws-cdk_aws-apigateway.Deployment",
       "@aws-cdk_aws-apigateway.LambdaRestApi",
@@ -51,7 +51,7 @@
         ]
       }
     ],
-    "aws-applicationautoscaling": [
+    "Applicationautoscaling": [
       "aws-applicationautoscaling-readme",
       "@aws-cdk_aws-applicationautoscaling.ScalableTarget",
       "@aws-cdk_aws-applicationautoscaling.StepScalingAction",
@@ -66,7 +66,7 @@
         ]
       }
     ],
-    "aws-appstream": [
+    "Appstream": [
       "aws-appstream-readme",
       {
         "type": "subcategory",
@@ -82,7 +82,7 @@
         ]
       }
     ],
-    "aws-appsync": [
+    "Appsync": [
       "aws-appsync-readme",
       {
         "type": "subcategory",
@@ -97,7 +97,7 @@
         ]
       }
     ],
-    "aws-athena": [
+    "Athena": [
       "aws-athena-readme",
       {
         "type": "subcategory",
@@ -107,7 +107,7 @@
         ]
       }
     ],
-    "aws-autoscaling": [
+    "Autoscaling": [
       "aws-autoscaling-readme",
       "@aws-cdk_aws-autoscaling.AutoScalingGroup",
       "@aws-cdk_aws-autoscaling.LifecycleHook",
@@ -127,7 +127,7 @@
         ]
       }
     ],
-    "aws-autoscalingplans": [
+    "Autoscalingplans": [
       "aws-autoscalingplans-readme",
       {
         "type": "subcategory",
@@ -137,7 +137,7 @@
         ]
       }
     ],
-    "aws-batch": [
+    "Batch": [
       "aws-batch-readme",
       {
         "type": "subcategory",
@@ -149,7 +149,7 @@
         ]
       }
     ],
-    "aws-budgets": [
+    "Budgets": [
       "aws-budgets-readme",
       {
         "type": "subcategory",
@@ -159,7 +159,7 @@
         ]
       }
     ],
-    "aws-certificatemanager": [
+    "Certificatemanager": [
       "aws-certificatemanager-readme",
       "@aws-cdk_aws-certificatemanager.Certificate",
       {
@@ -170,7 +170,7 @@
         ]
       }
     ],
-    "aws-cloud9": [
+    "Cloud9": [
       "aws-cloud9-readme",
       {
         "type": "subcategory",
@@ -180,7 +180,7 @@
         ]
       }
     ],
-    "aws-cloudformation": [
+    "Cloudformation": [
       "aws-cloudformation-readme",
       "@aws-cdk_aws-cloudformation.CustomResource",
       "@aws-cdk_aws-cloudformation.PipelineCreateReplaceChangeSetAction",
@@ -198,7 +198,7 @@
         ]
       }
     ],
-    "aws-cloudfront": [
+    "Cloudfront": [
       "aws-cloudfront-readme",
       "@aws-cdk_aws-cloudfront.CloudFrontWebDistribution",
       {
@@ -211,7 +211,7 @@
         ]
       }
     ],
-    "aws-cloudtrail": [
+    "Cloudtrail": [
       "aws-cloudtrail-readme",
       "@aws-cdk_aws-cloudtrail.CloudTrail",
       {
@@ -222,7 +222,7 @@
         ]
       }
     ],
-    "aws-cloudwatch": [
+    "Cloudwatch": [
       "aws-cloudwatch-readme",
       "@aws-cdk_aws-cloudwatch.Alarm",
       "@aws-cdk_aws-cloudwatch.Dashboard",
@@ -235,7 +235,7 @@
         ]
       }
     ],
-    "aws-codebuild": [
+    "Codebuild": [
       "aws-codebuild-readme",
       "@aws-cdk_aws-codebuild.PipelineBuildAction",
       "@aws-cdk_aws-codebuild.PipelineProject",
@@ -249,7 +249,7 @@
         ]
       }
     ],
-    "aws-codecommit": [
+    "Codecommit": [
       "aws-codecommit-readme",
       "@aws-cdk_aws-codecommit.PipelineSourceAction",
       "@aws-cdk_aws-codecommit.Repository",
@@ -261,7 +261,7 @@
         ]
       }
     ],
-    "aws-codedeploy": [
+    "Codedeploy": [
       "aws-codedeploy-readme",
       "@aws-cdk_aws-codedeploy.PipelineDeployAction",
       "@aws-cdk_aws-codedeploy.ServerApplication",
@@ -277,7 +277,7 @@
         ]
       }
     ],
-    "aws-codepipeline": [
+    "Codepipeline": [
       "aws-codepipeline-readme",
       "@aws-cdk_aws-codepipeline.GitHubSourceAction",
       "@aws-cdk_aws-codepipeline.JenkinsBuildAction",
@@ -296,7 +296,7 @@
         ]
       }
     ],
-    "aws-cognito": [
+    "Cognito": [
       "aws-cognito-readme",
       {
         "type": "subcategory",
@@ -312,7 +312,7 @@
         ]
       }
     ],
-    "aws-config": [
+    "Config": [
       "aws-config-readme",
       {
         "type": "subcategory",
@@ -326,7 +326,7 @@
         ]
       }
     ],
-    "aws-datapipeline": [
+    "Datapipeline": [
       "aws-datapipeline-readme",
       {
         "type": "subcategory",
@@ -336,7 +336,7 @@
         ]
       }
     ],
-    "aws-dax": [
+    "Dax": [
       "aws-dax-readme",
       {
         "type": "subcategory",
@@ -348,7 +348,7 @@
         ]
       }
     ],
-    "aws-directoryservice": [
+    "Directoryservice": [
       "aws-directoryservice-readme",
       {
         "type": "subcategory",
@@ -359,7 +359,7 @@
         ]
       }
     ],
-    "aws-dlm": [
+    "Dlm": [
       "aws-dlm-readme",
       {
         "type": "subcategory",
@@ -369,7 +369,7 @@
         ]
       }
     ],
-    "aws-dms": [
+    "Dms": [
       "aws-dms-readme",
       {
         "type": "subcategory",
@@ -384,7 +384,7 @@
         ]
       }
     ],
-    "aws-docdb": [
+    "Docdb": [
       "aws-docdb-readme",
       {
         "type": "subcategory",
@@ -397,7 +397,7 @@
         ]
       }
     ],
-    "aws-dynamodb": [
+    "Dynamodb": [
       "aws-dynamodb-readme",
       "@aws-cdk_aws-dynamodb.Table",
       {
@@ -408,7 +408,7 @@
         ]
       }
     ],
-    "aws-ec2": [
+    "Ec2": [
       "aws-ec2-readme",
       "@aws-cdk_aws-ec2.SecurityGroup",
       "@aws-cdk_aws-ec2.VpcNetwork",
@@ -471,7 +471,7 @@
         ]
       }
     ],
-    "aws-ecr": [
+    "Ecr": [
       "aws-ecr-readme",
       "@aws-cdk_aws-ecr.PipelineSourceAction",
       "@aws-cdk_aws-ecr.Repository",
@@ -483,7 +483,7 @@
         ]
       }
     ],
-    "aws-ecs": [
+    "Ecs": [
       "aws-ecs-readme",
       "@aws-cdk_aws-ecs.AssetImage",
       "@aws-cdk_aws-ecs.AwsLogDriver",
@@ -508,7 +508,7 @@
         ]
       }
     ],
-    "aws-efs": [
+    "Efs": [
       "aws-efs-readme",
       {
         "type": "subcategory",
@@ -519,7 +519,7 @@
         ]
       }
     ],
-    "aws-eks": [
+    "Eks": [
       "aws-eks-readme",
       {
         "type": "subcategory",
@@ -529,7 +529,7 @@
         ]
       }
     ],
-    "aws-elasticache": [
+    "Elasticache": [
       "aws-elasticache-readme",
       {
         "type": "subcategory",
@@ -544,7 +544,7 @@
         ]
       }
     ],
-    "aws-elasticbeanstalk": [
+    "Elasticbeanstalk": [
       "aws-elasticbeanstalk-readme",
       {
         "type": "subcategory",
@@ -557,7 +557,7 @@
         ]
       }
     ],
-    "aws-elasticloadbalancing": [
+    "Elasticloadbalancing": [
       "aws-elasticloadbalancing-readme",
       "@aws-cdk_aws-elasticloadbalancing.LoadBalancer",
       {
@@ -568,7 +568,7 @@
         ]
       }
     ],
-    "aws-elasticloadbalancingv2": [
+    "Elasticloadbalancingv2": [
       "aws-elasticloadbalancingv2-readme",
       "@aws-cdk_aws-elasticloadbalancingv2.ApplicationListener",
       "@aws-cdk_aws-elasticloadbalancingv2.ApplicationListenerCertificate",
@@ -590,7 +590,7 @@
         ]
       }
     ],
-    "aws-elasticsearch": [
+    "Elasticsearch": [
       "aws-elasticsearch-readme",
       {
         "type": "subcategory",
@@ -600,7 +600,7 @@
         ]
       }
     ],
-    "aws-emr": [
+    "Emr": [
       "aws-emr-readme",
       {
         "type": "subcategory",
@@ -614,7 +614,7 @@
         ]
       }
     ],
-    "aws-events": [
+    "Events": [
       "aws-events-readme",
       "@aws-cdk_aws-events.EventRule",
       {
@@ -626,7 +626,7 @@
         ]
       }
     ],
-    "aws-gamelift": [
+    "Gamelift": [
       "aws-gamelift-readme",
       {
         "type": "subcategory",
@@ -638,7 +638,7 @@
         ]
       }
     ],
-    "aws-glue": [
+    "Glue": [
       "aws-glue-readme",
       {
         "type": "subcategory",
@@ -656,7 +656,7 @@
         ]
       }
     ],
-    "aws-guardduty": [
+    "Guardduty": [
       "aws-guardduty-readme",
       {
         "type": "subcategory",
@@ -671,7 +671,7 @@
         ]
       }
     ],
-    "aws-iam": [
+    "Iam": [
       "aws-iam-readme",
       "@aws-cdk_aws-iam.Group",
       "@aws-cdk_aws-iam.LazyRole",
@@ -694,7 +694,7 @@
         ]
       }
     ],
-    "aws-inspector": [
+    "Inspector": [
       "aws-inspector-readme",
       {
         "type": "subcategory",
@@ -706,7 +706,7 @@
         ]
       }
     ],
-    "aws-iot": [
+    "Iot": [
       "aws-iot-readme",
       {
         "type": "subcategory",
@@ -721,7 +721,7 @@
         ]
       }
     ],
-    "aws-iot1click": [
+    "Iot1click": [
       "aws-iot1click-readme",
       {
         "type": "subcategory",
@@ -733,7 +733,7 @@
         ]
       }
     ],
-    "aws-iotanalytics": [
+    "Iotanalytics": [
       "aws-iotanalytics-readme",
       {
         "type": "subcategory",
@@ -746,7 +746,7 @@
         ]
       }
     ],
-    "aws-kinesis": [
+    "Kinesis": [
       "aws-kinesis-readme",
       "@aws-cdk_aws-kinesis.Stream",
       {
@@ -758,7 +758,7 @@
         ]
       }
     ],
-    "aws-kinesisanalytics": [
+    "Kinesisanalytics": [
       "aws-kinesisanalytics-readme",
       {
         "type": "subcategory",
@@ -770,7 +770,7 @@
         ]
       }
     ],
-    "aws-kinesisfirehose": [
+    "Kinesisfirehose": [
       "aws-kinesisfirehose-readme",
       {
         "type": "subcategory",
@@ -780,7 +780,7 @@
         ]
       }
     ],
-    "aws-kms": [
+    "Kms": [
       "aws-kms-readme",
       "@aws-cdk_aws-kms.EncryptionKey",
       "@aws-cdk_aws-kms.EncryptionKeyAlias",
@@ -793,7 +793,7 @@
         ]
       }
     ],
-    "aws-lambda": [
+    "Lambda": [
       "aws-lambda-readme",
       "@aws-cdk_aws-lambda.Alias",
       "@aws-cdk_aws-lambda.EventSourceMapping",
@@ -818,7 +818,7 @@
         ]
       }
     ],
-    "aws-logs": [
+    "Logs": [
       "aws-logs-readme",
       "@aws-cdk_aws-logs.CrossAccountDestination",
       "@aws-cdk_aws-logs.LogGroup",
@@ -837,7 +837,7 @@
         ]
       }
     ],
-    "aws-neptune": [
+    "Neptune": [
       "aws-neptune-readme",
       {
         "type": "subcategory",
@@ -851,7 +851,7 @@
         ]
       }
     ],
-    "aws-opsworks": [
+    "Opsworks": [
       "aws-opsworks-readme",
       {
         "type": "subcategory",
@@ -867,7 +867,7 @@
         ]
       }
     ],
-    "aws-opsworkscm": [
+    "Opsworkscm": [
       "aws-opsworkscm-readme",
       {
         "type": "subcategory",
@@ -877,7 +877,7 @@
         ]
       }
     ],
-    "aws-quickstarts": [
+    "Quickstarts": [
       "aws-quickstarts-readme",
       "@aws-cdk_aws-quickstarts.RemoteDesktopGateway",
       "@aws-cdk_aws-quickstarts.SqlServer",
@@ -887,7 +887,7 @@
         "ids": []
       }
     ],
-    "aws-rds": [
+    "Rds": [
       "aws-rds-readme",
       "@aws-cdk_aws-rds.ClusterParameterGroup",
       "@aws-cdk_aws-rds.DatabaseCluster",
@@ -907,7 +907,7 @@
         ]
       }
     ],
-    "aws-redshift": [
+    "Redshift": [
       "aws-redshift-readme",
       {
         "type": "subcategory",
@@ -921,7 +921,7 @@
         ]
       }
     ],
-    "aws-route53": [
+    "Route53": [
       "aws-route53-readme",
       "@aws-cdk_aws-route53.AliasRecord",
       "@aws-cdk_aws-route53.CnameRecord",
@@ -941,7 +941,7 @@
         ]
       }
     ],
-    "aws-route53resolver": [
+    "Route53resolver": [
       "aws-route53resolver-readme",
       {
         "type": "subcategory",
@@ -953,7 +953,7 @@
         ]
       }
     ],
-    "aws-s3-deployment": [
+    "S3-deployment": [
       "aws-s3-deployment-readme",
       "@aws-cdk_aws-s3-deployment.BucketDeployment",
       {
@@ -962,7 +962,7 @@
         "ids": []
       }
     ],
-    "aws-s3": [
+    "S3": [
       "aws-s3-readme",
       "@aws-cdk_aws-s3.Bucket",
       "@aws-cdk_aws-s3.BucketPolicy",
@@ -977,7 +977,7 @@
         ]
       }
     ],
-    "aws-sagemaker": [
+    "Sagemaker": [
       "aws-sagemaker-readme",
       {
         "type": "subcategory",
@@ -991,7 +991,7 @@
         ]
       }
     ],
-    "aws-sdb": [
+    "Sdb": [
       "aws-sdb-readme",
       {
         "type": "subcategory",
@@ -1001,7 +1001,7 @@
         ]
       }
     ],
-    "aws-secretsmanager": [
+    "Secretsmanager": [
       "aws-secretsmanager-readme",
       "@aws-cdk_aws-secretsmanager.SecretString",
       {
@@ -1015,7 +1015,7 @@
         ]
       }
     ],
-    "aws-serverless": [
+    "Serverless": [
       "aws-serverless-readme",
       {
         "type": "subcategory",
@@ -1027,7 +1027,7 @@
         ]
       }
     ],
-    "aws-servicecatalog": [
+    "Servicecatalog": [
       "aws-servicecatalog-readme",
       {
         "type": "subcategory",
@@ -1048,7 +1048,7 @@
         ]
       }
     ],
-    "aws-servicediscovery": [
+    "Servicediscovery": [
       "aws-servicediscovery-readme",
       {
         "type": "subcategory",
@@ -1062,7 +1062,7 @@
         ]
       }
     ],
-    "aws-ses": [
+    "Ses": [
       "aws-ses-readme",
       {
         "type": "subcategory",
@@ -1077,7 +1077,7 @@
         ]
       }
     ],
-    "aws-sns": [
+    "Sns": [
       "aws-sns-readme",
       "@aws-cdk_aws-sns.Subscription",
       "@aws-cdk_aws-sns.Topic",
@@ -1092,7 +1092,7 @@
         ]
       }
     ],
-    "aws-sqs": [
+    "Sqs": [
       "aws-sqs-readme",
       "@aws-cdk_aws-sqs.Queue",
       "@aws-cdk_aws-sqs.QueuePolicy",
@@ -1105,7 +1105,7 @@
         ]
       }
     ],
-    "aws-ssm": [
+    "Ssm": [
       "aws-ssm-readme",
       "@aws-cdk_aws-ssm.ParameterStoreSecureString",
       "@aws-cdk_aws-ssm.ParameterStoreString",
@@ -1123,7 +1123,7 @@
         ]
       }
     ],
-    "aws-stepfunctions": [
+    "Stepfunctions": [
       "aws-stepfunctions-readme",
       "@aws-cdk_aws-stepfunctions.Activity",
       "@aws-cdk_aws-stepfunctions.Choice",
@@ -1143,7 +1143,7 @@
         ]
       }
     ],
-    "aws-waf": [
+    "Waf": [
       "aws-waf-readme",
       {
         "type": "subcategory",
@@ -1159,7 +1159,7 @@
         ]
       }
     ],
-    "aws-wafregional": [
+    "Wafregional": [
       "aws-wafregional-readme",
       {
         "type": "subcategory",
@@ -1176,7 +1176,7 @@
         ]
       }
     ],
-    "aws-workspaces": [
+    "Workspaces": [
       "aws-workspaces-readme",
       {
         "type": "subcategory",
@@ -1188,7 +1188,7 @@
     ]
   },
   "frameworkDocs": {
-    "Overview": [
+    "Framework Reference": [
       "framework-reference"
     ]
   }
