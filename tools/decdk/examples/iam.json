@@ -1,0 +1,15 @@
+{
+  "$schema": "./cdk.schema.json",
+  "Resources": {
+    "MyUser": {
+      "Type": "@aws-cdk/aws-iam.User"
+    },
+    "Policy": {
+      "Type": "@aws-cdk/aws-iam.Policy",
+      "Properties": {
+        "users": [ { "Ref": "MyUser"} ],
+        //TODO: can't add statements
+      }
+    }
+  }
+}
