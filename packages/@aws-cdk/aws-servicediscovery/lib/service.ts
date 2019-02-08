@@ -127,6 +127,11 @@ export class Service extends cdk.Construct {
    */
   public readonly namespace: INamespace;
 
+  /**
+   * The DNS name of the service
+   */
+  public readonly serviceDnsName?: string;
+
   constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
@@ -170,6 +175,9 @@ export class Service extends cdk.Construct {
     this.serviceName = resource.serviceName;
     this.dnsRecordType = props.dnsRecord && props.dnsRecord.type;
     this.namespace = props.namespace;
+    this.serviceDnsName = !props.namespace.httpOnly && props.namespace.namespaceName
+      ? `${this.serviceName}.${props.namespace.namespaceName}`
+      : undefined;
   }
 
   /**
