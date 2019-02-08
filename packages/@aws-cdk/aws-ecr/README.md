@@ -33,18 +33,21 @@ Example:
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const sourceStage = pipeline.addStage('Source');
-const sourceAction = new ecr.PipelineSourceAction(this, 'ECR', {
-  stage: sourceStage,
+const sourceAction = new ecr.PipelineSourceAction({
+  actionName: 'ECR',
   repository: ecrRepository,
   imageTag: 'some-tag', // optional, default: 'latest'
   outputArtifactName: 'SomeName', // optional
 });
+pipeline.addStage({
+  actionName: 'Source',
+  actions: [sourceAction],
+});
 ```
 
-You can also add the Repository to the Pipeline directly:
+You can also create the action from the Repository directly:
 
 ```ts
 // equivalent to the code above:
-const sourceAction = ecrRepository.addToPipeline(sourceStage, 'ECR');
+const sourceAction = ecrRepository.toCodePipelineSourceAction({ actionName: 'ECR' });
 ```

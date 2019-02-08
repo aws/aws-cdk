@@ -1,17 +1,14 @@
-import cdk = require("@aws-cdk/cdk");
-import { Action, ActionArtifactBounds, ActionCategory, CommonActionConstructProps, CommonActionProps } from "./action";
+import { Action, ActionArtifactBounds, ActionCategory, CommonActionProps } from "./action";
 import { Artifact } from "./artifact";
 
 /**
  * Construction properties of the low-level {@link TestAction test Action}.
  */
-export interface TestActionProps extends CommonActionProps, CommonActionConstructProps {
+export interface TestActionProps extends CommonActionProps {
   /**
    * The source to use as input for this test.
-   *
-   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact?: Artifact;
+  inputArtifact: Artifact;
 
   /**
    * The optional name of the output artifact.
@@ -71,10 +68,10 @@ export interface TestActionProps extends CommonActionProps, CommonActionConstruc
 export abstract class TestAction extends Action {
   public readonly outputArtifact?: Artifact;
 
-  constructor(scope: cdk.Construct, id: string, props: TestActionProps) {
-    super(scope, id, {
-      category: ActionCategory.Test,
+  constructor(props: TestActionProps) {
+    super({
       ...props,
+      category: ActionCategory.Test,
     });
 
     this.addInputArtifact(props.inputArtifact);

@@ -10,12 +10,8 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit-codebuild');
 const repository = new codecommit.Repository(stack, 'MyRepo', {
   repositoryName: 'my-repo',
 });
-
-const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-
-const sourceStage = new codepipeline.Stage(pipeline, 'source', { pipeline });
-new codecommit.PipelineSourceAction(stack, 'source', {
-  stage: sourceStage,
+const sourceAction = new codecommit.PipelineSourceAction({
+  actionName: 'source',
   outputArtifactName: 'SourceArtifact',
   repository,
   pollForSourceChanges: true,
@@ -24,9 +20,30 @@ new codecommit.PipelineSourceAction(stack, 'source', {
 const project = new codebuild.Project(stack, 'MyBuildProject', {
   source: new codebuild.CodePipelineSource(),
 });
+const buildAction = new codebuild.PipelineBuildAction({
+  actionName: 'build',
+  project,
+  inputArtifact: sourceAction.outputArtifact,
+});
+const testAction = new codebuild.PipelineTestAction({
+  actionName: 'test',
+  project,
+  inputArtifact: sourceAction.outputArtifact,
+});
 
-const buildStage = new codepipeline.Stage(pipeline, 'build', { pipeline });
-project.addToPipeline(buildStage, 'build');
-project.addToPipelineAsTest(buildStage, 'test');
+new codepipeline.Pipeline(stack, 'Pipeline', {
+  stages: [
+    {
+      name: 'source',
+      actions: [sourceAction],
+    },
+  ],
+}).addStage({
+  name: 'build',
+  actions: [
+    buildAction,
+    testAction,
+  ],
+});
 
 app.run();
