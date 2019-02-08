@@ -2,10 +2,10 @@
 
 AWS CodeCommit is a version control service that enables you to privately store and manage Git repositories in the AWS cloud.
 
-For further information on AWS CodeCommit,
+For further information on CodeCommit,
 see the [AWS CodeCommit documentation](https://docs.aws.amazon.com/codecommit).
 
-To add an AWS CodeCommit Repository to your stack:
+To add a CodeCommit Repository to your stack:
 
 ```ts
 import codecommit = require('@aws-cdk/aws-codecommit');
@@ -25,7 +25,7 @@ repo.notify('arn:aws:sns:*:123456789012:my_topic');
 
 ## AWS CodePipeline
 
-To use an AWS CodeCommit Repository in an AWS CodePipeline:
+To use a CodeCommit Repository in a CodePipeline:
 
 ```ts
 import codepipeline = require('@aws-cdk/aws-codepipeline');
@@ -49,12 +49,12 @@ const sourceAction = repo.addToPipeline(sourceStage, 'CodeCommit');
 
 ## Events
 
-AWS CodeCommit repositories emit Amazon CloudWatch events for certain activities.
+CodeCommit repositories emit Amazon CloudWatch events for certain activities.
 Use the `repo.onXxx` methods to define rules that trigger on these events
 and invoke targets as a result:
 
 ```ts
-// starts an AWS CodeBuild project when a commit is pushed to the "master" branch of the repo
+// starts a CodeBuild project when a commit is pushed to the "master" branch of the repo
 repo.onCommit('CommitToMaster', project, 'master');
 
 // publishes a message to an Amazon SNS topic when a comment is made on a pull request
