@@ -30,7 +30,7 @@ export interface INamespace extends cdk.IConstruct {
   /**
    * Creates a new service in this namespace.
    */
-  createService(id: string, props: BaseServiceProps): Service;
+  createService(id: string, props?: BaseServiceProps): Service;
 
   /**
    * Exports this namespace from the stack.
@@ -100,7 +100,7 @@ export abstract class NamespaceBase extends cdk.Construct implements INamespace 
   /**
    * Creates a new service in this namespace
    */
-  public createService(id: string, props: BaseServiceProps): Service {
+  public createService(id: string, props?: BaseServiceProps): Service {
     return new Service(this, id, {
       namespace: this,
       ...props,
