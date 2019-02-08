@@ -1,4 +1,4 @@
-## AWS CodeBuild Construct Library
+# AWS CodeBuild
 
 AWS CodeBuild is a fully managed continuous integration service that compiles
 source code, runs tests, and produces software packages that are ready to
@@ -9,7 +9,7 @@ started quickly by using prepackaged build environments, or you can create
 custom build environments that use your own build tools. With CodeBuild, you are
 charged by the minute for the compute resources you use.
 
-### Installation
+## Installation
 
 Install the module:
 
@@ -27,25 +27,25 @@ The `codebuild.Project` construct represents a build project resource. See the
 reference documentation for a comprehensive list of initialization properties,
 methods and attributes.
 
-### Source
+## Source
 
 Build projects are usually associated with a _source_, which is specified via
 the `source` property which accepts a class that extends the `BuildSource`
 abstract base class. The supported sources are:
 
-#### `NoSource`
+### `NoSource`
 
-This is the default and implies that no source will be associated with this
+This is the default and implies that no source is associated with this
 build project.
 
 The `buildSpec` option is required in this case.
 
-Here's an AWS CodeBuild project with no source which simply prints `Hello,
+Here's a CodeBuild project with no source which simply prints `Hello,
 CodeBuild!`:
 
 [Minimal Example](./test/integ.defaults.lit.ts)
 
-#### `CodeCommitSource`
+### `CodeCommitSource`
 
 Use an AWS CodeCommit repository as the source of this build:
 
@@ -59,7 +59,7 @@ new codebuild.Project(this, 'MyFirstCodeCommitProject', {
 });
 ```
 
-#### `S3BucketSource`
+### `S3BucketSource`
 
 Create a CodeBuild project with an S3 bucket as the source:
 
@@ -76,12 +76,12 @@ new codebuild.Project(this, 'MyProject', {
 });
 ```
 
-#### `CodePipelineSource`
+### `CodePipelineSource`
 
-Used as a special source type when an AWS CodeBuild project is used as an AWS
+Used as a special source type when a CodeBuild project is used as a
 CodePipeline action.
 
-#### `GitHubSource` and `GitHubEnterpriseSource`
+### `GitHubSource` and `GitHubEnterpriseSource`
 
 These source types can be used to build code from a GitHub repository.
 Example:
@@ -97,13 +97,13 @@ const gitHubSource = new codebuild.GitHubSource({
 });
 ```
 
-#### `BitBucketSource`
+### `BitBucketSource`
 
 This source type can be used to build code from a BitBucket repository.
 
-### Environment
+## Environment
 
-By default, projects will use a small instance with an Ubuntu 14.04 image. You
+By default, projects use a small instance with an Ubuntu 14.04 image. You
 can use the `environment` property to customize the build environment:
 
 * `buildImage` defines the Docker image used. See [Images](#images) below for
@@ -113,9 +113,9 @@ can use the `environment` property to customize the build environment:
 * `environmentVariables` can be set at this level (and also at the project
   level).
 
-### Images
+## Images
 
-The AWS CodeBuild library supports both Linux and Windows images via the
+The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
 
 You can either specify one of the predefined Windows/Linux images by using one
@@ -140,12 +140,12 @@ The following example shows how to define an image from an ECR repository:
 
 [ECR example](./test/integ.ecr.lit.ts)
 
-### Events
+## Events
 
-AWS CodeBuild projects can be used either as a source for events or be triggered
+CodeBuild projects can be used either as a source for events or be triggered
 by events via an event rule.
 
-#### Using Project as an event target
+### Using Project as an event target
 
 The `Project` construct implements the `IEventRuleTarget` interface. This means
 that it can be used as a target for event rules:
@@ -155,9 +155,9 @@ that it can be used as a target for event rules:
 codeCommitRepository.onCommit('OnCommit', project);
 ```
 
-#### Using Project as an event source
+### Using Project as an event source
 
-To define CloudWatch event rules for build projects, use one of the `onXxx`
+To define Amazon CloudWatch event rules for build projects, use one of the `onXxx`
 methods:
 
 ```ts
@@ -166,7 +166,7 @@ rule.addTarget(lambdaFunction);
 ```
 
 
-### Using an AWS CodeBuild Project as an AWS CodePipeline action
+## Using a CodeBuild Project as an AWS CodePipeline action
 
 Example of a Project used in CodePipeline, alongside CodeCommit:
 
@@ -233,7 +233,7 @@ project.addToPipelineAsTest(buildStage, 'IntegrationTest', {
 });
 ```
 
-### Secondary sources and artifacts
+## Secondary sources and artifacts
 
 CodeBuild Projects can get their sources from multiple places, and produce
 multiple outputs. For example:
@@ -261,7 +261,7 @@ const project = new codebuild.Project(this, 'MyProject', {
 Note that the `identifier` property is required for both secondary sources and
 artifacts.
 
-The contents of the secondary source will be available to the build under the
+The contents of the secondary source is available to the build under the
 directory specified by the `CODEBUILD_SRC_DIR_<identifier>` environment variable
 (so, `CODEBUILD_SRC_DIR_source2` in the above case).
 
@@ -298,7 +298,7 @@ const project = new codebuild.Project(this, 'MyProject', {
 });
 ```
 
-#### Multiple inputs and outputs in CodePipeline
+### Multiple inputs and outputs in CodePipeline
 
 When you want to have multiple inputs and/or outputs for a Project used in a
 Pipeline, instead of using the `secondarySources` and `secondaryArtifacts`
@@ -327,7 +327,7 @@ const buildAction = project.addToPipeline(buildStage, 'Build', {
 ```
 
 **Note**: when a CodeBuild Action in a Pipeline has more than one output, it
-will only use the `secondary-artifacts` field of the buildspec, never the
+only uses the `secondary-artifacts` field of the buildspec, never the
 primary output specification directly under `artifacts`. Because of that, it
 pays to name even your primary output artifact on the Pipeline, like we did
 above, so that you know what name to use in the buildspec.
