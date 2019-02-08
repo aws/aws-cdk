@@ -34,3 +34,8 @@
     height: 20px;
     vertical-align: middle;
 }
+
+/**
+ * Get rid of italics on headers, it's really quite ugly
+ */
+.navGroupCategoryTitle { font-style: normal !important; }
