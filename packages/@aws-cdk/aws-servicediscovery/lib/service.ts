@@ -50,7 +50,7 @@ export interface BaseServiceProps {
   /**
    * The name of the service.
    */
-  name: string;
+  name?: string;
 
   /**
    * The description of the service.
@@ -100,7 +100,7 @@ export class Service extends cdk.Construct {
   /**
    * The name of the service resource.
    */
-  public readonly serviceName: string;
+  public readonly serviceName?: string;
 
   /**
    * The type of DNS records uses for the service.
@@ -132,6 +132,7 @@ export class Service extends cdk.Construct {
     }
 
     const resource = new CfnService(this, 'Resource', {
+      name: props.name,
       description: props.description,
       dnsConfig: props.namespace.httpOnly
         ? undefined
