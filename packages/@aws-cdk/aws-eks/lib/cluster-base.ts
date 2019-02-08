@@ -30,6 +30,11 @@ export interface ICluster extends cdk.IConstruct, ec2.IConnectable {
    * The certificate-authority-data for your cluster.
    */
   readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * Export cluster references to use in other stacks
+   */
+  export(): ClusterImportProps;
 }
 
 /**

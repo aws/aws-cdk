@@ -72,12 +72,12 @@ export class Cluster extends ClusterBase {
   /**
    * Import an existing cluster
    *
-   * @param parent the construct parent, in most cases 'this'
+   * @param scope the construct scope, in most cases 'this'
    * @param id the id or name to import as
    * @param props the cluster properties to use for importing information
    */
-  public static import(parent: cdk.Construct, id: string, props: ClusterImportProps): ICluster {
-    return new ImportedCluster(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: ClusterImportProps): ICluster {
+    return new ImportedCluster(scope, id, props);
   }
 
   /**
@@ -129,12 +129,12 @@ export class Cluster extends ClusterBase {
   /**
    * Initiates an EKS Cluster with the supplied arguments
    *
-   * @param parent a Construct, most likely a cdk.Stack created
+   * @param scope a Construct, most likely a cdk.Stack created
    * @param name the name of the Construct to create
    * @param props properties in the IClusterProps interface
    */
-  constructor(parent: cdk.Construct, name: string, props: ClusterProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: ClusterProps) {
+    super(scope, id);
 
     this.vpc = props.vpc;
     this.version = props.version;
@@ -320,8 +320,8 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterEndpoint: string;
   public readonly connections = new ec2.Connections();
 
-  constructor(parent: cdk.Construct, name: string, props: ClusterImportProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: ClusterImportProps) {
+    super(scope, id);
 
     this.vpc = ec2.VpcNetwork.import(this, "VPC", props.vpc);
     this.clusterName = props.clusterName;
