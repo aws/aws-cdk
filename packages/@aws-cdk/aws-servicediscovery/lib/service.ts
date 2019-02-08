@@ -150,9 +150,9 @@ export class Service extends cdk.Construct {
       namespaceId: props.namespace.namespaceId
     });
 
-    this.serviceId = resource.ref;
-    this.serviceArn = resource.getAtt('Arn').toString();
-    this.serviceName = props.name;
+    this.serviceId = resource.serviceId;
+    this.serviceArn = resource.serviceArn;
+    this.serviceName = resource.serviceName;
     this.dnsRecordType = props.dnsRecord && props.dnsRecord.type;
     this.namespace = props.namespace;
   }
