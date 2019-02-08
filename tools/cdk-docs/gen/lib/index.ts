@@ -2,17 +2,12 @@ import fs = require('fs');
 import jsiiReflect = require('jsii-reflect');
 import path = require('path');
 
+import { Docs, Sidebar } from './docusaurus';
 import render = require('./render');
+import { packageDisplayName } from './render';
 
 const ts = new jsiiReflect.TypeSystem();
 // tslint:disable:no-console
-
-type Category = string | {
-  doc?: string;
-  type?: string;
-  label: string;
-  ids?: string[];
-};
 
 export async function main() {
   // load all JSII from all dependencies
@@ -27,65 +22,47 @@ export async function main() {
 
   // ready to explore!
 
+  const docs = new Docs('../website', '../docs');
+
   const constructType = ts.findClass('@aws-cdk/cdk.Construct');
   const constructs = ts.classes.filter(c => extendsType(c, constructType));
 
-  const resources: { [service: string]: Category[] } = {};
-  const services: { [key: string]: Category[]} = {};
-  constructs
+  const resources = constructs
     .filter(c => c.fqn.startsWith('@aws-cdk/aws-'))
     .filter(c => !c.abstract)
-    .filter(c => (c.initializer!.parameters.length === 3))
+    .filter(c => (c.initializer!.parameters.length === 3));
+
+  docs.sidebar('docs').category('Service Reference').add(render.serviceReferencePage('service-reference'));
+  documentResources(docs.sidebar('docs'), resources);
+
+  docs.sidebar('framework-docs').category('Framework Reference').add(render.frameworkReferencePage('framework-reference'));
+
+  docs.write();
+}
+
+function documentResources(sidebar: Sidebar, resources: jsiiReflect.ClassType[]) {
+  resources
     .sort((a, b) => a.fqn.localeCompare(b.fqn))
     .forEach(c => {
       const [, serviceName] = c.assembly.name.split('/');
-      const displayName = packageDisplayName(serviceName);
-      if (!services[displayName]) {
-        const readmeName = `${serviceName}-readme`;
-        services[displayName] = [readmeName];
-        resources[displayName] = [];
-        fs.writeFileSync(`../docs/${readmeName}.md`, render.assemblyOverview(c.assembly, readmeName));
+      const readmeName = `${serviceName}-readme`;
+
+      const serviceCategory = sidebar.category(packageDisplayName(serviceName));
+      if (serviceCategory.findDocument(readmeName) === undefined) {
+        serviceCategory.add(render.assemblyOverview(c.assembly, readmeName));
       }
+      const cfnCategory = serviceCategory.category('CloudFormation Resources');
 
       const resourceName = c.fqn.replace('/', '_');
+      const resourceDoc = render.resourcePage(c, resourceName);
+
+      // Decide which category to put this document in
       if (c.name.startsWith('Cfn')) {
-        resources[displayName].push(resourceName);
+        cfnCategory.add(resourceDoc);
       } else {
-        services[displayName].push(resourceName);
+        serviceCategory.add(resourceDoc);
       }
-
-      fs.writeFileSync(`../docs/${resourceName}.md`, render.resourcePage(c, resourceName));
     });
-
-  fs.writeFileSync('../docs/framework-reference.md', render.frameworkReferencePage('framework-reference'));
-  fs.writeFileSync('../docs/service-reference.md', render.serviceReferencePage('service-reference'));
-
-  const sidebars: any = {
-    'Service Reference': ['service-reference']
-  };
-  for (const displayName of Object.keys(services)) {
-    const service = services[displayName];
-    const resourceIds = resources[displayName];
-
-    sidebars[displayName] = [
-      ...service,
-      {
-        type: "subcategory",
-        label: "CloudFormation Resources",
-        ids: resourceIds
-      }
-    ];
-  }
-
-  fs.writeFileSync(`../website/sidebars.json`, JSON.stringify({
-    docs: sidebars,
-    frameworkDocs: {'Framework Reference': ['framework-reference'] }
-  }, null, 2));
-}
-
-function packageDisplayName(serviceName: string) {
-  serviceName = serviceName.replace(/^aws-/, '');
-  return serviceName.substr(0, 1).toUpperCase() + serviceName.substr(1);
 }
 
 function extendsType(derived: jsiiReflect.Type, base: jsiiReflect.Type) {

@@ -1,15 +1,23 @@
 import jsiiReflect = require('jsii-reflect');
-import YAML = require('yaml');
+import { Document } from './docusaurus';
 
 const BADGE_OPTIONAL = '![Optional](https://img.shields.io/badge/-Optional-inactive.svg)';
 const BADGE_REQUIRED = '![Required](https://img.shields.io/badge/-Required-important.svg)';
 
-export function assemblyOverview(assembly: jsiiReflect.Assembly, id: string): string {
-  const markdown = assembly.readme && assembly.readme.markdown || 'Oops!';
-  return _addFrontMatter(markdown, { id, hide_title: true, sidebar_label: 'Overview' });
+/**
+ * Return the dislay name for a service package
+ */
+export function packageDisplayName(serviceName: string) {
+  serviceName = serviceName.replace(/^aws-/, '');
+  return serviceName.substr(0, 1).toUpperCase() + serviceName.substr(1);
 }
 
-export function resourcePage(resource: jsiiReflect.ClassType, id: string): string {
+export function assemblyOverview(assembly: jsiiReflect.Assembly, id: string): Document {
+  const markdown = assembly.readme && assembly.readme.markdown || 'Oops!';
+  return new Document(id, markdown, { hide_title: true, sidebar_label: 'Overview' });
+}
+
+export function resourcePage(resource: jsiiReflect.ClassType, id: string): Document {
   const props = resource.initializer!.parameters[2].type.fqn as jsiiReflect.InterfaceType;
   const properties = props.getProperties(true).sort(_propertyComparator);
 
@@ -21,7 +29,8 @@ export function resourcePage(resource: jsiiReflect.ClassType, id: string): strin
     ...properties.map(_propertiesTableLine),
     ...properties.map(_propertyDetail),
   ].join('\n');
-  return _addFrontMatter(markdown, { id, title: resource.name });
+
+  return new Document(id, markdown, { title: resource.name });
 
   function _propertiesTableLine(property: jsiiReflect.Property) {
     const badge = property.type.optional ? BADGE_OPTIONAL : BADGE_REQUIRED;
@@ -43,16 +52,12 @@ export function resourcePage(resource: jsiiReflect.ClassType, id: string): strin
   }
 }
 
-export function frameworkReferencePage(id: string) {
-  return _addFrontMatter('Lorem Ipsum...', { id, title: 'Framework Reference', sidebar_label: 'Overview' });
+export function frameworkReferencePage(id: string): Document {
+  return new Document(id, 'Lorem Ipsum...', { title: 'Framework Reference', sidebar_label: 'Overview' });
 }
 
-export function serviceReferencePage(id: string): string {
-  return _addFrontMatter('Lorem Ipsum...', { id, title: 'Service Reference', sidebar_label: 'Overview' });
-}
-
-function _addFrontMatter(document: string, frontMatter: { [key: string]: any }): string {
-  return `---\n${YAML.stringify(frontMatter, { schema: 'yaml-1.1' }).trim()}\n---\n${document}`;
+export function serviceReferencePage(id: string): Document {
+  return new Document(id, 'Lorem Ipsum...', { title: 'Service Reference', sidebar_label: 'Overview' });
 }
 
 function _formatType(reference: jsiiReflect.TypeReference, relativeTo: jsiiReflect.Assembly, quote = true): string {

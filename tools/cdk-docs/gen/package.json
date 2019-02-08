@@ -15,7 +15,6 @@
   "scripts": {
     "build": "tsc && chmod a+x bin/gen",
     "watch": "tsc -w",
-    "test": "jest",
     "gen": "bin/gen"
   },
   "author": {
