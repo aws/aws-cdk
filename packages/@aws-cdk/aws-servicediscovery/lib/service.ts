@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { Instance, InstanceProps } from './instance';
+import { BaseInstanceProps, Instance } from './instance';
 import { INamespace } from './namespace';
 import { CfnService } from './servicediscovery.generated';
 
@@ -46,12 +46,7 @@ export interface HealthCheckConfig {
   resourcePath?: string;
 }
 
-export interface ServiceProps {
-  /**
-   * The namespace where the service is created.
-   */
-  namespace: INamespace
-
+export interface BaseServiceProps {
   /**
    * The name of the service.
    */
@@ -82,6 +77,13 @@ export interface ServiceProps {
    * @default no health check
    */
   healthCheckConfig?: HealthCheckConfig;
+}
+
+export interface ServiceProps extends BaseServiceProps {
+  /**
+   * The namespace where the service is created.
+   */
+  namespace: INamespace
 }
 
 export class Service extends cdk.Construct {
@@ -157,7 +159,7 @@ export class Service extends cdk.Construct {
   /**
    * Registers a new instance in this service.
    */
-  public registerInstance(id: string, props: InstanceProps): Instance {
+  public registerInstance(id: string, props: BaseInstanceProps): Instance {
     return new Instance(this, id, {
       service: this,
       ...props

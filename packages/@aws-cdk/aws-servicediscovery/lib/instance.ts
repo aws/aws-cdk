@@ -36,12 +36,7 @@ export interface InstanceAttributes {
   customAttributes?: object;
 }
 
-export interface InstanceProps {
-  /**
-   * The service in which the instance is registered.
-   */
-  service: Service;
-
+export interface BaseInstanceProps {
   /**
    * The instance id.
    */
@@ -51,6 +46,13 @@ export interface InstanceProps {
    * The instance attributes.
    */
   instanceAttributes: InstanceAttributes
+}
+
+export interface InstanceProps extends BaseInstanceProps {
+  /**
+   * The service in which the instance is registered.
+   */
+  service: Service;
 }
 
 export class Instance extends cdk.Construct {
