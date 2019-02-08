@@ -41,8 +41,23 @@ export enum HealthCheckType {
 }
 
 export interface HealthCheckConfig {
-  failureThreshold?: number;
-  type: HealthCheckType;
+  /**
+   * The number of consecutive health checks that an endpoint must pass or fail
+   * for Route 53 to change the current status of the endpoint from unhealthy
+   * to healthy or vice versa.
+   */
+  failureThreshold: number;
+
+  /**
+   * The type of health check
+   *
+   * @default HTTP
+   */
+  type?: HealthCheckType;
+
+  /**
+   * The path that you want Route 53 to request when performing health checks.
+   */
   resourcePath?: string;
 }
 
@@ -121,8 +136,8 @@ export class Service extends cdk.Construct {
 
     if (!props.namespace.httpOnly
         && props.healthCheckConfig
-        && (props.healthCheckConfig.type || props.healthCheckConfig.failureThreshold)) {
-      throw new Error('Cannot specify health check `type` or `failureThreshold` for a DNS namespace.');
+        && (props.healthCheckConfig.type || props.healthCheckConfig.resourcePath)) {
+      throw new Error('Cannot specify health check `type` or `resourcePath` for a DNS namespace.');
     }
 
     if (props.routingPolicy === RountingPolicy.Multivalue
@@ -141,8 +156,8 @@ export class Service extends cdk.Construct {
             namespaceId: props.namespace.namespaceId,
             routingPolicy: props.routingPolicy
           },
-      healthCheckConfig: props.namespace.httpOnly
-        ? props.healthCheckConfig
+      healthCheckConfig: props.namespace.httpOnly && props.healthCheckConfig
+        ? { type: HealthCheckType.HTTP, ...props.healthCheckConfig }
         : undefined,
       healthCheckCustomConfig: props.namespace.httpOnly
         ? undefined

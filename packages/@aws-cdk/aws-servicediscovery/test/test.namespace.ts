@@ -125,7 +125,7 @@ export = {
     const stack2 = new cdk.Stack(undefined, 'S2');
     const importedNamespace = servicediscovery.Namespace.import(stack2, 'ImportedNamespace', namespaceRef);
 
-    importedNamespace.createService('MyService', { name: 'service'});
+    importedNamespace.createService('MyService', { name: 'service' });
 
     expect(stack2).toMatch({
       "Resources": {
