@@ -173,10 +173,6 @@ export class Cluster extends ClusterBase {
       }
     });
 
-    if (ec2.SecurityGroupBase.isSecurityGroup(securityGroup)) {
-      securityGroup.apply(new cdk.Tag(`kubernetes.io/cluster/${resource.clusterName}`, "owned"));
-    }
-
     this.clusterName = resource.clusterName;
     this.clusterArn = resource.clusterArn;
     this.clusterEndpoint = resource.clusterEndpoint;

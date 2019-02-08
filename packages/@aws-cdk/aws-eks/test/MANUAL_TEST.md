@@ -48,3 +48,11 @@ ssh -L 3000:<ELB ADDRESS>:3000 ssh-box-somewhere.example.com
 
 # Visit http://localhost:3000/
 ```
+
+Clean the services before you stop the cluster to get rid of the load balancer
+(otherwise you won't be able to delet the stack):
+
+```
+kubectl delete --all services
+
+```

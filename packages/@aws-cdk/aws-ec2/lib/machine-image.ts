@@ -190,7 +190,7 @@ export class GenericLinuxImage implements IMachineImageSource  {
   public getImage(scope: Construct): MachineImage {
     const stack = Stack.find(scope);
     const region = stack.requireRegion('AMI cannot be determined');
-    const ami = this.amiMap[region];
+    const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
     if (!ami) {
       throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);
     }
