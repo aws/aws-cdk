@@ -374,7 +374,8 @@ export class ConstructNode {
     }
 
     if (childName in this._children) {
-      throw new Error(`There is already a Construct with name '${childName}' in ${this.toString()}`);
+      const name = this.id || '';
+      throw new Error(`There is already a Construct with name '${childName}' in ${this.typename}${name.length > 0 ? ' [' + name + ']' : ''}`);
     }
 
     this._children[childName] = child;
