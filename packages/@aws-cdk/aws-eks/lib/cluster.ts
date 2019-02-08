@@ -21,6 +21,14 @@ export interface ClusterProps {
    *
    * If you want to create public load balancers, this must include public subnets.
    *
+   * For example, to only select private subnets, supply the following:
+   *
+   * ```
+   * vpcPlacements: [
+   *   { subnetsToUse: ec2.SubnetType.Private }
+   * ]
+   * ```
+   *
    * @default All public and private subnets
    */
   vpcPlacements?: ec2.VpcPlacementStrategy[];
@@ -145,7 +153,6 @@ export class Cluster extends ClusterBase {
       vpc: props.vpc,
       description: 'EKS Control Plane Security Group',
     });
-    // FIXME: Tag Security Group as soon as we can w/: "kubernetes.io/cluster/${ClusterName}": "owned"
 
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
@@ -166,6 +173,10 @@ export class Cluster extends ClusterBase {
       }
     });
 
+    if (ec2.SecurityGroupBase.isSecurityGroup(securityGroup)) {
+      securityGroup.apply(new cdk.Tag(`kubernetes.io/cluster/${resource.clusterName}`, "owned"));
+    }
+
     this.clusterName = resource.clusterName;
     this.clusterArn = resource.clusterArn;
     this.clusterEndpoint = resource.clusterEndpoint;
@@ -180,7 +191,7 @@ export class Cluster extends ClusterBase {
    * The nodes will automatically be configured with the right VPC and AMI
    * for the instance type and Kubernetes version.
    */
-  public addWorkerNodes(id: string, options: AddWorkerNodesOptions): autoscaling.AutoScalingGroup {
+  public addCapacity(id: string, options: AddWorkerNodesOptions): autoscaling.AutoScalingGroup {
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
@@ -203,9 +214,14 @@ export class Cluster extends ClusterBase {
    * Add compute capacity to this EKS cluster in the form of an AutoScalingGroup
    *
    * The AutoScalingGroup must be running an EKS-optimized AMI containing the
-   * /etc/eks/bootstrap.sh script.
+   * /etc/eks/bootstrap.sh script. This method will configure Security Groups,
+   * add the right policies to the instance role, apply the right tags, and add
+   * the required user data to the instance's launch configuration.
    *
-   * Prefer to use `addWorkerNodes` if possible.
+   * Prefer to use `addCapacity` if possible, it will automatically configure
+   * the right AMI and the `maxPods` number based on your instance type.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
    */
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupOptions) {
     // self rules
@@ -235,9 +251,7 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('AmazonEC2ContainerRegistryReadOnly', this).policyArn);
 
     // EKS Required Tags
-    autoScalingGroup.tags.setTag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
-      propagate: true,
-    });
+    autoScalingGroup.apply(new cdk.Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
 
     // Create an Output for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
     new cdk.Output(autoScalingGroup, 'InstanceRoleARN', {
@@ -257,19 +271,19 @@ export class Cluster extends ClusterBase {
     const privates = this.vpc.subnets({ subnetsToUse: ec2.SubnetType.Private });
 
     for (const subnet of privates) {
-      if (!isTaggableSubnet(subnet)) {
+      if (!isRealSubnetConstruct(subnet)) {
         // Just give up, all of them will be the same.
         this.node.addWarning('Could not auto-tag private subnets with "kubernetes.io/role/internal-elb=1", please remember to do this manually');
         return;
       }
 
-      subnet.tags.setTag("kubernetes.io/role/internal-elb", "1");
+      subnet.apply(new cdk.Tag("kubernetes.io/role/internal-elb", "1"));
     }
   }
 }
 
-function isTaggableSubnet(subnet: ec2.IVpcSubnet): subnet is ec2.VpcSubnet {
-  return (subnet as any).tags !== undefined;
+function isRealSubnetConstruct(subnet: ec2.IVpcSubnet): subnet is ec2.VpcSubnet {
+  return (subnet as any).addDefaultRouteToIGW !== undefined;
 }
 
 /**

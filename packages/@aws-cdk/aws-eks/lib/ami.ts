@@ -13,6 +13,8 @@ export interface EksOptimizedAmiProps {
 
   /**
    * The Kubernetes version to use
+   *
+   * @default The latest version
    */
   kubernetesVersion?: string;
 }
@@ -44,7 +46,7 @@ export const enum NodeType {
   /**
    * GPU instances
    */
-  GPU = 'GPUSupport',
+  GPU = 'GPU',
 }
 
 export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
@@ -58,7 +60,7 @@ export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
  *
  * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html
  */
-export const EKS_AMI: {[version: string]: {[type: string]: {[region: string]: string}}} = {
+const EKS_AMI: {[version: string]: {[type: string]: {[region: string]: string}}} = {
   '1.10': parseTable(`
     US West (Oregon) (us-west-2) 	ami-09e1df3bad220af0b 	ami-0ebf0561e61a2be02
     US East (N. Virginia) (us-east-1) 	ami-04358410d28eaab63 	ami-0131c0ca222183def

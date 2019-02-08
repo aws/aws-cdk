@@ -20,7 +20,7 @@ have an SSH key in the region you're connecting to and pass it, and you must
 be able to connect to the hosts (meaning they must have a public IP and you
 should be allowed to connect to them on port 22):
 
-[ssh into nodes exampled](test/example.ssh-into-nodes.lit.ts)
+[ssh into nodes example](test/example.ssh-into-nodes.lit.ts)
 
 If you want to SSH into nodes in a private subnet, you should set up a
 bastion host in a public subnet. That setup is recommended, but is
