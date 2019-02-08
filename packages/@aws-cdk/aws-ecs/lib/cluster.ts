@@ -349,7 +349,7 @@ export interface AddAutoScalingGroupCapacityOptions {
 /**
  * Properties for adding autoScalingGroup
  */
-export interface AddDefaultAutoScalingGroupOptions extends AddAutoScalingGroupCapacityOptions, autoscaling.BasicAutoScalingGroupProps {
+export interface AddDefaultAutoScalingGroupOptions extends AddAutoScalingGroupCapacityOptions, autoscaling.CommonAutoScalingGroupProps {
   /**
    * The type of EC2 instance to launch into your Autoscaling Group
    */

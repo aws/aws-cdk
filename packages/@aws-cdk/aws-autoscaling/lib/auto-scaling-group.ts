@@ -23,7 +23,7 @@ const NAME_TAG: string = 'Name';
  * Constructs that want to create AutoScalingGroups can inherit
  * this interface and specialize the essential parts in various ways.
  */
-export interface BasicAutoScalingGroupProps {
+export interface CommonAutoScalingGroupProps {
   /**
    * Minimum number of instances in the fleet
    *
@@ -149,7 +149,7 @@ export interface BasicAutoScalingGroupProps {
 /**
  * Properties of a Fleet
  */
-export interface AutoScalingGroupProps extends BasicAutoScalingGroupProps {
+export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * VPC to launch these instances in.
    */

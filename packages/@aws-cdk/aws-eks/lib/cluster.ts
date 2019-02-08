@@ -275,7 +275,7 @@ function isTaggableSubnet(subnet: ec2.IVpcSubnet): subnet is ec2.VpcSubnet {
 /**
  * Options for adding worker nodes
  */
-export interface AddWorkerNodesOptions extends autoscaling.BasicAutoScalingGroupProps {
+export interface AddWorkerNodesOptions extends autoscaling.CommonAutoScalingGroupProps {
   /**
    * Instance type of the instances to start
    */
