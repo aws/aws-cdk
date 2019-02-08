@@ -184,8 +184,8 @@
         ]
       },
       "DependsOn": [
-        "PipelineRoleD68726F7",
-        "PipelineRoleDefaultPolicyC7A05455"
+        "PipelineRoleDefaultPolicyC7A05455",
+        "PipelineRoleD68726F7"
       ]
     },
     "PipelineEventsRole46BEEA7C": {
@@ -503,8 +503,8 @@
         "Runtime": "nodejs6.10"
       },
       "DependsOn": [
-        "LambdaFunServiceRoleF0979767",
-        "LambdaFunServiceRoleDefaultPolicy217FED83"
+        "LambdaFunServiceRoleDefaultPolicy217FED83",
+        "LambdaFunServiceRoleF0979767"
       ]
     }
   }

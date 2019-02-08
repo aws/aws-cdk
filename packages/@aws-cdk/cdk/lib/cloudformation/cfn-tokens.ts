@@ -38,6 +38,10 @@ export class CfnReference extends Token {
     if (typeof(value) === 'function') {
         throw new Error('CfnReference can only hold CloudFormation intrinsics (not a function)');
     }
+    // prepend scope path to display name
+    if (displayName && scope) {
+      displayName = `${scope.node.path}.${displayName}`;
+    }
     super(value, displayName);
     this.replacementTokens = new Map<Stack, Token>();
     this.isReference = true;
@@ -102,7 +106,7 @@ export class CfnReference extends Token {
 
     // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
     // so construct one in-place.
-    return new Token({ 'Fn::ImportValue': output.export });
+    return new Token({ 'Fn::ImportValue': output.obtainExportName() });
   }
 
 }

@@ -66,7 +66,7 @@
     "TD925BC7E": {
       "Type": "AWS::SNS::Topic"
     },
-    "TFSubscription47A24A95": {
+    "FTSubscription775EAF05": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Endpoint": {

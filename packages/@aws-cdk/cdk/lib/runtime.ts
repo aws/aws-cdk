@@ -48,7 +48,7 @@ function pad(x: number) {
 /**
  * Turn a tag object into the proper CloudFormation representation
  */
-export function tagToCloudFormation(x: any): any {
+export function cfnTagToCloudFormation(x: any): any {
   return {
     Key: x.key,
     Value: x.value
@@ -249,7 +249,7 @@ export function validateObject(x: any): ValidationResult {
   return VALIDATION_SUCCESS;
 }
 
-export function validateTag(x: any): ValidationResult {
+export function validateCfnTag(x: any): ValidationResult {
   if (!canInspect(x)) { return VALIDATION_SUCCESS; }
 
   if (x.key == null || x.value == null) {

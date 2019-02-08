@@ -1,22 +1,12 @@
 import { Construct, IConstruct, PATH_SEP } from "../core/construct";
+import { Token } from '../core/tokens';
 
 const LOGICAL_ID_MD = 'aws:cdk:logicalId';
 
 /**
- * Represents a construct that can be "depended on" via `addDependency`.
- */
-export interface IDependable {
-  /**
-   * Returns the set of all stack elements (resources, parameters, conditions)
-   * that should be added when a resource "depends on" this construct.
-   */
-  readonly dependencyElements: IDependable[];
-}
-
-/**
  * An element of a CloudFormation stack.
  */
-export abstract class StackElement extends Construct implements IDependable {
+export abstract class StackElement extends Construct {
   /**
    * Returns `true` if a construct is a stack element (i.e. part of the
    * synthesized cloudformation template).
@@ -26,16 +16,18 @@ export abstract class StackElement extends Construct implements IDependable {
    *
    * @returns The construct as a stack element or undefined if it is not a stack element.
    */
-  public static _asStackElement(construct: IConstruct): StackElement | undefined {
-    if ('logicalId' in construct && 'toCloudFormation' in construct) {
-      return construct as StackElement;
-    } else {
-      return undefined;
-    }
+  public static isStackElement(construct: IConstruct): construct is StackElement {
+    return ('logicalId' in construct && 'toCloudFormation' in construct);
   }
 
   /**
-   * The logical ID for this CloudFormation stack element
+   * The logical ID for this CloudFormation stack element. The logical ID of the element
+   * is calculated from the path of the resource node in the construct tree.
+   *
+   * To override this value, use `overrideLogicalId(newLogicalId)`.
+   *
+   * @returns the logical ID as a stringified token. This value will only get
+   * resolved during synthesis.
    */
   public readonly logicalId: string;
 
@@ -43,6 +35,8 @@ export abstract class StackElement extends Construct implements IDependable {
    * The stack this Construct has been made a part of
    */
   protected stack: Stack;
+
+  private _logicalId: string;
 
   /**
    * Creates an entity and binds it to a tree.
@@ -61,7 +55,16 @@ export abstract class StackElement extends Construct implements IDependable {
 
     this.node.addMetadata(LOGICAL_ID_MD, new (require("../core/tokens/token").Token)(() => this.logicalId), this.constructor);
 
-    this.logicalId = this.stack.logicalIds.getLogicalId(this);
+    this._logicalId = this.stack.logicalIds.getLogicalId(this);
+    this.logicalId = new Token(() => this._logicalId).toString();
+  }
+
+  /**
+   * Overrides the auto-generated logical ID with a specific ID.
+   * @param newLogicalId The new logical ID to use for this stack element.
+   */
+  public overrideLogicalId(newLogicalId: string) {
+    this._logicalId = newLogicalId;
   }
 
   /**
@@ -91,10 +94,6 @@ export abstract class StackElement extends Construct implements IDependable {
    */
   public get stackPath(): string {
     return this.node.ancestors(this.stack).map(c => c.node.id).join(PATH_SEP);
-  }
-
-  public get dependencyElements(): IDependable[] {
-    return [ this ];
   }
 
   /**
@@ -142,12 +141,9 @@ import { CfnReference } from "./cfn-tokens";
  */
 export class Ref extends CfnReference {
   constructor(element: StackElement) {
-    super({ Ref: element.logicalId }, `${element.logicalId}.Ref`, element);
+    super({ Ref: element.logicalId }, 'Ref', element);
   }
 }
-
-import { findTokens } from "../core/tokens/resolve";
-import { Stack } from "./stack";
 
 /**
  * Base class for referenceable CloudFormation constructs which are not Resources
@@ -167,3 +163,6 @@ export abstract class Referenceable extends StackElement {
     return new Ref(this).toString();
   }
 }
+
+import { findTokens } from "../core/tokens/resolve";
+import { Stack } from "./stack";

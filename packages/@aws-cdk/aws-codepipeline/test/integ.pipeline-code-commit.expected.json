@@ -225,8 +225,8 @@
         ]
       },
       "DependsOn": [
-        "PipelineRoleD68726F7",
-        "PipelineRoleDefaultPolicyC7A05455"
+        "PipelineRoleDefaultPolicyC7A05455",
+        "PipelineRoleD68726F7"
       ]
     },
     "PipelineEventsRole46BEEA7C": {

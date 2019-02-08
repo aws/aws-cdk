@@ -29,7 +29,7 @@ const uniqueTests = {
     const r = new Resource(stack, 'MyAwesomeness', { type: 'Resource' });
 
     // THEN
-    test.equal(r.logicalId, 'MyAwesomeness');
+    test.equal(stack.node.resolve(r.logicalId), 'MyAwesomeness');
 
     test.done();
   },
@@ -198,18 +198,19 @@ const allSchemesTests: {[name: string]: (scheme: IAddressingScheme, test: Test) 
     const ref = new Ref(c1);
 
     const c2 = new Resource(stack, 'Construct2', { type: 'R2', properties: { ReferenceToR1: ref } });
-    c2.addDependency(c1);
+    c2.node.addDependency(c1);
 
     // THEN
+    stack.node.prepareTree();
     test.deepEqual(stack.toCloudFormation(), {
       Resources: {
-        [c1.logicalId]: {
+        NewName: {
           Type: 'R1' },
-        [c2.logicalId]: {
+        Construct2: {
           Type: 'R2',
           Properties: {
-            ReferenceToR1: { Ref: c1.logicalId } },
-          DependsOn: [ c1.logicalId ] } } });
+            ReferenceToR1: { Ref: 'NewName' } },
+          DependsOn: [ 'NewName' ] } } });
 
     test.done();
   },

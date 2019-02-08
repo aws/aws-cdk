@@ -1,10 +1,12 @@
 {
     "check-coverage": true,
     "all": true,
-    "lines": 80,
+    "statements": 80,
+    "lines": 0,
     "branches": 50,
     "reporter": [
         "html",
+        "lcov",
         "text-summary"
     ],
     "cache": true,

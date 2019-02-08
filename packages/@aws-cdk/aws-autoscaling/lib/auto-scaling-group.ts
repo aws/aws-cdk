@@ -126,11 +126,6 @@ export interface CommonAutoScalingGroupProps {
   resourceSignalTimeoutSec?: number;
 
   /**
-   * The AWS resource tags to associate with the ASG.
-   */
-  tags?: cdk.Tags;
-
-  /**
    * Default scaling cooldown for this AutoScalingGroup
    *
    * @default 300 (5 minutes)
@@ -177,7 +172,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
  *
  * The ASG spans all availability zones.
  */
-export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup, cdk.ITaggable, elb.ILoadBalancerTarget, ec2.IConnectable,
+export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup, elb.ILoadBalancerTarget, ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
   /**
    * The type of OS instances of this fleet are running.
@@ -193,11 +188,6 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
    * The IAM role assumed by instances of this fleet.
    */
   public readonly role: iam.Role;
-
-  /**
-   * Manage tags for this construct and children
-   */
-  public readonly tags: cdk.TagManager;
 
   /**
    * Name of the AutoScalingGroup
@@ -225,8 +215,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.tags = new TagManager(this, {initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.node.path, { overwrite: false });
+    this.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
     this.role = new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
@@ -251,7 +240,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       associatePublicIpAddress: props.associatePublicIpAddress,
     });
 
-    launchConfig.addDependency(this.role);
+    launchConfig.node.addDependency(this.role);
 
     const desiredCapacity =
         (props.desiredCapacity !== undefined ? props.desiredCapacity :
@@ -272,7 +261,6 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined),
       targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined),
-      tags: this.tags,
     };
 
     if (props.notificationsTopic) {
@@ -408,9 +396,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       ...props
     });
 
-    // Target tracking policy can only be created after the load balancer has been
-    // attached to the targetgroup (because we need its ARN).
-    policy.addDependency(this.albTargetGroup.loadBalancerDependency());
+    policy.node.addDependency(this.albTargetGroup.loadBalancerAttached);
     return policy;
   }
 
@@ -631,16 +617,6 @@ function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): cdk
       [ScalingProcess.HealthCheck, ScalingProcess.ReplaceUnhealthy, ScalingProcess.AZRebalance,
         ScalingProcess.AlarmNotification, ScalingProcess.ScheduledActions],
   };
-}
-
-class TagManager extends cdk.TagManager {
-  protected tagFormatResolve(tagGroups: cdk.TagGroups): any {
-    const tags = {...tagGroups.nonStickyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
-    return Object.keys(tags).map( (key) => {
-      const propagateAtLaunch = !!tagGroups.propagateTags[key] || !!tagGroups.ancestorTags[key];
-      return {key, value: tags[key], propagateAtLaunch};
-    });
-  }
 }
 
 /**

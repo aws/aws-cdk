@@ -6,13 +6,6 @@
     "packages/@aws-cdk/*",
     "tools/*"
   ],
-  "command": {
-    "bootstrap": {
-      "npmClientArgs": [
-        "--no-package-lock"
-      ]
-    }
-  },
   "rejectCycles": "true",
-  "version": "0.22.0"
+  "version": "0.24.1"
 }
