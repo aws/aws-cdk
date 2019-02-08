@@ -1,5 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
+import { Service, ServiceProps } from './service';
 import { CfnHttpNamespace, CfnPrivateDnsNamespace, CfnPublicDnsNamespace } from './servicediscovery.generated';
 
 /**
@@ -25,6 +26,11 @@ export interface INamespace extends cdk.IConstruct {
    * Whether the namespace is an HTTP only namespace.
    */
   readonly httpOnly: boolean;
+
+  /**
+   * Creates a new service in this namespace.
+   */
+  createService(id: string, props: ServiceProps): Service;
 
   /**
    * Exports this namespace from the stack.
@@ -90,6 +96,16 @@ export abstract class NamespaceBase extends cdk.Construct implements INamespace 
   public abstract readonly namespaceName: string;
   public abstract readonly httpOnly: boolean;
   public abstract export(): NamespaceImportProps;
+
+  /**
+   * Creates a new service in this namespace
+   */
+  public createService(id: string, props: ServiceProps): Service {
+    return new Service(this, id, {
+      namespace: this,
+      ...props,
+    });
+  }
 }
 
 export class Namespace extends NamespaceBase {

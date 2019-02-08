@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { Instance, InstanceProps } from './instance';
 import { INamespace } from './namespace';
 import { CfnService } from './servicediscovery.generated';
 
@@ -151,6 +152,16 @@ export class Service extends cdk.Construct {
     this.serviceName = props.name;
     this.dnsRecordType = props.dnsRecord && props.dnsRecord.type;
     this.namespace = props.namespace;
+  }
+
+  /**
+   * Registers a new instance in this service.
+   */
+  public registerInstance(id: string, props: InstanceProps): Instance {
+    return new Instance(this, id, {
+      service: this,
+      ...props
+    });
   }
 }
 
