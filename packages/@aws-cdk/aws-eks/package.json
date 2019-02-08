@@ -56,14 +56,21 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.24.1",
     "cdk-build-tools": "^0.24.1",
+    "cdk-integ-tools": "^0.24.1",
     "cfn2ts": "^0.24.1",
     "pkglint": "^0.24.1"
   },
   "dependencies": {
+    "@aws-cdk/aws-ec2": "^0.24.1",
+    "@aws-cdk/aws-iam": "^0.24.1",
+    "@aws-cdk/aws-autoscaling": "^0.24.1",
     "@aws-cdk/cdk": "^0.24.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-ec2": "^0.24.1",
+    "@aws-cdk/aws-iam": "^0.24.1",
+    "@aws-cdk/aws-autoscaling": "^0.24.1",
     "@aws-cdk/cdk": "^0.24.1"
   },
   "engines": {
