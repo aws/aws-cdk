@@ -21,8 +21,11 @@ export class Rendering {
   }
 
   public assemblyOverview(assembly: jsiiReflect.Assembly, id: string): Document {
-    const markdown = assembly.readme && assembly.readme.markdown || 'Oops!';
-    return new Document(id, markdown, { hide_title: true, sidebar_label: 'Overview' });
+    const preamble = [
+      this.javadocLinkAssembly(assembly),
+      ''].join('\n');
+    const readmeMarkdown = assembly.readme && assembly.readme.markdown || 'Oops!';
+    return new Document(id, preamble + '\n' + readmeMarkdown, { hide_title: true, sidebar_label: 'Overview' });
   }
 
   public resourcePage(resource: jsiiReflect.ClassType, id: string): Document {
@@ -30,7 +33,7 @@ export class Rendering {
     const properties = props.getProperties(true).sort(_propertyComparator);
 
     const markdown = [
-      this.javadocLink(resource),
+      this.javadocLinkType(resource),
       '',
       resource.docs.docs && resource.docs.docs.comment || '',
       '## Properties',
@@ -70,13 +73,23 @@ export class Rendering {
     return new Document(id, 'Lorem Ipsum...', { title: 'Service Reference', sidebar_label: 'Overview' });
   }
 
-  protected javadocLink(type: jsiiReflect.Type) {
+  private javadocLinkAssembly(assembly: jsiiReflect.Assembly) {
+    if (!this.opts.javadocPath) { return ''; }
+    const javaName = javaPackageName(assembly);
+    if (!javaName) { return ''; }
+
+    return this.javadocLink(javaName.replace(/\./g, '/') + '/package-summary.html');
+  }
+
+  private javadocLinkType(type: jsiiReflect.Type) {
     if (!this.opts.javadocPath) { return ''; }
     const javaName = javaTypeName(type);
     if (!javaName) { return ''; }
+    return this.javadocLink(javaName.replace(/\./g, '/') + '.html');
+  }
 
-    // tslint:disable-next-line:max-line-length
-    return `<a href="${this.opts.javadocPath}/index.html?${javaName.replace(/\./g, '/')}.html"><img src="/img/java32.png" class="lang-icon"> JavaDoc</a>`;
+  private javadocLink(linkTarget: string) {
+    return `<a href="${this.opts.javadocPath}/index.html?${linkTarget}"><img src="/img/java32.png" class="lang-icon"> JavaDoc</a>`;
   }
 }
 
@@ -115,8 +128,17 @@ function _propertyComparator(l: jsiiReflect.Property, r: jsiiReflect.Property): 
  * Return the Java name for this type
  */
 function javaTypeName(type: jsiiReflect.Type): string | undefined {
-  const java = type.assembly.targets && type.assembly.targets.java;
+  const pkg = javaPackageName(type.assembly);
+  if (!pkg) { return undefined; }
+  return pkg + '.' + type.name;
+}
+
+/**
+ * Return the Java name for this type
+ */
+function javaPackageName(assembly: jsiiReflect.Assembly): string | undefined {
+  const java = assembly.targets && assembly.targets.java;
   if (!java || !java.package) { return undefined; }
 
-  return java.package + '.' + type.name;
+  return java.package;
 }
