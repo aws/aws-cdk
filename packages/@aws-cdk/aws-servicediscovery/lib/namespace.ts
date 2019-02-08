@@ -164,7 +164,7 @@ export class Namespace extends NamespaceBase {
       namespaceId: new cdk.Output(this, 'NamespaceId', { value: this.namespaceId }).makeImportValue().toString(),
       namespaceArn: new cdk.Output(this, 'NamespaceArn', { value: this.namespaceArn }).makeImportValue().toString(),
       namespaceName: new cdk.Output(this, 'NamespaceName', { value: this.namespaceName }).makeImportValue().toString(),
-      httpOnly: new cdk.Output(this, 'NamespaceName', { value: this.httpOnly }).makeImportValue().toString()
+      httpOnly: new cdk.Output(this, 'NamespaceHttpOnly', { value: this.httpOnly }).makeImportValue().toString()
     };
   }
 }
