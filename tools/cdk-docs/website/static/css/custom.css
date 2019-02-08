@@ -28,3 +28,9 @@
 .post article h2:first-child, .post article h1:first-child {
     margin-top: 0px !important;
 }
+
+.lang-icon {
+    display: inline;
+    height: 20px;
+    vertical-align: middle;
+}

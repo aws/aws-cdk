@@ -4,60 +4,80 @@ import { Document } from './docusaurus';
 const BADGE_OPTIONAL = '![Optional](https://img.shields.io/badge/-Optional-inactive.svg)';
 const BADGE_REQUIRED = '![Required](https://img.shields.io/badge/-Required-important.svg)';
 
-/**
- * Return the dislay name for a service package
- */
-export function packageDisplayName(serviceName: string) {
-  serviceName = serviceName.replace(/^aws-/, '');
-  return serviceName.substr(0, 1).toUpperCase() + serviceName.substr(1);
+export interface RenderingOptions {
+  javadocPath?: string;
 }
 
-export function assemblyOverview(assembly: jsiiReflect.Assembly, id: string): Document {
-  const markdown = assembly.readme && assembly.readme.markdown || 'Oops!';
-  return new Document(id, markdown, { hide_title: true, sidebar_label: 'Overview' });
-}
-
-export function resourcePage(resource: jsiiReflect.ClassType, id: string): Document {
-  const props = resource.initializer!.parameters[2].type.fqn as jsiiReflect.InterfaceType;
-  const properties = props.getProperties(true).sort(_propertyComparator);
-
-  const markdown = [
-    resource.docs.docs && resource.docs.docs.comment || '',
-    '## Properties',
-    'Name | Required | Type',
-    '-----|:--------:|-----',
-    ...properties.map(_propertiesTableLine),
-    ...properties.map(_propertyDetail),
-  ].join('\n');
-
-  return new Document(id, markdown, { title: resource.name });
-
-  function _propertiesTableLine(property: jsiiReflect.Property) {
-    const badge = property.type.optional ? BADGE_OPTIONAL : BADGE_REQUIRED;
-    return [
-      `\`${property.name}\``,
-      badge,
-      _formatType(property.type, resource.assembly),
-    ].join('|');
+export class Rendering {
+  constructor(private readonly opts: RenderingOptions) {
   }
 
-  function _propertyDetail(property: jsiiReflect.Property) {
-    return [
-      '\n---',
-      `### \`${property.name}${property.type.optional ? '?' : ''}\``,
-      property.docs.docs.comment && `${property.docs.docs.comment.split('\n').map(l => `> ${l}`).join('\n')}\n`,
-      `*${property.type.optional ? 'Optional' : 'Required'}* ${_formatType(property.type, resource.assembly)}`,
-      property.docs.docs.default && `, *default:* ${property.docs.docs.default}`,
+  /**
+   * Return the dislay name for a service package
+   */
+  public packageDisplayName(serviceName: string) {
+    serviceName = serviceName.replace(/^aws-/, '');
+    return serviceName.substr(0, 1).toUpperCase() + serviceName.substr(1);
+  }
+
+  public assemblyOverview(assembly: jsiiReflect.Assembly, id: string): Document {
+    const markdown = assembly.readme && assembly.readme.markdown || 'Oops!';
+    return new Document(id, markdown, { hide_title: true, sidebar_label: 'Overview' });
+  }
+
+  public resourcePage(resource: jsiiReflect.ClassType, id: string): Document {
+    const props = resource.initializer!.parameters[2].type.fqn as jsiiReflect.InterfaceType;
+    const properties = props.getProperties(true).sort(_propertyComparator);
+
+    const markdown = [
+      this.javadocLink(resource),
+      '',
+      resource.docs.docs && resource.docs.docs.comment || '',
+      '## Properties',
+      'Name | Required | Type',
+      '-----|:--------:|-----',
+      ...properties.map(_propertiesTableLine),
+      ...properties.map(_propertyDetail),
     ].join('\n');
+
+    return new Document(id, markdown, { title: resource.name });
+
+    function _propertiesTableLine(property: jsiiReflect.Property) {
+      const badge = property.type.optional ? BADGE_OPTIONAL : BADGE_REQUIRED;
+      return [
+        `\`${property.name}\``,
+        badge,
+        _formatType(property.type, resource.assembly),
+      ].join('|');
+    }
+
+    function _propertyDetail(property: jsiiReflect.Property) {
+      return [
+        '\n---',
+        `### \`${property.name}${property.type.optional ? '?' : ''}\``,
+        property.docs.docs.comment && `${property.docs.docs.comment.split('\n').map(l => `> ${l}`).join('\n')}\n`,
+        `*${property.type.optional ? 'Optional' : 'Required'}* ${_formatType(property.type, resource.assembly)}`,
+        property.docs.docs.default && `, *default:* ${property.docs.docs.default}`,
+      ].join('\n');
+    }
   }
-}
 
-export function frameworkReferencePage(id: string): Document {
-  return new Document(id, 'Lorem Ipsum...', { title: 'Framework Reference', sidebar_label: 'Overview' });
-}
+  public frameworkReferencePage(id: string): Document {
+    return new Document(id, 'Lorem Ipsum...', { title: 'Framework Reference', sidebar_label: 'Overview' });
+  }
 
-export function serviceReferencePage(id: string): Document {
-  return new Document(id, 'Lorem Ipsum...', { title: 'Service Reference', sidebar_label: 'Overview' });
+  public serviceReferencePage(id: string): Document {
+    return new Document(id, 'Lorem Ipsum...', { title: 'Service Reference', sidebar_label: 'Overview' });
+  }
+
+  protected javadocLink(type: jsiiReflect.Type) {
+    if (!this.opts.javadocPath) { return ''; }
+    const javaName = javaTypeName(type);
+    if (!javaName) { return ''; }
+
+    // tslint:disable-next-line:max-line-length
+    return `<a href="${this.opts.javadocPath}/index.html?${javaName.replace(/\./g, '/')}.html"><img src="/img/java32.png" class="lang-icon"> JavaDoc</a>`;
+  }
 }
 
 function _formatType(reference: jsiiReflect.TypeReference, relativeTo: jsiiReflect.Assembly, quote = true): string {
@@ -89,4 +109,14 @@ function _propertyComparator(l: jsiiReflect.Property, r: jsiiReflect.Property): 
   } else {
     return -1;
   }
+}
+
+/**
+ * Return the Java name for this type
+ */
+function javaTypeName(type: jsiiReflect.Type): string | undefined {
+  const java = type.assembly.targets && type.assembly.targets.java;
+  if (!java || !java.package) { return undefined; }
+
+  return java.package + '.' + type.name;
 }

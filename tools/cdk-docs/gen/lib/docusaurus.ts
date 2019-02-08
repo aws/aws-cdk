@@ -3,6 +3,8 @@ import path = require('path');
 import util = require('util');
 import YAML = require('yaml');
 
+const writeFile = util.promisify(fs.writeFile);
+
 /**
  * Data model:
  *
@@ -30,7 +32,7 @@ export class Docs {
   public async write() {
     await this.writeDocs();
 
-    await util.promisify(fs.writeFile)(
+    await writeFile(
         path.join(this.websitePath, 'sidebars.json'),
         JSON.stringify(this.renderSidebars(), undefined, 2),
         { encoding: 'utf-8' });
@@ -38,7 +40,7 @@ export class Docs {
 
   private async writeDocs() {
     for (const sidebar of this.sidebars.values()) {
-      sidebar.writeDocs(this.docPath);
+      await sidebar.writeDocs(this.docPath);
     }
   }
 
@@ -77,11 +79,12 @@ export class Sidebar {
     for (const cat of this.categories) {
       ret[cat.caption] = cat.renderSidebarEntry(true);
     }
+    return ret;
   }
 
-  public writeDocs(docPath: string) {
+  public async writeDocs(docPath: string) {
     for (const cat of this.categories) {
-      cat.writeDocs(docPath);
+      await cat.writeDocs(docPath);
     }
   }
 }
@@ -126,7 +129,7 @@ export class Category {
   }
 
   public renderSidebarEntry(topLevel?: boolean) {
-    const ids = this.elements.map(e => e.renderSidebarEntry());
+    const ids = stableSort(this.elements, makeComparator(docsFirst)).filter(e => !e.isEmpty).map(e => e.renderSidebarEntry());
 
     if (topLevel) {
       return ids;
@@ -139,9 +142,9 @@ export class Category {
     }
   }
 
-  public writeDocs(docPath: string) {
+  public async writeDocs(docPath: string) {
     for (const el of this.elements) {
-      el.writeDocs(docPath);
+      await el.writeDocs(docPath);
     }
   }
 }
@@ -157,8 +160,12 @@ export class Document {
   constructor(public id: string, public contents: string, private readonly frontMatter: FrontMatter = {}) {
   }
 
-  public writeDocs(docPath: string) {
-    fs.writeFileSync(path.join(docPath, this.id + 'md'), this.renderContents(), { encoding: 'utf-8' });
+  public get isEmpty() {
+    return false;
+  }
+
+  public async writeDocs(docPath: string) {
+    await writeFile(path.join(docPath, this.id + '.md'), this.renderContents(), { encoding: 'utf-8' });
   }
 
   public renderContents() {
@@ -168,4 +175,34 @@ export class Document {
   public renderSidebarEntry() {
     return this.id;
   }
+}
+
+function docsFirst(x: Element) {
+  return isDocument(x) ? 0 : 1;
+}
+
+function makeComparator<T>(f: (x: T) => number) {
+  return (a: T, b: T) => {
+    return f(a) - f(b);
+  };
+}
+
+function stableSort<T>(xs: T[], cmp?: (a: T, b: T) => number) {
+  cmp = !!cmp ? cmp : (a, b) => {
+    if (a < b) { return -1; }
+    if (a > b) { return 1; }
+    return 0;
+  };
+  const stabilizedThis: Array<[T, number]> = xs.map((el, index) => [el, index] as [T, number]);
+  const stableCmp = (a, b) => {
+    const order = cmp!(a[0], b[0]);
+    if (order !== 0) { return order; }
+    return a[1] - b[1];
+  };
+
+  stabilizedThis.sort(stableCmp);
+  for (let i = 0; i < xs.length; i++) {
+    xs[i] = stabilizedThis[i][0];
+  }
+  return xs;
 }
