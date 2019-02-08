@@ -1178,6 +1178,52 @@ export = {
     test.done();
   },
 
+  'environment variables are prohibited in China'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'cn-north-1' }});
+
+    // WHEN
+    test.throws(() => {
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NodeJS,
+        environment: {
+          SOME: 'Variable'
+        }
+      });
+    }, /Environment variables are not supported/);
+
+    test.done();
+  },
+
+  'environment variables work in an unspecified region'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS,
+      environment: {
+        SOME: 'Variable'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          SOME: "Variable"
+        }
+      }
+    }));
+
+    test.done();
+
+  },
+
   'support reserved concurrent executions'(test: Test) {
     const stack = new cdk.Stack();
 
