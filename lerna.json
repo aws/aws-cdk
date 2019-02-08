@@ -1,7 +1,6 @@
 {
   "lerna": "2.5.1",
   "packages": [
-    "examples/*",
     "packages/*",
     "packages/@aws-cdk/*",
     "tools/*"

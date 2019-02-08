@@ -1,8 +1,0 @@
-# applet is loaded from the local ./test-applet.js file
-applets:
-  LoadBalancedFargateService:
-    type: @aws-cdk/aws-ecs:LoadBalancedFargateServiceApplet
-    properties:
-      image: 'amazon/amazon-ecs-sample'
-      cpu: "2048"
-      memoryMiB: "1024"
