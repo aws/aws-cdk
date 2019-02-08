@@ -2,11 +2,11 @@
 
 AWS CodeBuild is a fully managed continuous integration service that compiles
 source code, runs tests, and produces software packages that are ready to
-deploy. With AWS CodeBuild, you don’t need to provision, manage, and scale your own
-build servers. AWS CodeBuild scales continuously and processes multiple builds
+deploy. With CodeBuild, you don’t need to provision, manage, and scale your own
+build servers. CodeBuild scales continuously and processes multiple builds
 concurrently, so your builds are not left waiting in a queue. You can get
 started quickly by using prepackaged build environments, or you can create
-custom build environments that use your own build tools. With AWS CodeBuild, you are
+custom build environments that use your own build tools. With CodeBuild, you are
 charged by the minute for the compute resources you use.
 
 ## Installation
@@ -40,7 +40,7 @@ build project.
 
 The `buildSpec` option is required in this case.
 
-Here's an AWS CodeBuild project with no source which simply prints `Hello,
+Here's a CodeBuild project with no source which simply prints `Hello,
 CodeBuild!`:
 
 [Minimal Example](./test/integ.defaults.lit.ts)
@@ -61,7 +61,7 @@ new codebuild.Project(this, 'MyFirstCodeCommitProject', {
 
 ### `S3BucketSource`
 
-Create an AWS CodeBuild project with an S3 bucket as the source:
+Create a CodeBuild project with an S3 bucket as the source:
 
 ```ts
 import codebuild = require('@aws-cdk/aws-codebuild');
@@ -78,7 +78,7 @@ new codebuild.Project(this, 'MyProject', {
 
 ### `CodePipelineSource`
 
-Used as a special source type when an AWS CodeBuild project is used as an AWS
+Used as a special source type when a CodeBuild project is used as a
 CodePipeline action.
 
 ### `GitHubSource` and `GitHubEnterpriseSource`
@@ -115,7 +115,7 @@ can use the `environment` property to customize the build environment:
 
 ## Images
 
-The AWS CodeBuild library supports both Linux and Windows images via the
+The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
 
 You can either specify one of the predefined Windows/Linux images by using one
@@ -142,7 +142,7 @@ The following example shows how to define an image from an ECR repository:
 
 ## Events
 
-AWS CodeBuild projects can be used either as a source for events or be triggered
+CodeBuild projects can be used either as a source for events or be triggered
 by events via an event rule.
 
 ### Using Project as an event target
@@ -157,7 +157,7 @@ codeCommitRepository.onCommit('OnCommit', project);
 
 ### Using Project as an event source
 
-To define CloudWatch event rules for build projects, use one of the `onXxx`
+To define Amazon CloudWatch event rules for build projects, use one of the `onXxx`
 methods:
 
 ```ts
@@ -166,9 +166,9 @@ rule.addTarget(lambdaFunction);
 ```
 
 
-## Using an AWS CodeBuild Project as an AWS CodePipeline action
+## Using a CodeBuild Project as an AWS CodePipeline action
 
-Example of a Project used in CodePipeline, alongside AWS CodeCommit:
+Example of a Project used in CodePipeline, alongside CodeCommit:
 
 ```ts
 import codebuild = require('@aws-cdk/aws-codebuild');
@@ -235,7 +235,7 @@ project.addToPipelineAsTest(buildStage, 'IntegrationTest', {
 
 ## Secondary sources and artifacts
 
-AWS CodeBuild Projects can get their sources from multiple places, and produce
+CodeBuild Projects can get their sources from multiple places, and produce
 multiple outputs. For example:
 
 ```ts
@@ -303,7 +303,7 @@ const project = new codebuild.Project(this, 'MyProject', {
 When you want to have multiple inputs and/or outputs for a Project used in a
 Pipeline, instead of using the `secondarySources` and `secondaryArtifacts`
 properties, you need to use the `additionalInputArtifacts` and
-`additionalOutputArtifactNames` properties of the AWS CodeBuild CodePipeline
+`additionalOutputArtifactNames` properties of the CodeBuild CodePipeline
 Actions. Example:
 
 ```ts
@@ -326,7 +326,7 @@ const buildAction = project.addToPipeline(buildStage, 'Build', {
 });
 ```
 
-**Note**: when an AWS CodeBuild Action in a Pipeline has more than one output, it
+**Note**: when a CodeBuild Action in a Pipeline has more than one output, it
 only uses the `secondary-artifacts` field of the buildspec, never the
 primary output specification directly under `artifacts`. Because of that, it
 pays to name even your primary output artifact on the Pipeline, like we did
