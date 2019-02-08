@@ -106,10 +106,27 @@ export = {
 
     test.done();
   },
+
+  'exercise export/import'(test: Test) {
+    // GIVEN
+    const [stack1, vpc] = testFixture();
+    const stack2 = new cdk.Stack();
+    const cluster = new eks.Cluster(stack1, 'Cluster', { vpc });
+
+    // WHEN
+    const imported = eks.Cluster.import(stack2, 'Imported', cluster.export());
+
+    // THEN
+    test.deepEqual(stack2.node.resolve(imported.clusterArn), {
+      'Fn::ImportValue': 'Stack:ClusterClusterArn00DCA0E0'
+    });
+
+    test.done();
+  },
 };
 
 function testFixture(): [cdk.Stack, ec2.VpcNetwork] {
-  const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' }});
+  const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-east-1' }});
   const vpc = new ec2.VpcNetwork(stack, 'VPC');
 
   return [stack, vpc];

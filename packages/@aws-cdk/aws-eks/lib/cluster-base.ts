@@ -54,7 +54,7 @@ export abstract class ClusterBase extends cdk.Construct implements ICluster {
   public export(): ClusterImportProps {
     return {
       vpc: this.vpc.export(),
-      clusterName: this.makeOutput('ClusterName', this.clusterName),
+      clusterName: this.makeOutput('ClusterNameExport', this.clusterName),
       clusterArn: this.makeOutput('ClusterArn', this.clusterArn),
       clusterEndpoint: this.makeOutput('ClusterEndpoint', this.clusterEndpoint),
       clusterCertificateAuthorityData: this.makeOutput('ClusterCAData', this.clusterCertificateAuthorityData),
