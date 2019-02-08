@@ -84,7 +84,7 @@ export = {
             "DnsConfig": {
               "DnsRecords": [
                 {
-                  "TTL": "300",
+                  "TTL": "60",
                   "Type": "A"
                 }
               ],
@@ -106,4 +106,87 @@ export = {
 
     test.done();
   },
+
+  'Throws when specifying routingPolicy for an HTTP only namespace'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'name',
+      httpOnly: true
+    });
+
+    test.throws(() => namespace.createService('MyService', {
+      routingPolicy: servicediscovery.RountingPolicy.Multivalue
+    }), /`routingPolicy`/);
+
+    test.done();
+  },
+
+  'Throws when specifying dnsRecord for an HTTP only namespace'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'name',
+      httpOnly: true
+    });
+
+    test.throws(() => namespace.createService('MyService', {
+      dnsRecord: {
+        type: servicediscovery.RecordType.A
+      }
+    }), /`dnsRecord`/);
+
+    test.done();
+  },
+
+  'Throws when specifying health check type for a DNS namespace'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'name'
+    });
+
+    test.throws(() => namespace.createService('MyService', {
+      healthCheckConfig: {
+        failureThreshold: 1,
+        type: servicediscovery.HealthCheckType.HTTP
+      }
+    }), /`type`/);
+
+    test.done();
+  },
+
+  'Throws when specifying health check resourcePath for a DNS namespace'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'name'
+    });
+
+    test.throws(() => namespace.createService('MyService', {
+      healthCheckConfig: {
+        failureThreshold: 1,
+        resourcePath: '/check'
+      }
+    }), /`resourcePath`/);
+
+    test.done();
+  },
+
+  'Throws when using CNAME and Multivalue'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'name'
+    });
+
+    test.throws(() => namespace.createService('MyService', {
+      dnsRecord: {
+        type: servicediscovery.RecordType.CNAME
+      },
+      routingPolicy: servicediscovery.RountingPolicy.Multivalue,
+    }), /`CNAME`.+`Multivalue`/);
+
+    test.done();
+  }
 };

@@ -22,8 +22,10 @@ export interface DnsRecord {
 
   /**
    * The time to live for the record.
+   *
+   * @default 60
    */
-  ttl: string;
+  ttl?: string;
 }
 
 export enum RountingPolicy {
@@ -82,7 +84,7 @@ export interface BaseServiceProps {
    * The DNS records to create when an instance is registered. Possible
    * values for type are: A, A and AAAA (A_AAAA), SRV or CNAME.
    *
-   * @default one A record with TTL of 300
+   * @default one A record with TTL of 60
    */
   dnsRecord?: DnsRecord;
 
@@ -157,7 +159,7 @@ export class Service extends cdk.Construct {
       dnsConfig: props.namespace.httpOnly
         ? undefined
         : {
-            dnsRecords: props.dnsRecord === undefined ? [{ type: RecordType.A, ttl: '300' }] : _getDnsRecords(props.dnsRecord),
+            dnsRecords: props.dnsRecord === undefined ? [{ type: RecordType.A, ttl: '60' }] : _getDnsRecords(props.dnsRecord),
             namespaceId: props.namespace.namespaceId,
             routingPolicy: props.routingPolicy
           },
@@ -192,5 +194,5 @@ export class Service extends cdk.Construct {
 }
 
 function _getDnsRecords(dnsRecord: DnsRecord) {
-  return dnsRecord.type.split(',').map(type => ({ type, ttl: dnsRecord.ttl }));
+  return dnsRecord.type.split(',').map(type => ({ type, ttl: dnsRecord.ttl || '60' }));
 }

@@ -68,4 +68,144 @@ export = {
 
     test.done();
   },
+
+  'Throws when specifying both domainName for an HTTP namespace'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'http',
+      httpOnly: true
+    });
+
+    const service = namespace.createService('MyService');
+
+    test.throws(() => service.registerInstance('MyInstance', {
+      instanceId: 'id',
+      instanceAttributes: {
+        domainName: 'domain'
+      }
+    }), /`domainName`/);
+
+    test.done();
+  },
+
+  'Throws when omitting domainName for a service using CNAME'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'dns'
+    });
+
+    const service = namespace.createService('MyService', {
+      dnsRecord: {
+        type: servicediscovery.RecordType.CNAME,
+        ttl: '300'
+      }
+    });
+
+    test.throws(() => service.registerInstance('MyInstance', {
+      instanceId: 'id',
+      instanceAttributes: {
+        customAttributes: {
+          key: 'value'
+        }
+      }
+    }), /`domainName`.+`CNAME`/);
+
+    test.done();
+  },
+
+  'Throws when omitting port for a service using SRV'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'dns'
+    });
+
+    const service = namespace.createService('MyService', {
+      dnsRecord: {
+        type: servicediscovery.RecordType.SRV
+      }
+    });
+
+    test.throws(() => service.registerInstance('MyInstance', {
+      instanceId: 'id',
+      instanceAttributes: {
+        customAttributes: {
+          key: 'value'
+        }
+      }
+    }), /`port`.+`SRV`/);
+
+    test.done();
+  },
+
+  'Throws when omitting ipv4 and ipv6 for a service using SRV'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'dns'
+    });
+
+    const service = namespace.createService('MyService', {
+      dnsRecord: {
+        type: servicediscovery.RecordType.SRV
+      }
+    });
+
+    test.throws(() => service.registerInstance('MyInstance', {
+      instanceId: 'id',
+      instanceAttributes: {
+        port: '3306'
+      }
+    }), /`ipv4`.+`ipv6`.+`SRV`/);
+
+    test.done();
+  },
+
+  'Throws when omitting ipv4 for a service using A'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'dns'
+    });
+
+    const service = namespace.createService('MyService', {
+      dnsRecord: {
+        type: servicediscovery.RecordType.A
+      }
+    });
+
+    test.throws(() => service.registerInstance('MyInstance', {
+      instanceId: 'id',
+      instanceAttributes: {
+        port: '3306'
+      }
+    }), /`ipv4`.+`A`/);
+
+    test.done();
+  },
+
+  'Throws when omitting ipv6 for a service using AAAA'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'dns'
+    });
+
+    const service = namespace.createService('MyService', {
+      dnsRecord: {
+        type: servicediscovery.RecordType.AAAA,
+      }
+    });
+
+    test.throws(() => service.registerInstance('MyInstance', {
+      instanceId: 'id',
+      instanceAttributes: {
+        port: '3306'
+      }
+    }), /`ipv6`.+`AAAA`/);
+
+    test.done();
+  }
 };

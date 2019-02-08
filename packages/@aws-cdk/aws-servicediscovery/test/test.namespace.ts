@@ -142,5 +142,18 @@ export = {
     });
 
     test.done();
+  },
+
+  'Throws when specifying httpOnly and vpc'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+
+    test.throws(() => new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'name',
+      httpOnly: true,
+      vpc
+    }), /`httpOnly`.+`vpc`/);
+
+    test.done();
   }
 };
