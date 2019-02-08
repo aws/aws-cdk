@@ -11,7 +11,7 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addDefaultAutoScalingGroupCapacity({
+    cluster.addDefaultAutoScalingGroupCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
     });
 
