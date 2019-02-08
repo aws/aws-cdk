@@ -219,7 +219,7 @@ $ ./install.sh
 $ ./build.sh
 ```
 
-If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains] and now run:
+If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains) and now run:
 
 ```
 $ ./pack.sh
