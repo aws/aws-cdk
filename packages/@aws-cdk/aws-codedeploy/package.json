@@ -41,6 +41,9 @@
   "cdk-build": {
     "cloudformation": "AWS::CodeDeploy"
   },
+  "nyc": {
+    "statements": 79
+  },
   "keywords": [
     "aws",
     "cdk",

@@ -16,16 +16,14 @@ export interface BasicJenkinsActionProps extends cpapi.CommonActionProps {
 
   /**
    * The source to use as input for this build.
-   *
-   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact?: cpapi.Artifact;
+  inputArtifact: cpapi.Artifact;
 }
 
 /**
  * Common properties for creating {@link JenkinsBuildAction} -
  * either directly, through its constructor,
- * or through {@link JenkinsProvider#addToPipeline}.
+ * or through {@link IJenkinsProvider#toCodePipelineBuildAction}.
  */
 export interface BasicJenkinsBuildActionProps extends BasicJenkinsActionProps {
   /**
@@ -39,8 +37,7 @@ export interface BasicJenkinsBuildActionProps extends BasicJenkinsActionProps {
 /**
  * Construction properties of {@link JenkinsBuildAction}.
  */
-export interface JenkinsBuildActionProps extends BasicJenkinsBuildActionProps,
-    cpapi.CommonActionConstructProps {
+export interface JenkinsBuildActionProps extends BasicJenkinsBuildActionProps {
   /**
    * The Jenkins Provider for this Action.
    */
@@ -53,8 +50,11 @@ export interface JenkinsBuildActionProps extends BasicJenkinsBuildActionProps,
  * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/tutorials-four-stage-pipeline.html
  */
 export class JenkinsBuildAction extends cpapi.BuildAction {
-  constructor(scope: cdk.Construct, id: string, props: JenkinsBuildActionProps) {
-    super(scope, id, {
+  private readonly jenkinsProvider: IJenkinsProvider;
+
+  constructor(props: JenkinsBuildActionProps) {
+    super({
+      ...props,
       provider: props.jenkinsProvider.providerName,
       owner: 'Custom',
       artifactBounds: jenkinsArtifactsBounds,
@@ -62,17 +62,21 @@ export class JenkinsBuildAction extends cpapi.BuildAction {
       configuration: {
         ProjectName: props.projectName,
       },
-      ...props,
+      outputArtifactName: props.outputArtifactName || `Artifact_${props.actionName}_${props.jenkinsProvider.node.uniqueId}`,
     });
 
-    props.jenkinsProvider._registerBuildProvider();
+    this.jenkinsProvider = props.jenkinsProvider;
+  }
+
+  protected bind(_stage: cpapi.IStage, _scope: cdk.Construct): void {
+    this.jenkinsProvider._registerBuildProvider();
   }
 }
 
 /**
  * Common properties for creating {@link JenkinsTestAction} -
  * either directly, through its constructor,
- * or through {@link JenkinsProvider#addToPipelineAsTest}.
+ * or through {@link IJenkinsProvider#toCodePipelineTestAction}.
  */
 export interface BasicJenkinsTestActionProps extends BasicJenkinsActionProps {
   /**
@@ -89,8 +93,7 @@ export interface BasicJenkinsTestActionProps extends BasicJenkinsActionProps {
 /**
  * Construction properties of {@link JenkinsTestAction}.
  */
-export interface JenkinsTestActionProps extends BasicJenkinsTestActionProps,
-    cpapi.CommonActionConstructProps {
+export interface JenkinsTestActionProps extends BasicJenkinsTestActionProps {
   /**
    * The Jenkins Provider for this Action.
    */
@@ -103,8 +106,11 @@ export interface JenkinsTestActionProps extends BasicJenkinsTestActionProps,
  * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/tutorials-four-stage-pipeline.html
  */
 export class JenkinsTestAction extends cpapi.TestAction {
-  constructor(scope: cdk.Construct, id: string, props: JenkinsTestActionProps) {
-    super(scope, id, {
+  private readonly jenkinsProvider: IJenkinsProvider;
+
+  constructor(props: JenkinsTestActionProps) {
+    super({
+      ...props,
       provider: props.jenkinsProvider.providerName,
       owner: 'Custom',
       artifactBounds: jenkinsArtifactsBounds,
@@ -112,9 +118,12 @@ export class JenkinsTestAction extends cpapi.TestAction {
       configuration: {
         ProjectName: props.projectName,
       },
-      ...props,
     });
 
-    props.jenkinsProvider._registerTestProvider();
+    this.jenkinsProvider = props.jenkinsProvider;
+  }
+
+  protected bind(_stage: cpapi.IStage, _scope: cdk.Construct): void {
+    this.jenkinsProvider._registerTestProvider();
   }
 }

@@ -31,20 +31,23 @@ To use a CodeCommit Repository in a CodePipeline:
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
-    pipelineName: 'MyPipeline',
+  pipelineName: 'MyPipeline',
 });
-const sourceStage = pipeline.addStage('Source');
-const sourceAction = new codecommit.PipelineSourceAction(this, 'CodeCommit', {
-    stage: sourceStage,
-    repository: repo,
+const sourceAction = new codecommit.PipelineSourceAction({
+  actionName: 'CodeCommit',
+  repository: repo,
+});
+pipeline.addStage({
+  name: 'Source',
+  actions: [sourceAction],
 });
 ```
 
-You can also add the Repository to the Pipeline directly:
+You can also create the action from the Repository directly:
 
 ```ts
 // equivalent to the code above:
-const sourceAction = repo.addToPipeline(sourceStage, 'CodeCommit');
+const sourceAction = repo.toCodePipelineSourceAction({ actionName: 'CodeCommit' });
 ```
 
 ## Events

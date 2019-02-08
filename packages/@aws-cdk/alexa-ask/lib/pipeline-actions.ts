@@ -4,9 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 /**
  * Construction properties of the {@link AlexaSkillDeployAction Alexa deploy Action}.
  */
-export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionProps,
-    codepipeline.CommonActionConstructProps {
-
+export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionProps {
   /**
    * The client id of the developer console token
    */
@@ -30,7 +28,7 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
   /**
    * The source artifact containing the voice model and skill manifest
    */
-  inputArtifact?: codepipeline.Artifact;
+  inputArtifact: codepipeline.Artifact;
 
   /**
    * An optional artifact containing overrides for the skill manifest
@@ -42,8 +40,8 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
  * Deploys the skill to Alexa
  */
 export class AlexaSkillDeployAction extends codepipeline.DeployAction {
-  constructor(scope: cdk.Construct, id: string, props: AlexaSkillDeployActionProps) {
-    super(scope, id, {
+  constructor(props: AlexaSkillDeployActionProps) {
+    super({
       ...props,
       artifactBounds: {
         minInputs: 1,
@@ -60,8 +58,13 @@ export class AlexaSkillDeployAction extends codepipeline.DeployAction {
         SkillId: props.skillId,
       },
     });
+
     if (props.parameterOverridesArtifact) {
       this.addInputArtifact(props.parameterOverridesArtifact);
     }
+  }
+
+  protected bind(_stage: codepipeline.IStage, _scope: cdk.Construct): void {
+    // nothing to do
   }
 }

@@ -1,5 +1,4 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
@@ -49,15 +48,12 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   addPermission(id: string, permission: Permission): void;
 
   /**
-   * Convenience method for creating a new {@link PipelineInvokeAction},
-   * and adding it to the given Stage.
+   * Convenience method for creating a new {@link PipelineInvokeAction}.
    *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
+   * @param props the construction properties of the new Action
    * @returns the newly created {@link PipelineInvokeAction}
    */
-  addToPipeline(stage: codepipeline.IStage, name: string, props?: CommonPipelineInvokeActionProps): PipelineInvokeAction;
+  toCodePipelineInvokeAction(props: CommonPipelineInvokeActionProps): PipelineInvokeAction;
 
   addToRolePolicy(statement: iam.PolicyStatement): void;
 
@@ -190,20 +186,10 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     return this.node.id;
   }
 
-  /**
-   * Convenience method for creating a new {@link PipelineInvokeAction},
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
-   * @returns the newly created {@link PipelineInvokeAction}
-   */
-  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineInvokeActionProps = {}): PipelineInvokeAction {
-    return new PipelineInvokeAction(this, name, {
-      stage,
-      lambda: this,
+  public toCodePipelineInvokeAction(props: CommonPipelineInvokeActionProps): PipelineInvokeAction {
+    return new PipelineInvokeAction({
       ...props,
+      lambda: this,
     });
   }
 

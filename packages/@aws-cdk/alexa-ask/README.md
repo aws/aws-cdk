@@ -10,13 +10,13 @@ You can deploy to Alexa using CodePipeline with the following DeployAction.
 
 ```ts
 // Read the secrets from ParameterStore
-const clientId = new cdk.SecretParameter(stack, 'AlexaClientId', {ssmParameter: '/Alexa/ClientId'});
-const clientSecret = new cdk.SecretParameter(stack, 'AlexaClientSecret', {ssmParameter: '/Alexa/ClientSecret'});
-const refreshToken = new cdk.SecretParameter(stack, 'AlexaRefreshToken', {ssmParameter: '/Alexa/RefreshToken'});
+const clientId = new cdk.SecretParameter(this, 'AlexaClientId', { ssmParameter: '/Alexa/ClientId' });
+const clientSecret = new cdk.SecretParameter(this, 'AlexaClientSecret', { ssmParameter: '/Alexa/ClientSecret' });
+const refreshToken = new cdk.SecretParameter(this, 'AlexaRefreshToken', { ssmParameter: '/Alexa/RefreshToken' });
 
 // Add deploy action
-new alexa.AlexaSkillDeployAction(stack, 'DeploySkill', {
-  stage: deployStage,
+new alexaAsk.AlexaSkillDeployAction({
+  actionName: 'DeploySkill',
   runOrder: 1,
   inputArtifact: sourceAction.outputArtifact,
   clientId: clientId.value,
@@ -26,12 +26,14 @@ new alexa.AlexaSkillDeployAction(stack, 'DeploySkill', {
 });
 ```
 
-If you need manifest overrides you can specify them as `overrideArtifact` in the action.
+If you need manifest overrides you can specify them as `parameterOverridesArtifact` in the action:
 
 ```ts
+const cloudformation = require('@aws-cdk/aws-cloudformation');
+
 // Deploy some CFN change set and store output
-const executeChangeSetAction = new PipelineExecuteChangeSetAction(this, 'ExecuteChangesTest', {
-  stage: deployStage,
+const executeChangeSetAction = new cloudformation.PipelineExecuteChangeSetAction({
+  actionName: 'ExecuteChangesTest',
   runOrder: 2,
   stackName,
   changeSetName,
@@ -40,8 +42,8 @@ const executeChangeSetAction = new PipelineExecuteChangeSetAction(this, 'Execute
 });
 
 // Provide CFN output as manifest overrides
-new AlexaSkillDeployAction(this, 'DeploySkill', {
-  stage: deployStage,
+new alexaAsk.AlexaSkillDeployAction({
+  actionName: 'DeploySkill',
   runOrder: 1,
   inputArtifact: sourceAction.outputArtifact,
   parameterOverridesArtifact: executeChangeSetAction.outputArtifact,

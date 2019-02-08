@@ -41,6 +41,10 @@
   "cdk-build": {
     "cloudformation": "AWS::ECR"
   },
+  "nyc": {
+    "lines": 78,
+    "statements": 79
+  },
   "keywords": [
     "aws",
     "cdk",

@@ -190,7 +190,7 @@
                 "Name": "build",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinecodecommitcodebuildMyBuildProjectbuild61B48DC4"
+                    "Name": "Artifact_build_awscdkcodepipelinecodecommitcodebuildMyBuildProject20018D4F"
                   }
                 ],
                 "RunOrder": 1

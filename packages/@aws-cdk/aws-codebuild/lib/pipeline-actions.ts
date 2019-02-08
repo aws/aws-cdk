@@ -23,16 +23,14 @@ export interface CommonCodeBuildActionProps {
 /**
  * Common properties for creating {@link PipelineBuildAction} -
  * either directly, through its constructor,
- * or through {@link IProject#addToPipeline}.
+ * or through {@link IProject#toCodePipelineBuildAction}.
  */
 export interface CommonPipelineBuildActionProps extends CommonCodeBuildActionProps,
     codepipeline.CommonActionProps {
   /**
    * The source to use as input for this build.
-   *
-   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact?: codepipeline.Artifact;
+  inputArtifact: codepipeline.Artifact;
 
   /**
    * The name of the build's output artifact.
@@ -45,8 +43,7 @@ export interface CommonPipelineBuildActionProps extends CommonCodeBuildActionPro
 /**
  * Construction properties of the {@link PipelineBuildAction CodeBuild build CodePipeline Action}.
  */
-export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps,
-    codepipeline.CommonActionConstructProps {
+export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps {
   /**
    * The build project
    */
@@ -57,20 +54,20 @@ export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps
  * CodePipeline build Action that uses AWS CodeBuild.
  */
 export class PipelineBuildAction extends codepipeline.BuildAction {
-  constructor(scope: cdk.Construct, id: string, props: PipelineBuildActionProps) {
-    // This happened when ProjectName was accidentally set to the project's ARN:
-    // https://qiita.com/ikeisuke/items/2fbc0b80b9bbd981b41f
+  private readonly props: PipelineBuildActionProps;
 
-    super(scope, id, {
+  constructor(props: PipelineBuildActionProps) {
+    super({
+      ...props,
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
+      outputArtifactName: props.outputArtifactName || `Artifact_${props.actionName}_${props.project.node.uniqueId}`,
       configuration: {
         ProjectName: props.project.projectName,
       },
-      ...props,
     });
 
-    setCodeBuildNeededPermissions(props.stage, props.project, true);
+    this.props = props;
 
     handleAdditionalInputOutputArtifacts(props, this,
       // pass functions to get around protected members
@@ -104,21 +101,23 @@ export class PipelineBuildAction extends codepipeline.BuildAction {
   public additionalOutputArtifact(name: string): codepipeline.Artifact {
     return findOutputArtifact(this.additionalOutputArtifacts(), name);
   }
+
+  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
+    setCodeBuildNeededPermissions(stage, this.props.project, true);
+  }
 }
 
 /**
  * Common properties for creating {@link PipelineTestAction} -
  * either directly, through its constructor,
- * or through {@link IProject#addToPipelineAsTest}.
+ * or through {@link IProject#toCodePipelineTestAction}.
  */
 export interface CommonPipelineTestActionProps extends CommonCodeBuildActionProps,
     codepipeline.CommonActionProps {
   /**
    * The source to use as input for this test.
-   *
-   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact?: codepipeline.Artifact;
+  inputArtifact: codepipeline.Artifact;
 
   /**
    * The optional name of the primary output artifact.
@@ -134,8 +133,7 @@ export interface CommonPipelineTestActionProps extends CommonCodeBuildActionProp
 /**
  * Construction properties of the {@link PipelineTestAction CodeBuild test CodePipeline Action}.
  */
-export interface PipelineTestActionProps extends CommonPipelineTestActionProps,
-    codepipeline.CommonActionConstructProps {
+export interface PipelineTestActionProps extends CommonPipelineTestActionProps {
   /**
    * The build Project.
    */
@@ -143,18 +141,19 @@ export interface PipelineTestActionProps extends CommonPipelineTestActionProps,
 }
 
 export class PipelineTestAction extends codepipeline.TestAction {
-  constructor(scope: cdk.Construct, id: string, props: PipelineTestActionProps) {
-    super(scope, id, {
+  private readonly props: PipelineTestActionProps;
+
+  constructor(props: PipelineTestActionProps) {
+    super({
+      ...props,
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
       configuration: {
         ProjectName: props.project.projectName,
       },
-      ...props,
     });
 
-    // the Action needs write permissions only if it's producing an output artifact
-    setCodeBuildNeededPermissions(props.stage, props.project, !!props.outputArtifactName);
+    this.props = props;
 
     handleAdditionalInputOutputArtifacts(props, this,
       // pass functions to get around protected members
@@ -190,6 +189,10 @@ export class PipelineTestAction extends codepipeline.TestAction {
   public additionalOutputArtifact(name: string): codepipeline.Artifact {
     return findOutputArtifact(this.additionalOutputArtifacts(), name);
   }
+
+  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
+    setCodeBuildNeededPermissions(stage, this.props.project, this._outputArtifacts.length > 0);
+  }
 }
 
 function setCodeBuildNeededPermissions(stage: codepipeline.IStage, project: IProject,
@@ -216,7 +219,7 @@ function handleAdditionalInputOutputArtifacts(props: CommonCodeBuildActionProps,
                                               addOutputArtifact: (_: string) => void) {
   if ((props.additionalInputArtifacts || []).length > 0) {
     // we have to set the primary source in the configuration
-    action.configuration.PrimarySource = action._inputArtifacts[0].name;
+    action.configuration.PrimarySource = action._inputArtifacts[0].artifactName;
     // add the additional artifacts
     for (const additionalInputArtifact of props.additionalInputArtifacts || []) {
       addInputArtifact(additionalInputArtifact);
@@ -229,7 +232,7 @@ function handleAdditionalInputOutputArtifacts(props: CommonCodeBuildActionProps,
 }
 
 function findOutputArtifact(artifacts: codepipeline.Artifact[], name: string): codepipeline.Artifact {
-  const ret = artifacts.find((artifact) => artifact.name === name);
+  const ret = artifacts.find((artifact) => artifact.artifactName === name);
   if (!ret) {
     throw new Error(`Could not find output artifact with name '${name}'`);
   }

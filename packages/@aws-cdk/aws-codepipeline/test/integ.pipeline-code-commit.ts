@@ -8,16 +8,24 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit');
 
 const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'my-repo' });
 
-const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-
-const sourceStage = pipeline.addStage('source');
-repo.addToPipeline(sourceStage, 'source', {
-  outputArtifactName: 'SourceArtifact',
-});
-
-const buildStage = new codepipeline.Stage(stack, 'build', { pipeline });
-new codepipeline.ManualApprovalAction(stack, 'manual', {
-  stage: buildStage,
+new codepipeline.Pipeline(stack, 'Pipeline', {
+  stages: [
+    {
+      name: 'source',
+      actions: [
+        repo.toCodePipelineSourceAction({
+          actionName: 'source',
+          outputArtifactName: 'SourceArtifact',
+        }),
+      ],
+    },
+    {
+      name: 'build',
+      actions: [
+        new codepipeline.ManualApprovalAction({ actionName: 'manual' }),
+      ],
+    },
+  ],
 });
 
 app.run();
