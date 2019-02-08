@@ -209,7 +209,16 @@ export = {
     // THEN: They have different paths
     test.throws(() => {
       new Construct(root, 'SameName');
-    });
+    }, /There is already a Construct with name 'SameName' in Root/);
+
+    // WHEN
+    const c0 = new Construct(root, 'c0');
+    new Construct(c0, 'SameName');
+
+    // THEN: They have different paths
+    test.throws(() => {
+      new Construct(c0, 'SameName');
+    }, /There is already a Construct with name 'SameName' in Construct \[c0\]/);
 
     test.done();
   },
