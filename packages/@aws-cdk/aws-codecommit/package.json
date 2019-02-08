@@ -44,7 +44,7 @@
   "nyc": {
     "statements": 30,
     "lines": 30,
-    "branches": 40
+    "branches": 38
   },
   "keywords": [
     "aws",
