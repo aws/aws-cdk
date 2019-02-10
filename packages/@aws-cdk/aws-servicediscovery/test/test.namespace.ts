@@ -70,7 +70,7 @@ export = {
     test.done();
   },
 
-  'Export/import'(test: Test) {
+  'Export/import from other stack'(test: Test) {
     const stack1 = new cdk.Stack(undefined, 'S1');
     const namespace = new servicediscovery.Namespace(stack1, 'MyNamespace', {
       name: 'name'
@@ -125,14 +125,13 @@ export = {
     const stack2 = new cdk.Stack(undefined, 'S2');
     const importedNamespace = servicediscovery.Namespace.import(stack2, 'ImportedNamespace', namespaceRef);
 
-    importedNamespace.createService('MyService', { name: 'service' });
+    importedNamespace.createService('MyService');
 
     expect(stack2).toMatch({
       "Resources": {
         "ImportedNamespaceMyServiceA61A61FA": {
           "Type": "AWS::ServiceDiscovery::Service",
           "Properties": {
-            "Name": "service",
             "NamespaceId": {
               "Fn::ImportValue": "S1:MyNamespaceNamespaceId1F78B5C5"
             }
@@ -140,6 +139,62 @@ export = {
         }
       }
     });
+
+    test.done();
+  },
+
+  'Manual import from id'(test: Test) {
+    const stack = new cdk.Stack();
+    const namespace = servicediscovery.Namespace.import(stack, 'ImportedNamespace', {
+      namespaceId: 'ns-e1tpmexample0001',
+      httpOnly: true
+    });
+
+    namespace.createService('MyService');
+
+    expect(stack).toMatch({
+      "Resources": {
+        "ImportedNamespaceMyServiceA61A61FA": {
+          "Type": "AWS::ServiceDiscovery::Service",
+          "Properties": {
+            "NamespaceId": "ns-e1tpmexample0001"
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'Manual import from arn'(test: Test) {
+    const stack = new cdk.Stack();
+    const namespace = servicediscovery.Namespace.import(stack, 'ImportedNamespace', {
+      namespaceArn: 'arn:aws:servicediscovery:us-east-1:123456789012:namespace/ns-e1tpmexample0001',
+      httpOnly: true
+    });
+
+    namespace.createService('MyService');
+
+    expect(stack).toMatch({
+      "Resources": {
+        "ImportedNamespaceMyServiceA61A61FA": {
+          "Type": "AWS::ServiceDiscovery::Service",
+          "Properties": {
+            "NamespaceId": "ns-e1tpmexample0001"
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'Throws when importing without namespaceId or namspaceArn'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => servicediscovery.Namespace.import(stack, 'MyNamespace', {
+      httpOnly: false
+    }), /`namespaceId`/);
 
     test.done();
   },

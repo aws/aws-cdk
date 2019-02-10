@@ -2,6 +2,7 @@ import { expect } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import servicediscovery = require('../lib');
+import { RecordType } from '../lib';
 
 // to make it easy to copy & paste from output:
 // tslint:disable:object-literal-key-quotes
@@ -64,7 +65,7 @@ export = {
     namespace.createService('MyService', {
       name: 'service',
       description: 'service description',
-      healthCheckConfig: {
+      healthCheckCustomConfig: {
         failureThreshold: 3,
       }
     });
@@ -90,12 +91,111 @@ export = {
               ],
               "NamespaceId": {
                 "Ref": "MyNamespaceD0BB8558"
-              }
+              },
+              "RoutingPolicy": "MULTIVALUE",
             },
             "HealthCheckCustomConfig": {
               "FailureThreshold": 3
             },
             "Name": "service",
+            "NamespaceId": {
+              "Ref": "MyNamespaceD0BB8558"
+            }
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'Service for DNS namespace with A and AAAA records'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'dns'
+    });
+
+    namespace.createService('MyService', {
+      dnsRecord: {
+        type: RecordType.A_AAAA
+      }
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyNamespaceD0BB8558": {
+          "Type": "AWS::ServiceDiscovery::PublicDnsNamespace",
+          "Properties": {
+            "Name": "dns"
+          }
+        },
+        "MyNamespaceMyService365E2470": {
+          "Type": "AWS::ServiceDiscovery::Service",
+          "Properties": {
+            "DnsConfig": {
+              "DnsRecords": [
+                {
+                  "TTL": "60",
+                  "Type": "A"
+                },
+                {
+                  "TTL": "60",
+                  "Type": "AAAA"
+                }
+              ],
+              "NamespaceId": {
+                "Ref": "MyNamespaceD0BB8558"
+              },
+              "RoutingPolicy": "MULTIVALUE",
+            },
+            "NamespaceId": {
+              "Ref": "MyNamespaceD0BB8558"
+            }
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'Defaults to weighted for CNAME'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'dns'
+    });
+
+    namespace.createService('MyService', {
+      dnsRecord: {
+        type: RecordType.CNAME
+      }
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyNamespaceD0BB8558": {
+          "Type": "AWS::ServiceDiscovery::PublicDnsNamespace",
+          "Properties": {
+            "Name": "dns"
+          }
+        },
+        "MyNamespaceMyService365E2470": {
+          "Type": "AWS::ServiceDiscovery::Service",
+          "Properties": {
+            "DnsConfig": {
+              "DnsRecords": [
+                {
+                  "TTL": "60",
+                  "Type": "CNAME"
+                }
+              ],
+              "NamespaceId": {
+                "Ref": "MyNamespaceD0BB8558"
+              },
+              "RoutingPolicy": "WEIGHTED",
+            },
             "NamespaceId": {
               "Ref": "MyNamespaceD0BB8558"
             }
@@ -116,7 +216,7 @@ export = {
     });
 
     test.throws(() => namespace.createService('MyService', {
-      routingPolicy: servicediscovery.RountingPolicy.Multivalue
+      routingPolicy: servicediscovery.RoutingPolicy.Multivalue
     }), /`routingPolicy`/);
 
     test.done();
@@ -139,24 +239,27 @@ export = {
     test.done();
   },
 
-  'Throws when specifying health check type for a DNS namespace'(test: Test) {
+  'Throws when specifying both healthCheckConfig and healthCheckCustomCOnfig'(test: Test) {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
-      name: 'name'
+      name: 'name',
+      httpOnly: true
     });
 
     test.throws(() => namespace.createService('MyService', {
       healthCheckConfig: {
-        failureThreshold: 1,
-        type: servicediscovery.HealthCheckType.HTTP
+        failureThreshold: 1
+      },
+      healthCheckCustomConfig: {
+        resourcePath: '/'
       }
-    }), /`type`/);
+    }), /`healthCheckConfig`.+`healthCheckCustomConfig`/);
 
     test.done();
   },
 
-  'Throws when specifying health check resourcePath for a DNS namespace'(test: Test) {
+  'Throws when specifying health check config for a DNS namespace'(test: Test) {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
@@ -165,10 +268,9 @@ export = {
 
     test.throws(() => namespace.createService('MyService', {
       healthCheckConfig: {
-        failureThreshold: 1,
-        resourcePath: '/check'
+        failureThreshold: 1
       }
-    }), /`resourcePath`/);
+    }), /`healthCheckConfig`/);
 
     test.done();
   },
@@ -184,8 +286,26 @@ export = {
       dnsRecord: {
         type: servicediscovery.RecordType.CNAME
       },
-      routingPolicy: servicediscovery.RountingPolicy.Multivalue,
+      routingPolicy: servicediscovery.RoutingPolicy.Multivalue,
     }), /`CNAME`.+`Multivalue`/);
+
+    test.done();
+  },
+
+  'Throws when specifying resourcePath with TCP'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'name',
+      httpOnly: true,
+    });
+
+    test.throws(() => namespace.createService('MyService', {
+      healthCheckConfig: {
+        type: servicediscovery.HealthCheckType.TCP,
+        resourcePath: '/check'
+      }
+    }), /`resourcePath`.+`TCP`/);
 
     test.done();
   }

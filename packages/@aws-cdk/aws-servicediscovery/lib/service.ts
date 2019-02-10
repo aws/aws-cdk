@@ -4,14 +4,29 @@ import { INamespace } from './namespace';
 import { CfnService } from './servicediscovery.generated';
 
 export enum RecordType {
+  /**
+   * An A record.
+   */
   A = 'A',
 
+  /**
+   * An AAAA record.
+   */
   AAAA = 'AAAA',
 
+  /**
+   * Both A and AAAA records.
+   */
   A_AAAA = 'A,AAAA',
 
+  /**
+   * A SRV record.
+   */
   SRV = 'SRV',
 
+  /**
+   * A CNAME record.
+   */
   CNAME = 'CNAME',
 }
 export interface DnsRecord {
@@ -28,28 +43,51 @@ export interface DnsRecord {
   ttl?: string;
 }
 
-export enum RountingPolicy {
-  Weighted = 'WEIGTHED',
+export enum RoutingPolicy {
+  /**
+   * Route 53 returns the applicable value from one randomly selected instance.
+   */
+  Weighted = 'WEIGHTED',
 
+  /**
+   * Route 53 returns the applicable value for up to eight instances.
+   */
   Multivalue = 'MULTIVALUE',
 }
 
 export enum HealthCheckType {
+  /**
+   * Route 53 tries to establish a TCP connection.
+   * If successful, Route 53 submits an HTTP request and waits
+   * for an HTTP status code of 200 or greater and less than 400.
+   */
   HTTP = 'HTTP',
 
+  /**
+   * Route 53 tries to establish a TCP connection.
+   * If successful, Route 53 submits an HTTPS request and waits
+   * for an HTTP status code of 200 or greater and less than 400.
+   */
   HTTPS = 'HTTPS',
 
+  /**
+   * Route 53 tries to establish a TCP connection.
+   */
   TCP = 'TCP',
 }
 
-export interface HealthCheckConfig {
+export interface HealthCheckCustomConfig {
   /**
    * The number of consecutive health checks that an endpoint must pass or fail
    * for Route 53 to change the current status of the endpoint from unhealthy
    * to healthy or vice versa.
+   *
+   * @default 1
    */
-  failureThreshold: number;
+  failureThreshold?: number;
+}
 
+export interface HealthCheckConfig extends HealthCheckCustomConfig {
   /**
    * The type of health check
    *
@@ -59,26 +97,34 @@ export interface HealthCheckConfig {
 
   /**
    * The path that you want Route 53 to request when performing health checks.
+   * Cannot be specfied when type is TCP.
+   *
+   * @default The path '/'
    */
   resourcePath?: string;
 }
-
 export interface BaseServiceProps {
   /**
    * The name of the service.
+   *
+   * @default A CloudFormation generated name
    */
   name?: string;
 
   /**
    * The description of the service.
+   *
+   * @default No description
    */
   description?: string;
 
   /**
    * The routing policy to apply to all DNS records created when an instance
    * is registered.
+   *
+   * @default Weighted for CNAME, Multivalue otherwise
    */
-  routingPolicy?: RountingPolicy;
+  routingPolicy?: RoutingPolicy;
 
   /**
    * The DNS records to create when an instance is registered. Possible
@@ -89,11 +135,20 @@ export interface BaseServiceProps {
   dnsRecord?: DnsRecord;
 
   /**
-   * The health check configuration for the service.
+   * The health check configuration for the service (only for a HTTP only namespace).
+   * Either healthCheckConfig or healthCheckCustomConfig can be specified.
    *
    * @default no health check
    */
   healthCheckConfig?: HealthCheckConfig;
+
+  /**
+   * The custom health check configuration for the service. Either
+   * healthCheckConfig or healthCheckCustomConfig can be specified.
+   *
+   * @default no custom health check
+   */
+  healthCheckCustomConfig?: HealthCheckConfig;
 }
 
 export interface ServiceProps extends BaseServiceProps {
@@ -141,17 +196,43 @@ export class Service extends cdk.Construct {
       throw new Error('Cannot specify `routingPolicy` or `dnsRecord` for an HTTP only namespace.');
     }
 
-    if (!props.namespace.httpOnly
-        && props.healthCheckConfig
-        && (props.healthCheckConfig.type || props.healthCheckConfig.resourcePath)) {
-      throw new Error('Cannot specify health check `type` or `resourcePath` for a DNS namespace.');
+    if (props.healthCheckConfig && props.healthCheckCustomConfig) {
+      throw new Error('Cannot specify both `healthCheckConfig` and `healthCheckCustomConfig`.');
     }
 
-    if (props.routingPolicy === RountingPolicy.Multivalue
+    if (props.healthCheckConfig && !props.namespace.httpOnly) {
+      throw new Error('Cannot specify `healthCheckConfig` for a DNS namespace.');
+    }
+
+    if (props.routingPolicy === RoutingPolicy.Multivalue
         && props.dnsRecord
         && props.dnsRecord.type === RecordType.CNAME) {
       throw new Error('Cannot use `CNAME` record when routing policy is `Multivalue`.');
     }
+
+    if (props.healthCheckConfig
+        && props.healthCheckConfig.type === HealthCheckType.TCP
+        && props.healthCheckConfig.resourcePath) {
+          throw new Error('Cannot specify `resourcePath` when using a `TCP` health check.');
+    }
+
+    const defaultRoutingPolicy = props.dnsRecord && props.dnsRecord.type === RecordType.CNAME
+      ? RoutingPolicy.Weighted
+      : RoutingPolicy.Multivalue;
+
+    const defaultFailureThreshold = 1;
+
+    const defaultHealthCheckCustomConfig = {
+      failureThreshold: defaultFailureThreshold
+    };
+
+    const defaultHealthCheckConfig = {
+      type: HealthCheckType.HTTP,
+      failureThreshold: defaultFailureThreshold,
+      resourcePath: props.healthCheckConfig && props.healthCheckConfig.type !== HealthCheckType.TCP
+        ? '/'
+        : undefined
+    };
 
     const resource = new CfnService(this, 'Resource', {
       name: props.name,
@@ -159,16 +240,18 @@ export class Service extends cdk.Construct {
       dnsConfig: props.namespace.httpOnly
         ? undefined
         : {
-            dnsRecords: props.dnsRecord === undefined ? [{ type: RecordType.A, ttl: '60' }] : _getDnsRecords(props.dnsRecord),
+            dnsRecords: props.dnsRecord === undefined
+              ? [{ type: RecordType.A, ttl: '60' }]
+              : _getDnsRecords(props.dnsRecord),
             namespaceId: props.namespace.namespaceId,
-            routingPolicy: props.routingPolicy
+            routingPolicy: props.routingPolicy || defaultRoutingPolicy
           },
-      healthCheckConfig: props.namespace.httpOnly && props.healthCheckConfig
-        ? { type: HealthCheckType.HTTP, ...props.healthCheckConfig }
+      healthCheckConfig: props.healthCheckConfig
+        ? { ...defaultHealthCheckConfig, ...props.healthCheckConfig }
         : undefined,
-      healthCheckCustomConfig: props.namespace.httpOnly
-        ? undefined
-        : props.healthCheckConfig,
+      healthCheckCustomConfig: props.healthCheckCustomConfig
+        ? { ...defaultHealthCheckCustomConfig, ...props.healthCheckCustomConfig }
+        : undefined,
       namespaceId: props.namespace.namespaceId
     });
 
