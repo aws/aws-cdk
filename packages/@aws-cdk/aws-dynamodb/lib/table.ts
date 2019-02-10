@@ -82,8 +82,8 @@ export interface TableProps {
   pitrEnabled?: boolean;
 
   /**
-   * Whether server-side encryption is enabled.
-   * @default undefined, server-side encryption is disabled
+   * Whether server-side encryption with an AWS managed customer master key is enabled.
+   * @default undefined, server-side encryption is enabled with an AWS owned customer master key
    */
   sseEnabled?: boolean;
 
