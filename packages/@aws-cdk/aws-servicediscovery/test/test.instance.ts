@@ -1,7 +1,10 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
+import ec2 = require('@aws-cdk/aws-ec2');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import servicediscovery = require('../lib');
+import { RecordType } from '../lib';
 
 // to make it easy to copy & paste from output:
 // tslint:disable:object-literal-key-quotes
@@ -29,47 +32,150 @@ export = {
       }
     });
 
-    expect(stack).toMatch({
-      "Resources": {
-        "MyNamespaceD0BB8558": {
-          "Type": "AWS::ServiceDiscovery::HttpNamespace",
-          "Properties": {
-            "Name": "http"
-          }
-        },
-        "MyNamespaceMyService365E2470": {
-          "Type": "AWS::ServiceDiscovery::Service",
-          "Properties": {
-            "NamespaceId": {
-              "Ref": "MyNamespaceD0BB8558"
-            }
-          }
-        },
-        "MyNamespaceMyServiceMyInstance562A88C1": {
-          "Type": "AWS::ServiceDiscovery::Instance",
-          "Properties": {
-            "InstanceAttributes": {
-              "AWS_INSTANCE_IPV4": "10.0.0.0",
-              "AWS_INSTANCE_IPV6": "0:0:0:0:0:ffff:a00:0",
-              "AWS_INSTANCE_PORT": "443",
-              "key": "value"
-            },
-            "ServiceId": {
-              "Fn::GetAtt": [
-                "MyNamespaceMyService365E2470",
-                "Id"
-              ]
-            },
-            "InstanceId": "id"
-          }
-        }
-      }
-    });
+    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+      "InstanceAttributes": {
+        "key": "value",
+        "AWS_INSTANCE_IPV4": "10.0.0.0",
+        "AWS_INSTANCE_IPV6": "0:0:0:0:0:ffff:a00:0",
+        "AWS_INSTANCE_PORT": "443"
+      },
+      "ServiceId": {
+        "Fn::GetAtt": [
+          "MyNamespaceMyService365E2470",
+          "Id"
+        ]
+      },
+      "InstanceId": "id"
+    }));
 
     test.done();
   },
 
-  'Throws when specifying both domainName for an HTTP namespace'(test: Test) {
+  'Instance for a load balancer'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'dns',
+      vpc
+    });
+
+    const service = namespace.createService('MyService');
+
+    service.registerInstance('MyInstance', {
+      instanceId: 'id',
+      instanceAttributes: {
+        loadBalancer: alb
+      }
+    });
+
+    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+      "InstanceAttributes": {
+        "AWS_ALIAS_DNS_NAME": {
+          "Fn::GetAtt": [
+            "MyALB911A8556",
+            "DNSName"
+          ]
+        }
+      },
+      "ServiceId": {
+        "Fn::GetAtt": [
+          "MyNamespaceMyService365E2470",
+          "Id"
+        ]
+      },
+      "InstanceId": "id"
+    }));
+
+    test.done();
+  },
+
+  'Instance with domain name'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'dns'
+    });
+
+    const service = namespace.createService('MyService', {
+      dnsRecord: {
+        type: RecordType.CNAME
+      }
+    });
+
+    service.registerInstance('MyInstance', {
+      instanceId: 'id',
+      instanceAttributes: {
+        domainName: 'a.b.c'
+      }
+    });
+
+    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+      "InstanceAttributes": {
+        "AWS_INSTANCE_CNAME": "a.b.c",
+      },
+      "ServiceId": {
+        "Fn::GetAtt": [
+          "MyNamespaceMyService365E2470",
+          "Id"
+        ]
+      },
+      "InstanceId": "id"
+    }));
+
+    test.done();
+  },
+
+  'Throws when specifying both loadBalancer and domainName'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'http',
+      httpOnly: true
+    });
+
+    const service = namespace.createService('MyService');
+
+    const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
+
+    test.throws(() => service.registerInstance('MyInstance', {
+      instanceId: 'id',
+      instanceAttributes: {
+        loadBalancer: alb,
+        domainName: 'domain'
+      }
+    }), /`loadBalancer`.+`domainName`/);
+
+    test.done();
+  },
+
+  'Throws when specifying loadBalancer for an HTTP only namespace'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+      name: 'http',
+      httpOnly: true
+    });
+
+    const service = namespace.createService('MyService');
+
+    const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
+
+    test.throws(() => service.registerInstance('MyInstance', {
+      instanceId: 'id',
+      instanceAttributes: {
+        loadBalancer: alb,
+      }
+    }), /`loadBalancer`/);
+
+    test.done();
+  },
+
+  'Throws when specifying domainName for an HTTP namespace'(test: Test) {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {

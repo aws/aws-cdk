@@ -96,12 +96,12 @@ export class Instance extends cdk.Construct {
  */
 function _getStandardAttributes(props: InstanceProps): object {
   if (props.instanceAttributes.loadBalancer && props.instanceAttributes.domainName) {
-    throw new Error('Cannot specify both `loadblancer` and `domainName.');
+    throw new Error('Cannot specify both `loadBalancer` and `domainName`.');
   }
 
   if (props.service.namespace.httpOnly) {
     if (props.instanceAttributes.loadBalancer || props.instanceAttributes.domainName) {
-      throw new Error('Cannot specify `loadbalancer` or `domainName` for an HTTP only namespace.');
+      throw new Error('Cannot specify `loadBalancer` or `domainName` for an HTTP only namespace.');
     }
 
     return {
