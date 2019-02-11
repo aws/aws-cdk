@@ -63,8 +63,9 @@ A bucket policy will be automatically created for the bucket upon the first call
 ```ts
 const bucket = new Bucket(this, 'MyBucket');
 bucket.addToResourcePolicy(new iam.PolicyStatement()
-    .addActions('s3:GetObject')
-    .addAllResources());
+  .addActions('s3:GetObject')
+  .addResources(bucket.arnForObjects('file.txt'))
+  .addAccountRootPrincipal());
 ```
 
 Most of the time, you won't have to manipulate the bucket policy directly.
