@@ -65,8 +65,19 @@ export class NotificationsResourceHandler extends cdk.Construct {
       .addAction('s3:PutBucketNotification')
       .addAllResources());
 
-    const resource = new cdk.Resource(this, 'Resource', {
-      type: 'AWS::Lambda::Function',
+    const resourceType = 'AWS::Lambda::Function';
+    class InLineLambda extends cdk.Resource {
+      public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.Standard, resourceType);
+
+      protected renderProperties(properties: any): { [key: string]: any } {
+        properties.Tags = cdk.listMapper(
+          cdk.cfnTagToCloudFormation)(this.tags.renderTags());
+        delete properties.tags;
+        return properties;
+      }
+    }
+    const resource = new InLineLambda(this, 'Resource', {
+      type: resourceType,
       properties: {
         Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
         Code: { ZipFile: `exports.handler = ${handler.toString()};` },
