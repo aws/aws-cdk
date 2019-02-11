@@ -15,7 +15,7 @@ export = {
         vpc,
       });
 
-      cluster.addDefaultAutoScalingGroupCapacity('DefaultAutoScalingGroup', {
+      cluster.addCapacity('DefaultAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro')
       });
 
@@ -164,7 +164,7 @@ export = {
       });
 
       // WHEN
-      cluster.addDefaultAutoScalingGroupCapacity('DefaultAutoScalingGroup', {
+      cluster.addCapacity('DefaultAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro')
       });
 
@@ -188,7 +188,7 @@ export = {
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addDefaultAutoScalingGroupCapacity('DefaultAutoScalingGroup', {
+    cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new InstanceType("m3.large")
     });
 
@@ -206,7 +206,7 @@ export = {
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addDefaultAutoScalingGroupCapacity('DefaultAutoScalingGroup', {
+    cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
       desiredCapacity: 3
     });
