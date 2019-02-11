@@ -1,4 +1,4 @@
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack, Tag } from '@aws-cdk/cdk';
 import { Attribute, AttributeType, BillingMode, ProjectionType, StreamViewType, Table } from '../lib';
 
 // CDK parameters
@@ -50,11 +50,12 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   pitrEnabled: true,
   sseEnabled: true,
   streamSpecification: StreamViewType.KeysOnly,
-  tags: { Environment: 'Production' },
   billingMode: BillingMode.PayPerRequest,
   ttlAttributeName: 'timeToLive',
   partitionKey: TABLE_PARTITION_KEY
 });
+
+tableWithGlobalAndLocalSecondaryIndex.apply(new Tag('Environment', 'Production'));
 
 tableWithGlobalAndLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({

@@ -140,7 +140,7 @@
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinejenkinsMyBucketS32154568D"
+                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
                   }
                 ],
                 "RunOrder": 1
@@ -162,13 +162,13 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinejenkinsMyBucketS32154568D"
+                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
                   }
                 ],
                 "Name": "JenkinsBuild",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinejenkinsJenkinsProviderJenkinsBuild6007E9FD"
+                    "Name": "Artifact_JenkinsBuild_awscdkcodepipelinejenkinsJenkinsProviderF1B32E8D"
                   }
                 ],
                 "RunOrder": 1
@@ -185,7 +185,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinejenkinsMyBucketS32154568D"
+                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
                   }
                 ],
                 "Name": "JenkinsTest",
@@ -204,7 +204,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinejenkinsMyBucketS32154568D"
+                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
                   }
                 ],
                 "Name": "JenkinsTest2",
@@ -217,8 +217,8 @@
         ]
       },
       "DependsOn": [
-        "PipelineRoleD68726F7",
-        "PipelineRoleDefaultPolicyC7A05455"
+        "PipelineRoleDefaultPolicyC7A05455",
+        "PipelineRoleD68726F7"
       ]
     },
     "JenkinsProviderJenkinsBuildProviderResourceD9231CAC": {

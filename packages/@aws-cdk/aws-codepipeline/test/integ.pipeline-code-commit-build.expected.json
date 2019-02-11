@@ -190,7 +190,7 @@
                 "Name": "build",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinecodecommitcodebuildMyBuildProjectbuild61B48DC4"
+                    "Name": "Artifact_build_awscdkcodepipelinecodecommitcodebuildMyBuildProject20018D4F"
                   }
                 ],
                 "RunOrder": 1
@@ -222,8 +222,8 @@
         ]
       },
       "DependsOn": [
-        "PipelineRoleD68726F7",
-        "PipelineRoleDefaultPolicyC7A05455"
+        "PipelineRoleDefaultPolicyC7A05455",
+        "PipelineRoleD68726F7"
       ]
     },
     "MyBuildProjectRole6B7E2258": {

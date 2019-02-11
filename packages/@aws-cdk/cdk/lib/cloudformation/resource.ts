@@ -1,5 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct, IConstruct } from '../core/construct';
+import { TagManager } from '../core/tag-manager';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CfnReference } from './cfn-tokens';
 import { Condition } from './condition';
@@ -18,6 +19,12 @@ export interface ResourceProps {
   properties?: any;
 }
 
+export interface ITaggable {
+  /**
+   * TagManager to set, remove and format tags
+   */
+  readonly tags: TagManager;
+}
 /**
  * Represents a CloudFormation resource.
  */
@@ -46,6 +53,13 @@ export class Resource extends Referenceable {
   }
 
   /**
+   * Check whether the given construct is Taggable
+   */
+  public static isTaggable(construct: any): construct is ITaggable {
+    return (construct as any).tags !== undefined;
+  }
+
+  /**
    * Options for this resource, such as condition, update policy etc.
    */
   public readonly options: ResourceOptions = {};
@@ -54,6 +68,13 @@ export class Resource extends Referenceable {
    * AWS resource type.
    */
   public readonly resourceType: string;
+
+  /**
+   * AWS resource properties.
+   *
+   * This object is rendered via a call to "renderProperties(this.properties)".
+   */
+  protected readonly properties: any;
 
   /**
    * AWS resource property overrides.
@@ -68,13 +89,6 @@ export class Resource extends Referenceable {
   protected readonly untypedPropertyOverrides: any = { };
 
   /**
-   * AWS resource properties.
-   *
-   * This object is rendered via a call to "renderProperties(this.properties)".
-   */
-  protected readonly properties: any;
-
-  /**
    * An object to be merged on top of the entire resource definition.
    */
   private readonly rawOverrides: any = { };
@@ -84,7 +98,7 @@ export class Resource extends Referenceable {
    *
    * Is filled during prepare().
    */
-  private readonly dependsOn = new Set<string>();
+  private readonly dependsOn = new Set<Resource>();
 
   /**
    * Creates a resource construct.
@@ -117,7 +131,7 @@ export class Resource extends Referenceable {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`, this);
+    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, attributeName, this);
   }
 
   /**
@@ -179,8 +193,12 @@ export class Resource extends Referenceable {
     this.addPropertyOverride(propertyPath, undefined);
   }
 
+  /**
+   * Indicates that this resource depends on another resource and cannot be provisioned
+   * unless the other resource has been successfully provisioned.
+   */
   public addDependsOn(resource: Resource) {
-    this.dependsOn.add(resource.logicalId);
+    this.dependsOn.add(resource);
   }
 
   /**
@@ -188,6 +206,10 @@ export class Resource extends Referenceable {
    */
   public toCloudFormation(): object {
     try {
+      if (Resource.isTaggable(this)) {
+        const tags = this.tags.renderTags();
+        this.properties.tags = tags === undefined ? this.properties.tags : tags;
+      }
       // merge property overrides onto properties and then render (and validate).
       const properties = this.renderProperties(deepMerge(this.properties || { }, this.untypedPropertyOverrides));
 
@@ -197,7 +219,7 @@ export class Resource extends Referenceable {
             Type: this.resourceType,
             Properties: ignoreEmpty(this, properties),
             // Return a sorted set of dependencies to be consistent across tests
-            DependsOn: ignoreEmpty(this, sortedSet(this.dependsOn)),
+            DependsOn: ignoreEmpty(this, renderDependsOn(this.dependsOn)),
             CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
             UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.options.updateReplacePolicy),
@@ -217,12 +239,28 @@ export class Resource extends Referenceable {
       // Re-throw
       throw e;
     }
+
+    // returns the set of logical ID (tokens) this resource depends on
+    // sorted by construct paths to ensure test determinism
+    function renderDependsOn(dependsOn: Set<Resource>) {
+      return Array
+        .from(dependsOn)
+        .sort((x, y) => x.node.path.localeCompare(y.node.path))
+        .map(r => r.logicalId);
+    }
   }
 
   protected renderProperties(properties: any): { [key: string]: any } {
     return properties;
   }
 
+}
+
+export enum TagType {
+  Standard = 'StandardTag',
+  AutoScalingGroup = 'AutoScalingGroupTag',
+  Map = 'StringToStringMap',
+  NotTaggable = 'NotTaggable',
 }
 
 export interface ResourceOptions {
@@ -304,9 +342,4 @@ export function deepMerge(target: any, source: any) {
   }
 
   return target;
-}
-function sortedSet<T>(xs: Set<T>): T[] {
-  const ret = Array.from(xs);
-  ret.sort();
-  return ret;
 }

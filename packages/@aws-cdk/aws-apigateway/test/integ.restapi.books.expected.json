@@ -526,12 +526,12 @@
       },
       "DependsOn": [
         "booksapiANYF4F0CDEB",
-        "booksapibooks97D84727",
+        "booksapibooksbookidDELETE214F4059",
+        "booksapibooksbookidGETCCE21986",
+        "booksapibooksbookid5264BCA2",
         "booksapibooksGETA776447A",
         "booksapibooksPOSTF6C6559D",
-        "booksapibooksbookid5264BCA2",
-        "booksapibooksbookidDELETE214F4059",
-        "booksapibooksbookidGETCCE21986"
+        "booksapibooks97D84727"
       ]
     },
     "booksapiDeploymentStageprod55D8E03E": {
@@ -847,9 +847,6 @@
             "/"
           ]
         ]
-      },
-      "Export": {
-        "Name": "restapi-books-example:booksapiEndpointE230E8D5"
       }
     }
   }

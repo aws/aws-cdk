@@ -169,7 +169,7 @@ export class Stack extends Construct {
       };
 
       const elements = stackElements(this);
-      const fragments = elements.map(e => e.toCloudFormation());
+      const fragments = elements.map(e => this.node.resolve(e.toCloudFormation()));
 
       // merge in all CloudFormation fragments collected from the tree
       for (const fragment of fragments) {
@@ -239,7 +239,6 @@ export class Stack extends Construct {
    * Rename a generated logical identities
    */
   public renameLogical(oldId: string, newId: string) {
-    // tslint:disable-next-line:no-console
     if (this.node.children.length > 0) {
       throw new Error("All renames must be set up before adding elements to the stack");
     }
@@ -522,9 +521,8 @@ export interface TemplateOptions {
  * @returns The same array as is being collected into
  */
 function stackElements(node: IConstruct, into: StackElement[] = []): StackElement[] {
-  const element = StackElement._asStackElement(node);
-  if (element) {
-    into.push(element);
+  if (StackElement.isStackElement(node)) {
+    into.push(node);
   }
 
   for (const child of node.node.children) {

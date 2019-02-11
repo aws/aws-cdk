@@ -2,12 +2,12 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { PipelineCreateReplaceChangeSetAction, PipelineCreateUpdateStackAction, PipelineExecuteChangeSetAction } from '@aws-cdk/aws-cloudformation';
 import { CodePipelineBuildArtifacts, CodePipelineSource, PipelineBuildAction, Project } from '@aws-cdk/aws-codebuild';
 import { PipelineSourceAction, Repository } from '@aws-cdk/aws-codecommit';
-import { ArtifactPath } from '@aws-cdk/aws-codepipeline-api';
-import { Role } from '@aws-cdk/aws-iam';
+import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Role } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { Pipeline, Stage } from '../lib';
+import { Pipeline } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -24,29 +24,34 @@ export = {
   /** Source! */
   const repo = new Repository(stack, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
 
-  const sourceStage = new Stage(pipeline, 'source', { pipeline });
-
-  const source = new PipelineSourceAction(stack, 'source', {
-    stage: sourceStage,
+  const source = new PipelineSourceAction({
+    actionName: 'source',
     outputArtifactName: 'SourceArtifact',
     repository: repo,
     pollForSourceChanges: true,
   });
+  pipeline.addStage({
+    name: 'source',
+    actions: [source]
+  });
 
   /** Build! */
 
-  const buildStage = new Stage(pipeline, 'build', { pipeline });
   const buildArtifacts = new CodePipelineBuildArtifacts();
   const project = new Project(stack, 'MyBuildProject', {
     source: new CodePipelineSource(),
     artifacts: buildArtifacts,
   });
 
-  const buildAction = new PipelineBuildAction(stack, 'build', {
-    stage: buildStage,
+  const buildAction = new PipelineBuildAction({
+    actionName: 'build',
     project,
     inputArtifact: source.outputArtifact,
     outputArtifactName: "OutputYo"
+  });
+  pipeline.addStage({
+    name: 'build',
+    actions: [buildAction],
   });
 
   /** Deploy! */
@@ -54,24 +59,26 @@ export = {
   // To execute a change set - yes, you probably do need *:* 🤷‍♀️
   changeSetExecRole.addToPolicy(new PolicyStatement().addAllResources().addAction("*"));
 
-  const prodStage = new Stage(stack, 'prod', { pipeline });
   const stackName = 'BrelandsStack';
   const changeSetName = 'MyMagicalChangeSet';
-
-  new PipelineCreateReplaceChangeSetAction(stack, 'BuildChangeSetProd', {
-    stage: prodStage,
-    stackName,
-    changeSetName,
-    deploymentRole: changeSetExecRole,
-    templatePath: new ArtifactPath(buildAction.outputArtifact, 'template.yaml'),
-    templateConfiguration: new ArtifactPath(buildAction.outputArtifact, 'templateConfig.json'),
-    adminPermissions: false,
-  });
-
-  new PipelineExecuteChangeSetAction(stack, 'ExecuteChangeSetProd', {
-    stage: prodStage,
-    stackName,
-    changeSetName,
+  pipeline.addStage({
+    name: 'prod',
+    actions: [
+      new PipelineCreateReplaceChangeSetAction({
+        actionName: 'BuildChangeSetProd',
+        stackName,
+        changeSetName,
+        deploymentRole: changeSetExecRole,
+        templatePath: new cpapi.ArtifactPath(buildAction.outputArtifact, 'template.yaml'),
+        templateConfiguration: new cpapi.ArtifactPath(buildAction.outputArtifact, 'templateConfig.json'),
+        adminPermissions: false,
+      }),
+      new PipelineExecuteChangeSetAction({
+        actionName: 'ExecuteChangeSetProd',
+        stackName,
+        changeSetName,
+      }),
+    ],
   });
 
   expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -202,12 +209,12 @@ export = {
   const stack = new TestFixture();
 
   // WHEN
-  new PipelineCreateUpdateStackAction(stack.deployStage, 'CreateUpdate', {
-    stage: stack.deployStage,
+  stack.deployStage.addAction(new PipelineCreateUpdateStackAction({
+    actionName: 'CreateUpdate',
     stackName: 'MyStack',
     templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     adminPermissions: true,
-  });
+  }));
 
   const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
 
@@ -257,13 +264,13 @@ export = {
   const stack = new TestFixture();
 
   // WHEN
-  new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
-    stage: stack.deployStage,
+  stack.deployStage.addAction(new PipelineCreateUpdateStackAction({
+    actionName: 'CreateUpdate',
     stackName: 'MyStack',
     templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     outputFileName: 'CreateResponse.json',
     adminPermissions: false,
-  });
+  }));
 
   // THEN: Action has output artifacts
   expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -273,7 +280,7 @@ export = {
       "Name": "Deploy",
       "Actions": [
       {
-        "OutputArtifacts": [{"Name": "DeployCreateUpdateArtifact"}],
+        "OutputArtifacts": [{"Name": "CreateUpdate_MyStack_Artifact"}],
         "Name": "CreateUpdate",
       },
       ],
@@ -289,13 +296,13 @@ export = {
   const stack = new TestFixture();
 
   // WHEN
-  new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
-    stage: stack.deployStage,
+  stack.deployStage.addAction(new PipelineCreateUpdateStackAction({
+    actionName: 'CreateUpdate',
     stackName: 'MyStack',
     templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     replaceOnFailure: true,
     adminPermissions: false,
-  });
+  }));
 
   // THEN: Action has output artifacts
   expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -323,15 +330,15 @@ export = {
   const stack = new TestFixture();
 
   // WHEN
-  new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
-    stage: stack.deployStage,
+  stack.deployStage.addAction(new PipelineCreateUpdateStackAction({
+    actionName: 'CreateUpdate',
     stackName: 'MyStack',
     templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     adminPermissions: false,
     parameterOverrides: {
     RepoName: stack.repo.repositoryName
     }
-  });
+  }));
 
   // THEN
   expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -368,19 +375,19 @@ export = {
       assumedBy: new ServicePrincipal('magicservice')
     });
 
-    new PipelineExecuteChangeSetAction(stack.pipeline, 'ImportedRoleAction', {
+    stack.deployStage.addAction(new PipelineExecuteChangeSetAction({
+      actionName: 'ImportedRoleAction',
       role: importedRole,
       changeSetName: 'magicSet',
       stackName: 'magicStack',
-      stage: stack.deployStage
-    });
+    }));
 
-    new PipelineExecuteChangeSetAction(stack.pipeline, 'FreshRoleAction', {
+    stack.deployStage.addAction(new PipelineExecuteChangeSetAction({
+      actionName: 'FreshRoleAction',
       role: freshRole,
       changeSetName: 'magicSet',
       stackName: 'magicStack',
-      stage: stack.deployStage
-    });
+    }));
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "Stages": [
@@ -417,22 +424,29 @@ export = {
  */
 class TestFixture extends cdk.Stack {
   public readonly pipeline: Pipeline;
-  public readonly sourceStage: Stage;
-  public readonly deployStage: Stage;
+  public readonly sourceStage: cpapi.IStage;
+  public readonly deployStage: cpapi.IStage;
   public readonly repo: Repository;
   public readonly source: PipelineSourceAction;
 
   constructor() {
-  super();
+    super();
 
-  this.pipeline = new Pipeline(this, 'Pipeline');
-  this.sourceStage = new Stage(this.pipeline, 'Source', { pipeline: this.pipeline });
-  this.deployStage = new Stage(this.pipeline, 'Deploy', { pipeline: this.pipeline });
-  this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
-  this.source = new PipelineSourceAction(this, 'Source', {
-    stage: this.sourceStage,
-    outputArtifactName: 'SourceArtifact',
-    repository: this.repo,
-  });
+    this.pipeline = new Pipeline(this, 'Pipeline');
+    this.sourceStage = this.pipeline.addStage({ name: 'Source' });
+    this.deployStage = this.pipeline.addStage({ name: 'Deploy' });
+    this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
+    this.source = new PipelineSourceAction({
+      actionName: 'Source',
+      outputArtifactName: 'SourceArtifact',
+      repository: this.repo,
+    });
+    this.sourceStage.addAction(this.source);
+    // this.pipeline = new Pipeline(this, 'Pipeline', {
+    //   stages: [
+    //       this.sourceStage.addAction(this.source),
+    //       this.deployStage,
+    //   ],
+    // });
   }
 }

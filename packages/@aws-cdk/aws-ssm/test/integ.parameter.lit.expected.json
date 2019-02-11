@@ -111,9 +111,6 @@
             ]
           }
         ]
-      },
-      "Export": {
-        "Name": "SSM-Parameter:StringListOutput"
       }
     }
   }

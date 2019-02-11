@@ -63,8 +63,9 @@ A bucket policy will be automatically created for the bucket upon the first call
 ```ts
 const bucket = new Bucket(this, 'MyBucket');
 bucket.addToResourcePolicy(new iam.PolicyStatement()
-    .addActions('s3:GetObject')
-    .addAllResources());
+  .addActions('s3:GetObject')
+  .addResources(bucket.arnForObjects('file.txt'))
+  .addAccountRootPrincipal());
 ```
 
 Most of the time, you won't have to manipulate the bucket policy directly.
@@ -91,24 +92,28 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 import s3 = require('@aws-cdk/aws-s3');
 
 const sourceBucket = new s3.Bucket(this, 'MyBucket', {
-    versioned: true, // a Bucket used as a source in CodePipeline must be versioned
+  versioned: true, // a Bucket used as a source in CodePipeline must be versioned
 });
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const sourceStage = pipeline.addStage('Source');
-const sourceAction = new s3.PipelineSourceAction(this, 'S3Source', {
-    stage: sourceStage,
-    bucket: sourceBucket,
-    bucketKey: 'path/to/file.zip',
+const sourceAction = new s3.PipelineSourceAction({
+  actionName: 'S3Source',
+  bucket: sourceBucket,
+  bucketKey: 'path/to/file.zip',
+});
+pipeline.addStage({
+  name: 'Source',
+  actions: [sourceAction],
 });
 ```
 
-You can also add the Bucket to the Pipeline directly:
+You can also create the action from the Bucket directly:
 
 ```ts
 // equivalent to the code above:
-const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
-    bucketKey: 'path/to/file.zip',
+const sourceAction = sourceBucket.toCodePipelineSourceAction({
+  actionName: 'S3Source',
+  bucketKey: 'path/to/file.zip',
 });
 ```
 
@@ -126,7 +131,8 @@ import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 const key = 'some/key.zip';
 const trail = new cloudtrail.CloudTrail(this, 'CloudTrail');
 trail.addS3EventSelector([sourceBucket.arnForObjects(key)], cloudtrail.ReadWriteType.WriteOnly);
-const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
+const sourceAction = sourceBucket.toCodePipelineSourceAction({
+  actionName: 'S3Source',
   bucketKey: key,
   pollForSourceChanges: false, // default: true
 });
@@ -144,11 +150,27 @@ import s3 = require('@aws-cdk/aws-s3');
 const targetBucket = new s3.Bucket(this, 'MyBucket', {});
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const deployStage = pipeline.addStage('Deploy');
-const deployAction = new s3.PipelineDeployAction(this, 'S3Deploy', {
-    stage: deployStage,
-    bucket: targetBucket,
-    inputArtifact: sourceAction.outputArtifact,
+const deployAction = new s3.PipelineDeployAction({
+  actionName: 'S3Deploy',
+  stage: deployStage,
+  bucket: targetBucket,
+  inputArtifact: sourceAction.outputArtifact,
+});
+const deployStage = pipeline.addStage({
+  name: 'Deploy',
+  actions: [deployAction],
+});
+```
+
+You can also create the action from the Bucket directly:
+
+```ts
+// equivalent to the code above:
+const deployAction = targetBucket.toCodePipelineDeployAction({
+  actionName: 'S3Deploy',
+  extract: false, // default: true
+  objectKey: 'path/in/bucket', // required if extract is false
+  inputArtifact: sourceAction.outputArtifact,
 });
 ```
 

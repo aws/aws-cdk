@@ -345,6 +345,30 @@ export = {
 
     test.done();
   },
+
+  'overrideLogicalId(id) can be used to override the logical ID of a resource'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const bonjour = new Resource(stack, 'BonjourResource', { type: 'Resource::Type' });
+
+    // { Ref } and { GetAtt }
+    new Resource(stack, 'RefToBonjour', { type: 'Other::Resource', properties: {
+      RefToBonjour: bonjour.ref.toString(),
+      GetAttBonjour: bonjour.getAtt('TheAtt').toString()
+    }});
+
+    bonjour.overrideLogicalId('BOOM');
+
+    // THEN
+    test.deepEqual(stack.toCloudFormation(), { Resources:
+      { BOOM: { Type: 'Resource::Type' },
+        RefToBonjour:
+         { Type: 'Other::Resource',
+           Properties:
+            { RefToBonjour: { Ref: 'BOOM' },
+              GetAttBonjour: { 'Fn::GetAtt': [ 'BOOM', 'TheAtt' ] } } } } });
+    test.done();
+  }
 };
 
 class StackWithPostProcessor extends Stack {

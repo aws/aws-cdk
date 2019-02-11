@@ -95,7 +95,7 @@ export = {
           Handler: 'index.handler',
           Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
           Runtime: 'nodejs6.10' },
-         DependsOn: [ 'MyLambdaServiceRole4539ECB6', 'MyLambdaServiceRoleDefaultPolicy5BBC6F68' ] } } } );
+         DependsOn: [ 'MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6' ] } } } );
     test.done();
 
   },
@@ -429,8 +429,8 @@ export = {
             "FunctionName": "OneFunctionToRuleThemAll"
           },
           "DependsOn": [
-            "MyLambdaServiceRole4539ECB6",
-            "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6"
           ]
           }
         }
@@ -539,8 +539,8 @@ export = {
             }
           },
           "DependsOn": [
-            "MyLambdaServiceRole4539ECB6",
-            "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6"
           ]
           }
         }
@@ -717,8 +717,8 @@ export = {
             }
           },
           "DependsOn": [
-            "MyLambdaServiceRole4539ECB6",
-            "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6"
           ]
           }
         }
@@ -827,8 +827,8 @@ export = {
           }
           },
           "DependsOn": [
-          "MyLambdaServiceRole4539ECB6",
-          "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6",
           ]
         }
         }
@@ -906,8 +906,8 @@ export = {
       }
     },
     "DependsOn": [
+      "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
       "MyLambdaServiceRole4539ECB6",
-      "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
     ]
     }, ResourcePart.CompleteDefinition));
 
@@ -964,8 +964,8 @@ export = {
       }
     },
     "DependsOn": [
+      "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
       "MyLambdaServiceRole4539ECB6",
-      "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
     ]
     }, ResourcePart.CompleteDefinition));
 
@@ -1054,6 +1054,27 @@ export = {
         ]
       }
     }));
+
+    test.done();
+  },
+
+  'Can use metricErrors on a lambda Function'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+
+    // THEN
+    test.deepEqual(stack.node.resolve(fn.metricErrors()), {
+      dimensions: { FunctionName: { Ref: 'Function76856677' }},
+      namespace: 'AWS/Lambda',
+      metricName: 'Errors',
+      periodSec: 300,
+      statistic: 'Sum',
+    });
 
     test.done();
   },
@@ -1155,6 +1176,52 @@ export = {
                 /Unable to add layer:/);
 
     test.done();
+  },
+
+  'environment variables are prohibited in China'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'cn-north-1' }});
+
+    // WHEN
+    test.throws(() => {
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NodeJS,
+        environment: {
+          SOME: 'Variable'
+        }
+      });
+    }, /Environment variables are not supported/);
+
+    test.done();
+  },
+
+  'environment variables work in an unspecified region'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS,
+      environment: {
+        SOME: 'Variable'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          SOME: "Variable"
+        }
+      }
+    }));
+
+    test.done();
+
   },
 
   'support reserved concurrent executions'(test: Test) {

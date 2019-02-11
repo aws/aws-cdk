@@ -92,8 +92,7 @@ export = {
               { Ref: "myapiDeploymentStageprod298F01AF" },
               "/"
             ]]
-          },
-          Export: { Name: "myapiEndpoint3628AFE3" }
+          }
         }
       }
     });
@@ -526,12 +525,12 @@ export = {
     // THEN
     expect(stack).to(haveResource('My::Resource', {
       DependsOn: [
-        "myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9",
-        "myapi162F20B8",
         "myapiAccountC3A4750C",
         "myapiCloudWatchRoleEB425128",
+        "myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9",
         "myapiDeploymentStageprod329F21FF",
-        "myapiGET9B7CD29E"
+        "myapiGET9B7CD29E",
+        "myapi162F20B8"
       ]
     }, ResourcePart.CompleteDefinition));
 

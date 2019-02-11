@@ -29,12 +29,16 @@ export = nodeunit.testCase({
             const app = new cdk.App();
             const stack = new cdk.Stack(app, 'Test', { env: { account: pipelineAccount } });
             const pipeline = new code.Pipeline(stack, 'Pipeline');
-            const fakeAction = new FakeAction(stack, 'Fake', pipeline);
+            const fakeAction = new FakeAction('Fake');
+            pipeline.addStage({
+              name: 'FakeStage',
+              actions: [fakeAction],
+            });
             new PipelineDeployStackAction(stack, 'Action', {
               changeSetName: 'ChangeSet',
               inputArtifact: fakeAction.outputArtifact,
               stack: new cdk.Stack(app, 'DeployedStack', { env: { account: stackAccount } }),
-              stage: pipeline.addStage('DeployStage'),
+              stage: pipeline.addStage({ name: 'DeployStage' }),
               adminPermissions: false,
             });
           }, 'Cross-environment deployment is not supported');
@@ -54,14 +58,18 @@ export = nodeunit.testCase({
             const app = new cdk.App();
             const stack = new cdk.Stack(app, 'Test');
             const pipeline = new code.Pipeline(stack, 'Pipeline');
-            const fakeAction = new FakeAction(stack, 'Fake', pipeline);
+            const fakeAction = new FakeAction('Fake');
+            pipeline.addStage({
+              name: 'FakeStage',
+              actions: [fakeAction],
+            });
             new PipelineDeployStackAction(stack, 'Action', {
               changeSetName: 'ChangeSet',
               createChangeSetRunOrder: createRunOrder,
               executeChangeSetRunOrder: executeRunOrder,
               inputArtifact: fakeAction.outputArtifact,
               stack: new cdk.Stack(app, 'DeployedStack'),
-              stage: pipeline.addStage('DeployStage'),
+              stage: pipeline.addStage({ name: 'DeployStage' }),
               adminPermissions: false,
             });
           }, 'createChangeSetRunOrder must be < executeChangeSetRunOrder');
@@ -81,23 +89,26 @@ export = nodeunit.testCase({
     const selfUpdatingStack = createSelfUpdatingStack(pipelineStack);
 
     const pipeline = selfUpdatingStack.pipeline;
-    const selfUpdateStage = pipeline.addStage('SelfUpdate');
+    const selfUpdateStage1 = pipeline.addStage({ name: 'SelfUpdate1' });
+    const selfUpdateStage2 = pipeline.addStage({ name: 'SelfUpdate2' });
+    const selfUpdateStage3 = pipeline.addStage({ name: 'SelfUpdate3' });
+
     new PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
-      stage: selfUpdateStage,
+      stage: selfUpdateStage1,
       stack: pipelineStack,
       inputArtifact: selfUpdatingStack.synthesizedApp,
       capabilities: cfn.CloudFormationCapabilities.NamedIAM,
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack', {
-      stage: selfUpdateStage,
+      stage: selfUpdateStage2,
       stack: stackWithNoCapability,
       inputArtifact: selfUpdatingStack.synthesizedApp,
       capabilities: cfn.CloudFormationCapabilities.None,
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack2', {
-      stage: selfUpdateStage,
+      stage: selfUpdateStage3,
       stack: stackWithAnonymousCapability,
       inputArtifact: selfUpdatingStack.synthesizedApp,
       capabilities: cfn.CloudFormationCapabilities.AnonymousIAM,
@@ -144,7 +155,7 @@ export = nodeunit.testCase({
     const selfUpdatingStack = createSelfUpdatingStack(pipelineStack);
 
     const pipeline = selfUpdatingStack.pipeline;
-    const selfUpdateStage = pipeline.addStage('SelfUpdate');
+    const selfUpdateStage = pipeline.addStage({ name: 'SelfUpdate' });
     new PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
       stage: selfUpdateStage,
       stack: pipelineStack,
@@ -176,11 +187,11 @@ export = nodeunit.testCase({
     const pipelineStack = getTestStack();
     const selfUpdatingStack = createSelfUpdatingStack(pipelineStack);
 
-    const pipeline = selfUpdatingStack.pipeline;
     const role = new iam.Role(pipelineStack, 'MyRole', {
       assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
     });
-    const selfUpdateStage = pipeline.addStage('SelfUpdate');
+    const pipeline = selfUpdatingStack.pipeline;
+    const selfUpdateStage = pipeline.addStage({ name: 'SelfUpdate' });
     const deployAction = new PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
       stage: selfUpdateStage,
       stack: pipelineStack,
@@ -203,7 +214,7 @@ export = nodeunit.testCase({
 
     // WHEN //
     // this our app/service/infra to deploy
-    const deployStage = pipeline.addStage('Deploy');
+    const deployStage = pipeline.addStage({ name: 'Deploy' });
     const deployAction = new PipelineDeployStackAction(pipelineStack, 'DeployServiceStackA', {
       stage: deployStage,
       stack: emptyStack,
@@ -248,7 +259,7 @@ export = nodeunit.testCase({
       },
       Roles: [
         {
-          Ref: 'DeployServiceStackAChangeSetRoleA1245536',
+          Ref: 'CodePipelineDeployChangeSetRoleF9F2B343',
         },
       ],
     }));
@@ -262,13 +273,18 @@ export = nodeunit.testCase({
           const app = new cdk.App();
           const stack = new cdk.Stack(app, 'Test');
           const pipeline = new code.Pipeline(stack, 'Pipeline');
-          const fakeAction = new FakeAction(stack, 'Fake', pipeline);
+          const fakeAction = new FakeAction('Fake');
+          pipeline.addStage({
+            name: 'FakeStage',
+            actions: [fakeAction],
+          });
           const deployedStack = new cdk.Stack(app, 'DeployedStack');
+          const deployStage = pipeline.addStage({ name: 'DeployStage' });
           const action = new PipelineDeployStackAction(stack, 'Action', {
             changeSetName: 'ChangeSet',
             inputArtifact: fakeAction.outputArtifact,
             stack: deployedStack,
-            stage: pipeline.addStage('DeployStage'),
+            stage: deployStage,
             adminPermissions: false,
           });
           for (let i = 0 ; i < assetCount ; i++) {
@@ -286,15 +302,19 @@ export = nodeunit.testCase({
 class FakeAction extends api.Action {
   public readonly outputArtifact: api.Artifact;
 
-  constructor(scope: cdk.Construct, id: string, pipeline: code.Pipeline) {
-    super(scope, id, {
+  constructor(actionName: string) {
+    super({
+      actionName,
       artifactBounds: api.defaultBounds(),
       category: api.ActionCategory.Test,
       provider: 'Test',
-      stage: pipeline.addStage('FakeStage'),
     });
 
-    this.outputArtifact = new api.Artifact(this, 'OutputArtifact');
+    this.outputArtifact = new api.Artifact('OutputArtifact');
+  }
+
+  protected bind(_stage: api.IStage, _scope: cdk.Construct): void {
+    // do nothing
   }
 }
 
@@ -309,15 +329,25 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
 
   // simple source
   const bucket = s3.Bucket.import( pipeline, 'PatternBucket', { bucketArn: 'arn:aws:s3:::totally-fake-bucket' });
-  new s3.PipelineSourceAction(pipeline, 'S3Source', {
+  const sourceAction = new s3.PipelineSourceAction({
+    actionName: 'S3Source',
     bucket,
     bucketKey: 'the-great-key',
-    stage: pipeline.addStage('source'),
+  });
+  pipeline.addStage({
+    name: 'source',
+    actions: [sourceAction],
   });
 
   const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild');
-  const buildStage = pipeline.addStage('build');
-  const buildAction = project.addToPipeline(buildStage, 'CodeBuild');
+  const buildAction = project.toCodePipelineBuildAction({
+    actionName: 'CodeBuild',
+    inputArtifact: sourceAction.outputArtifact,
+  });
+  pipeline.addStage({
+    name: 'build',
+    actions: [buildAction],
+  });
   const synthesizedApp = buildAction.outputArtifact;
   return {synthesizedApp, pipeline};
 }

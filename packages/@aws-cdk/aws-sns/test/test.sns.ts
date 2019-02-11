@@ -149,7 +149,7 @@ export = {
           "TopicName": "topicName"
           }
         },
-        "MyTopicMyQueueSubscription3245B11E": {
+        "MyQueueMyTopicSubscriptionEB66AD1B": {
           "Type": "AWS::SNS::Subscription",
           "Properties": {
           "Endpoint": {
@@ -233,7 +233,7 @@ export = {
           "TopicName": "topicName"
           }
         },
-        "MyTopicMyFuncSubscriptionEAF54A3F": {
+        "MyFuncMyTopicSubscription708A6535": {
           "Type": "AWS::SNS::Subscription",
           "Properties": {
           "Endpoint": {
@@ -368,7 +368,7 @@ export = {
               "TopicName": "topicName"
             }
           },
-          "MyTopicMyQueueSubscription3245B11E": {
+          "MyQueueMyTopicSubscriptionEB66AD1B": {
             "Type": "AWS::SNS::Subscription",
             "Properties": {
               "Endpoint": {
@@ -383,7 +383,7 @@ export = {
               }
             }
           },
-          "MyTopicMyFuncSubscriptionEAF54A3F": {
+          "MyFuncMyTopicSubscription708A6535": {
             "Type": "AWS::SNS::Subscription",
             "Properties": {
               "Endpoint": {
@@ -718,7 +718,8 @@ export = {
     test.deepEqual(dest1.type, s3n.BucketNotificationDestinationType.Topic);
 
     const dep: cdk.Construct = dest1.dependencies![0] as any;
-    test.deepEqual((dep.node.children[0] as any).logicalId, 'MyTopicPolicy12A5EC17', 'verify topic policy is added as dependency');
+    test.deepEqual(stack.node.resolve((dep.node.children[0] as any).logicalId),
+      'MyTopicPolicy12A5EC17', 'verify topic policy is added as dependency');
 
     // calling again on the same bucket yields is idempotent
     const dest2 = topic.asBucketNotificationDestination(bucketArn, bucketId);
@@ -783,6 +784,31 @@ export = {
         }
       }
       }
+    });
+
+    test.done();
+  },
+
+  'test metrics'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // THEN
+    test.deepEqual(stack.node.resolve(topic.metricNumberOfMessagesPublished()), {
+      dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
+      namespace: 'AWS/SNS',
+      metricName: 'NumberOfMessagesPublished',
+      periodSec: 300,
+      statistic: 'Sum'
+    });
+
+    test.deepEqual(stack.node.resolve(topic.metricPublishSize()), {
+      dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
+      namespace: 'AWS/SNS',
+      metricName: 'PublishSize',
+      periodSec: 300,
+      statistic: 'Average'
     });
 
     test.done();

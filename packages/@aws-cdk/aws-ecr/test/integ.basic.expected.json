@@ -54,9 +54,6 @@
             }
           ]
         ]
-      },
-      "Export": {
-        "Name": "aws-ecr-integ-stack:RepositoryURI"
       }
     }
   }

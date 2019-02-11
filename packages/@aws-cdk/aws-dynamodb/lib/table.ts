@@ -1,7 +1,7 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Construct, TagManager, Tags, Token } from '@aws-cdk/cdk';
+import { Construct, Token } from '@aws-cdk/cdk';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -82,8 +82,8 @@ export interface TableOptions {
   pitrEnabled?: boolean;
 
   /**
-   * Whether server-side encryption is enabled.
-   * @default undefined, server-side encryption is disabled
+   * Whether server-side encryption with an AWS managed customer master key is enabled.
+   * @default undefined, server-side encryption is enabled with an AWS owned customer master key
    */
   sseEnabled?: boolean;
 
@@ -93,12 +93,6 @@ export interface TableOptions {
    * @default undefined, streams are disabled
    */
   streamSpecification?: StreamViewType;
-
-  /**
-   * The AWS resource tags to associate with the table.
-   * @default undefined
-   */
-  tags?: Tags;
 
   /**
    * The name of TTL attribute.
@@ -236,7 +230,6 @@ export class Table extends Construct {
       },
       sseSpecification: props.sseEnabled ? { sseEnabled: props.sseEnabled } : undefined,
       streamSpecification: props.streamSpecification ? { streamViewType: props.streamSpecification } : undefined,
-      tags: new TagManager(this, { initialTags: props.tags }),
       timeToLiveSpecification: props.ttlAttributeName ? { attributeName: props.ttlAttributeName, enabled: true } : undefined
     });
 

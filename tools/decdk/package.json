@@ -1,8 +1,7 @@
 {
-  "name": "decdk",
-  "private": true,
+  "name": "@aws-cdk/decdk",
   "version": "0.23.0",
-  "description": "Generate JSON schema for declarative CDK packages",
+  "description": "Declarative CDK: a CloudFormation-like syntax for defining CDK stacks",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": {
