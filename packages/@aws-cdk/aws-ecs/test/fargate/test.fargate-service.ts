@@ -129,6 +129,33 @@ export = {
 
       test.done();
     },
+
+    "allows specifying 0 for minimumHealthyPercent"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+      });
+
+      new ecs.FargateService(stack, "FargateService", {
+        cluster,
+        taskDefinition,
+        minimumHealthyPercent: 0,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::Service", {
+        DeploymentConfiguration: {
+          MinimumHealthyPercent: 0,
+        }
+      }));
+
+      test.done();
+    },
   },
 
   "When setting up a health check": {

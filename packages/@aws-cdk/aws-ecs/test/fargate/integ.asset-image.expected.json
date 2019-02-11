@@ -512,8 +512,8 @@
         "Timeout": 300
       },
       "DependsOn": [
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17",
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C"
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ]
     },
     "FargateServiceTaskDefTaskRole8CDCF85E": {
@@ -838,6 +838,7 @@
         }
       },
       "DependsOn": [
+        "FargateServiceLBPublicListenerECSGroupBE57E081",
         "FargateServiceLBPublicListener4B4929CA"
       ]
     },
@@ -903,7 +904,8 @@
         "Type": "application"
       },
       "DependsOn": [
-        "VpcIGWD7BA715C"
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet2DefaultRoute97F91067"
       ]
     },
     "FargateServiceLBSecurityGroup5F444C78": {
@@ -1000,9 +1002,6 @@
           "FargateServiceLBB353E155",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:FargateServiceLoadBalancerDNS9433D5F6"
       }
     },
     "LoadBalancerDNS": {
@@ -1011,9 +1010,6 @@
           "FargateServiceLBB353E155",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:LoadBalancerDNS"
       }
     }
   }

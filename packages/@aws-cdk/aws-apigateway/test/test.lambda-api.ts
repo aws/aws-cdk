@@ -126,9 +126,12 @@ export = {
               },
               ":lambda:path/2015-03-31/functions/",
               {
-                "Ref": "alias68BF17F5"
+                "Fn::GetAtt": [
+                  "handlerE1533BD5",
+                  "Arn"
+                ]
               },
-              "/invocations"
+              ":my-alias/invocations"
             ]
           ]
         }

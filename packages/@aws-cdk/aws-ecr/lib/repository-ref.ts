@@ -1,4 +1,3 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
@@ -41,15 +40,12 @@ export interface IRepository extends cdk.IConstruct {
   addToResourcePolicy(statement: iam.PolicyStatement): void;
 
   /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
+   * Convenience method for creating a new {@link PipelineSourceAction}.
    *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the optional construction properties of the new Action
+   * @param props the construction properties of the new Action
    * @returns the newly created {@link PipelineSourceAction}
    */
-  addToPipeline(stage: codepipeline.IStage, name: string, props?: CommonPipelineSourceActionProps):
+  toCodePipelineSourceAction(props: CommonPipelineSourceActionProps):
       PipelineSourceAction;
 
   /**
@@ -173,12 +169,10 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    */
   public abstract export(): RepositoryImportProps;
 
-  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineSourceActionProps = {}):
-      PipelineSourceAction {
-    return new PipelineSourceAction(this, name, {
-      stage,
-      repository: this,
+  public toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction {
+    return new PipelineSourceAction({
       ...props,
+      repository: this,
     });
   }
 

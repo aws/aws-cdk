@@ -169,7 +169,7 @@
                 "Name": "CodeBuildAction",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkpipelineeventtargetCodeBuildAction37D411C2"
+                    "Name": "Artifact_CodeBuildAction_awscdkpipelineeventtargetBuildProject106B7735"
                   }
                 ],
                 "RunOrder": 1
@@ -180,8 +180,8 @@
         ]
       },
       "DependsOn": [
-        "MyPipelineRoleC0D47CA4",
-        "MyPipelineRoleDefaultPolicy34F09EFA"
+        "MyPipelineRoleDefaultPolicy34F09EFA",
+        "MyPipelineRoleC0D47CA4"
       ]
     },
     "MyPipelineOnPipelineStateChangeA017E4B1": {
@@ -238,7 +238,7 @@
         ]
       }
     },
-    "SourceOnSourceStateChangeEF8EB16D": {
+    "MyPipelineSourceOnSourceStateChange6DEE3A75": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
@@ -290,7 +290,7 @@
         ]
       }
     },
-    "MyPipelineCodeCommitSourceOnActionStateChange39DCCFC1": {
+    "MyPipelineSourceCodeCommitSourceOnActionStateChangeDCAF781A": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {

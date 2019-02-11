@@ -1,4 +1,4 @@
-import { Construct, IConstruct, IDependable, Output, Stack } from '@aws-cdk/cdk';
+import { Construct, IConstruct, Output, Stack } from '@aws-cdk/cdk';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
@@ -126,8 +126,6 @@ export class Role extends Construct implements IRole {
   /**
    * Returns the role.
    */
-  public readonly dependencyElements: IDependable[];
-
   public readonly policyFragment: PrincipalPolicyFragment;
 
   private defaultPolicy?: Policy;
@@ -154,7 +152,6 @@ export class Role extends Construct implements IRole {
     this.roleId = role.roleId;
     this.roleArn = role.roleArn;
     this.roleName = role.roleName;
-    this.dependencyElements = [ role ];
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
     function _flatten(policies?: { [name: string]: PolicyDocument }) {
@@ -186,7 +183,6 @@ export class Role extends Construct implements IRole {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.attachInlinePolicy(this.defaultPolicy);
-      this.dependencyElements.push(this.defaultPolicy);
     }
     this.defaultPolicy.addStatement(statement);
     return true;
@@ -208,12 +204,32 @@ export class Role extends Construct implements IRole {
     this.attachedPolicies.attach(policy);
     policy.attachToRole(this);
   }
+
+  /**
+   * Grant the actions defined in actions to the identity Principal on this resource.
+   */
+  public grant(identity?: IPrincipal, ...actions: string[]) {
+      if (!identity) {
+        return;
+      }
+
+      identity.addToPolicy(new PolicyStatement()
+        .addResource(this.roleArn)
+        .addActions(...actions));
+  }
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  public grantPassRole(identity?: IPrincipal) {
+    this.grant(identity, 'iam:PassRole');
+  }
 }
 
 /**
  * A Role object
  */
-export interface IRole extends IConstruct, IIdentity, IDependable {
+export interface IRole extends IConstruct, IIdentity {
   /**
    * Returns the ARN of this role.
    */
@@ -285,7 +301,6 @@ class ImportedRole extends Construct implements IRole {
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
   public readonly policyFragment: PrincipalPolicyFragment;
   public readonly roleArn: string;
-  public readonly dependencyElements: IDependable[] = [];
 
   private readonly _roleId?: string;
 

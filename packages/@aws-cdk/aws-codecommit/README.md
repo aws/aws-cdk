@@ -1,4 +1,9 @@
-## AWS CodeCommit Construct Library
+# AWS CodeCommit
+
+AWS CodeCommit is a version control service that enables you to privately store and manage Git repositories in the AWS cloud.
+
+For further information on CodeCommit,
+see the [AWS CodeCommit documentation](https://docs.aws.amazon.com/codecommit).
 
 To add a CodeCommit Repository to your stack:
 
@@ -11,14 +16,14 @@ const repo = new codecommit.Repository(this, 'Repository' ,{
 });
 ```
 
-To add an SNS trigger to your repository:
+To add an Amazon SNS trigger to your repository:
 
 ```ts
 // trigger is established for all repository actions on all branches by default.
 repo.notify('arn:aws:sns:*:123456789012:my_topic');
 ```
 
-### CodePipeline
+## AWS CodePipeline
 
 To use a CodeCommit Repository in a CodePipeline:
 
@@ -26,25 +31,28 @@ To use a CodeCommit Repository in a CodePipeline:
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
-    pipelineName: 'MyPipeline',
+  pipelineName: 'MyPipeline',
 });
-const sourceStage = pipeline.addStage('Source');
-const sourceAction = new codecommit.PipelineSourceAction(this, 'CodeCommit', {
-    stage: sourceStage,
-    repository: repo,
+const sourceAction = new codecommit.PipelineSourceAction({
+  actionName: 'CodeCommit',
+  repository: repo,
+});
+pipeline.addStage({
+  name: 'Source',
+  actions: [sourceAction],
 });
 ```
 
-You can also add the Repository to the Pipeline directly:
+You can also create the action from the Repository directly:
 
 ```ts
 // equivalent to the code above:
-const sourceAction = repo.addToPipeline(sourceStage, 'CodeCommit');
+const sourceAction = repo.toCodePipelineSourceAction({ actionName: 'CodeCommit' });
 ```
 
-### Events
+## Events
 
-CodeCommit repositories emit CloudWatch events for certain activity.
+CodeCommit repositories emit Amazon CloudWatch events for certain activities.
 Use the `repo.onXxx` methods to define rules that trigger on these events
 and invoke targets as a result:
 
@@ -52,7 +60,7 @@ and invoke targets as a result:
 // starts a CodeBuild project when a commit is pushed to the "master" branch of the repo
 repo.onCommit('CommitToMaster', project, 'master');
 
-// publishes a message to an SNS topic when a comment is made on a pull request
+// publishes a message to an Amazon SNS topic when a comment is made on a pull request
 const rule = repo.onCommentOnPullRequest('CommentOnPullRequest');
 rule.addTarget(myTopic);
 ```

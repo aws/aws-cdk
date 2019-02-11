@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Construct, Output, Ref, Resource, Stack } from '../../lib';
+import { Output, Ref, Resource, Stack } from '../../lib';
 
 export = {
   'outputs can be added to the stack'(test: Test) {
@@ -28,16 +28,6 @@ export = {
     test.done();
   },
 
-  'outputs have a default unique export name'(test: Test) {
-    const stack = new Stack(undefined, 'MyStack');
-    const output = new Output(stack, 'MyOutput');
-    const child = new Construct(stack, 'MyConstruct');
-    const output2 = new Output(child, 'MyOutput2');
-    test.equal(output.export, 'MyStack:MyOutput');
-    test.equal(output2.export, 'MyStack:MyConstructMyOutput255322D15');
-    test.done();
-  },
-
   'disableExport can be used to disable the auto-export behavior'(test: Test) {
     const stack = new Stack();
     const output = new Output(stack, 'MyOutput', { disableExport: true });
@@ -53,10 +43,10 @@ export = {
     test.done();
   },
 
-  'is stack name is undefined, we will only use the logical ID for the export name'(test: Test) {
+  'if stack name is undefined, we will only use the logical ID for the export name'(test: Test) {
     const stack = new Stack();
     const output = new Output(stack, 'MyOutput');
-    test.equal(output.export, 'MyOutput');
+    test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyOutput' });
     test.done();
   },
 
@@ -64,6 +54,33 @@ export = {
     const stack = new Stack(undefined, 'MyStack');
     const output = new Output(stack, 'MyOutput');
     test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyStack:MyOutput' });
+
+    test.deepEqual(stack.toCloudFormation(), {
+      Outputs: {
+        MyOutput: {
+          Export: { Name: 'MyStack:MyOutput' }
+        }
+      }
+    });
     test.done();
-  }
+  },
+
+  'No export is created by default'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Output(stack, 'SomeOutput', { value: 'x' });
+
+    // THEN
+    test.deepEqual(stack.toCloudFormation(), {
+      Outputs: {
+        SomeOutput: {
+          Value: 'x'
+        }
+      }
+    });
+
+    test.done();
+  },
 };

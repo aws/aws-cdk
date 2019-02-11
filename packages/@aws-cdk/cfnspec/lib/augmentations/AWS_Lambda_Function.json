@@ -1,0 +1,27 @@
+{
+  "metrics": {
+    "namespace": "AWS/Lambda",
+    "dimensions": { "FunctionName": "this.functionName" },
+    "metrics": [
+      {
+        "name": "Throttles",
+        "documentation": "How often this Lambda is throttled",
+        "type": "count"
+      },
+      {
+        "name": "Invocations",
+        "documentation": "How often this Lambda is invoked",
+        "type": "count"
+      },
+      {
+        "name": "Errors",
+        "documentation": "How many invocations of this Lambda fail",
+        "type": "count"
+      },
+      {
+        "name": "Duration",
+        "documentation": "How long execution of this Lambda takes"
+      }
+    ]
+  }
+}

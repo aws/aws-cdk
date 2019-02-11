@@ -359,7 +359,8 @@
         "Type": "network"
       },
       "DependsOn": [
-        "VPCIGWB7E252D3"
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet2DefaultRouteB7481BBA"
       ]
     },
     "LBListener49E825B4": {
@@ -397,9 +398,7 @@
         "TargetType": "ip"
       },
       "DependsOn": [
-        "VPCB9E5F0B4",
-        "VPCIGWB7E252D3",
-        "VPCVPCGW99B986DC"
+        "VPCIGWB7E252D3"
       ]
     }
   }

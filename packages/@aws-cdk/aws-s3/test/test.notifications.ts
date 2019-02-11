@@ -42,6 +42,24 @@ export = {
 
     test.done();
   },
+  'when notification are added, you can tag the lambda'(test: Test) {
+    const stack = new cdk.Stack();
+    stack.apply(new cdk.Tag('Lambda', 'AreTagged'));
+
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    const topic = new Topic(stack, 'MyTopic');
+
+    bucket.onEvent(s3.EventType.ObjectCreated, topic);
+
+    expect(stack).to(haveResource('AWS::S3::Bucket'));
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Tags: [{Key: 'Lambda', Value: 'AreTagged'}],
+      Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)' }));
+    expect(stack).to(haveResource('Custom::S3BucketNotifications'));
+
+    test.done();
+  },
 
   'bucketNotificationTarget is not called during synthesis'(test: Test) {
     const stack = new cdk.Stack();
@@ -288,6 +306,7 @@ export = {
 
     bucket.onObjectCreated(dest);
 
+    stack.node.prepareTree();
     test.deepEqual(stack.toCloudFormation().Resources.BucketNotifications8F2E257D, {
       Type: 'Custom::S3BucketNotifications',
       Properties: {

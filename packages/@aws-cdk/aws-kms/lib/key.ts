@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, IConstruct, Output, TagManager, Tags } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IConstruct, Output } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -166,11 +166,6 @@ export interface EncryptionKeyProps {
    * administer the key will be created.
    */
   policy?: PolicyDocument;
-
-  /**
-   * The AWS resource tags to associate with the KMS key.
-   */
-  tags?: Tags;
 }
 
 /**
@@ -199,11 +194,6 @@ export class EncryptionKey extends EncryptionKeyBase {
     return new ImportedEncryptionKey(scope, id, props);
   }
 
-  /**
-   * Manage tags for this construct and children
-   */
-  public readonly tags: TagManager;
-
   public readonly keyArn: string;
   protected readonly policy?: PolicyDocument;
 
@@ -217,14 +207,11 @@ export class EncryptionKey extends EncryptionKeyBase {
       this.allowAccountToAdmin();
     }
 
-    this.tags = new TagManager(this, { initialTags: props.tags });
-
     const resource = new CfnKey(this, 'Resource', {
       description: props.description,
       enableKeyRotation: props.enableKeyRotation,
       enabled: props.enabled,
       keyPolicy: this.policy,
-      tags: this.tags
     });
 
     this.keyArn = resource.keyArn;

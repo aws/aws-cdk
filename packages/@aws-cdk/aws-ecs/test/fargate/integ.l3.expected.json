@@ -525,6 +525,7 @@
         }
       },
       "DependsOn": [
+        "L3LBPublicListenerECSGroup648EEA11",
         "L3LBPublicListener156FFC0F"
       ]
     },
@@ -590,7 +591,8 @@
         "Type": "application"
       },
       "DependsOn": [
-        "VpcIGWD7BA715C"
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet2DefaultRoute97F91067"
       ]
     },
     "L3LBSecurityGroupEDE61198": {
@@ -673,9 +675,6 @@
           "L3LB212FC0E0",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:L3LoadBalancerDNSC6CB4A70"
       }
     }
   }

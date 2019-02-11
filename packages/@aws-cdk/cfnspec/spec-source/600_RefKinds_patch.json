@@ -2676,6 +2676,30 @@
         "description": "Set RefKind of AWS::Lambda::Function to Name"
       }
     },
+    "AWS::Lambda::LayerVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Lambda::LayerVersion to Arn"
+      }
+    },
+    "AWS::Lambda::LayerVersionPermission": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Lambda::LayerVersionPermission to Arn"
+      }
+    },
     "AWS::Lambda::Permission": {
       "patch": {
         "operations": [
@@ -2902,6 +2926,18 @@
           }
         ],
         "description": "Set RefKind of AWS::OpsWorks::Volume to Id"
+      }
+    },
+    "AWS::OpsWorksCM::Server": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::OpsWorksCM::Server to Arn"
       }
     },
     "AWS::RDS::DBCluster": {
@@ -3142,6 +3178,18 @@
           }
         ],
         "description": "Set RefKind of AWS::Route53Resolver::ResolverRule to Object"
+      }
+    },
+    "AWS::Route53Resolver::ResolverRuleAssociation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Route53Resolver::ResolverRuleAssociation to Id"
       }
     },
     "AWS::S3::Bucket": {
@@ -3456,6 +3504,18 @@
         "description": "Set RefKind of AWS::SageMaker::NotebookInstanceLifecycleConfig to Arn"
       }
     },
+    "AWS::Serverless::Application": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::Serverless::Application to Name"
+      }
+    },
     "AWS::Serverless::Api": {
       "patch": {
         "operations": [
@@ -3478,6 +3538,18 @@
           }
         ],
         "description": "Set RefKind of AWS::Serverless::Function to Name"
+      }
+    },
+    "AWS::Serverless::LayerVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Serverless::LayerVersion to Arn"
       }
     },
     "AWS::Serverless::SimpleTable": {
@@ -3922,6 +3994,54 @@
           }
         ],
         "description": "Set RefKind of AWS::DLM::LifecyclePolicy to Id"
+      }
+    },
+    "AWS::DocDB::DBCluster": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::DocDB::DBCluster to Name"
+      }
+    },
+    "AWS::DocDB::DBClusterParameterGroup": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::DocDB::DBClusterParameterGroup to Name"
+      }
+    },
+    "AWS::DocDB::DBInstance": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::DocDB::DBInstance to Id"
+      }
+    },
+    "AWS::DocDB::DBSubnetGroup": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::DocDB::DBSubnetGroup to Name"
       }
     },
     "AWS::SecretsManager::ResourcePolicy": {

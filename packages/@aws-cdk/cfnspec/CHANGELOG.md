@@ -1,3 +1,107 @@
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+* AWS::Serverless::Application
+* AWS::Serverless::LayerVersion
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api Auth (__added__)
+* AWS::Serverless::Api BinaryMediaTypes (__added__)
+* AWS::Serverless::Api Cors (__added__)
+* AWS::Serverless::Api EndpointConfiguration (__added__)
+* AWS::Serverless::Function AutoPublishAlias (__added__)
+* AWS::Serverless::Function DeploymentPreference (__added__)
+* AWS::Serverless::Function Layers (__added__)
+* AWS::Serverless::Function ReservedConcurrentExecutions (__added__)
+* AWS::Serverless::SimpleTable SSESpecification (__added__)
+* AWS::Serverless::SimpleTable TableName (__added__)
+* AWS::Serverless::SimpleTable Tags (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.Auth (__added__)
+* AWS::Serverless::Function.DeploymentPreference (__added__)
+* AWS::Serverless::SimpleTable.SSESpecification (__added__)
+
+
+
+# CloudFormation Resource Specification v2.21.0
+
+## New Resource Types
+
+* AWS::DocDB::DBCluster
+* AWS::DocDB::DBClusterParameterGroup
+* AWS::DocDB::DBInstance
+* AWS::DocDB::DBSubnetGroup
+* AWS::Lambda::LayerVersion
+* AWS::Lambda::LayerVersionPermission
+* AWS::OpsWorksCM::Server
+* AWS::Route53Resolver::ResolverRuleAssociation
+
+## Attribute Changes
+
+* AWS::Route53Resolver::ResolverRule Name (__added__)
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker Tags (__added__)
+* AWS::AmazonMQ::Configuration Tags (__added__)
+* AWS::ApiGateway::ApiKey Value (__added__)
+* AWS::DMS::Endpoint ElasticsearchSettings (__added__)
+* AWS::DMS::Endpoint KinesisSettings (__added__)
+* AWS::EC2::EC2Fleet ValidFrom.PrimitiveType (__changed__)
+  * Old: Integer
+  * New: String
+* AWS::EC2::EC2Fleet ValidUntil.PrimitiveType (__changed__)
+  * Old: Integer
+  * New: String
+* AWS::ECS::Cluster Tags (__added__)
+* AWS::ECS::Service Tags (__added__)
+* AWS::ECS::TaskDefinition Tags (__added__)
+* AWS::Elasticsearch::Domain NodeToNodeEncryptionOptions (__added__)
+* AWS::Inspector::AssessmentTarget ResourceGroupArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::DBCluster SourceRegion (__added__)
+* AWS::RDS::DBInstance UseDefaultProcessorFeatures (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct ProductId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct ProductName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::Service HealthCheckCustomConfig.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::AmazonMQ::Broker.TagsEntry (__added__)
+* AWS::AmazonMQ::Configuration.TagsEntry (__added__)
+* AWS::CodeBuild::Project.RegistryCredential (__added__)
+* AWS::DMS::Endpoint.ElasticsearchSettings (__added__)
+* AWS::DMS::Endpoint.KinesisSettings (__added__)
+* AWS::Elasticsearch::Domain.NodeToNodeEncryptionOptions (__added__)
+* AWS::CodeBuild::Project.Environment ImagePullCredentialsType (__added__)
+* AWS::CodeBuild::Project.Environment RegistryCredential (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+* Tag Key.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
 
 # CloudFormation Resource Specification v2.18.0
 

@@ -19,7 +19,7 @@ always launch a database in a VPC. Use the `vpcPlacement` attribute to control w
 your instances will be launched privately or publicly:
 
 ```ts
-const cluster = new DatabaseCluster(stack, 'Database', {
+const cluster = new DatabaseCluster(this, 'Database', {
     engine: DatabaseClusterEngine.Aurora,
     masterUser: {
         username: 'admin',

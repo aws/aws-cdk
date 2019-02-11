@@ -1,13 +1,13 @@
 # Contributing to the AWS Cloud Development Kit
 
-Thanks for your interest in contibuting to the AWS CDK! ❤️
+Thanks for your interest in contributing to the AWS CDK! ❤️
 
 This document describes how to set up a development environment and submit your contributions. Please read it carefully
 and let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
 
 ## Pull Requests
 
-1. If there isn't one already, open an issue describing what you intend to contribute. It's usful to communicate in
+1. If there isn't one already, open an issue describing what you intend to contribute. It's useful to communicate in
    advance, because sometimes, someone is already working in this space, so maybe it's worth collaborating with them
    instead of duplicating the efforts.
 1. Work your magic. Here are some guidelines:
@@ -18,7 +18,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
       single commit, so you can use that to frame your scope.
 1. Create a commit with the proposed change changes:
     * Commit title and message (and PR title and description) must adhere to [conventionalcommits].
-    * The title must begin with `feat(module): title`, `fix(module): title`, `reactor(module): title` or
+    * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
       `chore(module): title`.
     * Title should be lowercase.
     * No period at the end of the title.
@@ -28,8 +28,8 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
     * Commit message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
     * Shout out to collaborators.
     * If not obvious (i.e. from unit tests), describe how you verified that your change works.
-    * If this commit includes a breaking change, the commit message must end with a a single pragraph
-      `BREAKING CHANGE: description of what broke and how to achieve this beahvior now`.
+    * If this commit includes a breaking change, the commit message must end with a single paragraph
+      `BREAKING CHANGE: description of what broke and how to achieve this behavior now`.
 2. Push to a fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
 3. Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
 5. Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
@@ -69,7 +69,7 @@ In order to enable efficient collaboration over design documents, the following 
 
 The CDK is a big project, and, at the moment, all of the CDK modules are mastered in a single monolithic repository
 (uses [lerna](https://github.com/lerna/lerna)). There are pros and cons to this approach, and it's especially valuable
-to maintain integrity in the early stage of thr project where things constantly change across the stack. In the future
+to maintain integrity in the early stage of the project where things constantly change across the stack. In the future
 we believe many of these modules will be extracted to their own repositories.
 
 Another complexity is that the CDK is packaged using [jsii](https://github.com/awslabs/jsii) to multiple programming
@@ -122,7 +122,7 @@ alias lw='lr watch'
 The `pkglint` tool "lints" package.json files across the repo according to [rules.ts](tools/pkglint/lib/rules.ts).
 
 To evaluate (and attempt to fix) all package linting issues in the repo, run the following command from the root of the
-repository (after boostrapping):
+repository (after bootstrapping):
 
 ```console
 $ lerna run pkglint
@@ -172,6 +172,33 @@ Each module also has an npm script called `cfn2ts`:
 * `npm run cfn2ts`: generates L1 for a specific module
 * `lerna run cfn2ts`: generates L1 for the entire repo
 
+### scripts/foreach.sh
+
+The script `scripts/foreach.sh` emits a bash script to stdout which executes COMMAND for each module in the repo, in topological order
+this can be useful if you are performing large scale refactors and wish to continue from where you left off
+yes, there are better ways to do this, but this is A WAY...
+
+Usage:
+
+```console
+$ scripts/foreach.sh COMMAND... > a.sh
+$ chmod +x ./a.sh
+$ ./a.sh
+```
+
+For example, to emit a script to run all tests:
+
+```console
+$ scripts/foreach.sh npm test > /tmp/test-all.sh
+$ chmod +x /tmp/test-all.sh
+$ /tmp/test-all.sh
+....runs tests...
+FAIL!
+$ # fix test
+$ # edit /tmp/test-all.sh and delete all lines until the offening module
+$ /tmp/test-all.sh # continue from where you left off
+```
+
 ## Development Workflows
 
 ### Full clean build
@@ -192,7 +219,7 @@ $ ./install.sh
 $ ./build.sh
 ```
 
-If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains] and now run:
+If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains) and now run:
 
 ```
 $ ./pack.sh

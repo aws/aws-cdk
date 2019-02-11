@@ -551,17 +551,11 @@
     "PrivateZoneId": {
       "Value": {
         "Ref": "PrivateZone27242E85"
-      },
-      "Export": {
-        "Name": "aws-cdk-route53-integ:PrivateZoneId"
       }
     },
     "PublicZoneId": {
       "Value": {
         "Ref": "PublicZone2E1C4E34"
-      },
-      "Export": {
-        "Name": "aws-cdk-route53-integ:PublicZoneId"
       }
     }
   }

@@ -201,6 +201,76 @@ export = {
     test.done();
   },
 
+  'bucket with block public access set to BlockAll'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      blockPublicAccess: s3.BlockPublicAccess.BlockAll,
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "PublicAccessBlockConfiguration": {
+              "BlockPublicAcls": true,
+              "BlockPublicPolicy": true,
+              "IgnorePublicAcls": true,
+              "RestrictPublicBuckets": true,
+            }
+          },
+        "DeletionPolicy": "Retain",
+        }
+      }
+    });
+    test.done();
+  },
+
+  'bucket with block public access set to BlockAcls'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      blockPublicAccess: s3.BlockPublicAccess.BlockAcls,
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "PublicAccessBlockConfiguration": {
+              "BlockPublicAcls": true,
+              "IgnorePublicAcls": true,
+            }
+          },
+        "DeletionPolicy": "Retain",
+        }
+      }
+    });
+    test.done();
+  },
+
+  'bucket with custom block public access setting'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true })
+    });
+
+    expect(stack).toMatch({
+      "Resources": {
+        "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "PublicAccessBlockConfiguration": {
+              "RestrictPublicBuckets": true,
+            }
+          },
+        "DeletionPolicy": "Retain",
+        }
+      }
+    });
+    test.done();
+  },
+
   'permissions': {
 
     'addPermission creates a bucket policy'(test: Test) {
@@ -978,9 +1048,7 @@ export = {
             "WebsiteURL"
           ]
         },
-        "Export": {
-          "Name": "MyBucketWebsiteURL9C222788"
-        }
+        "Export": {"Name": "MyBucketWebsiteURL9C222788"}
       }
       }
     });
@@ -1072,9 +1140,6 @@ export = {
           ]
         ]
         },
-        "Export": {
-        "Name": "BucketURL"
-        }
       },
       "MyFileURL": {
         "Value": {
@@ -1096,9 +1161,6 @@ export = {
           "/my/file.txt"
           ]
         ]
-        },
-        "Export": {
-        "Name": "MyFileURL"
         }
       },
       "YourFileURL": {
@@ -1122,9 +1184,6 @@ export = {
           ]
         ]
         },
-        "Export": {
-        "Name": "YourFileURL"
-        }
       }
       }
     });
@@ -1234,6 +1293,19 @@ export = {
           "Version": "2012-10-17"
         }
       }));
+      test.done();
+    },
+
+    'throws when blockPublicPolicy is set to true'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket', {
+        blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true })
+      });
+
+      // THEN
+      test.throws(() => bucket.grantPublicAccess(), /blockPublicPolicy/);
+
       test.done();
     }
   },

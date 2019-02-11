@@ -1,4 +1,3 @@
-import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
@@ -7,7 +6,10 @@ import cdk = require('@aws-cdk/cdk');
 import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
-import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
+import {
+  CommonPipelineDeployActionProps, CommonPipelineSourceActionProps,
+  PipelineDeployAction, PipelineSourceAction
+} from './pipeline-actions';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
@@ -54,15 +56,20 @@ export interface IBucket extends cdk.IConstruct {
   export(): BucketImportProps;
 
   /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
+   * Convenience method for creating a new {@link PipelineSourceAction}.
    *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
+   * @param props the construction properties of the new Action
    * @returns the newly created {@link PipelineSourceAction}
    */
-  addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction;
+  toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction;
+
+  /**
+   * Convenience method for creating a new {@link PipelineDeployAction}.
+   *
+   * @param props the construction properties of the new Action
+   * @returns the newly created {@link PipelineDeployAction}
+   */
+  toCodePipelineDeployAction(props: CommonPipelineDeployActionProps): PipelineDeployAction;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -280,24 +287,26 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
   protected abstract autoCreatePolicy = false;
 
   /**
+   * Whether to disallow public access
+   */
+  protected abstract disallowPublicAccess?: boolean;
+
+  /**
    * Exports this bucket from the stack.
    */
   public abstract export(): BucketImportProps;
 
-  /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction {
-    return new PipelineSourceAction(this, name, {
-      stage,
-      bucket: this,
+  public toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction {
+    return new PipelineSourceAction({
       ...props,
+      bucket: this,
+    });
+  }
+
+  public toCodePipelineDeployAction(props: CommonPipelineDeployActionProps): PipelineDeployAction {
+    return new PipelineDeployAction({
+      ...props,
+      bucket: this,
     });
   }
 
@@ -492,6 +501,10 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
    */
   public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]): iam.PolicyStatement {
+    if (this.disallowPublicAccess) {
+      throw new Error("Cannot grant public access when 'blockPublicPolicy' is enabled");
+    }
+
     allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
 
     const statement = new iam.PolicyStatement()
@@ -519,6 +532,62 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
     if (this.encryptionKey) {
       this.encryptionKey.grant(principal, keyActions);
     }
+  }
+}
+
+export interface BlockPublicAccessOptions {
+  /**
+   * Whether to block public ACLs
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
+   */
+  blockPublicAcls?: boolean;
+
+  /**
+   * Whether to block public policy
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
+   */
+  blockPublicPolicy?: boolean;
+
+  /**
+   * Whether to ignore public ACLs
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
+   */
+  ignorePublicAcls?: boolean;
+
+  /**
+   * Whether to restrict public access
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
+   */
+  restrictPublicBuckets?: boolean;
+}
+
+export class BlockPublicAccess {
+  public static readonly BlockAll = new BlockPublicAccess({
+    blockPublicAcls: true,
+    blockPublicPolicy: true,
+    ignorePublicAcls: true,
+    restrictPublicBuckets: true
+  });
+
+  public static readonly BlockAcls = new BlockPublicAccess({
+    blockPublicAcls: true,
+    ignorePublicAcls: true
+  });
+
+  public blockPublicAcls: boolean | undefined;
+  public blockPublicPolicy: boolean | undefined;
+  public ignorePublicAcls: boolean | undefined;
+  public restrictPublicBuckets: boolean | undefined;
+
+  constructor(options: BlockPublicAccessOptions) {
+    this.blockPublicAcls = options.blockPublicAcls;
+    this.blockPublicPolicy = options.blockPublicPolicy;
+    this.ignorePublicAcls = options.ignorePublicAcls;
+    this.restrictPublicBuckets = options.restrictPublicBuckets;
   }
 }
 
@@ -590,6 +659,13 @@ export interface BucketProps {
    * Similar to calling `bucket.grantPublicAccess()`
    */
   publicReadAccess?: boolean;
+
+  /**
+   * The block public access configuration of this bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+   */
+  blockPublicAccess?: BlockPublicAccess;
 }
 
 /**
@@ -619,6 +695,7 @@ export class Bucket extends BucketBase {
   public readonly encryptionKey?: kms.IEncryptionKey;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
+  protected disallowPublicAccess?: boolean;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
@@ -633,7 +710,8 @@ export class Bucket extends BucketBase {
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: new cdk.Token(() => this.parseLifecycleConfiguration()),
-      websiteConfiguration: this.renderWebsiteConfiguration(props)
+      websiteConfiguration: this.renderWebsiteConfiguration(props),
+      publicAccessBlockConfiguration: props.blockPublicAccess
     });
 
     cdk.applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : cdk.RemovalPolicy.Orphan);
@@ -645,6 +723,7 @@ export class Bucket extends BucketBase {
     this.domainName = resource.bucketDomainName;
     this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
     this.dualstackDomainName = resource.bucketDualStackDomainName;
+    this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
 
     // Add all lifecycle rules
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
@@ -1009,6 +1088,8 @@ class ImportedBucket extends BucketBase {
   public policy?: BucketPolicy;
   protected autoCreatePolicy: boolean;
 
+  protected disallowPublicAccess?: boolean;
+
   constructor(scope: cdk.Construct, id: string, private readonly props: BucketImportProps) {
     super(scope, id);
 
@@ -1026,6 +1107,7 @@ class ImportedBucket extends BucketBase {
       ? false
       : props.bucketWebsiteNewUrlFormat;
     this.policy = undefined;
+    this.disallowPublicAccess = false;
   }
 
   /**

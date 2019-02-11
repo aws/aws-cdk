@@ -4,7 +4,6 @@ import { Construct, IConstruct } from '../core/construct';
 import { Environment } from '../environment';
 import { CfnReference } from './cfn-tokens';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
-import { Resource } from './resource';
 
 export interface StackProps {
   /**
@@ -33,13 +32,23 @@ export class Stack extends Construct {
    * @returns The Stack object (throws if the node is not part of a Stack-rooted tree)
    */
   public static find(scope: IConstruct): Stack {
+    const curr = Stack.tryFind(scope);
+    if (curr == null) {
+      throw new Error(`Cannot find a Stack parent for '${scope.toString()}'`);
+    }
+    return curr;
+  }
+
+  /**
+   * Traverses the tree and looks up for the Stack root.
+   *
+   * @param scope A construct in the tree
+   * @returns The Stack object, or undefined if no stack was found.
+   */
+  public static tryFind(scope: IConstruct): Stack | undefined {
     let curr: IConstruct | undefined = scope;
     while (curr != null && !Stack.isStack(curr)) {
       curr = curr.node.scope;
-    }
-
-    if (curr == null) {
-      throw new Error(`Cannot find a Stack parent for '${scope.toString()}'`);
     }
     return curr;
   }
@@ -160,7 +169,7 @@ export class Stack extends Construct {
       };
 
       const elements = stackElements(this);
-      const fragments = elements.map(e => e.toCloudFormation());
+      const fragments = elements.map(e => this.node.resolve(e.toCloudFormation()));
 
       // merge in all CloudFormation fragments collected from the tree
       for (const fragment of fragments) {
@@ -230,7 +239,6 @@ export class Stack extends Construct {
    * Rename a generated logical identities
    */
   public renameLogical(oldId: string, newId: string) {
-    // tslint:disable-next-line:no-console
     if (this.node.children.length > 0) {
       throw new Error("All renames must be set up before adding elements to the stack");
     }
@@ -401,11 +409,28 @@ export class Stack extends Construct {
    * Prepare stack
    *
    * Find all CloudFormation references and tell them we're consuming them.
+   *
+   * Find all dependencies as well and add the appropriate DependsOn fields.
    */
   protected prepare() {
+    // References
     for (const ref of this.node.findReferences()) {
       if (CfnReference.isCfnReference(ref)) {
         ref.consumeFromStack(this);
+      }
+    }
+
+    // Resource dependencies
+    for (const dependency of this.node.findDependencies()) {
+      const theirStack = Stack.tryFind(dependency.target);
+      if (theirStack !== undefined && theirStack !== this) {
+        this.addDependency(theirStack);
+      } else {
+        for (const target of findResources([dependency.target])) {
+          for (const source of findResources([dependency.source])) {
+            source.addDependsOn(target);
+          }
+        }
       }
     }
   }
@@ -496,9 +521,8 @@ export interface TemplateOptions {
  * @returns The same array as is being collected into
  */
 function stackElements(node: IConstruct, into: StackElement[] = []): StackElement[] {
-  const element = StackElement._asStackElement(node);
-  if (element) {
-    into.push(element);
+  if (StackElement.isStackElement(node)) {
+    into.push(node);
   }
 
   for (const child of node.node.children) {
@@ -511,4 +535,16 @@ function stackElements(node: IConstruct, into: StackElement[] = []): StackElemen
 // These imports have to be at the end to prevent circular imports
 import { ArnComponents, arnFromComponents, parseArn } from './arn';
 import { Aws } from './pseudo';
+import { Resource } from './resource';
 import { StackElement } from './stack-element';
+
+/**
+ * Find all resources in a set of constructs
+ */
+function findResources(roots: Iterable<IConstruct>): Resource[] {
+  const ret = new Array<Resource>();
+  for (const root of roots) {
+    ret.push(...root.node.findAll().filter(Resource.isResource));
+  }
+  return ret;
+}
