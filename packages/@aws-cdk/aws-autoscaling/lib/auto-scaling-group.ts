@@ -159,6 +159,12 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * AMI to launch
    */
   machineImage: ec2.IMachineImageSource;
+
+  /**
+   * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
+   * @default A role will automatically be created, it can be accessed via the `role` property
+   */
+  role?: iam.IRole;
 }
 
 /**
@@ -187,7 +193,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   /**
    * The IAM role assumed by instances of this fleet.
    */
-  public readonly role: iam.Role;
+  public readonly role: iam.IRole;
 
   /**
    * Name of the AutoScalingGroup
@@ -217,7 +223,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     this.securityGroups.push(this.securityGroup);
     this.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
-    this.role = new iam.Role(this, 'InstanceRole', {
+    this.role = props.role || new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
 
