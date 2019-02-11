@@ -119,6 +119,7 @@ export abstract class ParameterBase extends cdk.Construct implements IParameter 
     return cdk.Stack.find(this).formatArn({
       service: 'ssm',
       resource: 'parameter',
+      sep: '', // Sep is empty because this.parameterName starts with a / already!
       resourceName: this.parameterName,
     });
   }
