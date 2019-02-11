@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-document';
-import { PrincipalPolicyFragment } from './principals';
+import { PrincipalPolicyFragment } from './policy-document';
 import { IRole, Role, RoleImportProps, RoleProps } from './role';
 
 /**
