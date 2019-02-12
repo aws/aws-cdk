@@ -5,8 +5,9 @@ import dynamodb = require('../lib');
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-dynamodb');
 
-const table = new dynamodb.Table(stack, 'Table', {});
-table.addPartitionKey({ name: 'hashKey', type: dynamodb.AttributeType.String });
+const table = new dynamodb.Table(stack, 'Table', {
+  partitionKey: { name: 'hashKey', type: dynamodb.AttributeType.String }
+});
 
 /// !show
 const readScaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 50 });
