@@ -12,14 +12,14 @@ const table = new dynamodb.Table(this, 'Table', {
 
 ### Keys
 
-You can either specify `partitionKey` and/or `sortKey` when you initialize the
-table, or call `addPartitionKey` and `addSortKey` after initialization.
+When a table is defined, you must define it's schema using the `partitionKey`
+(required) and `sortKey` (optional) properties.
 
 ### Billing Mode
 
 DynamoDB supports two billing modes:
 * PROVISIONED - the default mode where the table and global secondary indexes have configured read and write capacity.
-* PAY_PER_REQUEST - on-demand pricing and scaling. You only pay for what you use and there is no read and write capacity for the table or its gloal secondary indexes.
+* PAY_PER_REQUEST - on-demand pricing and scaling. You only pay for what you use and there is no read and write capacity for the table or its global secondary indexes.
 
 ```ts
 import dynamodb = require('@aws-cdk/aws-dynamodb');
