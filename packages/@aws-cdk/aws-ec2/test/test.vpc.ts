@@ -349,8 +349,8 @@ export = {
 
       const vpc = new VpcNetwork(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.apply(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.resourceTypeName]}));
-      vpc.apply(new Tag('VpcType', 'Good'));
+      vpc.node.apply(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.resourceTypeName]}));
+      vpc.node.apply(new Tag('VpcType', 'Good'));
       expect(stack).to(haveResource("AWS::EC2::VPC", hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
       const propTags = toCfnTags(tags);
@@ -381,7 +381,7 @@ export = {
       const vpc = new VpcNetwork(stack, 'TheVPC');
       const tag = {Key: 'Late', Value: 'Adder'};
       expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
-      vpc.apply(new Tag(tag.Key, tag.Value));
+      vpc.node.apply(new Tag(tag.Key, tag.Value));
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
       test.done();
     },

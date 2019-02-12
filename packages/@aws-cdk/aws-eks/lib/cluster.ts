@@ -247,7 +247,7 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('AmazonEC2ContainerRegistryReadOnly', this).policyArn);
 
     // EKS Required Tags
-    autoScalingGroup.apply(new cdk.Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
+    autoScalingGroup.node.apply(new cdk.Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
 
     // Create an Output for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
     new cdk.Output(autoScalingGroup, 'InstanceRoleARN', {
@@ -273,7 +273,7 @@ export class Cluster extends ClusterBase {
         return;
       }
 
-      subnet.apply(new cdk.Tag("kubernetes.io/role/internal-elb", "1"));
+      subnet.node.apply(new cdk.Tag("kubernetes.io/role/internal-elb", "1"));
     }
   }
 }

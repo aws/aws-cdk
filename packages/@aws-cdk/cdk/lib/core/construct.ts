@@ -313,6 +313,13 @@ export class ConstructNode {
   }
 
   /**
+   * Applies the aspect to this Constructs node
+   */
+  public apply(aspect: IAspect): void {
+    this.aspects.push(aspect);
+    return;
+  }
+  /**
    * Return the ancestors (including self) of this Construct up until and excluding the indicated component
    *
    * @param to The construct to return the path components relative to, or
@@ -574,14 +581,6 @@ export class Construct implements IConstruct {
   public toString() {
     const path = this.node.path;
     return this.node.typename + (path.length > 0 ? ` [${path}]` : '');
-  }
-
-  /**
-   * Applies the aspect to this Constructs node
-   */
-  public apply(aspect: IAspect): void {
-    this.node.aspects.push(aspect);
-    return;
   }
 
   /**

@@ -44,7 +44,7 @@ export = {
   },
   'when notification are added, you can tag the lambda'(test: Test) {
     const stack = new cdk.Stack();
-    stack.apply(new cdk.Tag('Lambda', 'AreTagged'));
+    stack.node.apply(new cdk.Tag('Lambda', 'AreTagged'));
 
     const bucket = new s3.Bucket(stack, 'MyBucket');
 

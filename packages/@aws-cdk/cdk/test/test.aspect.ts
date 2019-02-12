@@ -19,7 +19,7 @@ class VisitOnce implements IAspect {
 export = {
   'Aspects are invoked only once'(test: Test) {
     const root = new MyConstruct();
-    root.apply(new VisitOnce());
+    root.node.apply(new VisitOnce());
     root.node.prepareTree();
     test.deepEqual(root.visitCounter, 1);
     root.node.prepareTree();

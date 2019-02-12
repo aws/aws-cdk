@@ -317,7 +317,7 @@ export = {
     });
     table.addPartitionKey(TABLE_PARTITION_KEY);
     table.addSortKey(TABLE_SORT_KEY);
-    table.apply(new Tag('Environment', 'Production'));
+    table.node.apply(new Tag('Environment', 'Production'));
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {

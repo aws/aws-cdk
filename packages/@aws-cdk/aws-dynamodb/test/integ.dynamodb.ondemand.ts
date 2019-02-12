@@ -52,7 +52,7 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   ttlAttributeName: 'timeToLive'
 });
 
-tableWithGlobalAndLocalSecondaryIndex.apply(new Tag('Environment', 'Production'));
+tableWithGlobalAndLocalSecondaryIndex.node.apply(new Tag('Environment', 'Production'));
 
 tableWithGlobalAndLocalSecondaryIndex.addPartitionKey(TABLE_PARTITION_KEY);
 tableWithGlobalAndLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
