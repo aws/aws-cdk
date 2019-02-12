@@ -299,7 +299,7 @@ export class VpcNetwork extends VpcNetworkBase {
       instanceTenancy,
     });
 
-    this.apply(new cdk.Tag(NAME_TAG, this.node.path));
+    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
     this.availabilityZones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
     this.availabilityZones.sort();
@@ -452,8 +452,8 @@ export class VpcNetwork extends VpcNetworkBase {
 
       // These values will be used to recover the config upon provider import
       const includeResourceTypes = [CfnSubnet.resourceTypeName];
-      subnet.apply(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
-      subnet.apply(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
+      subnet.node.apply(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
+      subnet.node.apply(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
     });
   }
 }
@@ -529,7 +529,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
 
   constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
     super(scope, id);
-    this.apply(new cdk.Tag(NAME_TAG, this.node.path));
+    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {

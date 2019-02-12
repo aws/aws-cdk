@@ -39,7 +39,7 @@ import cdk = require('@aws-cdk/cdk');
 
 const app = new cdk.App();
 const theBestStack = new cdk.Stack(app, 'MarketingSystem');
-theBestStack.apply(new cdk.Tag('StackType', 'TheBest'));
+theBestStack.node.apply(new cdk.Tag('StackType', 'TheBest'));
 
 // any resources added that support tags will get them
 ```
@@ -105,8 +105,8 @@ const vpc = new ec2.VpcNetwork(marketingStack, 'MarketingVpc', {
   });
 // override the VPC tags with Platform
 // this will tag the VPC, Subnets, Route Tables, IGW, and NatGWs
-vpc.apply(new cdk.Tag(COST_CENTER_KEY, 'Platform'));
-vpc.apply(new cdk.RemoveTag('Name'));
+vpc.node.apply(new cdk.Tag(COST_CENTER_KEY, 'Platform'));
+vpc.node.apply(new cdk.RemoveTag('Name'));
 // snip //
 ```
 
@@ -131,7 +131,7 @@ true. If false the property is set accordingly.
 ```ts
 // ... snip
 const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
-vpc.apply(new cdk.Tag('MyKey', 'MyValue', { applyToLaunchedInstances: false }));
+vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { applyToLaunchedInstances: false }));
 // ... snip
 ```
 
@@ -145,7 +145,7 @@ interpreted as apply to any resource type.
 ```ts
 // ... snip
 const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
-vpc.apply(new cdk.Tag('MyKey', 'MyValue', { includeResourceTypes: ['AWS::EC2::Subnet']}));
+vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { includeResourceTypes: ['AWS::EC2::Subnet']}));
 // ... snip
 ```
 
@@ -160,7 +160,7 @@ over include in the event of a collision.
 ```ts
 // ... snip
 const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
-vpc.apply(new cdk.Tag('MyKey', 'MyValue', { exludeResourceTypes: ['AWS::EC2::Subnet']}));
+vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { exludeResourceTypes: ['AWS::EC2::Subnet']}));
 // ... snip
 ```
 
@@ -174,6 +174,6 @@ setting for removing tags uses a higher priority than the standard tag.
 ```ts
 // ... snip
 const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
-vpc.apply(new cdk.Tag('MyKey', 'MyValue', { priority: 2 }));
+vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { priority: 2 }));
 // ... snip
 ```
