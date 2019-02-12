@@ -5,7 +5,7 @@ import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
 import { IEventSource } from './event-source';
-import { FunctionBase, FunctionImportProps, IFunction } from './lambda-base';
+import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
 import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
