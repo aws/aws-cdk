@@ -114,9 +114,10 @@ tableWithGlobalSecondaryIndex.addGlobalSecondaryIndex({
 });
 
 const tableWithLocalSecondaryIndex = new Table(stack, TABLE_WITH_LOCAL_SECONDARY_INDEX, {
-  partitionKey: TABLE_PARTITION_KEY
+  partitionKey: TABLE_PARTITION_KEY,
+  sortKey: TABLE_SORT_KEY
 });
-tableWithLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
+
 tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_1,
   sortKey: LSI_SORT_KEY

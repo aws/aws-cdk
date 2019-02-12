@@ -79,8 +79,11 @@ export = {
 
   'hash + range key'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY })
-      .addSortKey(TABLE_SORT_KEY);
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    });
+
     expect(stack).to(haveResource('AWS::DynamoDB::Table', {
             AttributeDefinitions: [
               { AttributeName: 'hashKey', AttributeType: 'S' },
@@ -121,8 +124,10 @@ export = {
 
   'point-in-time recovery is not enabled'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY })
-      .addSortKey(TABLE_SORT_KEY);
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -142,8 +147,10 @@ export = {
 
   'server-side encryption is not enabled'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY })
-      .addSortKey(TABLE_SORT_KEY);
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -163,8 +170,10 @@ export = {
 
   'stream is not enabled'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY })
-      .addSortKey(TABLE_SORT_KEY);
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -184,8 +193,10 @@ export = {
 
   'ttl is not enabled'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY })
-      .addSortKey(TABLE_SORT_KEY);
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -205,14 +216,15 @@ export = {
 
   'can specify new and old images'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, {
+
+    new Table(stack, CONSTRUCT_NAME, {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       streamSpecification: StreamViewType.NewAndOldImages,
-      partitionKey: TABLE_PARTITION_KEY
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
     });
-    table.addSortKey(TABLE_SORT_KEY);
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -234,14 +246,15 @@ export = {
 
   'can specify new images only'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, {
+
+    new Table(stack, CONSTRUCT_NAME, {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       streamSpecification: StreamViewType.NewImage,
-      partitionKey: TABLE_PARTITION_KEY
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
     });
-    table.addSortKey(TABLE_SORT_KEY);
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -263,14 +276,15 @@ export = {
 
   'can specify old images only'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, {
+
+    new Table(stack, CONSTRUCT_NAME, {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       streamSpecification: StreamViewType.OldImage,
-      partitionKey: TABLE_PARTITION_KEY
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
     });
-    table.addSortKey(TABLE_SORT_KEY);
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -302,9 +316,9 @@ export = {
       billingMode: BillingMode.Provisioned,
       streamSpecification: StreamViewType.KeysOnly,
       ttlAttributeName: 'timeToLive',
-      partitionKey: TABLE_PARTITION_KEY
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
     });
-    table.addSortKey(TABLE_SORT_KEY);
     table.node.apply(new Tag('Environment', 'Production'));
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
@@ -381,14 +395,18 @@ export = {
 
   'when adding a global secondary index with hash key only'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY })
-      .addSortKey(TABLE_SORT_KEY)
-      .addGlobalSecondaryIndex({
-        indexName: GSI_NAME,
-        partitionKey: GSI_PARTITION_KEY,
-        readCapacity: 42,
-        writeCapacity: 1337
-      });
+
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      readCapacity: 42,
+      writeCapacity: 1337
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -419,16 +437,19 @@ export = {
 
   'when adding a global secondary index with hash + range key'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY })
-      .addSortKey(TABLE_SORT_KEY)
-      .addGlobalSecondaryIndex({
-        indexName: GSI_NAME,
-        partitionKey: GSI_PARTITION_KEY,
-        sortKey: GSI_SORT_KEY,
-        projectionType: ProjectionType.All,
-        readCapacity: 42,
-        writeCapacity: 1337
-      });
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+      projectionType: ProjectionType.All,
+      readCapacity: 42,
+      writeCapacity: 1337
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -461,14 +482,17 @@ export = {
 
   'when adding a global secondary index with projection type KEYS_ONLY'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY })
-      .addSortKey(TABLE_SORT_KEY)
-      .addGlobalSecondaryIndex({
-        indexName: GSI_NAME,
-        partitionKey: GSI_PARTITION_KEY,
-        sortKey: GSI_SORT_KEY,
-        projectionType: ProjectionType.KeysOnly,
-      });
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+      projectionType: ProjectionType.KeysOnly,
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {

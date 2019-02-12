@@ -101,8 +101,9 @@ export interface TableOptions {
   ttlAttributeName?: string;
 
   /**
-   * Table sort key attribute definition. You can also use `addSortKey` to set
-   * this up later.
+   * Table sort key attribute definition.
+   *
+   * @default no sort key
    */
   sortKey?: Attribute;
 }
@@ -202,7 +203,7 @@ export class Table extends Construct {
   private readonly nonKeyAttributes: string[] = [];
 
   private readonly tablePartitionKey: Attribute;
-  private tableSortKey?: Attribute;
+  private readonly tableSortKey: Attribute | undefined;
 
   private readonly billingMode: BillingMode;
   private readonly tableScaling: ScalableAttributePair = {};
@@ -244,20 +245,9 @@ export class Table extends Construct {
     this.tablePartitionKey = props.partitionKey;
 
     if (props.sortKey) {
-      this.addSortKey(props.sortKey);
+      this.addKey(props.sortKey, RANGE_KEY_TYPE);
+      this.tableSortKey = props.sortKey;
     }
-  }
-
-  /**
-   * Add a sort key of table.
-   *
-   * @param attribute the sort key of table
-   * @returns a reference to this object so that method calls can be chained together
-   */
-  public addSortKey(attribute: Attribute): this {
-    this.addKey(attribute, RANGE_KEY_TYPE);
-    this.tableSortKey = attribute;
-    return this;
   }
 
   /**

@@ -52,12 +52,12 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   streamSpecification: StreamViewType.KeysOnly,
   billingMode: BillingMode.PayPerRequest,
   ttlAttributeName: 'timeToLive',
-  partitionKey: TABLE_PARTITION_KEY
+  partitionKey: TABLE_PARTITION_KEY,
+  sortKey: TABLE_SORT_KEY
 });
 
 tableWithGlobalAndLocalSecondaryIndex.node.apply(new Tag('Environment', 'Production'));
 
-tableWithGlobalAndLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
   partitionKey: GSI_PARTITION_KEY,
@@ -118,8 +118,9 @@ tableWithGlobalSecondaryIndex.addGlobalSecondaryIndex({
 const tableWithLocalSecondaryIndex = new Table(stack, TABLE_WITH_LOCAL_SECONDARY_INDEX, {
   billingMode: BillingMode.PayPerRequest,
   partitionKey: TABLE_PARTITION_KEY,
+  sortKey: TABLE_SORT_KEY,
 });
-tableWithLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
+
 tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_1,
   sortKey: LSI_SORT_KEY
