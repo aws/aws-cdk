@@ -68,6 +68,23 @@ export = {
     test.done();
   },
 
+  'resourcePathSep can be set to "" instead of the default "/"'(test: Test) {
+    const stack = new Stack();
+
+    const arn = stack.formatArn({
+      service: 'ssm',
+      resource: 'parameter',
+      sep: '',
+      resourceName: '/parameter-name'
+    });
+
+    const pseudo = new Aws(stack);
+
+    test.deepEqual(stack.node.resolve(arn),
+                   stack.node.resolve(`arn:${pseudo.partition}:ssm:${pseudo.region}:${pseudo.accountId}:parameter/parameter-name`));
+    test.done();
+  },
+
   'fails if resourcePathSep is neither ":" nor "/"'(test: Test) {
     const stack = new Stack();
 

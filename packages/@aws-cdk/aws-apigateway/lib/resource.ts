@@ -64,9 +64,6 @@ export interface IRestApiResource extends cdk.IConstruct {
   /**
    * Retrieves a child resource by path part.
    *
-   * NOTE: this method will only be able to find children that were previously
-   * added using `addResource`, not directly created by instantiating the class.
-   *
    * @param pathPart The path part of the child resource
    * @returns the child resource or undefined if not found
    */
