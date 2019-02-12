@@ -1259,6 +1259,34 @@ export = {
           Runtime: 'nodejs' },
           DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
     test.done();
+  },
+
+  'its possible to specify event sources upon creation'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    let bindCount = 0;
+
+    class EventSource implements lambda.IEventSource {
+      public bind(_: lambda.FunctionBase): void {
+        bindCount++;
+      }
+    }
+
+    // WHEN
+    new lambda.Function(stack, 'fn', {
+      code: lambda.Code.inline('boom'),
+      runtime: lambda.Runtime.NodeJS810,
+      handler: 'index.bam',
+      events: [
+        new EventSource(),
+        new EventSource(),
+      ]
+    });
+
+    // THEN
+    test.deepEqual(bindCount, 2);
+    test.done();
   }
 };
 
