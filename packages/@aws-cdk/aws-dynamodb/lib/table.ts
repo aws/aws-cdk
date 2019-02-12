@@ -43,7 +43,19 @@ export interface Attribute {
   type: AttributeType;
 }
 
-export interface TableOptions {
+export interface TableProps {
+  /**
+   * Partition key attribute definition.
+   */
+  partitionKey: Attribute;
+
+  /**
+   * Table sort key attribute definition.
+   *
+   * @default no sort key
+   */
+  sortKey?: Attribute;
+
   /**
    * The read capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
@@ -99,20 +111,6 @@ export interface TableOptions {
    * @default undefined, TTL is disabled
    */
   ttlAttributeName?: string;
-
-  /**
-   * Table sort key attribute definition.
-   *
-   * @default no sort key
-   */
-  sortKey?: Attribute;
-}
-
-export interface TableProps extends TableOptions {
-  /**
-   * Partition key attribute definition.
-   */
-  partitionKey: Attribute;
 }
 
 export interface SecondaryIndexProps {
