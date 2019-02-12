@@ -100,4 +100,25 @@ export = {
     }));
     test.done();
   },
+
+  'parameterArn is crafted correctly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const param = new ssm.StringParameter(stack, 'Parameter', { value: 'Foo' });
+
+    // THEN
+    test.deepEqual(param.node.resolve(param.parameterArn), {
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter',
+        { Ref: 'Parameter9E1B4FBA' }
+      ]]
+    });
+    test.done();
+  }
 };
