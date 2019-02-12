@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-dynamodb": "^0.24.1",
+    "@aws-cdk/aws-apigateway": "^0.24.1",
     "@aws-cdk/aws-events": "^0.24.1",
     "@aws-cdk/aws-iam": "^0.24.1",
     "@aws-cdk/aws-kinesis": "^0.24.1",

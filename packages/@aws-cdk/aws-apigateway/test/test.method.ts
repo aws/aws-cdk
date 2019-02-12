@@ -348,5 +348,22 @@ export = {
       }
     }));
     test.done();
+  },
+
+  'method is always set as uppercase'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'api');
+
+    // WHEN
+    api.root.addMethod('get');
+    api.root.addMethod('PoSt');
+    api.root.addMethod('PUT');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "POST" }));
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "GET" }));
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "PUT" }));
+    test.done();
   }
 };
