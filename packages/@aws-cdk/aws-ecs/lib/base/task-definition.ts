@@ -226,7 +226,7 @@ export class TaskDefinition extends cdk.Construct {
    * Create a new container to this task definition
    */
   public addContainer(id: string, props: ContainerDefinitionOptions) {
-    return new ContainerDefinition(this, id, { task: this, ...props });
+    return new ContainerDefinition(this, id, { taskDefinition: this, ...props });
   }
 
   /**
