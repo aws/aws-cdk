@@ -201,7 +201,7 @@ export class Table extends Construct {
   private readonly nonKeyAttributes: string[] = [];
 
   private readonly tablePartitionKey: Attribute;
-  private readonly tableSortKey: Attribute | undefined;
+  private readonly tableSortKey?: Attribute;
 
   private readonly billingMode: BillingMode;
   private readonly tableScaling: ScalableAttributePair = {};
