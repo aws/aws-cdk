@@ -90,7 +90,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: "bar",
-      ParentId: { "Fn::GetAtt": [ "MyFuncApiEventSourceA7A86A4FF4B434AC", "RootResourceId" ] }
+      ParentId: { Ref: "MyFuncApiEventSourceA7A86A4Ffoo73254F28" }
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
@@ -100,7 +100,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
-      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4FbarFF0EF497" },
+      ResourceId: { Ref: "MyFuncApiEventSourceA7A86A4Ffoobarzoo34214ADE" },
     }));
 
     test.done();
