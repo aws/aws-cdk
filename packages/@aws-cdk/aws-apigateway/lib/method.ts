@@ -76,7 +76,7 @@ export class Method extends cdk.Construct {
 
     this.resource = props.resource;
     this.restApi = props.resource.resourceApi;
-    this.httpMethod = props.httpMethod;
+    this.httpMethod = props.httpMethod.toUpperCase();
 
     validateHttpMethod(this.httpMethod);
 
@@ -87,7 +87,7 @@ export class Method extends cdk.Construct {
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
       restApiId: this.restApi.restApiId,
-      httpMethod: props.httpMethod,
+      httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
       authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.None,

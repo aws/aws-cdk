@@ -527,9 +527,9 @@ export = {
       DependsOn: [
         "myapiAccountC3A4750C",
         "myapiCloudWatchRoleEB425128",
+        "myapiGET9B7CD29E",
         "myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9",
         "myapiDeploymentStageprod329F21FF",
-        "myapiGET9B7CD29E",
         "myapi162F20B8"
       ]
     }, ResourcePart.CompleteDefinition));
