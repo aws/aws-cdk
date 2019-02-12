@@ -1,8 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
-import { BaseService, BaseServiceProps } from '../base/base-service';
+import { BaseService, BaseServiceProps, ServiceDiscoveryOptions } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
-import { ICluster } from '../cluster';
 import { isFargateCompatible } from '../util';
 
 /**
@@ -75,6 +75,39 @@ export class FargateService extends BaseService {
     if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
+  }
+
+  public enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
+    const sdNamespace = this.cluster.serviceDiscoveryNamespace();
+    if (sdNamespace === undefined) {
+      throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
+    }
+
+    const dnsRecordType = options.dnsRecordType === undefined
+     ? cloudmap.DnsRecordType.A : options.dnsRecordType;
+
+    // If the task definition that your service task specifies uses the awsvpc network mode and a type SRV DNS record
+    // is used, you must specify a containerName and containerPort combination
+    const containerName = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.node.id : undefined;
+    const containerPort = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.containerPort : undefined;
+
+    const cloudmapService = new cloudmap.Service(this, 'CloudmapService', {
+      namespace: sdNamespace,
+      name: options.name,
+      dnsRecordType: dnsRecordType!,
+      customHealthCheck: { failureThreshold: options.failureThreshold || 1 }
+    });
+
+    const serviceArn = cloudmapService.serviceArn;
+
+    // add Cloudmap service to the ECS Service's serviceRegistry
+    this.addServiceRegistry({
+      arn: serviceArn,
+      containerName,
+      containerPort
+    });
+
+    return cloudmapService;
   }
 }
 

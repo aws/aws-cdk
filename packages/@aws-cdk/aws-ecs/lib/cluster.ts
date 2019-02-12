@@ -2,6 +2,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
@@ -55,6 +56,11 @@ export class Cluster extends cdk.Construct implements ICluster {
   public readonly clusterName: string;
 
   /**
+   * The service discovery namespace created in this cluster
+   */
+  private _serviceDiscoveryNamespace?: cloudmap.INamespace;
+
+  /**
    * Whether the cluster has EC2 capacity associated with it
    */
   private _hasEc2Capacity: boolean = false;
@@ -67,6 +73,43 @@ export class Cluster extends cdk.Construct implements ICluster {
     this.vpc = props.vpc;
     this.clusterArn = cluster.clusterArn;
     this.clusterName = cluster.clusterName;
+  }
+
+  /**
+   * Add an AWS Cloud Map Private DNS namespace for this cluster.
+   * NOTE: HttpNamespaces are not supported, as ECS always requires a DNSConfig when registering an instance to a Cloud
+   * Map service.
+   *
+   * FIXME Support adding public dns namespace as import?
+   */
+  public addNamespace(options: NamespaceOptions): cloudmap.INamespace {
+    if (options.type === cloudmap.NamespaceType.Http) {
+      throw new Error("Http Namespaces are not supported in ECS.");
+    }
+
+    const namespaceType = options.type !== undefined
+      ? options.type
+      : cloudmap.NamespaceType.DnsPrivate;
+
+    const sdNamespace = namespaceType === cloudmap.NamespaceType.DnsPrivate ?
+      new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+        name: options.name,
+        vpc: this.vpc
+      }) :
+      new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+        name: options.name,
+      });
+
+    this._serviceDiscoveryNamespace = sdNamespace;
+
+    return sdNamespace;
+  }
+
+  /**
+   * Getter for namespace added to cluster
+   */
+  public serviceDiscoveryNamespace(): cloudmap.INamespace | undefined {
+    return this._serviceDiscoveryNamespace;
   }
 
   /**
@@ -253,6 +296,11 @@ export interface ICluster extends cdk.IConstruct {
   readonly hasEc2Capacity: boolean;
 
   /**
+   * Getter for Cloudmap namespace created in the cluster
+   */
+  serviceDiscoveryNamespace(): cloudmap.INamespace | undefined;
+
+  /**
    * Export the Cluster
    */
   export(): ClusterImportProps;
@@ -321,6 +369,11 @@ class ImportedCluster extends cdk.Construct implements ICluster {
    */
   public readonly hasEc2Capacity: boolean;
 
+  /**
+   * Cloudmap namespace created in the cluster
+   */
+  private _serviceDiscoveryNamespace: cloudmap.INamespace;
+
   constructor(scope: cdk.Construct, id: string, private readonly props: ClusterImportProps) {
     super(scope, id);
     this.clusterName = props.clusterName;
@@ -338,6 +391,10 @@ class ImportedCluster extends cdk.Construct implements ICluster {
       this.connections.addSecurityGroup(ec2.SecurityGroup.import(this, `SecurityGroup${i}`, sgProps));
       i++;
     }
+  }
+
+  public serviceDiscoveryNamespace(): cloudmap.INamespace | undefined {
+    return this._serviceDiscoveryNamespace;
   }
 
   public export() {
@@ -378,4 +435,25 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    * The type of EC2 instance to launch into your Autoscaling Group
    */
   readonly instanceType: ec2.InstanceType;
+}
+
+export interface NamespaceOptions {
+  /**
+   * The domain name for the namespace, such as foo.com
+   */
+  name: string;
+
+  /**
+   * The type of CloudMap Namespace to create in your cluster
+   *
+   * @default PrivateDns
+   */
+  type?: cloudmap.NamespaceType;
+
+  /**
+   * The Amazon VPC that you want to associate the namespace with. Required for Private DNS namespaces
+   *
+   * @default VPC of the cluster for Private DNS Namespace, otherwise none
+   */
+  vpc?: ec2.IVpcNetwork;
 }

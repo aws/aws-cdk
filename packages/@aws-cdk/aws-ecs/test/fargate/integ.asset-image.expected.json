@@ -965,7 +965,8 @@
               }
             ]
           }
-        }
+        },
+        "ServiceRegistries": []
       },
       "DependsOn": [
         "FargateServiceLBPublicListenerECSGroupBE57E081",

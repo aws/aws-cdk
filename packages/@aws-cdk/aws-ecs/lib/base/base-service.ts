@@ -3,8 +3,10 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
+import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -12,6 +14,11 @@ import { ScalableTaskCount } from './scalable-task-count';
  * Basic service properties
  */
 export interface BaseServiceProps {
+  /**
+   * Cluster where service will be deployed
+   */
+  cluster: ICluster;
+
   /**
    * Number of desired copies of running tasks
    *
@@ -83,8 +90,12 @@ export abstract class BaseService extends cdk.Construct
    */
   public readonly taskDefinition: TaskDefinition;
 
+  protected cloudmapService: cloudmap.Service;
+  protected cluster: ICluster;
   protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
+  protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
+
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
 
@@ -109,11 +120,13 @@ export abstract class BaseService extends cdk.Construct
       healthCheckGracePeriodSeconds: props.healthCheckGracePeriodSeconds,
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: new cdk.Token(() => this.networkConfiguration),
+      serviceRegistries: new cdk.Token(() => this.serviceRegistries),
       ...additionalProps
     });
     this.serviceArn = this.resource.serviceArn;
     this.serviceName = this.resource.serviceName;
     this.clusterName = clusterName;
+    this.cluster = props.cluster;
   }
 
   /**
@@ -162,6 +175,14 @@ export abstract class BaseService extends cdk.Construct
   }
 
   /**
+   * Associate Service Discovery (Cloud Map) service
+   */
+  public addServiceRegistry(registry: ServiceRegistry) {
+    const sr = this.renderServiceRegistry(registry);
+    this.serviceRegistries.push(sr);
+  }
+
+  /**
    * Return the given named metric for this Service
    */
   public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
@@ -192,6 +213,14 @@ export abstract class BaseService extends cdk.Construct
         subnets: vpc.subnetIds(vpcSubnets),
         securityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]).toList(),
       }
+    };
+  }
+
+  private renderServiceRegistry(registry: ServiceRegistry): CfnService.ServiceRegistryProperty {
+    return {
+      registryArn: registry.arn,
+      containerName: registry.containerName,
+      containerPort: registry.containerPort,
     };
   }
 
@@ -236,3 +265,64 @@ export abstract class BaseService extends cdk.Construct
  * The port range to open up for dynamic port mapping
  */
 const EPHEMERAL_PORT_RANGE = new ec2.TcpPortRange(32768, 65535);
+
+/**
+ * Options for enabling service discovery on an ECS service
+ */
+export interface ServiceDiscoveryOptions {
+  /**
+   * Name of the cloudmap service to attach to the ECS Service
+   *
+   * @default CloudFormation-generated name
+   */
+  name?: string,
+
+  /**
+   * The DNS type of the record that you want AWS Cloud Map to create. Supported record types include A or SRV.
+   *
+   * @default: A
+   */
+  dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
+
+  /**
+   * The amount of time, in seconds, that you want DNS resolvers to cache the settings for this record.
+   *
+   * @default 60
+   */
+  dnsTtlSec?: number;
+
+  /**
+   * The number of 30-second intervals that you want Cloud Map to wait after receiving an
+   * UpdateInstanceCustomHealthStatus request before it changes the health status of a service instance.
+   * NOTE: This is used for HealthCheckCustomConfig
+   */
+  failureThreshold?: number,
+}
+
+/**
+ * Service Registry for ECS service
+ */
+export interface ServiceRegistry {
+  /**
+   * Arn of the Cloud Map Service that will register a Cloud Map Instance for your ECS Service
+   */
+  arn: string;
+
+  /**
+   * The container name value, already specified in the task definition, to be used for your service discovery service.
+   * If the task definition that your service task specifies uses the bridge or host network mode,
+   * you must specify a containerName and containerPort combination from the task definition.
+   * If the task definition that your service task specifies uses the awsvpc network mode and a type SRV DNS record is
+   * used, you must specify either a containerName and containerPort combination or a port value, but not both.
+   */
+  containerName?: string;
+
+  /**
+   * The container port value, already specified in the task definition, to be used for your service discovery service.
+   * If the task definition that your service task specifies uses the bridge or host network mode,
+   * you must specify a containerName and containerPort combination from the task definition.
+   * If the task definition that your service task specifies uses the awsvpc network mode and a type SRV DNS record is
+   * used, you must specify either a containerName and containerPort combination or a port value, but not both.
+   */
+  containerPort?: number;
+}
