@@ -2,7 +2,7 @@ import { format as formatUrl } from 'url';
 const ALLOWED_METHODS = [ 'ANY', 'DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT' ];
 
 export function validateHttpMethod(method: string, messagePrefix: string = '') {
-  if (!ALLOWED_METHODS.includes(method.toUpperCase())) {
+  if (!ALLOWED_METHODS.includes(method)) {
     throw new Error(`${messagePrefix}Invalid HTTP method "${method}". Allowed methods: ${ALLOWED_METHODS.join(',')}`);
   }
 }
