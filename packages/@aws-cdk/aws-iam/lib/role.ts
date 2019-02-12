@@ -2,7 +2,7 @@ import { Construct, IConstruct, Output, Stack } from '@aws-cdk/cdk';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
-import { PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ArnPrincipal } from './policy-document';
+import { ArnPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment } from './policy-document';
 import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 

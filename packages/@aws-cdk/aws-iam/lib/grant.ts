@@ -1,16 +1,17 @@
+import cdk = require('@aws-cdk/cdk');
 import { PolicyStatement } from "./policy-document";
 import { IPrincipal } from "./principals";
 
 /**
  * Properties for a grant operation
  */
-export interface GrantProps {
+export interface GrantOptions {
   /**
    * The principal to grant to
    *
    * @default No work is done
    */
-  principal?: IPrincipal;
+  principal: IPrincipal | undefined;
 
   /**
    * The actions to grant
@@ -25,9 +26,12 @@ export interface GrantProps {
   /**
    * Adder to the resource policy
    *
-   * @default Failure if no principal policy and `skipResourcePolicy` is not set.
+   * Either 'scope' or 'resource' must be supplied.
+   *
+   * An error will be thrown if the policy could not be added to the principal,
+   * no resource is supplied given and `skipResourcePolicy` is false.
    */
-  addToResourcePolicy?: (statement: PolicyStatement) => void;
+  resource?: IResourceWithPolicy;
 
   /**
    * When referring to the resource in a resource policy, use this as ARN.
@@ -39,40 +43,87 @@ export interface GrantProps {
   resourceSelfArns?: string[];
 
   /**
-   * If there is no resource policy, ignore the error
+   * If we wanted to add to the resource policy but there is no resource, ignore the error.
    *
    * @default false
    */
   skipResourcePolicy?: boolean;
+
+  /**
+   * Construct to report warnings on in case grant could not be registered
+   *
+   * @default resource
+   */
+  scope?: cdk.IConstruct;
+}
+
+export class Permissions {
+  /**
+   * Helper function to implement grants.
+   *
+   * The pattern is the same every time. We try to add to the principal
+   * first, then add to the resource afterwards.
+   */
+  public static grant(options: GrantOptions): GrantResult {
+    let addedToPrincipal = false;
+    let addedToResource = false;
+
+    const scope = options.scope || options.resource;
+    if (!scope) {
+      throw new Error(`Either 'scope' or 'resource' must be supplied.`);
+    }
+
+    // One-iteration loop to be able to skip to end of function easily
+    do {
+      if (!options.principal) {
+        // tslint:disable-next-line:max-line-length
+        scope.node.addWarning(`Could not add grant for '${options.actions}' on '${options.resourceArns}' because the principal was not available. Add the permissions by hand.`);
+        break;
+      }
+
+      addedToPrincipal = options.principal.addToPolicy(new PolicyStatement()
+        .addActions(...options.actions)
+        .addResources(...options.resourceArns));
+
+      if (addedToPrincipal || options.skipResourcePolicy) { break; }
+
+      if (!options.resource) {
+        throw new Error('Could not add permissions to Principal without policy, and resource does not have policy either. Grant to a Role instead.');
+      }
+
+      options.resource.addToResourcePolicy(new PolicyStatement()
+        .addActions(...options.actions)
+        .addResources(...(options.resourceSelfArns || options.resourceArns))
+        .addPrincipal(options.principal));
+      addedToResource = true;
+
+    } while (false);
+
+    return { addedToPrincipal, addedToResource };
+  }
 }
 
 /**
- * Helper function to implement grants.
- *
- * The pattern is the same every time. We try to add to the principal
- * first, then add to the resource afterwards.
- *
- * @returns false if `skipResourcePolicy` was used, true otherwise
+ * The result of the grant() operation
  */
-export function grant(props: GrantProps): boolean {
-  if (!props.principal) { return true; }
+export interface GrantResult {
+  /**
+   * The grant was added to the principal's policy
+   */
+  addedToPrincipal: boolean;
 
-  const addedToPrincipal = props.principal.addToPolicy(new PolicyStatement()
-    .addActions(...props.actions)
-    .addResources(...props.resourceArns));
+  /**
+   * The grant was added to the resource policy
+   */
+  addedToResource: boolean;
+}
 
-  if (addedToPrincipal || props.skipResourcePolicy) { return false; }
-
-  // This is a function so that it can be used by resources that lazily
-  // need to create a policy document (Queue, Bucket) which cannot have
-  // an empty policy.
-  if (!props.addToResourcePolicy) {
-    throw new Error('Could not add permissions to Principal without policy, and resource does not have policy either. Grant to a Role instead.');
-  }
-
-  props.addToResourcePolicy(new PolicyStatement()
-    .addActions(...props.actions)
-    .addResources(...(props.resourceSelfArns || props.resourceArns))
-    .addPrincipal(props.principal));
-  return true;
+/**
+ * A resource with a resource policy that can be added to
+ */
+export interface IResourceWithPolicy extends cdk.IConstruct {
+  /**
+   * Add a statement to the resource's resource policy
+   */
+  addToResourcePolicy(statement: PolicyStatement): void;
 }

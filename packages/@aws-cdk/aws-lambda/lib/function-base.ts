@@ -247,16 +247,17 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
    * Grant the given identity permissions to invoke this Lambda
    */
   public grantInvoke(principal?: iam.IPrincipal) {
-    const added = iam.grant({
+    const added = iam.Permissions.grant({
       principal,
       actions: ['lambda:InvokeFunction'],
       resourceArns: [this.functionArn],
       // Can't use a resource policy because adding resource permissions
       // looks different on a Lambda Function.
-      skipResourcePolicy: true
+      skipResourcePolicy: true,
+      scope: this,
     });
 
-    if (!added && principal) {
+    if (principal && !added.addedToPrincipal) {
       // Couldn't add permissions to the principal, so add them locally.
       const identifier = 'Invoke' + JSON.stringify(principal!.policyFragment.principalJson);
       this.addPermission(identifier, {

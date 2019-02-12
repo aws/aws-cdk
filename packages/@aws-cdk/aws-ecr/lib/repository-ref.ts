@@ -207,11 +207,11 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Grant the given principal identity permissions to perform the actions on this repository
    */
   public grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    iam.grant({
+    iam.Permissions.grant({
       principal,
       actions,
       resourceArns: [this.repositoryArn],
-      addToResourcePolicy: this.addToResourcePolicy.bind(this),
+      resource: this,
     });
   }
 
@@ -221,11 +221,12 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   public grantPull(principal?: iam.IPrincipal) {
     this.grant(principal, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
 
-    iam.grant({
+    iam.Permissions.grant({
       principal,
       actions: ["ecr:GetAuthorizationToken", "logs:CreateLogStream", "logs:PutLogEvents"],
       resourceArns: ['*'],
       skipResourcePolicy: true,
+      scope: this,
     });
   }
 
@@ -233,12 +234,12 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Grant the given identity permissions to pull and push images to this repository.
    */
   public grantPullPush(identity?: iam.IPrincipal) {
-      this.grantPull(identity);
-      this.grant(identity,
-        "ecr:PutImage",
-        "ecr:InitiateLayerUpload",
-        "ecr:UploadLayerPart",
-        "ecr:CompleteLayerUpload");
+    this.grantPull(identity);
+    this.grant(identity,
+      "ecr:PutImage",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload");
   }
 }
 

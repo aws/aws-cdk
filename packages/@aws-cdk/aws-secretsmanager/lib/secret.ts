@@ -118,7 +118,7 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
       // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.addToResourcePolicy(new iam.PolicyStatement()
       .allow()
-      .addPrincipal(grantee.principal)
+      .addPrincipal(grantee)
       .addAction('kms:Decrypt')
       .addAllResources()
       .addCondition('StringEquals', {

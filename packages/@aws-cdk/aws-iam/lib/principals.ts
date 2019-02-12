@@ -19,7 +19,8 @@ export interface IPrincipal {
   /**
    * Add to the policy of this principal.
    *
-   * @returns true if the policy was added, false if the policy could not be added
+   * @returns true if the statement was added, false if the principal in
+   * question does not have a policy document to add the statement to.
    */
   addToPolicy(statement: PolicyStatement): boolean;
 }

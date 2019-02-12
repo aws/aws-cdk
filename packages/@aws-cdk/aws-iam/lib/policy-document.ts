@@ -49,17 +49,22 @@ export class PolicyDocument extends cdk.Token {
  */
 export abstract class PrincipalBase implements IPrincipal {
   /**
-   * When this Principal is used in an AssumeRole policy, the action to use.
-   */
-  public assumeRoleAction: string = 'sts:AssumeRole';
-
-  /**
    * Return the policy fragment that identifies this principal in a Policy.
    */
-  public abstract policyFragment: PrincipalPolicyFragment;
+  public abstract readonly policyFragment: PrincipalPolicyFragment;
+
+  /**
+   * When this Principal is used in an AssumeRole policy, the action to use.
+   */
+  protected _assumeRoleAction: string = 'sts:AssumeRole';
+
+  public get assumeRoleAction(): string {
+    return this._assumeRoleAction;
+  }
 
   public addToPolicy(_statement: PolicyStatement): boolean {
-    // None of these have a policy to add to
+    // This base class is used for non-identity principals. None of them
+    // have a PolicyDocument to add to.
     return false;
   }
 }
@@ -149,8 +154,10 @@ export class FederatedPrincipal extends PrincipalBase {
   constructor(
     public readonly federated: string,
     public readonly conditions: {[key: string]: any},
-    public assumeRoleAction: string = 'sts:AssumeRole') {
+    assumeRoleAction: string = 'sts:AssumeRole') {
     super();
+
+    this._assumeRoleAction = assumeRoleAction;
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
@@ -184,7 +191,7 @@ export class CompositePrincipal extends PrincipalBase {
 
   constructor(principal: PrincipalBase, ...additionalPrincipals: PrincipalBase[]) {
     super();
-    this.assumeRoleAction = principal.assumeRoleAction;
+    this._assumeRoleAction = principal.assumeRoleAction;
     this.addPrincipals(principal);
     this.addPrincipals(...additionalPrincipals);
   }

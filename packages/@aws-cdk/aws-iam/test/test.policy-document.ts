@@ -1,6 +1,6 @@
 import { Stack, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Anyone, AnyPrincipal, CanonicalUserPrincipal, PolicyDocument, PolicyStatement, PrincipalBase } from '../lib';
+import { Anyone, AnyPrincipal, CanonicalUserPrincipal, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
 
 export = {
@@ -278,7 +278,7 @@ export = {
 
   'addPrincipal correctly merges array in'(test: Test) {
     const stack = new Stack();
-    const arrayPrincipal: PrincipalBase = {
+    const arrayPrincipal: IPrincipal = {
       assumeRoleAction: 'sts:AssumeRole',
       policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
       addToPolicy() { return false; }

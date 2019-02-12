@@ -179,12 +179,13 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
    * Give the indicated permissions on this log group and all streams
    */
   public grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    iam.grant({
+    iam.Permissions.grant({
       principal,
       actions,
       // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.
       // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
-      resourceArns: [this.logGroupArn]
+      resourceArns: [this.logGroupArn],
+      scope: this,
     });
   }
 }

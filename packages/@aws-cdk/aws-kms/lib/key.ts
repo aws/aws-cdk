@@ -100,11 +100,12 @@ export abstract class EncryptionKeyBase extends Construct {
    * must not be empty and so default grants won't work.
    */
   public grant(principal: iam.IPrincipal | undefined, actions: string[]): void {
-    iam.grant({
+    iam.Permissions.grant({
       principal,
       actions,
       resourceArns: [this.keyArn],
       skipResourcePolicy: true,
+      scope: this
     });
 
     if (principal) {

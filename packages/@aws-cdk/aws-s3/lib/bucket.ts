@@ -522,11 +522,11 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
                 resourceArn: string, ...otherResourceArns: string[]) {
     const resources = [ resourceArn, ...otherResourceArns ];
 
-    iam.grant({
+    iam.Permissions.grant({
       principal,
       actions: bucketActions,
       resourceArns: resources,
-      addToResourcePolicy: this.addToResourcePolicy.bind(this),
+      resource: this,
     });
 
     if (this.encryptionKey) {
