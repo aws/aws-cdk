@@ -1,5 +1,5 @@
 {
-  "$schema": "./cdk.schema.json",
+  "$schema": "../cdk.schema.json",
   "Resources": {
     "Topic": {
       "Type": "@aws-cdk/aws-sns.Topic"
@@ -11,7 +11,7 @@
         "runtime": "NodeJS",
         "handler": "index.handler",
         "events": [
-          { "SnsEventSource": { "topic": { "Ref": "Topic" } } }
+          { "@aws-cdk/aws-lambda-event-sources.SnsEventSource": { "topic": { "Ref": "Topic" } } }
         ]
       }
     }

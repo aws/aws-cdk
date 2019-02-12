@@ -1,7 +1,6 @@
 import colors = require('colors/safe');
 import jsiiReflect = require('jsii-reflect');
 import { extendsType, SchemaContext, schemaForTypeReference } from '../lib/jsii2schema';
-import { loadTypeSystem } from '../lib/type-system';
 
 // tslint:disable:no-console
 
@@ -15,9 +14,7 @@ export interface RenderSchemaOptions {
   colors?: boolean;
 }
 
-export async function renderFullSchema(options: RenderSchemaOptions = { }) {
-  const typeSystem = await loadTypeSystem();
-
+export function renderFullSchema(typeSystem: jsiiReflect.TypeSystem, options: RenderSchemaOptions = { }) {
   if (!process.stdin.isTTY || options.colors === false) {
     colors.disable();
   }
@@ -86,7 +83,7 @@ export function schemaForResource(construct: ConstructAndProps, ctx: SchemaConte
     return undefined;
   }
 
-  return ctx.definitionOf(construct.constructClass.fqn, () => {
+  return ctx.define(construct.constructClass.fqn, () => {
     return {
       additionalProperties: false,
       properties: {

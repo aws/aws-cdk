@@ -1,5 +1,5 @@
 {
-  "$schema": "./cdk.schema.json",
+  "$schema": "../cdk.schema.json",
   "Resources": {
     "MyTopic": {
       "Type": "@aws-cdk/aws-sns.Topic"
@@ -19,13 +19,13 @@
           "asset": { "path": "." }
         },
         "environment": {
-          "PARAM1": "VALUE"
+          "Param": "f"
         },
         "events": [
-          { "DynamoEventSource": { "table": { "Ref": "Table" }, "props": { "startingPosition": "TrimHorizon" } } },
-          { "ApiEventSource": { "method": "GET", "path": "/hello" } },
-          { "ApiEventSource": { "method": "POST", "path": "/hello" } },
-          { "SnsEventSource": { "topic": { "Ref": "MyTopic" } } }
+          { "@aws-cdk/aws-lambda-event-sources.DynamoEventSource": { "table": { "Ref": "Table" }, "startingPosition": "TrimHorizon" } },
+          { "@aws-cdk/aws-lambda-event-sources.ApiEventSource": { "method": "GET", "path": "/hello" } },
+          { "@aws-cdk/aws-lambda-event-sources.ApiEventSource": { "method": "POST", "path": "/hello" } },
+          { "@aws-cdk/aws-lambda-event-sources.SnsEventSource": { "topic": { "Ref": "MyTopic" } } }
         ]
       }
     }

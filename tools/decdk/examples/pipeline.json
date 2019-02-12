@@ -1,32 +1,10 @@
 {
-  "$schema": "./cdk.schema.json",
+  "$schema": "../cdk.schema.json",
   "Resources": {
-    "Pipeline": {
-      "Type": "@aws-cdk/aws-codepipeline.Pipeline"
-    },
-    "SourceStage": {
-      "Type": "@aws-cdk/aws-codepipeline.Stage",
-      "Properties": {
-        "pipeline": { "Ref": "Pipeline" }
-      }
-    },
     "Repo": {
       "Type": "@aws-cdk/aws-codecommit.Repository",
       "Properties": {
         "repositoryName": "my-first-decdk-repo"
-      }
-    },
-    "Code": {
-      "Type": "@aws-cdk/aws-codecommit.PipelineSourceAction",
-      "Properties": {
-        "stage": { "Ref": "SourceStage" },
-        "repository": { "Ref": "Repo" }
-      }
-    },
-    "BuildStage": {
-      "Type": "@aws-cdk/aws-codepipeline.Stage",
-      "Properties": {
-        "pipeline": { "Ref": "Pipeline" }
       }
     },
     "Key": {
@@ -38,12 +16,39 @@
         "encryptionKey": { "Ref": "Key" }
       }
     },
-    "BuildAction": {
-      "Type": "@aws-cdk/aws-codebuild.PipelineBuildAction",
+    "Pipeline": {
+      "Type": "@aws-cdk/aws-codepipeline.Pipeline",
       "Properties": {
-        "stage": { "Ref": "BuildStage" },
-        "project": { "Ref": "BuildProject" }
+        "stages": [
+          {
+            "name": "Source",
+            "actions": [
+              {
+                "@aws-cdk/aws-codecommit.PipelineSourceAction": {
+                  "repository": { "Ref": "Repo" },
+                  "actionName": "Source"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Build",
+            "actions": [
+              {
+                "@aws-cdk/aws-codebuild.PipelineBuildAction": {
+                  "actionName": "Build",
+                  "project": { "Ref": "BuildProject" },
+                  "inputArtifact": {
+                    "@aws-cdk/aws-codepipeline-api.Artifact": {
+                      "artifactName": "Source"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
       }
     }
- }
+  }
 }

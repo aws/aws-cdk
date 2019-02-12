@@ -50,7 +50,12 @@ export class SchemaContext {
     this.errors.push(util.format(format, ...args));
   }
 
-  public definitionOf(fqn: string, schema: () => any) {
+  public findDefinition(ref: string) {
+    const [ , , id ] = ref.split('/');
+    return this.definitions[id];
+  }
+
+  public define(fqn: string, schema: () => any) {
     const originalFqn = fqn;
     fqn = fqn.replace('/', '.');
 
@@ -162,7 +167,7 @@ export function schemaForPolymorphic(type: jsiiReflect.Type | undefined, ctx: Sc
           type: 'object',
           additionalProperties: false,
           properties: {
-            [x.name]: methd
+            [x.fqn]: methd
           }
         });
       }
@@ -173,7 +178,7 @@ export function schemaForPolymorphic(type: jsiiReflect.Type | undefined, ctx: Sc
     return undefined;
   }
 
-  return ctx.definitionOf(type.fqn, () => {
+  return ctx.define(type.fqn, () => {
     return { anyOf };
   });
 }
@@ -232,7 +237,7 @@ function schemaForPrimitive(type: jsiiReflect.TypeReference): any {
   switch (type.primitive) {
     case 'date': return { type: 'string', format: 'date-time' };
     case 'json': return { type: 'object' };
-    case 'any': return { type: 'object' };
+    case 'any': return { }; // this means "any"
     default: return { type: type.primitive };
   }
 }
@@ -281,7 +286,7 @@ export function schemaForInterface(type: jsiiReflect.Type | undefined, ctx: Sche
 
   const ifctx = ctx;
 
-  return ctx.definitionOf(type.fqn, () => {
+  return ctx.define(type.fqn, () => {
     const properties: any = {};
     const required = new Array<string>();
 
@@ -366,7 +371,7 @@ function schemaForEnumLikeClass(type: jsiiReflect.Type | undefined, ctx: SchemaC
     return undefined;
   }
 
-  return ctx.definitionOf(type.fqn, () => {
+  return ctx.define(type.fqn, () => {
     return { anyOf };
   });
 }
@@ -378,12 +383,31 @@ function methodSchema(method: jsiiReflect.Method, ctx: SchemaContext) {
 
   const methodctx = ctx;
 
-  return ctx.definitionOf(fqn, () => {
+  return ctx.define(fqn, () => {
     const properties: any = { };
     const required = new Array<string>();
 
-    for (const p of method.parameters) {
+    for (let i = 0; i < method.parameters.length; ++i) {
+      const p = method.parameters[i];
       methodctx.child('param', p.name);
+
+      // if this is the last parameter and it's a data type, treat as keyword arguments
+      if (i === method.parameters.length - 1 && isDataType(p.type.fqn)) {
+        const kwargs = schemaForInterface(p.type.fqn, ctx);
+        if (kwargs) {
+          const def = JSON.parse(JSON.stringify(ctx.findDefinition(kwargs.$ref))); // poor man's clone
+          def.properties = def.properties || { };
+          for (const [ key, value ] of Object.entries(properties)) {
+            if (key in def.properties) {
+              throw new Error('conflict between kwargs and argument name');
+            }
+
+            def.properties[key] = value;
+          }
+
+          return def;
+        }
+      }
 
       const param = schemaForTypeReference(p.type, ctx);
 
@@ -407,6 +431,13 @@ function methodSchema(method: jsiiReflect.Method, ctx: SchemaContext) {
       required: required.length > 0 ? required : undefined
     };
   });
+}
+
+export function isDataType(t: jsiiReflect.Type | undefined): t is jsiiReflect.InterfaceType {
+  if (!t) {
+    return false;
+  }
+  return t instanceof jsiiReflect.InterfaceType && (t as any).interfaceSpec.datatype;
 }
 
 // Must only have properties, all of which are scalars,

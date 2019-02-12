@@ -169,9 +169,8 @@ Outputs:
 
 If deCDK doesn't identify a resource type as a CDK resource, it will just pass it through to the resulting output (through a special construct we have in the CDK called `cdk.Include`). This means that any existing CloudFormation resources (such as `AWS::SQS::Queue`) can be used as-is.
 
+## Issues
 
-## Open issues
-
-- [ ] Do we need a "ref" attribute for allowing referencing resources?
-- [ ] Intrinsics
-- [ ] Support IBucket-like properties
+- [ ] PolicyDocument API is not deconstructable
+- [ ] Shorthand tags for intrinsics in YAML
+- [ ]
