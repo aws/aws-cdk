@@ -55,7 +55,7 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   partitionKey: TABLE_PARTITION_KEY
 });
 
-tableWithGlobalAndLocalSecondaryIndex.apply(new Tag('Environment', 'Production'));
+tableWithGlobalAndLocalSecondaryIndex.node.apply(new Tag('Environment', 'Production'));
 
 tableWithGlobalAndLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({

@@ -384,8 +384,8 @@ export = {
       partitionKey: TABLE_PARTITION_KEY
     });
     table.addSortKey(TABLE_SORT_KEY);
-    table.apply(new Tag('Environment', 'Production'));
     const template = app.synthesizeTemplate();
+    table.node.apply(new Tag('Environment', 'Production'));
 
     test.deepEqual(template, {
       Resources: {
