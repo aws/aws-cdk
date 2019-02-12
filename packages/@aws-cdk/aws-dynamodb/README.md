@@ -12,8 +12,8 @@ const table = new dynamodb.Table(this, 'Table', {
 
 ### Keys
 
-`partitionKey` is required when a table is defined, `sortKey` is optional and can also be
-defined later using `addSortKey`.
+When a table is defined, you must define it's schema using the `partitionKey`
+(required) and `sortKey` (optional) properties.
 
 ### Billing Mode
 
