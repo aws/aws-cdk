@@ -60,7 +60,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":parameter/",
+                    ":parameter",
                     {
                       "Ref": "StringParameter472EED0E"
                     }
