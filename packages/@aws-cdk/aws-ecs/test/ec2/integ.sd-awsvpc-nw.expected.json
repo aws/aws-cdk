@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc"
+            "Value": "aws-ecs-integ-ecs/Vpc"
           }
         ]
       }
@@ -27,7 +27,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-ecs/Vpc/PublicSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-ecs/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -101,7 +101,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ-ecs/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -118,7 +118,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-ecs/Vpc/PublicSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -140,7 +140,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-ecs/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -192,7 +192,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ-ecs/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -209,7 +209,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ-ecs/Vpc/PrivateSubnet1"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -231,7 +231,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ-ecs/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -271,7 +271,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ-ecs/Vpc/PrivateSubnet2"
           },
           {
             "Key": "aws-cdk:subnet-name",
@@ -293,7 +293,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ-ecs/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -327,7 +327,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/Vpc"
+            "Value": "aws-ecs-integ-ecs/Vpc"
           }
         ]
       }
@@ -349,7 +349,7 @@
     "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+        "GroupDescription": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -361,7 +361,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
           }
         ],
         "VpcId": {
@@ -487,7 +487,7 @@
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
           }
         ],
         "VPCZoneIdentifier": [
@@ -616,7 +616,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
           }
         ],
         "Timeout": 310
@@ -646,10 +646,7 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Fn::GetAtt": [
-            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
-            "Arn"
-          ]
+          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E"
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
@@ -731,6 +728,15 @@
         "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B"
       ]
     },
+    "EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F": {
+      "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+      "Properties": {
+        "Name": "scorekeep.com",
+        "Vpc": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
     "TaskDefTaskRole1EDB4A67": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -776,10 +782,11 @@
             },
             "Memory": 256,
             "MountPoints": [],
-            "Name": "web",
+            "Name": "frontend",
             "PortMappings": [
               {
                 "ContainerPort": 80,
+                "HostPort": 80,
                 "Protocol": "tcp"
               }
             ],
@@ -787,7 +794,7 @@
             "VolumesFrom": []
           }
         ],
-        "Family": "awsecsintegTaskDef6FDFB69A",
+        "Family": "awsecsintegecsTaskDef8DD0C801",
         "NetworkMode": "awsvpc",
         "PlacementConstraints": [],
         "RequiresCompatibilities": [
@@ -802,7 +809,7 @@
         "Volumes": []
       }
     },
-    "ServiceD69D759B": {
+    "FrontendServiceBC94BA93": {
       "Type": "AWS::ECS::Service",
       "Properties": {
         "TaskDefinition": {
@@ -817,22 +824,14 @@
         },
         "DesiredCount": 1,
         "LaunchType": "EC2",
-        "LoadBalancers": [
-          {
-            "ContainerName": "web",
-            "ContainerPort": 80,
-            "TargetGroupArn": {
-              "Ref": "LBPublicListenerECSGroupD6A32205"
-            }
-          }
-        ],
+        "LoadBalancers": [],
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
             "AssignPublicIp": "DISABLED",
             "SecurityGroups": [
               {
                 "Fn::GetAtt": [
-                  "ServiceSecurityGroupC96ED6A7",
+                  "FrontendServiceSecurityGroup85470DEC",
                   "GroupId"
                 ]
               }
@@ -850,17 +849,22 @@
         "PlacementConstraints": [],
         "PlacementStrategies": [],
         "SchedulingStrategy": "REPLICA",
-        "ServiceRegistries": []
-      },
-      "DependsOn": [
-        "LBPublicListenerECSGroupD6A32205",
-        "LBPublicListener6E1F3D94"
-      ]
+        "ServiceRegistries": [
+          {
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "FrontendServiceCloudmapService6FE76C06",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }
     },
-    "ServiceSecurityGroupC96ED6A7": {
+    "FrontendServiceSecurityGroup85470DEC": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-ecs-integ/Service/SecurityGroup",
+        "GroupDescription": "aws-ecs-integ-ecs/FrontendService/SecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -874,135 +878,34 @@
         }
       }
     },
-    "ServiceSecurityGroupfromawsecsintegLBSecurityGroupC30F5EB480CD1B9463": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
+    "FrontendServiceCloudmapService6FE76C06": {
+      "Type": "AWS::ServiceDiscovery::Service",
       "Properties": {
-        "IpProtocol": "tcp",
-        "Description": "Load balancer to target",
-        "FromPort": 80,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "ServiceSecurityGroupC96ED6A7",
-            "GroupId"
-          ]
-        },
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "LBSecurityGroup8A41EA2B",
-            "GroupId"
-          ]
-        },
-        "ToPort": 80
-      }
-    },
-    "LB8A12904C": {
-      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
-      "Properties": {
-        "LoadBalancerAttributes": [],
-        "Scheme": "internet-facing",
-        "SecurityGroups": [
-          {
+        "DnsConfig": {
+          "DnsRecords": [
+            {
+              "TTL": "60",
+              "Type": "A"
+            }
+          ],
+          "NamespaceId": {
             "Fn::GetAtt": [
-              "LBSecurityGroup8A41EA2B",
-              "GroupId"
+              "EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F",
+              "Id"
             ]
-          }
-        ],
-        "Subnets": [
-          {
-            "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
           },
-          {
-            "Ref": "VpcPublicSubnet2Subnet691E08A3"
-          }
-        ],
-        "Type": "application"
-      },
-      "DependsOn": [
-        "VpcPublicSubnet1DefaultRoute3DA9E72A",
-        "VpcPublicSubnet2DefaultRoute97F91067"
-      ]
-    },
-    "LBSecurityGroup8A41EA2B": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Automatically created Security Group for ELB awsecsintegLBC73915FE",
-        "SecurityGroupEgress": [],
-        "SecurityGroupIngress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow from anyone on port 80",
-            "FromPort": 80,
-            "IpProtocol": "tcp",
-            "ToPort": 80
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
-    "LBSecurityGrouptoawsecsintegServiceSecurityGroup48EE4368807B287D7F": {
-      "Type": "AWS::EC2::SecurityGroupEgress",
-      "Properties": {
-        "GroupId": {
+          "RoutingPolicy": "MULTIVALUE"
+        },
+        "HealthCheckCustomConfig": {
+          "FailureThreshold": 1
+        },
+        "Name": "frontend",
+        "NamespaceId": {
           "Fn::GetAtt": [
-            "LBSecurityGroup8A41EA2B",
-            "GroupId"
+            "EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F",
+            "Id"
           ]
-        },
-        "IpProtocol": "tcp",
-        "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ServiceSecurityGroupC96ED6A7",
-            "GroupId"
-          ]
-        },
-        "FromPort": 80,
-        "ToPort": 80
-      }
-    },
-    "LBPublicListener6E1F3D94": {
-      "Type": "AWS::ElasticLoadBalancingV2::Listener",
-      "Properties": {
-        "DefaultActions": [
-          {
-            "TargetGroupArn": {
-              "Ref": "LBPublicListenerECSGroupD6A32205"
-            },
-            "Type": "forward"
-          }
-        ],
-        "LoadBalancerArn": {
-          "Ref": "LB8A12904C"
-        },
-        "Port": 80,
-        "Protocol": "HTTP",
-        "Certificates": []
-      }
-    },
-    "LBPublicListenerECSGroupD6A32205": {
-      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-      "Properties": {
-        "Port": 80,
-        "Protocol": "HTTP",
-        "TargetGroupAttributes": [],
-        "Targets": [],
-        "TargetType": "ip",
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
         }
-      }
-    }
-  },
-  "Outputs": {
-    "LoadBalancerDNS": {
-      "Value": {
-        "Fn::GetAtt": [
-          "LB8A12904C",
-          "DNSName"
-        ]
       }
     }
   }

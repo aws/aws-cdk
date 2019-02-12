@@ -1,6 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import { InstanceType } from '@aws-cdk/aws-ec2';
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -215,6 +216,53 @@ export = {
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
       MaxSize: "3"
     }));
+
+    test.done();
+  },
+
+  "allows adding service discovery namespace"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+    });
+
+    // WHEN
+    cluster.addNamespace({
+      name: "foo.com"
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::ServiceDiscovery::PrivateDnsNamespace", {
+       Name: 'foo.com',
+        Vpc: {
+          Ref: 'MyVpcF9F0CA6F'
+        }
+    }));
+
+    test.done();
+  },
+
+  "throws if http namespace is added"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+    });
+
+    // THEN
+    test.throws(() => {
+      cluster.addNamespace({
+        name: "foo.com",
+        type: cloudmap.NamespaceType.Http
+      });
+    }, /Http Namespaces are not supported in ECS./);
 
     test.done();
   },
