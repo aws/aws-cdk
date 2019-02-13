@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct, IConstruct } from '../core/construct';
 import { TagManager } from '../core/tag-manager';
-import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
+import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from '../core/util';
 import { CfnReference } from './cfn-tokens';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
@@ -215,18 +215,19 @@ export class Resource extends Referenceable {
 
       return {
         Resources: {
-          [this.logicalId]: deepMerge({
+          // Post-Resolve operation since otherwise deepMerge is going to mix values into
+          // the Token objects returned by ignoreEmpty.
+          [this.logicalId]: new PostResolveToken({
             Type: this.resourceType,
-            Properties: ignoreEmpty(this, properties),
-            // Return a sorted set of dependencies to be consistent across tests
-            DependsOn: ignoreEmpty(this, renderDependsOn(this.dependsOn)),
+            Properties: ignoreEmpty(properties),
+            DependsOn: ignoreEmpty(renderDependsOn(this.dependsOn)),
             CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
             UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.options.updateReplacePolicy),
             DeletionPolicy: capitalizePropertyNames(this, this.options.deletionPolicy),
-            Metadata: ignoreEmpty(this, this.options.metadata),
+            Metadata: ignoreEmpty(this.options.metadata),
             Condition: this.options.condition && this.options.condition.logicalId
-          }, this.rawOverrides)
+          }, props => deepMerge(props, this.rawOverrides))
         }
       };
     } catch (e) {
