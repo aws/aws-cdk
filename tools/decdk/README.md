@@ -1,5 +1,7 @@
 # deCDK - Declarative CDK
 
+[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
+
 Define AWS CDK applications declaratively.
 
 This tool reads CloudFormation-like JSON/YAML templates which can contain both normal CloudFormation resources (`AWS::S3::Bucket`) and also reference AWS CDK resources (`@aws-cdk/aws-s3.Bucket`).
@@ -51,7 +53,13 @@ As you can see, the deCDK has the same semantics as a CloudFormation template. I
 
 When deCDK processes a template, it identifies these special resources and under-the-hood, it instantiates an object of that type, passing in the properties to the object's constructor. All CDK constructs have a uniform signature, so this is actually straightforward.
 
-## Deconstruction
+## Development
+
+### Examples/Tests
+
+When you build this module, it will produce a `cdk.schema.json` file at the root, which is referenced by the examples in the [`examples`](./examples) directory. This directory includes working examples of deCDK templates for various areas. We also snapshot-test those to ensure there are no unwanted regressions.
+
+## Design
 
 "Deconstruction" is the process of reflecting on the AWS Construct Library's type system and determining what would be the declarative interface for each API. This section describes how various elements in the library's type system are represented through the template format.
 
@@ -59,17 +67,17 @@ When deCDK processes a template, it identifies these special resources and under
 
 Constructs can be defined in the `Resources` section of the template. The `Type` of the resource is the fully-qualified class name (e.g. `@aws-cdk/aws-s3.Bucket`) and `Properties` are mapped to the deconstructed type of the construct's "Props" interface (e.g. `BucketProps`).
 
-### Data Interfaces
+### Data Interfaces ("Props")
 
 jsii has a concept of "data interfaces", which are basically interfaces that do not have methods. For example, all construct "props" are data interfaces.
 
 > In some languages (Python, Ruby), if a method accepts a data interface as the last argument, interface properties can be used as keyword arguments in the method call. Other languages have a different idiomatic representation of data such as Java PoJos and Builders.
 
-deCDK maps data interfaces to closed JSON objects (do not allow additional properties), and will recursively deconstruct all property types.
+deCDK maps data interfaces to closed JSON objects (no additional properties), and will recursively deconstruct all property types.
 
 ### Primitives
 
-Strings, numbers, booleans, Dates, lists and maps are all deconstructed 1:1 to their JSON representation.
+Strings, numbers, booleans, dates, lists and maps are all deconstructed 1:1 to their JSON representation.
 
 ### Enums
 
@@ -77,7 +85,7 @@ Enums are mapped to JSON schema enums.
 
 ### References
 
-If deCDK identifies that an API expects a reference to another construct (a type that extends cdk.Construct or an interface that extends cdk.IConstruct), it will allow referencing it via a “Ref” intrinsic. For example, here's a definition of an ECS cluster that references a VPC:
+If deCDK encounters a reference to another __construct__ (a type that extends `cdk.Construct` or an interface that extends `cdk.IConstruct`), it will allow referencing it via a “Ref” intrinsic. For example, here's a definition of an ECS cluster that references a VPC:
 
 ```yaml
 Resources:
@@ -134,8 +142,7 @@ MyHandler:
     - DynamoEventSource:
         table:
           Ref: Table
-        props:
-          startingPosition: TrimHorizon
+        startingPosition: TrimHorizon
     - ApiEventSource:
         method: GET
         path: "/hello"
@@ -167,10 +174,83 @@ Outputs:
 
 ### Raw CloudFormation
 
-If deCDK doesn't identify a resource type as a CDK resource, it will just pass it through to the resulting output (through a special construct we have in the CDK called `cdk.Include`). This means that any existing CloudFormation resources (such as `AWS::SQS::Queue`) can be used as-is.
+If deCDK doesn't identify a resource type as a CDK resource, it will just pass it through to the resulting output (through a special construct we have in the CDK called `cdk.Include`). This means that any existing CloudFormation/SAM resources (such as `AWS::SQS::Queue`) can be used as-is.
 
-## Issues
+## Roadmap
 
-- [ ] PolicyDocument API is not deconstructable
-- [ ] Shorthand tags for intrinsics in YAML
-- [ ]
+There is much more we can do here. This section lists API surfaces with ideas on how to deconstruct them.
+
+### Imports
+
+When decdk encounters a reference to an AWS construct, it currently requires a "Ref" to another resource in the template. We should also support importing external resources by reflecting on the various static "fromXxx", "importXxx" and deconstructing those methods.
+
+For example if we have a property `Bucket` that's modeled as an `s3.IBucket`, at the moment it will only accept:
+
+```json
+"Bucket": { "Ref": "MyBucket" }
+```
+
+But this requires that `MyBucket` is defined within the same template. If we want to reference a bucket by ARN, we should be able to do this:
+
+```json
+"Bucket": { "arn": "arn-of-bucket" }
+```
+
+Which should be translated to a call:
+
+```ts
+bucket: Bucket.fromBucketArn(this, 'arn-of-bucket')
+```
+
+### Grants
+
+AWS constructs expose a set of "grant" methods that can be used to grant IAM principals permissions to perform certain actions on a resource (e.g. `table.grantRead` or `lambda.grantInvoke`).
+
+deCDK should be able to provide a declarative-style for expressing those grants:
+
+```json
+"MyFunction": {
+  "Type": "@aws-cdk/aws-lambda.Function",
+  "Properties": {
+    "grants": {
+      "invoke": [ { "Ref": "MyRole" }, { "Ref": "AnotherRole" } ]
+    }
+  }
+}
+```
+
+### Events
+
+The CDK employs a loose pattern for event-driven programming by exposing a set of `onXxx` methods from AWS constructs. This pattern is used for various types of event systems such as CloudWatch events, bucket notifications, etc.
+
+It might be possible to add a bit more rigor to these patterns and expose them also via a declarative API:
+
+```json
+"MyBucket": {
+  "Type": "@aws-cdk/aws-s3.Bucket",
+  "Properties": {
+    "on": {
+      "objectCreated": [
+        {
+          "target": { "Ref": "MyFunction" },
+          "prefix": "foo/"
+        }
+      ]
+    }
+  }
+}
+```
+
+### addXxxx
+
+We should enforce in our APIs that anything that can be "added" to a construct can also be defined in props as an array. `awslint` can enforce this and ensure that `addXxx` methods always return `void` and have a corresponding prop.
+
+### Supporting user-defined constructs
+
+deCDK can deconstruct APIs that adhere to the standards defined by __awslint__ and exposed through jsii (it reflects on the jsii type system). Technically, nothing prevents us from allowing users to "bring their own constructs" to decdk, but those requirements must be met.
+
+### Misc
+
+- `iam.PolicyDocument` is be tricky since it utilizes a fluent API. We need to think whether we want to revise the PolicyDocument API to be more compatible or add a utility class that can help.
+- We should enable shorthand tags for intrinsics in YAML
+
