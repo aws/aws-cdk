@@ -26,7 +26,7 @@
     "ContainerDef": {
       "Type": "@aws-cdk/aws-ecs.ContainerDefinition",
       "Properties": {
-        "task": { "Ref": "MyTaskDef" },
+        "taskDefinition": { "Ref": "MyTaskDef" },
         "essential": true,
         "memoryLimitMiB": 1024,
         "image": {

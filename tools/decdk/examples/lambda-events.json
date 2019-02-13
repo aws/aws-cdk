@@ -5,8 +5,12 @@
       "Type": "@aws-cdk/aws-sns.Topic"
     },
     "Table": {
-      "Type": "@aws-cdk/aws-dynamodb.SimpleTable",
+      "Type": "@aws-cdk/aws-dynamodb.Table",
       "Properties": {
+        "partitionKey": {
+          "name": "ID",
+          "type": "String"
+        },
         "streamSpecification": "NewAndOldImages"
       }
     },
