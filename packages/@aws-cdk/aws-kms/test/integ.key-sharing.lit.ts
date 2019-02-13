@@ -13,7 +13,7 @@ class KeyStack extends cdk.Stack {
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    this.key = new kms.EncryptionKey(this, 'MyKey');
+    this.key = new kms.EncryptionKey(this, 'MyKey', { retain: false });
   }
 }
 
