@@ -20,4 +20,4 @@ fi
 echo "#!/bin/bash"
 echo "set -euo pipefail"
 
-lerna ls | xargs -n1 -I{} echo "lerna exec --stream --scope {} \"$@\""
+lerna ls --toposort | xargs -n1 -I{} echo "lerna exec --stream --scope {} \"$@\""

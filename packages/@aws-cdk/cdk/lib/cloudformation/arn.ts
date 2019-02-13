@@ -13,7 +13,7 @@ import { Stack } from './stack';
  *
  * The ARN will be formatted as follows:
  *
- *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
+ *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}{resource-name}
  *
  * The required ARN pieces that are omitted will be taken from the stack that
  * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
@@ -23,12 +23,12 @@ export function arnFromComponents(components: ArnComponents, stack: Stack): stri
   const partition = components.partition !== undefined ? components.partition : stack.partition;
   const region = components.region !== undefined ? components.region : stack.region;
   const account = components.account !== undefined ? components.account : stack.accountId;
+  const sep = components.sep !== undefined ? components.sep : '/';
 
   const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];
 
-  const sep = components.sep || '/';
-  if (sep !== '/' && sep !== ':') {
-    throw new Error('resourcePathSep may only be ":" or "/"');
+  if (sep !== '/' && sep !== ':' && sep !== '') {
+    throw new Error('resourcePathSep may only be ":", "/" or an empty string');
   }
 
   if (components.resourceName != null) {
@@ -257,7 +257,7 @@ export interface ArnComponents {
   /**
    * Separator between resource type and the resource.
    *
-   * Can be either '/' or ':'. Will only be used if path is defined.
+   * Can be either '/', ':' or an empty string. Will only be used if resourceName is defined.
    * @default '/'
    */
   sep?: string;
