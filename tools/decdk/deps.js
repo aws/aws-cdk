@@ -1,3 +1,7 @@
+// +------------------------------------------------------------------------------------------------
+// | this script runs during build to verify that this package depends on the entire aws construct
+// | library. the script will fail (and update package.json) if this is not true.
+// |
 const fs = require('fs');
 const path = require('path');
 
@@ -21,14 +25,14 @@ for (const dir of modules) {
     errors = true;
   }
 
-  const requiremennt = `^${meta.version}`;
+  const requirement = `^${meta.version}`;
 
-  if (exists && exists !== requiremennt) {
-    console.error(`invalid version requirement: expecting '${requiremennt}', got ${exists}`);
+  if (exists && exists !== requirement) {
+    console.error(`invalid version requirement: expecting '${requirement}', got ${exists}`);
     errors = true;
   }
 
-  deps[meta.name] = requiremennt;
+  deps[meta.name] = requirement;
 }
 
 fs.writeFileSync(path.join(__dirname, 'package.json'), JSON.stringify(pkg, undefined, 2));
