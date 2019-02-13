@@ -106,7 +106,6 @@
     "exclude": [
       "resource-attribute:@aws-cdk/aws-ecs.ICluster.clusterArn",
       "construct-ctor:@aws-cdk/aws-ecs.BaseService.<initializer>",
-      "construct-ctor:@aws-cdk/aws-ecs.ContainerDefinition.<initializer>",
       "construct-ctor:@aws-cdk/aws-ecs.LoadBalancedFargateServiceApplet.<initializer>.params[0]"
     ]
   }
