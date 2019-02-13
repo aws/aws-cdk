@@ -43,7 +43,19 @@ export interface Attribute {
   type: AttributeType;
 }
 
-export interface TableOptions {
+export interface TableProps {
+  /**
+   * Partition key attribute definition.
+   */
+  partitionKey: Attribute;
+
+  /**
+   * Table sort key attribute definition.
+   *
+   * @default no sort key
+   */
+  sortKey?: Attribute;
+
   /**
    * The read capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
@@ -99,20 +111,6 @@ export interface TableOptions {
    * @default undefined, TTL is disabled
    */
   ttlAttributeName?: string;
-
-  /**
-   * Table sort key attribute definition. You can also use `addSortKey` to set
-   * this up later.
-   */
-  sortKey?: Attribute;
-}
-
-export interface TableProps extends TableOptions {
-  /**
-   * Partition key attribute definition. This is eventually required, but you
-   * can also use `addPartitionKey` to specify the partition key at a later stage.
-   */
-  partitionKey: Attribute;
 }
 
 export interface SecondaryIndexProps {
@@ -202,8 +200,8 @@ export class Table extends Construct {
   private readonly secondaryIndexNames: string[] = [];
   private readonly nonKeyAttributes: string[] = [];
 
-  private tablePartitionKey?: Attribute;
-  private tableSortKey?: Attribute;
+  private readonly tablePartitionKey: Attribute;
+  private readonly tableSortKey?: Attribute;
 
   private readonly billingMode: BillingMode;
   private readonly tableScaling: ScalableAttributePair = {};
@@ -241,26 +239,13 @@ export class Table extends Construct {
 
     this.scalingRole = this.makeScalingRole();
 
-    if (props.partitionKey) {
-      this.addKey(props.partitionKey, HASH_KEY_TYPE);
-      this.tablePartitionKey = props.partitionKey;
-    }
+    this.addKey(props.partitionKey, HASH_KEY_TYPE);
+    this.tablePartitionKey = props.partitionKey;
 
     if (props.sortKey) {
-      this.addSortKey(props.sortKey);
+      this.addKey(props.sortKey, RANGE_KEY_TYPE);
+      this.tableSortKey = props.sortKey;
     }
-  }
-
-  /**
-   * Add a sort key of table.
-   *
-   * @param attribute the sort key of table
-   * @returns a reference to this object so that method calls can be chained together
-   */
-  public addSortKey(attribute: Attribute): this {
-    this.addKey(attribute, RANGE_KEY_TYPE);
-    this.tableSortKey = attribute;
-    return this;
   }
 
   /**
@@ -304,10 +289,6 @@ export class Table extends Construct {
     if (this.localSecondaryIndexes.length === 5) {
       // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
       throw new RangeError('a maximum number of local secondary index per table is 5');
-    }
-
-    if (!this.tablePartitionKey) {
-      throw new Error('a partition key of the table must be specified first through addPartitionKey()');
     }
 
     this.validateIndexName(props.indexName);

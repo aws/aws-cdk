@@ -177,7 +177,7 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
   /**
    * The task this container definition belongs to.
    */
-  task: TaskDefinition;
+  taskDefinition: TaskDefinition;
 }
 
 /**
@@ -232,12 +232,12 @@ export class ContainerDefinition extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
-    this.taskDefinition = props.task;
+    this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
 
     props.image.bind(this);
     if (props.logging) { props.logging.bind(this); }
-    props.task._linkContainer(this);
+    props.taskDefinition._linkContainer(this);
   }
 
   /**

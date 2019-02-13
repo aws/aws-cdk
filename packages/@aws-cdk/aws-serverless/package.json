@@ -61,16 +61,7 @@
     "pkglint": "^0.24.1"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.24.1",
-    "@aws-cdk/aws-lambda-event-sources": "^0.24.1",
-    "@aws-cdk/aws-dynamodb": "^0.24.1",
-    "@aws-cdk/aws-sqs": "^0.24.1",
-    "@aws-cdk/aws-s3": "^0.24.1",
-    "@aws-cdk/aws-sns": "^0.24.1",
-    "@aws-cdk/aws-kinesis": "^0.24.1",
-    "@aws-cdk/aws-iam": "^0.24.1",
-    "@aws-cdk/aws-lambda": "^0.24.1",
-    "@aws-cdk/aws-apigateway": "^0.24.1"
+    "@aws-cdk/cdk": "^0.24.1"
   },
   "peerDependencies": {
     "@aws-cdk/cdk": "^0.24.1"
