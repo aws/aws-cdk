@@ -530,7 +530,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
     });
 
     if (this.encryptionKey) {
-      this.encryptionKey.grant(principal, keyActions);
+      this.encryptionKey.grant(principal, ...keyActions);
     }
   }
 }
