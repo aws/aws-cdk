@@ -387,6 +387,22 @@ function methodSchema(method: jsiiReflect.Method, ctx: SchemaContext) {
     const properties: any = { };
     const required = new Array<string>();
 
+    const addProperty = (name: string, type: jsiiReflect.TypeReference): void => {
+      const param = schemaForTypeReference(type, ctx);
+
+      // bail out - can't serialize a required parameter, so we can't serialize the method
+      if (!param && !type.optional) {
+        ctx.error(`cannot schematize method because parameter cannot be schematized`);
+        return undefined;
+      }
+
+      properties[name] = param;
+
+      if (!type.optional) {
+        required.push(name);
+      }
+    };
+
     for (let i = 0; i < method.parameters.length; ++i) {
       const p = method.parameters[i];
       methodctx.child('param', p.name);
@@ -395,32 +411,12 @@ function methodSchema(method: jsiiReflect.Method, ctx: SchemaContext) {
       if (i === method.parameters.length - 1 && isDataType(p.type.fqn)) {
         const kwargs = schemaForInterface(p.type.fqn, ctx);
         if (kwargs) {
-          const def = JSON.parse(JSON.stringify(ctx.findDefinition(kwargs.$ref))); // poor man's clone
-          def.properties = def.properties || { };
-          for (const [ key, value ] of Object.entries(properties)) {
-            if (key in def.properties) {
-              throw new Error('conflict between kwargs and argument name');
-            }
-
-            def.properties[key] = value;
+          for (const prop of p.type.fqn.getProperties(true)) {
+            addProperty(prop.name, prop.type);
           }
-
-          return def;
         }
-      }
-
-      const param = schemaForTypeReference(p.type, ctx);
-
-      // bail out - can't serialize a required parameter, so we can't serialize the method
-      if (!param && !p.type.optional) {
-        ctx.error(`cannot schematize method because parameter cannot be schematized`);
-        return undefined;
-      }
-
-      properties[p.name] = param;
-
-      if (!p.type.optional) {
-        required.push(p.name);
+      } else {
+        addProperty(p.name, p.type);
       }
     }
 
