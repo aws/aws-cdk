@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { Construct, Root, Token } from '../../lib';
+import { ArnComponents, Construct, Root, Stack, Token } from '../../lib';
 
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
@@ -92,6 +92,50 @@ export = {
     const root = new Root();
     const c = new Construct(root, 'Default');
     test.throws(() => c.node.uniqueId, /Unable to calculate a unique id for an empty set of components/);
+    test.done();
+  },
+
+  'construct.node.stack returns the correct stack'(test: Test) {
+    const stack = new Stack();
+    test.same(stack.node.stack, stack);
+    const parent = new Construct(stack, 'Parent');
+    const construct = new Construct(parent, 'Construct');
+    test.same(construct.node.stack, stack);
+    test.done();
+  },
+
+  'construct.node.stack throws when there is no parent Stack'(test: Test) {
+    const root = new Root();
+    const construct = new Construct(root, 'Construct');
+    test.throws(() => construct.node.stack, /No stack could be identified for the construct at path/);
+    test.done();
+  },
+
+  'construct.node.stack.formatArn forwards to the Stack'(test: Test) {
+    const stack = new Stack();
+    const components: ArnComponents = { service: 'test', resource: 'test' };
+    const dummyArn = 'arn:::dummy';
+    stack.formatArn = (args) => {
+      test.same(args, components);
+      return dummyArn;
+    };
+
+    const construct = new Construct(stack, 'Construct');
+    test.same(construct.node.stack.formatArn(components), dummyArn);
+    test.done();
+  },
+
+  'construct.node.stack.parseArn forwards to the Stack'(test: Test) {
+    const stack = new Stack();
+    const components: ArnComponents = { service: 'test', resource: 'test' };
+    const dummyArn = 'arn:::dummy';
+    stack.parseArn = (arn) => {
+      test.same(arn, dummyArn);
+      return components;
+    };
+
+    const construct = new Construct(stack, 'Construct');
+    test.same(construct.node.stack.parseArn(dummyArn), components);
     test.done();
   },
 
@@ -339,7 +383,7 @@ export = {
       }
     }
 
-    class Stack extends Root {
+    class TestStack extends Root {
       constructor() {
         super();
 
@@ -352,7 +396,7 @@ export = {
       }
     }
 
-    const stack = new Stack();
+    const stack = new TestStack();
 
     const errors = (stack.node.validateTree()).map(v => ({ path: v.source.node.path, message: v.message }));
 

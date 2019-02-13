@@ -1,4 +1,4 @@
-import { Construct, IConstruct, IDependable, Stack } from "@aws-cdk/cdk";
+import { Construct, IConstruct, IDependable } from "@aws-cdk/cdk";
 import { subnetName } from './util';
 
 export interface IVpcSubnet extends IConstruct {
@@ -231,7 +231,7 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
    * The region where this VPC is defined
    */
   public get vpcRegion(): string {
-    return Stack.find(this).region;
+    return this.node.stack.region;
   }
 
 }
