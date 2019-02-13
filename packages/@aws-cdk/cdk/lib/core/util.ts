@@ -1,4 +1,5 @@
 import { IConstruct } from "./construct";
+import { IResolvedValuePostProcessor, ResolveContext, Token } from "./tokens";
 
 /**
  * Given an object, converts all keys to PascalCase given they are currently in camel case.
@@ -30,21 +31,34 @@ export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
 /**
  * Turns empty arrays/objects to undefined (after evaluating tokens).
  */
-export function ignoreEmpty(construct: IConstruct, o: any): any {
-  o = construct.node.resolve(o); // first resolve tokens, in case they evaluate to 'undefined'.
+export function ignoreEmpty(obj: any): any {
+ return new PostResolveToken(obj, o => {
+    // undefined/null
+    if (o == null) {
+      return o;
+    }
 
-  // undefined/null
-  if (o == null) {
+    if (Array.isArray(o) && o.length === 0) {
+      return undefined;
+    }
+
+    if (typeof(o) === 'object' && Object.keys(o).length === 0) {
+      return undefined;
+    }
+
     return o;
+  });
+}
+
+/**
+ * A Token that applies a function AFTER resolve resolution
+ */
+export class PostResolveToken extends Token implements IResolvedValuePostProcessor {
+  constructor(value: any, private readonly processor: (x: any) => any) {
+    super(value);
   }
 
-  if (Array.isArray(o) && o.length === 0) {
-    return undefined;
+  public postProcess(o: any, _context: ResolveContext): any {
+    return this.processor(o);
   }
-
-  if (typeof(o) === 'object' && Object.keys(o).length === 0) {
-    return undefined;
-  }
-
-  return o;
 }
