@@ -13,7 +13,7 @@
     "decdk-schema": "bin/recdk-schema"
   },
   "scripts": {
-    "build": "node ./deps.js && tsc && chmod +x bin/decdk && chmod +x bin/decdk-schema",
+    "build": "node ./deps.js && tsc && chmod +x bin/decdk && chmod +x bin/decdk-schema && bin/decdk-schema > cdk.schema.json",
     "watch": "tsc -w",
     "test": "jest"
   },
