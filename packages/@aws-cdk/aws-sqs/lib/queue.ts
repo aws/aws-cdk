@@ -350,7 +350,7 @@ class ImportedQueue extends QueueBase {
     super(scope, id);
     this.queueArn = props.queueArn;
     this.queueUrl = props.queueUrl;
-    this.queueName = cdk.Stack.find(this).parseArn(props.queueArn).resource;
+    this.queueName = this.node.parseArn(props.queueArn).resource;
 
     if (props.keyArn) {
       this.encryptionMasterKey = kms.EncryptionKey.import(this, 'Key', {

@@ -26,7 +26,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
    * @returns The ARN of the custom resource lambda function.
    */
   public static singleton(context: cdk.Construct) {
-    const root = cdk.Stack.find(context);
+    const root = context.node.stack;
 
     // well-known logical id to ensure stack singletonity
     const logicalId = 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834';
@@ -50,7 +50,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
     const role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicyArns: [
-        cdk.Stack.find(this).formatArn({
+        this.node.formatArn({
           service: 'iam',
           region: '', // no region for managed policy
           account: 'aws', // the account for a managed policy is 'aws'

@@ -188,7 +188,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     this.artifactStores = {};
 
     // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
-    this.pipelineArn = cdk.Stack.find(this).formatArn({
+    this.pipelineArn = this.node.formatArn({
       service: 'codepipeline',
       resource: this.pipelineName
     });
@@ -336,8 +336,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     }
 
     // get the region the Pipeline itself is in
-    const pipelineStack = cdk.Stack.find(this);
-    const pipelineRegion = pipelineStack.requireRegion(
+    const pipelineRegion = this.node.stack.requireRegion(
       "You need to specify an explicit region when using CodePipeline's cross-region support");
 
     // if we already have an ArtifactStore generated for this region, or it's the Pipeline's region, nothing to do
@@ -347,9 +346,9 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
 
     let replicationBucketName = this.crossRegionReplicationBuckets[action.region];
     if (!replicationBucketName) {
-      const pipelineAccount = pipelineStack.requireAccountId(
+      const pipelineAccount = this.node.stack.requireAccountId(
         "You need to specify an explicit account when using CodePipeline's cross-region support");
-      const app = pipelineStack.parentApp();
+      const app = this.node.stack.parentApp();
       if (!app) {
         throw new Error(`Pipeline stack which uses cross region actions must be part of an application`);
       }
@@ -477,7 +476,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
 
       // add the Pipeline's artifact store
       const artifactStore = this.renderArtifactStore();
-      this.artifactStores[cdk.Stack.find(this).requireRegion()] = {
+      this.artifactStores[this.node.stack.requireRegion()] = {
         Location: artifactStore.location,
         Type: artifactStore.type,
         EncryptionKey: artifactStore.encryptionKey,

@@ -1,4 +1,4 @@
-import { Construct, Stack, Token } from "@aws-cdk/cdk";
+import { Construct, Token } from "@aws-cdk/cdk";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -61,7 +61,6 @@ export class Dashboard extends Construct {
    */
   private generateDashboardName(): string {
     // Combination of stack name and LogicalID, which are guaranteed to be unique.
-    const stack = Stack.find(this);
-    return stack.name + '-' + this.dashboard.logicalId;
+    return this.node.stack.name + '-' + this.dashboard.logicalId;
   }
 }
