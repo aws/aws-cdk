@@ -1,0 +1,54 @@
+{
+  "$schema": "../cdk.schema.json",
+  "Resources": {
+    "Repo": {
+      "Type": "@aws-cdk/aws-codecommit.Repository",
+      "Properties": {
+        "repositoryName": "my-first-decdk-repo"
+      }
+    },
+    "Key": {
+      "Type": "@aws-cdk/aws-kms.EncryptionKey"
+    },
+    "BuildProject": {
+      "Type": "@aws-cdk/aws-codebuild.PipelineProject",
+      "Properties": {
+        "encryptionKey": { "Ref": "Key" }
+      }
+    },
+    "Pipeline": {
+      "Type": "@aws-cdk/aws-codepipeline.Pipeline",
+      "Properties": {
+        "stages": [
+          {
+            "name": "Source",
+            "actions": [
+              {
+                "@aws-cdk/aws-codecommit.PipelineSourceAction": {
+                  "repository": { "Ref": "Repo" },
+                  "actionName": "Source"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Build",
+            "actions": [
+              {
+                "@aws-cdk/aws-codebuild.PipelineBuildAction": {
+                  "actionName": "Build",
+                  "project": { "Ref": "BuildProject" },
+                  "inputArtifact": {
+                    "@aws-cdk/aws-codepipeline-api.Artifact": {
+                      "artifactName": "Source"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

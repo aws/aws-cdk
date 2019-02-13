@@ -1,0 +1,37 @@
+{
+  "$schema": "../cdk.schema.json",
+  "Resources": {
+    "MyTopic": {
+      "Type": "@aws-cdk/aws-sns.Topic"
+    },
+    "Table": {
+      "Type": "@aws-cdk/aws-dynamodb.Table",
+      "Properties": {
+        "partitionKey": {
+          "name": "ID",
+          "type": "String"
+        },
+        "streamSpecification": "NewAndOldImages"
+      }
+    },
+    "HelloWorldFunction": {
+      "Type": "@aws-cdk/aws-lambda.Function",
+      "Properties": {
+        "handler": "app.hello_handler",
+        "runtime": "Python36",
+        "code": {
+          "asset": { "path": "." }
+        },
+        "environment": {
+          "Param": "f"
+        },
+        "events": [
+          { "@aws-cdk/aws-lambda-event-sources.DynamoEventSource": { "table": { "Ref": "Table" }, "startingPosition": "TrimHorizon" } },
+          { "@aws-cdk/aws-lambda-event-sources.ApiEventSource": { "method": "GET", "path": "/hello" } },
+          { "@aws-cdk/aws-lambda-event-sources.ApiEventSource": { "method": "POST", "path": "/hello" } },
+          { "@aws-cdk/aws-lambda-event-sources.SnsEventSource": { "topic": { "Ref": "MyTopic" } } }
+        ]
+      }
+    }
+  }
+}
