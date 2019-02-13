@@ -1,0 +1,17 @@
+{
+  "name": "typescriptref",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@microsoft/api-extractor": "^6.3.0",
+    "@microsoft/api-documenter": "^1.5.59"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
