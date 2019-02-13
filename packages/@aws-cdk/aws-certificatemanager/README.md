@@ -37,7 +37,7 @@ const certificate = new Certificate(this, 'Certificate', {
 
 ### Importing
 
-Import a certificate either manually, if you know the ARN:
+Import a certificate manually, if you know the ARN:
 
 ```ts
 const certificate = Certificate.import(this, 'Certificate', {
@@ -45,13 +45,13 @@ const certificate = Certificate.import(this, 'Certificate', {
 });
 ```
 
-Or use exporting and importing mechanisms between stacks:
+### Sharing between Stacks
 
-```ts
-const certRef = certStack.certificate.export();
+To share the certificate between stacks in the same CDK application, simply
+pass the `Certificate` object between the stacks.
 
-const certificate = Certificate.import(this, 'Certificate', certRef);
-```
 
-> We should probably also make a Custom Resource that can looks up the certificate ARN
-> by domain name by querying ACM.
+## TODO
+
+- [ ] Custom Resource that can looks up the certificate ARN by domain name by querying ACM.
+- [ ] Custom Resource to automate certificate validation through Route53.

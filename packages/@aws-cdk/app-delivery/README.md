@@ -1,5 +1,5 @@
 ## Continuous Integration / Continuous Delivery for CDK Applications
-This library includes a *CodePipeline* action for deploying AWS CDK Applications.
+This library includes a *CodePipeline* composite Action for deploying AWS CDK Applications.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
 
@@ -29,7 +29,7 @@ The example below defines a *CDK App* that contains 3 stacks:
 ```
 
 #### `index.ts`
-```ts
+```typescript
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cdk = require('@aws-cdk/cdk');
@@ -46,26 +46,39 @@ const pipeline = new codepipeline.Pipeline(pipelineStack, 'CodePipeline', {
   restartExecutionOnUpdate: true,
   /* ... */
 });
+
 // Configure the CodePipeline source - where your CDK App's source code is hosted
-const source = new codepipeline.GitHubSourceAction(pipelineStack, 'GitHub', {
-  stage: pipeline.addStage('source'),
+const source = new codepipeline.GitHubSourceAction({
+  actionName: 'GitHub',
   /* ... */
 });
+pipeline.addStage({
+  name: 'source',
+  actions: [source],
+});
+
 const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild', {
   /** 
-  * Choose an environment configuration that meets your use case. For NodeJS
-  * this might be
+  * Choose an environment configuration that meets your use case.
+  * For NodeJS, this might be:
+  *
   * environment: {
-  *  buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
+  *   buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
   * },
   */
 });
-const buildStage = pipeline.addStage('build');
-const buildAction = project.addToPipeline(buildStage, 'CodeBuild');
+const buildAction = project.toCodePipelineBuildAction({
+  actionName: 'CodeBuild',
+  inputArtifact: source.outputArtifact,
+});
+pipeline.addStage({
+  name: 'build',
+  actions: [buildAction],
+});
 const synthesizedApp = buildAction.outputArtifact;
 
 // Optionally, self-update the pipeline stack
-const selfUpdateStage = pipeline.addStage('SelfUpdate');
+const selfUpdateStage = pipeline.addStage({ name: 'SelfUpdate' });
 new cicd.PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
   stage: selfUpdateStage,
   stack: pipelineStack,
@@ -73,9 +86,8 @@ new cicd.PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
 });
 
 // Now add our service stacks
-const deployStage = pipeline.addStage('Deploy');
+const deployStage = pipeline.addStage({ name: 'Deploy' });
 const serviceStackA = new MyServiceStackA(app, 'ServiceStackA', { /* ... */ });
-const serviceStackB = new MyServiceStackB(app, 'ServiceStackB', { /* ... */ });
 // Add actions to deploy the stacks in the deploy stage:
 const deployServiceAAction = new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackA', {
   stage: deployStage,
@@ -84,7 +96,6 @@ const deployServiceAAction = new cicd.PipelineDeployStackAction(pipelineStack, '
   // See the note below for details about this option.
   adminPermissions: false, 
 });
-
 // Add the necessary permissions for you service deploy action. This role is
 // is passed to CloudFormation and needs the permissions necessary to deploy
 // stack. Alternatively you can enable [Administrator](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html#jf_administrator) permissions above, 
@@ -95,7 +106,9 @@ deployServiceAAction.addToRolePolicy(
     .addResource(myResource.myResourceArn)
     // add more Action(s) and/or Resource(s) here, as needed
 );
-const deployServiceBAction = new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackB', {
+
+const serviceStackB = new MyServiceStackB(app, 'ServiceStackB', { /* ... */ });
+new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackB', {
   stage: deployStage,
   stack: serviceStackB,
   inputArtifact: synthesizedApp,

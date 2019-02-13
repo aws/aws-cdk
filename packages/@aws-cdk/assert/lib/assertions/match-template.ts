@@ -55,7 +55,7 @@ class StackMatchesTemplateAssertion extends Assertion<StackInspector> {
   private isDiffAcceptable(diff: cfnDiff.TemplateDiff): boolean {
     switch (this.matchStyle) {
     case MatchStyle.EXACT:
-      return diff.count === 0;
+      return diff.differenceCount === 0;
     case MatchStyle.NO_REPLACES:
       for (const key of Object.keys(diff.resources.changes)) {
         const change = diff.resources.changes[key]!;

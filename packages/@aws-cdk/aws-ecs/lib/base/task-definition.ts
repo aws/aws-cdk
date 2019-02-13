@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { ContainerDefinition, ContainerDefinitionProps } from '../container-definition';
+import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { isEc2Compatible, isFargateCompatible } from '../util';
 
@@ -134,6 +134,13 @@ export class TaskDefinition extends cdk.Construct {
   public compatibility: Compatibility;
 
   /**
+   * Execution role for this task definition
+   *
+   * May not exist, will be created as needed.
+   */
+  public executionRole?: iam.IRole;
+
+  /**
    * All containers
    */
   protected readonly containers = new Array<ContainerDefinition>();
@@ -141,14 +148,7 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * All volumes
    */
-  private readonly volumes: CfnTaskDefinition.VolumeProperty[] = [];
-
-  /**
-   * Execution role for this task definition
-   *
-   * Will be created as needed.
-   */
-  private executionRole?: iam.Role;
+  private readonly volumes: Volume[] = [];
 
   /**
    * Placement constraints for task instances
@@ -225,14 +225,18 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * Create a new container to this task definition
    */
-  public addContainer(id: string, props: ContainerDefinitionProps) {
-    const container = new ContainerDefinition(this, id, this, props);
+  public addContainer(id: string, props: ContainerDefinitionOptions) {
+    return new ContainerDefinition(this, id, { taskDefinition: this, ...props });
+  }
+
+  /**
+   * (internal) Links a container to this task definition.
+   */
+  public _linkContainer(container: ContainerDefinition) {
     this.containers.push(container);
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
-
-    return container;
   }
 
   /**
@@ -345,8 +349,12 @@ export interface Volume {
   /**
    * A name for the volume
    */
-  name?: string;
-  // FIXME add dockerVolumeConfiguration
+  name: string;
+
+  /**
+   * Specifies this configuration when using Docker volumes
+   */
+  dockerVolumeConfiguration?: DockerVolumeConfiguration;
 }
 
 /**
@@ -357,6 +365,50 @@ export interface Host {
    * Source path on the host
    */
   sourcePath?: string;
+}
+
+/**
+ * A configuration of a Docker volume
+ */
+export interface DockerVolumeConfiguration {
+  /**
+   * If true, the Docker volume is created if it does not already exist
+   *
+   * @default false
+   */
+  autoprovision?: boolean;
+  /**
+   * The Docker volume driver to use
+   */
+  driver: string;
+  /**
+   * A map of Docker driver specific options passed through
+   *
+   * @default No options
+   */
+  driverOpts?: string[];
+  /**
+   * Custom metadata to add to your Docker volume
+   *
+   * @default No labels
+   */
+  labels?: string[];
+  /**
+   * The scope for the Docker volume which determines it's lifecycle
+   */
+  scope: Scope;
+}
+
+export enum Scope {
+  /**
+   * Docker volumes are automatically provisioned when the task starts and destroyed when the task stops
+   */
+  Task = "task",
+
+  /**
+   * Docker volumes are persist after the task stops
+   */
+  Shared = "shared"
 }
 
 /**

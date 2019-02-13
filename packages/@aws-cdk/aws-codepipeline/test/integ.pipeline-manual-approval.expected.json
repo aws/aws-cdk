@@ -93,7 +93,7 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Resource": {
-                "Ref": "ManualApprovalTopicResource300641E2"
+                "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
               }
             }
           ],
@@ -130,14 +130,13 @@
                   "S3Bucket": {
                     "Ref": "Bucket83908E77"
                   },
-                  "S3ObjectKey": "file.zip",
-                  "PollForSourceChanges": true
+                  "S3ObjectKey": "file.zip"
                 },
                 "InputArtifacts": [],
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinemanualapprovalBucketS39750AFE7"
+                    "Name": "Artifact_S3_awscdkcodepipelinemanualapprovalBucketFF0B256C"
                   }
                 ],
                 "RunOrder": 1
@@ -156,7 +155,7 @@
                 },
                 "Configuration": {
                   "NotificationArn": {
-                    "Ref": "ManualApprovalTopicResource300641E2"
+                    "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
                   }
                 },
                 "InputArtifacts": [],
@@ -176,20 +175,20 @@
         }
       },
       "DependsOn": [
-        "PipelineRoleD68726F7",
-        "PipelineRoleDefaultPolicyC7A05455"
+        "PipelineRoleDefaultPolicyC7A05455",
+        "PipelineRoleD68726F7"
       ]
     },
-    "ManualApprovalTopicResource300641E2": {
+    "PipelineApproveManualApprovalTopicResourceF5A35B20": {
       "Type": "AWS::SNS::Topic"
     },
-    "ManualApprovalTopicResourceSubscriptionadamruka85gmailcomBACEE98E": {
+    "PipelineApproveManualApprovalTopicResourceSubscriptionadamruka85gmailcom76398FFA": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Endpoint": "adamruka85@gmail.com",
         "Protocol": "email",
         "TopicArn": {
-          "Ref": "ManualApprovalTopicResource300641E2"
+          "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
         }
       }
     }

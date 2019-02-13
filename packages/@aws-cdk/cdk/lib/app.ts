@@ -8,6 +8,8 @@ import { IConstruct, MetadataEntry, PATH_SEP, Root } from './core/construct';
  * Represents a CDK program.
  */
 export class App extends Root {
+  private prepared = false;
+
   /**
    * Initializes a CDK application.
    * @param request Optional toolkit request (e.g. for tests)
@@ -58,7 +60,12 @@ export class App extends Root {
   public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
     const stack = this.getStack(stackName);
 
-    this.node.prepareTree();
+    if (!this.prepared) {
+      // Maintain the existing contract that the tree will be prepared even if
+      // 'synthesizeStack' is called by itself. But only prepare the tree once.
+      this.node.prepareTree();
+      this.prepared = true;
+    }
 
     // first, validate this stack and stop if there are errors.
     const errors = stack.node.validateTree();
@@ -91,6 +98,9 @@ export class App extends Root {
    * Synthesizes multiple stacks
    */
   public synthesizeStacks(stackNames: string[]): cxapi.SynthesizedStack[] {
+    this.node.prepareTree();
+    this.prepared = true;
+
     const ret: cxapi.SynthesizedStack[] = [];
     for (const stackName of stackNames) {
       ret.push(this.synthesizeStack(stackName));

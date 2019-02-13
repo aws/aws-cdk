@@ -1,7 +1,7 @@
 import { IConstruct } from '../construct';
 import { containsListToken, TOKEN_MAP } from "./encoding";
 import { RESOLVE_OPTIONS } from "./options";
-import { RESOLVE_METHOD, ResolveContext, Token } from "./token";
+import { isResolvedValuePostProcessor, RESOLVE_METHOD, ResolveContext, Token } from "./token";
 import { unresolved } from "./unresolved";
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
@@ -83,8 +83,16 @@ export function resolve(obj: any, context: ResolveContext): any {
   if (unresolved(obj)) {
     const collect = RESOLVE_OPTIONS.collect;
     if (collect) { collect(obj); }
-    const value = obj[RESOLVE_METHOD](context);
-    return resolve(value, context);
+
+    const resolved = obj[RESOLVE_METHOD](context);
+
+    let deepResolved = resolve(resolved, context);
+
+    if (isResolvedValuePostProcessor(obj)) {
+      deepResolved = obj.postProcess(deepResolved, context);
+    }
+
+    return deepResolved;
   }
 
   //

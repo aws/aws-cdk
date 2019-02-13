@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
@@ -38,6 +38,24 @@ export = {
 
     expect(stack).to(haveResource('AWS::S3::Bucket'));
     expect(stack).to(haveResource('AWS::Lambda::Function', { Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)' }));
+    expect(stack).to(haveResource('Custom::S3BucketNotifications'));
+
+    test.done();
+  },
+  'when notification are added, you can tag the lambda'(test: Test) {
+    const stack = new cdk.Stack();
+    stack.node.apply(new cdk.Tag('Lambda', 'AreTagged'));
+
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    const topic = new Topic(stack, 'MyTopic');
+
+    bucket.onEvent(s3.EventType.ObjectCreated, topic);
+
+    expect(stack).to(haveResource('AWS::S3::Bucket'));
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Tags: [{Key: 'Lambda', Value: 'AreTagged'}],
+      Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)' }));
     expect(stack).to(haveResource('Custom::S3BucketNotifications'));
 
     test.done();
@@ -288,6 +306,7 @@ export = {
 
     bucket.onObjectCreated(dest);
 
+    stack.node.prepareTree();
     test.deepEqual(stack.toCloudFormation().Resources.BucketNotifications8F2E257D, {
       Type: 'Custom::S3BucketNotifications',
       Properties: {
@@ -299,5 +318,93 @@ export = {
     });
 
     test.done();
-  }
+  },
+
+  'CloudWatch Events': {
+    'onPutItem contains the Bucket ARN itself when path is undefined'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.import(stack, 'Bucket', {
+        bucketName: 'MyBucket',
+      });
+      bucket.onPutObject('PutRule');
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        "EventPattern": {
+          "source": [
+            "aws.s3",
+          ],
+          "detail": {
+            "eventSource": [
+              "s3.amazonaws.com",
+            ],
+            "eventName": [
+              "PutObject",
+            ],
+            "resources": {
+              "ARN": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::MyBucket",
+                    ],
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        "State": "ENABLED",
+      }));
+
+      test.done();
+    },
+
+    "onPutItem contains the path when it's provided"(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.import(stack, 'Bucket', {
+        bucketName: 'MyBucket',
+      });
+      bucket.onPutObject('PutRule', undefined, 'my/path.zip');
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        "EventPattern": {
+          "source": [
+            "aws.s3",
+          ],
+          "detail": {
+            "eventSource": [
+              "s3.amazonaws.com",
+            ],
+            "eventName": [
+              "PutObject",
+            ],
+            "resources": {
+              "ARN": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::MyBucket/my/path.zip"
+                    ],
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        "State": "ENABLED",
+      }));
+
+      test.done();
+    },
+  },
 };

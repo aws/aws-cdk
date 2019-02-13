@@ -107,7 +107,7 @@
                 "Name": "ECR_Source",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelineecrsourceMyEcrRepoECRSource8525F033"
+                    "Name": "Artifact_ECR_Source_awscdkcodepipelineecrsourceMyEcrRepo7074CE15"
                   }
                 ],
                 "RunOrder": 1
@@ -141,8 +141,8 @@
         }
       },
       "DependsOn": [
-        "MyPipelineRoleC0D47CA4",
-        "MyPipelineRoleDefaultPolicy34F09EFA"
+        "MyPipelineRoleDefaultPolicy34F09EFA",
+        "MyPipelineRoleC0D47CA4"
       ]
     },
     "MyPipelineEventsRoleFAB99F32": {

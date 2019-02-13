@@ -64,13 +64,6 @@ export class LazyRole extends cdk.Construct implements IRole {
   }
 
   /**
-   * Returns the role.
-   */
-  public get dependencyElements(): cdk.IDependable[] {
-    return this.instantiate().dependencyElements;
-  }
-
-  /**
    * Returns the ARN of this role.
    */
   public get roleArn(): string {
@@ -79,6 +72,10 @@ export class LazyRole extends cdk.Construct implements IRole {
 
   public get roleId(): string {
     return this.instantiate().roleId;
+  }
+
+  public get roleName(): string {
+    return this.instantiate().roleName;
   }
 
   /**

@@ -85,8 +85,8 @@ export interface PipelineDeployStackActionProps {
 }
 
 /**
- * A CodePipeline action to deploy a stack that is part of a CDK App. This
- * action takes care of preparing and executing a CloudFormation ChangeSet.
+ * A Construct to deploy a stack that is part of a CDK App, using CodePipeline.
+ * This composite Action takes care of preparing and executing a CloudFormation ChangeSet.
  *
  * It currently does *not* support stacks that make use of ``Asset``s, and
  * requires the deployed stack is in the same account and region where the
@@ -97,7 +97,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
   /**
    * The role used by CloudFormation for the deploy action
    */
-  public readonly role: iam.IRole;
+  public readonly deploymentRole: iam.IRole;
 
   private readonly stack: cdk.Stack;
 
@@ -120,24 +120,25 @@ export class PipelineDeployStackAction extends cdk.Construct {
     const changeSetName = props.changeSetName || 'CDK-CodePipeline-ChangeSet';
 
     const capabilities = cfnCapabilities(props.adminPermissions, props.capabilities);
-    const changeSetAction = new cfn.PipelineCreateReplaceChangeSetAction(this, 'ChangeSet', {
+    const changeSetAction = new cfn.PipelineCreateReplaceChangeSetAction({
+      actionName: 'ChangeSet',
       changeSetName,
       runOrder: createChangeSetRunOrder,
       stackName: props.stack.name,
-      stage: props.stage,
       templatePath: props.inputArtifact.atPath(`${props.stack.name}.template.yaml`),
       adminPermissions: props.adminPermissions,
-      role: props.role,
+      deploymentRole: props.role,
       capabilities,
     });
-    this.role = changeSetAction.role;
-
-    new cfn.PipelineExecuteChangeSetAction(this, 'Execute', {
+    props.stage.addAction(changeSetAction);
+    props.stage.addAction(new cfn.PipelineExecuteChangeSetAction({
+      actionName: 'Execute',
       changeSetName,
       runOrder: executeChangeSetRunOrder,
       stackName: props.stack.name,
-      stage: props.stage,
-    });
+    }));
+
+    this.deploymentRole = changeSetAction.deploymentRole;
   }
 
   /**
@@ -149,8 +150,8 @@ export class PipelineDeployStackAction extends cdk.Construct {
    * `adminPermissions` you need to identify the proper statements to add to
    * this role based on the CloudFormation Resources in your stack.
    */
-  public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+  public addToDeploymentRolePolicy(statement: iam.PolicyStatement) {
+    this.deploymentRole.addToPolicy(statement);
   }
 
   protected validate(): string[] {

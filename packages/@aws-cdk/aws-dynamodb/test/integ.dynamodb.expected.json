@@ -9,16 +9,16 @@
             "KeyType": "HASH"
           }
         ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
         "AttributeDefinitions": [
           {
             "AttributeName": "hashKey",
             "AttributeType": "S"
           }
-        ]
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
       }
     },
     "TableWithGlobalAndLocalSecondaryIndexBC540710": {
@@ -34,10 +34,6 @@
             "KeyType": "RANGE"
           }
         ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
         "AttributeDefinitions": [
           {
             "AttributeName": "hashKey",
@@ -251,6 +247,10 @@
         "PointInTimeRecoverySpecification": {
           "PointInTimeRecoveryEnabled": true
         },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
         "SSESpecification": {
           "SSEEnabled": true
         },
@@ -278,10 +278,6 @@
             "KeyType": "HASH"
           }
         ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
         "AttributeDefinitions": [
           {
             "AttributeName": "hashKey",
@@ -309,7 +305,11 @@
               "WriteCapacityUnits": 5
             }
           }
-        ]
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
       }
     },
     "TableWithLocalSecondaryIndex4DA3D08F": {
@@ -325,10 +325,6 @@
             "KeyType": "RANGE"
           }
         ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
         "AttributeDefinitions": [
           {
             "AttributeName": "hashKey",
@@ -359,6 +355,84 @@
             "Projection": {
               "ProjectionType": "ALL"
             }
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
+      }
+    },
+    "User00B015A1": {
+      "Type": "AWS::IAM::User"
+    },
+    "UserDefaultPolicy1F97781E": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TableCD117FA1",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "TableWithGlobalAndLocalSecondaryIndexBC540710",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TableWithGlobalAndLocalSecondaryIndexBC540710",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "UserDefaultPolicy1F97781E",
+        "Users": [
+          {
+            "Ref": "User00B015A1"
           }
         ]
       }

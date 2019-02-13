@@ -21,7 +21,8 @@ const metric = new cloudwatch.Metric({
 
 const alarm = metric.newAlarm(stack, 'Alarm', {
   threshold: 100,
-  evaluationPeriods: 3
+  evaluationPeriods: 3,
+  datapointsToAlarm: 2,
 });
 
 const dashboard = new cloudwatch.Dashboard(stack, 'Dash');

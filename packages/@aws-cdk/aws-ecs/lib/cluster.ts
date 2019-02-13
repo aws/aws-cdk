@@ -74,18 +74,16 @@ export class Cluster extends cdk.Construct implements ICluster {
    *
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
    */
-  public addDefaultAutoScalingGroupCapacity(options: AddDefaultAutoScalingGroupOptions): autoscaling.AutoScalingGroup {
-    const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'DefaultAutoScalingGroup', {
+  public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
+      ...options,
       vpc: this.vpc,
-      instanceType: options.instanceType,
       machineImage: new EcsOptimizedAmi(),
-      updateType: autoscaling.UpdateType.ReplacingUpdate,
-      minSize: options.minCapacity,
-      maxSize: options.maxCapacity,
-      desiredCapacity: options.instanceCount,
+      updateType: options.updateType || autoscaling.UpdateType.ReplacingUpdate,
+      instanceType: options.instanceType,
     });
 
-    this.addAutoScalingGroupCapacity(autoScalingGroup, options);
+    this.addAutoScalingGroup(autoScalingGroup, options);
 
     return autoScalingGroup;
   }
@@ -93,7 +91,7 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * Add compute capacity to this ECS cluster in the form of an AutoScalingGroup
    */
-  public addAutoScalingGroupCapacity(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+  public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
     this._hasEc2Capacity = true;
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
 
@@ -147,6 +145,7 @@ export class Cluster extends cdk.Construct implements ICluster {
   public export(): ClusterImportProps {
     return {
       clusterName: new cdk.Output(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
+      clusterArn: this.clusterArn,
       vpc: this.vpc.export(),
       securityGroups: this.connections.securityGroups.map(sg => sg.export()),
       hasEc2Capacity: this.hasEc2Capacity,
@@ -234,6 +233,11 @@ export interface ICluster extends cdk.IConstruct {
   readonly clusterName: string;
 
   /**
+   * The ARN of this cluster
+   */
+  readonly clusterArn: string;
+
+  /**
    * VPC that the cluster instances are running in
    */
   readonly vpc: ec2.IVpcNetwork;
@@ -264,6 +268,13 @@ export interface ClusterImportProps {
   clusterName: string;
 
   /**
+   * ARN of the cluster
+   *
+   * @default Derived from clusterName
+   */
+  clusterArn?: string;
+
+  /**
    * VPC that the cluster instances are running in
    */
   vpc: ec2.VpcNetworkImportProps;
@@ -291,6 +302,11 @@ class ImportedCluster extends cdk.Construct implements ICluster {
   public readonly clusterName: string;
 
   /**
+   * ARN of the cluster
+   */
+  public readonly clusterArn: string;
+
+  /**
    * VPC that the cluster instances are running in
    */
   public readonly vpc: ec2.IVpcNetwork;
@@ -310,6 +326,12 @@ class ImportedCluster extends cdk.Construct implements ICluster {
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
+
+    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : cdk.Stack.find(this).formatArn({
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: props.clusterName,
+    });
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
@@ -351,31 +373,9 @@ export interface AddAutoScalingGroupCapacityOptions {
 /**
  * Properties for adding autoScalingGroup
  */
-export interface AddDefaultAutoScalingGroupOptions extends AddAutoScalingGroupCapacityOptions {
-
+export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, autoscaling.CommonAutoScalingGroupProps {
   /**
    * The type of EC2 instance to launch into your Autoscaling Group
    */
   instanceType: ec2.InstanceType;
-
-  /**
-   * Number of container instances registered in your ECS Cluster
-   *
-   * @default 1
-   */
-  instanceCount?: number;
-
-  /**
-   * Maximum number of instances
-   *
-   * @default Same as instanceCount
-   */
-  maxCapacity?: number;
-
-  /**
-   * Minimum number of instances
-   *
-   * @default Same as instanceCount
-   */
-  minCapacity?: number;
 }

@@ -4,7 +4,7 @@ import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
-import { IRestApiResource, ProxyResource, Resource, ResourceOptions } from './resource';
+import { IRestApiResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 
 export interface RestApiImportProps {
@@ -154,7 +154,7 @@ export interface RestApiProps extends ResourceOptions {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi {
+export class RestApi extends cdk.Construct implements IRestApi {
   /**
    * Imports an existing REST API resource.
    * @param parent Parent construct
@@ -176,11 +176,6 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
    * This will be undefined if `deploy` is false.
    */
   public latestDeployment?: Deployment;
-
-  /**
-   * Allows taking a dependency on this construct.
-   */
-  public readonly dependencyElements = new Array<cdk.IDependable>();
 
   /**
    * API Gateway stage that points to the latest deployment (if defined).
@@ -226,32 +221,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
       this.configureCloudWatchRole(resource);
     }
 
-    this.dependencyElements.push(resource);
-    if (this.latestDeployment) {
-      this.dependencyElements.push(this.latestDeployment);
-    }
-    if (this.deploymentStage) {
-      this.dependencyElements.push(this.deploymentStage);
-    }
-
-    // configure the "root" resource
-    this.root = {
-      node: this.node,
-      addResource: (pathPart: string, options?: ResourceOptions) => {
-        return new Resource(this, pathPart, { parent: this.root, pathPart, ...options });
-      },
-      addMethod: (httpMethod: string, integration?: Integration, options?: MethodOptions) => {
-        return new Method(this, httpMethod, { resource: this.root, httpMethod, integration, options });
-      },
-      addProxy: (options?: ResourceOptions) => {
-        return new ProxyResource(this, '{proxy+}', { parent: this.root, ...options });
-      },
-      defaultIntegration: props.defaultIntegration,
-      defaultMethodOptions: props.defaultMethodOptions,
-      resourceApi: this,
-      resourceId: resource.restApiRootResourceId,
-      resourcePath: '/'
-    };
+    this.root = new RootResource(this, props, resource.restApiRootResourceId);
   }
 
   /**
@@ -372,7 +342,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
       cloudWatchRoleArn: role.roleArn
     });
 
-    resource.addDependency(apiResource);
+    resource.node.addDependency(apiResource);
   }
 }
 
@@ -416,5 +386,25 @@ class ImportedRestApi extends cdk.Construct implements IRestApi {
 
   public export() {
     return this.props;
+  }
+}
+
+class RootResource extends ResourceBase {
+  public readonly parentResource?: IRestApiResource;
+  public readonly resourceApi: RestApi;
+  public readonly resourceId: string;
+  public readonly resourcePath: string;
+  public readonly defaultIntegration?: Integration | undefined;
+  public readonly defaultMethodOptions?: MethodOptions | undefined;
+
+  constructor(api: RestApi, props: RestApiProps, resourceId: string) {
+    super(api, 'Default');
+
+    this.parentResource = undefined;
+    this.defaultIntegration = props.defaultIntegration;
+    this.defaultMethodOptions = props.defaultMethodOptions;
+    this.resourceApi = api;
+    this.resourceId = resourceId;
+    this.resourcePath = '/';
   }
 }

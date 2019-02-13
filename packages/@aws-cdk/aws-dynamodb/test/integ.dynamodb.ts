@@ -1,4 +1,5 @@
-import { App, Stack } from '@aws-cdk/cdk';
+import iam = require('@aws-cdk/aws-iam');
+import { App, Stack, Tag } from '@aws-cdk/cdk';
 import { Attribute, AttributeType, ProjectionType, StreamViewType, Table } from '../lib';
 
 // CDK parameters
@@ -40,19 +41,20 @@ const app = new App();
 
 const stack = new Stack(app, STACK_NAME);
 
-const table = new Table(stack, TABLE, {});
-table.addPartitionKey(TABLE_PARTITION_KEY);
+const table = new Table(stack, TABLE, {
+  partitionKey: TABLE_PARTITION_KEY
+});
 
 const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_AND_LOCAL_SECONDARY_INDEX, {
   pitrEnabled: true,
   sseEnabled: true,
   streamSpecification: StreamViewType.KeysOnly,
-  tags: { Environment: 'Production' },
-  ttlAttributeName: 'timeToLive'
+  ttlAttributeName: 'timeToLive',
+  partitionKey: TABLE_PARTITION_KEY,
+  sortKey: TABLE_SORT_KEY
 });
 
-tableWithGlobalAndLocalSecondaryIndex.addPartitionKey(TABLE_PARTITION_KEY);
-tableWithGlobalAndLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
+tableWithGlobalAndLocalSecondaryIndex.node.apply(new Tag('Environment', 'Production'));
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
   partitionKey: GSI_PARTITION_KEY,
@@ -103,19 +105,26 @@ tableWithGlobalAndLocalSecondaryIndex.addLocalSecondaryIndex({
   nonKeyAttributes: LSI_NON_KEY
 });
 
-const tableWithGlobalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_SECONDARY_INDEX, {});
-tableWithGlobalSecondaryIndex.addPartitionKey(TABLE_PARTITION_KEY);
+const tableWithGlobalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_SECONDARY_INDEX, {
+  partitionKey: TABLE_PARTITION_KEY
+});
 tableWithGlobalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
   partitionKey: GSI_PARTITION_KEY
 });
 
-const tableWithLocalSecondaryIndex = new Table(stack, TABLE_WITH_LOCAL_SECONDARY_INDEX, {});
-tableWithLocalSecondaryIndex.addPartitionKey(TABLE_PARTITION_KEY);
-tableWithLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
+const tableWithLocalSecondaryIndex = new Table(stack, TABLE_WITH_LOCAL_SECONDARY_INDEX, {
+  partitionKey: TABLE_PARTITION_KEY,
+  sortKey: TABLE_SORT_KEY
+});
+
 tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_1,
   sortKey: LSI_SORT_KEY
 });
+
+const user = new iam.User(stack, 'User');
+table.grantReadData(user);
+tableWithGlobalAndLocalSecondaryIndex.grantReadData(user);
 
 app.run();

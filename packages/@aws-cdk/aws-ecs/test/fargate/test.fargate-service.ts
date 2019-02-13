@@ -1,5 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
+import elbv2 = require("@aws-cdk/aws-elasticloadbalancingv2");
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
@@ -128,6 +129,33 @@ export = {
 
       test.done();
     },
+
+    "allows specifying 0 for minimumHealthyPercent"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+      });
+
+      new ecs.FargateService(stack, "FargateService", {
+        cluster,
+        taskDefinition,
+        minimumHealthyPercent: 0,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::Service", {
+        DeploymentConfiguration: {
+          MinimumHealthyPercent: 0,
+        }
+      }));
+
+      test.done();
+    },
   },
 
   "When setting up a health check": {
@@ -156,4 +184,59 @@ export = {
       test.done();
     },
   },
+
+  "When adding an app load balancer": {
+    'allows auto scaling by ALB request per target'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromDockerHub('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+        targets: [service]
+      });
+
+      // WHEN
+      const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
+      capacity.scaleOnRequestCount("ScaleOnRequests", {
+        requestsPerTarget: 1000,
+        targetGroup
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+        MaxCapacity: 10,
+        MinCapacity: 1
+      }));
+
+      expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+        TargetTrackingScalingPolicyConfiguration: {
+          PredefinedMetricSpecification: {
+            PredefinedMetricType: "ALBRequestCountPerTarget",
+            ResourceLabel: {
+              "Fn::Join": ["", [
+                { "Fn::Select": [1, { "Fn::Split": ["/", { Ref: "lblistener657ADDEC" }] }] }, "/",
+                { "Fn::Select": [2, { "Fn::Split": ["/", { Ref: "lblistener657ADDEC" }] }] }, "/",
+                { "Fn::Select": [3, { "Fn::Split": ["/", { Ref: "lblistener657ADDEC" }] }] }, "/",
+                { "Fn::GetAtt": ["lblistenertargetGroupC7489D1E", "TargetGroupFullName"] }
+              ]]
+            }
+          },
+          TargetValue: 1000
+        }
+      }));
+
+      test.done();
+    }
+
+  }
 };

@@ -98,7 +98,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "CFNDeployRole68D5E8D3",
+                  "MyPipelineCFNCFNDeployRole9CC99B3F",
                   "Arn"
                 ]
               }
@@ -161,14 +161,13 @@
                   "S3Bucket": {
                     "Ref": "MyBucketF68F3FF0"
                   },
-                  "S3ObjectKey": "some/path",
-                  "PollForSourceChanges": true
+                  "S3ObjectKey": "some/path"
                 },
                 "InputArtifacts": [],
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinecloudformationcrossregionMyBucketS3DBF7878C"
+                    "Name": "Artifact_S3_awscdkcodepipelinecloudformationcrossregionMyBucket99D95A28"
                   }
                 ],
                 "RunOrder": 1
@@ -188,17 +187,17 @@
                 "Configuration": {
                   "StackName": "aws-cdk-codepipeline-cross-region-deploy-stack",
                   "ActionMode": "CREATE_UPDATE",
-                  "TemplatePath": "Artifact_awscdkcodepipelinecloudformationcrossregionMyBucketS3DBF7878C::template.yml",
+                  "TemplatePath": "Artifact_S3_awscdkcodepipelinecloudformationcrossregionMyBucket99D95A28::template.yml",
                   "RoleArn": {
                     "Fn::GetAtt": [
-                      "CFNDeployRole68D5E8D3",
+                      "MyPipelineCFNCFNDeployRole9CC99B3F",
                       "Arn"
                     ]
                   }
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinecloudformationcrossregionMyBucketS3DBF7878C"
+                    "Name": "Artifact_S3_awscdkcodepipelinecloudformationcrossregionMyBucket99D95A28"
                   }
                 ],
                 "Name": "CFN_Deploy",
@@ -223,11 +222,11 @@
         ]
       },
       "DependsOn": [
-        "MyPipelineRoleC0D47CA4",
-        "MyPipelineRoleDefaultPolicy34F09EFA"
+        "MyPipelineRoleDefaultPolicy34F09EFA",
+        "MyPipelineRoleC0D47CA4"
       ]
     },
-    "CFNDeployRole68D5E8D3": {
+    "MyPipelineCFNCFNDeployRole9CC99B3F": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {

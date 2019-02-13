@@ -34,7 +34,7 @@ example:
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
 
-const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
+const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
   cidr: '10.0.0.0/21',
   subnetConfiguration: [
     {
@@ -98,7 +98,7 @@ distributed for the application.
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
 
-const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
+const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
   cidr: '10.0.0.0/16',
   natGateways: 1,
   subnetConfiguration: [
@@ -144,7 +144,7 @@ traffic. This can be accomplished with a single parameter configuration:
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
 
-const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
+const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
   cidr: '10.0.0.0/16',
   natGateways: 1,
   natGatewayPlacement: {subnetName: 'Public'},
@@ -172,13 +172,15 @@ The `VpcNetwork` above will have the exact same subnet definitions as listed
 above. However, this time the VPC will have only 1 NAT Gateway and all
 Application subnets will route to the NAT Gateway.
 
-#### Sharing VPCs across stacks
+#### Sharing VPCs between stacks
 
 If you are creating multiple `Stack`s inside the same CDK application, you
 can reuse a VPC defined in one Stack in another by using `export()` and
 `import()`:
 
-[sharing VPCs between stacks](test/example.share-vpcs.lit.ts)
+[sharing VPCs between stacks](test/integ.share-vpcs.lit.ts)
+
+#### Importing an existing VPC
 
 If your VPC is created outside your CDK app, you can use `importFromContext()`:
 

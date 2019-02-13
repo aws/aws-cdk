@@ -12,7 +12,7 @@ export interface LambdaRestApiProps {
    * This handler will be used as a the default integration for all methods in
    * this API, unless specified otherwise in `addMethod`.
    */
-  handler: lambda.Function;
+  handler: lambda.IFunction;
 
   /**
    * If true, route all requests to the Lambda Function

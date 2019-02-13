@@ -14,7 +14,7 @@ import { unresolved } from "./unresolved";
  * works even when different copies of the library are loaded.
  */
 export class TokenMap {
-  private readonly tokenMap: {[key: string]: Token} = {};
+  private readonly tokenMap = new Map<string, Token>();
 
   /**
    * Generate a unique string for this Token, returning a key
@@ -44,14 +44,14 @@ export class TokenMap {
    * Returns a `TokenString` for this string.
    */
   public createStringTokenString(s: string) {
-    return new TokenString(s, BEGIN_STRING_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, END_TOKEN_MARKER);
+    return new TokenString(s, QUOTED_BEGIN_STRING_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, QUOTED_END_TOKEN_MARKER);
   }
 
   /**
    * Returns a `TokenString` for this string.
    */
   public createListTokenString(s: string) {
-    return new TokenString(s, BEGIN_LIST_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, END_TOKEN_MARKER);
+    return new TokenString(s, QUOTED_BEGIN_LIST_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, QUOTED_END_TOKEN_MARKER);
   }
 
   /**
@@ -86,23 +86,18 @@ export class TokenMap {
    * Find a Token by key
    */
   public lookupToken(key: string): Token {
-    if (!(key in this.tokenMap)) {
+    const token = this.tokenMap.get(key);
+    if (!token) {
       throw new Error(`Unrecognized token key: ${key}`);
     }
-
-    return this.tokenMap[key];
+    return token;
   }
 
   private register(token: Token, representationHint?: string): string {
-    const counter = Object.keys(this.tokenMap).length;
-    const representation = representationHint || `TOKEN`;
-
+    const counter = this.tokenMap.size;
+    const representation = (representationHint || `TOKEN`).replace(new RegExp(`[^${VALID_KEY_CHARS}]`, 'g'), '.');
     const key = `${representation}.${counter}`;
-    if (new RegExp(`[^${VALID_KEY_CHARS}]`).exec(key)) {
-      throw new Error(`Invalid characters in token representation: ${key}`);
-    }
-
-    this.tokenMap[key] = token;
+    this.tokenMap.set(key, token);
     return key;
   }
 }
@@ -110,6 +105,11 @@ export class TokenMap {
 const BEGIN_STRING_TOKEN_MARKER = '${Token[';
 const BEGIN_LIST_TOKEN_MARKER = '#{Token[';
 const END_TOKEN_MARKER = ']}';
+
+const QUOTED_BEGIN_STRING_TOKEN_MARKER = regexQuote(BEGIN_STRING_TOKEN_MARKER);
+const QUOTED_BEGIN_LIST_TOKEN_MARKER = regexQuote(BEGIN_LIST_TOKEN_MARKER);
+const QUOTED_END_TOKEN_MARKER = regexQuote(END_TOKEN_MARKER);
+
 const VALID_KEY_CHARS = 'a-zA-Z0-9:._-';
 
 /**
@@ -138,10 +138,10 @@ class TokenString {
 
   constructor(
     private readonly str: string,
-    private readonly beginMarker: string,
-    private readonly idPattern: string,
-    private readonly endMarker: string) {
-    this.pattern = `${regexQuote(this.beginMarker)}(${this.idPattern})${regexQuote(this.endMarker)}`;
+    quotedBeginMarker: string,
+    idPattern: string,
+    quotedEndMarker: string) {
+    this.pattern = `${quotedBeginMarker}(${idPattern})${quotedEndMarker}`;
   }
 
   /**

@@ -1,6 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { IAspect } from '../aspects/aspect';
 import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
 import { makeUniqueId } from '../util/uniqueid';
+import { IDependable } from './dependency';
 import { Token, unresolved } from './tokens';
 import { resolve } from './tokens/resolve';
 export const PATH_SEP = '/';
@@ -8,7 +10,7 @@ export const PATH_SEP = '/';
 /**
  * Represents a construct.
  */
-export interface IConstruct {
+export interface IConstruct extends IDependable {
   /**
    * The construct node in the scope tree.
    */
@@ -32,18 +34,26 @@ export class ConstructNode {
   public readonly id: string;
 
   /**
+   * An array of aspects applied to this node
+   */
+  public readonly aspects: IAspect[] = [];
+
+  /**
    * List of children and their names
    */
   private readonly _children: { [name: string]: IConstruct } = { };
   private readonly context: { [key: string]: any } = { };
   private readonly _metadata = new Array<MetadataEntry>();
   private readonly references = new Set<Token>();
+  private readonly dependencies = new Set<IDependable>();
 
   /**
    * If this is set to 'true'. addChild() calls for this construct and any child
    * will fail. This is used to prevent tree mutations during synthesis.
    */
   private _locked = false;
+
+  private invokedAspects: IAspect[] = [];
 
   constructor(private readonly host: Construct, scope: IConstruct, id: string) {
     id = id || ''; // if undefined, convert to empty string
@@ -117,7 +127,6 @@ export class ConstructNode {
    * @returns a child by path or undefined if not found.
    */
   public tryFindChild(path: string): IConstruct | undefined {
-    // tslint:disable-next-line:no-console
     if (path.startsWith(PATH_SEP)) {
       throw new Error('Path must be relative');
     }
@@ -291,14 +300,25 @@ export class ConstructNode {
    */
   public prepareTree() {
     const constructs = this.host.node.findAll(ConstructOrder.BreadthFirst);
+    // Aspects are applied root to leaf
+    for (const construct of constructs) {
+      construct.node.invokeAspects();
+    }
     // Use .reverse() to achieve post-order traversal
     for (const construct of constructs.reverse()) {
-      if (Construct.isInstance(construct)) {
+      if (Construct.isConstruct(construct)) {
         (construct as any).prepare();
       }
     }
   }
 
+  /**
+   * Applies the aspect to this Constructs node
+   */
+  public apply(aspect: IAspect): void {
+    this.aspects.push(aspect);
+    return;
+  }
   /**
    * Return the ancestors (including self) of this Construct up until and excluding the indicated component
    *
@@ -361,7 +381,8 @@ export class ConstructNode {
     }
 
     if (childName in this._children) {
-      throw new Error(`There is already a Construct with name '${childName}' in ${this.toString()}`);
+      const name = this.id || '';
+      throw new Error(`There is already a Construct with name '${childName}' in ${this.typename}${name.length > 0 ? ' [' + name + ']' : ''}`);
     }
 
     this._children[childName] = child;
@@ -448,6 +469,56 @@ export class ConstructNode {
   }
 
   /**
+   * Add an ordering dependency on another Construct.
+   *
+   * All constructs in the dependency's scope will be deployed before any
+   * construct in this construct's scope.
+   */
+  public addDependency(...dependencies: IDependable[]) {
+    for (const dependency of dependencies) {
+      this.dependencies.add(dependency);
+    }
+  }
+
+  /**
+   * Return all dependencies registered on this node or any of its children
+   */
+  public findDependencies(): Dependency[] {
+    const found = new Map<IConstruct, Set<IConstruct>>(); // Deduplication map
+    const ret = new Array<Dependency>();
+
+    for (const source of this.findAll()) {
+      for (const dependable of source.node.dependencies) {
+        for (const target of dependable.dependencyRoots) {
+          let foundTargets = found.get(source);
+          if (!foundTargets) { found.set(source, foundTargets = new Set()); }
+
+          if (!foundTargets.has(target)) {
+            ret.push({ source, target });
+            foundTargets.add(target);
+          }
+        }
+      }
+    }
+
+    return ret;
+  }
+
+  /**
+   * Triggers each aspect to invoke visit
+   */
+  private invokeAspects(): void {
+    const descendants = this.findAll();
+    for (const aspect of this.aspects) {
+      if (this.invokedAspects.includes(aspect)) {
+        continue;
+      }
+      descendants.forEach( member => aspect.visit(member));
+      this.invokedAspects.push(aspect);
+    }
+  }
+
+  /**
    * Return the path of components up to but excluding the root
    */
   private rootPath(): IConstruct[] {
@@ -475,7 +546,7 @@ export class Construct implements IConstruct {
   /**
    * Return whether the given object is a Construct
    */
-  public static isInstance(x: IConstruct): x is Construct {
+  public static isConstruct(x: IConstruct): x is Construct {
     return (x as any).prepare !== undefined && (x as any).validate !== undefined;
   }
 
@@ -483,6 +554,14 @@ export class Construct implements IConstruct {
    * Construct node.
    */
   public readonly node: ConstructNode;
+
+  /**
+   * The set of constructs that form the root of this dependable
+   *
+   * All resources under all returned constructs are included in the ordering
+   * dependency.
+   */
+  public readonly dependencyRoots: IConstruct[] = [this];
 
   /**
    * Creates a new construct node.
@@ -529,6 +608,7 @@ export class Construct implements IConstruct {
   protected prepare(): void {
     // Intentionally left blank
   }
+
 }
 
 /**
@@ -597,4 +677,34 @@ export enum ConstructOrder {
    * Depth first
    */
   DepthFirst
+}
+
+/**
+ * A single dependency
+ */
+export interface Dependency {
+  /**
+   * Source the dependency
+   */
+  source: IConstruct;
+
+  /**
+   * Target of the dependency
+   */
+  target: IConstruct;
+}
+
+/**
+ * A single dependency
+ */
+export interface Dependency {
+  /**
+   * Source the dependency
+   */
+  source: IConstruct;
+
+  /**
+   * Target of the dependency
+   */
+  target: IConstruct;
 }

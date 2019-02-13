@@ -12,14 +12,18 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
     // WHEN
     new ecs.LoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromDockerHub('test'),
-      desiredCount: 2
+      desiredCount: 2,
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+      }
     });
 
     // THEN - stack containers a load balancer and a service
@@ -28,6 +32,23 @@ export = {
     expect(stack).to(haveResource("AWS::ECS::Service", {
       DesiredCount: 2,
       LaunchType: "EC2",
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Environment: [
+            {
+              Name: "TEST_ENVIRONMENT_VARIABLE1",
+              Value: "test environment variable 1 value"
+            },
+            {
+              Name: "TEST_ENVIRONMENT_VARIABLE2",
+              Value: "test environment variable 2 value"
+            }
+          ],
+        }
+      ]
     }));
 
     test.done();
@@ -43,7 +64,11 @@ export = {
     new ecs.LoadBalancedFargateService(stack, 'Service', {
       cluster,
       image: ecs.ContainerImage.fromDockerHub('test'),
-      desiredCount: 2
+      desiredCount: 2,
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+      }
     });
 
     // THEN - stack contains a load balancer and a service
@@ -51,6 +76,16 @@ export = {
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
+          Environment: [
+            {
+              Name: "TEST_ENVIRONMENT_VARIABLE1",
+              Value: "test environment variable 1 value"
+            },
+            {
+              Name: "TEST_ENVIRONMENT_VARIABLE2",
+              Value: "test environment variable 2 value"
+            }
+          ],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -86,13 +121,27 @@ export = {
       cluster,
       image: ecs.ContainerImage.fromDockerHub('test'),
       desiredCount: 2,
-      createLogs: false
+      createLogs: false,
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+      }
     });
 
     // THEN - stack contains a load balancer and a service
     expect(stack).notTo(haveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
+          Environment: [
+            {
+              Name: "TEST_ENVIRONMENT_VARIABLE1",
+              Value: "test environment variable 1 value"
+            },
+            {
+              Name: "TEST_ENVIRONMENT_VARIABLE2",
+              Value: "test environment variable 2 value"
+            }
+          ],
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -145,8 +194,8 @@ export = {
       },
       Type: 'A',
       AliasTarget: {
-        HostedZoneId: { 'Fn::GetAtt': [ 'ServiceLBE9A1ADBC', 'CanonicalHostedZoneID' ] },
-        DNSName: { 'Fn::GetAtt': [ 'ServiceLBE9A1ADBC', 'DNSName' ] },
+        HostedZoneId: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'CanonicalHostedZoneID'] },
+        DNSName: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] },
       }
     }));
 
@@ -176,7 +225,11 @@ export = {
     const app = new cdk.App();
     const stack = new ecs.LoadBalancedFargateServiceApplet(app, 'Service', {
       image: 'test',
-      desiredCount: 2
+      desiredCount: 2,
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+      }
     });
 
     // THEN - stack contains a load balancer and a service
@@ -185,6 +238,23 @@ export = {
     expect(stack).to(haveResource("AWS::ECS::Service", {
       DesiredCount: 2,
       LaunchType: "FARGATE",
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Environment: [
+            {
+              Name: "TEST_ENVIRONMENT_VARIABLE1",
+              Value: "test environment variable 1 value"
+            },
+            {
+              Name: "TEST_ENVIRONMENT_VARIABLE2",
+              Value: "test environment variable 2 value"
+            }
+          ],
+        }
+      ]
     }));
 
     test.done();
@@ -221,8 +291,8 @@ export = {
       HostedZoneId: "/hostedzone/DUMMY",
       Type: 'A',
       AliasTarget: {
-        HostedZoneId: { 'Fn::GetAtt': [ 'FargateServiceLBB353E155', 'CanonicalHostedZoneID' ] },
-        DNSName: { 'Fn::GetAtt': [ 'FargateServiceLBB353E155', 'DNSName' ] },
+        HostedZoneId: { 'Fn::GetAtt': ['FargateServiceLBB353E155', 'CanonicalHostedZoneID'] },
+        DNSName: { 'Fn::GetAtt': ['FargateServiceLBB353E155', 'DNSName'] },
       }
     }));
 

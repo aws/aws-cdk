@@ -1,18 +1,10 @@
 {
   "lerna": "2.5.1",
   "packages": [
-    "examples/*",
     "packages/*",
     "packages/@aws-cdk/*",
     "tools/*"
   ],
-  "command": {
-    "bootstrap": {
-      "npmClientArgs": [
-        "--no-package-lock"
-      ]
-    }
-  },
   "rejectCycles": "true",
-  "version": "0.21.0"
+  "version": "0.24.1"
 }

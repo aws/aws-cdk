@@ -177,8 +177,8 @@ The following example will configure API Gateway to emit logs and data traces to
 AWS CloudWatch for all API calls:
 
 > By default, an IAM role will be created and associated with API Gateway to
-allow it to write logs and metrics to AWS CloudWatch `cloudWatchRole` is set to
-`false`.
+allow it to write logs and metrics to AWS CloudWatch unless `cloudWatchRole` is
+set to `false`.
 
 ```ts
 const api = new apigateway.RestApi(this, 'books', {
@@ -212,6 +212,10 @@ to allow users revert the stage to an old deployment manually.
 
 See [awslabs/aws-cdk#723](https://github.com/awslabs/aws-cdk/issues/723) for a
 list of missing features.
+
+### Roadmap
+
+- [ ] Support defining REST API Models [#1695](https://github.com/awslabs/aws-cdk/issues/1695)
 
 ----
 

@@ -1,15 +1,12 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from './base/task-definition';
-import { IContainerImage } from './container-image';
+import { ContainerImage } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver } from './log-drivers/log-driver';
 
-/**
- * Properties of a container definition
- */
-export interface ContainerDefinitionProps {
+export interface ContainerDefinitionOptions {
   /**
    * The image to use for a container.
    *
@@ -17,7 +14,7 @@ export interface ContainerDefinitionProps {
    * repositories (repository-url/image:tag).
    * TODO: Update these to specify using classes of IContainerImage
    */
-  image: IContainerImage;
+  image: ContainerImage;
 
   /**
    * The CMD value to pass to the container.
@@ -59,7 +56,7 @@ export interface ContainerDefinitionProps {
    *
    * @default No labels
    */
-  dockerLabels?: {[key: string]: string };
+  dockerLabels?: { [key: string]: string };
 
   /**
    * A list of custom labels for SELinux and AppArmor multi-level security systems.
@@ -81,7 +78,7 @@ export interface ContainerDefinitionProps {
    *
    * @default No environment variables
    */
-  environment?: {[key: string]: string};
+  environment?: { [key: string]: string };
 
   /**
    * Indicates whether the task stops if this container fails.
@@ -101,7 +98,7 @@ export interface ContainerDefinitionProps {
    *
    * @default No extra hosts
    */
-  extraHosts?: {[name: string]: string};
+  extraHosts?: { [name: string]: string };
 
   /**
    * Container health check.
@@ -174,6 +171,16 @@ export interface ContainerDefinitionProps {
 }
 
 /**
+ * Properties of a container definition
+ */
+export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
+  /**
+   * The task this container definition belongs to.
+   */
+  taskDefinition: TaskDefinition;
+}
+
+/**
  * A definition for a single container in a Task
  */
 export class ContainerDefinition extends cdk.Construct {
@@ -222,14 +229,15 @@ export class ContainerDefinition extends cdk.Construct {
    */
   private readonly links = new Array<string>();
 
-  constructor(scope: cdk.Construct, id: string, taskDefinition: TaskDefinition, private readonly props: ContainerDefinitionProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
-    this.taskDefinition = taskDefinition;
+    this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
 
     props.image.bind(this);
     if (props.logging) { props.logging.bind(this); }
+    props.taskDefinition._linkContainer(this);
   }
 
   /**
@@ -434,7 +442,7 @@ export interface HealthCheck {
   timeout?: number;
 }
 
-function renderKV(env: {[key: string]: string}, keyName: string, valueName: string): any {
+function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
   const ret = [];
   for (const [key, value] of Object.entries(env)) {
     ret.push({ [keyName]: key, [valueName]: value });
@@ -577,16 +585,16 @@ function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProper
 }
 
 export interface ScratchSpace {
-    containerPath: string,
-    readOnly: boolean,
-    sourcePath: string
-    name: string,
+  containerPath: string,
+  readOnly: boolean,
+  sourcePath: string
+  name: string,
 }
 
 export interface MountPoint {
-    containerPath: string,
-    readOnly: boolean,
-    sourceVolume: string,
+  containerPath: string,
+  readOnly: boolean,
+  sourceVolume: string,
 }
 
 function renderMountPoint(mp: MountPoint): CfnTaskDefinition.MountPointProperty {

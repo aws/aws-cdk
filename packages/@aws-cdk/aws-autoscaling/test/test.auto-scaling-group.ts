@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
@@ -9,7 +9,7 @@ import autoscaling = require('../lib');
 
 export = {
   'default fleet'(test: Test) {
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+    const stack = getTestStack();
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
@@ -126,7 +126,7 @@ export = {
     test.done();
   },
 
-  'can set minSize, maxSize, desiredCapacity to 0'(test: Test) {
+  'can set minCapacity, maxCapacity, desiredCapacity to 0'(test: Test) {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
     const vpc = mockVpc(stack);
 
@@ -134,8 +134,8 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minSize: 0,
-      maxSize: 0,
+      minCapacity: 0,
+      maxCapacity: 0,
       desiredCapacity: 0
     });
 
@@ -159,7 +159,7 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minSize: 10
+      minCapacity: 10
     });
 
     // THEN
@@ -183,7 +183,7 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      maxSize: 10
+      maxCapacity: 10
     });
 
     // THEN
@@ -365,7 +365,8 @@ export = {
   },
   'can set tags'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+    const stack = getTestStack();
+      // new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
     const vpc = mockVpc(stack);
 
     // WHEN
@@ -378,32 +379,127 @@ export = {
         minSuccessfulInstancesPercent: 50,
         pauseTimeSec: 345
       },
-      tags: {superfood: 'acai'},
     });
-    asg.tags.setTag('notsuper', 'caramel', {propagate: false});
+    asg.node.apply(new cdk.Tag('superfood', 'acai'));
+    asg.node.apply(new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
 
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
       Tags: [
         {
-          Key: 'superfood',
-          Value: 'acai',
+          Key: 'Name',
           PropagateAtLaunch: true,
+          Value: 'MyFleet',
         },
         {
-          Key: 'Name',
-          Value: 'MyFleet',
+          Key: 'superfood',
           PropagateAtLaunch: true,
+          Value: 'acai',
         },
         {
           Key: 'notsuper',
-          Value: 'caramel',
           PropagateAtLaunch: false,
+          Value: 'caramel',
         },
       ]
     }));
     test.done();
   },
+  'allows association of public IP address'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minCapacity: 0,
+      maxCapacity: 0,
+      desiredCapacity: 0,
+      associatePublicIpAddress: true,
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+        AssociatePublicIpAddress: true,
+      }
+    ));
+    test.done();
+  },
+  'allows disassociation of public IP address'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minCapacity: 0,
+      maxCapacity: 0,
+      desiredCapacity: 0,
+      associatePublicIpAddress: false,
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+        AssociatePublicIpAddress: false,
+      }
+    ));
+    test.done();
+  },
+  'does not specify public IP address association by default'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minCapacity: 0,
+      maxCapacity: 0,
+      desiredCapacity: 0,
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", (resource: any, errors: InspectionFailure) => {
+      for (const key of Object.keys(resource)) {
+        if (key === "AssociatePublicIpAddress") {
+          errors.failureReason = "Has AssociatePublicIpAddress";
+          return false;
+        }
+      }
+      return true;
+    }));
+    test.done();
+  },
+
+  'an existing role can be specified instead of auto-created'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const importedRole = iam.Role.import(stack, 'ImportedRole', { roleArn: 'arn:aws:iam::123456789012:role/HelloDude' });
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      role: importedRole
+    });
+
+    // THEN
+    test.same(asg.role, importedRole);
+    expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+      "Roles": [ "HelloDude" ]
+    }));
+    test.done();
+  }
 };
 
 function mockVpc(stack: cdk.Stack) {
@@ -420,4 +516,8 @@ function mockSecurityGroup(stack: cdk.Stack) {
   return ec2.SecurityGroup.import(stack, 'MySG', {
     securityGroupId: 'most-secure',
   });
+}
+
+function getTestStack(): cdk.Stack {
+  return new cdk.Stack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
 }
