@@ -150,7 +150,7 @@ export class Output extends StackElement {
    */
   private uniqueOutputName() {
     // prefix export name with stack name since exports are global within account + region.
-    const stackName = require('./stack').Stack.find(this).name;
+    const stackName = this.node.stack.name;
     return (stackName ? stackName + ':' : '') + this.logicalId;
   }
 }

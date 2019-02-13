@@ -459,7 +459,6 @@ class StackDependentToken extends cdk.Token {
   }
 
   public resolve(context: cdk.ResolveContext) {
-    const stack = cdk.Stack.find(context.scope);
-    return this.fn(stack);
+    return this.fn(context.scope.node.stack);
   }
 }

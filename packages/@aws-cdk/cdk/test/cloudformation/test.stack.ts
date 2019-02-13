@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, Aws, Condition, Construct, Include, Output, Parameter, Resource, Root, Stack, Token } from '../../lib';
+import { App, Aws, Condition, Construct, Include, Output, Parameter, Resource, Stack, Token } from '../../lib';
 
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
@@ -19,27 +19,6 @@ export = {
       AWSTemplateFormatVersion: 'MyTemplateVersion',
       Transform: 'SAMy'
     });
-    test.done();
-  },
-
-  'Stack.find(c) can be used to find the stack from any point in the tree'(test: Test) {
-    const stack = new Stack();
-    const level1 = new Construct(stack, 'level1');
-    const level2 = new Construct(level1, 'level2');
-    const level3 = new Construct(level2, 'level3');
-    const res1 = new Resource(level1, 'childoflevel1', { type: 'MyResourceType1' });
-    const res2 = new Resource(level3, 'childoflevel3', { type: 'MyResourceType2' });
-
-    test.equal(Stack.find(res1), stack);
-    test.equal(Stack.find(res2), stack);
-    test.equal(Stack.find(level2), stack);
-
-    const root = new Root();
-    const child = new Construct(root, 'child');
-
-    test.throws(() => Stack.find(child));
-    test.throws(() => Stack.find(root));
-
     test.done();
   },
 

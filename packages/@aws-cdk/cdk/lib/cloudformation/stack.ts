@@ -32,33 +32,6 @@ export interface StackProps {
  */
 export class Stack extends Construct {
   /**
-   * Traverses the tree and looks up for the Stack root.
-   * @param scope A construct in the tree
-   * @returns The Stack object (throws if the node is not part of a Stack-rooted tree)
-   */
-  public static find(scope: IConstruct): Stack {
-    const curr = Stack.tryFind(scope);
-    if (curr == null) {
-      throw new Error(`Cannot find a Stack parent for '${scope.toString()}'`);
-    }
-    return curr;
-  }
-
-  /**
-   * Traverses the tree and looks up for the Stack root.
-   *
-   * @param scope A construct in the tree
-   * @returns The Stack object, or undefined if no stack was found.
-   */
-  public static tryFind(scope: IConstruct): Stack | undefined {
-    let curr: IConstruct | undefined = scope;
-    while (curr != null && !Stack.isStack(curr)) {
-      curr = curr.node.scope;
-    }
-    return curr;
-  }
-
-  /**
    * Adds a metadata annotation "aws:cdk:physical-name" to the construct if physicalName
    * is non-null. This can be used later by tools and aspects to determine if resources
    * have been created with physical names.
@@ -530,7 +503,7 @@ export class Stack extends Construct {
 
     // Resource dependencies
     for (const dependency of this.node.findDependencies()) {
-      const theirStack = Stack.tryFind(dependency.target);
+      const theirStack = dependency.target.node.stack;
       if (theirStack !== undefined && theirStack !== this) {
         this.addDependency(theirStack);
       } else {
