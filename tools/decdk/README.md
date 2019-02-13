@@ -114,53 +114,69 @@ new lambda.Function(this, 'MyHandler', {
 
 And here's the deCDK version:
 
-```yaml
-MyHandler:
-  Type: "@aws-cdk/aws-lambda.Function"
-  Properties:
-    handler: index.handler
-    runtime: NodeJS810
-    code:
-      asset:
-        path: "./src"
+```json
+{
+  "MyHandler": {
+    "Type": "@aws-cdk/aws-lambda.Function",
+    "Properties": {
+      "handler": "index.handler",
+      "runtime": "NodeJS810",
+      "code": { "asset": { "path": "./src" } }
+    }
+  }
+}
 ```
 
 ### Polymorphism
 
 Due to the decoupled nature of AWS, The AWS Construct Library highly utilizes polymorphism to expose rich APIs to users. In many cases, APIs would accept an interface of some kind, and various AWS services provide an implementation for that interface. deCDK is able to find all concrete implementation of an interface or an abstract class and offer the user an enum-like experience. The following example shows how this approach can be used to define AWS Lambda events:
 
-```yaml
-MyHandler:
-  Type: "@aws-cdk/aws-lambda.Function"
-  Properties:
-    handler: index.handler
-    runtime: NodeJS810
-    code:
-      asset:
-        path: "./src"
-    events:
-    - DynamoEventSource:
-        table:
-          Ref: Table
-        startingPosition: TrimHorizon
-    - ApiEventSource:
-        method: GET
-        path: "/hello"
-    - ApiEventSource:
-        method: POST
-        path: "/hello"
-    - SnsEventSource:
-        topic:
-          Ref: MyTopic
+```json
+{
+  "Resources": {
+    "MyTopic": {
+      "Type": "@aws-cdk/aws-sns.Topic"
+    },
+    "Table": {
+      "Type": "@aws-cdk/aws-dynamodb.Table",
+      "Properties": {
+        "partitionKey": {
+          "name": "ID",
+          "type": "String"
+        },
+        "streamSpecification": "NewAndOldImages"
+      }
+    },
+    "HelloWorldFunction": {
+      "Type": "@aws-cdk/aws-lambda.Function",
+      "Properties": {
+        "handler": "app.hello_handler",
+        "runtime": "Python36",
+        "code": {
+          "asset": { "path": "." }
+        },
+        "environment": {
+          "Param": "f"
+        },
+        "events": [
+          { "@aws-cdk/aws-lambda-event-sources.DynamoEventSource": { "table": { "Ref": "Table" }, "startingPosition": "TrimHorizon" } },
+          { "@aws-cdk/aws-lambda-event-sources.ApiEventSource": { "method": "GET", "path": "/hello" } },
+          { "@aws-cdk/aws-lambda-event-sources.ApiEventSource": { "method": "POST", "path": "/hello" } },
+          { "@aws-cdk/aws-lambda-event-sources.SnsEventSource": { "topic": { "Ref": "MyTopic" } } }
+        ]
+      }
+    }
+  }
+}
 ```
 
-The keys in the “events” array (“DynamoEventSource”, “ApiEventSource”, “SnsEventSource”) are all names of classes in the AWS Construct Library. The declaration is “Array<IEventSource>”. When deCDK deconstructs the objects in this array, it will create objects of these types and pass them in as IEventSource objects.
+The keys in the “events” array are all fully qualified names of classes in the AWS Construct Library. The declaration is “Array<IEventSource>”. When deCDK deconstructs the objects in this array, it will create objects of these types and pass them in as IEventSource objects.
 
 ### `Fn::GetAtt`
 
-deCDK also supports referencing specific attributes of CDK resources by the intrinsic “Fn::GetAt”. When processing the template, if an Fn::GetAtt is found, and references a CDK construct, the attribute name is treated as a property name of the construct and it's value is used.
+deCDK also supports referencing specific attributes of CDK resources by the intrinsic `Fn::GetAtt`. When processing the template, if an `Fn::GetAtt` is found, and references a CDK construct, the attribute name is treated as a property name of the construct and its value is used.
 
-The following example shows how to output the “url” property of a @aws-cdk/aws-lambda.Function from above:
+The following example shows how to output the “url” property of a `@aws-cdk/aws-lambda.Function` from above:
 
 ```yaml
 Outputs:
@@ -174,7 +190,7 @@ Outputs:
 
 ### Raw CloudFormation
 
-If deCDK doesn't identify a resource type as a CDK resource, it will just pass it through to the resulting output (through a special construct we have in the CDK called `cdk.Include`). This means that any existing CloudFormation/SAM resources (such as `AWS::SQS::Queue`) can be used as-is.
+If deCDK doesn't identify a resource type as a CDK resource, it will just pass it through to the resulting output. This means that any existing CloudFormation/SAM resources (such as `AWS::SQS::Queue`) can be used as-is.
 
 ## Roadmap
 
@@ -182,7 +198,7 @@ There is much more we can do here. This section lists API surfaces with ideas on
 
 ### Imports
 
-When decdk encounters a reference to an AWS construct, it currently requires a "Ref" to another resource in the template. We should also support importing external resources by reflecting on the various static "fromXxx", "importXxx" and deconstructing those methods.
+When decdk encounters a reference to an AWS construct, it currently requires a `Ref` to another resource in the template. We should also support importing external resources by reflecting on the various static `fromXxx`, `importXxx` and deconstructing those methods.
 
 For example if we have a property `Bucket` that's modeled as an `s3.IBucket`, at the moment it will only accept:
 
@@ -248,6 +264,10 @@ We should enforce in our APIs that anything that can be "added" to a construct c
 ### Supporting user-defined constructs
 
 deCDK can deconstruct APIs that adhere to the standards defined by __awslint__ and exposed through jsii (it reflects on the jsii type system). Technically, nothing prevents us from allowing users to "bring their own constructs" to decdk, but those requirements must be met.
+
+### Fully qualified type names
+
+As you might have observed, whenever users need to reference a type in deCDK templates they are required to reference the fully qualified name (e.g. `@aws-cdk/aws-s3.Bucket`). We can obvsiouly come up with a more concise way to reference these types, as long as it will be possible to deterministically translate back and forth.
 
 ### Misc
 
