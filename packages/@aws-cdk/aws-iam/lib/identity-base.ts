@@ -1,17 +1,10 @@
 import { Policy } from "./policy";
-import { PolicyStatement } from "./policy-document";
 import { IPrincipal } from "./principals";
 
 /**
  * A construct that represents an IAM principal, such as a user, group or role.
  */
 export interface IIdentity extends IPrincipal {
-  /**
-   * Adds an IAM statement to the default inline policy associated with this
-   * principal. If a policy doesn't exist, it is created.
-   */
-  addToPolicy(statement: PolicyStatement): boolean;
-
   /**
    * Attaches an inline policy to this principal.
    * This is the same as calling `policy.addToXxx(principal)`.
