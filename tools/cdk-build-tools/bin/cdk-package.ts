@@ -17,6 +17,7 @@ async function main() {
     .env('CDK_PACKAGE')
     .usage('Usage: cdk-package')
     .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'verbose output' })
+    .option('targets', { type: 'array', default: [], alias: 't', desc: 'Targets to pass to jsii-pacmak' })
     .option('jsii-pacmak', {
       type: 'string',
       desc: 'Specify a different jsii-pacmak executable',
@@ -36,7 +37,11 @@ async function main() {
   }
 
   if (pkg.jsii) {
-    await shell([ args.jsiiPacmak, args.verbose ? '-vvv' : '-v', '-o', outdir ], timers);
+    const command = [args.jsiiPacmak,
+      args.verbose ? '-vvv' : '-v',
+      ...flatMap(args.targets, (target: string) => ['-t', target]),
+      '-o', outdir ];
+    await shell(command, timers);
   } else {
     // just "npm pack" and deploy to "outdir"
     const tarball = (await shell([ 'npm', 'pack' ], timers)).trim();
@@ -56,3 +61,11 @@ main().then(() => {
   process.stderr.write(`Package failed. ${timers.display()}\n`);
   process.exit(1);
 });
+
+function flatMap<T, U>(xs: T[], f: (x: T) => U[]): U[] {
+  const ret = new Array<U>();
+  for (const x of xs) {
+    ret.push(...f(x));
+  }
+  return ret;
+}
