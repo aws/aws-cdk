@@ -33,7 +33,7 @@ export interface IEncryptionKey extends IConstruct {
   /**
    * Grant the indicated permissions on this key to the given principal
    */
-  grant(principal: iam.IPrincipal | undefined, actions: string[]): void;
+  grant(principal: iam.IPrincipal | undefined, ...actions: string[]): void;
 
   /**
    * Grant decryption permisisons using this key to the given principal
@@ -99,7 +99,7 @@ export abstract class EncryptionKeyBase extends Construct {
    * since the default CloudFormation setup for KMS keys is that the policy
    * must not be empty and so default grants won't work.
    */
-  public grant(principal: iam.IPrincipal | undefined, actions: string[]): void {
+  public grant(principal: iam.IPrincipal | undefined, ...actions: string[]): void {
     iam.Permissions.grant({
       principal,
       actions,
@@ -120,21 +120,21 @@ export abstract class EncryptionKeyBase extends Construct {
    * Grant decryption permisisons using this key to the given principal
    */
   public grantDecrypt(principal: iam.IPrincipal | undefined): void {
-    return this.grant(principal, [
+    return this.grant(principal,
       'kms:Decrypt',
-      'kms:DescribeKey',
-    ]);
+      'kms:DescribeKey'
+    );
   }
 
   /**
    * Grant encryption permisisons using this key to the given principal
    */
   public grantEncrypt(principal: iam.IPrincipal | undefined): void {
-    return this.grant(principal, [
+    return this.grant(principal,
       'kms:Encrypt',
       'kms:ReEncrypt*',
       'kms:GenerateDataKey*'
-    ]);
+    );
   }
 }
 
