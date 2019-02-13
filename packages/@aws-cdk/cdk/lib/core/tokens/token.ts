@@ -131,3 +131,20 @@ export interface ResolveContext {
   scope: IConstruct;
   prefix: string[];
 }
+
+/**
+ * A Token that can post-process the complete resolved value, after resolve() has recursed over it
+ */
+export interface IResolvedValuePostProcessor {
+  /**
+   * Process the completely resolved value, after full recursion/resolution has happened
+   */
+  postProcess(input: any, context: ResolveContext): any;
+}
+
+/**
+ * Whether the given object is an `IResolvedValuePostProcessor`
+ */
+export function isResolvedValuePostProcessor(x: any): x is IResolvedValuePostProcessor {
+  return x.postProcess !== undefined;
+}

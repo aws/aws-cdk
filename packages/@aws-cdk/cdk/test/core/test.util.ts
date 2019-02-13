@@ -32,43 +32,43 @@ export = {
 
     '[]'(test: Test) {
       const c = new Root();
-      test.strictEqual(ignoreEmpty(c, []), undefined);
+      test.strictEqual(c.node.resolve(ignoreEmpty([])), undefined);
       test.done();
     },
 
     '{}'(test: Test) {
       const c = new Root();
-      test.strictEqual(ignoreEmpty(c, {}), undefined);
+      test.strictEqual(c.node.resolve(ignoreEmpty({})), undefined);
       test.done();
     },
 
     'undefined/null'(test: Test) {
       const c = new Root();
-      test.strictEqual(ignoreEmpty(c, undefined), undefined);
-      test.strictEqual(ignoreEmpty(c, null), null);
+      test.strictEqual(c.node.resolve(ignoreEmpty(undefined)), undefined);
+      test.strictEqual(c.node.resolve(ignoreEmpty(null)), null);
       test.done();
     },
 
     'primitives'(test: Test) {
       const c = new Root();
-      test.strictEqual(ignoreEmpty(c, 12), 12);
-      test.strictEqual(ignoreEmpty(c, "12"), "12");
+      test.strictEqual(c.node.resolve(ignoreEmpty(12)), 12);
+      test.strictEqual(c.node.resolve(ignoreEmpty("12")), "12");
       test.done();
     },
 
     'non-empty arrays/objects'(test: Test) {
       const c = new Root();
-      test.deepEqual(ignoreEmpty(c, [ 1, 2, 3, undefined ]), [ 1, 2, 3 ]); // undefined array values is cleaned up by "resolve"
-      test.deepEqual(ignoreEmpty(c, { o: 1, b: 2, j: 3 }), { o: 1, b: 2, j: 3 });
+      test.deepEqual(c.node.resolve(ignoreEmpty([ 1, 2, 3, undefined ])), [ 1, 2, 3 ]); // undefined array values is cleaned up by "resolve"
+      test.deepEqual(c.node.resolve(ignoreEmpty({ o: 1, b: 2, j: 3 })), { o: 1, b: 2, j: 3 });
       test.done();
     },
 
     'resolve first'(test: Test) {
       const c = new Root();
-      test.deepEqual(ignoreEmpty(c, { xoo: { resolve: () => 123 }}), { xoo: 123 });
-      test.strictEqual(ignoreEmpty(c, { xoo: { resolve: () => undefined }}), undefined);
-      test.deepEqual(ignoreEmpty(c, { xoo: { resolve: () => [ ] }}), { xoo: [] });
-      test.deepEqual(ignoreEmpty(c, { xoo: { resolve: () => [ undefined, undefined ] }}), { xoo: [] });
+      test.deepEqual(c.node.resolve(ignoreEmpty({ xoo: { resolve: () => 123 }})), { xoo: 123 });
+      test.strictEqual(c.node.resolve(ignoreEmpty({ xoo: { resolve: () => undefined }})), undefined);
+      test.deepEqual(c.node.resolve(ignoreEmpty({ xoo: { resolve: () => [ ] }})), { xoo: [] });
+      test.deepEqual(c.node.resolve(ignoreEmpty({ xoo: { resolve: () => [ undefined, undefined ] }})), { xoo: [] });
       test.done();
     }
   }
