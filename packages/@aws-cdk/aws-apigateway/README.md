@@ -213,6 +213,10 @@ to allow users revert the stage to an old deployment manually.
 See [awslabs/aws-cdk#723](https://github.com/awslabs/aws-cdk/issues/723) for a
 list of missing features.
 
+### Roadmap
+
+- [ ] Support defining REST API Models [#1695](https://github.com/awslabs/aws-cdk/issues/1695)
+
 ----
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
