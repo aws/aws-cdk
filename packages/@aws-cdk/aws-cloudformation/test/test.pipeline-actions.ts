@@ -293,7 +293,7 @@ function _isOrContains(entity: string | string[], value: string): boolean {
 }
 
 function _stackArn(stackName: string, scope: cdk.IConstruct): string {
-  return scope.node.formatArn({
+  return scope.node.stack.formatArn({
     service: 'cloudformation',
     resource: 'stack',
     resourceName: `${stackName}/*`,
@@ -308,7 +308,7 @@ class PipelineDouble extends cdk.Construct implements cpapi.IPipeline {
   constructor(scope: cdk.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
-    this.pipelineArn = this.node.formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
+    this.pipelineArn = this.node.stack.formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
     this.role = role;
   }
 

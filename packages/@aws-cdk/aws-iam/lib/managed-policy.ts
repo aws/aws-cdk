@@ -18,7 +18,7 @@ export class AwsManagedPolicy {
    */
   public get policyArn(): string {
     // the arn is in the form of - arn:aws:iam::aws:policy/<policyName>
-    return this.scope.node.formatArn({
+    return this.scope.node.stack.formatArn({
       service: "iam",
       region: "", // no region for managed policy
       account: "aws", // the account for a managed policy is 'aws'

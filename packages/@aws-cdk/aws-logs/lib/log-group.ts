@@ -295,7 +295,7 @@ class ImportedLogGroup extends LogGroupBase {
     super(scope, id);
 
     this.logGroupArn = props.logGroupArn;
-    this.logGroupName = this.node.parseArn(props.logGroupArn, ':').resourceName!;
+    this.logGroupName = this.node.stack.parseArn(props.logGroupArn, ':').resourceName!;
   }
 
   /**

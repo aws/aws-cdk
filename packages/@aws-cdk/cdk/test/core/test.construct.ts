@@ -111,7 +111,7 @@ export = {
     test.done();
   },
 
-  'construct.node.formatArn forwards to the Stack'(test: Test) {
+  'construct.node.stack.formatArn forwards to the Stack'(test: Test) {
     const stack = new Stack();
     const components: ArnComponents = { service: 'test', resource: 'test' };
     const dummyArn = 'arn:::dummy';
@@ -121,11 +121,11 @@ export = {
     };
 
     const construct = new Construct(stack, 'Construct');
-    test.same(construct.node.formatArn(components), dummyArn);
+    test.same(construct.node.stack.formatArn(components), dummyArn);
     test.done();
   },
 
-  'construct.node.parseArn forwards to the Stack'(test: Test) {
+  'construct.node.stack.parseArn forwards to the Stack'(test: Test) {
     const stack = new Stack();
     const components: ArnComponents = { service: 'test', resource: 'test' };
     const dummyArn = 'arn:::dummy';
@@ -135,7 +135,7 @@ export = {
     };
 
     const construct = new Construct(stack, 'Construct');
-    test.same(construct.node.parseArn(dummyArn), components);
+    test.same(construct.node.stack.parseArn(dummyArn), components);
     test.done();
   },
 

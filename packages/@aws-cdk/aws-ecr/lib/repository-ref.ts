@@ -119,7 +119,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * as the current stack.
    */
   public static arnForLocalRepository(repositoryName: string, scope: cdk.IConstruct): string {
-    return scope.node.formatArn({
+    return scope.node.stack.formatArn({
       service: 'ecr',
       resource: 'repository',
       resourceName: repositoryName
@@ -160,7 +160,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    */
   public repositoryUriForTag(tag?: string): string {
     const tagSuffix = tag ? `:${tag}` : '';
-    const parts = this.node.parseArn(this.repositoryArn);
+    const parts = this.node.stack.parseArn(this.repositoryArn);
     return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${this.repositoryName}${tagSuffix}`;
   }
 

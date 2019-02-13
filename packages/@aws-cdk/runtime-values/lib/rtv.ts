@@ -63,7 +63,7 @@ export class RuntimeValue extends cdk.Construct {
       value: props.value,
     });
 
-    this.parameterArn = this.node.formatArn({
+    this.parameterArn = this.node.stack.formatArn({
       service: 'ssm',
       resource: 'parameter',
       resourceName: this.parameterName

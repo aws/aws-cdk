@@ -409,7 +409,7 @@ class ImportedProject extends ProjectBase {
   constructor(scope: cdk.Construct, id: string, private readonly props: ProjectImportProps) {
     super(scope, id);
 
-    this.projectArn = this.node.formatArn({
+    this.projectArn = this.node.stack.formatArn({
       service: 'codebuild',
       resource: 'project',
       resourceName: props.projectName,
@@ -744,7 +744,7 @@ export class Project extends ProjectBase {
   }
 
   private createLoggingPermission() {
-    const logGroupArn = this.node.formatArn({
+    const logGroupArn = this.node.stack.formatArn({
       service: 'logs',
       resource: 'log-group',
       sep: ':',

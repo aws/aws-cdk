@@ -116,7 +116,7 @@ export abstract class ParameterBase extends cdk.Construct implements IParameter 
   }
 
   public get parameterArn(): string {
-    return this.node.formatArn({
+    return this.node.stack.formatArn({
       service: 'ssm',
       resource: 'parameter',
       sep: '', // Sep is empty because this.parameterName starts with a / already!

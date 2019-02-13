@@ -313,7 +313,7 @@ class ImportedRole extends Construct implements IRole {
   }
 
   public get roleName() {
-    return this.node.parseArn(this.roleArn).resourceName!;
+    return this.node.stack.parseArn(this.roleArn).resourceName!;
   }
 
   public export() {

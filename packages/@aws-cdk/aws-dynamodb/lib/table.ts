@@ -622,7 +622,7 @@ export class Table extends Construct {
   private makeScalingRole(): iam.IRole {
     // Use a Service Linked Role.
     return iam.Role.import(this, 'ScalingRole', {
-      roleArn: this.node.formatArn({
+      roleArn: this.node.stack.formatArn({
         // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
         service: 'iam',
         resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',

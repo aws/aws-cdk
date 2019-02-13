@@ -428,7 +428,7 @@ class ImportedStream extends StreamBase {
     this.streamArn = props.streamArn;
 
     // Get the name from the ARN
-    this.streamName = this.node.parseArn(props.streamArn).resourceName!;
+    this.streamName = this.node.stack.parseArn(props.streamArn).resourceName!;
 
     if (props.encryptionKey) {
       // TODO: import "scope" should be changed to "this"
