@@ -544,7 +544,7 @@ class SingletonPolicy extends cdk.Construct {
   }
 
   private stackArnFromProps(props: { stackName: string, region?: string }): string {
-    return cdk.Stack.find(this).formatArn({
+    return this.node.stack.formatArn({
       region: props.region,
       service: 'cloudformation',
       resource: 'stack',

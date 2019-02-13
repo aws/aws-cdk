@@ -282,9 +282,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent === undefined ? true : props.installAgent;
-    const stack = cdk.Stack.find(this);
     this.codeDeployBucket = s3.Bucket.import(this, 'CodeDeployBucket', {
-      bucketName: `aws-codedeploy-${stack.region}`,
+      bucketName: `aws-codedeploy-${this.node.stack.region}`,
     });
     for (const asg of this._autoScalingGroups) {
       this.addCodeDeployAgentInstallUserData(asg);
@@ -359,7 +358,6 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this.codeDeployBucket.grantRead(asg.role, 'latest/*');
 
-    const stack = cdk.Stack.find(this);
     switch (asg.osType) {
       case ec2.OperatingSystemType.Linux:
         asg.addUserData(
@@ -377,7 +375,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           '$PKG_CMD install -y awscli',
           'TMP_DIR=`mktemp -d`',
           'cd $TMP_DIR',
-          `aws s3 cp s3://aws-codedeploy-${stack.region}/latest/install . --region ${stack.region}`,
+          `aws s3 cp s3://aws-codedeploy-${this.node.stack.region}/latest/install . --region ${this.node.stack.region}`,
           'chmod +x ./install',
           './install auto',
           'rm -fr $TMP_DIR',
@@ -386,7 +384,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       case ec2.OperatingSystemType.Windows:
         asg.addUserData(
           'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
-          `aws s3 cp s3://aws-codedeploy-${stack.region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
+          `aws s3 cp s3://aws-codedeploy-${this.node.stack.region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
           '$TEMPDIR\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
         );
         break;

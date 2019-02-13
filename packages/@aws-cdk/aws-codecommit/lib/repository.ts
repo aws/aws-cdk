@@ -230,7 +230,7 @@ class ImportedRepository extends RepositoryBase {
   constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
     super(scope, id);
 
-    this.repositoryArn = cdk.Stack.find(this).formatArn({
+    this.repositoryArn = this.node.stack.formatArn({
       service: 'codecommit',
       resource: props.repositoryName,
     });
@@ -249,9 +249,8 @@ class ImportedRepository extends RepositoryBase {
     return this.repositoryCloneUrl('ssh');
   }
 
-  private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
-    const stack = cdk.Stack.find(this);
-    return `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${this.repositoryName}`;
+  private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
+    return `${protocol}://git-codecommit.${this.node.stack.region}.${this.node.stack.urlSuffix}/v1/repos/${this.repositoryName}`;
   }
 }
 
