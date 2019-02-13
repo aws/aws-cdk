@@ -47,6 +47,9 @@ export class ConstructNode {
   private readonly references = new Set<Token>();
   private readonly dependencies = new Set<IDependable>();
 
+  /** Will be used to cache the value of ``this.stack``. */
+  private _stack?: Stack;
+
   /**
    * If this is set to 'true'. addChild() calls for this construct and any child
    * will fail. This is used to prevent tree mutations during synthesis.
@@ -80,6 +83,23 @@ export class ConstructNode {
 
     if (unresolved(id)) {
       throw new Error(`Cannot use tokens in construct ID: ${id}`);
+    }
+  }
+
+  /**
+   * The stack the construct is a part of.
+   */
+  public get stack(): Stack {
+    return this._stack || (this._stack = _lookStackUp(this));
+
+    function _lookStackUp(_this: ConstructNode) {
+      if (Stack.isStack(_this.host)) {
+        return _this.host;
+      }
+      if (!_this.scope) {
+        throw new Error(`No stack could be identified for the construct at path ${_this.path}`);
+      }
+      return _this.scope.node.stack;
     }
   }
 
@@ -708,3 +728,6 @@ export interface Dependency {
    */
   target: IConstruct;
 }
+
+// Import this _after_ everything else to help node work the classes out in the correct order...
+import { Stack } from '../cloudformation/stack';

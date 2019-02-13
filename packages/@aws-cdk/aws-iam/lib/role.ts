@@ -1,4 +1,4 @@
-import { Construct, IConstruct, Output, Stack } from '@aws-cdk/cdk';
+import { Construct, IConstruct, Output } from '@aws-cdk/cdk';
 import { CfnRole } from './iam.generated';
 import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
@@ -313,7 +313,7 @@ class ImportedRole extends Construct implements IRole {
   }
 
   public get roleName() {
-    return Stack.find(this).parseArn(this.roleArn).resourceName!;
+    return this.node.stack.parseArn(this.roleArn).resourceName!;
   }
 
   public export() {

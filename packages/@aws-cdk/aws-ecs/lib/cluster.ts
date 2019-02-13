@@ -327,7 +327,7 @@ class ImportedCluster extends cdk.Construct implements ICluster {
     this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
 
-    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : cdk.Stack.find(this).formatArn({
+    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
       service: 'ecs',
       resource: 'cluster',
       resourceName: props.clusterName,

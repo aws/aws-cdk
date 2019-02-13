@@ -122,7 +122,7 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
       .addAction('kms:Decrypt')
       .addAllResources()
       .addCondition('StringEquals', {
-        'kms:ViaService': `secretsmanager.${cdk.Stack.find(this).region}.amazonaws.com`
+        'kms:ViaService': `secretsmanager.${this.node.stack.region}.amazonaws.com`
       }));
     }
   }

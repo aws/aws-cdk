@@ -31,11 +31,6 @@ export abstract class StackElement extends Construct {
    */
   public readonly logicalId: string;
 
-  /**
-   * The stack this Construct has been made a part of
-   */
-  protected stack: Stack;
-
   private _logicalId: string;
 
   /**
@@ -47,15 +42,10 @@ export abstract class StackElement extends Construct {
    */
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    const s = Stack.find(this);
-    if (!s) {
-      throw new Error('The tree root must be derived from "Stack"');
-    }
-    this.stack = s;
 
     this.node.addMetadata(LOGICAL_ID_MD, new (require("../core/tokens/token").Token)(() => this.logicalId), this.constructor);
 
-    this._logicalId = this.stack.logicalIds.getLogicalId(this);
+    this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
     this.logicalId = new Token(() => this._logicalId).toString();
   }
 
@@ -93,7 +83,7 @@ export abstract class StackElement extends Construct {
    * Return the path with respect to the stack
    */
   public get stackPath(): string {
-    return this.node.ancestors(this.stack).map(c => c.node.id).join(PATH_SEP);
+    return this.node.ancestors(this.node.stack).map(c => c.node.id).join(PATH_SEP);
   }
 
   /**
@@ -165,4 +155,3 @@ export abstract class Referenceable extends StackElement {
 }
 
 import { findTokens } from "../core/tokens/resolve";
-import { Stack } from "./stack";

@@ -54,10 +54,8 @@ export class RuntimeValue extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: RuntimeValueProps) {
     super(scope, id);
 
-    const stack = cdk.Stack.find(this);
-
-    this.parameterName = `/rtv/${stack.stackName}/${props.package}/${id}`;
-    this.envValue = stack.stackName;
+    this.parameterName = `/rtv/${this.node.stack.stackName}/${props.package}/${id}`;
+    this.envValue = this.node.stack.stackName;
 
     new ssm.CfnParameter(this, 'Parameter', {
       name: this.parameterName,
@@ -65,7 +63,7 @@ export class RuntimeValue extends cdk.Construct {
       value: props.value,
     });
 
-    this.parameterArn = cdk.Stack.find(this).formatArn({
+    this.parameterArn = this.node.stack.formatArn({
       service: 'ssm',
       resource: 'parameter',
       resourceName: this.parameterName

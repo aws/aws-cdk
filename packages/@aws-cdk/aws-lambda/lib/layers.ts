@@ -233,11 +233,10 @@ export class SingletonLayerVersion extends cdk.Construct implements ILayerVersio
 
   private ensureLayerVersion(props: SingletonLayerVersionProps): ILayerVersion {
     const singletonId = `SingletonLayer-${props.uuid}`;
-    const stack = cdk.Stack.find(this);
-    const existing = stack.node.tryFindChild(singletonId);
+    const existing = this.node.stack.node.tryFindChild(singletonId);
     if (existing) {
       return existing as unknown as ILayerVersion;
     }
-    return new LayerVersion(stack, singletonId, props);
+    return new LayerVersion(this.node.stack, singletonId, props);
   }
 }

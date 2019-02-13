@@ -355,10 +355,10 @@ export class Function extends FunctionBase {
       this.role.addToPolicy(statement);
     }
 
-    const stack = cdk.Stack.find(this);
-    const isChina = stack.env.region && stack.env.region.startsWith('cn-');
+    const isChina = this.node.stack.env.region && this.node.stack.env.region.startsWith('cn-');
     if (isChina && props.environment && Object.keys(props.environment).length > 0) {
-      throw new Error(`Environment variables are not supported in this region (${stack.env.region}); consider using tags or SSM parameters instead`);
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`Environment variables are not supported in this region (${this.node.stack.env.region}); consider using tags or SSM parameters instead`);
     }
 
     const resource = new CfnFunction(this, 'Resource', {

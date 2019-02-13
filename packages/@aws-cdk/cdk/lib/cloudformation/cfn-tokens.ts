@@ -47,14 +47,14 @@ export class CfnReference extends Token {
     this.isReference = true;
 
     if (scope !== undefined) {
-      this.producingStack = Stack.find(scope);
+      this.producingStack = scope.node.stack;
     }
   }
 
   public resolve(context: ResolveContext): any {
     // If we have a special token for this consuming stack, resolve that. Otherwise resolve as if
     // we are in the same stack.
-    const token = this.replacementTokens.get(Stack.find(context.scope));
+    const token = this.replacementTokens.get(context.scope.node.stack);
     if (token) {
       return token.resolve(context);
     } else {
