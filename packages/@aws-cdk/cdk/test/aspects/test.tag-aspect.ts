@@ -130,7 +130,7 @@ export = {
     test.deepEqual(res2.tags.renderTags(), [{key: 'key', value: 'value'}]);
     test.done();
   },
-  'Aspects are mutually exclusive with tags created by L1 Constructor'(test: Test) {
+  'Aspects are merged with tags created by L1 Constructor'(test: Test) {
     const root = new Stack();
     const aspectBranch = new TaggableResource(root, 'FakeBranchA', {
       type: 'AWS::Fake::Thing',
@@ -150,7 +150,7 @@ export = {
     });
     aspectBranch.node.apply(new Tag('aspects', 'rule'));
     root.node.prepareTree();
-    test.deepEqual(aspectBranch.tags.renderTags(), [{key: 'aspects', value: 'rule'}]);
+    test.deepEqual(aspectBranch.tags.renderTags(), [{key: 'aspects', value: 'rule'}, {key: 'cfn', value: 'is cool'}]);
     test.deepEqual(cfnBranch.testProperties().tags, [{key: 'cfn', value: 'is cool'}]);
     test.done();
   },

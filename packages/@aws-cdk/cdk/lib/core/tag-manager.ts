@@ -94,7 +94,8 @@ export class TagManager {
   /**
    * Renders tags into the proper format based on TagType
    */
-  public renderTags(): any {
+  public renderTags(propertyTags?: any): any {
+    this.mergeFrom(propertyTags);
     const keys = Object.keys(this.tags);
     switch (this.tagType) {
       case TagType.Standard: {
@@ -149,5 +150,46 @@ export class TagManager {
       return priority >= this.removedTags[key];
     }
     return true;
+  }
+
+  private mergeFrom(propertyTags: any): void {
+    if (propertyTags === undefined) {
+      return;
+    }
+    const keys = Object.keys(this.tags);
+    switch (this.tagType) {
+      case TagType.Standard: {
+        if (Array.isArray(propertyTags)) {
+          for (const tag of propertyTags) {
+            if (!keys.includes(tag.key)) {
+              this.setTag(tag.key, tag.value);
+            }
+          }
+        } else {
+          throw new Error(`${this.resourceTypeName} expects a tags array of key value pairs, received [ ${JSON.stringify(propertyTags)} ]`);
+        }
+        break;
+      }
+      case TagType.AutoScalingGroup: {
+        if (Array.isArray(propertyTags)) {
+          for (const tag of propertyTags) {
+            if (!keys.includes(tag.key)) {
+              this.setTag(tag.key, tag.value, {applyToLaunchedInstances: tag.propagateAtLaunch});
+            }
+          }
+        } else {
+          throw new Error(`${this.resourceTypeName} expects a tags array of key value pairs, received [ ${JSON.stringify(propertyTags)} ]`);
+        }
+        break;
+      }
+      case TagType.Map: {
+        for (const key of Object.keys(propertyTags)) {
+          if (!keys.includes(key)) {
+            this.setTag(key, propertyTags[key]);
+          }
+        }
+        break;
+      }
+    }
   }
 }

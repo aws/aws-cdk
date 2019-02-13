@@ -206,12 +206,14 @@ export class Resource extends Referenceable {
    */
   public toCloudFormation(): object {
     try {
-      if (Resource.isTaggable(this)) {
-        const tags = this.tags.renderTags();
-        this.properties.tags = tags === undefined ? this.properties.tags : tags;
-      }
       // merge property overrides onto properties and then render (and validate).
-      const properties = this.renderProperties(deepMerge(this.properties || { }, this.untypedPropertyOverrides));
+      const tags = Resource.isTaggable(this) ?
+        {tags: this.tags.renderTags(this.properties.tags)} : {tags: undefined};
+      const properties = this.renderProperties(
+        deepMerge(
+          deepMerge(this.properties || { }, tags || {}),
+          this.untypedPropertyOverrides
+        ));
 
       return {
         Resources: {
@@ -254,14 +256,13 @@ export class Resource extends Referenceable {
   protected renderProperties(properties: any): { [key: string]: any } {
     return properties;
   }
-
 }
 
 export enum TagType {
   Standard = 'StandardTag',
-  AutoScalingGroup = 'AutoScalingGroupTag',
-  Map = 'StringToStringMap',
-  NotTaggable = 'NotTaggable',
+    AutoScalingGroup = 'AutoScalingGroupTag',
+    Map = 'StringToStringMap',
+    NotTaggable = 'NotTaggable',
 }
 
 export interface ResourceOptions {
