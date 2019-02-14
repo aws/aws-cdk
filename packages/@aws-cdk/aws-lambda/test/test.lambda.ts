@@ -1287,6 +1287,15 @@ export = {
     // THEN
     test.deepEqual(bindCount, 2);
     test.done();
+  },
+
+  'Provided Runtime returns the right values'(test: Test) {
+    const rt = lambda.Runtime.Provided;
+
+    test.equal(rt.name, 'provided');
+    test.equal(rt.supportsInlineCode, false);
+
+    test.done();
   }
 };
 
