@@ -148,7 +148,7 @@ export class Metric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public newAlarm(scope: cdk.Construct, id: string, props: MetricAarmProps): Alarm {
+  public newAlarm(scope: cdk.Construct, id: string, props: MetricAlarmProps): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         statistic: props.statistic,
@@ -296,7 +296,7 @@ export interface MetricCustomization {
 /**
  * Properties needed to make an alarm from a metric
  */
-export interface MetricAarmProps {
+export interface MetricAlarmProps {
   /**
    * The period over which the specified statistic is applied.
    *
