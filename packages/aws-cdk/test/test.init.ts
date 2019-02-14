@@ -46,5 +46,17 @@ export = {
     test.equal(true, await fs.pathExists('bin'));
 
     test.done();
+  },
+
+  async 'git directory does not throw off the initer!'(test: Test) {
+    fs.mkdirSync('.git');
+
+    await cliInit('app', 'typescript', false);
+
+    // Check that package.json and bin/ got created in the current directory
+    test.equal(true, await fs.pathExists('package.json'));
+    test.equal(true, await fs.pathExists('bin'));
+
+    test.done();
   }
 };
