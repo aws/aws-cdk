@@ -8,6 +8,7 @@ import util = require('./util');
 export type SettingsMap = {[key: string]: any};
 
 export const DEFAULTS = 'cdk.json';
+export const PROJECT_CONTEXT = 'cdk.context.json';
 export const PER_USER_DEFAULTS = '~/.cdk.json';
 
 /**
@@ -18,6 +19,9 @@ export class Configuration {
   public readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
   public readonly userConfig = new Settings();
   public readonly projectConfig = new Settings();
+  public projectContext = new Settings();
+
+  private projectConfigHadContextOnLoad = false;
 
   constructor(commandLineArguments?: yargs.Arguments) {
     this.commandLineArguments = commandLineArguments
@@ -31,6 +35,11 @@ export class Configuration {
   public async load(): Promise<this> {
     await this.userConfig.load(PER_USER_DEFAULTS);
     await this.projectConfig.load(DEFAULTS);
+    await this.projectContext.load(PROJECT_CONTEXT);
+    this.projectContext = this.projectContext.rescope('context');
+
+    this.projectConfigHadContextOnLoad = this.projectConfig.get(['context']) !== undefined;
+
     return this;
   }
 
@@ -53,13 +62,20 @@ export class Configuration {
     if (!this.projectConfig.empty()) {
       debug(DEFAULTS + ':', JSON.stringify(this.projectConfig.settings, undefined, 2));
     }
+
+    if (!this.projectContext.empty()) {
+      debug(DEFAULTS + ':', JSON.stringify(this.projectContext.settings, undefined, 2));
+    }
   }
 
   /**
    * Return the combined config from all config sources
    */
   public get combined(): Settings {
-    return this.defaultConfig.merge(this.userConfig).merge(this.projectConfig).merge(this.commandLineArguments);
+    return this.defaultConfig
+      .merge(this.userConfig)
+      .merge(this.projectConfig)
+      .merge(this.commandLineArguments);
   }
 }
 
@@ -113,6 +129,11 @@ export class Settings {
 
   constructor(public settings: SettingsMap = {}) {}
 
+  public rescope(key: string): Settings {
+    if (this.empty) { return this; }
+    return new Settings({ [key]: this.settings });
+  }
+
   public async load(fileName: string): Promise<this> {
     this.settings = {};
 
@@ -122,29 +143,11 @@ export class Settings {
     }
 
     // See https://github.com/awslabs/aws-cdk/issues/59
-    prohibitContextKey(this, 'default-account');
-    prohibitContextKey(this, 'default-region');
-    warnAboutContextKey(this, 'aws:');
+    this.prohibitContextKey('default-account', fileName);
+    this.prohibitContextKey('default-region', fileName);
+    this.warnAboutContextKey('aws:', fileName);
 
     return this;
-
-    function prohibitContextKey(self: Settings, key: string) {
-      if (!self.settings.context) { return; }
-      if (key in self.settings.context) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
-      }
-    }
-
-    function warnAboutContextKey(self: Settings, prefix: string) {
-      if (!self.settings.context) { return; }
-      for (const contextKey of Object.keys(self.settings.context)) {
-        if (contextKey.startsWith(prefix)) {
-          // tslint:disable-next-line:max-line-length
-          warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
-        }
-      }
-    }
   }
 
   public async save(fileName: string): Promise<this> {
@@ -169,6 +172,28 @@ export class Settings {
   public set(path: string[], value: any): Settings {
     util.deepSet(this.settings, path, value);
     return this;
+  }
+
+  public unset(path: string[]) {
+    this.set(path, undefined);
+  }
+
+  private prohibitContextKey(key: string, fileName: string) {
+    if (!this.settings.context) { return; }
+    if (key in this.settings.context) {
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
+    }
+  }
+
+  private warnAboutContextKey(prefix: string, fileName: string) {
+    if (!this.settings.context) { return; }
+    for (const contextKey of Object.keys(this.settings.context)) {
+      if (contextKey.startsWith(prefix)) {
+        // tslint:disable-next-line:max-line-length
+        warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
+      }
+    }
   }
 }
 
