@@ -208,7 +208,7 @@ async function initializeProject(template: InitTemplate, language: string, canUs
 
 async function assertIsEmptyDirectory() {
   const files = await fs.readdir(process.cwd());
-  if (files.length !== 0) {
+  if (files.filter(f => !f.startsWith('.')).length !== 0) {
     throw new Error('`cdk init` cannot be run in a non-empty directory!');
   }
 }
