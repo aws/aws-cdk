@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, Aws, Stack, Token } from '../../lib';
+import { ArnComponents, Output, ScopedAws, Stack, Token } from '../../lib';
 
 export = {
   'create from components with defaults'(test: Test) {
@@ -10,7 +10,7 @@ export = {
       resource: 'myqueuename'
     });
 
-    const pseudo = new Aws(stack);
+    const pseudo = new ScopedAws(stack);
 
     test.deepEqual(stack.node.resolve(arn),
                    stack.node.resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
@@ -61,7 +61,7 @@ export = {
       resourceName: 'WordPress_App'
     });
 
-    const pseudo = new Aws(stack);
+    const pseudo = new ScopedAws(stack);
 
     test.deepEqual(stack.node.resolve(arn),
                    stack.node.resolve(`arn:${pseudo.partition}:codedeploy:${pseudo.region}:${pseudo.accountId}:application:WordPress_App`));
@@ -78,7 +78,7 @@ export = {
       resourceName: '/parameter-name'
     });
 
-    const pseudo = new Aws(stack);
+    const pseudo = new ScopedAws(stack);
 
     test.deepEqual(stack.node.resolve(arn),
                    stack.node.resolve(`arn:${pseudo.partition}:ssm:${pseudo.region}:${pseudo.accountId}:parameter/parameter-name`));
@@ -204,4 +204,31 @@ export = {
     }
   },
 
+  'can use a fully specified ARN from a different stack without incurring an import'(test: Test) {
+    // GIVEN
+    const stack1 = new Stack(undefined, 'Stack1', { env: { account: '12345678', region: 'us-turbo-5' }});
+    const stack2 = new Stack(undefined, 'Stack2', { env: { account: '87654321', region: 'us-turbo-1' }});
+
+    // WHEN
+    const arn = stack1.formatArn({
+      // No partition specified here
+      service: 'bla',
+      resource: 'thing',
+      resourceName: 'thong',
+    });
+    new Output(stack2, 'SomeValue', { value: arn });
+
+    // THEN
+    test.deepEqual(stack2.node.resolve(stack2.toCloudFormation()), {
+      Outputs: {
+        SomeValue: {
+          Value: {
+            // Look ma, no Fn::ImportValue!
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':bla:us-turbo-5:12345678:thing/thong']] }
+        }
+      }
+    });
+
+    test.done();
+  },
 };

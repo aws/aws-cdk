@@ -248,7 +248,7 @@ export class Stack extends Construct {
     if (this.props && this.props.env && this.props.env.account) {
       return this.props.env.account;
     }
-    return new Aws(this).accountId;
+    return new ScopedAws(this).accountId;
   }
 
   /**
@@ -262,21 +262,24 @@ export class Stack extends Construct {
     if (this.props && this.props.env && this.props.env.region) {
       return this.props.env.region;
     }
-    return new Aws(this).region;
+    return new ScopedAws(this).region;
   }
 
   /**
    * The partition in which this stack is defined
    */
   public get partition(): string {
-    return new Aws(this).partition;
+    // Always return a non-scoped partition intrinsic. These will usually
+    // be used to construct an ARN, but there are no cross-partition
+    // calls anyway.
+    return Aws.partition;
   }
 
   /**
    * The Amazon domain suffix for the region in which this stack is defined
    */
   public get urlSuffix(): string {
-    return new Aws(this).urlSuffix;
+    return new ScopedAws(this).urlSuffix;
   }
 
   /**
@@ -285,7 +288,7 @@ export class Stack extends Construct {
    * @example After resolving, looks like arn:aws:cloudformation:us-west-2:123456789012:stack/teststack/51af3dc0-da77-11e4-872e-1234567db123
    */
   public get stackId(): string {
-    return new Aws(this).stackId;
+    return new ScopedAws(this).stackId;
   }
 
   /**
@@ -294,14 +297,14 @@ export class Stack extends Construct {
    * Only available at deployment time.
    */
   public get stackName(): string {
-    return new Aws(this).stackName;
+    return new ScopedAws(this).stackName;
   }
 
   /**
    * Returns the list of notification Amazon Resource Names (ARNs) for the current stack.
    */
   public get notificationArns(): string[] {
-    return new Aws(this).notificationArns;
+    return new ScopedAws(this).notificationArns;
   }
 
   /**
@@ -507,7 +510,7 @@ function stackElements(node: IConstruct, into: StackElement[] = []): StackElemen
 
 // These imports have to be at the end to prevent circular imports
 import { ArnComponents, arnFromComponents, parseArn } from './arn';
-import { Aws } from './pseudo';
+import { Aws, ScopedAws } from './pseudo';
 import { Resource } from './resource';
 import { StackElement } from './stack-element';
 
