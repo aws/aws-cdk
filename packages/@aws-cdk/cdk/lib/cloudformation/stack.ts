@@ -248,7 +248,10 @@ export class Stack extends Construct {
     if (this.props && this.props.env && this.props.env.account) {
       return this.props.env.account;
     }
-    return new ScopedAws(this).accountId;
+    // Does not need to be scoped, the only situation in which
+    // Export/Fn::ImportValue would work if { Ref: "AWS::AccountId" } is the
+    // same for provider and consumer anyway.
+    return Aws.accountId;
   }
 
   /**
@@ -262,7 +265,10 @@ export class Stack extends Construct {
     if (this.props && this.props.env && this.props.env.region) {
       return this.props.env.region;
     }
-    return new ScopedAws(this).region;
+    // Does not need to be scoped, the only situation in which
+    // Export/Fn::ImportValue would work if { Ref: "AWS::AccountId" } is the
+    // same for provider and consumer anyway.
+    return Aws.region;
   }
 
   /**

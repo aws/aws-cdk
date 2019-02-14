@@ -222,6 +222,31 @@ export = {
     test.done();
   },
 
+  'Cross-stack use of Region returns nonscoped intrinsic'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another stack
+    new Output(stack2, 'DemOutput', { value: stack1.region });
+
+    // THEN
+    // Need to do this manually now, since we're in testing mode. In a normal CDK app,
+    // this happens as part of app.run().
+    app.node.prepareTree();
+
+    test.deepEqual(stack2.toCloudFormation(), {
+      Outputs: {
+        DemOutput: {
+          Value: { Ref: 'AWS::Region' },
+        }
+      }
+    });
+
+    test.done();
+  },
+
   'cross-stack references in strings work'(test: Test) {
     // GIVEN
     const app = new App();
