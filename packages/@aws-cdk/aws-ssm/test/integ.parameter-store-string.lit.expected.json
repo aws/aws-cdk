@@ -6,7 +6,7 @@
         "Properties": {
           "Type": "String",
           "Value": "abcdef",
-          "Name": "/My/String/Parameter"
+          "Name": "/My/Public/Parameter"
         }
       }
     }
@@ -15,7 +15,7 @@
     "Parameters": {
       "MyValueParameterCCC58B13": {
         "Type": "AWS::SSM::Parameter::Value<String>",
-        "Default": "/My/String/Parameter"
+        "Default": "/My/Public/Parameter"
       }
     },
     "Outputs": {

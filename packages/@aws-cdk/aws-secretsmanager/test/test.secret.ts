@@ -224,7 +224,7 @@ export = {
     new cdk.Resource(stack, 'FakeResource', {
       type: 'CDK::Phony::Resource',
       properties: {
-        value: secret.toSecretString().stringValue
+        value: secret.stringValue
       }
     });
 
