@@ -24,12 +24,12 @@ export interface ISecret extends cdk.IConstruct {
    *
    * SecretString represents the value of the Secret.
    */
-  secretString: SecretString;
+  readonly secretString: SecretString;
 
   /**
    * Retrieve the value of the Secret, as a string.
    */
-  stringValue: string;
+  readonly stringValue: string;
 
   /**
    * Interpret the secret as a JSON object and return a field's value from it
