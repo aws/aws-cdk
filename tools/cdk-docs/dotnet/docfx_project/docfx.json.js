@@ -9,7 +9,8 @@ console.log(JSON.stringify({
       ],
       "dest": "api",
       "disableGitFeatures": false,
-      "disableDefaultFilter": false
+      "disableDefaultFilter": false,
+      "filter": "filterConfig.yml"
     }
   ],
   "build": {

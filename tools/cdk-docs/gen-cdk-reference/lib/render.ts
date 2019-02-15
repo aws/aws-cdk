@@ -6,6 +6,7 @@ const BADGE_REQUIRED = '![Required](https://img.shields.io/badge/-Required-impor
 
 export interface RenderingOptions {
   javadocPath?: string;
+  dotnetPath?: string;
 }
 
 export class Rendering {
@@ -23,6 +24,7 @@ export class Rendering {
   public assemblyOverview(assembly: jsiiReflect.Assembly, id: string): Document {
     const preamble = [
       this.javadocLinkAssembly(assembly),
+      this.dotnetLinkAssembly(assembly),
       ''].join('\n');
     const readmeMarkdown = assembly.readme && assembly.readme.markdown || 'Oops!';
     return new Document(id, preamble + '\n' + readmeMarkdown, { hide_title: true, sidebar_label: 'Overview' });
@@ -34,6 +36,7 @@ export class Rendering {
 
     const markdown = [
       this.javadocLinkType(resource),
+      this.dotnetLinkType(resource),
       '',
       resource.docs.docs && resource.docs.docs.comment || '',
       '## Properties',
@@ -74,22 +77,35 @@ export class Rendering {
   }
 
   private javadocLinkAssembly(assembly: jsiiReflect.Assembly) {
-    if (!this.opts.javadocPath) { return ''; }
     const javaName = javaPackageName(assembly);
     if (!javaName) { return ''; }
-
     return this.javadocLink(javaName.replace(/\./g, '/') + '/package-summary.html');
   }
 
   private javadocLinkType(type: jsiiReflect.Type) {
-    if (!this.opts.javadocPath) { return ''; }
     const javaName = javaTypeName(type);
     if (!javaName) { return ''; }
     return this.javadocLink(javaName.replace(/\./g, '/') + '.html');
   }
 
   private javadocLink(linkTarget: string) {
+    if (!this.opts.javadocPath) { return ''; }
     return `<a href="${this.opts.javadocPath}/index.html?${linkTarget}"><img src="/img/java32.png" class="lang-icon"> JavaDoc</a>`;
+  }
+
+  private dotnetLinkAssembly(assembly: jsiiReflect.Assembly) {
+    const name = dotnetPackageName(assembly);
+    return name && this.dotnetLink(name);
+  }
+
+  private dotnetLinkType(type: jsiiReflect.Type) {
+    const name = dotnetTypeName(type);
+    return name && this.dotnetLink(name);
+  }
+
+  private dotnetLink(linkTarget: string) {
+    if (!this.opts.dotnetPath) { return ''; }
+    return `<a href="${this.opts.dotnetPath}/api/${linkTarget}.html"><img src="/img/dotnet32.png" class="lang-icon"> .NET Docs</a>`;
   }
 }
 
@@ -138,7 +154,22 @@ function javaTypeName(type: jsiiReflect.Type): string | undefined {
  */
 function javaPackageName(assembly: jsiiReflect.Assembly): string | undefined {
   const java = assembly.targets && assembly.targets.java;
-  if (!java || !java.package) { return undefined; }
+  return java && java.package;
+}
 
-  return java.package;
+/**
+ * Return the Java name for this type
+ */
+function dotnetTypeName(type: jsiiReflect.Type): string | undefined {
+  const pkg = dotnetPackageName(type.assembly);
+  if (!pkg) { return undefined; }
+  return pkg + '.' + type.name;
+}
+
+/**
+ * Return the Java name for this type
+ */
+function dotnetPackageName(assembly: jsiiReflect.Assembly): string | undefined {
+  const dotnet = assembly.targets && assembly.targets.dotnet;
+  return dotnet && dotnet.namespace;
 }

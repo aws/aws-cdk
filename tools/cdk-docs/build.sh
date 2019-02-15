@@ -37,7 +37,7 @@ build_failed() {
         echo "ERROR: Build of $1 failed." >&2
         exit 1
     else
-        echo "Build of $1 failed. Continuing without those." >&2
+        printf '\e[1;34m%-6s\e[m\n' "Build of $1 failed. Skipping." >&2
     fi
 }
 
@@ -62,3 +62,12 @@ $scriptdir/dotnet/build-dotnet.sh $distdir/dotnet $dotnetdir && {
         --website $scriptdir/docusaurus/website \
         --docs $scriptdir/docusaurus/docs
 )
+
+# Build website
+if $full; then
+    (
+        cd docusaurus/website
+        [[ -d node_modules ]] || npm install
+        npm run build
+    )
+fi

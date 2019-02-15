@@ -12,12 +12,12 @@ if [[ -d $outdir ]]; then
 fi
 
 if [[ ! -d $1 ]]; then
-    echo "No JAVA binaries found. Not including JavaDocs." >&2
+    echo "No JARs found. Not including JavaDocs." >&2
     exit 1
 fi
 
 if ! type javadoc > /dev/null; then
-    echo "JAVADOC not installed. Not building JavaDocs." >&2
+    echo "'javadoc' not installed. Not building JavaDocs." >&2
     exit 1
 fi
 

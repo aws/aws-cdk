@@ -1,8 +1,12 @@
 #!/bin/bash
 set -euo pipefail
+absname() {
+    echo $(cd $(dirname $1) && pwd)/$(basename $1)
+}
+
 scriptdir=$(cd $(dirname $0) && pwd)
 rootdir=$1
-outdir="$2"
+outdir=$(absname $2)
 
 if [[ -d $outdir ]]; then
     echo "DotNet directory already exists; not rebuilding to save time." >&2
@@ -20,13 +24,9 @@ tmpdir=$temproot/dotnet
 rm -rf $tmpdir
 mkdir -p $tmpdir
 
-absname() {
-    echo $(cd $(dirname $1) && pwd)/$(basename $1)
-}
-
 # Extract NUPKGs to get a set of DLLs
 echo "Unpacking NUPKGs..." >&2
-pkgdir=$tempdir/nupkgs
+pkgdir=$tmpdir/nupkgs
 mkdir -p $pkgdir
 for pkg in $(find $1 -name \*.nupkg); do
     (
@@ -40,11 +40,15 @@ done
 # Fix that.
 chmod -R 0755 $pkgdir
 
-# Initialize DocFx project here
-export SOURCEDIR=$pkgdir/src
-export OUTPUTDIR=$outdir
-$scriptdir/../docfx/docfx-prepare $scriptdir/docfx_project
+(
+    cd $tmpdir
 
-# Extract metadata
-$scriptdir/../docfx/docfx metadata
-$scriptdir/../docfx/docfx build
+    # Initialize DocFx project here
+    export SOURCEDIR=$pkgdir/src
+    export OUTPUTDIR=$outdir
+    $scriptdir/../docfx/docfx-prepare $scriptdir/docfx_project
+
+    # Extract metadata
+    $scriptdir/../docfx/docfx metadata
+    $scriptdir/../docfx/docfx build
+)

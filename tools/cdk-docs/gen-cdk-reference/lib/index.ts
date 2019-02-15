@@ -21,7 +21,8 @@ export async function main() {
     .argv;
 
   const render = new Rendering({
-    javadocPath: args.java
+    javadocPath: args.java,
+    dotnetPath: args.dotnet,
   });
 
   // load all JSII from all dependencies
