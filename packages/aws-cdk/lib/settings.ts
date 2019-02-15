@@ -7,21 +7,23 @@ import util = require('./util');
 
 export type SettingsMap = {[key: string]: any};
 
-export const DEFAULTS = 'cdk.json';
+export const PROJECT_CONFIG = 'cdk.json';
 export const PROJECT_CONTEXT = 'cdk.context.json';
-export const PER_USER_DEFAULTS = '~/.cdk.json';
+export const USER_DEFAULTS = '~/.cdk.json';
+
+const CONTEXT_KEY = 'context';
 
 /**
  * All sources of settings combined
  */
 export class Configuration {
-  public readonly commandLineArguments: Settings;
-  public readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
-  public readonly userConfig = new Settings();
-  public readonly projectConfig = new Settings();
-  public projectContext = new Settings();
+  public settings = new Settings();
+  public context = new Settings();
 
-  private projectConfigHadContextOnLoad = false;
+  private readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
+  private readonly commandLineArguments: Settings;
+
+  private contextIsInLegacyFile = false;
 
   constructor(commandLineArguments?: yargs.Arguments) {
     this.commandLineArguments = commandLineArguments
@@ -33,12 +35,31 @@ export class Configuration {
    * Load all config
    */
   public async load(): Promise<this> {
-    await this.userConfig.load(PER_USER_DEFAULTS);
-    await this.projectConfig.load(DEFAULTS);
-    await this.projectContext.load(PROJECT_CONTEXT);
-    this.projectContext = this.projectContext.rescope('context');
+    const userConfig = await loadAndLog(USER_DEFAULTS);
+    const projectConfig = await loadAndLog(PROJECT_CONFIG);
+    const projectContext = await loadAndLog(PROJECT_CONTEXT);
 
-    this.projectConfigHadContextOnLoad = this.projectConfig.get(['context']) !== undefined;
+    // If the config currently has a 'context' setting, use that as context.
+    // Otherwise, load context from a separate file.
+    this.contextIsInLegacyFile = projectConfig.get([CONTEXT_KEY]) !== undefined;
+    if (this.contextIsInLegacyFile) {
+      if (!projectContext.empty) {
+        // Let's check context is not in two places, that's just a recipe for
+        // disaster while we're in the cutover period.
+        warning(`Found context in both ${PROJECT_CONFIG} and ${PROJECT_CONTEXT}; please remove one of them (${PROJECT_CONTEXT} will be ignored).`);
+      }
+      this.context = new Settings(projectConfig.get([CONTEXT_KEY]));
+      projectConfig.unset([CONTEXT_KEY]);
+    } else {
+      this.context = projectContext;
+    }
+
+    // Build settings from what's left
+    this.settings = this.defaultConfig
+      .merge(userConfig)
+      .merge(projectConfig)
+      .merge(this.commandLineArguments)
+      .makeReadOnly();
 
     return this;
   }
@@ -46,41 +67,31 @@ export class Configuration {
   /**
    * Save the project config
    */
-  public async saveProjectConfig(): Promise<this> {
-    await this.projectConfig.save(DEFAULTS);
+  public async saveContext(): Promise<this> {
+    if (this.contextIsInLegacyFile) {
+      // Save to cdk.json if it was loaded from there
+      const projectConfig = await new Settings().load(PROJECT_CONFIG);
+      projectConfig.set([CONTEXT_KEY], this.context.get([]));
+      await projectConfig.save(PROJECT_CONFIG);
+    } else {
+      // Otherwise save to cdk.context.json
+      await this.context.save(PROJECT_CONTEXT);
+    }
     return this;
-  }
-
-  /**
-   * Log the loaded defaults
-   */
-  public logDefaults() {
-    if (!this.userConfig.empty()) {
-      debug(PER_USER_DEFAULTS + ':', JSON.stringify(this.userConfig.settings, undefined, 2));
-    }
-
-    if (!this.projectConfig.empty()) {
-      debug(DEFAULTS + ':', JSON.stringify(this.projectConfig.settings, undefined, 2));
-    }
-
-    if (!this.projectContext.empty()) {
-      debug(DEFAULTS + ':', JSON.stringify(this.projectContext.settings, undefined, 2));
-    }
-  }
-
-  /**
-   * Return the combined config from all config sources
-   */
-  public get combined(): Settings {
-    return this.defaultConfig
-      .merge(this.userConfig)
-      .merge(this.projectConfig)
-      .merge(this.commandLineArguments);
   }
 }
 
+async function loadAndLog(fileName: string): Promise<Settings> {
+  const ret = new Settings();
+  await ret.load(fileName);
+  if (!ret.empty) {
+    debug(fileName + ':', JSON.stringify(ret.get([]), undefined, 2));
+  }
+  return ret;
+}
+
 /**
- * A single set of settings
+ * A single bag of settings
  */
 export class Settings {
   /**
@@ -127,7 +138,7 @@ export class Settings {
     return ret;
   }
 
-  constructor(public settings: SettingsMap = {}) {}
+  constructor(private settings: SettingsMap = {}, private readOnly = false) {}
 
   public rescope(key: string): Settings {
     if (this.empty) { return this; }
@@ -135,6 +146,9 @@ export class Settings {
   }
 
   public async load(fileName: string): Promise<this> {
+    if (this.readOnly) {
+      throw new Error(`Can't load ${fileName}: settings object is readonly`);
+    }
     this.settings = {};
 
     const expanded = expandHomeDir(fileName);
@@ -161,7 +175,20 @@ export class Settings {
     return new Settings(util.deepMerge(this.settings, other.settings));
   }
 
-  public empty(): boolean {
+  public makeReadOnly(): Settings {
+    const ret = this.clone();
+    ret.readOnly = true;
+    return ret;
+  }
+
+  public clear() {
+    if (this.readOnly) {
+      throw new Error('Cannot clear(): settings are readonly');
+    }
+    this.settings = {};
+  }
+
+  public get empty(): boolean {
     return Object.keys(this.settings).length === 0;
   }
 
@@ -170,12 +197,24 @@ export class Settings {
   }
 
   public set(path: string[], value: any): Settings {
-    util.deepSet(this.settings, path, value);
+    if (this.readOnly) {
+      throw new Error(`Can't set ${path}: settings object is readonly`);
+    }
+    if (path.length === 0) {
+      // deepSet can't handle this case
+      this.settings = value;
+    } else {
+      util.deepSet(this.settings, path, value);
+    }
     return this;
   }
 
   public unset(path: string[]) {
     this.set(path, undefined);
+  }
+
+  public clone() {
+    return new Settings({ ...this.settings });
   }
 
   private prohibitContextKey(key: string, fileName: string) {

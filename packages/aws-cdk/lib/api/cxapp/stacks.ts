@@ -112,20 +112,20 @@ export class AppStacks {
       return this.cachedResponse;
     }
 
-    const trackVersions: boolean = this.configuration.combined.get(['versionReporting']);
+    const trackVersions: boolean = this.configuration.settings.get(['versionReporting']);
 
     // We may need to run the cloud executable multiple times in order to satisfy all missing context
     while (true) {
-      const response: cxapi.SynthesizeResponse = await execProgram(this.aws, this.configuration.combined);
+      const response: cxapi.SynthesizeResponse = await execProgram(this.aws, this.configuration);
       const allMissing = cdkUtil.deepMerge(...response.stacks.map(s => s.missing));
 
       if (!cdkUtil.isEmpty(allMissing)) {
         debug(`Some context information is missing. Fetching...`);
 
-        await contextproviders.provideContextValues(allMissing, this.configuration.projectConfig, this.aws);
+        await contextproviders.provideContextValues(allMissing, this.configuration.context, this.aws);
 
         // Cache the new context to disk
-        await this.configuration.saveProjectConfig();
+        await this.configuration.saveContext();
 
         continue;
       }
