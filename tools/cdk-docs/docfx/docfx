@@ -1,0 +1,38 @@
+#!/bin/bash
+# Launcher/bootstrapping script for DocFx
+# This tool is not easily obtained via a package manager, so
+# we have a custom bootstrapper script.
+set -euo pipefail
+scriptdir=$(cd $(dirname $0) && pwd)
+
+docfx_bundle="https://github.com/dotnet/docfx/releases/download/v2.40.11/docfx.zip"
+sqlite="https://www.nuget.org/api/v2/package/SQLitePCLRaw.core/1.1.13"
+
+if ! type mono > /dev/null; then
+    echo "Please install Mono 5!" >&2
+    exit 1
+fi
+
+if [[ ! -f $scriptdir/downloaded/docfx.exe ]]; then
+    echo "Downloading DocFX..." >&2
+    mkdir -p $scriptdir/downloaded
+    (
+        cd $scriptdir/downloaded
+        curl -LSf "$docfx_bundle" -o bundle.zip
+        unzip -qo bundle.zip
+    )
+fi
+
+if [[ ! -f $scriptdir/downloaded/SQLitePCLRaw.core.dll ]]; then
+    echo "Patching with a missing SQLite package..." >&2
+    # https://github.com/dotnet/docfx/issues/3389
+    # This file is necessary when analyzing .csproj files
+    (
+    set -x
+        cd $scriptdir/downloaded
+        curl -LSf "$sqlite" -o sqlite.nupkg
+        unzip -p sqlite.nupkg lib/net45/SQLitePCLRaw.core.dll > SQLitePCLRaw.core.dll
+    )
+fi
+
+exec mono $scriptdir/downloaded/docfx.exe "$@"

@@ -1,0 +1,7 @@
+#!/bin/bash
+set -euo pipefail
+sourcedir="$1"
+outdir="$2"
+cp -R "$1/*" .
+
+node docfx.json.js > docfx.json
