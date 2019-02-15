@@ -1,3 +1,4 @@
+attributeRules:
 - exclude:
     uidRegex: '\.Internal\.'
     type: Namespace

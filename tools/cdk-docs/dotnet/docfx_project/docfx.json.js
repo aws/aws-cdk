@@ -26,7 +26,6 @@ console.log(JSON.stringify({
       }
     ],
     "dest": process.env.OUTPUTDIR,
-    "template": ["default", "dotnet"],
     "postProcessors": [],
     "markdownEngineName": "markdig",
     "noLangKeyword": false,

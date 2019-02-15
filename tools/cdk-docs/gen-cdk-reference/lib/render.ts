@@ -7,6 +7,7 @@ const BADGE_REQUIRED = '![Required](https://img.shields.io/badge/-Required-impor
 export interface RenderingOptions {
   javadocPath?: string;
   dotnetPath?: string;
+  typescriptPath?: string;
 }
 
 export class Rendering {
@@ -23,6 +24,7 @@ export class Rendering {
 
   public assemblyOverview(assembly: jsiiReflect.Assembly, id: string): Document {
     const preamble = [
+      this.typescriptLinkAssembly(assembly),
       this.javadocLinkAssembly(assembly),
       this.dotnetLinkAssembly(assembly),
       ''].join('\n');
@@ -35,6 +37,7 @@ export class Rendering {
     const properties = props.getProperties(true).sort(_propertyComparator);
 
     const markdown = [
+      this.typescriptLinkType(resource),
       this.javadocLinkType(resource),
       this.dotnetLinkType(resource),
       '',
@@ -88,11 +91,6 @@ export class Rendering {
     return this.javadocLink(javaName.replace(/\./g, '/') + '.html');
   }
 
-  private javadocLink(linkTarget: string) {
-    if (!this.opts.javadocPath) { return ''; }
-    return `<a href="${this.opts.javadocPath}/index.html?${linkTarget}"><img src="/img/java32.png" class="lang-icon"> JavaDoc</a>`;
-  }
-
   private dotnetLinkAssembly(assembly: jsiiReflect.Assembly) {
     const name = dotnetPackageName(assembly);
     return name && this.dotnetLink(name);
@@ -103,9 +101,29 @@ export class Rendering {
     return name && this.dotnetLink(name);
   }
 
+  private typescriptLinkAssembly(assembly: jsiiReflect.Assembly) {
+    const name = assembly.name;
+    return name && this.typescriptLink(name);
+  }
+
+  private typescriptLinkType(type: jsiiReflect.Type) {
+    const name = type.fqn;
+    return name && this.typescriptLink(name);
+  }
+
+  private javadocLink(linkTarget: string) {
+    if (!this.opts.javadocPath) { return ''; }
+    return `<a href="${this.opts.javadocPath}/index.html?${linkTarget}"><img src="/img/java32.png" class="lang-icon"> JavaDoc</a>`;
+  }
+
   private dotnetLink(linkTarget: string) {
     if (!this.opts.dotnetPath) { return ''; }
     return `<a href="${this.opts.dotnetPath}/api/${linkTarget}.html"><img src="/img/dotnet32.png" class="lang-icon"> .NET Docs</a>`;
+  }
+
+  private typescriptLink(linkTarget: string) {
+    if (!this.opts.typescriptPath) { return ''; }
+    return `<a href="${this.opts.typescriptPath}/api/${linkTarget}.html"><img src="/img/typescript32.png" class="lang-icon"> TypeScript Docs</a>`;
   }
 }
 

@@ -23,6 +23,7 @@ export async function main() {
   const render = new Rendering({
     javadocPath: args.java,
     dotnetPath: args.dotnet,
+    typescriptPath: args.typescript,
   });
 
   // load all JSII from all dependencies

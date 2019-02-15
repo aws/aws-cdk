@@ -1,8 +1,13 @@
 #!/bin/bash
 set -euo pipefail
+
+absname() {
+    echo $(cd $(dirname $1) && pwd)/$(basename $1)
+}
+
 scriptdir=$(cd $(dirname $0) && pwd)
 rootdir=$1
-outdir="$2"
+outdir=$(absname $2)
 
 if [[ -d $outdir ]]; then
     echo "TypeScript directory already exists; not rebuilding to save time." >&2
@@ -15,21 +20,14 @@ if ! type mono > /dev/null; then
     exit 1
 fi
 
-if [[ ! -f $scriptdir/../docfx/docfx.exe ]]; then
-    echo "DocFx not symlinked. Not building TypeScript docs." >&2
-    exit 1
-fi
-
 cd $scriptdir
 
 [[ -d node_modules ]] || npm install
 
-tmpdir=$(mktemp -d)
-trap "rm -rf $tmpdir" EXIT
-
-absname() {
-    echo $(cd $(dirname $1) && pwd)/$(basename $1)
-}
+temproot=$(dirname $(mktemp -u))
+tmpdir=$temproot/typescript
+rm -rf $tmpdir
+mkdir -p $tmpdir
 
 # extract_docs TARBALL JSONDIR
 extract_docs() {
@@ -62,32 +60,21 @@ EOF
     )
 }
 
-# Collect API jsons to $tmpdir/api
+# Collect API jsons to $tmpdir/tsapi
 mkdir -p $tmpdir/api
 for tarball in $(find $1 -name \*.tgz); do
-    extract_docs $tarball $tmpdir/api
+    extract_docs $tarball $tmpdir/tsapi
 done
 
 # Convert API jsons to DocFX YAMLs
 mkdir -p $tmpdir/yaml
-$scriptdir/node_modules/.bin/api-documenter yaml -i $tmpdir/api -o $tmpdir/yaml
+$scriptdir/node_modules/.bin/api-documenter yaml -i $tmpdir/tsapi -o $tmpdir/yaml
 
 # Convert YAMLs to a reference
 (
     cd $tmpdir
-    cat <<EOF > docfx.json
-{
-  "build": {
-    "content": [
-      {
-        "files": ["**/*.yml"],
-        "src": "yaml",
-        "dest": "api"
-      }
-    ],
-    "dest": "$outdir"
-  }
-}
-EOF
-    mono $scriptdir/../docfx/docfx.exe build
+
+    export OUTPUTDIR=$outdir
+    $scriptdir/../docfx/docfx-prepare $scriptdir/docfx_project
+    $scriptdir/../docfx/docfx-build
 )

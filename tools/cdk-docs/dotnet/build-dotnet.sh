@@ -50,5 +50,5 @@ chmod -R 0755 $pkgdir
 
     # Extract metadata
     $scriptdir/../docfx/docfx metadata
-    $scriptdir/../docfx/docfx build
+    $scriptdir/../docfx/docfx-build
 )
