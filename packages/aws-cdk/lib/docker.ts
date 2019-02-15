@@ -18,43 +18,69 @@ import { PleaseHold } from './util/please-hold';
  *
  * As a workaround, we calculate our own digest over parts of the manifest that
  * are unlikely to change, and tag based on that.
+ *
+ * When running in CI, we pull the latest image first and use it as cache for
+ * the build. CI is detected by the presence of the `CI` environment variable.
  */
 export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
   debug(' 👑  Preparing Docker image asset:', asset.path);
 
   const buildHold = new PleaseHold(` ⌛ Building Docker image for ${asset.path}; this may take a while.`);
   try {
+    const ecr = await toolkitInfo.prepareEcrRepository(asset.id);
+    const latest = `${ecr.repositoryUri}:latest`;
+
+    let loggedIn = false;
+
+    // In CI we try to pull latest first
+    if (process.env.CI) {
+      await dockerLogin(toolkitInfo);
+      loggedIn = true;
+
+      try {
+        await shell(['docker', 'pull', latest]);
+      } catch (e) {
+        debug('Failed to pull latest image from ECR repository');
+      }
+    }
+
     buildHold.start();
 
-    const command = ['docker',
+    const baseCommand = ['docker',
       'build',
       '--quiet',
       asset.path];
+    const command = process.env.CI
+      ? [...baseCommand, '--cache-from', latest] // This does not fail if latest is not available
+      : baseCommand;
     const imageId = (await shell(command, { quiet: true })).trim();
+
     buildHold.stop();
 
     const tag = await calculateImageFingerprint(imageId);
 
-    debug(` ⌛  Image has tag ${tag}, preparing ECR repository`);
-    const ecr = await toolkitInfo.prepareEcrRepository(asset.id, tag);
+    debug(` ⌛  Image has tag ${tag}, checking ECR repository`);
+    const imageExists = await toolkitInfo.checkEcrImage(ecr.repositoryName, tag);
 
-    if (ecr.alreadyExists) {
+    if (imageExists) {
       debug(' 👑  Image already uploaded.');
     } else {
       // Login and push
       debug(` ⌛  Image needs to be uploaded first.`);
 
-      await shell(['docker', 'login',
-        '--username', ecr.username,
-        '--password', ecr.password,
-        ecr.endpoint]);
+      if (!loggedIn) { // We could be already logged in if in CI
+        await dockerLogin(toolkitInfo);
+      }
 
       const qualifiedImageName = `${ecr.repositoryUri}:${tag}`;
+
       await shell(['docker', 'tag', imageId, qualifiedImageName]);
+      await shell(['docker', 'tag', imageId, latest]); // Tag with `latest` also
 
       // There's no way to make this quiet, so we can't use a PleaseHold. Print a header message.
       print(` ⌛ Pusing Docker image for ${asset.path}; this may take a while.`);
       await shell(['docker', 'push', qualifiedImageName]);
+      await shell(['docker', 'push', latest]);
       debug(` 👑  Docker image for ${asset.path} pushed.`);
     }
 
@@ -70,6 +96,17 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
   } finally {
     buildHold.stop();
   }
+}
+
+/**
+ * Get credentials from ECR and run docker login
+ */
+async function dockerLogin(toolkitInfo: ToolkitInfo) {
+  const credentials = await toolkitInfo.getEcrCredentials();
+  await shell(['docker', 'login',
+  '--username', credentials.username,
+  '--password', credentials.password,
+  credentials.endpoint]);
 }
 
 /**
@@ -94,6 +131,9 @@ async function calculateImageFingerprint(imageId: string) {
 
   // Metadata that has no bearing on the image contents
   delete manifest.Created;
+
+  // Parent can change when using --cache-from in CI
+  delete manifest.Parent;
 
   // We're interested in the image itself, not any running instaces of it
   delete manifest.Container;
