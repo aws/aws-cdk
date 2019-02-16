@@ -44,7 +44,7 @@ export class SecretString extends cdk.DynamicReference {
   /**
    * Return the full value of the secret
    */
-  public get value(): string {
+  public get stringValue(): string {
     return this.resolveStringForJsonKey('');
   }
 

@@ -143,6 +143,15 @@ const uniqueTests = {
     test.deepEqual(val1, 'FoobarB00mHelloWorldHorrayHorray640E99FB');
     test.deepEqual(val2, 'FoobarB00mHelloWorldHorrayHorray744334FD');
     test.done();
+  },
+
+  'non-alphanumeric characters are removed even if the ID has only one component'(test: Test) {
+    const scheme = new HashedAddressingScheme();
+    const val1 = scheme.allocateAddress([ 'Foo-bar' ]);
+
+    // same human part, different hash
+    test.deepEqual(val1, 'Foobar');
+    test.done();
   }
 };
 

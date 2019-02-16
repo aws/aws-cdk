@@ -25,7 +25,7 @@ export interface DynamicReferenceProps {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html
  */
 export class DynamicReference extends Construct {
-  private readonly _value: string;
+  private _value: string;
 
   constructor(scope: Construct, id: string, props: DynamicReferenceProps) {
     super(scope, id);
@@ -36,7 +36,7 @@ export class DynamicReference extends Construct {
   /**
    * The value of this dynamic reference
    */
-  public get value(): string {
+  public get stringValue(): string {
     return this._value;
   }
 
