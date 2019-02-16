@@ -61,7 +61,7 @@ export class DockerImageAsset extends cdk.Construct {
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);
 
     // parse repository name and tag from the parameter (<REPO_NAME>:<TAG>)
-    const components = cdk.Fn.split(':', imageNameParameter.valueAsString);
+    const components = cdk.Fn.split(':', imageNameParameter.stringValue);
     const repositoryName = cdk.Fn.select(0, components).toString();
     const imageTag = cdk.Fn.select(1, components).toString();
 
