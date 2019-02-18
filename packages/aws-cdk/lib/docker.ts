@@ -73,19 +73,26 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
 
       if (!loggedIn) { // We could be already logged in if in CI
         await dockerLogin(toolkitInfo);
+        loggedIn = true;
       }
 
       const qualifiedImageName = `${ecr.repositoryUri}:${tag}`;
 
       await shell(['docker', 'tag', imageId, qualifiedImageName]);
-      await shell(['docker', 'tag', imageId, latest]); // Tag with `latest` also
 
       // There's no way to make this quiet, so we can't use a PleaseHold. Print a header message.
       print(` ⌛ Pusing Docker image for ${asset.path}; this may take a while.`);
       await shell(['docker', 'push', qualifiedImageName]);
-      await shell(['docker', 'push', latest]);
       debug(` 👑  Docker image for ${asset.path} pushed.`);
     }
+
+    if (!loggedIn) { // We could be already logged in if in CI or if image did not exist
+      await dockerLogin(toolkitInfo);
+    }
+
+    // Always tag and push latest
+    await shell(['docker', 'tag', imageId, latest]);
+    await shell(['docker', 'push', latest]);
 
     return [
       { ParameterKey: asset.imageNameParameter, ParameterValue: `${ecr.repositoryName}:${tag}` },
