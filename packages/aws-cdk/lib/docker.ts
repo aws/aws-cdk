@@ -20,9 +20,12 @@ import { PleaseHold } from './util/please-hold';
  * are unlikely to change, and tag based on that.
  *
  * When running in CI, we pull the latest image first and use it as cache for
- * the build. CI is detected by the presence of the `CI` environment variable.
+ * the build. CI is detected by the presence of the `CI` environment variable or
+ * the `--ci` command line option.
  */
-export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
+export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEntry,
+                                            toolkitInfo: ToolkitInfo,
+                                            ci?: boolean): Promise<CloudFormation.Parameter[]> {
   debug(' 👑  Preparing Docker image asset:', asset.path);
 
   const buildHold = new PleaseHold(` ⌛ Building Docker image for ${asset.path}; this may take a while.`);
@@ -33,7 +36,7 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
     let loggedIn = false;
 
     // In CI we try to pull latest first
-    if (process.env.CI) {
+    if (ci === true || (process.env.CI && ci !== false)) {
       await dockerLogin(toolkitInfo);
       loggedIn = true;
 
