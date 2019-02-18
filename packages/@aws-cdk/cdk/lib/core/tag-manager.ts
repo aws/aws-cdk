@@ -158,7 +158,7 @@ export class TagManager {
   }
 }
 
-export class StandardFormatter implements ITagFormatter {
+class StandardFormatter implements ITagFormatter {
   public renderTags(tags: ITag[], propertyTags: any): any {
     const cfnTags: CfnTag[] = [];
     for (const tag of tags) {
@@ -172,10 +172,10 @@ export class StandardFormatter implements ITagFormatter {
 interface AsgTag {
   key: string;
   value: string;
-  propagateAtLaunch?: boolean;
+  propagateAtLaunch: boolean;
 }
 
-export class AsgFormatter implements ITagFormatter {
+class AsgFormatter implements ITagFormatter {
   public renderTags(tags: ITag[], propertyTags: any): any {
     const cfnTags: AsgTag[] = [];
     for (const tag of tags) {
@@ -188,7 +188,7 @@ export class AsgFormatter implements ITagFormatter {
   }
 }
 
-export class MapFormatter implements ITagFormatter {
+class MapFormatter implements ITagFormatter {
   public renderTags(tags: ITag[], propertyTags: any): any {
     const cfnTags: {[key: string]: string} = {};
     for (const tag of tags) {
@@ -199,7 +199,7 @@ export class MapFormatter implements ITagFormatter {
   }
 }
 
-export class NoFormat implements ITagFormatter {
+class NoFormat implements ITagFormatter {
   public renderTags(_tags: ITag[], _propertyTags: any): any {
     return undefined;
   }
