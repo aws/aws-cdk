@@ -4,7 +4,7 @@
 ### Pull Request Checklist
 
 * [ ] Testing
-  - Unit test added
+  - Unit test added (prefer not to modify an existing test, otherwise, it's probably a breaking change)
   - __CLI change?:__ coordinate update of integration tests with team
   - __cdk-init template change?:__ coordinated update of integration tests with team
 * [ ] Docs
