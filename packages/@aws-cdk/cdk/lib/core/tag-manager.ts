@@ -1,9 +1,5 @@
 import { TagType } from '../cloudformation/resource';
-
-/**
- * Properties Tags is a dictionary of tags as strings
- */
-type Tags = { [key: string]: {value: string, props: TagProps }};
+import { CfnTag } from '../cloudformation/tag';
 
 /**
  * Properties for a tag
@@ -44,16 +40,31 @@ export interface TagProps {
   priority?: number;
 }
 
+export interface ITag {
+  key: string;
+  value: string;
+  props: TagProps;
+}
+
+export interface ITagFormatter {
+  renderTags(tags: ITag[], propertyTags: any): any;
+}
+
 /**
  * TagManager facilitates a common implementation of tagging for Constructs.
  */
 export class TagManager {
 
-  private readonly tags: Tags = {};
-
+  private readonly tags: ITag[] = [];
+  private readonly tagSet: {[key: string]: number} = {};
   private readonly removedTags: {[key: string]: number} = {};
+  private readonly tagType: TagType;
+  private readonly resourceTypeName: string;
 
-  constructor(private readonly tagType: TagType, private readonly resourceTypeName: string) { }
+  constructor(tagType: TagType, resourceTypeName: string) {
+    this.tagType = tagType;
+    this.resourceTypeName = resourceTypeName;
+  }
 
   /**
    * Adds the specified tag to the array of tags
@@ -70,7 +81,8 @@ export class TagManager {
       return;
     }
     tagProps.applyToLaunchedInstances = tagProps.applyToLaunchedInstances !== false;
-    this.tags[key] = { value, props: tagProps };
+    const index = this.tags.push({key, value, props: tagProps});
+    this.tagSet[key] = index - 1;
     // ensure nothing is left in removeTags
     delete this.removedTags[key];
   }
@@ -87,7 +99,7 @@ export class TagManager {
       // tag is blocked by a remove
       return;
     }
-    delete this.tags[key];
+    delete this.tagSet[key];
     this.removedTags[key] = priority;
   }
 
@@ -95,37 +107,28 @@ export class TagManager {
    * Renders tags into the proper format based on TagType
    */
   public renderTags(propertyTags?: any): any {
-    this.mergeFrom(propertyTags);
-    const keys = Object.keys(this.tags);
+    const formatter = this.tagFormatter();
+    const tags: ITag[] = [];
+    for (const key of Object.keys(this.tagSet)) {
+      tags.push(this.tags[this.tagSet[key]]);
+    }
+    return formatter.renderTags(tags, propertyTags);
+  }
+
+  private tagFormatter(): ITagFormatter {
     switch (this.tagType) {
-      case TagType.Standard: {
-        const tags: Array<{key: string, value: string}> = [];
-        for (const key of keys) {
-          tags.push({key, value: this.tags[key].value});
-        }
-        return tags.length === 0 ? undefined : tags;
-      }
-      case TagType.AutoScalingGroup: {
-        const tags: Array<{key: string, value: string, propagateAtLaunch: boolean}> = [];
-        for (const key of keys) {
-          tags.push({
-            key,
-            value: this.tags[key].value,
-            propagateAtLaunch: this.tags[key].props.applyToLaunchedInstances !== false}
-          );
-        }
-        return tags.length === 0 ? undefined : tags;
-      }
-      case TagType.Map: {
-        const tags: {[key: string]: string} = {};
-        for (const key of keys) {
-          tags[key] = this.tags[key].value;
-        }
-        return Object.keys(tags).length === 0 ? undefined : tags;
-      }
-      case TagType.NotTaggable: {
-        return undefined;
-      }
+      case TagType.AutoScalingGroup:
+        return new AsgFormatter();
+        break;
+      case TagType.Map:
+        return new MapFormatter();
+        break;
+      case TagType.Standard:
+        return new StandardFormatter();
+        break;
+      default:
+        return new NoFormat();
+        break;
     }
   }
 
@@ -133,6 +136,7 @@ export class TagManager {
     const include = props.includeResourceTypes || [];
     const exclude = props.excludeResourceTypes || [];
     const priority = props.priority === undefined ? 0 : props.priority;
+
     if (exclude.length !== 0 &&
       exclude.indexOf(this.resourceTypeName) !== -1) {
       return false;
@@ -141,9 +145,10 @@ export class TagManager {
       include.indexOf(this.resourceTypeName) === -1) {
       return false;
     }
-    if (this.tags[key]) {
-      if (this.tags[key].props.priority !== undefined) {
-        return priority >= this.tags[key].props.priority!;
+    if (this.tagSet[key] >= 0) {
+      const tag = this.tags[this.tagSet[key]];
+      if (tag.props.priority !== undefined) {
+        return priority >= tag.props.priority!;
       }
     }
     if (this.removedTags[key]) {
@@ -151,45 +156,65 @@ export class TagManager {
     }
     return true;
   }
+}
 
-  private mergeFrom(propertyTags: any): void {
-    if (propertyTags === undefined) {
-      return;
+export class StandardFormatter implements ITagFormatter {
+  public renderTags(tags: ITag[], propertyTags: any): any {
+    const cfnTags: CfnTag[] = [];
+    for (const tag of tags) {
+      cfnTags.push({key: tag.key, value: tag.value});
     }
-    const keys = Object.keys(this.tags);
-    switch (this.tagType) {
-      case TagType.Standard: {
-        if (Array.isArray(propertyTags)) {
-          for (const tag of propertyTags) {
-            if (!keys.includes(tag.key)) {
-              this.setTag(tag.key, tag.value);
-            }
-          }
-        } else {
-          throw new Error(`${this.resourceTypeName} expects a tags array of key value pairs, received [ ${JSON.stringify(propertyTags)} ]`);
-        }
-        break;
-      }
-      case TagType.AutoScalingGroup: {
-        if (Array.isArray(propertyTags)) {
-          for (const tag of propertyTags) {
-            if (!keys.includes(tag.key)) {
-              this.setTag(tag.key, tag.value, {applyToLaunchedInstances: tag.propagateAtLaunch});
-            }
-          }
-        } else {
-          throw new Error(`${this.resourceTypeName} expects a tags array of key value pairs, received [ ${JSON.stringify(propertyTags)} ]`);
-        }
-        break;
-      }
-      case TagType.Map: {
-        for (const key of Object.keys(propertyTags)) {
-          if (!keys.includes(key)) {
-            this.setTag(key, propertyTags[key]);
-          }
-        }
-        break;
-      }
-    }
+    const finalTags = mergeTags(propertyTags || [], cfnTags);
+    return finalTags.length === 0 ? undefined : finalTags;
   }
+}
+
+interface AsgTag {
+  key: string;
+  value: string;
+  propagateAtLaunch?: boolean;
+}
+
+export class AsgFormatter implements ITagFormatter {
+  public renderTags(tags: ITag[], propertyTags: any): any {
+    const cfnTags: AsgTag[] = [];
+    for (const tag of tags) {
+      cfnTags.push({key: tag.key,
+        value: tag.value,
+        propagateAtLaunch: tag.props.applyToLaunchedInstances !== false});
+    }
+    const finalTags = mergeTags(propertyTags || [], cfnTags);
+    return finalTags.length === 0 ? undefined : finalTags;
+  }
+}
+
+export class MapFormatter implements ITagFormatter {
+  public renderTags(tags: ITag[], propertyTags: any): any {
+    const cfnTags: {[key: string]: string} = {};
+    for (const tag of tags) {
+      cfnTags[tag.key] = tag.value;
+    }
+    const finalTags = mergeTags(propertyTags || {}, cfnTags);
+    return Object.keys(finalTags).length === 0 ? undefined : finalTags;
+  }
+}
+
+export class NoFormat implements ITagFormatter {
+  public renderTags(_tags: ITag[], _propertyTags: any): any {
+    return undefined;
+  }
+}
+
+function mergeTags(target: any, source: any): any {
+  if (Array.isArray(target) && Array.isArray(source)) {
+    const result = [...source];
+    const keys = result.map( (tag) => (tag.key) );
+    result.push(...target.filter( (tag) => (!keys.includes(tag.key))));
+    return result;
+  }
+  if (typeof(target) === 'object' && typeof(source) === 'object' &&
+    !Array.isArray(target) && !Array.isArray(source)) {
+    return Object.assign(target, source);
+  }
+  throw new Error(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must both be string maps or arrays`);
 }

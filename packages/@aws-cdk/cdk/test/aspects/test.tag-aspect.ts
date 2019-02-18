@@ -137,7 +137,26 @@ export = {
       properties: {
         tags: [
           {key: 'cfn', value: 'is cool'},
+          {key: 'aspects', value: 'overwrite'},
         ],
+      },
+    });
+    const asgResource = new AsgTaggableResource(aspectBranch, 'FakeAsg', {
+      type: 'AWS::Fake::Thing',
+      properties: {
+        tags: [
+          {key: 'cfn', value: 'is cool', propagateAtLaunch: true},
+          {key: 'aspects', value: 'overwrite'},
+        ],
+      },
+    });
+    const mapTaggable = new MapTaggableResource(aspectBranch, 'FakeSam', {
+      type: 'AWS::Fake::Thing',
+      properties: {
+        tags: {
+          cfn: 'is cool',
+          aspects: 'overwrite',
+        },
       },
     });
     const cfnBranch = new TaggableResource(root, 'FakeBranchB', {
@@ -150,8 +169,46 @@ export = {
     });
     aspectBranch.node.apply(new Tag('aspects', 'rule'));
     root.node.prepareTree();
-    test.deepEqual(aspectBranch.tags.renderTags(), [{key: 'aspects', value: 'rule'}, {key: 'cfn', value: 'is cool'}]);
+    test.deepEqual(aspectBranch.testProperties().tags, [{key: 'aspects', value: 'rule'}, {key: 'cfn', value: 'is cool'}]);
+    test.deepEqual(asgResource.testProperties().tags, [
+      {key: 'aspects', value: 'rule', propagateAtLaunch: true},
+      {key: 'cfn', value: 'is cool', propagateAtLaunch: true}
+    ]);
+    test.deepEqual(mapTaggable.testProperties().tags, {
+      aspects: 'rule',
+      cfn: 'is cool',
+    });
     test.deepEqual(cfnBranch.testProperties().tags, [{key: 'cfn', value: 'is cool'}]);
     test.done();
+  },
+  'when invalid tag properties are passed from L1s': {
+    'map passed instead of array it raises'(test: Test) {
+      const root = new Stack();
+      new TaggableResource(root, 'FakeBranchA', {
+        type: 'AWS::Fake::Thing',
+        properties: {
+          tags: {
+            cfn: 'is cool',
+            aspects: 'overwrite',
+          },
+        },
+      });
+      test.throws(() => root.node.prepareTree());
+      test.done();
+    },
+    'if array is passed instead of map it raises'(test: Test) {
+      const root = new Stack();
+      new MapTaggableResource(root, 'FakeSam', {
+        type: 'AWS::Fake::Thing',
+        properties: {
+          tags: [
+            {key: 'cfn', value: 'is cool', propagateAtLaunch: true},
+            {key: 'aspects', value: 'overwrite'},
+          ],
+        },
+      });
+      test.throws(() => root.node.prepareTree());
+      test.done();
+    },
   },
 };

@@ -79,6 +79,9 @@ export = {
     mgr.setTag('key', 'newVal', {
       priority: 1,
     });
+    test.deepEqual(mgr.renderTags(), [
+      {key: 'key', value: 'myVal'},
+    ]);
     mgr.removeTag('key', {priority: 1});
     test.deepEqual(mgr.renderTags(), [
       {key: 'key', value: 'myVal'},

@@ -208,10 +208,10 @@ export class Resource extends Referenceable {
     try {
       // merge property overrides onto properties and then render (and validate).
       const tags = Resource.isTaggable(this) ?
-        {tags: this.tags.renderTags(this.properties.tags)} : {tags: undefined};
+        this.tags.renderTags(this.node.resolve(this.properties.tags)) : undefined ;
       const properties = this.renderProperties(
         deepMerge(
-          deepMerge(this.properties || { }, tags || {}),
+          deepMerge(this.properties || { }, {tags}),
           this.untypedPropertyOverrides
         ));
 
@@ -260,9 +260,9 @@ export class Resource extends Referenceable {
 
 export enum TagType {
   Standard = 'StandardTag',
-    AutoScalingGroup = 'AutoScalingGroupTag',
-    Map = 'StringToStringMap',
-    NotTaggable = 'NotTaggable',
+  AutoScalingGroup = 'AutoScalingGroupTag',
+  Map = 'StringToStringMap',
+  NotTaggable = 'NotTaggable',
 }
 
 export interface ResourceOptions {
