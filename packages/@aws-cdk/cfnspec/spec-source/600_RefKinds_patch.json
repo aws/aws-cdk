@@ -1596,6 +1596,18 @@
         "description": "Set RefKind of AWS::EC2::VPCEndpointConnectionNotification to None"
       }
     },
+    "AWS::EC2::VPCEndpointService": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::VPCEndpointService to Id"
+      }
+    },
     "AWS::EC2::VPCEndpointServicePermissions": {
       "patch": {
         "operations": [
