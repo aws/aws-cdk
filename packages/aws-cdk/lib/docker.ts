@@ -132,9 +132,6 @@ async function calculateImageFingerprint(imageId: string) {
   // Metadata that has no bearing on the image contents
   delete manifest.Created;
 
-  // Parent can change when using --cache-from in CI
-  delete manifest.Parent;
-
   // We're interested in the image itself, not any running instaces of it
   delete manifest.Container;
   delete manifest.ContainerConfig;
