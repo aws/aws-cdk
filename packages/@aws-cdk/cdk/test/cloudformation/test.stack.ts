@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, Aws, Condition, Construct, Include, Output, Parameter, Resource, Stack, Token } from '../../lib';
+import { App, Condition, Construct, Include, Output, Parameter, Resource, ScopedAws, Stack, Token } from '../../lib';
 
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
@@ -156,7 +156,7 @@ export = {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
-    const account1 = new Aws(stack1).accountId;
+    const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN - used in another stack
@@ -192,7 +192,7 @@ export = {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
-    const account1 = new Aws(stack1).accountId;
+    const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN - used in another stack
@@ -222,11 +222,36 @@ export = {
     test.done();
   },
 
+  'Cross-stack use of Region returns nonscoped intrinsic'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another stack
+    new Output(stack2, 'DemOutput', { value: stack1.region });
+
+    // THEN
+    // Need to do this manually now, since we're in testing mode. In a normal CDK app,
+    // this happens as part of app.run().
+    app.node.prepareTree();
+
+    test.deepEqual(stack2.toCloudFormation(), {
+      Outputs: {
+        DemOutput: {
+          Value: { Ref: 'AWS::Region' },
+        }
+      }
+    });
+
+    test.done();
+  },
+
   'cross-stack references in strings work'(test: Test) {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
-    const account1 = new Aws(stack1).accountId;
+    const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN - used in another stack
@@ -251,9 +276,9 @@ export = {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
-    const account1 = new Aws(stack1).accountId;
+    const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
-    const account2 = new Aws(stack2).accountId;
+    const account2 = new ScopedAws(stack2).accountId;
 
     // WHEN
     new Parameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
@@ -270,7 +295,7 @@ export = {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
-    const account1 = new Aws(stack1).accountId;
+    const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN
@@ -288,7 +313,7 @@ export = {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' }});
-    const account1 = new Aws(stack1).accountId;
+    const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2', { env: { account: '123456789012', region: 'es-norst-2' }});
 
     // WHEN

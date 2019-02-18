@@ -23,7 +23,7 @@ const sourceStage = {
 };
 
 const role = new iam.Role(stack, 'ActionRole', {
-  assumedBy: new iam.AccountPrincipal(new cdk.Aws().accountId)
+  assumedBy: new iam.AccountPrincipal(cdk.Aws.accountId)
 });
 role.addToPolicy(new iam.PolicyStatement()
   .addAction('sqs:*')

@@ -412,7 +412,7 @@ export class Table extends Construct {
       return;
     }
     principal.addToPolicy(new iam.PolicyStatement()
-      .addResources(this.tableArn, new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : new cdk.Aws().noValue).toString())
+      .addResources(this.tableArn, new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : cdk.Aws.noValue).toString())
       .addActions(...actions));
   }
 

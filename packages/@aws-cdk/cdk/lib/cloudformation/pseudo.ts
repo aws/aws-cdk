@@ -10,6 +10,49 @@ import { CfnReference } from './cfn-tokens';
  * values can be obtained as properties from an scoped object.
  */
 export class Aws {
+  private constructor() {
+  }
+
+  public static get accountId(): string {
+    return new AwsAccountId(undefined).toString();
+  }
+
+  public static get urlSuffix(): string {
+    return new AwsURLSuffix(undefined).toString();
+  }
+
+  public static get notificationArns(): string[] {
+    return new AwsNotificationARNs(undefined).toList();
+  }
+
+  public static get partition(): string {
+    return new AwsPartition(undefined).toString();
+  }
+
+  public static get region(): string {
+    return new AwsRegion(undefined).toString();
+  }
+
+  public static get stackId(): string {
+    return new AwsStackId(undefined).toString();
+  }
+
+  public static get stackName(): string {
+    return new AwsStackName(undefined).toString();
+  }
+
+  public static get noValue(): string {
+    return new AwsNoValue().toString();
+  }
+}
+
+/**
+ * Accessor for scoped pseudo parameters
+ *
+ * These pseudo parameters are anchored to a stack somewhere in the construct
+ * tree, and their values will be exported automatically.
+ */
+export class ScopedAws {
   constructor(private readonly scope?: Construct) {
   }
 
@@ -39,10 +82,6 @@ export class Aws {
 
   public get stackName(): string {
     return new AwsStackName(this.scope).toString();
-  }
-
-  public get noValue(): string {
-    return new AwsNoValue().toString();
   }
 }
 
