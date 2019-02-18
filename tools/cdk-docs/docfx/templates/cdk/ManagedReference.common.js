@@ -192,6 +192,7 @@ function handleItem(vm, gitContribute, gitUrlPattern) {
 
   // set to null incase mustache looks up
   vm.summary = vm.summary || null;
+  vm.firstSentence = vm.summary && firstSentence(vm.summary);
   vm.remarks = vm.remarks || null;
   vm.conceptual = vm.conceptual || null;
   vm.syntax = vm.syntax || null;
@@ -253,4 +254,9 @@ function handleItem(vm, gitContribute, gitUrlPattern) {
 
     return array;
   }
+}
+
+function firstSentence(summary) {
+  //Return first <p> tag.
+  return /<p.*<\/p>/.exec(summary)[0];
 }

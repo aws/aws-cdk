@@ -119,3 +119,8 @@
 {{#example}}
 {{{.}}}
 {{/example}}
+<h3 id="{{id}}_synopsis">Synopsis</h3>
+{{#children}}
+  <h4>{{>partials/classSubtitle}}</h4>
+  {{>partials/childtable}}
+{{/children}}

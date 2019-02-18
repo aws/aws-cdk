@@ -1,0 +1,70 @@
+/**
+ * Make a nice sparse table
+ */
+.element-table { width: 100%; }
+.element-table td { padding: 0.6em 0.2em; }
+.element-table tr {
+    border-top: solid 1px #ddd;
+}
+
+.element-table td:first-child {
+    width: 30%;
+}
+
+/**
+ * Colors
+ */
+.navbar-default {
+    background: #eee !important;
+    border-bottom: solid 1px #ddd !important;
+}
+
+.sidenav, .sidetoc, .sidefilter, .toc {
+    background: white !important;
+}
+
+/**
+ * Needs color now that the sidebar doesn't have one
+ */
+.toc-filter, .toc-filter input {
+    background: #eee !important;
+}
+
+.navbar-inverse { background: #592C3E; }
+/*
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:focus, .navbar-inverse .navbar-nav>.active>a:hover {
+    background: #DEDBD8;
+    color: black;
+    border-bottom: solid 1px #DEDBD8;
+}
+
+*/
+
+article h4 {
+    border-bottom: 0px !important;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 0.5em;
+}
+
+.indent {
+    margin-left: 1em;
+}
+
+h5 { font-weight: bold; }
+
+dl dd, dl dt {
+    margin: 1em 0em;
+}
+
+dl .parametername {
+    font-style: normal;
+    padding: 0.3em 1em;
+    margin-right: 0.8em;
+    background: #eee;
+}
+
+dl .parametertype {
+    font-weight: normal;
+    color: #666;
+}

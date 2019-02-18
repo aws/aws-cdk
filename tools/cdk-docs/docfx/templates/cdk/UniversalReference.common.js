@@ -70,6 +70,7 @@ function handleItem(vm, gitContribute, gitUrlPattern) {
 
   // set to null incase mustache looks up
   vm.summary = vm.summary || null;
+  vm.firstSentence = vm.summary && firstSentence(vm.summary);
   vm.remarks = vm.remarks || null;
   vm.conceptual = vm.conceptual || null;
   vm.syntax = vm.syntax || null;
@@ -96,6 +97,10 @@ function handleItem(vm, gitContribute, gitUrlPattern) {
       syntax.return = joinType(syntax.return);
     }
   }
+}
+
+function firstSentence(summary) {
+  return summary.trim().split('\n\n')[0];
 }
 
 function joinType(parameter) {

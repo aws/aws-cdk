@@ -19,52 +19,27 @@
 <a id="{{id}}" data-uid="{{uid}}"></a>
 {{/overload}}
 <h4 id="{{id}}" data-uid="{{uid}}">{{name.0.value}}</h4>
+<div class="indent">
+
 <div class="markdown level1 summary">{{{summary}}}</div>
 <div class="markdown level1 conceptual">{{{conceptual}}}</div>
-<h5 class="decalaration">{{__global.declaration}}</h5>
 {{#syntax}}
 <div class="codewrapper">
   <pre><code class="lang-{{_lang}} hljs">{{syntax.content.0.value}}</code></pre>
 </div>
 {{#parameters.0}}
 <h5 class="parameters">{{__global.parameters}}</h5>
-<table class="table table-bordered table-striped table-condensed">
-  <thead>
-    <tr>
-      <th>{{__global.type}}</th>
-      <th>{{__global.name}}</th>
-      <th>{{__global.description}}</th>
-    </tr>
-  </thead>
-  <tbody>
-{{/parameters.0}}
+<dl>
 {{#parameters}}
-    <tr>
-      <td>{{{type.specName.0.value}}}</td>
-      <td><span class="parametername">{{{id}}}</span></td>
-      <td>{{{description}}}</td>
-    </tr>
+  <dt><span class="parametername">{{{id}}}</span> <span class="parametertype">{{{type.specName.0.value}}}</span></dt>
+  <dd>{{{description}}}</dd>
 {{/parameters}}
-{{#parameters.0}}
-  </tbody>
-</table>
+</dl>
 {{/parameters.0}}
 {{#return}}
 <h5 class="returns">{{__global.returns}}</h5>
-<table class="table table-bordered table-striped table-condensed">
-  <thead>
-    <tr>
-      <th>{{__global.type}}</th>
-      <th>{{__global.description}}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{{type.specName.0.value}}}</td>
-      <td>{{{description}}}</td>
-    </tr>
-  </tbody>
-</table>
+<p>{{{type.specName.0.value}}}</p>
+<p>{{{description}}}</p>
 {{/return}}
 {{#typeParameters.0}}
 <h5 class="typeParameters">{{__global.typeParameters}}</h5>
@@ -106,20 +81,8 @@
 {{/fieldValue}}
 {{#propertyValue}}
 <h5 class="propertyValue">{{__global.propertyValue}}</h5>
-<table class="table table-bordered table-striped table-condensed">
-  <thead>
-    <tr>
-      <th>{{__global.type}}</th>
-      <th>{{__global.description}}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{{type.specName.0.value}}}</td>
-      <td>{{{description}}}</td>
-    </tr>
-  </tbody>
-</table>
+<p>{{{type.specName.0.value}}}</p>
+<p>{{{description}}}</p>
 {{/propertyValue}}
 {{#eventType}}
 <h5 class="eventType">{{__global.eventType}}</h5>
@@ -189,6 +152,7 @@
 {{#seealso.0}}
 </div>
 {{/seealso.0}}
+</div> <!-- indent -->
 {{/children}}
 {{/children}}
 {{#implements.0}}
