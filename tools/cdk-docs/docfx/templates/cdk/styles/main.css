@@ -1,3 +1,9 @@
+@import url(../fonts/ember-font.css);
+body {
+  font-family: 'Amazon Ember', 'Open Sans', Helvetica, sans-serif;
+  font-size: 16px;
+}
+
 /**
  * Make a nice sparse table
  */
@@ -61,7 +67,7 @@ dl .parametername {
     font-style: normal;
     padding: 0.3em 1em;
     margin-right: 0.8em;
-    background: #eee;
+    background: #F6F6F6;
 }
 
 dl .parametertype {
