@@ -460,7 +460,7 @@ export interface CommonProjectProps {
    * Service Role to assume while running the build.
    * If not specified, a role will be created.
    */
-  role?: iam.Role;
+  role?: iam.IRole;
 
   /**
    * Encryption key to use to read and write artifacts
