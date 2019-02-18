@@ -20,7 +20,12 @@ import { PleaseHold } from './util/please-hold';
  * are unlikely to change, and tag based on that.
  *
  * When running in CI, we pull the latest image first and use it as cache for
- * the build. CI is detected by the presence of the `CI` environment variable or
+ * the build. Generally pulling will be faster than building, especially for
+ * Dockerfiles with lots of OS/code packages installation or changes only in
+ * the bottom layers. When running locally chances are that we already have
+ * layers cache available.
+ *
+ * CI is detected by the presence of the `CI` environment variable or
  * the `--ci` command line option.
  */
 export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEntry,
