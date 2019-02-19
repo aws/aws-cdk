@@ -247,7 +247,7 @@
                 "InputArtifacts": [],
                 "Name": "ApproveChanges",
                 "OutputArtifacts": [],
-                "RunOrder": 1
+                "RunOrder": 2
               },
               {
                 "ActionTypeId": {
@@ -264,7 +264,7 @@
                 "InputArtifacts": [],
                 "Name": "ExecuteChanges",
                 "OutputArtifacts": [],
-                "RunOrder": 1
+                "RunOrder": 3
               }
             ],
             "Name": "Deploy"
