@@ -41,7 +41,7 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
     let loggedIn = false;
 
     // In CI we try to pull latest first
-    if (ci === true || (process.env.CI && ci !== false)) {
+    if (ci) {
       await dockerLogin(toolkitInfo);
       loggedIn = true;
 
@@ -58,7 +58,7 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
       'build',
       '--quiet',
       asset.path];
-    const command = process.env.CI
+    const command = ci
       ? [...baseCommand, '--cache-from', latest] // This does not fail if latest is not available
       : baseCommand;
     const imageId = (await shell(command, { quiet: true })).trim();
