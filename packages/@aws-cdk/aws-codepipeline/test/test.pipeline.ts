@@ -50,6 +50,22 @@ export = {
     test.done();
   },
 
+  'Tokens can be used as physical names of the Pipeline'(test: Test) {
+    const stack = new cdk.Stack(undefined, 'StackName');
+
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineName: stack.stackName,
+    });
+
+    expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      "Name": {
+        "Ref": "AWS::StackName",
+      },
+    }));
+
+    test.done();
+  },
+
   'github action uses ThirdParty owner'(test: Test) {
     const stack = new cdk.Stack();
 
