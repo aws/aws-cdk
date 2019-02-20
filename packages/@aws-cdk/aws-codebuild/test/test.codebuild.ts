@@ -142,7 +142,7 @@ export = {
 
       const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'hello-cdk' });
 
-      const source = new codebuild.CodeCommitSource({ repository: repo });
+      const source = new codebuild.CodeCommitSource({ repository: repo, cloneDepth: 2 });
 
       new codebuild.Project(stack, 'MyProject', {
         source
@@ -282,6 +282,7 @@ export = {
               "CloneUrlHttp"
             ]
             },
+            "GitCloneDepth": 2,
             "Type": "CODECOMMIT"
           }
           }
