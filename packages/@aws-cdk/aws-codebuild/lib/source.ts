@@ -72,16 +72,47 @@ export class NoSource extends BuildSource {
 }
 
 /**
+ * The construction properties common to all build sources that are backed by Git.
+ */
+export interface GitBuildSourceProps extends BuildSourceProps {
+  /**
+   * The depth of history to download. Minimum value is 0.
+   * If this value is 0, greater than 25, or not provided,
+   * then the full history is downloaded with each build of the project.
+   */
+  cloneDepth?: number;
+}
+
+/**
+ * A common superclass of all build sources that are backed by Git.
+ */
+export abstract class GitBuildSource extends BuildSource {
+  private readonly cloneDepth?: number;
+
+  protected constructor(props: GitBuildSourceProps) {
+    super(props);
+
+    this.cloneDepth = props.cloneDepth;
+  }
+
+  public toSourceJSON(): CfnProject.SourceProperty {
+    const ret = super.toSourceJSON();
+    ret.gitCloneDepth = this.cloneDepth;
+    return ret;
+  }
+}
+
+/**
  * Construction properties for {@link CodeCommitSource}.
  */
-export interface CodeCommitSourceProps extends BuildSourceProps {
+export interface CodeCommitSourceProps extends GitBuildSourceProps {
   repository: codecommit.IRepository;
 }
 
 /**
  * CodeCommit Source definition for a CodeBuild project.
  */
-export class CodeCommitSource extends BuildSource {
+export class CodeCommitSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.CodeCommit;
   private readonly repo: codecommit.IRepository;
 
@@ -153,7 +184,7 @@ export class CodePipelineSource extends BuildSource {
 /**
  * Construction properties for {@link GitHubSource} and {@link GitHubEnterpriseSource}.
  */
-export interface GitHubSourceProps extends BuildSourceProps {
+export interface GitHubSourceProps extends GitBuildSourceProps {
   /**
    * The GitHub account/user that owns the repo.
    *
@@ -193,7 +224,7 @@ export interface GitHubSourceProps extends BuildSourceProps {
 /**
  * GitHub Source definition for a CodeBuild project.
  */
-export class GitHubSource extends BuildSource {
+export class GitHubSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.GitHub;
   private readonly httpsCloneUrl: string;
   private readonly oauthToken: cdk.Secret;
@@ -228,7 +259,7 @@ export class GitHubSource extends BuildSource {
 /**
  * Construction properties for {@link GitHubEnterpriseSource}.
  */
-export interface GitHubEnterpriseSourceProps extends BuildSourceProps {
+export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
   /**
    * The HTTPS URL of the repository in your GitHub Enterprise installation.
    */
@@ -250,8 +281,8 @@ export interface GitHubEnterpriseSourceProps extends BuildSourceProps {
 /**
  * GitHub Enterprise Source definition for a CodeBuild project.
  */
-export class GitHubEnterpriseSource extends BuildSource {
-  public readonly type: SourceType = SourceType.GitHubEnterPrise;
+export class GitHubEnterpriseSource extends GitBuildSource {
+  public readonly type: SourceType = SourceType.GitHubEnterprise;
   private readonly httpsCloneUrl: string;
   private readonly oauthToken: cdk.Secret;
   private readonly ignoreSslErrors?: boolean;
@@ -275,7 +306,7 @@ export class GitHubEnterpriseSource extends BuildSource {
 /**
  * Construction properties for {@link BitBucketSource}.
  */
-export interface BitBucketSourceProps extends BuildSourceProps {
+export interface BitBucketSourceProps extends GitBuildSourceProps {
   /**
    * The BitBucket account/user that owns the repo.
    *
@@ -294,7 +325,7 @@ export interface BitBucketSourceProps extends BuildSourceProps {
 /**
  * BitBucket Source definition for a CodeBuild project.
  */
-export class BitBucketSource extends BuildSource {
+export class BitBucketSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.BitBucket;
   private readonly httpsCloneUrl: any;
 
@@ -318,7 +349,7 @@ export enum SourceType {
   CodeCommit = 'CODECOMMIT',
   CodePipeline = 'CODEPIPELINE',
   GitHub = 'GITHUB',
-  GitHubEnterPrise = 'GITHUB_ENTERPRISE',
+  GitHubEnterprise = 'GITHUB_ENTERPRISE',
   BitBucket = 'BITBUCKET',
   S3 = 'S3',
 }
