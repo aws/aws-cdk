@@ -231,7 +231,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 const myApplication = new codedeploy.LambdaApplication(..);
 const func = new lambda.Function(..);
 const version = func.addVersion('1');
-const version1Alias = new lambda.Alias({
+const version1Alias = new lambda.Alias(this, 'alias', {
   aliasName: 'prod',
   version
 });
