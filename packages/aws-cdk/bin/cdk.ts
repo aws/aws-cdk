@@ -9,6 +9,7 @@ import yargs = require('yargs');
 
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
+import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';
 import { leftPad } from '../lib/api/util/string-manipulation';
 import { printSecurityDiff, printStackDiff, RequireApproval } from '../lib/diff';
@@ -106,7 +107,11 @@ async function initCommandLine() {
   await configuration.load();
   configuration.logDefaults();
 
-  const appStacks = new AppStacks(argv, configuration, aws);
+  const appStacks = new AppStacks({
+    verbose: argv.trace || argv.verbose,
+    ignoreErrors: argv.ignoreErrors,
+    strict: argv.strict,
+    configuration, aws, synthesizer: execProgram });
 
   const renames = parseRenames(argv.rename);
 
@@ -249,7 +254,10 @@ async function initCommandLine() {
                                outputDir: string|undefined,
                                json: boolean,
                                numbered: boolean): Promise<any> {
-    const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
+    // Only autoselect dependencies if it doesn't interfere with user request or output options
+    const autoSelectDependencies = !exclusively && outputDir !== undefined;
+
+    const stacks = await appStacks.selectStacks(stackNames, autoSelectDependencies ? ExtendedStackSelection.Upstream : ExtendedStackSelection.None);
     renames.validateSelectedStacks(stacks);
 
     if (doInteractive) {

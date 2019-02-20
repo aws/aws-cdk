@@ -1,14 +1,52 @@
 import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import minimatch = require('minimatch');
-import yargs = require('yargs');
 import contextproviders = require('../../context-providers');
 import { debug, error, print, warning } from '../../logging';
-import { Configuration } from '../../settings';
+import { Configuration, Settings } from '../../settings';
 import cdkUtil = require('../../util');
 import { SDK } from '../util/sdk';
 import { topologicalSort } from '../util/toposort';
-import { execProgram } from './exec';
+
+type Synthesizer = (aws: SDK, config: Settings) => Promise<cxapi.SynthesizeResponse>;
+
+export interface AppStacksProps {
+  /**
+   * Whether to be verbose
+   *
+   * @default false
+   */
+  verbose?: boolean;
+
+  /**
+   * Don't stop on error metadata
+   *
+   * @default false
+   */
+  ignoreErrors?: boolean;
+
+  /**
+   * Treat warnings in metadata as errors
+   *
+   * @default false
+   */
+  strict?: boolean;
+
+  /**
+   * Application configuration (settings and context)
+   */
+  configuration: Configuration;
+
+  /**
+   * AWS object (used by synthesizer and contextprovider)
+   */
+  aws: SDK;
+
+  /**
+   * Callback invoked to synthesize the actual stacks
+   */
+  synthesizer: Synthesizer;
+}
 
 /**
  * Routines to get stacks from an app
@@ -22,7 +60,7 @@ export class AppStacks {
    */
   private cachedResponse?: cxapi.SynthesizeResponse;
 
-  constructor(private readonly argv: yargs.Arguments, private readonly configuration: Configuration, private readonly aws: SDK) {
+  constructor(private readonly props: AppStacksProps) {
   }
 
   /**
@@ -76,7 +114,11 @@ export class AppStacks {
     }
 
     // Filter original array because it is in the right order
-    return stacks.filter(s => selectedStacks.has(s.name));
+    const selectedList = stacks.filter(s => selectedStacks.has(s.name));
+
+    // Only check selected stacks for errors
+    this.processMessages(selectedList);
+    return selectedList;
   }
 
   /**
@@ -112,32 +154,22 @@ export class AppStacks {
       return this.cachedResponse;
     }
 
-    const trackVersions: boolean = this.configuration.combined.get(['versionReporting']);
+    const trackVersions: boolean = this.props.configuration.combined.get(['versionReporting']);
 
     // We may need to run the cloud executable multiple times in order to satisfy all missing context
     while (true) {
-      const response: cxapi.SynthesizeResponse = await execProgram(this.aws, this.configuration.combined);
+      const response: cxapi.SynthesizeResponse = await this.props.synthesizer(this.props.aws, this.props.configuration.combined);
       const allMissing = cdkUtil.deepMerge(...response.stacks.map(s => s.missing));
 
       if (!cdkUtil.isEmpty(allMissing)) {
         debug(`Some context information is missing. Fetching...`);
 
-        await contextproviders.provideContextValues(allMissing, this.configuration.projectConfig, this.aws);
+        await contextproviders.provideContextValues(allMissing, this.props.configuration.projectConfig, this.props.aws);
 
         // Cache the new context to disk
-        await this.configuration.saveProjectConfig();
+        await this.props.configuration.saveProjectConfig();
 
         continue;
-      }
-
-      const { errors, warnings } = this.processMessages(response);
-
-      if (errors && !this.argv.ignoreErrors) {
-        throw new Error('Found errors');
-      }
-
-      if (this.argv.strict && warnings) {
-        throw new Error('Found warnings (--strict mode)');
       }
 
       if (trackVersions && response.runtime) {
@@ -181,10 +213,10 @@ export class AppStacks {
   /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */
-  private processMessages(stacks: cxapi.SynthesizeResponse): { errors: boolean, warnings: boolean } {
+  private processMessages(stacks: cxapi.SynthesizedStack[]) {
     let warnings = false;
     let errors = false;
-    for (const stack of stacks.stacks) {
+    for (const stack of stacks) {
       for (const id of Object.keys(stack.metadata)) {
         const metadata = stack.metadata[id];
         for (const entry of metadata) {
@@ -204,13 +236,20 @@ export class AppStacks {
         }
       }
     }
-    return { warnings, errors };
+
+    if (errors && !this.props.ignoreErrors) {
+      throw new Error('Found errors');
+    }
+
+    if (this.props.strict && warnings) {
+      throw new Error('Found warnings (--strict mode)');
+    }
   }
 
   private printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
     logFn(`[${prefix} at ${id}] ${entry.data}`);
 
-    if (this.argv.trace || this.argv.verbose) {
+    if (this.props.verbose) {
       logFn(`  ${entry.trace.join('\n  ')}`);
     }
   }
