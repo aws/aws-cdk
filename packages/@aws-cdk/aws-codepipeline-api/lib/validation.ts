@@ -1,3 +1,4 @@
+import cdk = require('@aws-cdk/cdk');
 import { ActionCategory } from "./action";
 import { Artifact } from "./artifact";
 
@@ -44,6 +45,11 @@ const VALID_IDENTIFIER_REGEX = /^[a-zA-Z0-9.@_-]{1,100}$/;
  * This can be used to validate the name of all components of a pipeline.
  */
 export function validateName(thing: string, name: string | undefined) {
+  // name could be a Token - in that case, skip validation altogether
+  if (cdk.unresolved(name)) {
+    return;
+  }
+
   if (name !== undefined && !VALID_IDENTIFIER_REGEX.test(name)) {
     throw new Error(`${thing} name must match regular expression: ${VALID_IDENTIFIER_REGEX.toString()}, got '${name}'`);
   }
