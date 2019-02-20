@@ -326,7 +326,7 @@ async function initCommandLine() {
                            toolkitStackName: string,
                            roleArn: string | undefined,
                            requireApproval: RequireApproval,
-                           ci?: boolean) {
+                           ci: boolean) {
     if (requireApproval === undefined) { requireApproval = RequireApproval.Broadening; }
 
     const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
