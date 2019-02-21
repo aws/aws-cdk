@@ -40,30 +40,86 @@ export interface TagProps {
   priority?: number;
 }
 
-export interface ITag {
+interface Tag {
   key: string;
   value: string;
   props: TagProps;
 }
 
-export interface ITagFormatter {
-  renderTags(tags: ITag[], propertyTags: any): any;
+interface CfnAsgTag {
+  key: string;
+  value: string;
+  propagateAtLaunch?: boolean;
 }
 
+interface ITagFormatter {
+  renderTags(tags: Tag[], propertyTags: CfnAsgTag[] | {[key: string]: string}): any;
+}
+
+class StandardFormatter implements ITagFormatter {
+  public renderTags(tags: Tag[], propertyTags: any): any {
+    const cfnTags: CfnTag[] = [];
+    for (const tag of tags) {
+      cfnTags.push({key: tag.key, value: tag.value});
+    }
+    const finalTags = mergeTags(propertyTags || [], cfnTags);
+    return finalTags.length === 0 ? undefined : finalTags;
+  }
+}
+
+class AsgFormatter implements ITagFormatter {
+  public renderTags(tags: Tag[], propertyTags: any): any {
+    const cfnTags: CfnAsgTag[] = [];
+    for (const tag of tags) {
+      cfnTags.push({key: tag.key,
+        value: tag.value,
+        propagateAtLaunch: tag.props.applyToLaunchedInstances !== false});
+    }
+    const finalTags = mergeTags(propertyTags || [], cfnTags);
+    return finalTags.length === 0 ? undefined : finalTags;
+  }
+}
+
+class MapFormatter implements ITagFormatter {
+  public renderTags(tags: Tag[], propertyTags: {[key: string]: string}): any {
+    const cfnTags: {[key: string]: string} = {};
+    const propTags = propertyTags || {};
+    for (const tag of tags) {
+      cfnTags[tag.key] = tag.value;
+    }
+    if (Array.isArray(propertyTags) || typeof(propTags) !== 'object') {
+      throw new Error(`Invalid usage. This resource uses a String Map for tags not (${JSON.stringify(propertyTags)})`);
+    }
+    const finalTags = Object.assign(propTags, cfnTags);
+    return Object.keys(finalTags).length === 0 ? undefined : finalTags;
+  }
+}
+
+class NoFormat implements ITagFormatter {
+  public renderTags(_tags: Tag[], _propertyTags: any): any {
+    return undefined;
+  }
+}
+
+const TAG_FORMATTERS: {[key: string]: ITagFormatter} = {
+  [TagType.AutoScalingGroup]: new AsgFormatter(),
+  [TagType.Standard]: new StandardFormatter(),
+  [TagType.Map]: new MapFormatter(),
+  [TagType.NotTaggable]: new NoFormat(),
+};
 /**
  * TagManager facilitates a common implementation of tagging for Constructs.
  */
 export class TagManager {
 
-  private readonly tags: ITag[] = [];
-  private readonly tagSet: {[key: string]: number} = {};
-  private readonly removedTags: {[key: string]: number} = {};
-  private readonly tagType: TagType;
+  private readonly tags = new Map<string, {value: string, props: TagProps}>();
+  private readonly removedTags = new Map<string, number>();
+  private readonly tagFormatter: ITagFormatter;
   private readonly resourceTypeName: string;
 
   constructor(tagType: TagType, resourceTypeName: string) {
-    this.tagType = tagType;
     this.resourceTypeName = resourceTypeName;
+    this.tagFormatter = TAG_FORMATTERS[tagType];
   }
 
   /**
@@ -75,16 +131,15 @@ export class TagManager {
    */
   public setTag(key: string, value: string, props?: TagProps): void {
     const tagProps: TagProps = props || {};
+    tagProps.applyToLaunchedInstances = tagProps.applyToLaunchedInstances !== false;
 
     if (!this.canApplyTag(key, tagProps)) {
-      // tag is blocked by a remove
+      // can't apply tag so return doing nothing
       return;
     }
-    tagProps.applyToLaunchedInstances = tagProps.applyToLaunchedInstances !== false;
-    const index = this.tags.push({key, value, props: tagProps});
-    this.tagSet[key] = index - 1;
+    this.tags.set(key, {value, props: tagProps});
     // ensure nothing is left in removeTags
-    delete this.removedTags[key];
+    this.removedTags.delete(key);
   }
 
   /**
@@ -96,40 +151,22 @@ export class TagManager {
     const tagProps = props || {};
     const priority = tagProps.priority === undefined ? 0 : tagProps.priority;
     if (!this.canApplyTag(key, tagProps)) {
-      // tag is blocked by a remove
+      // can't apply tag so return doing nothing
       return;
     }
-    delete this.tagSet[key];
-    this.removedTags[key] = priority;
+    this.tags.delete(key);
+    this.removedTags.set(key, priority);
   }
 
   /**
    * Renders tags into the proper format based on TagType
    */
   public renderTags(propertyTags?: any): any {
-    const formatter = this.tagFormatter();
-    const tags: ITag[] = [];
-    for (const key of Object.keys(this.tagSet)) {
-      tags.push(this.tags[this.tagSet[key]]);
-    }
-    return formatter.renderTags(tags, propertyTags);
-  }
-
-  private tagFormatter(): ITagFormatter {
-    switch (this.tagType) {
-      case TagType.AutoScalingGroup:
-        return new AsgFormatter();
-        break;
-      case TagType.Map:
-        return new MapFormatter();
-        break;
-      case TagType.Standard:
-        return new StandardFormatter();
-        break;
-      default:
-        return new NoFormat();
-        break;
-    }
+    const tags: Tag[] = [];
+    this.tags.forEach( (tag, key) => {
+      tags.push({key, value: tag.value, props: tag.props});
+    });
+    return this.tagFormatter.renderTags(tags, propertyTags);
   }
 
   private canApplyTag(key: string, props: TagProps): boolean {
@@ -145,76 +182,25 @@ export class TagManager {
       include.indexOf(this.resourceTypeName) === -1) {
       return false;
     }
-    if (this.tagSet[key] >= 0) {
-      const tag = this.tags[this.tagSet[key]];
-      if (tag.props.priority !== undefined) {
+    if (this.tags.has(key)) {
+      const tag = this.tags.get(key);
+      if (tag !== undefined && tag.props.priority !== undefined) {
         return priority >= tag.props.priority!;
       }
     }
-    if (this.removedTags[key]) {
-      return priority >= this.removedTags[key];
+    if (this.removedTags.has(key)) {
+      const removePriority = this.removedTags.get(key);
+      return priority >= (removePriority === undefined ? 0 : removePriority );
     }
     return true;
   }
 }
-
-class StandardFormatter implements ITagFormatter {
-  public renderTags(tags: ITag[], propertyTags: any): any {
-    const cfnTags: CfnTag[] = [];
-    for (const tag of tags) {
-      cfnTags.push({key: tag.key, value: tag.value});
-    }
-    const finalTags = mergeTags(propertyTags || [], cfnTags);
-    return finalTags.length === 0 ? undefined : finalTags;
-  }
-}
-
-interface AsgTag {
-  key: string;
-  value: string;
-  propagateAtLaunch: boolean;
-}
-
-class AsgFormatter implements ITagFormatter {
-  public renderTags(tags: ITag[], propertyTags: any): any {
-    const cfnTags: AsgTag[] = [];
-    for (const tag of tags) {
-      cfnTags.push({key: tag.key,
-        value: tag.value,
-        propagateAtLaunch: tag.props.applyToLaunchedInstances !== false});
-    }
-    const finalTags = mergeTags(propertyTags || [], cfnTags);
-    return finalTags.length === 0 ? undefined : finalTags;
-  }
-}
-
-class MapFormatter implements ITagFormatter {
-  public renderTags(tags: ITag[], propertyTags: any): any {
-    const cfnTags: {[key: string]: string} = {};
-    for (const tag of tags) {
-      cfnTags[tag.key] = tag.value;
-    }
-    const finalTags = mergeTags(propertyTags || {}, cfnTags);
-    return Object.keys(finalTags).length === 0 ? undefined : finalTags;
-  }
-}
-
-class NoFormat implements ITagFormatter {
-  public renderTags(_tags: ITag[], _propertyTags: any): any {
-    return undefined;
-  }
-}
-
-function mergeTags(target: any, source: any): any {
+function mergeTags(target: CfnAsgTag[], source: CfnAsgTag[]): CfnAsgTag[] {
   if (Array.isArray(target) && Array.isArray(source)) {
     const result = [...source];
     const keys = result.map( (tag) => (tag.key) );
     result.push(...target.filter( (tag) => (!keys.includes(tag.key))));
     return result;
   }
-  if (typeof(target) === 'object' && typeof(source) === 'object' &&
-    !Array.isArray(target) && !Array.isArray(source)) {
-    return Object.assign(target, source);
-  }
-  throw new Error(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must both be string maps or arrays`);
+  throw new Error(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must both be arrays`);
 }
