@@ -2,6 +2,7 @@ import cdk = require('@aws-cdk/cdk');
 import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
 import { CfnPublicDnsNamespace} from './servicediscovery.generated';
 
+// tslint:disable:no-empty-interface
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
 
 /**

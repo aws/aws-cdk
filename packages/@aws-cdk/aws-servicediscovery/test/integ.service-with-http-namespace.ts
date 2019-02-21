@@ -4,9 +4,8 @@ import servicediscovery = require('../lib');
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');
 
-const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
   name: 'covfefe',
-  type: servicediscovery.NamespaceType.Http,
 });
 
 new servicediscovery.Service(stack, 'Service', {

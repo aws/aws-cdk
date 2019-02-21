@@ -75,11 +75,13 @@
   },
   "awslint": {
     "exclude": [
-      "resource-class:@aws-cdk/aws-servicediscovery.HttpNamespace",
-      "resource-interface:@aws-cdk/aws-servicediscovery.IInstance",
-      "resource-class:@aws-cdk/aws-servicediscovery.PrivateDnsNamespace",
-      "resource-class:@aws-cdk/aws-servicediscovery.PublicDnsNamespace",
-      "resource-interface:@aws-cdk/aws-servicediscovery.IService"
+      "export:@aws-cdk/aws-servicediscovery.IService",
+      "export:@aws-cdk/aws-servicediscovery.IInstance",
+      "import-props-interface:@aws-cdk/aws-servicediscovery.ServiceImportProps",
+      "import-props-interface:@aws-cdk/aws-servicediscovery.InstanceImportProps",
+      "resource-interface:@aws-cdk/aws-servicediscovery.IHttpNamespace",
+      "resource-interface:@aws-cdk/aws-servicediscovery.IPublicDnsNamespace",
+      "resource-interface:@aws-cdk/aws-servicediscovery.IPrivateDnsNamespace"
     ]
   }
 }

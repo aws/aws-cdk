@@ -2,16 +2,14 @@ import { expect } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import servicediscovery = require('../lib');
-// import { DnsRecordType } from '../lib';
 
 export = {
   'Service for HTTP namespace'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
       name: 'http',
-      type: servicediscovery.NamespaceType.Http,
     });
 
     new servicediscovery.Service(stack, 'MyService', {
@@ -58,9 +56,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'dns',
-      type: servicediscovery.NamespaceType.DnsPublic,
     });
 
     new servicediscovery.Service(stack, 'MyService', {
@@ -122,9 +119,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'dns',
-      type: servicediscovery.NamespaceType.DnsPublic,
     });
 
     new servicediscovery.Service(stack, 'MyService', {
@@ -177,9 +173,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'dns',
-      type: servicediscovery.NamespaceType.DnsPublic,
     });
 
     new servicediscovery.Service(stack, 'MyService', {
@@ -232,9 +227,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
       name: 'name',
-      type: servicediscovery.NamespaceType.Http,
     });
 
     // THEN
@@ -253,9 +247,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
       name: 'name',
-      type: servicediscovery.NamespaceType.Http,
     });
 
     // THEN
@@ -273,9 +266,8 @@ export = {
   'Throws when specifying both healthCheckConfig and healthCheckCustomCOnfig'(test: Test) {
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
       name: 'name',
-      type: servicediscovery.NamespaceType.Http,
     });
 
     // THEN
@@ -299,9 +291,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
       name: 'name',
-      type: servicediscovery.NamespaceType.Http,
     });
 
     // THEN
@@ -322,9 +313,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'name',
-      type: servicediscovery.NamespaceType.DnsPublic,
     });
 
     // THEN
@@ -344,9 +334,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'name',
-      type: servicediscovery.NamespaceType.DnsPublic,
     });
 
     // THEN
@@ -363,4 +352,6 @@ export = {
 
     test.done();
   }
+
+  // TODO add tests for Private DNS namespace
 };

@@ -10,9 +10,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
       name: 'http',
-      type: servicediscovery.NamespaceType.Http,
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {
@@ -55,9 +54,8 @@ export = {
     const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'dns',
-      type: servicediscovery.NamespaceType.DnsPrivate,
       vpc
     });
 
@@ -99,9 +97,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'dns',
-      type: servicediscovery.NamespaceType.DnsPublic
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {
@@ -138,9 +135,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
       name: 'http',
-      type: servicediscovery.NamespaceType.Http
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {
@@ -166,9 +162,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
       name: 'http',
-      type: servicediscovery.NamespaceType.Http
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {
@@ -193,9 +188,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
       name: 'http',
-      type: servicediscovery.NamespaceType.Http
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {
@@ -220,9 +214,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'dns',
-      type: servicediscovery.NamespaceType.DnsPublic,
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {
@@ -247,9 +240,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'dns',
-      type: servicediscovery.NamespaceType.DnsPublic,
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {
@@ -273,9 +265,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'dns',
-      type: servicediscovery.NamespaceType.DnsPublic,
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {
@@ -301,9 +292,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'dns',
-      type: servicediscovery.NamespaceType.DnsPublic
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {
@@ -329,9 +319,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.Namespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'dns',
-      type: servicediscovery.NamespaceType.DnsPublic
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {

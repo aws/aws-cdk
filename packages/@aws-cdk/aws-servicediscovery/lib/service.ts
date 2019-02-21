@@ -2,8 +2,34 @@ import cdk = require('@aws-cdk/cdk');
 import { INamespace, NamespaceType } from './namespace';
 import { CfnService} from './servicediscovery.generated';
 
-export interface BaseServiceProps {
+export interface IService extends cdk.IConstruct {
+  /**
+   * A name for the Cloudmap Service.
+   */
+  readonly serviceName: string;
 
+  /**
+   *  The namespace for the Cloudmap Service.
+   */
+  readonly namespace: INamespace;
+
+  /**
+   * The ID of the namespace that you want to use for DNS configuration.
+   */
+  readonly serviceId: string;
+
+  /**
+   * The Arn of the namespace that you want to use for DNS configuration.
+   */
+  readonly serviceArn: string;
+
+  /**
+   * The DnsRecordType used by the service
+   */
+  readonly dnsRecordType: DnsRecordType;
+}
+
+export interface BaseServiceProps {
   /**
    * The DNS type of the record that you want AWS Cloud Map to create. Supported record types
    * include A, AAAA, A and AAAA (A_AAAA), CNAME, and SRV.
@@ -72,11 +98,11 @@ export interface ServiceProps extends BaseServiceProps {
 /**
  * Define a CloudMap Service
  */
-export class Service extends cdk.Construct {
+export class Service extends cdk.Construct implements IService {
   /**
    * A name for the Cloudmap Service.
    */
-  public readonly name: string;
+  public readonly serviceName: string;
 
   /**
    *  The namespace for the Cloudmap Service.
@@ -172,7 +198,7 @@ export class Service extends cdk.Construct {
       namespaceId: props.namespace.namespaceId
     });
 
-    this.name = service.serviceName;
+    this.serviceName = service.serviceName;
     this.serviceArn = service.serviceArn;
     this.serviceId = service.serviceId;
     this.namespace = props.namespace;

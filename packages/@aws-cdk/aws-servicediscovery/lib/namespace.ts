@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { BaseServiceProps, Service } from './service';
+// import { BaseServiceProps, Service } from './service';
 
 export interface INamespace extends cdk.IConstruct {
   /**
@@ -52,6 +52,11 @@ export interface NamespaceImportProps {
    * Namespace ARN for the Namespace.
    */
   readonly namespaceArn: string;
+
+  /**
+   * Type of Namespace. Valid values: HTTP, DNS_PUBLIC, or DNS_PRIVATE
+   */
+  readonly type: NamespaceType;
 }
 
 export enum NamespaceType {
@@ -60,17 +65,17 @@ export enum NamespaceType {
    */
   Http = "HTTP",
 
-  /**
-   * Choose this option if you want your application to be able to discover instances using either API calls or using
-   * DNS queries in a VPC.
-   */
-  DnsPrivate = "DNS_PRIVATE",
+    /**
+     * Choose this option if you want your application to be able to discover instances using either API calls or using
+     * DNS queries in a VPC.
+     */
+    DnsPrivate = "DNS_PRIVATE",
 
-  /**
-   * Choose this option if you want your application to be able to discover instances using either API calls or using
-   * public DNS queries. You aren't required to use both methods.
-   */
-  DnsPublic = "DNS_PUBLIC",
+    /**
+     * Choose this option if you want your application to be able to discover instances using either API calls or using
+     * public DNS queries. You aren't required to use both methods.
+     */
+    DnsPublic = "DNS_PUBLIC",
 }
 
 export abstract class NamespaceBase extends cdk.Construct implements INamespace {
@@ -82,10 +87,31 @@ export abstract class NamespaceBase extends cdk.Construct implements INamespace 
   /**
    * Creates a new service in this namespace
    */
-  public createService(id: string, props?: BaseServiceProps): Service {
-    return new Service(this, id, {
-      namespace: this,
-      ...props,
-    });
+  // public createService(id: string, props?: BaseServiceProps): Service {
+  //   return new Service(this, id, {
+  //     namespace: this,
+  //     ...props,
+  //   });
+  // }
+}
+
+export class ImportedNamespace extends NamespaceBase {
+  public readonly namespaceId: string;
+  public readonly namespaceArn: string;
+  public readonly namespaceName: string;
+  public readonly type: NamespaceType;
+
+  constructor(scope: cdk.Construct, id: string, private readonly props: NamespaceImportProps) {
+    super(scope, id);
+
+    this.namespaceId = props.namespaceId;
+    this.namespaceArn = props.namespaceArn;
+    this.namespaceName = props.namespaceName || '';
+    this.type = props.type;
+  }
+
+  // FIXME not sure this is quite right?
+  public export() {
+    return this.props;
   }
 }

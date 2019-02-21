@@ -1,7 +1,24 @@
 import cdk = require('@aws-cdk/cdk');
 import { NamespaceType } from './namespace';
-import { DnsRecordType, Service } from './service';
+import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
+
+export interface IInstance extends cdk.IConstruct {
+  /**
+   * The instance attributes.
+   */
+  readonly instanceAttributes: InstanceAttributes;
+
+  /**
+   * The id of the instance resource
+   */
+  readonly instanceId: string;
+
+  /**
+   * The Cloudmap service this resource is registered to.
+   */
+  readonly service: IService;
+}
 
 /**
  * Properties to define ServiceDiscovery Instance
@@ -20,13 +37,13 @@ export interface InstanceProps {
   /**
    * The Cloudmap service this resource is registered to.
    */
-  service: Service;
+  service: IService;
 }
 
 /**
  * Define a Service Discovery Instance
  */
-export class Instance extends cdk.Construct {
+export class Instance extends cdk.Construct implements IInstance {
   /**
    * The Id of the instance
    */
@@ -34,7 +51,13 @@ export class Instance extends cdk.Construct {
   /**
    * The Cloudmap service to which the instance is registered.
    */
-  public readonly service: Service;
+  public readonly service: IService;
+
+  /**
+   * The instance attributes.
+   *  FIXME  break out into different instance types
+   */
+  public readonly instanceAttributes: InstanceAttributes;
 
   constructor(scope: cdk.Construct, id: string, props: InstanceProps) {
     super(scope, id);

@@ -8,9 +8,8 @@ export = {
   'HTTP namespace'(test: Test) {
     const stack = new cdk.Stack();
 
-    new servicediscovery.Namespace(stack, 'MyNamespace', {
+    new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
       name: 'foobar.com',
-      type: servicediscovery.NamespaceType.Http,
     });
 
     expect(stack).toMatch({
@@ -30,9 +29,8 @@ export = {
   'Public DNS namespace'(test: Test) {
     const stack = new cdk.Stack();
 
-    new servicediscovery.Namespace(stack, 'MyNamespace', {
+    new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'foobar.com',
-      type: servicediscovery.NamespaceType.DnsPublic,
     });
 
     expect(stack).toMatch({
@@ -53,9 +51,8 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
 
-    new servicediscovery.Namespace(stack, 'MyNamespace', {
+    new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'foobar.com',
-      type: servicediscovery.NamespaceType.DnsPrivate,
       vpc
     });
 
