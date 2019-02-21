@@ -1,4 +1,5 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -390,6 +391,51 @@ export = {
           },
         }
       ]
+    }));
+
+    test.done();
+  },
+
+  'can specify private registry credentials'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const mySecretArn = 'arn:aws:secretsmanager:region:1234567890:secret:MyRepoSecret-6f8hj3';
+
+    const repoCreds = secretsmanager.Secret.import(stack, 'MyRepoSecret', {
+        secretArn: mySecretArn,
+    });
+
+    // WHEN
+    taskDefinition.addContainer('Container', {
+        image: ecs.ContainerImage.fromDockerHub('user-x/my-app', {
+            credentials: repoCreds
+        }),
+        memoryLimitMiB: 2048,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Image: 'user-x/my-app',
+            RepositoryCredentials: {
+              CredentialsParameter: mySecretArn
+            },
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+          Statement: [
+              {
+                  Action: "secretsmanager:GetSecretValue",
+                  Effect: "Allow",
+                  Resource: mySecretArn
+              }
+          ]
+      }
     }));
 
     test.done();

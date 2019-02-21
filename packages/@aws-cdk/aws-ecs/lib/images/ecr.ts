@@ -1,12 +1,13 @@
 import ecr = require('@aws-cdk/aws-ecr');
 import { ContainerDefinition } from '../container-definition';
-import { ContainerImage } from '../container-image';
+import { ContainerImage, RepositoryCreds } from '../container-image';
 
 /**
  * An image from an ECR repository
  */
 export class EcrImage extends ContainerImage {
   public readonly imageName: string;
+  public readonly credentials?: RepositoryCreds;
   private readonly repository: ecr.IRepository;
 
   constructor(repository: ecr.IRepository, tag: string) {

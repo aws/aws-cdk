@@ -399,6 +399,9 @@
                 "Protocol": "tcp"
               }
             ],
+            "RepositoryCredentials": {
+                "CredentialsParameter": ""
+            },
             "Ulimits": [],
             "VolumesFrom": []
           }

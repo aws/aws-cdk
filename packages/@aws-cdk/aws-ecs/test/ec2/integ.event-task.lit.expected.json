@@ -691,6 +691,9 @@
             "MountPoints": [],
             "Name": "TheContainer",
             "PortMappings": [],
+            "RepositoryCredentials": {
+                "CredentialsParameter": ""
+            },
             "Ulimits": [],
             "VolumesFrom": []
           }
