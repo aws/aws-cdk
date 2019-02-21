@@ -28,7 +28,7 @@ export interface ITopic extends
   /**
    * Subscribe some endpoint to this topic
    */
-  subscribe(name: string, endpoint: string, protocol: SubscriptionProtocol): Subscription;
+  subscribe(name: string, endpoint: string, protocol: SubscriptionProtocol, rawMessageDelivery?: boolean): Subscription;
 
   /**
    * Defines a subscription from this SNS topic to an SQS queue.
@@ -38,8 +38,9 @@ export interface ITopic extends
    *
    * @param name The subscription name
    * @param queue The target queue
+   * @param rawMessageDelivery Enable raw message delivery
    */
-  subscribeQueue(queue: sqs.IQueue): Subscription;
+  subscribeQueue(queue: sqs.IQueue, rawMessageDelivery?: boolean): Subscription;
 
   /**
    * Defines a subscription from this SNS Topic to a Lambda function.
@@ -66,8 +67,9 @@ export interface ITopic extends
    *
    * @param name A name for the subscription
    * @param url The URL to invoke
+   * @param rawMessageDelivery Enable raw message delivery
    */
-  subscribeUrl(name: string, url: string): Subscription;
+  subscribeUrl(name: string, url: string, rawMessageDelivery?: boolean): Subscription;
 
   /**
    * Adds a statement to the IAM resource policy associated with this topic.
