@@ -1,31 +1,32 @@
 import cdk = require('@aws-cdk/cdk');
+import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
 import { CfnPublicDnsNamespace} from './servicediscovery.generated';
 
-export interface PublicDnsNamespaceProps {
-  /**
-   * A name for the HttpNamespace.
-   */
-  name: string;
-
-  /**
-   * A description of the namespace.
-   */
-  description?: string;
-}
+export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
 
 /**
- * Define a Service Discovery HTTP Namespace
+ * Define a Public DNS Namespace
  */
-export class PublicDnsNamespace extends cdk.Construct {
+export class PublicDnsNamespace extends NamespaceBase {
   /**
-   * A name for the PublicDnsNamespace.
+   * A name for the namespace.
    */
-  public readonly name: string;
+  public readonly namespaceName: string;
 
   /**
-   * Namespace Id for the PublicDnsNamespace.
+   * Namespace Id for the namespace.
    */
   public readonly namespaceId: string;
+
+  /**
+   * Namespace Arn for the namespace.
+   */
+  public readonly namespaceArn: string;
+
+  /**
+   * Type of the namespace.
+   */
+  public readonly type: NamespaceType;
 
   constructor(scope: cdk.Construct, id: string, props: PublicDnsNamespaceProps) {
     super(scope, id);
@@ -35,7 +36,9 @@ export class PublicDnsNamespace extends cdk.Construct {
       description: props.description,
     });
 
-    this.name = props.name;
+    this.namespaceName = props.name;
     this.namespaceId = ns.publicDnsNamespaceId;
+    this.namespaceArn = ns.publicDnsNamespaceArn;
+    this.type = NamespaceType.DnsPublic;
   }
 }

@@ -1,31 +1,33 @@
 import cdk = require('@aws-cdk/cdk');
+import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 
-export interface HttpNamespaceProps {
-  /**
-   * A name for the HttpNamespace.
-   */
-  name: string;
-
-  /**
-   * A description of the namespace.
-   */
-  description?: string;
-}
+export interface HttpNamespaceProps extends BaseNamespaceProps {}
 
 /**
- * Define a Service Discovery HTTP Namespace
+ * Define an HTTP Namespace
  */
-export class HttpNamespace extends cdk.Construct {
+export class HttpNamespace extends NamespaceBase {
   /**
-   * A domain name
+   * A name for the namespace.
    */
-  public readonly name: string;
+  public readonly namespaceName: string;
 
   /**
-   * Namespace Id for the HttpNamespace.
+   * Namespace Id for the namespace.
    */
   public readonly namespaceId: string;
+
+  /**
+   * Namespace Arn for the namespace.
+   */
+  public readonly namespaceArn: string;
+
+  /**
+   * Type of the namespace.
+   */
+  public readonly type: NamespaceType;
+
 
   constructor(scope: cdk.Construct, id: string, props: HttpNamespaceProps) {
     super(scope, id);
@@ -35,7 +37,9 @@ export class HttpNamespace extends cdk.Construct {
       description: props.description
     });
 
-    this.name = props.name;
+    this.namespaceName = props.name;
     this.namespaceId = ns.httpNamespaceId;
+    this.namespaceArn = ns.httpNamespaceArn;
+    this.type = NamespaceType.Http;
   }
 }
