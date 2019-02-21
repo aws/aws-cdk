@@ -180,28 +180,47 @@ export class Service extends cdk.Construct {
   }
 }
 
+/**
+ * An optional complex type that contains information about the DNS records that you want AWS Cloud Map to create when
+ * you register an instance.
+ */
 export interface DnsConfig {
-  dnsRecords: DnsRecord[],
-    namespaceId: string,
-    /**
-     * The routing policy that you want to apply to all Route 53 DNS records that AWS Cloud Map creates when you
-     * register an instance and specify this service.
-     */
-    routingPolicy?: RoutingPolicy
+  /**
+   * List of DNS record that you want AWS Cloud Map to create when you register an instance.
+   */
+  dnsRecords: DnsRecord[];
+
+  /**
+   * The ID of the namespace that you want to use for DNS configuration.
+   */
+  namespaceId: string;
+
+  /**
+   * The routing policy that you want to apply to all Route 53 DNS records that AWS Cloud Map creates when you
+   * register an instance and specify this service.
+   */
+  routingPolicy?: RoutingPolicy;
 }
 
+/**
+ * Settings for one DNS record that you want AWS Cloud Map to create when you register an instance.
+ */
 export interface DnsRecord {
   /**
    * The record type
    */
-  type: DnsRecordType,
+  type: DnsRecordType;
 
   /**
    * The time to live for the record
    */
-  ttlSec: number,
+  ttlSec: number;
 }
 
+/**
+ * Settings for an optional Amazon Route 53 health check. If you specify settings for a health check, AWS Cloud Map
+ * associates the health check with all the records that you specify in DnsConfig.
+ */
 export interface HealthCheckConfig {
   /**
    * The type of health check that you want to create, which indicates how Route 53 determines whether an endpoint is
@@ -209,14 +228,14 @@ export interface HealthCheckConfig {
    *
    * @default HTTP
    */
-  type?: HealthCheckType,
+  type?: HealthCheckType;
 
   /**
    * The path that you want Route 53 to request when performing health checks. DO not use when health check type is TCP.
    *
    * @default '/'
    */
-  resourcePath?: string,
+  resourcePath?: string;
 
   /**
    * The number of consecutive health checks that an endpoint must pass or fail for Route 53 to change the current
@@ -224,9 +243,12 @@ export interface HealthCheckConfig {
    *
    * @default 1
    */
-  failureThreshold?: number,
+  failureThreshold?: number;
 }
 
+/**
+ * Specifies information about an optional custom health check.
+ */
 export interface HealthCheckCustomConfig {
   /**
    * The number of 30-second intervals that you want Cloud Map to wait after receiving an
@@ -234,7 +256,7 @@ export interface HealthCheckCustomConfig {
    *
    * @default 1
    */
-  failureThreshold?: number,
+  failureThreshold?: number;
 }
 
 export enum DnsRecordType {

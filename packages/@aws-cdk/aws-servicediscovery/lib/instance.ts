@@ -9,9 +9,8 @@ import { CfnInstance } from './servicediscovery.generated';
 export interface InstanceProps {
   /**
    * The instance attributes.
-   * FIXME: add defaults/validations
    */
-  instanceAttributes: InstanceAttributes
+  instanceAttributes: InstanceAttributes;
 
   /**
    * The id of the instance resource
@@ -40,10 +39,8 @@ export class Instance extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: InstanceProps) {
     super(scope, id);
 
-    const customAttributes = props.instanceAttributes.customAttributes || {};
-
     const resource = new CfnInstance(this, 'Resource', {
-      instanceAttributes: { ...customAttributes, ...getInstanceAttributes(props) },
+      instanceAttributes: renderInstanceAttributes(props),
       instanceId: props.instanceId,
       serviceId: props.service.serviceId
     });
@@ -60,34 +57,49 @@ export interface InstanceAttributes {
   /**
    * If you want AWS Cloud Map to create an Amazon Route 53 alias record that routes traffic to an Elastic Load
    * Balancing load balancer, specify the DNS name that is associated with the load balancer.
+   *
+   * @default none
    */
-  aliasDnsName?: string,
+  aliasDnsName?: string;
 
   /**
    * If the service configuration includes a CNAME record, the domain name that you want Route 53 to return in
    * response to DNS queries, for example, example.com. This value is required if the service specified by ServiceId
    * includes settings for an CNAME record.
+   *
+   * @default none
    */
-  instanceCname?: string,
+  instanceCname?: string;
 
-  /** The port on the endpoint that you want AWS Cloud Map to perform health checks on. This value is also used for
-   * the port value in an SRV record if the service that you specify includes an SRV record. You can also specify a
-   * default port that is applied to all instances in the Service configuration.
-   */
-  port?: string,
+   /**
+    * The port on the endpoint that you want AWS Cloud Map to perform health checks on. This value is also used for
+    * the port value in an SRV record if the service that you specify includes an SRV record. You can also specify a
+    * default port that is applied to all instances in the Service configuration.
+    *
+    * @default none
+    */
+  port?: string;
+
   /**
    *  If the service that you specify contains a template for an A record, the IPv4 address that you want AWS Cloud
    *  Map to use for the value of the A record.
+   *
+   * @default none
    */
-  ipv4?: string,
+  ipv4?: string;
+
   /**
    *  If the service that you specify contains a template for an AAAA record, the IPv6 address that you want AWS Cloud
    *  Map to use for the value of the AAAA record.
+   *
+   * @default none
    */
-  ipv6?: string,
+  ipv6?: string;
 
   /**
    * Custom attributes of the instance.
+   *
+   * @default none
    */
   customAttributes?: object;
 }
@@ -98,7 +110,10 @@ export interface InstanceAttributes {
  * @param props instance props
  * @throws if the instance attributes are invalid
  */
-function getInstanceAttributes(props: InstanceProps): object {
+function renderInstanceAttributes(props: InstanceProps): object {
+
+  const customAttributes = props.instanceAttributes.customAttributes || {};
+
   if (props.instanceAttributes.aliasDnsName && props.instanceAttributes.instanceCname) {
     throw new Error('Cannot specify both `aliasDnsName` and `instanceCname`.');
   }
@@ -111,7 +126,8 @@ function getInstanceAttributes(props: InstanceProps): object {
     return {
       AWS_INSTANCE_IPV4: props.instanceAttributes.ipv4,
       AWS_INSTANCE_IPV6: props.instanceAttributes.ipv6,
-      AWS_INSTANCE_PORT: props.instanceAttributes.port
+      AWS_INSTANCE_PORT: props.instanceAttributes.port,
+      ...customAttributes
     };
   }
 
@@ -121,7 +137,8 @@ function getInstanceAttributes(props: InstanceProps): object {
     }
 
     return {
-      AWS_INSTANCE_CNAME: props.instanceAttributes.instanceCname
+      AWS_INSTANCE_CNAME: props.instanceAttributes.instanceCname,
+      ...customAttributes
     };
   }
 
@@ -137,7 +154,8 @@ function getInstanceAttributes(props: InstanceProps): object {
     return {
       AWS_INSTANCE_IPV4: props.instanceAttributes.ipv4,
       AWS_INSTANCE_IPV6: props.instanceAttributes.ipv6,
-      AWS_INSTANCE_PORT: props.instanceAttributes.port
+      AWS_INSTANCE_PORT: props.instanceAttributes.port,
+      ...customAttributes
     };
   }
 
@@ -147,7 +165,8 @@ function getInstanceAttributes(props: InstanceProps): object {
     }
 
     return {
-      AWS_ALIAS_DNS_NAME: props.instanceAttributes.aliasDnsName
+      AWS_ALIAS_DNS_NAME: props.instanceAttributes.aliasDnsName,
+      ...customAttributes
     };
   }
 
@@ -163,6 +182,7 @@ function getInstanceAttributes(props: InstanceProps): object {
   return {
     AWS_INSTANCE_IPV4: props.instanceAttributes.ipv4,
     AWS_INSTANCE_IPV6: props.instanceAttributes.ipv6,
-    AWS_INSTANCE_PORT: props.instanceAttributes.port
+    AWS_INSTANCE_PORT: props.instanceAttributes.port,
+    ...customAttributes
   };
 }
