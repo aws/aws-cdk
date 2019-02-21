@@ -1,4 +1,3 @@
-attributeRules:
-- exclude:
-    uidRegex: '\.Internal\.'
-    type: Namespace
+apiRules:
+- include:
+    uidRegex: '^.*\.Internal\..*$'

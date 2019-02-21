@@ -13,3 +13,4 @@ website/node_modules
 website/i18n/*
 gen/jsii
 .js
+dist

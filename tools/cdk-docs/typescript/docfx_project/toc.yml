@@ -1,3 +1,5 @@
+- name: CDK Reference
+  href: /
 - name: TypeScript Reference
   href: api/
   homepage: api/index.md

@@ -67,8 +67,8 @@ for tarball in $(find $1 -name \*.tgz); do
 done
 
 # Convert API jsons to DocFX YAMLs
-mkdir -p $tmpdir/yaml
-$scriptdir/node_modules/.bin/api-documenter yaml -i $tmpdir/tsapi -o $tmpdir/yaml
+mkdir -p $tmpdir/api
+$scriptdir/node_modules/.bin/api-documenter yaml -i $tmpdir/tsapi -o $tmpdir/api
 
 # Convert YAMLs to a reference
 (

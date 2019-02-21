@@ -23,5 +23,5 @@ fi
 
 mkdir -p $outdir
 
-jars=$(find $1 -name \*.jar -printf '%p:')
+jars=$(find $1 -name \*.jar | tr '\n' ':')
 javadoc -cp $jars -d $outdir -subpackages software.amazon.awscdk

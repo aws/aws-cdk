@@ -23,13 +23,13 @@ export class Rendering {
   }
 
   public assemblyOverview(assembly: jsiiReflect.Assembly, id: string): Document {
-    const preamble = [
+    const preamble = join(' | ', [
       this.typescriptLinkAssembly(assembly),
       this.javadocLinkAssembly(assembly),
       this.dotnetLinkAssembly(assembly),
-      ''].join('\n');
+    ]);
     const readmeMarkdown = assembly.readme && assembly.readme.markdown || 'Oops!';
-    return new Document(id, preamble + '\n' + readmeMarkdown, { hide_title: true, sidebar_label: 'Overview' });
+    return new Document(id, preamble + '\n\n' + readmeMarkdown, { hide_title: true, sidebar_label: 'Overview' });
   }
 
   public resourcePage(resource: jsiiReflect.ClassType, id: string): Document {
@@ -37,9 +37,11 @@ export class Rendering {
     const properties = props.getProperties(true).sort(_propertyComparator);
 
     const markdown = [
-      this.typescriptLinkType(resource),
-      this.javadocLinkType(resource),
-      this.dotnetLinkType(resource),
+      join(' | ', [
+        this.typescriptLinkType(resource),
+        this.javadocLinkType(resource),
+        this.dotnetLinkType(resource),
+      ]),
       '',
       resource.docs.docs && resource.docs.docs.comment || '',
       '## Properties',
@@ -91,23 +93,25 @@ export class Rendering {
     return this.javadocLink(javaName.replace(/\./g, '/') + '.html');
   }
 
-  private dotnetLinkAssembly(assembly: jsiiReflect.Assembly) {
+  private dotnetLinkAssembly(assembly: jsiiReflect.Assembly): string {
     const name = dotnetPackageName(assembly);
-    return name && this.dotnetLink(name);
+    if (!name) { return ''; }
+    return this.dotnetLink(name);
   }
 
-  private dotnetLinkType(type: jsiiReflect.Type) {
+  private dotnetLinkType(type: jsiiReflect.Type): string {
     const name = dotnetTypeName(type);
-    return name && this.dotnetLink(name);
+    if (!name) { return ''; }
+    return this.dotnetLink(name);
   }
 
   private typescriptLinkAssembly(assembly: jsiiReflect.Assembly) {
-    const name = assembly.name;
+    const name = typescriptPackageName(assembly);
     return name && this.typescriptLink(name);
   }
 
   private typescriptLinkType(type: jsiiReflect.Type) {
-    const name = type.fqn;
+    const name = typescriptPackageName(type.assembly) + '/' + type.name.toLowerCase();
     return name && this.typescriptLink(name);
   }
 
@@ -190,4 +194,14 @@ function dotnetTypeName(type: jsiiReflect.Type): string | undefined {
 function dotnetPackageName(assembly: jsiiReflect.Assembly): string | undefined {
   const dotnet = assembly.targets && assembly.targets.dotnet;
   return dotnet && dotnet.namespace;
+}
+
+function typescriptPackageName(assembly: jsiiReflect.Assembly): string {
+  // Our current TypeScript reference generator drops the namespace prefix
+  const parts = assembly.name.split('/');
+  return parts[parts.length - 1];
+}
+
+function join(sep: string, args: string[]) {
+  return args.filter(a => a).join(sep);
 }

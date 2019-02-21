@@ -36,7 +36,12 @@ body {
     background: #eee !important;
 }
 
-.navbar-inverse { background: #592C3E; }
+.navbar-inverse { background: #237ea0; }
+
+.navbar-inverse .navbar-nav>li>a, .navbar-inverse .navbar-text {
+    color: #e2e2e8;
+}
+
 /*
 .navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:focus, .navbar-inverse .navbar-nav>.active>a:hover {
     background: #DEDBD8;
@@ -73,4 +78,9 @@ dl .parametername {
 dl .parametertype {
     font-weight: normal;
     color: #666;
+}
+
+.svg {
+    height: 40px;
+    margin-top: 5px;
 }

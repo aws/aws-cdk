@@ -9,7 +9,6 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         -f|--full)
             full=true
-            shift
             ;;
         -h|--help)
             echo "Usage: build.sh [--full|-f]" >&2
@@ -25,10 +24,13 @@ done
 
 #----------------------------------------------------------------------
 
+outdir=$scriptdir/dist
+mkdir -p $outdir
+
 distdir=$scriptdir/../../dist
-javadocdir=$scriptdir/docusaurus/website/static/reference/java
-typescriptdir=$scriptdir/docusaurus/website/static/reference/typescript
-dotnetdir=$scriptdir/docusaurus/website/static/reference/dotnet
+javadocdir=$outdir/reference/java
+typescriptdir=$outdir/reference/typescript
+dotnetdir=$outdir/reference/dotnet
 
 args=""
 
@@ -69,5 +71,6 @@ if $full; then
         cd docusaurus/website
         [[ -d node_modules ]] || npm install
         npm run build
+        cp -R build/cdk-reference/* $outdir
     )
 fi

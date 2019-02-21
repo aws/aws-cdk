@@ -3,6 +3,7 @@
 var common = require('./common.js');;
 var classCategory = 'class';
 var namespaceCategory = 'ns';
+var cdk = require('./CdkCommon.js');
 
 exports.transform = function (model) {
   if (!model) return
@@ -17,10 +18,10 @@ exports.transform = function (model) {
   if (model.type) {
     switch (model.type.toLowerCase()) {
       case 'namespace':
+      case 'package': // Treat package and namespace the same
         model.isNamespace = true;
         if (model.children) groupChildren(model, namespaceCategory);
         break;
-      case 'package':
       case 'class':
       case 'interface':
       case 'struct':
@@ -70,7 +71,7 @@ function handleItem(vm, gitContribute, gitUrlPattern) {
 
   // set to null incase mustache looks up
   vm.summary = vm.summary || null;
-  vm.firstSentence = vm.summary && firstSentence(vm.summary);
+  vm.firstSentence = vm.summary && cdk.firstSentence(vm.summary);
   vm.remarks = vm.remarks || null;
   vm.conceptual = vm.conceptual || null;
   vm.syntax = vm.syntax || null;
@@ -97,10 +98,6 @@ function handleItem(vm, gitContribute, gitUrlPattern) {
       syntax.return = joinType(syntax.return);
     }
   }
-}
-
-function firstSentence(summary) {
-  return summary.trim().split('\n\n')[0];
 }
 
 function joinType(parameter) {

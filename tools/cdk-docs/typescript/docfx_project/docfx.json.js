@@ -2,9 +2,7 @@ console.log(JSON.stringify({
   "build": {
     "content": [
       {
-        "files": ["**/*.yml", "toc.yml"],
-        "src": "yaml",
-        "dest": "api"
+        "files": ["api/**/*.yml", "api/toc.yml", "api/index.md"],
       },
       {
         "files": [
