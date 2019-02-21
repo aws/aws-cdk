@@ -20,7 +20,7 @@ namespace HelloCdk
                 DisplayName = "My First Topic Yeah"
             });
 
-            topic.SubscribeQueue(queue);
+            topic.SubscribeQueue(queue, null);
 
             // You can also define your own constructs and use them in your stack.
             HelloConstruct hello = new HelloConstruct(this, "Buckets", new HelloConstructProps()
@@ -28,7 +28,7 @@ namespace HelloCdk
                 BucketCount = 5
             });
 
-            // Create a new user with read access to the HelloConstruct resource.         
+            // Create a new user with read access to the HelloConstruct resource.
             User user = new User(this, "MyUser", new UserProps());
             hello.GrantRead(user);
         }
