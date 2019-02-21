@@ -118,11 +118,12 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
   /**
    * Subscribe some endpoint to this topic
    */
-  public subscribe(name: string, endpoint: string, protocol: SubscriptionProtocol): Subscription {
+  public subscribe(name: string, endpoint: string, protocol: SubscriptionProtocol, rawMessageDelivery?: boolean): Subscription {
     return new Subscription(this, name, {
       topic: this,
       endpoint,
-      protocol
+      protocol,
+      rawMessageDelivery,
     });
   }
 
@@ -134,8 +135,9 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    *
    * @param name The subscription name
    * @param queue The target queue
+   * @param rawMessageDelivery Enable raw message delivery
    */
-  public subscribeQueue(queue: sqs.IQueue): Subscription {
+  public subscribeQueue(queue: sqs.IQueue, rawMessageDelivery?: boolean): Subscription {
     if (!cdk.Construct.isConstruct(queue)) {
       throw new Error(`The supplied Queue object must be an instance of Construct`);
     }
@@ -151,7 +153,8 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
     const sub = new Subscription(queue, subscriptionName, {
       topic: this,
       endpoint: queue.queueArn,
-      protocol: SubscriptionProtocol.Sqs
+      protocol: SubscriptionProtocol.Sqs,
+      rawMessageDelivery,
     });
 
     // add a statement to the queue resource policy which allows this topic
@@ -190,7 +193,7 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
     const sub = new Subscription(lambdaFunction, subscriptionName, {
       topic: this,
       endpoint: lambdaFunction.functionArn,
-      protocol: SubscriptionProtocol.Lambda
+      protocol: SubscriptionProtocol.Lambda,
     });
 
     lambdaFunction.addPermission(this.node.id, {
@@ -206,7 +209,7 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    *
    * @param name A name for the subscription
    * @param emailAddress The email address to use.
-   * @param jsonFormat True if the email content should be in JSON format (default is false).
+   * @param options Options for the email delivery format.
    */
   public subscribeEmail(name: string, emailAddress: string, options?: EmailSubscriptionOptions): Subscription {
     const protocol = (options && options.json ? SubscriptionProtocol.EmailJson : SubscriptionProtocol.Email);
@@ -223,8 +226,9 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    *
    * @param name A name for the subscription
    * @param url The URL to invoke
+   * @param rawMessageDelivery Enable raw message delivery
    */
-  public subscribeUrl(name: string, url: string): Subscription {
+  public subscribeUrl(name: string, url: string, rawMessageDelivery?: boolean): Subscription {
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       throw new Error('URL must start with either http:// or https://');
     }
@@ -234,7 +238,8 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
     return new Subscription(this, name, {
       topic: this,
       endpoint: url,
-      protocol
+      protocol,
+      rawMessageDelivery,
     });
   }
 
@@ -353,5 +358,5 @@ export interface EmailSubscriptionOptions {
    *
    * @default Message text (false)
    */
-  json?: boolean
+  json?: boolean;
 }
