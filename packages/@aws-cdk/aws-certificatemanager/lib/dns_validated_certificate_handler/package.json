@@ -16,10 +16,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-sdk": "^2.401.0",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.5",
-    "uuid-encoder": "^1.1.0"
+    "aws-sdk": "^2.401.0"
   },
   "devDependencies": {
     "eslint": "^5.13.0",

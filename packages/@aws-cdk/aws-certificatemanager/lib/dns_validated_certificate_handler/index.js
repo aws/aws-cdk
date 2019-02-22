@@ -1,11 +1,61 @@
 'use strict';
 
 const aws = require('aws-sdk');
-const UuidEncoder = require('uuid-encoder');
-const request = require('request-promise-native');
 
 const sleep = function (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+/**
+ * Upload a CloudFormation response object to S3.
+ *
+ * @param {object} event the Lambda event payload received by the handler function
+ * @param {object} context the Lambda context received by the handler function
+ * @param {string} responseStatus the response status, either 'SUCCESS' or 'FAILED'
+ * @param {string} physicalResourceId CloudFormation physical resource ID
+ * @param {object} [responseData] arbitrary response data object
+ * @param {string} [reason] reason for failure, if any, to convey to the user
+ * @returns {Promise} Promise that is resolved on success, or rejected on connection error or HTTP error response
+ */
+const report = function (event, context, responseStatus, physicalResourceId, responseData, reason) {
+  return new Promise((resolve, reject) => {
+    const https = require('https');
+    const { URL } = require('url');
+
+    var responseBody = JSON.stringify({
+      Status: responseStatus,
+      Reason: reason,
+      PhysicalResourceId: physicalResourceId || context.logStreamName,
+      StackId: event.StackId,
+      RequestId: event.RequestId,
+      LogicalResourceId: event.LogicalResourceId,
+      Data: responseData
+    });
+
+    const parsedUrl = new URL(event.ResponseURL);
+    const options = {
+      hostname: parsedUrl.hostname,
+      port: 443,
+      path: parsedUrl.pathname + parsedUrl.search,
+      method: 'PUT',
+      headers: {
+        'Content-Type': '',
+        'Content-Length': responseBody.length
+      }
+    };
+
+    https.request(options)
+      .on('error', reject)
+      .on('response', res => {
+        res.resume();
+        if (res.statusCode >= 400) {
+          reject(new Error(`Server returned error ${res.statusCode}: ${res.statusMessage}`));
+        } else {
+          resolve();
+        }
+      })
+      .end(responseBody, 'utf8');
+  });
 };
 
 /**
@@ -23,14 +73,14 @@ const sleep = function (ms) {
 const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId) {
   const acm = new aws.ACM();
   const route53 = new aws.Route53();
-  const encoder = new UuidEncoder('base36');
+  const crypto = require('crypto');
 
   console.log(`Requesting certificate for ${domainName}`);
 
   const reqCertResponse = await acm.requestCertificate({
     DomainName: domainName,
     SubjectAlternativeNames: subjectAlternativeNames,
-    IdempotencyToken: encoder.encode(requestId),
+    IdempotencyToken: crypto.createHash('sha256').update(requestId).digest('hex').substr(0, 32),
     ValidationMethod: 'DNS'
   }).promise();
 
@@ -148,48 +198,10 @@ exports.certificateRequestHandler = async function (event, context) {
     }
 
     console.log(`Uploading SUCCESS response to S3...`);
-
-    await request({
-      uri: event.ResponseURL,
-      method: 'PUT',
-      body: {
-        Status: 'SUCCESS',
-        PhysicalResourceId: physicalResourceId,
-        StackId: event.StackId,
-        RequestId: event.RequestId,
-        LogicalResourceId: event.LogicalResourceId,
-        Data: responseData
-      },
-      headers: {
-        // This is required to ensure the presigned S3 URL signature matches
-        'Content-Type': ''
-      },
-      json: true,
-      followAllRedirects: true,
-      followOriginalHttpMethod: true
-    });
-
+    await report(event, context, 'SUCCESS', physicalResourceId, responseData);
     console.log('Done.');
   } catch (err) {
     console.log(`Caught error ${err}. Uploading FAILED message to S3.`);
-    await request({
-      uri: event.ResponseURL,
-      method: 'PUT',
-      body: {
-        Status: 'FAILED',
-        Reason: err.message,
-        PhysicalResourceId: physicalResourceId,
-        StackId: event.StackId,
-        RequestId: event.RequestId,
-        LogicalResourceId: event.LogicalResourceId
-      },
-      headers: {
-        // This is required to ensure the presigned S3 URL signature matches
-        'Content-Type': ''
-      },
-      json: true,
-      followAllRedirects: true,
-      followOriginalHttpMethod: true
-    });
+    await report(event, context, 'FAILED', physicalResourceId, null, err.message);
   }
 };
