@@ -50,7 +50,7 @@ export class SDK {
   private readonly credentialsCache: CredentialsCache;
   private readonly profile?: string;
 
-  constructor(options: SDKOptions) {
+  constructor(options: SDKOptions = {}) {
     this.profile = options.profile;
 
     const defaultCredentialProvider = makeCLICompatibleCredentialProvider(options.profile, options.ec2creds);
