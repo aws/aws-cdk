@@ -13,7 +13,7 @@ new ecs.LoadBalancedFargateService(stack, 'L3', {
   cluster,
   memoryMiB: '1GB',
   cpu: '512',
-  image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromInternet("amazon/amazon-ecs-sample"),
 });
 
 app.run();

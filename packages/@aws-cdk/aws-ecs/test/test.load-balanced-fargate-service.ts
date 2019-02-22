@@ -19,7 +19,7 @@ export = {
         cluster,
         certificate: cert,
         loadBalancerType: ecs.LoadBalancerType.Network,
-        image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app")
+        image: ecs.ContainerImage.fromInternet("/aws/aws-example-app")
       });
     };
 
@@ -38,7 +38,7 @@ export = {
     new ecs.LoadBalancedFargateService(stack, 'Service', {
       cluster,
       loadBalancerType: ecs.LoadBalancerType.Network,
-      image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app")
+      image: ecs.ContainerImage.fromInternet("/aws/aws-example-app")
     });
 
     // THEN

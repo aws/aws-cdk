@@ -19,7 +19,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
 });
 
 const container = taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromInternet("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 256,
 });
 

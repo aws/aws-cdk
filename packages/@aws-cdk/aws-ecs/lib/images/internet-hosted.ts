@@ -12,7 +12,7 @@ export interface InternetHostedImageProps {
 /**
  * A DockerHub image
  */
-export class DockerHubImage extends ContainerImage {
+export class InternetHostedImage extends ContainerImage {
   public readonly imageName: string;
   public readonly credentials?: RepositoryCreds;
 

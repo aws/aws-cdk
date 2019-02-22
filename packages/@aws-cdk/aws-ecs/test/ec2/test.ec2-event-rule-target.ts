@@ -17,7 +17,7 @@ export = {
 
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
     taskDefinition.addContainer('TheContainer', {
-      image: ecs.ContainerImage.fromDockerHub('henk'),
+      image: ecs.ContainerImage.fromInternet('henk'),
       memoryLimitMiB: 256
     });
 

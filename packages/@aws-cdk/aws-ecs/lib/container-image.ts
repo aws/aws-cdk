@@ -18,8 +18,8 @@ export abstract class ContainerImage {
   /**
    * Reference an image on DockerHub
    */
-  public static fromDockerHub(name: string, props: InternetHostedImageProps = {}) {
-    return new DockerHubImage(name, props);
+  public static fromInternet(name: string, props: InternetHostedImageProps = {}) {
+    return new InternetHostedImage(name, props);
   }
 
   /**
@@ -62,5 +62,5 @@ export abstract class ContainerImage {
 }
 
 import { AssetImage, AssetImageProps } from './images/asset-image';
-import { DockerHubImage, InternetHostedImageProps } from './images/dockerhub';
 import { EcrImage } from './images/ecr';
+import { InternetHostedImage, InternetHostedImageProps } from './images/internet-hosted';
