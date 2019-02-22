@@ -34,7 +34,7 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
 /**
  * Define a Network Target Group
  */
-export class NetworkTargetGroup extends TargetGroupBase {
+export class NetworkTargetGroup extends TargetGroupBase implements INetworkTargetGroup {
   /**
    * Import an existing listener
    */
