@@ -92,7 +92,7 @@ const gitHubSource = new codebuild.GitHubSource({
   repo: 'aws-cdk',
   oauthToken: new cdk.SecretParameter(this, 'GitHubOAuthToken', {
     ssmParameter: 'my-github-token',
-  }),
+  }).value,
   webhook: true, // optional, default: false
 });
 ```
