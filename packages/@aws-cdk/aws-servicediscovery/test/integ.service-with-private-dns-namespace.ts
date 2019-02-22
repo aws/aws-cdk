@@ -15,6 +15,7 @@ const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'Namespace', {
 new servicediscovery.Service(stack, 'Service', {
   name: "frontend",
   namespace,
+  dnsRecordType: servicediscovery.DnsRecordType.A_AAAA
 });
 
 app.run();

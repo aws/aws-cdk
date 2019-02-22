@@ -12,8 +12,7 @@ export = {
       name: 'http',
     });
 
-    new servicediscovery.Service(stack, 'MyService', {
-      namespace,
+    namespace.createService('MyService', {
       name: 'service',
       description: 'service description',
       healthCheckCustomConfig: {
@@ -30,7 +29,7 @@ export = {
             Name: "http"
           },
         },
-        MyServiceA1F951EB: {
+        MyNamespaceMyService365E2470: {
           Type: "AWS::ServiceDiscovery::Service",
           Properties: {
             Description: "service description",
@@ -60,8 +59,7 @@ export = {
       name: 'dns',
     });
 
-    new servicediscovery.Service(stack, 'MyService', {
-      namespace,
+    namespace.createService('MyService', {
       name: 'service',
       description: 'service description',
       healthCheckCustomConfig: {
@@ -78,7 +76,7 @@ export = {
             Name: "dns"
           }
         },
-        MyServiceA1F951EB: {
+        MyNamespaceMyService365E2470: {
           Type: "AWS::ServiceDiscovery::Service",
           Properties: {
             Description: "service description",
@@ -123,8 +121,7 @@ export = {
       name: 'dns',
     });
 
-    new servicediscovery.Service(stack, 'MyService', {
-      namespace,
+    namespace.createService('MyService', {
       dnsRecordType: servicediscovery.DnsRecordType.A_AAAA
     });
 
@@ -137,7 +134,7 @@ export = {
             Name: "dns"
           }
         },
-        MyServiceA1F951EB: {
+        MyNamespaceMyService365E2470: {
           Type: "AWS::ServiceDiscovery::Service",
           Properties: {
             DnsConfig: {
@@ -177,8 +174,7 @@ export = {
       name: 'dns',
     });
 
-    new servicediscovery.Service(stack, 'MyService', {
-      namespace,
+    namespace.createService('MyService', {
       dnsRecordType: servicediscovery.DnsRecordType.Cname
     });
 
@@ -191,7 +187,7 @@ export = {
             Name: "dns"
           }
         },
-        MyServiceA1F951EB: {
+        MyNamespaceMyService365E2470: {
           Type: "AWS::ServiceDiscovery::Service",
           Properties: {
             DnsConfig: {
@@ -223,57 +219,16 @@ export = {
     test.done();
   },
 
-  'Throws when specifying routingPolicy for an HTTP only namespace'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-      name: 'name',
-    });
-
-    // THEN
-    test.throws(() => {
-      new servicediscovery.Service(stack, 'MyService', {
-        namespace,
-        name: 'service',
-        routingPolicy: servicediscovery.RoutingPolicy.Multivalue
-      });
-    }, /`routingPolicy`/);
-
-    test.done();
-  },
-
-  'Throws when specifying dnsRecord for an HTTP namespace'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-      name: 'name',
-    });
-
-    // THEN
-    test.throws(() => {
-      new servicediscovery.Service(stack, 'MyService', {
-        namespace,
-        name: 'service',
-        dnsRecordType: servicediscovery.DnsRecordType.A
-      });
-    }, /`dnsRecord`/);
-
-    test.done();
-  },
-
   'Throws when specifying both healthCheckConfig and healthCheckCustomCOnfig'(test: Test) {
     const stack = new cdk.Stack();
 
-    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
       name: 'name',
     });
 
     // THEN
     test.throws(() => {
-      new servicediscovery.Service(stack, 'MyService', {
-        namespace,
+      namespace.createService('MyService', {
         name: 'service',
         healthCheckConfig: {
           resourcePath: '/'
@@ -283,28 +238,6 @@ export = {
         }
       });
     }, /`healthCheckConfig`.+`healthCheckCustomConfig`/);
-
-    test.done();
-  },
-
-  'Throws when specifying health check config for an Http Namespace'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-      name: 'name',
-    });
-
-    // THEN
-    test.throws(() => {
-      new servicediscovery.Service(stack, 'MyService', {
-        namespace,
-        name: 'service',
-        healthCheckConfig: {
-          resourcePath: '/'
-        }
-      });
-    }, /`healthCheckConfig`/);
 
     test.done();
   },
@@ -319,8 +252,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      new servicediscovery.Service(stack, 'MyService', {
-        namespace,
+      namespace.createService('MyService', {
         name: 'service',
         dnsRecordType: servicediscovery.DnsRecordType.Cname,
         routingPolicy: servicediscovery.RoutingPolicy.Multivalue,
@@ -340,8 +272,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      new servicediscovery.Service(stack, 'MyService', {
-        namespace,
+      namespace.createService('MyService', {
         name: 'service',
         healthCheckConfig: {
           type: servicediscovery.HealthCheckType.Tcp,

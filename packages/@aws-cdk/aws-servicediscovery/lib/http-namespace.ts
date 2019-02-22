@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
+import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 
 // tslint:disable:no-empty-interface
@@ -41,5 +42,12 @@ export class HttpNamespace extends NamespaceBase {
     this.namespaceId = ns.httpNamespaceId;
     this.namespaceArn = ns.httpNamespaceArn;
     this.type = NamespaceType.Http;
+  }
+
+  public createService(id: string, props?: BaseServiceProps): Service {
+    return new Service(this, id, {
+      namespace: this,
+      ...props
+    });
   }
 }

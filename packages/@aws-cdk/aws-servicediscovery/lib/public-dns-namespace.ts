@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
+import { DnsServiceProps, Service } from './service';
 import { CfnPublicDnsNamespace} from './servicediscovery.generated';
 
 // tslint:disable:no-empty-interface
@@ -41,5 +42,12 @@ export class PublicDnsNamespace extends NamespaceBase {
     this.namespaceId = ns.publicDnsNamespaceId;
     this.namespaceArn = ns.publicDnsNamespaceArn;
     this.type = NamespaceType.DnsPublic;
+  }
+
+  public createService(id: string, props?: DnsServiceProps): Service {
+    return new Service(this, id, {
+      namespace: this,
+      ...props
+    });
   }
 }

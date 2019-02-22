@@ -1,6 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
+import { DnsServiceProps, Service } from './service';
 import { CfnPrivateDnsNamespace} from './servicediscovery.generated';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
@@ -56,5 +57,12 @@ export class PrivateDnsNamespace extends NamespaceBase {
     this.namespaceArn = ns.privateDnsNamespaceArn;
     this.type = NamespaceType.DnsPrivate;
     this.vpc = props.vpc;
+  }
+
+  public createService(id: string, props?: DnsServiceProps): Service {
+    return new Service(this, id, {
+      namespace: this,
+      ...props
+    });
   }
 }

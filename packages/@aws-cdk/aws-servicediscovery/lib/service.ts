@@ -29,7 +29,40 @@ export interface IService extends cdk.IConstruct {
   readonly dnsRecordType: DnsRecordType;
 }
 
+
+/**
+ * Basic props needed to create a service in a given namespace. Used by HttpNamespace.createService
+ */
 export interface BaseServiceProps {
+  /**
+   * A name for the Service.
+   *
+   * @default CloudFormation-generated name
+   */
+  name?: string;
+
+  /**
+   * A description of the service.
+   *
+   * @default none
+   */
+  description?: string;
+
+  /**
+   * Structure containing failure threshold for a custom health checker.
+   * Only one of healthCheckConfig or healthCheckCustomConfig can be specified.
+   * See: https://docs.aws.amazon.com/cloud-map/latest/api/API_HealthCheckCustomConfig.html
+   *
+   * @default none
+   */
+  healthCheckCustomConfig?: HealthCheckCustomConfig;
+}
+
+/**
+ * Service props needed to create a service in a given namespace. Used by createService() for PrivateDnsNamespace and
+ * PublicDnsNamespace
+ */
+export interface DnsServiceProps extends BaseServiceProps {
   /**
    * The DNS type of the record that you want AWS Cloud Map to create. Supported record types
    * include A, AAAA, A and AAAA (A_AAAA), CNAME, and SRV.
@@ -57,38 +90,15 @@ export interface BaseServiceProps {
   healthCheckConfig?: HealthCheckConfig;
 
   /**
-   * Structure containing failure threshold for a custom health checker.
-   * Only one of healthCheckConfig or healthCheckCustomConfig can be specified.
-   * See: https://docs.aws.amazon.com/cloud-map/latest/api/API_HealthCheckCustomConfig.html
-   *
-   * @default none
-   */
-  healthCheckCustomConfig?: HealthCheckCustomConfig;
-
-  /**
    * The routing policy that you want to apply to all DNS records that AWS Cloud Map creates when you
    * register an instance and specify this service.
    *
    * @default WEIGHTED for CNAME records, MULTIVALUE otherwise
    */
   routingPolicy?: RoutingPolicy;
-
-  /**
-   * A name for the Service.
-   *
-   * @default CloudFormation-generated name
-   */
-  name?: string;
-
-  /**
-   * A description of the service.
-   *
-   * @default none
-   */
-  description?: string;
 }
 
-export interface ServiceProps extends BaseServiceProps {
+export interface ServiceProps extends DnsServiceProps {
   /**
    * The ID of the namespace that you want to use for DNS configuration.
    */
@@ -124,6 +134,7 @@ export class Service extends cdk.Construct implements IService {
    */
   public readonly dnsRecordType: DnsRecordType;
 
+  // FIXME make this only called through #createService on namespace classes?
   constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
@@ -141,6 +152,7 @@ export class Service extends cdk.Construct implements IService {
     if (namespaceType !== NamespaceType.DnsPublic && props.healthCheckConfig) {
       throw new Error('Can only use `healthCheckConfig` for a Public DNS namespace.');
     }
+
     if (props.routingPolicy === RoutingPolicy.Multivalue
         && props.dnsRecordType === DnsRecordType.Cname) {
       throw new Error('Cannot use `CNAME` record when routing policy is `Multivalue`.');
@@ -245,7 +257,7 @@ export interface DnsRecord {
 
 /**
  * Settings for an optional Amazon Route 53 health check. If you specify settings for a health check, AWS Cloud Map
- * associates the health check with all the records that you specify in DnsConfig.
+ * associates the health check with all the records that you specify in DnsConfig. Only valid with a PublicDnsNamespace.
  */
 export interface HealthCheckConfig {
   /**
