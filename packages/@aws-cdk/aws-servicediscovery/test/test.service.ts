@@ -141,8 +141,12 @@ export = {
               DnsRecords: [
                 {
                   TTL: "60",
-                  Type: "A, AAAA"
+                  Type: "A"
                 },
+                {
+                  TTL: "60",
+                  Type: "AAAA"
+                }
               ],
               NamespaceId: {
                 "Fn::GetAtt": [

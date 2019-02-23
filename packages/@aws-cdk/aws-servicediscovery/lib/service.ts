@@ -29,7 +29,6 @@ export interface IService extends cdk.IConstruct {
   readonly dnsRecordType: DnsRecordType;
 }
 
-
 /**
  * Basic props needed to create a service in a given namespace. Used by HttpNamespace.createService
  */
@@ -170,16 +169,10 @@ export class Service extends cdk.Construct implements IService {
       : RoutingPolicy.Multivalue;
 
     const dnsRecordType = props.dnsRecordType !== undefined ? props.dnsRecordType : DnsRecordType.A;
-
     const dnsConfig = props.namespace.type === NamespaceType.Http
       ? undefined
       : {
-          dnsRecords: [
-            {
-              type: dnsRecordType,
-              ttl: props.dnsTtlSec !== undefined ? props.dnsTtlSec.toString() : '60',
-            }
-          ],
+          dnsRecords: _getDnsRecords(dnsRecordType, props.dnsTtlSec),
           namespaceId: props.namespace.namespaceId,
           routingPolicy,
         };
@@ -214,7 +207,23 @@ export class Service extends cdk.Construct implements IService {
     this.serviceArn = service.serviceArn;
     this.serviceId = service.serviceId;
     this.namespace = props.namespace;
-    this.dnsRecordType = props.dnsRecordType || DnsRecordType.A;
+    this.dnsRecordType = dnsRecordType;
+  }
+}
+
+function _getDnsRecords(dnsRecordType: DnsRecordType, dnsTtlSec?: number): DnsRecord[] {
+  const ttl = dnsTtlSec !== undefined ? dnsTtlSec.toString() : '60';
+
+  if (dnsRecordType === DnsRecordType.A_AAAA) {
+    return [{
+      type: DnsRecordType.A,
+      ttl
+    }, {
+      type: DnsRecordType.AAAA,
+      ttl,
+    }];
+  } else {
+    return [ { type: dnsRecordType, ttl} ];
   }
 }
 
@@ -252,7 +261,7 @@ export interface DnsRecord {
   /**
    * The time to live for the record
    */
-  ttlSec: number;
+  ttl: string;
 }
 
 /**
