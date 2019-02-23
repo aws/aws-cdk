@@ -73,8 +73,12 @@
     "@aws-cdk/aws-iam": "^0.24.1",
     "@aws-cdk/aws-lambda": "^0.24.1",
     "@aws-cdk/aws-sns": "^0.24.1",
-    "@aws-cdk/cdk": "^0.24.1"
+    "@aws-cdk/cdk": "^0.24.1",
+    "aws-sdk": "^2.409.0"
   },
+  "bundledDependencies": [
+    "aws-sdk"
+  ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-codepipeline-api": "^0.24.1",
