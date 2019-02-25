@@ -1,8 +1,0 @@
-<table class="element-table">
-{{#children}}
-  <tr>
-      <td><xref uid="{{uid}}" altProperty="fullName" displayProperty="name"/></td>
-      <td>{{{firstSentence}}}</td>
-  </tr>
-{{/children}}
-</table>

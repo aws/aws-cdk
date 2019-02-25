@@ -1,6 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-scriptdir=$(cd $(dirname $0) && pwd)
-
-exec $scriptdir/docfx build -t $scriptdir/templates/cdk --debug "$@"
-# -t statictoc
