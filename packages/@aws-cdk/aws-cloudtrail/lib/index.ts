@@ -149,14 +149,13 @@ export class CloudTrail extends cdk.Construct {
       });
       this.cloudWatchLogsGroupArn = logGroup.logGroupArn;
 
-      const logsRole = new iam.Role(this, 'LogsRole', {assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
+      const logsRole = new iam.Role(this, 'LogsRole', { assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
+      this.cloudWatchLogsRoleArn = logsRole.roleArn;
 
       const streamArn = `${this.cloudWatchLogsRoleArn}:log-stream:*`;
       logsRole.addToPolicy(new iam.PolicyStatement()
         .addActions("logs:PutLogEvents", "logs:CreateLogStream")
         .addResource(streamArn));
-      this.cloudWatchLogsRoleArn = logsRole.roleArn;
-
     }
     if (props.managementEvents) {
       const managementEvent =  {
