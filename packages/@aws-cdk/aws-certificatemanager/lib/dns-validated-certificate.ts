@@ -38,7 +38,7 @@ export class DNSValidatedCertificate extends Construct implements ICertificate {
         this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
 
         const requestorFunction = new Function(this, 'CertificateRequestorFunction', {
-            code: new AssetCode(path.join(__dirname, 'request_handler')),
+            code: new AssetCode(path.join(__dirname, 'dns_validated_certificate_handler')),
             handler: 'index.certificateRequestHandler',
             runtime: Runtime.NodeJS810,
             timeout: 15 * 60 // 15 minutes
