@@ -2,6 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { SDK } from '../../lib';
 import { AppStacks, ExtendedStackSelection } from '../../lib/api/cxapp/stacks';
+import { Renames } from '../../lib/renames';
 import { Configuration } from '../../lib/settings';
 
 const FIXED_RESULT: cxapi.SynthesizeResponse = {
@@ -63,6 +64,25 @@ export = {
     } catch (e) {
       test.ok(/Found errors/.test(e.toString()), 'Wrong error');
     }
+
+    test.done();
+  },
+
+  async 'renames get applied when stacks are selected'(test: Test) {
+    // GIVEN
+    const stacks = new AppStacks({
+      configuration: new Configuration(),
+      aws: new SDK(),
+      synthesizer: async () => FIXED_RESULT,
+      renames: new Renames({ withouterrors: 'withoutbananas' }),
+    });
+
+    // WHEN
+    const synthed = await stacks.selectStacks(['withouterrors'], ExtendedStackSelection.None);
+
+    // THEN
+    test.equal(synthed[0].name, 'withoutbananas');
+    test.equal(synthed[0].originalName, 'withouterrors');
 
     test.done();
   },
