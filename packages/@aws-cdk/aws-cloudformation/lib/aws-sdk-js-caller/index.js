@@ -3,6 +3,7 @@ const AWS = require('aws-sdk');
 exports.handler = async function(event, context) {
   try {
     console.log(JSON.stringify(event));
+    console.log('AWS SDK VERSION: ' + AWS.VERSION);
 
     if (event.ResourceProperties[event.RequestType]) {
       const { service, action, parameters } = event.ResourceProperties[event.RequestType];
