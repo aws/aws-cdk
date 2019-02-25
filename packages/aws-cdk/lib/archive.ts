@@ -5,9 +5,7 @@ import fs = require('fs-extra');
 export function zipDirectory(directory: string, outputFile: string): Promise<void> {
   return new Promise((ok, fail) => {
     const output = fs.createWriteStream(outputFile);
-    const archive = archiver('zip', {
-
-    });
+    const archive = archiver('zip');
     // The below options are needed to support following symlinks when building zip files:
     // -  nodir: This will prevent symlinks themselves from being copied into the zip.
     // - follow: This will follow symlinks and copy the files within.
@@ -17,12 +15,7 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
       follow: true,
       cwd: directory
     };
-    archive.glob('**', globOptions, {
-      // Default date used by archiver is NOW(), not filedate.
-      // Force it to a constant so the hash of the output file
-      // doesn't change on every invocation.
-      date: new Date(0),
-    });
+    archive.glob('**', globOptions);
     archive.pipe(output);
     archive.finalize();
 
