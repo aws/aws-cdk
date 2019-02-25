@@ -33,7 +33,7 @@ In the following example, the various asset attributes are exported as stack out
 
 ## Permissions
 
-IAM roles, users or groups which need to be able to read assets in runtime will should be
+IAM roles, users or groups which need to be able to read assets in runtime should be
 granted IAM permissions. To do that use the `asset.grantRead(principal)` method:
 
 The following examples grants an IAM group read permissions on an asset:

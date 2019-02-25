@@ -26,11 +26,26 @@ export const ASSET_RESOURCE_METADATA_PROPERTY_KEY = 'aws:asset:property';
  */
 export const ASSET_PREFIX_SEPARATOR = '||';
 
+export interface BuildMetadata {
+  image: string;
+  command: string;
+  args?: string[];
+  stdin?: string;
+}
+
 export interface FileAssetMetadataEntry {
   /**
    * Requested packaging style
    */
-  packaging: 'zip' | 'file';
+  packaging: 'zip' | 'file' | 'build';
+
+  /**
+   * Optional build metadata containing a docker image and command
+   * to run on the directory prior to creating the .zip archive.
+   *
+   * @default no build
+   */
+  build?: BuildMetadata;
 
   /**
    * Path on disk to the asset

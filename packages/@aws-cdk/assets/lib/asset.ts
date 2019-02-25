@@ -10,6 +10,12 @@ import path = require('path');
  */
 export enum AssetPackaging {
   /**
+   * Path refers to a directory on disk, the contents fo the directory
+   * is first built and then archived into a .zip.
+   */
+  Build = 'build',
+
+  /**
    * Path refers to a directory on disk, the contents of the directory is
    * archived into a .zip.
    */
@@ -31,6 +37,8 @@ export interface GenericAssetProps {
    * The packaging type for this asset.
    */
   packaging: AssetPackaging;
+
+  build?: cxapi.BuildMetadata;
 
   /**
    * A list of principals that should be able to read this asset from S3.
@@ -131,6 +139,7 @@ export class Asset extends cdk.Construct {
       packaging: props.packaging,
       s3BucketParameter: bucketParam.logicalId,
       s3KeyParameter: keyParam.logicalId,
+      build: props.build
     };
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);
@@ -224,12 +233,42 @@ export class ZipDirectoryAsset extends Asset {
   }
 }
 
+export interface BuildAssetProps {
+  path: string;
+  image: string;
+  command: string;
+  args?: string[];
+  stdin?: string;
+
+  /**
+   * A list of principals that should be able to read this ZIP file from S3.
+   * You can use `asset.grantRead(principal)` to grant read permissions later.
+   */
+  readers?: iam.IPrincipal[];
+}
+export class BuildAsset extends Asset {
+  constructor(scope: cdk.Construct, id: string, props: BuildAssetProps) {
+    super(scope, id, {
+      packaging: AssetPackaging.Build,
+      build: {
+        image: props.image,
+        command: props.command,
+        args: props.args,
+        stdin: props.stdin
+      },
+      path: path.join(props.path, '.cdk.staging'),
+      readers: props.readers
+    });
+  }
+}
+
 function validateAssetOnDisk(assetPath: string, packaging: AssetPackaging) {
   if (!fs.existsSync(assetPath)) {
     throw new Error(`Cannot find asset at ${assetPath}`);
   }
 
   switch (packaging) {
+    case AssetPackaging.Build:
     case AssetPackaging.ZipDirectory:
       if (!fs.statSync(assetPath).isDirectory()) {
         throw new Error(`${assetPath} is expected to be a directory when asset packaging is 'zip'`);

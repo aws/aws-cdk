@@ -4,6 +4,7 @@ import { debug } from "./logging";
 
 export interface ShellOptions extends child_process.SpawnOptions {
   quiet?: boolean;
+  stdin?: string;
 }
 
 /**
@@ -16,8 +17,12 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   debug(`Executing ${colors.blue(renderCommandLine(command))}`);
   const child = child_process.spawn(command[0], command.slice(1), {
     ...options,
-    stdio: [ 'ignore', 'pipe', 'inherit' ]
+    stdio: [ 'pipe', 'pipe', 'inherit' ]
   });
+
+  if (options.stdin) {
+    child.stdin.write(options.stdin);
+  }
 
   return new Promise<string>((resolve, reject) => {
     const stdout = new Array<any>();
@@ -30,9 +35,13 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
       stdout.push(chunk);
     });
 
-    child.once('error', reject);
+    child.once('error', (err) => {
+      debug('error', err);
+      reject(err);
+    });
 
     child.once('exit', code => {
+      debug(`Finished with exit code ${code} ${colors.blue(renderCommandLine(command))}`);
       if (code === 0) {
         resolve(Buffer.concat(stdout).toString('utf-8'));
       } else {
