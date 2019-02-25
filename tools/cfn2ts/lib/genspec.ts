@@ -275,51 +275,46 @@ function specTypeToCodeType(resourceContext: CodeName, type: string): CodeName {
  * Translate a list of type references in a resource context to a list of code names
  */
 export function specTypesToCodeTypes(resourceContext: CodeName, types: string[]): CodeName[] {
-  const ret = [];
-
-  for (const type of types) {
-    ret.push(specTypeToCodeType(resourceContext, type));
-  }
-
-  return ret;
+  return types.map(type => specTypeToCodeType(resourceContext, type));
 }
 
 export interface PropertyVisitor<T> {
-  visitScalar(type: CodeName): T;
-  visitUnionScalar(types: CodeName[]): T;
-  visitList(itemType: CodeName): T;
-  visitUnionList(itemTypes: CodeName[]): T;
-  visitMap(itemType: CodeName): T;
-  visitUnionMap(itemTypes: CodeName[]): T;
-  visitListOrScalar(scalarTypes: CodeName[], itemTypes: CodeName[]): any;
+  visitScalar(type: CodeName, recurse: (spec: schema.Property) => T): T;
+  visitUnionScalar(types: CodeName[], recurse: (spec: schema.Property) => T): T;
+  visitList(itemType: CodeName, recurse: (spec: schema.Property) => T): T;
+  visitUnionList(itemTypes: CodeName[], recurse: (spec: schema.Property) => T): T;
+  visitMap(itemType: CodeName, recurse: (spec: schema.Property) => T): T;
+  visitUnionMap(itemTypes: CodeName[], recurse: (spec: schema.Property) => T): T;
+  visitListOrScalar(scalarTypes: CodeName[], itemTypes: CodeName[], recurse: (spec: schema.Property) => T): any;
 }
 
 export function typeDispatch<T>(resourceContext: CodeName, spec: schema.Property, visitor: PropertyVisitor<T>): T {
   const scalarTypes = specTypesToCodeTypes(resourceContext, scalarTypeNames(spec));
   const itemTypes = specTypesToCodeTypes(resourceContext, itemTypeNames(spec));
+  const recurse = (s: schema.Property) => typeDispatch(resourceContext, s, visitor);
 
   if (scalarTypes.length && itemTypes.length) {
     // Can accept both a list and a scalar
-    return visitor.visitListOrScalar(scalarTypes, itemTypes);
+    return visitor.visitListOrScalar(scalarTypes, itemTypes, recurse);
   } else if (schema.isCollectionProperty(spec)) {
     if (schema.isMapProperty(spec)) {
       if (itemTypes.length > 1) {
-        return visitor.visitUnionMap(itemTypes);
+        return visitor.visitUnionMap(itemTypes, recurse);
       } else {
-        return visitor.visitMap(itemTypes[0]);
+        return visitor.visitMap(itemTypes[0], recurse);
       }
     } else {
       if (itemTypes.length > 1) {
-        return visitor.visitUnionList(itemTypes);
+        return visitor.visitUnionList(itemTypes, recurse);
       } else {
-        return visitor.visitList(itemTypes[0]);
+        return visitor.visitList(itemTypes[0], recurse);
       }
     }
   } else {
     if (scalarTypes.length > 1) {
-      return visitor.visitUnionScalar(scalarTypes);
+      return visitor.visitUnionScalar(scalarTypes, recurse);
     } else {
-      return visitor.visitScalar(scalarTypes[0]);
+      return visitor.visitScalar(scalarTypes[0], recurse);
     }
   }
 }
