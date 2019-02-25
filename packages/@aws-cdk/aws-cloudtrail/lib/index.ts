@@ -122,8 +122,6 @@ export enum LogRetention {
 export class CloudTrail extends cdk.Construct {
 
   public readonly cloudTrailArn: string;
-  private readonly cloudWatchLogsRoleArn?: string;
-  private readonly cloudWatchLogsGroupArn?: string;
   private eventSelectors: EventSelector[] = [];
 
   constructor(scope: cdk.Construct, id: string, props: CloudTrailProps = {}) {
@@ -143,16 +141,16 @@ export class CloudTrail extends cdk.Construct {
       .addServicePrincipal(cloudTrailPrincipal)
       .setCondition("StringEquals", {'s3:x-amz-acl': "bucket-owner-full-control"}));
 
+    let logGroup: logs.CfnLogGroup | undefined;
+    let logsRole: iam.IRole | undefined;
     if (props.sendToCloudWatchLogs) {
-      const logGroup = new logs.CfnLogGroup(this, "LogGroup", {
+      logGroup = new logs.CfnLogGroup(this, "LogGroup", {
         retentionInDays: props.cloudWatchLogsRetentionTimeDays || LogRetention.OneYear
       });
-      this.cloudWatchLogsGroupArn = logGroup.logGroupArn;
 
-      const logsRole = new iam.Role(this, 'LogsRole', { assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
-      this.cloudWatchLogsRoleArn = logsRole.roleArn;
+      logsRole = new iam.Role(this, 'LogsRole', { assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
 
-      const streamArn = `${this.cloudWatchLogsRoleArn}:log-stream:*`;
+      const streamArn = `${logsRole.roleArn}:log-stream:*`;
       logsRole.addToPolicy(new iam.PolicyStatement()
         .addActions("logs:PutLogEvents", "logs:CreateLogStream")
         .addResource(streamArn));
@@ -175,8 +173,8 @@ export class CloudTrail extends cdk.Construct {
       kmsKeyId:  props.kmsKey && props.kmsKey.keyArn,
       s3BucketName: s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
-      cloudWatchLogsLogGroupArn: this.cloudWatchLogsGroupArn,
-      cloudWatchLogsRoleArn: this.cloudWatchLogsRoleArn,
+      cloudWatchLogsLogGroupArn: logGroup && logGroup.logGroupArn,
+      cloudWatchLogsRoleArn: logsRole && logsRole.roleArn,
       snsTopicName: props.snsTopic,
       eventSelectors: this.eventSelectors
     });
