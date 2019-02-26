@@ -71,12 +71,8 @@
     "pkglint": "^0.24.1"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.24.1",
-    "minimatch": "^3.0.4"
+    "@aws-cdk/cx-api": "^0.24.1"
   },
-  "bundledDependencies": [
-    "minimatch"
-  ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/cx-api": "^0.24.1"

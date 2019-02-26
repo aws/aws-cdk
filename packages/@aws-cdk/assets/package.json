@@ -53,6 +53,7 @@
     "@aws-cdk/assert": "^0.24.1",
     "aws-cdk": "^0.24.1",
     "cdk-build-tools": "^0.24.1",
+    "@types/minimatch": "^3.0.3",
     "cdk-integ-tools": "^0.24.1",
     "pkglint": "^0.24.1"
   },
@@ -60,8 +61,12 @@
     "@aws-cdk/aws-iam": "^0.24.1",
     "@aws-cdk/aws-s3": "^0.24.1",
     "@aws-cdk/cdk": "^0.24.1",
-    "@aws-cdk/cx-api": "^0.24.1"
+    "@aws-cdk/cx-api": "^0.24.1",
+    "minimatch": "^3.0.4"
   },
+  "bundleDependencies": [
+    "minimatch"
+  ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "^0.24.1",
