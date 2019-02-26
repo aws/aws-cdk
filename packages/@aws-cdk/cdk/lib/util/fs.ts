@@ -1,5 +1,6 @@
 import crypto = require('crypto');
 import fs = require('fs');
+import minimatch = require('minimatch');
 import path = require('path');
 
 const BUFFER_SIZE = 8 * 1024;
@@ -9,24 +10,45 @@ export interface CopyOptions {
    * @default External only follows symlinks that are external to the source directory
    */
   follow?: FollowMode;
+
+  /**
+   * glob patterns to exclude from the copy.
+   */
+  exclude?: string[];
 }
 
 export enum FollowMode {
+  /**
+   * Never follow symlinks.
+   */
   Never = 'never',
+
+  /**
+   * Materialize all symlinks, whether they are internal or external to the source directory.
+   */
   Always = 'always',
 
   /**
    * Only follows symlinks that are external to the source directory.
    */
-  External = 'external'
-}
+  External = 'external',
 
-export function copyFile(src: string, dest: string, options?: CopyOptions) {
-  fs.copyFileSync(src, dest);
+  /**
+   * Forbids source from having any symlinks pointing outside of the source
+   * tree.
+   *
+   * This is the safest mode of operation as it ensures that copy operations
+   * won't materialize files from the user's file system. Internal symlinks are
+   * not followed.
+   *
+   * If the copy operation runs into an external symlink, it will fail.
+   */
+  BlockExternal = 'internal-only',
 }
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
   const follow = options.follow !== undefined ? options.follow : FollowMode.External;
+  const exclude = options.exclude || [];
 
   rootDir = rootDir || srcDir;
 
@@ -37,6 +59,11 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
   const files = fs.readdirSync(srcDir);
   for (const file of files) {
     const sourceFilePath = path.join(srcDir, file);
+
+    if (shouldExclude(path.relative(rootDir, sourceFilePath))) {
+      continue;
+    }
+
     const destFilePath = path.join(destDir, file);
 
     let stat: fs.Stats | undefined = follow === FollowMode.Always
@@ -70,6 +97,25 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       fs.copyFileSync(sourceFilePath, destFilePath);
       stat = undefined;
     }
+  }
+
+  function shouldExclude(filePath: string): boolean {
+    let excludeOutput = false;
+
+    for (const pattern of exclude) {
+      const negate = pattern.startsWith('!');
+      const match = minimatch(filePath, pattern, { matchBase: true, flipNegate: true });
+
+      if (!negate && match) {
+        excludeOutput = true;
+      }
+
+      if (negate && match) {
+        excludeOutput = false;
+      }
+    }
+
+    return excludeOutput;
   }
 }
 

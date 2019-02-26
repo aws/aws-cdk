@@ -1,0 +1,192 @@
+{
+  "version": "0.19.0",
+  "stacks": [
+    {
+      "name": "my-stack",
+      "template": {
+        "Resources": {
+          "R1": {
+            "Type": "R1",
+            "Properties": {
+              "Boom": "Bam"
+            }
+          },
+          "R2": {
+            "Type": "R2",
+            "Properties": {
+              "Bucket": {
+                "Ref": "FileS3Bucket01CB8D46"
+              },
+              "Key": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::Select": [
+                        0,
+                        {
+                          "Fn::Split": [
+                            "||",
+                            {
+                              "Ref": "FileS3VersionKey29F3DA8C"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Select": [
+                        1,
+                        {
+                          "Fn::Split": [
+                            "||",
+                            {
+                              "Ref": "FileS3VersionKey29F3DA8C"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                ]
+              }
+            }
+          }
+        },
+        "Parameters": {
+          "FileS3Bucket01CB8D46": {
+            "Type": "String",
+            "Description": "S3 bucket for asset \"my-stack/File\""
+          },
+          "FileS3VersionKey29F3DA8C": {
+            "Type": "String",
+            "Description": "S3 key for asset version \"my-stack/File\""
+          }
+        }
+      },
+      "environment": {
+        "name": "unknown-account/unknown-region",
+        "account": "unknown-account",
+        "region": "unknown-region"
+      },
+      "metadata": {
+        "/my-stack/R1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "R1",
+            "trace": [
+              "new MyStack (/Users/benisrae/code/cdk/aws-cdk-3/packages/sample/boom.js:23:9)",
+              "Object.<anonymous> (/Users/benisrae/code/cdk/aws-cdk-3/packages/sample/boom.js:36:1)",
+              "Module._compile (internal/modules/cjs/loader.js:688:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)",
+              "Module.load (internal/modules/cjs/loader.js:598:32)",
+              "tryModuleLoad (internal/modules/cjs/loader.js:537:12)",
+              "Function.Module._load (internal/modules/cjs/loader.js:529:3)",
+              "Function.Module.runMain (internal/modules/cjs/loader.js:741:12)",
+              "startup (internal/bootstrap/node.js:285:19)",
+              "bootstrapNodeJSCore (internal/bootstrap/node.js:739:3)"
+            ]
+          }
+        ],
+        "/my-stack/File": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "/Users/benisrae/code/cdk/aws-cdk-3/packages/sample/file.txt",
+              "id": "mystackFileC9F97FBC",
+              "packaging": "file",
+              "s3BucketParameter": "FileS3Bucket01CB8D46",
+              "s3KeyParameter": "FileS3VersionKey29F3DA8C"
+            },
+            "trace": [
+              "FileAsset.Asset [as constructor] (/Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/lib/asset.js:94:20)",
+              "new FileAsset (/Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/lib/asset.js:146:23)",
+              "new MyStack (/Users/benisrae/code/cdk/aws-cdk-3/packages/sample/boom.js:24:20)",
+              "Object.<anonymous> (/Users/benisrae/code/cdk/aws-cdk-3/packages/sample/boom.js:36:1)",
+              "Module._compile (internal/modules/cjs/loader.js:688:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)",
+              "Module.load (internal/modules/cjs/loader.js:598:32)",
+              "tryModuleLoad (internal/modules/cjs/loader.js:537:12)",
+              "Function.Module._load (internal/modules/cjs/loader.js:529:3)",
+              "Function.Module.runMain (internal/modules/cjs/loader.js:741:12)",
+              "startup (internal/bootstrap/node.js:285:19)",
+              "bootstrapNodeJSCore (internal/bootstrap/node.js:739:3)"
+            ]
+          }
+        ],
+        "/my-stack/File/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileS3Bucket01CB8D46",
+            "trace": [
+              "FileAsset.Asset [as constructor] (/Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/lib/asset.js:66:27)",
+              "new FileAsset (/Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/lib/asset.js:146:23)",
+              "new MyStack (/Users/benisrae/code/cdk/aws-cdk-3/packages/sample/boom.js:24:20)",
+              "Object.<anonymous> (/Users/benisrae/code/cdk/aws-cdk-3/packages/sample/boom.js:36:1)",
+              "Module._compile (internal/modules/cjs/loader.js:688:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)",
+              "Module.load (internal/modules/cjs/loader.js:598:32)",
+              "tryModuleLoad (internal/modules/cjs/loader.js:537:12)",
+              "Function.Module._load (internal/modules/cjs/loader.js:529:3)",
+              "Function.Module.runMain (internal/modules/cjs/loader.js:741:12)",
+              "startup (internal/bootstrap/node.js:285:19)",
+              "bootstrapNodeJSCore (internal/bootstrap/node.js:739:3)"
+            ]
+          }
+        ],
+        "/my-stack/File/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileS3VersionKey29F3DA8C",
+            "trace": [
+              "FileAsset.Asset [as constructor] (/Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/lib/asset.js:70:24)",
+              "new FileAsset (/Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/lib/asset.js:146:23)",
+              "new MyStack (/Users/benisrae/code/cdk/aws-cdk-3/packages/sample/boom.js:24:20)",
+              "Object.<anonymous> (/Users/benisrae/code/cdk/aws-cdk-3/packages/sample/boom.js:36:1)",
+              "Module._compile (internal/modules/cjs/loader.js:688:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)",
+              "Module.load (internal/modules/cjs/loader.js:598:32)",
+              "tryModuleLoad (internal/modules/cjs/loader.js:537:12)",
+              "Function.Module._load (internal/modules/cjs/loader.js:529:3)",
+              "Function.Module.runMain (internal/modules/cjs/loader.js:741:12)",
+              "startup (internal/bootstrap/node.js:285:19)",
+              "bootstrapNodeJSCore (internal/bootstrap/node.js:739:3)"
+            ]
+          }
+        ],
+        "/my-stack/R2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "R2",
+            "trace": [
+              "new MyStack (/Users/benisrae/code/cdk/aws-cdk-3/packages/sample/boom.js:27:9)",
+              "Object.<anonymous> (/Users/benisrae/code/cdk/aws-cdk-3/packages/sample/boom.js:36:1)",
+              "Module._compile (internal/modules/cjs/loader.js:688:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:699:10)",
+              "Module.load (internal/modules/cjs/loader.js:598:32)",
+              "tryModuleLoad (internal/modules/cjs/loader.js:537:12)",
+              "Function.Module._load (internal/modules/cjs/loader.js:529:3)",
+              "Function.Module.runMain (internal/modules/cjs/loader.js:741:12)",
+              "startup (internal/bootstrap/node.js:285:19)",
+              "bootstrapNodeJSCore (internal/bootstrap/node.js:739:3)"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "runtime": {
+    "libraries": {
+      "@aws-cdk/assets": "0.24.1",
+      "@aws-cdk/aws-s3": "0.24.1",
+      "@aws-cdk/aws-events": "0.24.1",
+      "@aws-cdk/cdk": "0.24.1",
+      "@aws-cdk/cx-api": "0.24.1",
+      "@aws-cdk/aws-iam": "0.24.1",
+      "@aws-cdk/aws-kms": "0.24.1",
+      "@aws-cdk/aws-s3-notifications": "0.24.1",
+      "@aws-cdk/aws-codepipeline-api": "0.24.1",
+      "jsii-runtime": "node.js/v10.13.0"
+    }
+  }
+}

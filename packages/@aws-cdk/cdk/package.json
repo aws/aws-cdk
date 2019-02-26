@@ -63,6 +63,7 @@
   "devDependencies": {
     "@types/js-base64": "^2.3.1",
     "@types/lodash": "^4.14.118",
+    "@types/minimatch": "^3.0.3",
     "cdk-build-tools": "^0.24.1",
     "cfn2ts": "^0.24.1",
     "fast-check": "^1.7.0",
@@ -71,12 +72,10 @@
   },
   "dependencies": {
     "@aws-cdk/cx-api": "^0.24.1",
-    "js-base64": "^2.4.5",
-    "json-diff": "^0.3.1"
+    "minimatch": "^3.0.4"
   },
   "bundledDependencies": [
-    "json-diff",
-    "js-base64"
+    "minimatch"
   ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {

@@ -101,6 +101,30 @@ export = {
     test.done();
   },
 
+  'copy -- exclude'(test: Test) {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    copyDirectory(path.join(__dirname, 'test.fs.fixtures', 'test1'), outdir, {
+      exclude: [
+        '*',
+        '!subdir2',
+        '!subdir2/**/*',
+        '.*'
+      ]
+    });
+
+    // THEN
+    test.deepEqual(tree(outdir), [
+      'subdir2 (D)',
+      '    empty-subdir (D)',
+      '    subdir3 (D)',
+      '        file3.txt'
+    ]);
+    test.done();
+  },
+
   'fingerprint -- single file'(test: Test) {
     // GIVEN
     const workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'hash-tests'));
