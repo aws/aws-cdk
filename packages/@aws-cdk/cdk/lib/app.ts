@@ -46,17 +46,23 @@ export class App extends Root {
       this._session = new InMemorySynthesisSession();
     }
 
-    // the three holy phases of synthesis: validate, prepare and synthesize
+    // the three holy phases of synthesis: prepare, validate and synthesize
+
+    // prepare
+    this.node.prepareTree();
+
+    // validate
     const errors = this.node.validateTree();
     if (errors.length > 0) {
       const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
       throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
     }
 
-    this.node.prepareTree();
-    this.node.synthesizeTree(this.run());
+    // synthesize
+    this.node.synthesizeTree(this._session);
 
-    this._session.finalize(); // lock session - cannot emit more artifacts
+    // lock session - cannot emit more artifacts
+    this._session.finalize();
 
     return this._session;
   }
