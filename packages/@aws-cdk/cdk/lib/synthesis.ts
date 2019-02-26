@@ -19,10 +19,10 @@ export interface ISynthesisSession {
 
   /**
    * Writes a file into the synthesis session directory.
-   * @param fileName The name of the file.
+   * @param artifactName The name of the file.
    * @param data The contents of the file.
    */
-  writeFile(fileName: string, data: any): void;
+  writeFile(artifactName: string, data: any): void;
 
   /**
    * Reads a file from the synthesis session directory.
@@ -106,7 +106,7 @@ export class SynthesisSession implements ISynthesisSession {
   }
 
   public list(): string[] {
-    return fs.readdirSync(this.outdir);
+    return fs.readdirSync(this.outdir).sort();
   }
 
   public finalize() {
@@ -167,7 +167,7 @@ export class InMemorySynthesisSession implements ISynthesisSession {
   }
 
   public list(): string[] {
-    return [ ...Object.keys(this.files), ...Object.keys(this.dirs) ];
+    return [ ...Object.keys(this.files), ...Object.keys(this.dirs) ].sort();
   }
 
   public finalize() {
