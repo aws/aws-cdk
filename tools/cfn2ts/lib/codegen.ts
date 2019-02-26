@@ -26,7 +26,7 @@ export default class CodeGenerator {
    * @param moduleName the name of the module (used to determine the file name).
    * @param spec     CloudFormation resource specification
    */
-  constructor(moduleName: string, private readonly spec: schema.Specification) {
+  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
     this.outputFile = `${moduleName}.generated.ts`;
     this.code.openFile(this.outputFile);
 
@@ -72,7 +72,7 @@ export default class CodeGenerator {
       this.validateRefKindPresence(name, resourceType);
 
       const cfnName = SpecName.parse(name);
-      const resourceName = genspec.CodeName.forCfnResource(cfnName);
+      const resourceName = genspec.CodeName.forCfnResource(cfnName, this.affix);
       this.code.line();
 
       this.emitResourceType(resourceName, resourceType);
