@@ -1,5 +1,4 @@
 import cpapi = require('@aws-cdk/aws-codepipeline-api');
-import cdk = require('@aws-cdk/cdk');
 import { IJenkinsProvider, jenkinsArtifactsBounds } from "./jenkins-provider";
 
 /**
@@ -68,7 +67,7 @@ export class JenkinsBuildAction extends cpapi.BuildAction {
     this.jenkinsProvider = props.jenkinsProvider;
   }
 
-  protected bind(_stage: cpapi.IStage, _scope: cdk.Construct): void {
+  protected bind(_info: cpapi.ActionBind): void {
     this.jenkinsProvider._registerBuildProvider();
   }
 }
@@ -123,7 +122,7 @@ export class JenkinsTestAction extends cpapi.TestAction {
     this.jenkinsProvider = props.jenkinsProvider;
   }
 
-  protected bind(_stage: cpapi.IStage, _scope: cdk.Construct): void {
+  protected bind(_info: cpapi.ActionBind): void {
     this.jenkinsProvider._registerTestProvider();
   }
 }
