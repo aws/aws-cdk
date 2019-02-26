@@ -72,9 +72,8 @@ export class App extends Root {
    * @param stackName The name of the stack to synthesize
    */
   public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
-    this.getStack(stackName); // just make sure stack exists
-
-    const artifact = this.run().readFile(Stack.artifactIdForStack(stackName));
+    const stack = this.getStack(stackName);
+    const artifact = this.run().readFile(stack.artifactName);
     return JSON.parse(artifact);
   }
 
