@@ -33,6 +33,15 @@ export async function execProgram(aws: SDK, config: Settings): Promise<cxapi.Syn
     context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
   }
 
+  let versionReporting: boolean = config.get(['versionReporting']);
+  if (versionReporting === undefined) {
+    versionReporting = true; // defaults to true
+  }
+
+  if (!versionReporting) {
+    context[cxapi.DISABLE_VERSION_REPORTING] = true;
+  }
+
   debug('context:', context);
 
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
