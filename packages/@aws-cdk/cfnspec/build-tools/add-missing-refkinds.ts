@@ -1,3 +1,11 @@
+/**
+ * Generates patches into the spec-source/600_RefKinds_patch.json document for any resource not having one yet.
+ *
+ * It will prompt the user for the RefKind to be applied for any new resource class, and offers completion assis for all
+ * the known (already used at least once) RefKind values. New values can be introduced but they will need to be typed
+ * twice (for confirmation of the user's intention).
+ */
+
 import fs = require('fs-extra');
 import path = require('path');
 import readline = require('readline');
