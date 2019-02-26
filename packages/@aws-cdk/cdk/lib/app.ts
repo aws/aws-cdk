@@ -72,7 +72,7 @@ export class App extends Root {
 
     const manifest: cxapi.SynthesizeResponse = {
       version: cxapi.PROTO_RESPONSE_VERSION,
-      stacks: Object.values(this.stacks).map(s => session.readFile(s.artifactName)),
+      stacks: Object.values(this.stacks).map(s => this.readSynthesizedStack(session, s.artifactName)),
       runtime: this.collectRuntimeInformation()
     };
 
@@ -91,8 +91,8 @@ export class App extends Root {
    */
   public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
     const stack = this.getStack(stackName);
-    const artifact = this.run().readFile(stack.artifactName);
-    return JSON.parse(artifact);
+    const session = this.run();
+    return this.readSynthesizedStack(session, stack.artifactName);
   }
 
   /**
@@ -105,6 +105,10 @@ export class App extends Root {
       ret.push(this.synthesizeStack(stackName));
     }
     return ret;
+  }
+
+  private readSynthesizedStack(session: ISynthesisSession, artifactName: string) {
+    return JSON.parse(session.readFile(artifactName).toString());
   }
 
   private collectRuntimeInformation(): cxapi.AppRuntime {

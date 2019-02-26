@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import os = require('os');
@@ -5,7 +6,7 @@ import path = require('path');
 import cdk = require('../lib');
 import { InMemorySynthesisSession, SynthesisSession } from '../lib';
 
-const sessionTestMatix: any = { };
+const sessionTestMatix: any = {};
 
 export = {
   'constructs that implement "synthesize" can emit artifacts during synthesis'(test: Test) {
@@ -32,6 +33,37 @@ export = {
       'synthe2synthe30CE80559.txt'
     ]);
 
+    test.done();
+  },
+
+  'cdk.out contains all synthesized stacks'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack1 = new cdk.Stack(app, 'stack1');
+    new cdk.Resource(stack1, 'Resource1', { type: 'AWS::CDK::Resource' });
+    new cdk.Resource(stack1, 'Resource2', { type: 'AWS::CDK::Resource' });
+    const stack2 = new cdk.Stack(app, 'stack2');
+    new cdk.Resource(stack2, 'ResourceA', { type: 'AWS::CDK::Resource' });
+
+    // WHEN
+    const session = app.run();
+    const manifest: cxapi.SynthesizeResponse = JSON.parse(session.readFile(cxapi.OUTFILE_NAME).toString());
+
+    // THEN
+    const t1 = manifest.stacks.find(s => s.name === 'stack1')!.template;
+    const t2 = manifest.stacks.find(s => s.name === 'stack2')!.template;
+
+    test.deepEqual(t1, {
+      Resources: {
+        Resource1: { Type: 'AWS::CDK::Resource' },
+        Resource2: { Type: 'AWS::CDK::Resource' }
+      }
+    });
+    test.deepEqual(t2, {
+      Resources: {
+        ResourceA: { Type: 'AWS::CDK::Resource' }
+      }
+    });
     test.done();
   },
 
@@ -89,12 +121,12 @@ const sessionTests = {
     session.writeFile('file1.txt', 'boom1');
 
     // THEN
-    test.deepEqual(session.list(), [ 'dir1', 'file1.txt' ]);
+    test.deepEqual(session.list(), ['dir1', 'file1.txt']);
     test.done();
   }
 };
 
-for (const [ name, fn ] of Object.entries(sessionTests)) {
+for (const [name, fn] of Object.entries(sessionTests)) {
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'synthesis-tests'));
   const fsSession = new SynthesisSession({ outdir });
   const memorySession = new InMemorySynthesisSession();
