@@ -18,12 +18,12 @@ const CONTEXT_KEY = 'context';
  */
 export class Configuration {
   public settings = new Settings();
-  public context = new Settings();
+  public context = new Context(new Settings(), [], new Settings());
 
   private readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
   private readonly commandLineArguments: Settings;
-
-  private contextIsInLegacyFile = false;
+  private projectConfig: Settings;
+  private projectContext: Settings;
 
   constructor(commandLineArguments?: yargs.Arguments) {
     this.commandLineArguments = commandLineArguments
@@ -36,28 +36,15 @@ export class Configuration {
    */
   public async load(): Promise<this> {
     const userConfig = await loadAndLog(USER_DEFAULTS);
-    const projectConfig = await loadAndLog(PROJECT_CONFIG);
-    const projectContext = await loadAndLog(PROJECT_CONTEXT);
+    this.projectConfig = await loadAndLog(PROJECT_CONFIG);
+    this.projectContext = await loadAndLog(PROJECT_CONTEXT);
 
-    // If the config currently has a 'context' setting, use that as context.
-    // Otherwise, load context from a separate file.
-    this.contextIsInLegacyFile = projectConfig.get([CONTEXT_KEY]) !== undefined;
-    if (this.contextIsInLegacyFile) {
-      if (!projectContext.empty) {
-        // Let's check context is not in two places, that's just a recipe for
-        // disaster while we're in the cutover period.
-        warning(`Found context in both ${PROJECT_CONFIG} and ${PROJECT_CONTEXT}; please remove one of them (${PROJECT_CONTEXT} will be ignored).`);
-      }
-      this.context = new Settings(projectConfig.get([CONTEXT_KEY]));
-      projectConfig.unset([CONTEXT_KEY]);
-    } else {
-      this.context = projectContext;
-    }
+    this.context = new Context(this.projectConfig, [CONTEXT_KEY], this.projectContext);
 
     // Build settings from what's left
     this.settings = this.defaultConfig
       .merge(userConfig)
-      .merge(projectConfig)
+      .merge(this.projectConfig)
       .merge(this.commandLineArguments)
       .makeReadOnly();
 
@@ -68,15 +55,11 @@ export class Configuration {
    * Save the project config
    */
   public async saveContext(): Promise<this> {
-    if (this.contextIsInLegacyFile) {
-      // Save to cdk.json if it was loaded from there
-      const projectConfig = await new Settings().load(PROJECT_CONFIG);
-      projectConfig.set([CONTEXT_KEY], this.context.get([]));
-      await projectConfig.save(PROJECT_CONFIG);
-    } else {
-      // Otherwise save to cdk.context.json
-      await this.context.save(PROJECT_CONTEXT);
+    if (this.context.modifiedBottom) {
+      await this.projectConfig.save(PROJECT_CONFIG);
     }
+    await this.projectContext.save(PROJECT_CONTEXT);
+
     return this;
   }
 }
@@ -88,6 +71,55 @@ async function loadAndLog(fileName: string): Promise<Settings> {
     debug(fileName + ':', JSON.stringify(ret.get([]), undefined, 2));
   }
   return ret;
+}
+
+/**
+ * Class that supports overlaying 2 property bags
+ *
+ * Writes go to the topmost property bag, but if any writes collide between
+ * them the value will be deleted from the underlying property bag.
+ */
+export class Context {
+  public modifiedBottom = false;
+
+  constructor(private readonly bottom: Settings, private readonly bottomPrefixPath: string[], private readonly top: Settings) {
+  }
+
+  public everything(): {[key: string]: any} {
+    const b = this.bottom.get(this.bottomPrefixPath);
+    const t = this.top.get([]);
+    return Object.assign(b, t);
+  }
+
+  public get(key: string): any {
+    let x = this.top.get([key]);
+    if (x === undefined) { x = this.bottom.get(this.bottomPrefixPath.concat([key])); }
+    return x;
+  }
+
+  public set(key: string, value: any) {
+    this.top.set([key], value);
+    if (this.bottom.get(this.bottomPrefixPath.concat([key])) !== undefined) {
+      this.bottom.unset(this.bottomPrefixPath.concat([key]));
+      this.modifiedBottom = true;
+    }
+  }
+
+  public setAll(values: object) {
+    for (const [key, value] of Object.entries(values)) {
+      this.set(key, value);
+    }
+  }
+
+  public unset(key: string) {
+    this.set(key, undefined);
+  }
+
+  public clear() {
+    for (const key of Object.keys(this.everything())) {
+      this.unset(key);
+    }
+  }
 }
 
 /**
@@ -139,11 +171,6 @@ export class Settings {
   }
 
   constructor(private settings: SettingsMap = {}, private readOnly = false) {}
-
-  public rescope(key: string): Settings {
-    if (this.empty) { return this; }
-    return new Settings({ [key]: this.settings });
-  }
 
   public async load(fileName: string): Promise<this> {
     if (this.readOnly) {

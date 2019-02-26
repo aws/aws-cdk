@@ -27,7 +27,7 @@ export function handler(args: yargs.Arguments) {
 export async function realHandler(options: CommandOptions): Promise<number> {
   const { configuration, args } = options;
 
-  const contextValues = configuration.context.get([]);
+  const contextValues = configuration.context.everything();
 
   if (args.clear) {
     configuration.context.clear();
@@ -35,7 +35,7 @@ export async function realHandler(options: CommandOptions): Promise<number> {
     print('All context values cleared.');
   } else if (args.reset) {
     invalidateContext(contextValues, args.reset);
-    configuration.context.set([], contextValues);
+    configuration.context.setAll(contextValues);
     await configuration.saveContext();
   } else {
     // List -- support '--json' flag
