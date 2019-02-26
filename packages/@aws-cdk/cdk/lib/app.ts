@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Stack } from './cloudformation/stack';
-import { Root } from './core/construct';
+import { IConstruct, Root } from './core/construct';
 import { InMemorySynthesisSession, ISynthesisSession, SynthesisSession } from './synthesis';
 
 /**
@@ -20,14 +20,18 @@ export class App extends Root {
 
   private get stacks() {
     const out: { [name: string]: Stack } = { };
-    for (const child of this.node.children) {
-      if (!Stack.isStack(child)) {
-        throw new Error(`The child ${child.toString()} of App must be a Stack`);
-      }
-
-      out[child.node.id] = child as Stack;
-    }
+    collectStacks(this);
     return out;
+
+    function collectStacks(c: IConstruct) {
+      for (const child of c.node.children) {
+        if (Stack.isStack(child)) {
+          out[child.node.uniqueId] = child;
+        }
+
+        collectStacks(child);
+      }
+    }
   }
 
   /**
@@ -46,6 +50,8 @@ export class App extends Root {
       this._session = new InMemorySynthesisSession();
     }
 
+    const session = this._session;
+
     // the three holy phases of synthesis: prepare, validate and synthesize
 
     // prepare
@@ -59,17 +65,29 @@ export class App extends Root {
     }
 
     // synthesize
-    this.node.synthesizeTree(this._session);
+    this.node.synthesizeTree(session);
+
+    // write the entrypoint/manifest of this app. It includes a *copy* of the
+    // synthesized stack output for backwards compatibility
+
+    const manifest: cxapi.SynthesizeResponse = {
+      version: cxapi.PROTO_RESPONSE_VERSION,
+      stacks: Object.values(this.stacks).map(s => session.readFile(s.artifactName)),
+      runtime: this.collectRuntimeInformation()
+    };
+
+    session.writeFile(cxapi.OUTFILE_NAME, JSON.stringify(manifest, undefined, 2));
 
     // lock session - cannot emit more artifacts
-    this._session.finalize();
+    session.finalize();
 
-    return this._session;
+    return session;
   }
 
   /**
    * Synthesize and validate a single stack
    * @param stackName The name of the stack to synthesize
+   * @deprecated This method is going to be deprecated in a future version of the CDK
    */
   public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
     const stack = this.getStack(stackName);
@@ -79,6 +97,7 @@ export class App extends Root {
 
   /**
    * Synthesizes multiple stacks
+   * @deprecated This method is going to be deprecated in a future version of the CDK
    */
   public synthesizeStacks(stackNames: string[]): cxapi.SynthesizedStack[] {
     const ret: cxapi.SynthesizedStack[] = [];
@@ -86,19 +105,6 @@ export class App extends Root {
       ret.push(this.synthesizeStack(stackName));
     }
     return ret;
-  }
-
-  /**
-   * Synthesize the app manifest (the root file which the toolkit reads)
-   */
-  protected synthesize(session: ISynthesisSession) {
-    const manifest: cxapi.SynthesizeResponse = {
-      version: cxapi.PROTO_RESPONSE_VERSION,
-      stacks: this.synthesizeStacks(Object.keys(this.stacks)),
-      runtime: this.collectRuntimeInformation()
-    };
-
-    session.writeFile(cxapi.OUTFILE_NAME, JSON.stringify(manifest, undefined, 2));
   }
 
   private collectRuntimeInformation(): cxapi.AppRuntime {
