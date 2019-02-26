@@ -190,13 +190,13 @@ export class ConstructNode {
   /**
    * Return this construct and all of its children in the given order
    */
-  public findAll(order: ConstructOrder = ConstructOrder.DepthFirst): IConstruct[] {
+  public findAll(order: ConstructOrder = ConstructOrder.PreOrder): IConstruct[] {
     const ret = new Array<IConstruct>();
     visit(this.host);
     return ret;
 
     function visit(node: IConstruct) {
-      if (order === ConstructOrder.BreadthFirst) {
+      if (order === ConstructOrder.PreOrder) {
         ret.push(node);
       }
 
@@ -204,7 +204,7 @@ export class ConstructNode {
         visit(child);
       }
 
-      if (order === ConstructOrder.DepthFirst) {
+      if (order === ConstructOrder.PostOrder) {
         ret.push(node);
       }
     }
@@ -328,7 +328,7 @@ export class ConstructNode {
    * Run 'prepare()' on all constructs in the tree
    */
   public prepareTree() {
-    const constructs = this.host.node.findAll(ConstructOrder.BreadthFirst);
+    const constructs = this.host.node.findAll(ConstructOrder.PreOrder);
     // Aspects are applied root to leaf
     for (const construct of constructs) {
       construct.node.invokeAspects();
@@ -345,7 +345,7 @@ export class ConstructNode {
    * Synthesizes the entire subtree by writing artifacts into a synthesis session.
    */
   public synthesizeTree(session: ISynthesisSession) {
-    const constructs = this.host.node.findAll(ConstructOrder.DepthFirst);
+    const constructs = this.host.node.findAll(ConstructOrder.PostOrder);
 
     for (const construct of constructs) {
       if (Construct.isConstruct(construct)) {
@@ -725,14 +725,14 @@ function createStackTrace(below: Function): string[] {
  */
 export enum ConstructOrder {
   /**
-   * Breadth first
+   * Depth-first, pre-order
    */
-  BreadthFirst,
+  PreOrder,
 
   /**
-   * Depth first
+   * Depth-first, post-order (leaf nodes first)
    */
-  DepthFirst
+  PostOrder
 }
 
 /**
