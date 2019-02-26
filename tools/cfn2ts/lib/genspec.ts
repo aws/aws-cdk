@@ -19,8 +19,8 @@ export const CORE_NAMESPACE = 'cdk';
  * This refers to TypeScript constructs (typically a class)
  */
 export class CodeName {
-  public static forCfnResource(specName: SpecName): CodeName {
-    const className = RESOURCE_CLASS_PREFIX + specName.resourceName;
+  public static forCfnResource(specName: SpecName, affix: string): CodeName {
+    const className = RESOURCE_CLASS_PREFIX + specName.resourceName + affix;
     return new CodeName(packageName(specName), '', className, specName);
   }
 
@@ -275,13 +275,7 @@ function specTypeToCodeType(resourceContext: CodeName, type: string): CodeName {
  * Translate a list of type references in a resource context to a list of code names
  */
 export function specTypesToCodeTypes(resourceContext: CodeName, types: string[]): CodeName[] {
-  const ret = [];
-
-  for (const type of types) {
-    ret.push(specTypeToCodeType(resourceContext, type));
-  }
-
-  return ret;
+  return types.map(type => specTypeToCodeType(resourceContext, type));
 }
 
 export interface PropertyVisitor<T> {

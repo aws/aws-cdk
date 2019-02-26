@@ -1,6 +1,6 @@
 export interface Documented {
   /** A link to the AWS CloudFormation User Guide that provides informations about the entity. */
-  Documentation: string;
+  Documentation?: string;
 }
 
 export enum PrimitiveType {

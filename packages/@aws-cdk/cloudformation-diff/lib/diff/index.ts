@@ -56,10 +56,10 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
     const spec = resourceSpec && resourceSpec.Properties && resourceSpec.Properties[key];
     if (spec && !deepEqual(oldV, newV)) {
       switch (spec.UpdateType) {
-        case 'Immutable':
+        case cfnspec.schema.UpdateType.Immutable:
           changeImpact = types.ResourceImpact.WILL_REPLACE;
           break;
-        case 'Conditional':
+        case cfnspec.schema.UpdateType.Conditional:
           changeImpact = types.ResourceImpact.MAY_REPLACE;
           break;
         default:

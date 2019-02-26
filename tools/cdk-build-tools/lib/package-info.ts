@@ -108,7 +108,7 @@ export interface CDKBuildOptions {
   /**
    * What CloudFormation scope to generate resources for, if any
    */
-  cloudformation?: string;
+  cloudformation?: string | string[];
 
   /**
    * An optional command (formatted as a list of strings) to run before building

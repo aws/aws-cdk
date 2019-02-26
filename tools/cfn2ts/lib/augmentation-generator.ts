@@ -8,7 +8,7 @@ export class AugmentationGenerator {
   private readonly code = new CodeMaker();
   private readonly outputFile: string;
 
-  constructor(moduleName: string, private readonly spec: schema.Specification) {
+  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
     this.outputFile = `${moduleName}-augmentations.generated.ts`;
     this.code.openFile(this.outputFile);
 
@@ -17,16 +17,18 @@ export class AugmentationGenerator {
     this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
   }
 
-  public emitCode() {
+  public emitCode(): boolean {
+    let hadAugmentations = false;
     for (const resourceTypeName of Object.keys(this.spec.ResourceTypes).sort()) {
       const aug = cfnSpec.resourceAugmentation(resourceTypeName);
 
       if (aug.metrics) {
         this.code.line('import cloudwatch = require("@aws-cdk/aws-cloudwatch");');
-
         this.emitMetricAugmentations(resourceTypeName, aug.metrics);
+        hadAugmentations = true;
       }
     }
+    return hadAugmentations;
   }
 
   /**
@@ -39,7 +41,7 @@ export class AugmentationGenerator {
 
   private emitMetricAugmentations(resourceTypeName: string, metrics: schema.ResourceMetricAugmentations) {
     const cfnName = SpecName.parse(resourceTypeName);
-    const resourceName = genspec.CodeName.forCfnResource(cfnName);
+    const resourceName = genspec.CodeName.forCfnResource(cfnName, this.affix);
     const l2ClassName = resourceName.className.replace(/^Cfn/, '');
 
     const baseClassName = l2ClassName + 'Base';

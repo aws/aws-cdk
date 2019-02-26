@@ -26,16 +26,40 @@ async function main() {
   for (const namespace of cfnspec.namespaces()) {
     const [ moduleFamily, moduleBaseName ] = namespace.split('::');
 
-    const moduleName = `${moduleFamily}-${moduleBaseName}`.toLocaleLowerCase();
-    const pacakgePath = path.join(root, moduleName);
-
-    // we already have a module for this namesapce, move on.
-    if (await fs.pathExists(pacakgePath)) {
-      continue;
-    }
+    const moduleName = `${moduleFamily}-${moduleBaseName.replace(/V\d+$/, '')}`.toLocaleLowerCase();
+    const packagePath = path.join(root, moduleName);
 
     const lowcaseModuleName = moduleBaseName.toLocaleLowerCase();
     const packageName = `@aws-cdk/${moduleName}`;
+
+    // we already have a module for this namesapce, move on.
+    if (await fs.pathExists(packagePath)) {
+      const packageJsonPath = path.join(packagePath, 'package.json');
+      const packageJson = require(packageJsonPath);
+      let scopes: string | string[] = packageJson['cdk-build'].cloudformation;
+      if (typeof scopes === 'string') { scopes = [scopes]; }
+      if (scopes.indexOf(namespace) !== -1) {
+        // V2-style module is already modeled in the root package, nothing to be done!
+        continue;
+      } else if (await fs.pathExists(path.join(root, `${moduleFamily}-${moduleBaseName}`.toLocaleLowerCase()))) {
+        // V2-style package already has it's own package (legacy behavior), nothing to be done!
+        continue;
+      } else {
+        // V2-style package needs to be added to it's "V1" package... Get down to business!
+        console.error(`Adding ${namespace} to ${packageName}`);
+        scopes.push(namespace);
+        packageJson['cdk-build'].cloudformation = scopes;
+        await fs.writeJson(packageJsonPath, packageJson, { encoding: 'utf-8', spaces: 2 });
+        const indexTsPath = path.join(packagePath, 'lib', 'index.ts');
+        const indexTs = [
+          (await fs.readFile(indexTsPath, { encoding: 'utf8' })).trimRight(),
+          `// ${namespace} CloudFormation Resources:`,
+          `export * from './${lowcaseModuleName}.generated';`
+        ].join('\n');
+        await fs.writeFile(indexTsPath, indexTs, { encoding: 'utf8' });
+        continue;
+      }
+    }
 
     // dotnet names
     const dotnetPackage = `Amazon.CDK.${moduleFamily}.${moduleBaseName}`;
@@ -50,7 +74,7 @@ async function main() {
       : `${moduleFamily.toLocaleLowerCase()}-${lowcaseModuleName}`;
 
     async function write(relativePath: string, contents: string[] | string | object) {
-      const fullPath = path.join(pacakgePath, relativePath);
+      const fullPath = path.join(packagePath, relativePath);
       const dir = path.dirname(fullPath);
       await fs.mkdirp(dir);
 
@@ -105,6 +129,7 @@ async function main() {
         integ: "cdk-integ",
         lint: "cdk-lint",
         package: "cdk-package",
+        awslint: "cdk-awslint",
         pkglint: "pkglint -f",
         test: "cdk-test",
         watch: "cdk-watch",
@@ -209,12 +234,13 @@ async function main() {
 
     const templateDir = path.join(__dirname, 'template');
     for (const file of await fs.readdir(templateDir)) {
-      await fs.copy(path.join(templateDir, file), path.join(pacakgePath, file));
+      await fs.copy(path.join(templateDir, file), path.join(packagePath, file));
     }
 
     // bootstrap and build the package and all deps to ensure integrity
     const lerna = path.join(path.dirname(require.resolve('lerna/package.json')), 'cli.js');
-    await exec(`${lerna} bootstrap --scope ${packageName}`);
+    await exec(`${lerna} bootstrap`);
+    await exec(`${lerna} run --include-filtered-dependencies --progress pkglint --scope ${packageName}`);
     await exec(`${lerna} run --include-filtered-dependencies --progress build --scope ${packageName}`);
   }
 }
