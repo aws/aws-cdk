@@ -185,7 +185,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('My::Resource::Type', {
       Metadata: {
-        "aws:asset:path": SAMPLE_ASSET_DIRECTORY,
+        "aws:asset:path": './MyAsset',
         "aws:asset:property": "PropName"
       }
     }, ResourcePart.CompleteDefinition));

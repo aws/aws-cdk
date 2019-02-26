@@ -143,12 +143,14 @@ export class Asset extends cdk.Construct {
       ? this.artifactName
       : path.join(this.artifactName, path.basename(props.path));
 
+    this.relativePath = `./${this.relativePath}`; // prefix with './'
+
     // attach metadata to the lambda function which includes information
     // for tooling to be able to package and upload a directory to the
     // s3 bucket and plug in the bucket name and key in the correct
     // parameters.
     const asset: cxapi.FileAssetMetadataEntry = {
-      path: `./${this.relativePath}`,
+      path: this.relativePath,
       id: this.node.uniqueId,
       packaging: props.packaging,
       s3BucketParameter: bucketParam.logicalId,
