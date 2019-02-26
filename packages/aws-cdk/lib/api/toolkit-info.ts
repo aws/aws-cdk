@@ -99,11 +99,11 @@ export class ToolkitInfo {
   /**
    * Prepare an ECR repository for uploading to using Docker
    */
-  public async prepareEcrRepository(id: string, imageTag: string): Promise<EcrRepositoryInfo> {
+  public async prepareEcrRepository(assetId: string): Promise<EcrRepositoryInfo> {
     const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForWriting);
 
-    // Create the repository if it doesn't exist yet
-    const repositoryName = 'cdk/' + id.replace(/[:/]/g, '-').toLowerCase();
+    // Repository name based on asset id
+    const repositoryName = 'cdk/' + assetId.replace(/[:/]/g, '-').toLowerCase();
 
     let repository;
     try {
@@ -115,32 +115,34 @@ export class ToolkitInfo {
     }
 
     if (repository) {
-      try {
-        debug(`${repositoryName}: checking for image ${imageTag}`);
-        await ecr.describeImages({ repositoryName, imageIds: [{ imageTag }] }).promise();
-
-        // If we got here, the image already exists. Nothing else needs to be done.
-        return {
-          alreadyExists: true,
-          repositoryUri: repository.repositoryUri!,
-          repositoryName
-        };
-      } catch (e) {
-        if (e.code !== 'ImageNotFoundException') { throw e; }
-      }
-    } else {
-      debug(`${repositoryName}: creating`);
-      const response = await ecr.createRepository({ repositoryName }).promise();
-      repository = response.repository!;
-
-      // Better put a lifecycle policy on this so as to not cost too much money
-      await ecr.putLifecyclePolicy({
-        repositoryName,
-        lifecyclePolicyText: JSON.stringify(DEFAULT_REPO_LIFECYCLE)
-      }).promise();
+      return {
+        repositoryUri: repository.repositoryUri!,
+        repositoryName
+      };
     }
 
-    // The repo exists, image just needs to be uploaded. Get auth to do so.
+    debug(`${repositoryName}: creating`);
+    const response = await ecr.createRepository({ repositoryName }).promise();
+    repository = response.repository!;
+
+    // Better put a lifecycle policy on this so as to not cost too much money
+    await ecr.putLifecyclePolicy({
+      repositoryName,
+      lifecyclePolicyText: JSON.stringify(DEFAULT_REPO_LIFECYCLE)
+    }).promise();
+
+    return {
+      repositoryUri: repository.repositoryUri!,
+      repositoryName
+    };
+  }
+
+  /**
+   * Get ECR credentials
+   */
+  public async getEcrCredentials(): Promise<EcrCredentials> {
+    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForReading);
+
     debug(`Fetching ECR authorization token`);
     const authData =  (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
     if (authData.length === 0) {
@@ -150,28 +152,38 @@ export class ToolkitInfo {
     const [username, password] = token.split(':');
 
     return {
-      alreadyExists: false,
-      repositoryUri: repository.repositoryUri!,
-      repositoryName,
       username,
       password,
       endpoint: authData[0].proxyEndpoint!,
     };
   }
+
+  /**
+   * Check if image already exists in ECR repository
+   */
+  public async checkEcrImage(repositoryName: string, imageTag: string): Promise<boolean> {
+    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForReading);
+
+    try {
+      debug(`${repositoryName}: checking for image ${imageTag}`);
+      await ecr.describeImages({ repositoryName, imageIds: [{ imageTag }] }).promise();
+
+      // If we got here, the image already exists. Nothing else needs to be done.
+      return true;
+    } catch (e) {
+      if (e.code !== 'ImageNotFoundException') { throw e; }
+    }
+
+    return false;
+  }
 }
 
-export type EcrRepositoryInfo = CompleteEcrRepositoryInfo | UploadableEcrRepositoryInfo;
-
-export interface CompleteEcrRepositoryInfo {
+export interface EcrRepositoryInfo {
   repositoryUri: string;
   repositoryName: string;
-  alreadyExists: true;
 }
 
-export interface UploadableEcrRepositoryInfo {
-  repositoryUri: string;
-  repositoryName: string;
-  alreadyExists: false;
+export interface EcrCredentials {
   username: string;
   password: string;
   endpoint: string;

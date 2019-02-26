@@ -75,8 +75,20 @@ export = {
         expect(stack).to(haveResource("AWS::S3::BucketPolicy", ExpectedBucketPolicyProperties));
         expect(stack).to(haveResource("AWS::Logs::LogGroup"));
         expect(stack).to(haveResource("AWS::IAM::Role"));
-        expect(stack).to(haveResource("AWS::Logs::LogGroup", {
-          RetentionInDays: 365
+        expect(stack).to(haveResource("AWS::Logs::LogGroup", { RetentionInDays: 365 }));
+        expect(stack).to(haveResource("AWS::IAM::Policy", {
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [{
+              Effect: 'Allow',
+              Action: ['logs:PutLogEvents', 'logs:CreateLogStream'],
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyAmazingCloudTrailLogsRoleF2CCF977', 'Arn'] }, ':log-stream:*']],
+              }
+            }]
+          },
+          PolicyName: 'MyAmazingCloudTrailLogsRoleDefaultPolicy61DC49E7',
+          Roles: [{ Ref: 'MyAmazingCloudTrailLogsRoleF2CCF977' }],
         }));
         const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
         test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);

@@ -10,7 +10,7 @@ import { zipDirectory } from './archive';
 import { prepareContainerAsset } from './docker';
 import { debug, success } from './logging';
 
-export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
+export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo, ci?: boolean): Promise<CloudFormation.Parameter[]> {
   const assets = findAssets(stack.metadata);
   if (assets.length === 0) {
     return [];
@@ -26,13 +26,13 @@ export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: Toolk
   for (const asset of assets) {
     debug(` - ${asset.path} (${asset.packaging})`);
 
-    params = params.concat(await prepareAsset(asset, toolkitInfo));
+    params = params.concat(await prepareAsset(asset, toolkitInfo, ci));
   }
 
   return params;
 }
 
-async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
+async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo, ci?: boolean): Promise<CloudFormation.Parameter[]> {
   debug('Preparing asset', JSON.stringify(asset));
   switch (asset.packaging) {
     case 'zip':
@@ -40,7 +40,7 @@ async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo)
     case 'file':
       return await prepareFileAsset(asset, toolkitInfo);
     case 'container-image':
-      return await prepareContainerAsset(asset, toolkitInfo);
+      return await prepareContainerAsset(asset, toolkitInfo, ci);
     default:
       // tslint:disable-next-line:max-line-length
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);

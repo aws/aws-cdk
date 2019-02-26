@@ -9,6 +9,7 @@ import yargs = require('yargs');
 
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
+import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';
 import { leftPad } from '../lib/api/util/string-manipulation';
 import { printSecurityDiff, printStackDiff, RequireApproval } from '../lib/diff';
@@ -61,6 +62,7 @@ async function parseCommandLineArguments() {
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' }))
+      .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'x', desc: 'only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
@@ -105,7 +107,11 @@ async function initCommandLine() {
   const configuration = new Configuration(argv);
   await configuration.load();
 
-  const appStacks = new AppStacks(argv, configuration, aws);
+  const appStacks = new AppStacks({
+    verbose: argv.trace || argv.verbose,
+    ignoreErrors: argv.ignoreErrors,
+    strict: argv.strict,
+    configuration, aws, synthesizer: execProgram });
 
   const renames = parseRenames(argv.rename);
 
@@ -171,7 +177,7 @@ async function initCommandLine() {
         return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
 
       case 'deploy':
-        return await cliDeploy(args.STACKS, args.exclusively, toolkitStackName, args.roleArn, configuration.settings.get(['requireApproval']));
+        return await cliDeploy(args.STACKS, args.exclusively, toolkitStackName, args.roleArn, configuration.settings.get(['requireApproval']), args.ci);
 
       case 'destroy':
         return await cliDestroy(args.STACKS, args.exclusively, args.force, args.roleArn);
@@ -248,7 +254,10 @@ async function initCommandLine() {
                                outputDir: string|undefined,
                                json: boolean,
                                numbered: boolean): Promise<any> {
-    const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
+    // Only autoselect dependencies if it doesn't interfere with user request or output options
+    const autoSelectDependencies = !exclusively && outputDir !== undefined;
+
+    const stacks = await appStacks.selectStacks(stackNames, autoSelectDependencies ? ExtendedStackSelection.Upstream : ExtendedStackSelection.None);
     renames.validateSelectedStacks(stacks);
 
     if (doInteractive) {
@@ -323,7 +332,8 @@ async function initCommandLine() {
                            exclusively: boolean,
                            toolkitStackName: string,
                            roleArn: string | undefined,
-                           requireApproval: RequireApproval) {
+                           requireApproval: RequireApproval,
+                           ci: boolean) {
     if (requireApproval === undefined) { requireApproval = RequireApproval.Broadening; }
 
     const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
@@ -361,7 +371,7 @@ async function initCommandLine() {
       }
 
       try {
-        const result = await deployStack({ stack, sdk: aws, toolkitInfo, deployName, roleArn });
+        const result = await deployStack({ stack, sdk: aws, toolkitInfo, deployName, roleArn, ci });
         const message = result.noOp
           ? ` ✅  %s (no changes)`
           : ` ✅  %s`;

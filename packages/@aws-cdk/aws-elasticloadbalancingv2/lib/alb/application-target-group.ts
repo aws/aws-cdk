@@ -62,7 +62,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
 /**
  * Define an Application Target Group
  */
-export class ApplicationTargetGroup extends TargetGroupBase {
+export class ApplicationTargetGroup extends TargetGroupBase implements IApplicationTargetGroup {
   /**
    * Import an existing target group
    */
