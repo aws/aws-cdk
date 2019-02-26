@@ -63,7 +63,6 @@
   "devDependencies": {
     "@types/js-base64": "^2.3.1",
     "@types/lodash": "^4.14.118",
-    "@types/minimatch": "^3.0.3",
     "cdk-build-tools": "^0.24.1",
     "cfn2ts": "^0.24.1",
     "fast-check": "^1.7.0",
