@@ -26,7 +26,7 @@ export class App extends Root {
     function collectStacks(c: IConstruct) {
       for (const child of c.node.children) {
         if (Stack.isStack(child)) {
-          out[child.node.uniqueId] = child;
+          out[child.node.id] = child; // TODO: this should probably be changed to uniqueId
         }
 
         collectStacks(child);
@@ -140,6 +140,7 @@ export class App extends Root {
     }
 
     const stack = this.stacks[stackname];
+
     if (!stack) {
       throw new Error(`Cannot find stack ${stackname}`);
     }
