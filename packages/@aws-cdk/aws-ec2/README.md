@@ -303,3 +303,33 @@ selectable by instantiating one of these classes:
 > section of your `cdk.json`.
 >
 > We will add command-line options to make this step easier in the future.
+
+### VPN connections to a VPC
+
+Create your VPC with a VPN gateway:
+
+```ts
+const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
+  vpnGateway: true
+});
+```
+
+Then, add connections:
+
+```ts
+// Dynamic routing
+vpc.newVpnConnection('Dynamic', {
+  ip: '1.2.3.4'
+});
+
+// Static routing
+vpc.newVpnConnection('Static', {
+  ip: '4.5.6.7',
+  staticRoutes: [
+    '192.168.10.0/24',
+    '192.168.20.0/24'
+  ]
+});
+```
+
+Routes will be propagated on the route tables associated with the private subnets.

@@ -1,5 +1,6 @@
 import { Construct, IConstruct, IDependable } from "@aws-cdk/cdk";
 import { subnetName } from './util';
+import { BaseVpnConnectionProps, VpnConnection } from './vpn';
 
 export interface IVpcSubnet extends IConstruct {
   /**
@@ -11,6 +12,12 @@ export interface IVpcSubnet extends IConstruct {
    * The subnetId for this particular subnet
    */
   readonly subnetId: string;
+
+  /**
+   * The id of the route table associated with this subnet.
+   * Not available for an imported subnet.
+   */
+  readonly routeTableId: string;
 
   /**
    * Dependable that can be depended upon to force internet connectivity established on the VPC
@@ -55,6 +62,11 @@ export interface IVpcNetwork extends IConstruct {
   readonly vpcRegion: string;
 
   /**
+   * Identifier for the VPN gateway
+   */
+  readonly vpnGatewayId?: string;
+
+  /**
    * Return the subnets appropriate for the placement strategy
    */
   subnets(placement?: VpcPlacementStrategy): IVpcSubnet[];
@@ -67,6 +79,11 @@ export interface IVpcNetwork extends IConstruct {
    * never return true.
    */
   isPublicSubnet(subnet: IVpcSubnet): boolean;
+
+  /**
+   * Adds a new VPN connection to this VPC
+   */
+  newVpnConnection(id: string, props: BaseVpnConnectionProps): VpnConnection;
 
   /**
    * Exports this VPC so it can be consumed by another stack.
@@ -174,6 +191,11 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   public abstract readonly availabilityZones: string[];
 
   /**
+   * Identifier for the VPN gateway
+   */
+  public abstract readonly vpnGatewayId?: string;
+
+  /**
    * Dependencies for internet connectivity
    */
   public readonly internetDependencies = new Array<IConstruct>();
@@ -209,6 +231,16 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
       [SubnetType.Private]: this.privateSubnets,
       [SubnetType.Public]: this.publicSubnets,
     }[placement.subnetsToUse];
+  }
+
+  /**
+   * Adds a new VPN connection to this VPC
+   */
+  public newVpnConnection(id: string, props: BaseVpnConnectionProps): VpnConnection {
+    return new VpnConnection(this, id, {
+      vpc: this,
+      ...props
+    });
   }
 
   /**
@@ -291,6 +323,11 @@ export interface VpcNetworkImportProps {
    * Must be undefined or have a name for every isolated subnet group.
    */
   isolatedSubnetNames?: string[];
+
+  /**
+   * VPN gateway's identifier
+   */
+  vpnGatewayId?: string;
 }
 
 export interface VpcSubnetImportProps {

@@ -1,11 +1,12 @@
 import cdk = require('@aws-cdk/cdk');
 import { ConcreteDependable, IDependable } from '@aws-cdk/cdk';
-import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute } from './ec2.generated';
+import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
 import { IVpcNetwork, IVpcSubnet, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcPlacementStrategy, VpcSubnetImportProps } from './vpc-ref';
+import { IPsec1 } from './vpn';
 
 /**
  * Name tag constant
@@ -115,6 +116,20 @@ export interface VpcNetworkProps {
    * private subnet per AZ
    */
   subnetConfiguration?: SubnetConfiguration[];
+
+  /**
+   * Indicates whether a VPN gateway should be created and attached to this VPC.
+   *
+   * @default false
+   */
+  vpnGateway?: boolean;
+
+  /**
+   * The private Autonomous System Number (ASN) for the VPN gateway.
+   *
+   * @default Amazon default ASN
+   */
+  vpnGatewayAsn?: number;
 }
 
 /**
@@ -251,6 +266,11 @@ export class VpcNetwork extends VpcNetworkBase {
   public readonly availabilityZones: string[];
 
   /**
+   * Identifier for the VPN gateway
+   */
+  public readonly vpnGatewayId?: string;
+
+  /**
    * The VPC resource
    */
   private resource: CfnVPC;
@@ -343,6 +363,31 @@ export class VpcNetwork extends VpcNetworkBase {
         privateSubnet.addDefaultNatRouteEntry(ngwId);
       });
     }
+
+    if (props.vpnGateway) {
+      const vpnGateway = new CfnVPNGateway(this, 'VpnGateway', {
+        amazonSideAsn: props.vpnGatewayAsn,
+        type: IPsec1
+      });
+
+      const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
+        vpcId: this.vpcId,
+        vpnGatewayId: vpnGateway.vpnGatewayName
+      });
+
+      this.vpnGatewayId = vpnGateway.vpnGatewayName;
+
+      // Propagate routes on route tables associated with private subnets
+      const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
+        routeTableIds: this.privateSubnets.map(subnet => subnet.routeTableId!),
+        vpnGatewayId: this.vpnGatewayId
+      });
+
+      // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
+      // until it has successfully attached to the VPC.
+      // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
+      routePropagation.node.addDependency(attachment);
+    }
   }
 
   /**
@@ -355,6 +400,7 @@ export class VpcNetwork extends VpcNetworkBase {
 
     return {
       vpcId: new cdk.Output(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
+      vpnGatewayId: new cdk.Output(this, 'VpnGatewayId', { value: this.vpnGatewayId }).makeImportValue().toString(),
       availabilityZones: this.availabilityZones,
       publicSubnetIds: pub.ids,
       publicSubnetNames: pub.names,
@@ -523,7 +569,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
   /**
    * The routeTableId attached to this subnet.
    */
-  private readonly routeTableId: string;
+  public readonly routeTableId: string;
 
   private readonly internetDependencies = new ConcreteDependable();
 
@@ -653,12 +699,14 @@ class ImportedVpcNetwork extends VpcNetworkBase {
   public readonly privateSubnets: IVpcSubnet[];
   public readonly isolatedSubnets: IVpcSubnet[];
   public readonly availabilityZones: string[];
+  public readonly vpnGatewayId?: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: VpcNetworkImportProps) {
     super(scope, id);
 
     this.vpcId = props.vpcId;
     this.availabilityZones = props.availabilityZones;
+    this.vpnGatewayId = props.vpnGatewayId;
 
     // tslint:disable:max-line-length
     const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, SubnetType.Public, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames');
@@ -680,12 +728,14 @@ class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
   public readonly internetConnectivityEstablished: cdk.IDependable = new cdk.ConcreteDependable();
   public readonly availabilityZone: string;
   public readonly subnetId: string;
+  public readonly routeTableId: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: VpcSubnetImportProps) {
     super(scope, id);
 
     this.subnetId = props.subnetId;
     this.availabilityZone = props.availabilityZone;
+    this.routeTableId = '';
   }
 
   public export() {

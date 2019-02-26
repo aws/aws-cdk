@@ -323,6 +323,46 @@ export = {
       }));
       test.done();
     },
+    'with a vpn gateway'(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC', {
+        vpnGateway: true,
+        vpnGatewayAsn: 65000
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGateway', {
+        AmazonSideAsn: 65000,
+        Type: 'ipsec.1'
+      }));
+
+      expect(stack).to(haveResource('AWS::EC2::VPCGatewayAttachment', {
+        VpcId: {
+          Ref: 'VPCB9E5F0B4'
+        },
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCPrivateSubnet1RouteTableBE8A6027'
+          },
+          {
+            Ref: 'VPCPrivateSubnet2RouteTable0A19E10E'
+          },
+          {
+            Ref: 'VPCPrivateSubnet3RouteTable192186F8'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    }
 
   },
 
