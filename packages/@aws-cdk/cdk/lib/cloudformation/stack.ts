@@ -49,10 +49,6 @@ export class Stack extends Construct {
     return (construct as any)._isStack;
   }
 
-  public static artifactIdForStack(stackName: string) {
-    return `${stackName}.template.json`;
-  }
-
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
   /**
@@ -81,6 +77,11 @@ export class Stack extends Construct {
    * The CloudFormation stack name.
    */
   public readonly name: string;
+
+  /**
+   * The name of the CDK artifact produced by this stack.
+   */
+  public readonly artifactName: string;
 
   /*
    * Used to determine if this construct is a stack.
@@ -111,6 +112,8 @@ export class Stack extends Construct {
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = this.node.id;
+
+    this.artifactName = `${this.node.uniqueId}.stack.json`;
   }
 
   /**
@@ -151,7 +154,7 @@ export class Stack extends Construct {
       dependsOn: noEmptyArray(this.dependencies().map(s => s.node.id)),
     };
 
-    session.writeFile(Stack.artifactIdForStack(this.node.id), JSON.stringify(output, undefined, 2));
+    session.writeFile(this.artifactName, JSON.stringify(output, undefined, 2));
   }
 
   public collectMetadata() {
