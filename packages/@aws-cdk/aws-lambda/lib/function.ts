@@ -31,29 +31,11 @@ export enum Tracing {
   Disabled
 }
 
-export interface FunctionProps {
-  /**
-   * The source code of your Lambda function. You can point to a file in an
-   * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
-   * code as inline text.
-   */
-  code: Code;
-
+export interface PartialFunctionProps {
   /**
    * A description of the function.
    */
   description?: string;
-
-  /**
-   * The name of the function (within your source code) that Lambda calls to
-   * start running your code. For more information, see the Handler property
-   * in the AWS Lambda Developer Guide.
-   *
-   * NOTE: If you specify your source code as inline text by specifying the
-   * ZipFile property within the Code property, specify index.function_name as
-   * the handler.
-   */
-  handler: string;
 
   /**
    * The function execution time (in seconds) after which Lambda terminates
@@ -71,13 +53,6 @@ export interface FunctionProps {
    * Lambda function source code.
    */
   environment?: { [key: string]: any };
-
-  /**
-   * The runtime environment for the Lambda function that you are uploading.
-   * For valid values, see the Runtime property in the AWS Lambda Developer
-   * Guide.
-   */
-  runtime: Runtime;
 
   /**
    * A name for the function. If you don't specify a name, AWS CloudFormation
@@ -198,6 +173,33 @@ export interface FunctionProps {
    * You can also add event sources using `addEventSource`.
    */
   events?: IEventSource[];
+}
+
+export interface FunctionProps extends PartialFunctionProps {
+  /**
+   * The source code of your Lambda function. You can point to a file in an
+   * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
+   * code as inline text.
+   */
+  code: Code;
+
+  /**
+   * The name of the function (within your source code) that Lambda calls to
+   * start running your code. For more information, see the Handler property
+   * in the AWS Lambda Developer Guide.
+   *
+   * NOTE: If you specify your source code as inline text by specifying the
+   * ZipFile property within the Code property, specify index.function_name as
+   * the handler.
+   */
+  handler: string;
+
+  /**
+   * The runtime environment for the Lambda function that you are uploading.
+   * For valid values, see the Runtime property in the AWS Lambda Developer
+   * Guide.
+   */
+  runtime: Runtime;
 }
 
 /**

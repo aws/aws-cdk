@@ -17,11 +17,12 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   debug(`Executing ${colors.blue(renderCommandLine(command))}`);
   const child = child_process.spawn(command[0], command.slice(1), {
     ...options,
-    stdio: [ 'pipe', 'pipe', 'inherit' ]
+    stdio: [ options.stdin ? 'pipe' : 'ignore', 'pipe', 'inherit' ]
   });
 
   if (options.stdin) {
     child.stdin.write(options.stdin);
+    child.stdin.end();
   }
 
   return new Promise<string>((resolve, reject) => {
@@ -41,7 +42,6 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     });
 
     child.once('exit', code => {
-      debug(`Finished with exit code ${code} ${colors.blue(renderCommandLine(command))}`);
       if (code === 0) {
         resolve(Buffer.concat(stdout).toString('utf-8'));
       } else {

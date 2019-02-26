@@ -26,26 +26,36 @@ export const ASSET_RESOURCE_METADATA_PROPERTY_KEY = 'aws:asset:property';
  */
 export const ASSET_PREFIX_SEPARATOR = '||';
 
-export interface BuildMetadata {
+export interface BuildMetadataEntry {
+  packaging: 'build';
+  codePath: string;
+  path: string;
   image: string;
   command: string;
   args?: string[];
   stdin?: string;
+
+  /**
+   * Logical identifier for the asset
+   */
+  id: string;
+
+  /**
+   * Name of parameter where S3 bucket should be passed in
+   */
+  s3BucketParameter: string;
+
+  /**
+   * Name of parameter where S3 key should be passed in
+   */
+  s3KeyParameter: string;
 }
 
 export interface FileAssetMetadataEntry {
   /**
    * Requested packaging style
    */
-  packaging: 'zip' | 'file' | 'build';
-
-  /**
-   * Optional build metadata containing a docker image and command
-   * to run on the directory prior to creating the .zip archive.
-   *
-   * @default no build
-   */
-  build?: BuildMetadata;
+  packaging: 'zip' | 'file';
 
   /**
    * Path on disk to the asset
@@ -90,4 +100,4 @@ export interface ContainerImageAssetMetadataEntry {
   imageNameParameter: string;
 }
 
-export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry;
+export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry | BuildMetadataEntry;

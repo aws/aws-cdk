@@ -1,14 +1,15 @@
 // tslint:disable-next-line:max-line-length
-import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, FileAssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
+import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, BuildMetadataEntry, FileAssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import colors = require('colors');
 import fs = require('fs-extra');
+import os = require('os');
 import path = require('path');
 import { ToolkitInfo } from './api/toolkit-info';
 import { zipDirectory } from './archive';
 import { prepareContainerAsset } from './docker';
 import { debug, success } from './logging';
-import os = require('./os');
+import { shell } from './os';
 
 export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo, ci?: boolean): Promise<CloudFormation.Parameter[]> {
   const assets = findAssets(stack.metadata);
@@ -49,43 +50,32 @@ async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo,
   }
 }
 
-async function prepareBuildAsset(asset: FileAssetMetadataEntry, toolkitInfo: ToolkitInfo, _ci?: boolean): Promise<CloudFormation.Parameter[]> {
-  debug('Building project asset:', asset.path);
-  if (!asset.build) {
-    throw new Error(`build properties must be set for a '${asset.packaging}' asset`);
-  }
+async function prepareBuildAsset(asset: BuildMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
+  debug('Building project asset:', asset.codePath);
 
   // working directory within container
   const wd = '/tmp/cdk.out/';
 
-  // docker run --mount type=bind,source=/Users/samgood/maven/java-project,target=/tmp/project maven:3.6.0-jdk-11 mvn compile -f /tmp/project
-  await os.shell([
+  await shell([
     'docker', 'run',
-    '-it',
+    ...(asset.stdin !== undefined ? ['-i'] : []),
     '-w', wd,
-    '--mount', `type=bind,source=${asset.path},target=${wd}`,
-    asset.build.image,
-    asset.build.command,
-    ...(asset.build.args || [])], {
-      stdin: asset.build.stdin
+    '--mount', `type=bind,source=${asset.codePath},target=${wd}`,
+    asset.image,
+    asset.command,
+    ...(asset.args || [])], {
+      stdin: asset.stdin
     });
 
-  // tslint:disable-next-line:no-console
-  console.log('=====DONE======');
-
-  return await prepareZipAsset({
+  return await prepareFileAsset({
     ...asset,
-    packaging: 'zip'
+    packaging: 'zip',
   }, toolkitInfo);
 }
 
 async function prepareZipAsset(asset: FileAssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
   debug('Preparing zip asset from directory:', asset.path);
-
-  const staging = path.join(asset.path, '.cdk.staging');
-  if (!fs.existsSync(staging)) {
-    await fs.mkdir(staging);
-  }
+  const staging = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-assets'));
   // const staging = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-assets'));
   try {
     const archiveFile = path.join(staging, 'archive.zip');

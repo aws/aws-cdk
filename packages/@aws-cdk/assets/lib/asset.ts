@@ -10,12 +10,6 @@ import path = require('path');
  */
 export enum AssetPackaging {
   /**
-   * Path refers to a directory on disk, the contents fo the directory
-   * is first built and then archived into a .zip.
-   */
-  Build = 'build',
-
-  /**
    * Path refers to a directory on disk, the contents of the directory is
    * archived into a .zip.
    */
@@ -27,18 +21,11 @@ export enum AssetPackaging {
   File = 'file',
 }
 
-export interface GenericAssetProps {
+export interface BaseAssetProps {
   /**
    * The disk location of the asset.
    */
   path: string;
-
-  /**
-   * The packaging type for this asset.
-   */
-  packaging: AssetPackaging;
-
-  build?: cxapi.BuildMetadata;
 
   /**
    * A list of principals that should be able to read this asset from S3.
@@ -50,8 +37,10 @@ export interface GenericAssetProps {
 /**
  * An asset represents a local file or directory, which is automatically uploaded to S3
  * and then can be referenced within a CDK application.
+ *
+ * TODO: this is so hacky
  */
-export class Asset extends cdk.Construct {
+export abstract class BaseAsset extends cdk.Construct {
   /**
    * Attribute that represents the name of the bucket this asset exists in.
    */
@@ -82,44 +71,39 @@ export class Asset extends cdk.Construct {
    * Indicates if this asset is a zip archive. Allows constructs to ensure that the
    * correct file type was used.
    */
-  public readonly isZipArchive: boolean;
+  public abstract readonly isZipArchive: boolean;
+
+  protected readonly bucketParam: cdk.Parameter;
+  protected readonly keyParam: cdk.Parameter;
 
   /**
    * The S3 prefix where all different versions of this asset are stored
    */
   private readonly s3Prefix: string;
 
-  constructor(scope: cdk.Construct, id: string, props: GenericAssetProps) {
+  constructor(scope: cdk.Construct, id: string, props: BaseAssetProps) {
     super(scope, id);
 
     // resolve full path
     this.assetPath = path.resolve(props.path);
 
-    // sets isZipArchive based on the type of packaging and file extension
-    const allowedExtensions: string[] = ['.jar', '.zip'];
-    this.isZipArchive = props.packaging === AssetPackaging.ZipDirectory
-      ? true
-      : allowedExtensions.some(ext => this.assetPath.toLowerCase().endsWith(ext));
-
-    validateAssetOnDisk(this.assetPath, props.packaging);
-
     // add parameters for s3 bucket and s3 key. those will be set by
     // the toolkit or by CI/CD when the stack is deployed and will include
     // the name of the bucket and the S3 key where the code lives.
 
-    const bucketParam = new cdk.Parameter(this, 'S3Bucket', {
+    this.bucketParam = new cdk.Parameter(this, 'S3Bucket', {
       type: 'String',
       description: `S3 bucket for asset "${this.node.path}"`,
     });
 
-    const keyParam = new cdk.Parameter(this, 'S3VersionKey', {
+    this.keyParam = new cdk.Parameter(this, 'S3VersionKey', {
       type: 'String',
       description: `S3 key for asset version "${this.node.path}"`
     });
 
-    this.s3BucketName = bucketParam.stringValue;
-    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
-    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
+    this.s3BucketName = this.bucketParam.stringValue;
+    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, this.keyParam.stringValue)).toString();
+    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, this.keyParam.stringValue)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
 
     this.bucket = s3.Bucket.import(this, 'AssetBucket', {
@@ -128,21 +112,6 @@ export class Asset extends cdk.Construct {
 
     // form the s3 URL of the object key
     this.s3Url = this.bucket.urlForObject(this.s3ObjectKey);
-
-    // attach metadata to the lambda function which includes information
-    // for tooling to be able to package and upload a directory to the
-    // s3 bucket and plug in the bucket name and key in the correct
-    // parameters.
-    const asset: cxapi.FileAssetMetadataEntry = {
-      path: this.assetPath,
-      id: this.node.uniqueId,
-      packaging: props.packaging,
-      s3BucketParameter: bucketParam.logicalId,
-      s3KeyParameter: keyParam.logicalId,
-      build: props.build
-    };
-
-    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
 
     for (const reader of (props.readers || [])) {
       this.grantRead(reader);
@@ -186,6 +155,54 @@ export class Asset extends cdk.Construct {
     // and we don't want to accidentally revoke permission on old versions
     // when deploying a new version.
     this.bucket.grantRead(principal, `${this.s3Prefix}*`);
+  }
+}
+
+export interface GenericAssetProps {
+  /**
+   * The disk location of the asset.
+   */
+  path: string;
+
+  /**
+   * The packaging type for this asset.
+   */
+  packaging: AssetPackaging;
+
+  /**
+   * A list of principals that should be able to read this asset from S3.
+   * You can use `asset.grantRead(principal)` to grant read permissions later.
+   */
+  readers?: iam.IPrincipal[];
+}
+
+export class Asset extends BaseAsset {
+  public readonly isZipArchive: boolean;
+
+  constructor(scope: cdk.Construct, id: string, props: GenericAssetProps) {
+    super(scope, id, props);
+
+    // sets isZipArchive based on the type of packaging and file extension
+    const allowedExtensions: string[] = ['.jar', '.zip'];
+    this.isZipArchive = props.packaging === AssetPackaging.ZipDirectory
+      ? true
+      : allowedExtensions.some(ext => this.assetPath.toLowerCase().endsWith(ext));
+
+    validateAssetOnDisk(this.assetPath, props.packaging);
+
+    // attach metadata to the lambda function which includes information
+    // for tooling to be able to package and upload a directory to the
+    // s3 bucket and plug in the bucket name and key in the correct
+    // parameters.
+    const asset: cxapi.FileAssetMetadataEntry = {
+      path: this.assetPath,
+      id: this.node.uniqueId,
+      packaging: props.packaging,
+      s3BucketParameter: this.bucketParam.logicalId,
+      s3KeyParameter: this.keyParam.logicalId
+    };
+
+    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
   }
 }
 
@@ -234,7 +251,9 @@ export class ZipDirectoryAsset extends Asset {
 }
 
 export interface BuildAssetProps {
-  path: string;
+  codePath: string;
+  artifactName: string;
+
   image: string;
   command: string;
   args?: string[];
@@ -246,19 +265,35 @@ export interface BuildAssetProps {
    */
   readers?: iam.IPrincipal[];
 }
-export class BuildAsset extends Asset {
+export class BuildAsset extends BaseAsset {
+  public readonly isZipArchive: boolean = true;
+
   constructor(scope: cdk.Construct, id: string, props: BuildAssetProps) {
     super(scope, id, {
-      packaging: AssetPackaging.Build,
-      build: {
-        image: props.image,
-        command: props.command,
-        args: props.args,
-        stdin: props.stdin
-      },
-      path: path.join(props.path, '.cdk.staging'),
+      path: path.join(props.codePath, '.cdk.staging', props.artifactName),
       readers: props.readers
     });
+    // tslint:disable-next-line:no-console
+    console.log(JSON.stringify(props, null, 2));
+
+    // validateAssetOnDisk(this.assetPath, props.packaging);
+
+    // TODO: this is so hacky
+    const asset: cxapi.BuildMetadataEntry = {
+      codePath: path.resolve(props.codePath),
+      path: path.join(props.codePath, '.cdk.staging', props.artifactName),
+      args: props.args,
+      command: props.command,
+      image: props.image,
+      packaging: 'build',
+      stdin: props.stdin,
+
+      id: this.node.uniqueId,
+      s3BucketParameter: this.bucketParam.logicalId,
+      s3KeyParameter: this.keyParam.logicalId
+    };
+
+    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
   }
 }
 
@@ -268,7 +303,6 @@ function validateAssetOnDisk(assetPath: string, packaging: AssetPackaging) {
   }
 
   switch (packaging) {
-    case AssetPackaging.Build:
     case AssetPackaging.ZipDirectory:
       if (!fs.statSync(assetPath).isDirectory()) {
         throw new Error(`${assetPath} is expected to be a directory when asset packaging is 'zip'`);
