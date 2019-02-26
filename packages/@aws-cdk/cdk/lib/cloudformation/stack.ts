@@ -133,54 +133,6 @@ export class Stack extends Construct {
     return r as Resource;
   }
 
-  public synthesize(session: ISynthesisSession): void {
-    const account = this.env.account || 'unknown-account';
-    const region = this.env.region || 'unknown-region';
-
-    const environment: cxapi.Environment = {
-      name: `${account}/${region}`,
-      account,
-      region
-    };
-
-    const missing = Object.keys(this.missingContext).length ? this.missingContext : undefined;
-
-    const output: cxapi.SynthesizedStack = {
-      name: this.node.id,
-      template: this.toCloudFormation(),
-      environment,
-      missing,
-      metadata: this.collectMetadata(),
-      dependsOn: noEmptyArray(this.dependencies().map(s => s.node.id)),
-    };
-
-    session.writeFile(this.artifactName, JSON.stringify(output, undefined, 2));
-  }
-
-  public collectMetadata() {
-    const output: { [id: string]: cxapi.MetadataEntry[] } = { };
-
-    visit(this);
-
-    const app = this.parentApp();
-    if (app && app.node.metadata.length > 0) {
-      output[PATH_SEP] = app.node.metadata;
-    }
-
-    return output;
-
-    function visit(node: IConstruct) {
-      if (node.node.metadata.length > 0) {
-        // Make the path absolute
-        output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
-      }
-
-      for (const child of node.node.children) {
-        visit(child);
-      }
-    }
-  }
-
   /**
    * Returns the CloudFormation template for this stack by traversing
    * the tree and invoking toCloudFormation() on all Entity objects.
@@ -473,6 +425,30 @@ export class Stack extends Construct {
     }
   }
 
+  protected synthesize(session: ISynthesisSession): void {
+    const account = this.env.account || 'unknown-account';
+    const region = this.env.region || 'unknown-region';
+
+    const environment: cxapi.Environment = {
+      name: `${account}/${region}`,
+      account,
+      region
+    };
+
+    const missing = Object.keys(this.missingContext).length ? this.missingContext : undefined;
+
+    const output: cxapi.SynthesizedStack = {
+      name: this.node.id,
+      template: this.toCloudFormation(),
+      environment,
+      missing,
+      metadata: this.collectMetadata(),
+      dependsOn: noEmptyArray(this.dependencies().map(s => s.node.id)),
+    };
+
+    session.writeFile(this.artifactName, JSON.stringify(output, undefined, 2));
+  }
+
   /**
    * Applied defaults to environment attributes.
    */
@@ -502,6 +478,30 @@ export class Stack extends Construct {
       if (dep.dependsOnStack(other)) { return true; }
     }
     return false;
+  }
+
+  private collectMetadata() {
+    const output: { [id: string]: cxapi.MetadataEntry[] } = { };
+
+    visit(this);
+
+    const app = this.parentApp();
+    if (app && app.node.metadata.length > 0) {
+      output[PATH_SEP] = app.node.metadata;
+    }
+
+    return output;
+
+    function visit(node: IConstruct) {
+      if (node.node.metadata.length > 0) {
+        // Make the path absolute
+        output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
+      }
+
+      for (const child of node.node.children) {
+        visit(child);
+      }
+    }
   }
 }
 
