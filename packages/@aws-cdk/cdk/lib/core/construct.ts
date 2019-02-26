@@ -1,10 +1,12 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from '../aspects/aspect';
 import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
+import { ISynthesisSession } from '../synthesis';
 import { makeUniqueId } from '../util/uniqueid';
 import { IDependable } from './dependency';
 import { Token, unresolved } from './tokens';
 import { resolve } from './tokens/resolve';
+
 export const PATH_SEP = '/';
 
 /**
@@ -190,15 +192,22 @@ export class ConstructNode {
    */
   public findAll(order: ConstructOrder = ConstructOrder.DepthFirst): IConstruct[] {
     const ret = new Array<IConstruct>();
-    const queue: IConstruct[] = [this.host];
-
-    while (queue.length > 0) {
-      const next = order === ConstructOrder.BreadthFirst ? queue.splice(0, 1)[0] : queue.pop()!;
-      ret.push(next);
-      queue.push(...next.node.children);
-    }
-
+    visit(this.host);
     return ret;
+
+    function visit(node: IConstruct) {
+      if (order === ConstructOrder.BreadthFirst) {
+        ret.push(node);
+      }
+
+      for (const child of node.node.children) {
+        visit(child);
+      }
+
+      if (order === ConstructOrder.DepthFirst) {
+        ret.push(node);
+      }
+    }
   }
 
   /**
@@ -328,6 +337,19 @@ export class ConstructNode {
     for (const construct of constructs.reverse()) {
       if (Construct.isConstruct(construct)) {
         (construct as any).prepare();
+      }
+    }
+  }
+
+  /**
+   * Synthesizes the entire subtree by writing artifacts into a synthesis session.
+   */
+  public synthesizeTree(session: ISynthesisSession) {
+    const constructs = this.host.node.findAll(ConstructOrder.DepthFirst);
+
+    for (const construct of constructs) {
+      if (Construct.isConstruct(construct)) {
+        (construct as any).synthesize(session);
       }
     }
   }
@@ -626,9 +648,23 @@ export class Construct implements IConstruct {
    * understand the implications.
    */
   protected prepare(): void {
-    // Intentionally left blank
+    return;
   }
 
+  /**
+   * Synthesizes this construct into artifacts.
+   *
+   * This method can be overloaded by any construct that wishes to emit artifacts during
+   * the tree synthesis. For example, the `Stack` construct overrides this and produces
+   * CloudFormation templates, `Asset` overrides this to produce asset artifacts, etc.
+   *
+   * To emit artifacts, use the API of the `Session` argument.
+   *
+   * @param _session synthesis session
+   */
+  protected synthesize(_session: ISynthesisSession): void {
+    return;
+  }
 }
 
 /**

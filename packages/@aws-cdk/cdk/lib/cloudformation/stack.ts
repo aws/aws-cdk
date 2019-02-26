@@ -1,7 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
-import { Construct, IConstruct } from '../core/construct';
+import { Construct, IConstruct, PATH_SEP } from '../core/construct';
 import { Environment } from '../environment';
+import { ISynthesisSession } from '../synthesis';
 import { CfnReference } from './cfn-tokens';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 
@@ -46,6 +47,10 @@ export class Stack extends Construct {
    */
   public static isStack(construct: IConstruct): construct is Stack {
     return (construct as any)._isStack;
+  }
+
+  public static artifactIdForStack(stackName: string) {
+    return `${stackName}.template.json`;
   }
 
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
@@ -123,6 +128,54 @@ export class Stack extends Construct {
     }
 
     return r as Resource;
+  }
+
+  public synthesize(session: ISynthesisSession): void {
+    const account = this.env.account || 'unknown-account';
+    const region = this.env.region || 'unknown-region';
+
+    const environment: cxapi.Environment = {
+      name: `${account}/${region}`,
+      account,
+      region
+    };
+
+    const missing = Object.keys(this.missingContext).length ? this.missingContext : undefined;
+
+    const output: cxapi.SynthesizedStack = {
+      name: this.node.id,
+      template: this.toCloudFormation(),
+      environment,
+      missing,
+      metadata: this.collectMetadata(),
+      dependsOn: noEmptyArray(this.dependencies().map(s => s.node.id)),
+    };
+
+    session.writeFile(Stack.artifactIdForStack(this.node.id), JSON.stringify(output, undefined, 2));
+  }
+
+  public collectMetadata() {
+    const output: { [id: string]: cxapi.MetadataEntry[] } = { };
+
+    visit(this);
+
+    const app = this.parentApp();
+    if (app && app.node.metadata.length > 0) {
+      output[PATH_SEP] = app.node.metadata;
+    }
+
+    return output;
+
+    function visit(node: IConstruct) {
+      if (node.node.metadata.length > 0) {
+        // Make the path absolute
+        output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
+      }
+
+      for (const child of node.node.children) {
+        visit(child);
+      }
+    }
   }
 
   /**
@@ -529,4 +582,8 @@ function findResources(roots: Iterable<IConstruct>): Resource[] {
     ret.push(...root.node.findAll().filter(Resource.isResource));
   }
   return ret;
+}
+
+function noEmptyArray<T>(xs: T[]): T[] | undefined {
+  return xs.length > 0 ? xs : undefined;
 }
