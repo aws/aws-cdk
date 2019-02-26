@@ -70,14 +70,8 @@
     "pkglint": "^0.24.1"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.24.1",
-    "js-base64": "^2.4.5",
-    "json-diff": "^0.3.1"
+    "@aws-cdk/cx-api": "^0.24.1"
   },
-  "bundledDependencies": [
-    "json-diff",
-    "js-base64"
-  ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/cx-api": "^0.24.1"
