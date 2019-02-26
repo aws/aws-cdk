@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { ArnComponents, Construct, Root, Stack, Token } from '../../lib';
+import { ArnComponents, Construct, ConstructOrder, Root, Stack, Token } from '../../lib';
 
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
@@ -446,6 +446,21 @@ export = {
     new Construct(c1a, 'c1aZ');
     new Construct(c1b, 'c1bZ');
 
+    test.done();
+  },
+
+  'findAll returns a list of all children in either DFS or BFS'(test: Test) {
+    // GIVEN
+    const c1 = new Construct(undefined as any, '1');
+    const c2 = new Construct(c1, '2');
+    new Construct(c1, '3');
+    new Construct(c2, '4');
+    new Construct(c2, '5');
+
+    // THEN
+    test.deepEqual(c1.node.findAll().map(x => x.node.id), c1.node.findAll(ConstructOrder.PreOrder).map(x => x.node.id)); // default is PreOrder
+    test.deepEqual(c1.node.findAll(ConstructOrder.PreOrder).map(x => x.node.id), [ '1', '2', '4', '5', '3' ]);
+    test.deepEqual(c1.node.findAll(ConstructOrder.PostOrder).map(x => x.node.id), [ '4', '5', '2', '3', '1' ]);
     test.done();
   }
 };
