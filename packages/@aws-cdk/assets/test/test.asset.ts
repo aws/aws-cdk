@@ -6,12 +6,17 @@ import { Test } from 'nodeunit';
 import path = require('path');
 import { FileAsset, ZipDirectoryAsset } from '../lib/asset';
 
+const SAMPLE_ASSET_DIRECTORY = path.join(__dirname, 'sample-asset-directory');
+const SAMPLE_FILE_ASSET = path.join(SAMPLE_ASSET_DIRECTORY, 'sample-asset-file.txt');
+const SAMPLE_ZIP_ASSET = path.join(SAMPLE_ASSET_DIRECTORY, 'sample-zip-asset.zip');
+const SAMPLE_JAR_ASSET = path.join(SAMPLE_ASSET_DIRECTORY, 'sample-jar-asset.jar');
+const FILE_ASSET = path.join(__dirname, 'file-asset.txt');
+
 export = {
   'simple use case'(test: Test)  {
     const stack = new cdk.Stack();
-    const dirPath = path.join(__dirname, 'sample-asset-directory');
     const asset = new ZipDirectoryAsset(stack, 'MyAsset', {
-      path: dirPath
+      path: SAMPLE_ASSET_DIRECTORY
     });
 
     // verify that metadata contains an "aws:cdk:asset" entry with
@@ -22,7 +27,7 @@ export = {
     // console.error(JSON.stringify(stack.node.resolve(entry!.data)));
 
     test.deepEqual(stack.node.resolve(entry!.data), {
-      path: dirPath,
+      path: './MyAsset',
       id: 'MyAsset',
       packaging: 'zip',
       s3BucketParameter: 'MyAssetS3Bucket68C9B344',
@@ -40,16 +45,15 @@ export = {
   'verify that the app resolves tokens in metadata'(test: Test) {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'my-stack');
-    const dirPath = path.resolve(__dirname, 'sample-asset-directory');
 
     new ZipDirectoryAsset(stack, 'MyAsset', {
-      path: dirPath
+      path: SAMPLE_ASSET_DIRECTORY
     });
 
     const synth = app.synthesizeStack(stack.name);
 
     test.deepEqual(synth.metadata['/my-stack/MyAsset'][0].data, {
-      path: dirPath,
+      path: './mystackMyAssetD6B1B593',
       id: "mystackMyAssetD6B1B593",
       packaging: "zip",
       s3BucketParameter: "MyAssetS3Bucket68C9B344",
@@ -61,12 +65,11 @@ export = {
 
   '"file" assets'(test: Test) {
     const stack = new cdk.Stack();
-    const filePath = path.join(__dirname, 'file-asset.txt');
-    const asset = new FileAsset(stack, 'MyAsset', { path: filePath });
+    const asset = new FileAsset(stack, 'MyAsset', { path: FILE_ASSET });
     const entry = asset.node.metadata.find(m => m.type === 'aws:cdk:asset');
     test.ok(entry, 'found metadata entry');
     test.deepEqual(stack.node.resolve(entry!.data), {
-      path: filePath,
+      path: './MyAsset/file-asset.txt',
       packaging: 'file',
       id: 'MyAsset',
       s3BucketParameter: 'MyAssetS3Bucket68C9B344',
@@ -87,7 +90,7 @@ export = {
     const group = new iam.Group(stack, 'MyGroup');
 
     const asset = new ZipDirectoryAsset(stack, 'MyAsset', {
-      path: path.join(__dirname, 'sample-asset-directory'),
+      path: SAMPLE_ASSET_DIRECTORY,
       readers: [ user ]
     });
 
@@ -145,19 +148,19 @@ export = {
 
     // WHEN
     const nonZipAsset = new FileAsset(stack, 'NonZipAsset', {
-      path: path.join(__dirname, 'sample-asset-directory', 'sample-asset-file.txt')
+      path: SAMPLE_FILE_ASSET
     });
 
     const zipDirectoryAsset = new ZipDirectoryAsset(stack, 'ZipDirectoryAsset', {
-      path: path.join(__dirname, 'sample-asset-directory')
+      path: SAMPLE_ASSET_DIRECTORY
     });
 
     const zipFileAsset = new FileAsset(stack, 'ZipFileAsset', {
-      path: path.join(__dirname, 'sample-asset-directory', 'sample-zip-asset.zip')
+      path: SAMPLE_ZIP_ASSET
     });
 
     const jarFileAsset = new FileAsset(stack, 'JarFileAsset', {
-      path: path.join(__dirname, 'sample-asset-directory', 'sample-jar-asset.jar')
+      path: SAMPLE_JAR_ASSET
     });
 
     // THEN
@@ -173,9 +176,8 @@ export = {
     const stack = new cdk.Stack();
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
-    const location = path.join(__dirname, 'sample-asset-directory');
     const resource = new cdk.Resource(stack, 'MyResource', { type: 'My::Resource::Type' });
-    const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: location });
+    const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIRECTORY });
 
     // WHEN
     asset.addResourceMetadata(resource, 'PropName');
@@ -183,7 +185,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('My::Resource::Type', {
       Metadata: {
-        "aws:asset:path": location,
+        "aws:asset:path": SAMPLE_ASSET_DIRECTORY,
         "aws:asset:property": "PropName"
       }
     }, ResourcePart.CompleteDefinition));
@@ -194,9 +196,8 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const location = path.join(__dirname, 'sample-asset-directory');
     const resource = new cdk.Resource(stack, 'MyResource', { type: 'My::Resource::Type' });
-    const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: location });
+    const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIRECTORY });
 
     // WHEN
     asset.addResourceMetadata(resource, 'PropName');
@@ -204,10 +205,48 @@ export = {
     // THEN
     expect(stack).notTo(haveResource('My::Resource::Type', {
       Metadata: {
-        "aws:asset:path": location,
+        "aws:asset:path": SAMPLE_ASSET_DIRECTORY,
         "aws:asset:property": "PropName"
       }
     }, ResourcePart.CompleteDefinition));
+
+    test.done();
+  },
+
+  'assets are emitted to session directory upon synthesis'(test: Test) {
+    const app = new cdk.App();
+
+    const stack = new cdk.Stack(app, 'MyStack');
+
+    const dirAsset = new ZipDirectoryAsset(stack, 'MyZipDirectory', {
+      path: SAMPLE_ASSET_DIRECTORY,
+      copyOptions: {
+        exclude: [ '*jar*' ]
+      }
+    });
+
+    const fileAsset = new FileAsset(stack, 'MyFile', {
+      path: FILE_ASSET
+    });
+
+    const session = app.run();
+
+    test.ok(session.exists(dirAsset.artifactName));
+    test.ok(session.exists(fileAsset.artifactName));
+
+    test.deepEqual(session.readdir(dirAsset.artifactName), [
+      'sample-asset-file.txt',
+      'sample-zip-asset.zip'
+    ]);
+
+    test.deepEqual(session.readdir(fileAsset.artifactName), [
+      'file-asset.txt'
+    ]);
+
+    const manifest: cxapi.SynthesizeResponse = JSON.parse(session.readFile(cxapi.OUTFILE_NAME));
+    const metadata = manifest.stacks[0].metadata;
+    test.deepEqual(metadata['/MyStack/MyZipDirectory'][0].data.path, './MyStackMyZipDirectory6091175A');
+    test.deepEqual(metadata['/MyStack/MyFile'][0].data.path, './MyStackMyFile3667B666/file-asset.txt');
 
     test.done();
   }

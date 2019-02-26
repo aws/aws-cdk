@@ -33,6 +33,7 @@ export enum FollowMode {
    */
   External = 'external',
 
+  // ----------------- TODO::::::::::::::::::::::::::::::::::::::::::::
   /**
    * Forbids source from having any symlinks pointing outside of the source
    * tree.

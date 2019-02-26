@@ -4,6 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
+import { copyDirectory, CopyOptions } from './fs';
 
 /**
  * Defines the way an asset is packaged before it is uploaded to S3.
@@ -31,6 +32,12 @@ export interface GenericAssetProps {
    * The packaging type for this asset.
    */
   packaging: AssetPackaging;
+
+  /**
+   * Options for copying files from the source to the staging (only relevant for
+   * directory assets).
+   */
+  copyOptions?: CopyOptions;
 
   /**
    * A list of principals that should be able to read this asset from S3.
@@ -77,15 +84,24 @@ export class Asset extends cdk.Construct {
   public readonly isZipArchive: boolean;
 
   /**
+   * The name of the CDK artifact emitted for this asset.
+   */
+  public readonly artifactName: string;
+
+  /**
    * The S3 prefix where all different versions of this asset are stored
    */
   private readonly s3Prefix: string;
+  private readonly packaging: AssetPackaging;
+  private readonly copyOptions?: CopyOptions;
+  private readonly relativePath: string;
 
   constructor(scope: cdk.Construct, id: string, props: GenericAssetProps) {
     super(scope, id);
 
     // resolve full path
     this.assetPath = path.resolve(props.path);
+    this.packaging = props.packaging;
 
     // sets isZipArchive based on the type of packaging and file extension
     const allowedExtensions: string[] = ['.jar', '.zip'];
@@ -121,12 +137,18 @@ export class Asset extends cdk.Construct {
     // form the s3 URL of the object key
     this.s3Url = this.bucket.urlForObject(this.s3ObjectKey);
 
+    this.artifactName = this.node.uniqueId;
+
+    this.relativePath = props.packaging === AssetPackaging.ZipDirectory
+      ? this.artifactName
+      : path.join(this.artifactName, path.basename(props.path));
+
     // attach metadata to the lambda function which includes information
     // for tooling to be able to package and upload a directory to the
     // s3 bucket and plug in the bucket name and key in the correct
     // parameters.
     const asset: cxapi.FileAssetMetadataEntry = {
-      path: this.assetPath,
+      path: `./${this.relativePath}`,
       id: this.node.uniqueId,
       packaging: props.packaging,
       s3BucketParameter: bucketParam.logicalId,
@@ -138,6 +160,8 @@ export class Asset extends cdk.Construct {
     for (const reader of (props.readers || [])) {
       this.grantRead(reader);
     }
+
+    this.copyOptions = props.copyOptions;
   }
 
   /**
@@ -164,7 +188,7 @@ export class Asset extends cdk.Construct {
     // tell tools such as SAM CLI that the "Code" property of this resource
     // points to a local path in order to enable local invocation of this function.
     resource.options.metadata = resource.options.metadata || { };
-    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
+    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.relativePath;
     resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
 
@@ -177,6 +201,23 @@ export class Asset extends cdk.Construct {
     // and we don't want to accidentally revoke permission on old versions
     // when deploying a new version.
     this.bucket.grantRead(principal, `${this.s3Prefix}*`);
+  }
+
+  public synthesize(session: cdk.ISynthesisSession) {
+    const outputPath = session.mkdir(this.artifactName);
+
+    switch (this.packaging) {
+      case AssetPackaging.ZipDirectory:
+        copyDirectory(this.assetPath, outputPath, this.copyOptions);
+        break;
+      case AssetPackaging.File:
+        fs.copyFileSync(this.assetPath, path.join(outputPath, path.basename(this.assetPath)));
+        break;
+
+      default:
+        throw new Error('Invalid packaging type');
+    }
+
   }
 }
 
@@ -207,6 +248,11 @@ export interface ZipDirectoryAssetProps {
    * Path of the directory.
    */
   path: string;
+
+  /**
+   * Copy options.
+   */
+  copyOptions?: CopyOptions;
 
   /**
    * A list of principals that should be able to read this ZIP file from S3.

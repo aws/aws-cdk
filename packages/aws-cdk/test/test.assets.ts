@@ -14,24 +14,24 @@ export = {
         region: 'myregion'
       },
       metadata: {
-      '/SomeStack/SomeResource': [{
-        type: 'aws:cdk:asset',
-        data: {
-        path: __filename,
-        id: 'SomeStackSomeResource4567',
-        packaging: 'file',
-        s3BucketParameter: 'BucketParameter',
-        s3KeyParameter: 'KeyParameter'
-        } as AssetMetadataEntry,
-        trace: []
-      }]
+        '/SomeStack/SomeResource': [{
+          type: 'aws:cdk:asset',
+          data: {
+            path: __filename,
+            id: 'SomeStackSomeResource4567',
+            packaging: 'file',
+            s3BucketParameter: 'BucketParameter',
+            s3KeyParameter: 'KeyParameter'
+          } as AssetMetadataEntry,
+          trace: []
+        }]
       },
       template: {
-      Resources: {
-        SomeResource: {
-        Type: 'AWS::Something::Something'
+        Resources: {
+          SomeResource: {
+            Type: 'AWS::Something::Something'
+          }
         }
-      }
       }
     };
     const toolkit = new FakeToolkit();
