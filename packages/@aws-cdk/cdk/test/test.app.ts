@@ -1,15 +1,9 @@
 import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
 import { Construct, Resource, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
 
 function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void) {
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-app-test'));
-  process.env[cxapi.OUTDIR_ENV] = outdir;
-
   if (context) {
     process.env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
   } else {
@@ -20,13 +14,9 @@ function withApp(context: { [key: string]: any } | undefined, block: (app: App) 
 
   block(app);
 
-  app.run();
+  const session = app.run();
 
-  const outfile = path.join(outdir, cxapi.OUTFILE_NAME);
-  const response = JSON.parse(fs.readFileSync(outfile).toString());
-  fs.unlinkSync(outfile);
-  fs.rmdirSync(outdir);
-  return response;
+  return JSON.parse(session.readFile(cxapi.OUTFILE_NAME));
 }
 
 function synth(context?: { [key: string]: any }): cxapi.SynthesizeResponse {
@@ -212,7 +202,7 @@ export = {
 
     test.throws(() => {
       app.synthesizeStacks(['Parent']);
-    }, /Stack validation failed with the following errors/);
+    }, /Validation failed with the following errors/);
 
     test.done();
   },

@@ -1,14 +1,13 @@
 import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import path = require('path');
 import { Stack } from './cloudformation/stack';
-import { IConstruct, MetadataEntry, PATH_SEP, Root } from './core/construct';
+import { Root } from './core/construct';
+import { InMemorySynthesisSession, ISynthesisSession, SynthesisSession } from './synthesis';
 
 /**
  * Represents a CDK program.
  */
 export class App extends Root {
-  private prepared = false;
+  private _session?: ISynthesisSession;
 
   /**
    * Initializes a CDK application.
@@ -34,23 +33,32 @@ export class App extends Root {
   /**
    * Runs the program. Output is written to output directory as specified in the request.
    */
-  public run(): void {
-    const outdir = process.env[cxapi.OUTDIR_ENV];
-    if (!outdir) {
-      process.stderr.write(`ERROR: The environment variable "${cxapi.OUTDIR_ENV}" is not defined\n`);
-      process.stderr.write('AWS CDK Toolkit (>= 0.11.0) is required in order to interact with this program.\n');
-      process.exit(1);
-      return;
+  public run(): ISynthesisSession {
+    // this app has already been executed, no-op for you
+    if (this._session) {
+      return this._session;
     }
 
-    const result: cxapi.SynthesizeResponse = {
-      version: cxapi.PROTO_RESPONSE_VERSION,
-      stacks: this.synthesizeStacks(Object.keys(this.stacks)),
-      runtime: this.collectRuntimeInformation()
-    };
+    const outdir = process.env[cxapi.OUTDIR_ENV];
+    if (outdir) {
+      this._session = new SynthesisSession({ outdir });
+    } else {
+      this._session = new InMemorySynthesisSession();
+    }
 
-    const outfile = path.join(outdir, cxapi.OUTFILE_NAME);
-    fs.writeFileSync(outfile, JSON.stringify(result, undefined, 2));
+    // the three holy phases of synthesis: validate, prepare and synthesize
+    const errors = this.node.validateTree();
+    if (errors.length > 0) {
+      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+      throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
+    }
+
+    this.node.prepareTree();
+    this.node.synthesizeTree(this.run());
+
+    this._session.finalize(); // lock session - cannot emit more artifacts
+
+    return this._session;
   }
 
   /**
@@ -58,49 +66,16 @@ export class App extends Root {
    * @param stackName The name of the stack to synthesize
    */
   public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
-    const stack = this.getStack(stackName);
+    this.getStack(stackName); // just make sure stack exists
 
-    if (!this.prepared) {
-      // Maintain the existing contract that the tree will be prepared even if
-      // 'synthesizeStack' is called by itself. But only prepare the tree once.
-      this.node.prepareTree();
-      this.prepared = true;
-    }
-
-    // first, validate this stack and stop if there are errors.
-    const errors = stack.node.validateTree();
-    if (errors.length > 0) {
-      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-      throw new Error(`Stack validation failed with the following errors:\n  ${errorList}`);
-    }
-
-    const account = stack.env.account || 'unknown-account';
-    const region = stack.env.region || 'unknown-region';
-
-    const environment: cxapi.Environment = {
-      name: `${account}/${region}`,
-      account,
-      region
-    };
-
-    const missing = Object.keys(stack.missingContext).length ? stack.missingContext : undefined;
-    return {
-      name: stack.node.id,
-      environment,
-      missing,
-      template: stack.toCloudFormation(),
-      metadata: this.collectMetadata(stack),
-      dependsOn: noEmptyArray(stack.dependencies().map(s => s.node.id)),
-    };
+    const artifact = this.run().readFile(Stack.artifactIdForStack(stackName));
+    return JSON.parse(artifact);
   }
 
   /**
    * Synthesizes multiple stacks
    */
   public synthesizeStacks(stackNames: string[]): cxapi.SynthesizedStack[] {
-    this.node.prepareTree();
-    this.prepared = true;
-
     const ret: cxapi.SynthesizedStack[] = [];
     for (const stackName of stackNames) {
       ret.push(this.synthesizeStack(stackName));
@@ -109,30 +84,16 @@ export class App extends Root {
   }
 
   /**
-   * Returns metadata for all constructs in the stack.
+   * Synthesize the app manifest (the root file which the toolkit reads)
    */
-  public collectMetadata(stack: Stack) {
-    const output: { [id: string]: MetadataEntry[] } = { };
+  protected synthesize(session: ISynthesisSession) {
+    const manifest: cxapi.SynthesizeResponse = {
+      version: cxapi.PROTO_RESPONSE_VERSION,
+      stacks: this.synthesizeStacks(Object.keys(this.stacks)),
+      runtime: this.collectRuntimeInformation()
+    };
 
-    visit(stack);
-
-    // add app-level metadata under "."
-    if (this.node.metadata.length > 0) {
-      output[PATH_SEP] = this.node.metadata;
-    }
-
-    return output;
-
-    function visit(node: IConstruct) {
-      if (node.node.metadata.length > 0) {
-        // Make the path absolute
-        output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as MetadataEntry);
-      }
-
-      for (const child of node.node.children) {
-        visit(child);
-      }
-    }
+    session.writeFile(cxapi.OUTFILE_NAME, JSON.stringify(manifest, undefined, 2));
   }
 
   private collectRuntimeInformation(): cxapi.AppRuntime {
@@ -238,8 +199,4 @@ function getJsiiAgentVersion() {
   }
 
   return jsiiAgent;
-}
-
-function noEmptyArray<T>(xs: T[]): T[] | undefined {
-  return xs.length > 0 ? xs : undefined;
 }
