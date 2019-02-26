@@ -386,43 +386,43 @@ export default class CodeGenerator {
       const propSpec = propSpecs[cfnName];
 
       const mapperExpression = genspec.typeDispatch<string>(resource, propSpec, {
-        visitScalar(type: genspec.CodeName, recurse) {
+        visitScalar(type: genspec.CodeName) {
           const specType = type.specName && self.spec.PropertyTypes[type.specName.fqn];
           if (specType && !schema.isPropertyBag(specType)) {
-            return recurse(specType);
+            return genspec.typeDispatch(resource, specType, this);
           }
           return genspec.cfnMapperName(type).fqn;
         },
-        visitUnionScalar(types: genspec.CodeName[], recurse) {
+        visitUnionScalar(types: genspec.CodeName[]) {
           const validators = types.map(type => genspec.validatorName(type).fqn);
-          const mappers = types.map(type => this.visitScalar(type, recurse));
+          const mappers = types.map(type => this.visitScalar(type));
           return `${CORE}.unionMapper([${validators.join(', ')}], [${mappers.join(', ')}])`;
         },
-        visitList(itemType: genspec.CodeName, recurse) {
-          return `${CORE}.listMapper(${this.visitScalar(itemType, recurse)})`;
+        visitList(itemType: genspec.CodeName) {
+          return `${CORE}.listMapper(${this.visitScalar(itemType)})`;
         },
-        visitUnionList(itemTypes: genspec.CodeName[], recurse) {
+        visitUnionList(itemTypes: genspec.CodeName[]) {
           const validators = itemTypes.map(type => genspec.validatorName(type).fqn);
-          const mappers = itemTypes.map(type => this.visitScalar(type, recurse));
+          const mappers = itemTypes.map(type => this.visitScalar(type));
           return `${CORE}.listMapper(${CORE}.unionMapper([${validators.join(', ')}], [${mappers.join(', ')}]))`;
         },
-        visitMap(itemType: genspec.CodeName, recurse) {
-          return `${CORE}.hashMapper(${this.visitScalar(itemType, recurse)})`;
+        visitMap(itemType: genspec.CodeName) {
+          return `${CORE}.hashMapper(${this.visitScalar(itemType)})`;
         },
-        visitUnionMap(itemTypes: genspec.CodeName[], recurse) {
+        visitUnionMap(itemTypes: genspec.CodeName[]) {
           const validators = itemTypes.map(type => genspec.validatorName(type).fqn);
-          const mappers = itemTypes.map(type => this.visitScalar(type, recurse));
+          const mappers = itemTypes.map(type => this.visitScalar(type));
           return `${CORE}.hashMapper(${CORE}.unionMapper([${validators.join(', ')}], [${mappers.join(', ')}]))`;
         },
-        visitListOrScalar(types: genspec.CodeName[], itemTypes: genspec.CodeName[], recurse) {
+        visitListOrScalar(types: genspec.CodeName[], itemTypes: genspec.CodeName[]) {
           const validatorNames = types.map(type => genspec.validatorName(type).fqn).join(', ');
           const itemValidatorNames = itemTypes.map(type => genspec.validatorName(type).fqn).join(', ');
 
           const scalarValidator = `${CORE}.unionValidator(${validatorNames})`;
           const listValidator = `${CORE}.listValidator(${CORE}.unionValidator(${itemValidatorNames}))`;
-          const scalarMapper = `${CORE}.unionMapper([${validatorNames}], [${types.map(type => this.visitScalar(type, recurse)).join(', ')}])`;
+          const scalarMapper = `${CORE}.unionMapper([${validatorNames}], [${types.map(type => this.visitScalar(type)).join(', ')}])`;
           // tslint:disable-next-line:max-line-length
-          const listMapper = `${CORE}.listMapper(${CORE}.unionMapper([${itemValidatorNames}], [${itemTypes.map(type => this.visitScalar(type, recurse)).join(', ')}]))`;
+          const listMapper = `${CORE}.listMapper(${CORE}.unionMapper([${itemValidatorNames}], [${itemTypes.map(type => this.visitScalar(type)).join(', ')}]))`;
 
           return `${CORE}.unionMapper([${scalarValidator}, ${listValidator}], [${scalarMapper}, ${listMapper}])`;
         },
@@ -467,31 +467,31 @@ export default class CodeGenerator {
 
       const self = this;
       const validatorExpression = genspec.typeDispatch<string>(resource, propSpec, {
-        visitScalar(type: genspec.CodeName, recurse) {
+        visitScalar(type: genspec.CodeName) {
           const specType = type.specName && self.spec.PropertyTypes[type.specName.fqn];
           if (specType && !schema.isPropertyBag(specType)) {
-            return recurse(specType);
+            return genspec.typeDispatch(resource, specType, this);
           }
           return genspec.validatorName(type).fqn;
         },
-        visitUnionScalar(types: genspec.CodeName[], recurse) {
-          return `${CORE}.unionValidator(${types.map(type => this.visitScalar(type, recurse)).join(', ')})`;
+        visitUnionScalar(types: genspec.CodeName[]) {
+          return `${CORE}.unionValidator(${types.map(type => this.visitScalar(type)).join(', ')})`;
         },
-        visitList(itemType: genspec.CodeName, recurse) {
-          return `${CORE}.listValidator(${this.visitScalar(itemType, recurse)})`;
+        visitList(itemType: genspec.CodeName) {
+          return `${CORE}.listValidator(${this.visitScalar(itemType)})`;
         },
-        visitUnionList(itemTypes: genspec.CodeName[], recurse) {
-          return `${CORE}.listValidator(${CORE}.unionValidator(${itemTypes.map(type => this.visitScalar(type, recurse)).join(', ')}))`;
+        visitUnionList(itemTypes: genspec.CodeName[]) {
+          return `${CORE}.listValidator(${CORE}.unionValidator(${itemTypes.map(type => this.visitScalar(type)).join(', ')}))`;
         },
-        visitMap(itemType: genspec.CodeName, recurse) {
-          return `${CORE}.hashValidator(${this.visitScalar(itemType, recurse)})`;
+        visitMap(itemType: genspec.CodeName) {
+          return `${CORE}.hashValidator(${this.visitScalar(itemType)})`;
         },
-        visitUnionMap(itemTypes: genspec.CodeName[], recurse) {
-          return `${CORE}.hashValidator(${CORE}.unionValidator(${itemTypes.map(type => this.visitScalar(type, recurse)).join(', ')}))`;
+        visitUnionMap(itemTypes: genspec.CodeName[]) {
+          return `${CORE}.hashValidator(${CORE}.unionValidator(${itemTypes.map(type => this.visitScalar(type)).join(', ')}))`;
         },
-        visitListOrScalar(types: genspec.CodeName[], itemTypes: genspec.CodeName[], recurse) {
-          const scalarValidator = `${CORE}.unionValidator(${types.map(type => this.visitScalar(type, recurse)).join(', ')})`;
-          const listValidator = `${CORE}.listValidator(${CORE}.unionValidator(${itemTypes.map(type => this.visitScalar(type, recurse)).join(', ')}))`;
+        visitListOrScalar(types: genspec.CodeName[], itemTypes: genspec.CodeName[]) {
+          const scalarValidator = `${CORE}.unionValidator(${types.map(type => this.visitScalar(type)).join(', ')})`;
+          const listValidator = `${CORE}.listValidator(${CORE}.unionValidator(${itemTypes.map(type => this.visitScalar(type)).join(', ')}))`;
 
           return `${CORE}.unionValidator(${scalarValidator}, ${listValidator})`;
         },

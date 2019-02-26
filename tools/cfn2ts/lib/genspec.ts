@@ -279,42 +279,41 @@ export function specTypesToCodeTypes(resourceContext: CodeName, types: string[])
 }
 
 export interface PropertyVisitor<T> {
-  visitScalar(type: CodeName, recurse: (spec: schema.Property) => T): T;
-  visitUnionScalar(types: CodeName[], recurse: (spec: schema.Property) => T): T;
-  visitList(itemType: CodeName, recurse: (spec: schema.Property) => T): T;
-  visitUnionList(itemTypes: CodeName[], recurse: (spec: schema.Property) => T): T;
-  visitMap(itemType: CodeName, recurse: (spec: schema.Property) => T): T;
-  visitUnionMap(itemTypes: CodeName[], recurse: (spec: schema.Property) => T): T;
-  visitListOrScalar(scalarTypes: CodeName[], itemTypes: CodeName[], recurse: (spec: schema.Property) => T): any;
+  visitScalar(type: CodeName): T;
+  visitUnionScalar(types: CodeName[]): T;
+  visitList(itemType: CodeName): T;
+  visitUnionList(itemTypes: CodeName[]): T;
+  visitMap(itemType: CodeName): T;
+  visitUnionMap(itemTypes: CodeName[]): T;
+  visitListOrScalar(scalarTypes: CodeName[], itemTypes: CodeName[]): any;
 }
 
 export function typeDispatch<T>(resourceContext: CodeName, spec: schema.Property, visitor: PropertyVisitor<T>): T {
   const scalarTypes = specTypesToCodeTypes(resourceContext, scalarTypeNames(spec));
   const itemTypes = specTypesToCodeTypes(resourceContext, itemTypeNames(spec));
-  const recurse = (s: schema.Property) => typeDispatch(resourceContext, s, visitor);
 
   if (scalarTypes.length && itemTypes.length) {
     // Can accept both a list and a scalar
-    return visitor.visitListOrScalar(scalarTypes, itemTypes, recurse);
+    return visitor.visitListOrScalar(scalarTypes, itemTypes);
   } else if (schema.isCollectionProperty(spec)) {
     if (schema.isMapProperty(spec)) {
       if (itemTypes.length > 1) {
-        return visitor.visitUnionMap(itemTypes, recurse);
+        return visitor.visitUnionMap(itemTypes);
       } else {
-        return visitor.visitMap(itemTypes[0], recurse);
+        return visitor.visitMap(itemTypes[0]);
       }
     } else {
       if (itemTypes.length > 1) {
-        return visitor.visitUnionList(itemTypes, recurse);
+        return visitor.visitUnionList(itemTypes);
       } else {
-        return visitor.visitList(itemTypes[0], recurse);
+        return visitor.visitList(itemTypes[0]);
       }
     }
   } else {
     if (scalarTypes.length > 1) {
-      return visitor.visitUnionScalar(scalarTypes, recurse);
+      return visitor.visitUnionScalar(scalarTypes);
     } else {
-      return visitor.visitScalar(scalarTypes[0], recurse);
+      return visitor.visitScalar(scalarTypes[0]);
     }
   }
 }
