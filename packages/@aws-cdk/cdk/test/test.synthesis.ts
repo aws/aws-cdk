@@ -8,7 +8,88 @@ import { FileSystemStore, InMemoryStore, SynthesisSession } from '../lib';
 
 const storeTestMatrix: any = {};
 
+function createModernApp() {
+  return new cdk.App({
+    [cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT]: 'true',
+    [cxapi.DISABLE_RUNTIME_INFO_CONTEXT]: 'true', // for test reproducibility
+  });
+}
+
 export = {
+  'synthesis with an empty app'(test: Test) {
+    // GIVEN
+    const app = createModernApp();
+
+    // WHEN
+    const session = app.run();
+
+    // THEN
+    test.same(app.run(), session); // same session if we run() again
+    test.deepEqual(session.store.list(), [ 'manifest.json' ]);
+    test.deepEqual(session.store.readJson('manifest.json').artifacts, {});
+    test.done();
+  },
+
+  'single empty stack'(test: Test) {
+    // GIVEN
+    const app = createModernApp();
+    new cdk.Stack(app, 'one-stack');
+
+    // WHEN
+    const session = app.run();
+
+    // THEN
+    test.deepEqual(session.store.list(), [
+      'manifest.json',
+      'one-stack.template.json'
+    ]);
+    test.done();
+  },
+
+  'some random construct implements "synthesize"'(test: Test) {
+    // GIVEN
+    const app = createModernApp();
+    const stack = new cdk.Stack(app, 'one-stack');
+
+    class MyConstruct extends cdk.Construct implements cdk.ISynthesizable {
+      public synthesize(s: cdk.ISynthesisSession) {
+        s.store.writeJson('foo.json', { bar: 123 });
+        s.addArtifact('my-random-construct', {
+          type: cxapi.ArtifactType.CloudFormationStack,
+          environment: 'aws://12345/bar',
+        });
+      }
+    }
+
+    new MyConstruct(stack, 'MyConstruct');
+
+    // WHEN
+    const session = app.run();
+
+    // THEN
+    test.deepEqual(session.store.list(), [
+      'foo.json',
+      'manifest.json',
+      'one-stack.template.json'
+    ]);
+    test.deepEqual(session.store.readJson('foo.json'), { bar: 123 });
+    test.deepEqual(session.manifest, {
+      version: '0.19.0',
+      artifacts: {
+        'my-random-construct': {
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://12345/bar'
+        },
+        'one-stack': {
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://unknown-account/unknown-region',
+          properties: { template: 'one-stack.template.json' }
+        }
+      },
+    });
+    test.done();
+  },
+
   'backwards compatibility: cdk.out contains all synthesized stacks'(test: Test) {
     // GIVEN
     const app = new cdk.App();
@@ -20,11 +101,11 @@ export = {
 
     // WHEN
     const session = app.run();
-    const manifest = session.manifest;
+    const legacy: cxapi.SynthesizeResponse = session.store.readJson(cxapi.OUTFILE_NAME);
 
     // THEN
-    const t1 = manifest.stacks.find(s => s.name === 'stack1')!.template;
-    const t2 = manifest.stacks.find(s => s.name === 'stack2')!.template;
+    const t1 = legacy.stacks.find(s => s.name === 'stack1')!.template;
+    const t2 = legacy.stacks.find(s => s.name === 'stack2')!.template;
 
     test.deepEqual(t1, {
       Resources: {
@@ -103,7 +184,7 @@ const storeTests = {
 
   'SynthesisSession'(test: Test, store: cdk.ISessionStore) {
     // GIVEN
-    const session = new SynthesisSession(store);
+    const session = new SynthesisSession({ store });
     const templateFile = 'foo.template.json';
 
     // WHEN
@@ -156,7 +237,6 @@ const storeTests = {
     // verify the manifest looks right
     test.deepEqual(manifest, {
       version: cxapi.PROTO_RESPONSE_VERSION,
-      stacks: [], // here for legacy reasons
       artifacts: {
         'my-first-artifact': {
           type: 'aws:cloudformation:stack',
@@ -186,7 +266,7 @@ const storeTests = {
     });
 
     test.done();
-  }
+  },
 };
 
 for (const [name, fn] of Object.entries(storeTests)) {

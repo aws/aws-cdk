@@ -3,20 +3,15 @@ import { Test } from 'nodeunit';
 import { Construct, Resource, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
 
-function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void) {
-  if (context) {
-    process.env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
-  } else {
-    delete process.env[cxapi.CONTEXT_ENV];
-  }
-
-  const app = new App();
+function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void): cxapi.SynthesizeResponse {
+  const app = new App(context);
 
   block(app);
 
   const session = app.run();
 
-  return session.manifest;
+  // return the legacy manifest
+  return session.store.readJson(cxapi.OUTFILE_NAME);
 }
 
 function synth(context?: { [key: string]: any }): cxapi.SynthesizeResponse {

@@ -7,14 +7,20 @@ import { FileSystemStore, InMemoryStore, ISynthesisSession, SynthesisSession } f
  */
 export class App extends Root {
   private _session?: ISynthesisSession;
+  private readonly legacyManifest: boolean;
+  private readonly runtimeInformation: boolean;
 
   /**
    * Initializes a CDK application.
    * @param request Optional toolkit request (e.g. for tests)
    */
-  constructor() {
+  constructor(context?: { [key: string]: string }) {
     super();
-    this.loadContext();
+    this.loadContext(context);
+
+    // both are reverse logic
+    this.legacyManifest = this.node.getContext(cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT) === 'true' ? false : true;
+    this.runtimeInformation = this.node.getContext(cxapi.DISABLE_RUNTIME_INFO_CONTEXT) === 'true' ? false : true;
   }
 
   /**
@@ -34,7 +40,11 @@ export class App extends Root {
       store = new InMemoryStore();
     }
 
-    const session = this._session = new SynthesisSession(store);
+    const session = this._session = new SynthesisSession({
+      store,
+      legacyManifest: this.legacyManifest,
+      runtimeInformation: this.runtimeInformation
+    });
 
     // the three holy phases of synthesis: prepare, validate and synthesize
 
@@ -62,13 +72,19 @@ export class App extends Root {
   }
 
   /**
-   * Synthesize and validate a single stack
+   * Synthesize and validate a single stack.
    * @param stackName The name of the stack to synthesize
    * @deprecated This method is going to be deprecated in a future version of the CDK
    */
   public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
+    if (!this.legacyManifest) {
+      throw new Error('No legacy manifest available, return an old-style stack output');
+    }
+
     const session = this.run();
-    const res = session.manifest.stacks.find(s => s.name === stackName);
+    const legacy: cxapi.SynthesizeResponse = session.store.readJson(cxapi.OUTFILE_NAME);
+
+    const res = legacy.stacks.find(s => s.name === stackName);
     if (!res) {
       throw new Error(`Stack "${stackName}" not found`);
     }
@@ -88,11 +104,20 @@ export class App extends Root {
     return ret;
   }
 
-  private loadContext() {
+  private loadContext(defaults: { [key: string]: string } = { }) {
+    // primve with defaults passed through constructor
+    for (const [ k, v ] of Object.entries(defaults)) {
+      this.node.setContext(k, v);
+    }
+
+    // read from environment
     const contextJson = process.env[cxapi.CONTEXT_ENV];
-    const context = !contextJson ? { } : JSON.parse(contextJson);
-    for (const key of Object.keys(context)) {
-      this.node.setContext(key, context[key]);
+    const contextFromEnvironment = contextJson
+      ? JSON.parse(contextJson)
+      : { };
+
+    for (const [ k, v ] of Object.entries(contextFromEnvironment)) {
+      this.node.setContext(k, v);
     }
   }
 }

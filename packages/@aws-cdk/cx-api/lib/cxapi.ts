@@ -24,11 +24,6 @@ import { Environment } from './environment';
 export const PROTO_RESPONSE_VERSION = '0.19.0';
 
 /**
- * @deprecated Use `MANIFEST_FILE`
- */
-export const OUTFILE_NAME = 'cdk.out';
-
-/**
  * The name of the root manifest file of the assembly.
  */
 export const MANIFEST_FILE = "manifest.json";
@@ -63,17 +58,14 @@ export interface AssemblyManifest {
    * Runtime information.
    */
   runtime?: AppRuntime;
-
-  /**
-   * @deprecated stacks should be read from `Artifacts`.
-   */
-  stacks: SynthesizedStack[];
 }
 
 /**
  * @deprecated use `AssemblyManifest`
  */
-export type SynthesizeResponse = AssemblyManifest;
+export interface SynthesizeResponse extends AssemblyManifest {
+  stacks: SynthesizedStack[];
+}
 
 /**
  * A complete synthesized stack
@@ -161,3 +153,22 @@ export const PATH_METADATA_KEY = 'aws:cdk:path';
  * Enables the embedding of the "aws:cdk:path" in CloudFormation template metadata.
  */
 export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
+
+/**
+ * Disables the emission of `cdk.out`
+ */
+export const DISABLE_LEGACY_MANIFEST_CONTEXT = 'aws:cdk:disable-legacy-manifest';
+
+/**
+ * The name of the pre 0.25.0 manifest file. Will only be emitted if
+ * aws:cdk:disable-legacy-manifest is not defined.
+ *
+ * @deprecated Use `MANIFEST_FILE`
+ */
+export const OUTFILE_NAME = 'cdk.out';
+
+/**
+ * Disable the collection and reporting of version information.
+ * By default, synthesis output includes inforamtion about module versions.
+ */
+export const DISABLE_RUNTIME_INFO_CONTEXT = "aws:cdk:disable-runtime-information";

@@ -15,6 +15,25 @@ export interface ISynthesisSession {
   tryGetArtifact(id: string): cxapi.Artifact | undefined;
 }
 
+export interface SynthesisSessionOptions {
+  /**
+   * The file store used for this session.
+   */
+  store: ISessionStore;
+
+  /**
+   * Emit the legacy manifest (`cdk.out`) when the session is closed (alongside `manifest.json`).
+   * @default false
+   */
+  legacyManifest?: boolean;
+
+  /**
+   * Include runtime information (module versions) in manifest.
+   * @default true
+   */
+  runtimeInformation?: boolean;
+}
+
 export class SynthesisSession implements ISynthesisSession {
   /**
    * @returns true if `obj` implements `ISynthesizable`.
@@ -23,11 +42,17 @@ export class SynthesisSession implements ISynthesisSession {
     return 'synthesize' in obj;
   }
 
+  public readonly store: ISessionStore;
+
   private readonly artifacts: { [id: string]: cxapi.Artifact } = { };
   private _manifest?: cxapi.AssemblyManifest;
+  private readonly legacyManifest: boolean;
+  private readonly runtimeInfo: boolean;
 
-  constructor(public readonly store: ISessionStore) {
-
+  constructor(options: SynthesisSessionOptions) {
+    this.store = options.store;
+    this.legacyManifest = options.legacyManifest !== undefined ? options.legacyManifest : false;
+    this.runtimeInfo = options.runtimeInformation !== undefined ? options.runtimeInformation : true;
   }
 
   public get manifest() {
@@ -40,31 +65,34 @@ export class SynthesisSession implements ISynthesisSession {
 
   public addArtifact(id: string, artifact: cxapi.Artifact): void {
     cxapi.validateArtifact(artifact);
-    this.store.writeFile(id, JSON.stringify(artifact, undefined, 2));
     this.artifacts[id] = artifact;
   }
 
   public tryGetArtifact(id: string): cxapi.Artifact | undefined {
-    if (!this.store.exists(id)) {
-      return undefined;
-    }
-
-    return JSON.parse(this.store.readFile(id).toString());
+    return this.artifacts[id];
   }
 
   public close(): cxapi.AssemblyManifest {
-    const manifest: cxapi.SynthesizeResponse = this._manifest = {
+    const manifest: cxapi.AssemblyManifest = this._manifest = {
       version: cxapi.PROTO_RESPONSE_VERSION,
       artifacts: this.artifacts,
-      runtime: collectRuntimeInformation(),
-      stacks: [], // this is required
     };
+
+    if (this.runtimeInfo) {
+      manifest.runtime = collectRuntimeInformation();
+    }
 
     this.store.writeFile(cxapi.MANIFEST_FILE, JSON.stringify(manifest, undefined, 2));
 
-    // render the legacy manifest (cdk.out) which also contains a "stacks" attribute with all the rendered stacks.
-    manifest.stacks = renderLegacyStacks(this.artifacts, this.store);
-    this.store.writeFile(cxapi.OUTFILE_NAME, JSON.stringify(manifest, undefined, 2));
+    if (this.legacyManifest) {
+      const legacy: cxapi.SynthesizeResponse = {
+        ...manifest,
+        stacks: renderLegacyStacks(this.artifacts, this.store)
+      };
+
+      // render the legacy manifest (cdk.out) which also contains a "stacks" attribute with all the rendered stacks.
+      this.store.writeFile(cxapi.OUTFILE_NAME, JSON.stringify(legacy, undefined, 2));
+    }
 
     return manifest;
   }

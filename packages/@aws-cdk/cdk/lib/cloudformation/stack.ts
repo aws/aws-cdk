@@ -421,21 +421,33 @@ export class Stack extends Construct {
   protected synthesize(session: ISynthesisSession): void {
     const account = this.env.account || 'unknown-account';
     const region = this.env.region || 'unknown-region';
-    const missing = Object.keys(this.missingContext).length ? this.missingContext : undefined;
     const template = `${this.node.id}.template.json`;
 
     // write the CloudFormation template as a JSON file
     session.store.writeJson(template, this.toCloudFormation());
 
-    // add an artifact that represents this stack
-    session.addArtifact(this.node.id, {
+    const artifact: cxapi.Artifact = {
       type: cxapi.ArtifactType.CloudFormationStack,
-      dependencies: noEmptyArray(this.dependencies().map(s => s.node.id)),
       environment: `aws://${account}/${region}`,
-      metadata: this.collectMetadata(),
-      missing,
       properties: { template }
-    });
+    };
+
+    const deps = this.dependencies().map(s => s.node.id);
+    if (deps.length > 0) {
+      artifact.dependencies = deps;
+    }
+
+    const meta = this.collectMetadata();
+    if (Object.keys(meta).length > 0) {
+      artifact.metadata = meta;
+    }
+
+    if (this.missingContext && Object.keys(this.missingContext).length > 0) {
+      artifact.missing = this.missingContext;
+    }
+
+    // add an artifact that represents this stack
+    session.addArtifact(this.node.id, artifact);
   }
 
   /**
@@ -574,8 +586,4 @@ function findResources(roots: Iterable<IConstruct>): Resource[] {
     ret.push(...root.node.findAll().filter(Resource.isResource));
   }
   return ret;
-}
-
-function noEmptyArray<T>(xs: T[]): T[] | undefined {
-  return xs.length > 0 ? xs : undefined;
 }
