@@ -110,4 +110,36 @@ export = {
 
     test.done();
   },
+
+  async 'surive missing new file'(test: Test) {
+    // GIVEN
+    await fs.writeJSON('cdk.json', { context: { boo: 'far' } });
+    const config = await new Configuration().load();
+
+    // WHEN
+    test.deepEqual(config.context.everything(), { boo: 'far' });
+    await config.saveContext();
+
+    // THEN
+    test.deepEqual(await fs.readJSON('cdk.context.json'), {});
+    test.deepEqual(await fs.readJSON('cdk.json'), { context: { boo: 'far' } });
+
+    test.done();
+  },
+
+  async 'surive no context in old file'(test: Test) {
+    // GIVEN
+    await fs.writeJSON('cdk.json', { });
+    await fs.writeJSON('cdk.context.json', { boo: 'far' });
+    const config = await new Configuration().load();
+
+    // WHEN
+    test.deepEqual(config.context.everything(), { boo: 'far' });
+    await config.saveContext();
+
+    // THEN
+    test.deepEqual(await fs.readJSON('cdk.context.json'), { boo: 'far' });
+
+    test.done();
+  },
 };
