@@ -190,7 +190,7 @@ resourceLinter.add({
     const grantResultType = e.ctx.ts.findFqn(GRANT_RESULT_FQN);
 
     for (const klass of classAndAncestors(e.ctx.resourceClass)) {
-      const grantMethods = klass.methods.filter(m => m.name.startsWith('grant') && !m.static);
+      const grantMethods = klass.methods.filter(m => m.name.startsWith('grant'));
       for (const grantMethod of grantMethods) {
         e.assertSignature(grantMethod, {
           returns: grantResultType

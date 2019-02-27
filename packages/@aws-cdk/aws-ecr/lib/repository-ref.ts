@@ -221,7 +221,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   public grantPull(principal?: iam.IPrincipal) {
     const ret = this.grant(principal, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
 
-    iam.Permissions.tryGrantOnIdentity({
+    iam.Permissions.tryGrantOnPrincipal({
       principal,
       actions: ["ecr:GetAuthorizationToken"],
       resourceArns: ['*'],

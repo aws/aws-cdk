@@ -139,7 +139,7 @@ export class Permissions {
       throw new Error(`Either 'scope' or 'resource' must be supplied.`);
     }
 
-    const result = Permissions.tryGrantOnIdentity({
+    const result = Permissions.tryGrantOnPrincipal({
       actions: options.actions,
       principal: options.principal,
       resourceArns: options.resourceArns,
@@ -169,7 +169,7 @@ export class Permissions {
    * Absence of a principal leads to a warning, but failing to add
    * the permissions to a present principal is not an error.
    */
-  public static tryGrantOnIdentity(options: TryGrantOnIdentityOptions): GrantResult {
+  public static tryGrantOnPrincipal(options: TryGrantOnIdentityOptions): GrantResult {
     if (!options.principal) {
       // tslint:disable-next-line:max-line-length
       options.scope.node.addWarning(`Could not add grant for '${options.actions}' on '${options.resourceArns}' because the principal was not available. Add the permissions by hand.`);
@@ -186,7 +186,7 @@ export class Permissions {
   }
 
   /**
-   * Add a grant both on the identity and on the resource
+   * Add a grant both on the principal and on the resource
    *
    * As long as any principal is given, granting on the pricipal may fail (in
    * case of a non-identity principal), but granting on the resource will
@@ -194,8 +194,8 @@ export class Permissions {
    *
    * Statement will be the resource statement.
    */
-  public static grantOnIdentityAndResource(options: GrantOnIdentityAndResourceOptions): GrantResult {
-    const result = Permissions.tryGrantOnIdentity({
+  public static grantOnPrincipalAndResource(options: GrantOnIdentityAndResourceOptions): GrantResult {
+    const result = Permissions.tryGrantOnPrincipal({
       actions: options.actions,
       principal: options.principal,
       resourceArns: options.resourceArns,

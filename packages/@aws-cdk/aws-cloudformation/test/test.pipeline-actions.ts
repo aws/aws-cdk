@@ -316,11 +316,11 @@ class PipelineDouble extends cdk.Construct implements cpapi.IPipeline {
     throw new Error('asEventRuleTarget() is unsupported in PipelineDouble');
   }
 
-  public grantBucketRead(_identity?: iam.IPrincipal): void {
+  public grantBucketRead(_identity?: iam.IPrincipal): iam.GrantResult {
     throw new Error('grantBucketRead() is unsupported in PipelineDouble');
   }
 
-  public grantBucketReadWrite(_identity?: iam.IPrincipal): void {
+  public grantBucketReadWrite(_identity?: iam.IPrincipal): iam.GrantResult {
     throw new Error('grantBucketReadWrite() is unsupported in PipelineDouble');
   }
 }
