@@ -10,7 +10,7 @@ import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, SDK }
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';
-import { CfnProvisioner } from '../lib/api/provisioner';
+import { CloudFormationDeploymentTarget } from '../lib/api/deployment-target';
 import { leftPad } from '../lib/api/util/string-manipulation';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { printSecurityDiff, RequireApproval } from '../lib/diff';
@@ -68,7 +68,7 @@ async function parseCommandLineArguments() {
       .option('exclusively', { type: 'boolean', alias: 'x', desc: 'only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
     .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
-      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'number of context lines to include in arbitrary JSON diff rendering', default: 3 })
       .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' })
       .option('strict', { type: 'boolean', desc: 'do not filter out AWS::CDK::Metadata resources', default: false }))
@@ -110,7 +110,7 @@ async function initCommandLine() {
   await configuration.load();
   configuration.logDefaults();
 
-  const provisioner = new CfnProvisioner({ aws });
+  const provisioner = new CloudFormationDeploymentTarget({ aws });
 
   const appStacks = new AppStacks({
     verbose: argv.trace || argv.verbose,

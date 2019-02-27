@@ -3,7 +3,7 @@ import { Test } from 'nodeunit';
 import { Writable } from 'stream';
 import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
 import { AppStacks } from '../lib/api/cxapp/stacks';
-import { IProvisioner, Template } from '../lib/api/provisioner';
+import { IDeploymentTarget, Template } from '../lib/api/deployment-target';
 import { SDK } from '../lib/api/util/sdk';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { Configuration } from '../lib/settings';
@@ -36,7 +36,7 @@ const appStacks = new AppStacks({
 export = {
   async 'diff can diff multiple stacks'(test: Test) {
     // GIVEN
-    const provisioner: IProvisioner = {
+    const provisioner: IDeploymentTarget = {
       async readCurrentTemplate(_stack: cxapi.SynthesizedStack): Promise<Template> {
         return {};
       }

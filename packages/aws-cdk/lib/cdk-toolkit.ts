@@ -2,7 +2,7 @@ import colors = require('colors/safe');
 import fs = require('fs-extra');
 import { format } from 'util';
 import { AppStacks, ExtendedStackSelection } from "./api/cxapp/stacks";
-import { IProvisioner } from './api/provisioner';
+import { IDeploymentTarget } from './api/deployment-target';
 import { printStackDiff } from './diff';
 import { deserializeStructure } from './serialize';
 
@@ -15,7 +15,7 @@ export interface CdkToolkitProps {
   /**
    * The provisioning engine used to apply changes to the cloud
    */
-  provisioner: IProvisioner;
+  provisioner: IDeploymentTarget;
 }
 
 /**
@@ -72,16 +72,22 @@ export interface DiffOptions {
 
   /**
    * Only select the given stack
+   *
+   * @default false
    */
   exclusively?: boolean;
 
   /**
    * Used a template from disk instead of from the server
+   *
+   * @default Use from the server
    */
   templatePath?: string;
 
   /**
    * Strict diff mode
+   *
+   * @default false
    */
   strict?: boolean;
 

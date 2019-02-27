@@ -11,7 +11,7 @@ export type Template = { [key: string]: any };
  *
  * Provisioners apply templates to the cloud infrastructure.
  */
-export interface IProvisioner {
+export interface IDeploymentTarget {
   readCurrentTemplate(stack: cxapi.SynthesizedStack): Promise<Template>;
 }
 
@@ -22,7 +22,7 @@ export interface ProvisionerProps {
 /**
  * Default provisioner (applies to CloudFormation).
  */
-export class CfnProvisioner implements IProvisioner {
+export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   constructor(private readonly props: ProvisionerProps) {
   }
 
