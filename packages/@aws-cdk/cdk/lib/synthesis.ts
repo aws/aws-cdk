@@ -4,6 +4,10 @@ import os = require('os');
 import path = require('path');
 import { collectRuntimeInformation } from './runtime-info';
 
+export interface ISynthesizable {
+  synthesize(session: ISynthesisSession): void;
+}
+
 export interface ISynthesisSession {
   readonly store: ISessionStore;
   readonly manifest: cxapi.AssemblyManifest;
@@ -12,6 +16,13 @@ export interface ISynthesisSession {
 }
 
 export class SynthesisSession implements ISynthesisSession {
+  /**
+   * @returns true if `obj` implements `ISynthesizable`.
+   */
+  public static isSynthesizable(obj: any): obj is ISynthesizable {
+    return 'synthesize' in obj;
+  }
+
   private readonly artifacts: { [id: string]: cxapi.Artifact } = { };
   private _manifest?: cxapi.AssemblyManifest;
 

@@ -1,7 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from '../aspects/aspect';
 import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
-import { ISynthesisSession } from '../synthesis';
 import { makeUniqueId } from '../util/uniqueid';
 import { IDependable } from './dependency';
 import { Token, unresolved } from './tokens';
@@ -342,19 +341,6 @@ export class ConstructNode {
   }
 
   /**
-   * Synthesizes the entire subtree by writing artifacts into a synthesis session.
-   */
-  public synthesizeTree(session: ISynthesisSession) {
-    const constructs = this.host.node.findAll(ConstructOrder.PostOrder);
-
-    for (const construct of constructs) {
-      if (Construct.isConstruct(construct)) {
-        (construct as any).synthesize(session);
-      }
-    }
-  }
-
-  /**
    * Applies the aspect to this Constructs node
    */
   public apply(aspect: IAspect): void {
@@ -648,21 +634,6 @@ export class Construct implements IConstruct {
    * understand the implications.
    */
   protected prepare(): void {
-    return;
-  }
-
-  /**
-   * Synthesizes this construct into artifacts.
-   *
-   * This method can be overloaded by any construct that wishes to emit artifacts during
-   * the tree synthesis. For example, the `Stack` construct overrides this and produces
-   * CloudFormation templates, `Asset` overrides this to produce asset artifacts, etc.
-   *
-   * To emit artifacts, use the API of the `Session` argument.
-   *
-   * @param _session synthesis session
-   */
-  protected synthesize(_session: ISynthesisSession): void {
     return;
   }
 }

@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Root } from './core/construct';
+import { ConstructOrder, Root } from './core/construct';
 import { FileSystemStore, InMemoryStore, ISynthesisSession, SynthesisSession } from './synthesis';
 
 /**
@@ -48,8 +48,12 @@ export class App extends Root {
       throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
     }
 
-    // synthesize
-    this.node.synthesizeTree(session);
+    // synthesize (leaves first)
+    for (const c of this.node.findAll(ConstructOrder.PostOrder)) {
+      if (SynthesisSession.isSynthesizable(c)) {
+        c.synthesize(session);
+      }
+    }
 
     // write session manifest and lock store
     session.finalize();
