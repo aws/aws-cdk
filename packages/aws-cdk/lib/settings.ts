@@ -86,8 +86,8 @@ export class Context {
   }
 
   public everything(): {[key: string]: any} {
-    const b = this.bottom.get(this.bottomPrefixPath);
-    const t = this.top.get([]);
+    const b = this.bottom.get(this.bottomPrefixPath) || {};
+    const t = this.top.get([]) || {};
     return Object.assign(b, t);
   }
 
