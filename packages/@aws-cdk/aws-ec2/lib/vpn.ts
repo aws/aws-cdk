@@ -77,7 +77,13 @@ export enum VpnConnectionType {
   /**
    * The IPsec 1 VPN connection type.
    */
-  IPsec1 = 'ipsec.1'
+  IPsec1 = 'ipsec.1',
+
+  /**
+   * Dummy member
+   * TODO: remove once https://github.com/awslabs/jsii/issues/231 is fixed
+   */
+  Dummy = 'ipsec.1'
 }
 
 export class VpnConnection extends cdk.Construct implements IVpnConnection {
