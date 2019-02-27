@@ -2,21 +2,27 @@ import { Documented, PrimitiveType } from './base-types';
 
 export type Property = ScalarProperty | CollectionProperty;
 export type ScalarProperty = PrimitiveProperty | ComplexProperty | UnionProperty;
-export type CollectionProperty = ListProperty | MapProperty | UnionProperty;
+export type CollectionProperty = ListProperty | MapProperty | UnionProperty;
 export type ListProperty = PrimitiveListProperty | ComplexListProperty;
 export type MapProperty = PrimitiveMapProperty | ComplexMapProperty;
 export type TagProperty = TagPropertyStandard | TagPropertyAutoScalingGroup | TagPropertyJson | TagPropertyStringMap;
 
 export interface PropertyBase extends Documented {
-  /** Indicates whether the property is required. */
-  Required: boolean;
+  /**
+   * Indicates whether the property is required.
+   *
+   * @default false
+   */
+  Required?: boolean;
   /**
    * During a stack update, the update behavior when you add, remove, or modify the property. AWS CloudFormation
    * replaces the resource when you change `Ìmmutable``properties. AWS CloudFormation doesn't replace the resource
    * when you change ``Mutable`` properties. ``Conditional`` updates can be mutable or immutable, depending on, for
    * example, which other properties you updated.
+   *
+   * @default UpdateType.Mutable
    */
-  UpdateType: UpdateType;
+  UpdateType?: UpdateType;
 
   /**
    * During a stack update, what kind of additional scrutiny changes to this property should be subjected to

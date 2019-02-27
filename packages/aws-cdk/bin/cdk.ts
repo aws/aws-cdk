@@ -108,7 +108,6 @@ async function initCommandLine() {
 
   const configuration = new Configuration(argv);
   await configuration.load();
-  configuration.logDefaults();
 
   const provisioner = new CloudFormationDeploymentTarget({ aws });
 
@@ -146,7 +145,7 @@ async function initCommandLine() {
     }
   }
 
-  loadPlugins(configuration.combined);
+  loadPlugins(configuration.settings);
 
   const cmd = argv._[0];
 
@@ -163,7 +162,7 @@ async function initCommandLine() {
   }
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
-    const toolkitStackName: string = configuration.combined.get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
+    const toolkitStackName: string = configuration.settings.get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
 
     if (toolkitStackName !== DEFAULT_TOOLKIT_STACK_NAME) {
       print(`Toolkit stack: ${colors.bold(toolkitStackName)}`);
@@ -192,7 +191,7 @@ async function initCommandLine() {
         return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
 
       case 'deploy':
-        return await cliDeploy(args.STACKS, args.exclusively, toolkitStackName, args.roleArn, configuration.combined.get(['requireApproval']), args.ci);
+        return await cliDeploy(args.STACKS, args.exclusively, toolkitStackName, args.roleArn, configuration.settings.get(['requireApproval']), args.ci);
 
       case 'destroy':
         return await cliDestroy(args.STACKS, args.exclusively, args.force, args.roleArn);
@@ -205,7 +204,7 @@ async function initCommandLine() {
         return await cliMetadata(await findStack(args.STACK));
 
       case 'init':
-        const language = configuration.combined.get(['language']);
+        const language = configuration.settings.get(['language']);
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
@@ -236,7 +235,7 @@ async function initCommandLine() {
     // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
     // at their word that they know the name of the environment.
 
-    const app = configuration.combined.get(['app']);
+    const app = configuration.settings.get(['app']);
 
     const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs) : environmentsFromDescriptors(environmentGlobs);
 
