@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { SDK } from '../api/util/sdk';
 import { debug } from '../logging';
-import { Settings } from '../settings';
+import { Context } from '../settings';
 import { AZContextProviderPlugin } from './availability-zones';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
 import { ContextProviderPlugin } from './provider';
@@ -16,7 +16,7 @@ export type ProviderMap = {[name: string]: ProviderConstructor};
  */
 export async function provideContextValues(
   missingValues: { [key: string]: cxapi.MissingContext },
-  projectConfig: Settings,
+  context: Context,
   sdk: SDK) {
   for (const key of Object.keys(missingValues)) {
     const missingContext = missingValues[key];
@@ -30,7 +30,7 @@ export async function provideContextValues(
     const provider = new constructor(sdk);
 
     const value = await provider.getValue(missingContext.props);
-    projectConfig.set(['context', key], value);
+    context.set(key, value);
     debug(`Setting "${key}" context to ${JSON.stringify(value)}`);
   }
 }

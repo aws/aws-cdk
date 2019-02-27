@@ -3,12 +3,12 @@ import colors = require('colors/safe');
 import minimatch = require('minimatch');
 import contextproviders = require('../../context-providers');
 import { debug, error, print, warning } from '../../logging';
-import { Configuration, Settings } from '../../settings';
+import { Configuration } from '../../settings';
 import cdkUtil = require('../../util');
 import { SDK } from '../util/sdk';
 import { topologicalSort } from '../util/toposort';
 
-type Synthesizer = (aws: SDK, config: Settings) => Promise<cxapi.SynthesizeResponse>;
+type Synthesizer = (aws: SDK, config: Configuration) => Promise<cxapi.SynthesizeResponse>;
 
 export interface AppStacksProps {
   /**
@@ -154,20 +154,20 @@ export class AppStacks {
       return this.cachedResponse;
     }
 
-    const trackVersions: boolean = this.props.configuration.combined.get(['versionReporting']);
+    const trackVersions: boolean = this.props.configuration.settings.get(['versionReporting']);
 
     // We may need to run the cloud executable multiple times in order to satisfy all missing context
     while (true) {
-      const response: cxapi.SynthesizeResponse = await this.props.synthesizer(this.props.aws, this.props.configuration.combined);
+      const response: cxapi.SynthesizeResponse = await this.props.synthesizer(this.props.aws, this.props.configuration);
       const allMissing = cdkUtil.deepMerge(...response.stacks.map(s => s.missing));
 
       if (!cdkUtil.isEmpty(allMissing)) {
         debug(`Some context information is missing. Fetching...`);
 
-        await contextproviders.provideContextValues(allMissing, this.props.configuration.projectConfig, this.props.aws);
+        await contextproviders.provideContextValues(allMissing, this.props.configuration.context, this.props.aws);
 
         // Cache the new context to disk
-        await this.props.configuration.saveProjectConfig();
+        await this.props.configuration.saveContext();
 
         continue;
       }
