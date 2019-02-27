@@ -325,7 +325,7 @@ const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
 });
 ```
 
-To export a VPC that can accept VPN connections, set `vpnGateway` to `true`:
+To create a VPC that can accept VPN connections, set `vpnGateway` to `true`:
 
 ```ts
 const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
