@@ -71,7 +71,7 @@ class StringWritable extends Writable {
     this.data = '';
   }
 
-  public _write(chunk: any, encoding: string, callback: (error?: Error | null | undefined) => void) {
+  public _write(chunk: any, encoding: string, callback: (error?: Error | undefined) => void) {
     if (encoding === 'buffer') {
       chunk = this._decoder.write(chunk);
     }
