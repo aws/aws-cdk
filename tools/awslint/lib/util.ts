@@ -9,3 +9,14 @@ export function isConstruct(c: reflect.ClassType) {
   const root = bases[bases.length - 1];
   return root === constructClass;
 }
+
+/**
+ * Iterate over a class and all of its ancestors
+ */
+export function* classAndAncestors(c: reflect.ClassType): Iterable<reflect.ClassType> {
+  yield c;
+
+  for (const ancestor of c.getAncestors()) {
+    yield* classAndAncestors(ancestor);
+  }
+}

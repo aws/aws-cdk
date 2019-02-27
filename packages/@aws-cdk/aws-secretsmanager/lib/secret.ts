@@ -39,7 +39,7 @@ export interface ISecret extends cdk.IConstruct {
    * @param versionStages the version stages the grant is limited to. If not specified, no restriction on the version
    *                      stages is applied.
    */
-  grantRead(grantee: iam.IPrincipal, versionStages?: string[]): void;
+  grantRead(principal?: iam.IPrincipal, versionStages?: string[]): iam.GrantResult;
 }
 
 /**
@@ -101,30 +101,33 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
 
   public abstract export(): SecretImportProps;
 
-  public grantRead(grantee: iam.IPrincipal, versionStages?: string[]): void {
+  public grantRead(principal?: iam.IPrincipal, versionStages?: string[]): iam.GrantResult {
     // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
-    const statement = new iam.PolicyStatement()
-    .allow()
-    .addAction('secretsmanager:GetSecretValue')
-    .addResource(this.secretArn);
+
+    const result = iam.Permissions.grant({
+      principal,
+      actions: ['secretsmanager:GetSecretValue'],
+      resourceArns: [this.secretArn],
+      scope: this
+    });
     if (versionStages != null) {
-      statement.addCondition('ForAnyValue:StringEquals', {
+      result.statement!.addCondition('ForAnyValue:StringEquals', {
         'secretsmanager:VersionStage': versionStages
       });
     }
-    grantee.addToPolicy(statement);
 
-    if (this.encryptionKey) {
+    if (this.encryptionKey && principal) {
       // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.addToResourcePolicy(new iam.PolicyStatement()
-      .allow()
-      .addPrincipal(grantee)
-      .addAction('kms:Decrypt')
-      .addAllResources()
-      .addCondition('StringEquals', {
-        'kms:ViaService': `secretsmanager.${this.node.stack.region}.amazonaws.com`
-      }));
+        .addPrincipal(principal)
+        .addAction('kms:Decrypt')
+        .addAllResources()
+        .addCondition('StringEquals', {
+          'kms:ViaService': `secretsmanager.${this.node.stack.region}.amazonaws.com`
+        }));
     }
+
+    return result;
   }
 
   public toSecretString() {

@@ -51,17 +51,17 @@ export interface IRepository extends cdk.IConstruct {
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
-  grant(identity?: iam.IPrincipal, ...actions: string[]): void;
+  grant(identity?: iam.IPrincipal, ...actions: string[]): iam.GrantResult;
 
   /**
    * Grant the given identity permissions to pull images in this repository.
    */
-  grantPull(identity?: iam.IPrincipal): void;
+  grantPull(identity?: iam.IPrincipal): iam.GrantResult;
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
    */
-  grantPullPush(identity?: iam.IPrincipal): void;
+  grantPullPush(identity?: iam.IPrincipal): iam.GrantResult;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -207,7 +207,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Grant the given principal identity permissions to perform the actions on this repository
    */
   public grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    iam.Permissions.grant({
+    return iam.Permissions.grant({
       principal,
       actions,
       resourceArns: [this.repositoryArn],
@@ -219,15 +219,16 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPull(principal?: iam.IPrincipal) {
-    this.grant(principal, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
+    const ret = this.grant(principal, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
 
-    iam.Permissions.grant({
+    iam.Permissions.tryGrantOnIdentity({
       principal,
-      actions: ["ecr:GetAuthorizationToken", "logs:CreateLogStream", "logs:PutLogEvents"],
+      actions: ["ecr:GetAuthorizationToken"],
       resourceArns: ['*'],
-      skipResourcePolicy: true,
       scope: this,
     });
+
+    return ret;
   }
 
   /**
@@ -235,7 +236,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    */
   public grantPullPush(identity?: iam.IPrincipal) {
     this.grantPull(identity);
-    this.grant(identity,
+    return this.grant(identity,
       "ecr:PutImage",
       "ecr:InitiateLayerUpload",
       "ecr:UploadLayerPart",

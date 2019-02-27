@@ -32,7 +32,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  grantRead(identity?: iam.IPrincipal): void;
+  grantRead(identity?: iam.IPrincipal): iam.GrantResult;
 
   /**
    * Grant write permissions for this stream and its contents to an IAM
@@ -41,7 +41,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to ues the key to encrypt the
    * contents of the stream will also be granted.
    */
-  grantWrite(identity?: iam.IPrincipal): void;
+  grantWrite(identity?: iam.IPrincipal): iam.GrantResult;
 
   /**
    * Grants read/write permissions for this stream and its contents to an IAM
@@ -50,7 +50,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    */
-  grantReadWrite(identity?: iam.IPrincipal): void;
+  grantReadWrite(identity?: iam.IPrincipal): iam.GrantResult;
 }
 
 /**
@@ -117,23 +117,14 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantRead(identity?: iam.IPrincipal) {
-    if (!identity) {
-      return;
+  public grantRead(principal?: iam.IPrincipal) {
+    const ret = this.grant(principal, 'kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator');
+
+    if (this.encryptionKey) {
+      this.encryptionKey.grantDecrypt(principal);
     }
-    this.grant(
-      identity,
-      {
-        streamActions: [
-          'kinesis:DescribeStream',
-          'kinesis:GetRecords',
-          'kinesis:GetShardIterator'
-        ],
-        keyActions: [
-          'kms:Decrypt'
-        ]
-      }
-    );
+
+    return ret;
   }
 
   /**
@@ -143,25 +134,14 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantWrite(identity?: iam.IPrincipal) {
-    if (!identity) {
-      return;
+  public grantWrite(principal?: iam.IPrincipal) {
+    const ret = this.grant(principal, 'kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords');
+
+    if (this.encryptionKey) {
+      this.encryptionKey.grantEncrypt(principal);
     }
 
-    this.grant(
-      identity,
-      {
-        streamActions: [
-          'kinesis:DescribeStream',
-          'kinesis:PutRecord',
-          'kinesis:PutRecords'
-        ],
-        keyActions: [
-          'kms:GenerateDataKey',
-          'kms:Encrypt'
-        ]
-      }
-    );
+    return ret;
   }
 
   /**
@@ -171,27 +151,20 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    */
-  public grantReadWrite(identity?: iam.IPrincipal) {
-    if (!identity) {
-      return;
+  public grantReadWrite(principal?: iam.IPrincipal) {
+    const ret = this.grant(
+        principal,
+        'kinesis:DescribeStream',
+        'kinesis:GetRecords',
+        'kinesis:GetShardIterator',
+        'kinesis:PutRecord',
+        'kinesis:PutRecords');
+
+    if (this.encryptionKey) {
+      this.encryptionKey.grantEncryptDecrypt(principal);
     }
-    this.grant(
-      identity,
-      {
-        streamActions: [
-          'kinesis:DescribeStream',
-          'kinesis:GetRecords',
-          'kinesis:GetShardIterator',
-          'kinesis:PutRecord',
-          'kinesis:PutRecords'
-        ],
-        keyActions: [
-          'kms:Decrypt',
-          'kms:GenerateDataKey',
-          'kms:Encrypt'
-        ]
-      }
-    );
+
+    return ret;
   }
 
   public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
@@ -254,17 +227,13 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
     return dest.logSubscriptionDestination(sourceLogGroup);
   }
 
-  private grant(principal: iam.IPrincipal, actions: { streamActions: string[], keyActions: string[] }) {
-    principal.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.streamArn)
-      .addActions(...actions.streamActions));
-
-    // grant key permissions if there's an associated key.
-    if (this.encryptionKey) {
-      principal.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.encryptionKey.keyArn)
-        .addActions(...actions.keyActions));
-    }
+  private grant(principal?: iam.IPrincipal, ...actions: string[]) {
+    return iam.Permissions.grant({
+      principal,
+      actions,
+      resourceArns: [this.streamArn],
+      scope: this,
+    });
   }
 }
 

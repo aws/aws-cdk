@@ -1,7 +1,7 @@
 import reflect = require('jsii-reflect');
 import { CfnResourceSpec, findCfnResources } from '../cfn-resources';
 import { Linter } from '../linter';
-import { CONSTRUCT_FQN, CONSTRUCT_INTERFACE_FQN, isConstruct } from '../util';
+import { classAndAncestors, CONSTRUCT_FQN, CONSTRUCT_INTERFACE_FQN, isConstruct } from '../util';
 
 export const resourceLinter = new Linter<ResourceLinterContext>(assembly => {
   return findCfnResources(assembly).map(cfn => ({
@@ -10,6 +10,8 @@ export const resourceLinter = new Linter<ResourceLinterContext>(assembly => {
     ts: assembly.system,
   }));
 });
+
+const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.GrantResult';
 
 interface ResourceLinterContext {
   readonly ts: reflect.TypeSystem;
@@ -149,7 +151,7 @@ resourceLinter.add({
     }
 
     e.assertSignature(importMethod, {
-      returns: e.ctx.resourceInterface.fqn,
+      returns: e.ctx.resourceInterface,
       parameters: [
         { name: 'scope', type: CONSTRUCT_FQN },
         { name: 'id', type: 'string' },
@@ -173,8 +175,27 @@ resourceLinter.add({
     if (!e.ctx.importPropsInterface) { return; }
 
     e.assertSignature(exportMethod, {
-      returns: e.ctx.importPropsInterface.fqn,
+      returns: e.ctx.importPropsInterface,
       parameters: []
     });
+  }
+});
+
+resourceLinter.add({
+  code: 'grant-result',
+  message: `"grant" method must return ${GRANT_RESULT_FQN}`,
+  eval: e => {
+    if (!e.ctx.resourceClass) { return; }
+
+    const grantResultType = e.ctx.ts.findFqn(GRANT_RESULT_FQN);
+
+    for (const klass of classAndAncestors(e.ctx.resourceClass)) {
+      const grantMethods = klass.methods.filter(m => m.name.startsWith('grant') && !m.static);
+      for (const grantMethod of grantMethods) {
+        e.assertSignature(grantMethod, {
+          returns: grantResultType
+        });
+      }
+    }
   }
 });

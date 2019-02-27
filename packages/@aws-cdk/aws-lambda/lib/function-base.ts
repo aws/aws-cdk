@@ -60,7 +60,7 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  grantInvoke(identity?: iam.IPrincipal): void;
+  grantInvoke(identity?: iam.IPrincipal): iam.GrantResult;
 
   /**
    * Return the given named metric for this Lambda
@@ -246,25 +246,28 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  public grantInvoke(principal?: iam.IPrincipal) {
-    const added = iam.Permissions.grant({
+  public grantInvoke(principal?: iam.IPrincipal): iam.GrantResult {
+    return iam.Permissions.grant({
       principal,
       actions: ['lambda:InvokeFunction'],
       resourceArns: [this.functionArn],
-      // Can't use a resource policy because adding resource permissions
-      // looks different on a Lambda Function.
-      skipResourcePolicy: true,
       scope: this,
-    });
 
-    if (principal && !added.addedToPrincipal) {
-      // Couldn't add permissions to the principal, so add them locally.
-      const identifier = 'Invoke' + JSON.stringify(principal!.policyFragment.principalJson);
-      this.addPermission(identifier, {
-         principal,
-         action: 'lambda:InvokeFunction',
-      });
-    }
+      // Fake resource-like object on which to call addToResourcePolicy(), which actually
+      // calls addPermission()
+      resource: {
+        addToResourcePolicy: (_statement) => {
+          // Couldn't add permissions to the principal, so add them locally.
+          const identifier = 'Invoke' + JSON.stringify(principal!.policyFragment.principalJson);
+          this.addPermission(identifier, {
+            principal: principal!,
+            action: 'lambda:InvokeFunction',
+          });
+        },
+        dependencyRoots: [],
+        node: this.node,
+      },
+    });
   }
 
   public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {

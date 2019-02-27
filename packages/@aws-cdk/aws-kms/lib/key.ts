@@ -33,17 +33,22 @@ export interface IEncryptionKey extends IConstruct {
   /**
    * Grant the indicated permissions on this key to the given principal
    */
-  grant(principal: iam.IPrincipal | undefined, ...actions: string[]): void;
+  grant(principal: iam.IPrincipal | undefined, ...actions: string[]): iam.GrantResult;
 
   /**
    * Grant decryption permisisons using this key to the given principal
    */
-  grantDecrypt(principal: iam.IPrincipal | undefined): void;
+  grantDecrypt(principal: iam.IPrincipal | undefined): iam.GrantResult;
 
   /**
    * Grant encryption permisisons using this key to the given principal
    */
-  grantEncrypt(principal: iam.IPrincipal | undefined): void;
+  grantEncrypt(principal: iam.IPrincipal | undefined): iam.GrantResult;
+
+  /**
+   * Grant encryption and decryption permisisons using this key to the given principal
+   */
+  grantEncryptDecrypt(principal: iam.IPrincipal | undefined): iam.GrantResult;
 }
 
 export interface EncryptionKeyImportProps {
@@ -99,27 +104,20 @@ export abstract class EncryptionKeyBase extends Construct implements IEncryption
    * since the default CloudFormation setup for KMS keys is that the policy
    * must not be empty and so default grants won't work.
    */
-  public grant(principal: iam.IPrincipal | undefined, ...actions: string[]): void {
-    iam.Permissions.grant({
+  public grant(principal: iam.IPrincipal | undefined, ...actions: string[]): iam.GrantResult {
+    return iam.Permissions.grantOnIdentityAndResource({
       principal,
       actions,
       resourceArns: [this.keyArn],
-      skipResourcePolicy: true,
-      scope: this
+      resource: this,
+      resourceSelfArns: ['*']
     });
-
-    if (principal) {
-      this.addToResourcePolicy(new iam.PolicyStatement()
-        .addPrincipal(principal)
-        .addActions(...actions)
-        .addAllResources());
-    }
   }
 
   /**
    * Grant decryption permisisons using this key to the given principal
    */
-  public grantDecrypt(principal: iam.IPrincipal | undefined): void {
+  public grantDecrypt(principal: iam.IPrincipal | undefined): iam.GrantResult {
     return this.grant(principal,
       'kms:Decrypt',
       'kms:DescribeKey'
@@ -129,8 +127,21 @@ export abstract class EncryptionKeyBase extends Construct implements IEncryption
   /**
    * Grant encryption permisisons using this key to the given principal
    */
-  public grantEncrypt(principal: iam.IPrincipal | undefined): void {
+  public grantEncrypt(principal: iam.IPrincipal | undefined): iam.GrantResult {
     return this.grant(principal,
+      'kms:Encrypt',
+      'kms:ReEncrypt*',
+      'kms:GenerateDataKey*'
+    );
+  }
+
+  /**
+   * Grant encryption and decryption permisisons using this key to the given principal
+   */
+  public grantEncryptDecrypt(principal: iam.IPrincipal | undefined): iam.GrantResult {
+    return this.grant(principal,
+      'kms:Decrypt',
+      'kms:DescribeKey',
       'kms:Encrypt',
       'kms:ReEncrypt*',
       'kms:GenerateDataKey*'

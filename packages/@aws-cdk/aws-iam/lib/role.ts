@@ -1,4 +1,5 @@
 import { Construct, IConstruct, Output } from '@aws-cdk/cdk';
+import { Permissions } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
@@ -208,21 +209,20 @@ export class Role extends Construct implements IRole {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  public grant(identity?: IPrincipal, ...actions: string[]) {
-      if (!identity) {
-        return;
-      }
-
-      identity.addToPolicy(new PolicyStatement()
-        .addResource(this.roleArn)
-        .addActions(...actions));
+  public grant(principal?: IPrincipal, ...actions: string[]) {
+    return Permissions.grant({
+      principal,
+      actions,
+      resourceArns: [this.roleArn],
+      scope: this,
+    });
   }
 
   /**
    * Grant permissions to the given principal to pass this role.
    */
   public grantPassRole(identity?: IPrincipal) {
-    this.grant(identity, 'iam:PassRole');
+    return this.grant(identity, 'iam:PassRole');
   }
 }
 

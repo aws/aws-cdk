@@ -111,7 +111,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantRead(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+  grantRead(identity?: iam.IPrincipal, objectsKeyPattern?: any): iam.GrantResult;
 
   /**
    * Grant write permissions to this bucket to an IAM principal.
@@ -122,7 +122,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantWrite(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+  grantWrite(identity?: iam.IPrincipal, objectsKeyPattern?: any): iam.GrantResult;
 
   /**
    * Grants s3:PutObject* and s3:Abort* permissions for this bucket to an IAM principal.
@@ -132,7 +132,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantPut(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+  grantPut(identity?: iam.IPrincipal, objectsKeyPattern?: any): iam.GrantResult;
 
   /**
    * Grants s3:DeleteObject* permission to an IAM pricipal for objects
@@ -141,7 +141,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantDelete(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+  grantDelete(identity?: iam.IPrincipal, objectsKeyPattern?: any): iam.GrantResult;
 
   /**
    * Grants read/write permissions for this bucket and it's contents to an IAM
@@ -153,7 +153,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantReadWrite(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+  grantReadWrite(identity?: iam.IPrincipal, objectsKeyPattern?: any): iam.GrantResult;
 
   /**
    * Allows unrestricted access to objects from this bucket.
@@ -178,7 +178,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
    * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
    */
-  grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.PolicyStatement;
+  grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.GrantResult;
 
   /**
    * Defines a CloudWatch Event Rule that triggers upon putting an object into the Bucket.
@@ -410,7 +410,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantRead(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
-    this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
+    return this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
       this.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }
@@ -425,7 +425,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantWrite(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
-    this.grant(identity, perms.BUCKET_WRITE_ACTIONS, perms.KEY_WRITE_ACTIONS,
+    return this.grant(identity, perms.BUCKET_WRITE_ACTIONS, perms.KEY_WRITE_ACTIONS,
       this.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }
@@ -439,7 +439,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantPut(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
-    this.grant(identity, perms.BUCKET_PUT_ACTIONS, perms.KEY_WRITE_ACTIONS,
+    return this.grant(identity, perms.BUCKET_PUT_ACTIONS, perms.KEY_WRITE_ACTIONS,
       this.arnForObjects(objectsKeyPattern));
   }
 
@@ -451,7 +451,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantDelete(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
-    this.grant(identity, perms.BUCKET_DELETE_ACTIONS, [],
+    return this.grant(identity, perms.BUCKET_DELETE_ACTIONS, [],
       this.arnForObjects(objectsKeyPattern));
   }
 
@@ -469,7 +469,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
     const bucketActions = perms.BUCKET_READ_ACTIONS.concat(perms.BUCKET_WRITE_ACTIONS);
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
 
-    this.grant(identity,
+    return this.grant(identity,
       bucketActions,
       keyActions,
       this.bucketArn,
@@ -497,22 +497,20 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
    * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
-   * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
    */
-  public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]): iam.PolicyStatement {
+  public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]) {
     if (this.disallowPublicAccess) {
       throw new Error("Cannot grant public access when 'blockPublicPolicy' is enabled");
     }
 
     allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
 
-    const statement = new iam.PolicyStatement()
-      .addActions(...allowedActions)
-      .addResource(this.arnForObjects(keyPrefix))
-      .addPrincipal(new iam.Anyone());
-
-    this.addToResourcePolicy(statement);
-    return statement;
+    return iam.Permissions.grant({
+      actions: allowedActions,
+      resourceArns: [this.arnForObjects(keyPrefix)],
+      principal: new iam.Anyone(),
+      resource: this,
+    });
   }
 
   private grant(principal: iam.IPrincipal | undefined,
@@ -521,7 +519,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
                 resourceArn: string, ...otherResourceArns: string[]) {
     const resources = [ resourceArn, ...otherResourceArns ];
 
-    iam.Permissions.grant({
+    const ret = iam.Permissions.grant({
       principal,
       actions: bucketActions,
       resourceArns: resources,
@@ -531,6 +529,8 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
     if (this.encryptionKey) {
       this.encryptionKey.grant(principal, ...keyActions);
     }
+
+    return ret;
   }
 }
 
