@@ -2,7 +2,7 @@ import colors = require('colors/safe');
 import yargs = require('yargs');
 import { CommandOptions } from '../command-api';
 import { print } from '../logging';
-import { DEFAULTS } from '../settings';
+import { PROJECT_CONFIG } from '../settings';
 import { renderTable } from '../util';
 
 export const command = 'context';
@@ -27,22 +27,22 @@ export function handler(args: yargs.Arguments) {
 export async function realHandler(options: CommandOptions): Promise<number> {
   const { configuration, args } = options;
 
-  const context = configuration.projectConfig.get(['context']) || {};
+  const contextValues = configuration.context.everything();
 
   if (args.clear) {
-    configuration.projectConfig.set(['context'], {});
-    await configuration.saveProjectConfig();
+    configuration.context.clear();
+    await configuration.saveContext();
     print('All context values cleared.');
   } else if (args.reset) {
-    invalidateContext(context, args.reset);
-    configuration.projectConfig.set(['context'], context);
-    await configuration.saveProjectConfig();
+    invalidateContext(contextValues, args.reset);
+    configuration.context.setAll(contextValues);
+    await configuration.saveContext();
   } else {
     // List -- support '--json' flag
     if (args.json) {
-      process.stdout.write(JSON.stringify(context, undefined, 2));
+      process.stdout.write(JSON.stringify(contextValues, undefined, 2));
     } else {
-      listContext(context);
+      listContext(contextValues);
     }
   }
 
@@ -69,7 +69,7 @@ function listContext(context: any) {
     data.push([i, key, jsonWithoutNewlines]);
   }
 
-  print(`Context found in ${colors.blue(DEFAULTS)}:\n`);
+  print(`Context found in ${colors.blue(PROJECT_CONFIG)}:\n`);
 
   print(renderTable(data, process.stdout.columns));
 
