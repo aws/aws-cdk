@@ -56,7 +56,7 @@ export class App extends Root {
     }
 
     // write session manifest and lock store
-    session.finalize();
+    session.close();
 
     return session;
   }

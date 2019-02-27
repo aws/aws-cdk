@@ -52,7 +52,7 @@ export class SynthesisSession implements ISynthesisSession {
     return JSON.parse(this.store.readFile(id).toString());
   }
 
-  public finalize(): cxapi.AssemblyManifest {
+  public close(): cxapi.AssemblyManifest {
     const manifest: cxapi.SynthesizeResponse = this._manifest = {
       version: cxapi.PROTO_RESPONSE_VERSION,
       artifacts: this.artifacts,

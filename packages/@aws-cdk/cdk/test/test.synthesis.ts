@@ -146,7 +146,7 @@ const storeTests = {
       }
     });
 
-    session.finalize();
+    session.close();
 
     const manifest = session.store.readJson(cxapi.MANIFEST_FILE);
 
