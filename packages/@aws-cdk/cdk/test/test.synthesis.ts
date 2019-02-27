@@ -148,13 +148,15 @@ const storeTests = {
 
     session.finalize();
 
+    const manifest = session.store.readJson(cxapi.MANIFEST_FILE);
+
     // THEN
-    delete session.manifest.stacks; // remove legacy
-    delete session.manifest.runtime; // deterministic tests
+    delete manifest.runtime; // deterministic tests
 
     // verify the manifest looks right
-    test.deepEqual(session.manifest, {
+    test.deepEqual(manifest, {
       version: cxapi.PROTO_RESPONSE_VERSION,
+      stacks: [], // here for legacy reasons
       artifacts: {
         'my-first-artifact': {
           type: 'aws:cloudformation:stack',
@@ -194,30 +196,3 @@ for (const [name, fn] of Object.entries(storeTests)) {
   storeTestMatrix[`FileSystemStore - ${name}`] = (test: Test) => fn(test, fsStore);
   storeTestMatrix[`InMemoryStore - ${name}`] = (test: Test) => fn(test, memoryStore);
 }
-
-// class Synthesizer1 extends cdk.Construct {
-//   public synthesize(s: cdk.ISynthesisSession) {
-//     s.writeFile('s1.txt', 'hello, s1');
-//   }
-// }
-
-// class Synthesizer2 extends cdk.Construct {
-//   constructor(scope: cdk.Construct, id: string) {
-//     super(scope, id);
-
-//     const group = new cdk.Construct(this, 'Group');
-//     for (let i = 0; i < 3; ++i) {
-//       new Synthesizer3(group, `${i}`);
-//     }
-//   }
-
-//   public synthesize(s: cdk.ISynthesisSession) {
-//     s.writeFile('s2.txt', 'hello, s2');
-//   }
-// }
-
-// class Synthesizer3 extends cdk.Construct {
-//   public synthesize(s: cdk.ISynthesisSession) {
-//     s.writeFile(this.node.uniqueId + '.txt', 'hello, s3');
-//   }
-// }

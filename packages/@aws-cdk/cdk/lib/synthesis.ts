@@ -46,14 +46,14 @@ export class SynthesisSession implements ISynthesisSession {
       version: cxapi.PROTO_RESPONSE_VERSION,
       artifacts: this.artifacts,
       runtime: collectRuntimeInformation(),
-
-      // for backwards compatbility
-      stacks: renderLegacyStacks(this.artifacts, this.store),
+      stacks: [], // this is required
     };
 
-    // write the manifest (under both legacy and new name)
-    this.store.writeFile(cxapi.OUTFILE_NAME, JSON.stringify(manifest, undefined, 2));
     this.store.writeFile(cxapi.MANIFEST_FILE, JSON.stringify(manifest, undefined, 2));
+
+    // render the legacy manifest (cdk.out) which also contains a "stacks" attribute with all the rendered stacks.
+    manifest.stacks = renderLegacyStacks(this.artifacts, this.store);
+    this.store.writeFile(cxapi.OUTFILE_NAME, JSON.stringify(manifest, undefined, 2));
 
     return manifest;
   }
