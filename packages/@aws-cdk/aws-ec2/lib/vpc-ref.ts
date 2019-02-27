@@ -14,12 +14,6 @@ export interface IVpcSubnet extends IConstruct {
   readonly subnetId: string;
 
   /**
-   * The id of the route table associated with this subnet.
-   * Not available for an imported subnet.
-   */
-  readonly routeTableId: string;
-
-  /**
    * Dependable that can be depended upon to force internet connectivity established on the VPC
    */
   readonly internetConnectivityEstablished: IDependable;

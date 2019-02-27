@@ -390,7 +390,7 @@ export class VpcNetwork extends VpcNetworkBase {
 
       // Propagate routes on route tables associated with private subnets
       const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
-        routeTableIds: this.privateSubnets.map(subnet => subnet.routeTableId),
+        routeTableIds: (this.privateSubnets as VpcPrivateSubnet[]).map(subnet => subnet.routeTableId),
         vpnGatewayId: this.vpnGatewayId
       });
 
@@ -744,14 +744,12 @@ class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
   public readonly internetConnectivityEstablished: cdk.IDependable = new cdk.ConcreteDependable();
   public readonly availabilityZone: string;
   public readonly subnetId: string;
-  public readonly routeTableId: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: VpcSubnetImportProps) {
     super(scope, id);
 
     this.subnetId = props.subnetId;
     this.availabilityZone = props.availabilityZone;
-    this.routeTableId = '';
   }
 
   public export() {
