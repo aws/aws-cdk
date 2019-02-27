@@ -400,9 +400,9 @@ export class VpcNetwork extends VpcNetworkBase {
       routePropagation.node.addDependency(attachment);
 
       const vpnConnections = props.vpnConnections || {};
-      Object.keys(vpnConnections).forEach(cId => {
-        this.addVpnConnection(cId, vpnConnections[cId]);
-      });
+      for (const [connectionId, connection] of Object.entries(vpnConnections)) {
+        this.addVpnConnection(connectionId, connection);
+      }
     }
   }
 

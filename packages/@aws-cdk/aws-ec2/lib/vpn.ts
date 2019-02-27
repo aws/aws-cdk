@@ -23,6 +23,7 @@ export interface IVpnConnection extends cdk.IConstruct {
    */
   readonly customerGatewayAsn: number;
 }
+
 export interface VpnTunnelOption {
   /**
    * The pre-shared key (PSK) to establish initial authentication between the virtual
