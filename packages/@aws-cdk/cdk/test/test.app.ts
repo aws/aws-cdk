@@ -16,7 +16,7 @@ function withApp(context: { [key: string]: any } | undefined, block: (app: App) 
 
   const session = app.run();
 
-  return JSON.parse(session.readFile(cxapi.OUTFILE_NAME));
+  return session.manifest;
 }
 
 function synth(context?: { [key: string]: any }): cxapi.SynthesizeResponse {
@@ -59,6 +59,7 @@ export = {
     // clean up metadata so assertion will be sane
     response.stacks.forEach(s => delete s.metadata);
     delete response.runtime;
+    delete response.artifacts;
 
     test.deepEqual(response, {
       version: '0.19.0',
@@ -90,13 +91,7 @@ export = {
     const stack = new Stack(prog, 'MyStack');
     new Resource(stack, 'MyResource', { type: 'MyResourceType' });
 
-    let throws;
-    try {
-      prog.synthesizeStacks(['foo']);
-    } catch (e) {
-      throws = e.message;
-    }
-    test.ok(throws.indexOf('Cannot find stack foo') !== -1);
+    test.throws(() => prog.synthesizeStacks(['foo']), /foo/);
 
     test.deepEqual(prog.synthesizeStack('MyStack').template,
       { Resources: { MyResource: { Type: 'MyResourceType' } } });
@@ -264,7 +259,7 @@ export = {
       new Resource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
-    const libs = response.runtime.libraries;
+    const libs = (response.runtime && response.runtime.libraries) || { };
 
     const version = require('../package.json').version;
     test.deepEqual(libs['@aws-cdk/cdk'], version);
@@ -281,7 +276,7 @@ export = {
       new Resource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
-    const libs = response.runtime.libraries;
+    const libs = (response.runtime && response.runtime.libraries) || { };
     test.deepEqual(libs['jsii-runtime'], `Java/1.2.3.4`);
 
     delete process.env.JSII_AGENT;
@@ -294,7 +289,7 @@ export = {
       new Resource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
-    const libs = response.runtime.libraries;
+    const libs = (response.runtime && response.runtime.libraries) || { };
 
     const version = require('../package.json').version;
     test.deepEqual(libs, {

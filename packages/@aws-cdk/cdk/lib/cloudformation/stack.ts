@@ -78,11 +78,6 @@ export class Stack extends Construct {
    */
   public readonly name: string;
 
-  /**
-   * The name of the CDK artifact produced by this stack.
-   */
-  public readonly artifactName: string;
-
   /*
    * Used to determine if this construct is a stack.
    */
@@ -112,8 +107,6 @@ export class Stack extends Construct {
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = this.node.id;
-
-    this.artifactName = `${this.node.uniqueId}.stack.json`;
   }
 
   /**
@@ -428,25 +421,21 @@ export class Stack extends Construct {
   protected synthesize(session: ISynthesisSession): void {
     const account = this.env.account || 'unknown-account';
     const region = this.env.region || 'unknown-region';
-
-    const environment: cxapi.Environment = {
-      name: `${account}/${region}`,
-      account,
-      region
-    };
-
     const missing = Object.keys(this.missingContext).length ? this.missingContext : undefined;
+    const template = `${this.node.id}.template.json`;
 
-    const output: cxapi.SynthesizedStack = {
-      name: this.node.id,
-      template: this.toCloudFormation(),
-      environment,
-      missing,
+    // write the CloudFormation template as a JSON file
+    session.store.writeJson(template, this.toCloudFormation());
+
+    // add an artifact that represents this stack
+    session.addArtifact(this.node.id, {
+      type: cxapi.ArtifactType.CloudFormationStack,
+      dependencies: noEmptyArray(this.dependencies().map(s => s.node.id)),
+      environment: `aws://${account}/${region}`,
       metadata: this.collectMetadata(),
-      dependsOn: noEmptyArray(this.dependencies().map(s => s.node.id)),
-    };
-
-    session.writeFile(this.artifactName, JSON.stringify(output, undefined, 2));
+      missing,
+      properties: { template }
+    });
   }
 
   /**

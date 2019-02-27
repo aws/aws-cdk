@@ -2,6 +2,7 @@
  * File with definitions for the interface between the Cloud Executable and the CDK toolkit.
  */
 
+import { Artifact } from './artifacts';
 import { Environment } from './environment';
 
 /**
@@ -22,7 +23,16 @@ import { Environment } from './environment';
  */
 export const PROTO_RESPONSE_VERSION = '0.19.0';
 
+/**
+ * @deprecated Use `MANIFEST_FILE`
+ */
 export const OUTFILE_NAME = 'cdk.out';
+
+/**
+ * The name of the root manifest file of the assembly.
+ */
+export const MANIFEST_FILE = "manifest.json";
+
 export const OUTDIR_ENV = 'CDK_OUTDIR';
 export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 
@@ -38,14 +48,32 @@ export interface MissingContext {
   };
 }
 
-export interface SynthesizeResponse {
+export interface AssemblyManifest {
   /**
    * Protocol version
    */
   version: string;
-  stacks: SynthesizedStack[];
+
+  /**
+   * The set of artifacts in this assembly.
+   */
+  artifacts?: { [id: string]: Artifact };
+
+  /**
+   * Runtime information.
+   */
   runtime?: AppRuntime;
+
+  /**
+   * @deprecated stacks should be read from `Artifacts`.
+   */
+  stacks: SynthesizedStack[];
 }
+
+/**
+ * @deprecated use `AssemblyManifest`
+ */
+export type SynthesizeResponse = AssemblyManifest;
 
 /**
  * A complete synthesized stack

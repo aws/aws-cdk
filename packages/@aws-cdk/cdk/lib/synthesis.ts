@@ -1,10 +1,67 @@
+import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import os = require('os');
 import path = require('path');
+import { collectRuntimeInformation } from './runtime-info';
 
 export interface ISynthesisSession {
+  readonly store: ISessionStore;
+  readonly manifest: cxapi.AssemblyManifest;
+  addArtifact(id: string, droplet: cxapi.Artifact): void;
+  tryGetArtifact(id: string): cxapi.Artifact | undefined;
+}
+
+export class SynthesisSession implements ISynthesisSession {
+  private readonly artifacts: { [id: string]: cxapi.Artifact } = { };
+  private _manifest?: cxapi.AssemblyManifest;
+
+  constructor(public readonly store: ISessionStore) {
+
+  }
+
+  public get manifest() {
+    if (!this._manifest) {
+      throw new Error(`Cannot read assembly manifest before the session has been finalized`);
+    }
+
+    return this._manifest;
+  }
+
+  public addArtifact(id: string, artifact: cxapi.Artifact): void {
+    cxapi.validateArtifact(artifact);
+    this.store.writeFile(id, JSON.stringify(artifact, undefined, 2));
+    this.artifacts[id] = artifact;
+  }
+
+  public tryGetArtifact(id: string): cxapi.Artifact | undefined {
+    if (!this.store.exists(id)) {
+      return undefined;
+    }
+
+    return JSON.parse(this.store.readFile(id).toString());
+  }
+
+  public finalize(): cxapi.AssemblyManifest {
+    const manifest: cxapi.SynthesizeResponse = this._manifest = {
+      version: cxapi.PROTO_RESPONSE_VERSION,
+      artifacts: this.artifacts,
+      runtime: collectRuntimeInformation(),
+
+      // for backwards compatbility
+      stacks: renderLegacyStacks(this.artifacts, this.store),
+    };
+
+    // write the manifest (under both legacy and new name)
+    this.store.writeFile(cxapi.OUTFILE_NAME, JSON.stringify(manifest, undefined, 2));
+    this.store.writeFile(cxapi.MANIFEST_FILE, JSON.stringify(manifest, undefined, 2));
+
+    return manifest;
+  }
+}
+
+export interface ISessionStore {
   /**
-   * Creates a directory under the session directory and returns it's full path.
+   * Creates a directory and returns it's full path.
    * @param directoryName The name of the directory to create.
    * @throws if a directory by that name already exists in the session or if the session has already been finalized.
    */
@@ -18,38 +75,56 @@ export interface ISynthesisSession {
   readdir(directoryName: string): string[];
 
   /**
-   * Writes a file into the synthesis session directory.
+   * Writes a file into the store.
    * @param artifactName The name of the file.
    * @param data The contents of the file.
    */
   writeFile(artifactName: string, data: any): void;
 
   /**
-   * Reads a file from the synthesis session directory.
+   * Writes a formatted JSON output file to the store
+   * @param artifactName the name of the artifact
+   * @param json the JSON object
+   */
+  writeJson(artifactName: string, json: any): void;
+
+  /**
+   * Reads a file from the store.
    * @param fileName The name of the file.
    * @throws if the file is not found
    */
   readFile(fileName: string): any;
 
   /**
-   * @returns true if the file `fileName` exists in the session directory.
+   * Reads a JSON object from the store.
+   */
+  readJson(fileName: string): any;
+
+  /**
+   * @returns true if the file `fileName` exists in the store.
    * @param name The name of the file or directory to look up.
    */
   exists(name: string): boolean;
 
   /**
-   * List all artifacts that were emitted to the session.
+   * List all top-level files that were emitted to the store.
    */
   list(): string[];
 
   /**
-   * Finalizes the session. After this is called, the session will be locked for
-   * writing.
+   * Do not allow further writes into the store.
    */
   finalize(): void;
 }
 
 export interface SynthesisSessionOptions {
+  /**
+   * Where to store the
+   */
+  store: ISessionStore;
+}
+
+export interface FileSystemStoreOptions {
   /**
    * The output directory for synthesis artifacts
    */
@@ -59,11 +134,11 @@ export interface SynthesisSessionOptions {
 /**
  * Can be used to prepare and emit synthesis artifacts into an output directory.
  */
-export class SynthesisSession implements ISynthesisSession {
+export class FileSystemStore implements ISessionStore {
   private readonly outdir: string;
   private locked = false;
 
-  constructor(options: SynthesisSessionOptions) {
+  constructor(options: FileSystemStoreOptions) {
     this.outdir = options.outdir;
     return;
   }
@@ -75,6 +150,10 @@ export class SynthesisSession implements ISynthesisSession {
     fs.writeFileSync(p, data);
   }
 
+  public writeJson(fileName: string, json: any) {
+    this.writeFile(fileName, JSON.stringify(json, undefined, 2));
+  }
+
   public readFile(fileName: string): any {
     const p = this.pathForArtifact(fileName);
     if (!fs.existsSync(p)) {
@@ -82,6 +161,10 @@ export class SynthesisSession implements ISynthesisSession {
     }
 
     return fs.readFileSync(p);
+  }
+
+  public readJson(fileName: string): any {
+    return JSON.parse(this.readFile(fileName).toString());
   }
 
   public exists(name: string): boolean {
@@ -127,7 +210,7 @@ export class SynthesisSession implements ISynthesisSession {
   }
 }
 
-export class InMemorySynthesisSession implements ISynthesisSession {
+export class InMemoryStore implements ISessionStore {
   private files: { [fileName: string]: any } = { };
   private dirs: { [dirName: string]: string } = { }; // value is path to a temporary directory
 
@@ -138,11 +221,19 @@ export class InMemorySynthesisSession implements ISynthesisSession {
     this.files[fileName] = data;
   }
 
+  public writeJson(fileName: string, json: any): void {
+    this.writeFile(fileName, JSON.stringify(json, undefined, 2));
+  }
+
   public readFile(fileName: string) {
     if (!(fileName in this.files)) {
       throw new Error(`${fileName} not found`);
     }
     return this.files[fileName];
+  }
+
+  public readJson(fileName: string): any {
+    return JSON.parse(this.readFile(fileName).toString());
   }
 
   public exists(name: string) {
@@ -182,4 +273,43 @@ export class InMemorySynthesisSession implements ISynthesisSession {
       throw new Error('Session has already been finalized');
     }
   }
+}
+
+function renderLegacyStacks(artifacts: { [id: string]: cxapi.Artifact }, store: ISessionStore) {
+  // special case for backwards compat. build a list of stacks for the manifest
+  const stacks = new Array<cxapi.SynthesizedStack>();
+
+  for (const [ id, artifact ] of Object.entries(artifacts)) {
+    if (artifact.type === cxapi.ArtifactType.CloudFormationStack) {
+      const templateFile = (artifact.properties || {}).template;
+      if (!templateFile) {
+        throw new Error(`Invalid cloudformation artifact. Missing "template" property`);
+      }
+      const template = store.readJson(templateFile);
+
+      const match = cxapi.AWS_ENV_REGEX.exec(artifact.environment);
+      if (!match) {
+        throw new Error(`"environment" must match regex: ${cxapi.AWS_ENV_REGEX}`);
+      }
+
+      const synthStack: cxapi.SynthesizedStack = {
+        name: id,
+        environment: { name: artifact.environment.substr('aws://'.length), account: match[1], region: match[2] },
+        template,
+        metadata: artifact.metadata || {},
+      };
+
+      if (artifact.dependencies && artifact.dependencies.length > 0) {
+        synthStack.dependsOn = artifact.dependencies;
+      }
+
+      if (artifact.missing) {
+        synthStack.missing = artifact.missing;
+      }
+
+      stacks.push(synthStack);
+    }
+  }
+
+  return stacks;
 }

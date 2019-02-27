@@ -4,39 +4,12 @@ import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
 import cdk = require('../lib');
-import { InMemorySynthesisSession, SynthesisSession } from '../lib';
+import { FileSystemStore, InMemoryStore, SynthesisSession } from '../lib';
 
-const sessionTestMatix: any = {};
+const storeTestMatrix: any = {};
 
 export = {
-  'constructs that implement "synthesize" can emit artifacts during synthesis'(test: Test) {
-    // GIVEN
-    const app = new cdk.App();
-    new Synthesizer1(app, 'synthe1');
-    const s2 = new Synthesizer2(app, 'synthe2');
-    new Synthesizer3(s2, 'synthe3');
-
-    // WHEN
-    const session = app.run();
-
-    // THEN
-    test.deepEqual(session.readFile('s1.txt'), 'hello, s1');
-    test.deepEqual(session.readFile('s2.txt'), 'hello, s2');
-
-    test.deepEqual(session.list(), [
-      'cdk.out',
-      's1.txt',
-      's2.txt',
-      'synthe2Group0512C945A.txt',
-      'synthe2Group181E95665.txt',
-      'synthe2Group20BD1A3CD.txt',
-      'synthe2synthe30CE80559.txt'
-    ]);
-
-    test.done();
-  },
-
-  'cdk.out contains all synthesized stacks'(test: Test) {
+  'backwards compatibility: cdk.out contains all synthesized stacks'(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack1 = new cdk.Stack(app, 'stack1');
@@ -47,7 +20,7 @@ export = {
 
     // WHEN
     const session = app.run();
-    const manifest: cxapi.SynthesizeResponse = JSON.parse(session.readFile(cxapi.OUTFILE_NAME).toString());
+    const manifest = session.manifest;
 
     // THEN
     const t1 = manifest.stacks.find(s => s.name === 'stack1')!.template;
@@ -67,96 +40,184 @@ export = {
     test.done();
   },
 
-  'session': sessionTestMatix
+  'store': storeTestMatrix
 };
 
-const sessionTests = {
-  'writeFile()/readFile()'(test: Test, session: cdk.ISynthesisSession) {
+//
+// all these tests will be executed for each type of store
+//
+const storeTests = {
+  'writeFile()/readFile()'(test: Test, store: cdk.ISessionStore) {
     // WHEN
-    session.writeFile('bla.txt', 'hello');
-    session.writeFile('hey.txt', '1234');
+    store.writeFile('bla.txt', 'hello');
+    store.writeFile('hey.txt', '1234');
 
     // THEN
-    test.deepEqual(session.readFile('bla.txt').toString(), 'hello');
-    test.deepEqual(session.readFile('hey.txt').toString(), '1234');
-    test.throws(() => session.writeFile('bla.txt', 'override is forbidden'));
+    test.deepEqual(store.readFile('bla.txt').toString(), 'hello');
+    test.deepEqual(store.readFile('hey.txt').toString(), '1234');
+    test.throws(() => store.writeFile('bla.txt', 'override is forbidden'));
 
     // WHEN
-    session.finalize();
+    store.finalize();
 
     // THEN
-    test.throws(() => session.writeFile('another.txt', 'locked!'));
+    test.throws(() => store.writeFile('another.txt', 'locked!'));
     test.done();
   },
 
-  'exists() for files'(test: Test, session: cdk.ISynthesisSession) {
+  'exists() for files'(test: Test, store: cdk.ISessionStore) {
     // WHEN
-    session.writeFile('A.txt', 'aaa');
+    store.writeFile('A.txt', 'aaa');
 
     // THEN
-    test.ok(session.exists('A.txt'));
-    test.ok(!session.exists('B.txt'));
+    test.ok(store.exists('A.txt'));
+    test.ok(!store.exists('B.txt'));
     test.done();
   },
 
-  'mkdir'(test: Test, session: cdk.ISynthesisSession) {
+  'mkdir'(test: Test, store: cdk.ISessionStore) {
     // WHEN
-    const dir1 = session.mkdir('dir1');
-    const dir2 = session.mkdir('dir2');
+    const dir1 = store.mkdir('dir1');
+    const dir2 = store.mkdir('dir2');
 
     // THEN
     test.ok(fs.statSync(dir1).isDirectory());
     test.ok(fs.statSync(dir2).isDirectory());
-    test.throws(() => session.mkdir('dir1'));
+    test.throws(() => store.mkdir('dir1'));
 
     // WHEN
-    session.finalize();
-    test.throws(() => session.mkdir('dir3'));
+    store.finalize();
+    test.throws(() => store.mkdir('dir3'));
     test.done();
   },
 
-  'list'(test: Test, session: cdk.ISynthesisSession) {
+  'list'(test: Test, store: cdk.ISessionStore) {
     // WHEN
-    session.mkdir('dir1');
-    session.writeFile('file1.txt', 'boom1');
+    store.mkdir('dir1');
+    store.writeFile('file1.txt', 'boom1');
 
     // THEN
-    test.deepEqual(session.list(), ['dir1', 'file1.txt']);
+    test.deepEqual(store.list(), ['dir1', 'file1.txt']);
+    test.done();
+  },
+
+  'SynthesisSession'(test: Test, store: cdk.ISessionStore) {
+    // GIVEN
+    const session = new SynthesisSession(store);
+    const templateFile = 'foo.template.json';
+
+    // WHEN
+    session.addArtifact('my-first-artifact', {
+      type: cxapi.ArtifactType.CloudFormationStack,
+      environment: 'aws://1222344/us-east-1',
+      dependencies: ['a', 'b'],
+      metadata: {
+        foo: { bar: 123 }
+      },
+      properties: {
+        template: templateFile,
+        prop1: 1234,
+        prop2: 555
+      },
+      missing: {
+        foo: {
+          provider: 'context-provider',
+          props: {
+            a: 'A',
+            b: 2
+          }
+        }
+      }
+    });
+
+    session.addArtifact('minimal-artifact', {
+      type: cxapi.ArtifactType.CloudFormationStack,
+      environment: 'aws://111/helo-world',
+      properties: {
+        template: templateFile
+      }
+    });
+
+    session.store.writeJson(templateFile, {
+      Resources: {
+        MyTopic: {
+          Type: 'AWS::S3::Topic'
+        }
+      }
+    });
+
+    session.finalize();
+
+    // THEN
+    delete session.manifest.stacks; // remove legacy
+    delete session.manifest.runtime; // deterministic tests
+
+    // verify the manifest looks right
+    test.deepEqual(session.manifest, {
+      version: cxapi.PROTO_RESPONSE_VERSION,
+      artifacts: {
+        'my-first-artifact': {
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://1222344/us-east-1',
+          dependencies: ['a', 'b'],
+          metadata: { foo: { bar: 123 } },
+          properties: { template: 'foo.template.json', prop1: 1234, prop2: 555 },
+          missing: {
+            foo: { provider: 'context-provider', props: { a: 'A', b: 2 } }
+          }
+        },
+        'minimal-artifact': {
+          type: 'aws:cloudformation:stack',
+          environment: 'aws://111/helo-world',
+          properties: { template: 'foo.template.json' }
+        }
+      }
+    });
+
+    // verify we have a template file
+    test.deepEqual(session.store.readJson(templateFile), {
+      Resources: {
+        MyTopic: {
+          Type: 'AWS::S3::Topic'
+        }
+      }
+    });
+
     test.done();
   }
 };
 
-for (const [name, fn] of Object.entries(sessionTests)) {
+for (const [name, fn] of Object.entries(storeTests)) {
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'synthesis-tests'));
-  const fsSession = new SynthesisSession({ outdir });
-  const memorySession = new InMemorySynthesisSession();
-  sessionTestMatix[`SynthesisSession - ${name}`] = (test: Test) => fn(test, fsSession);
-  sessionTestMatix[`InMemorySession - ${name}`] = (test: Test) => fn(test, memorySession);
+  const fsStore = new FileSystemStore({ outdir });
+  const memoryStore = new InMemoryStore();
+  storeTestMatrix[`FileSystemStore - ${name}`] = (test: Test) => fn(test, fsStore);
+  storeTestMatrix[`InMemoryStore - ${name}`] = (test: Test) => fn(test, memoryStore);
 }
 
-class Synthesizer1 extends cdk.Construct {
-  public synthesize(s: cdk.ISynthesisSession) {
-    s.writeFile('s1.txt', 'hello, s1');
-  }
-}
+// class Synthesizer1 extends cdk.Construct {
+//   public synthesize(s: cdk.ISynthesisSession) {
+//     s.writeFile('s1.txt', 'hello, s1');
+//   }
+// }
 
-class Synthesizer2 extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string) {
-    super(scope, id);
+// class Synthesizer2 extends cdk.Construct {
+//   constructor(scope: cdk.Construct, id: string) {
+//     super(scope, id);
 
-    const group = new cdk.Construct(this, 'Group');
-    for (let i = 0; i < 3; ++i) {
-      new Synthesizer3(group, `${i}`);
-    }
-  }
+//     const group = new cdk.Construct(this, 'Group');
+//     for (let i = 0; i < 3; ++i) {
+//       new Synthesizer3(group, `${i}`);
+//     }
+//   }
 
-  public synthesize(s: cdk.ISynthesisSession) {
-    s.writeFile('s2.txt', 'hello, s2');
-  }
-}
+//   public synthesize(s: cdk.ISynthesisSession) {
+//     s.writeFile('s2.txt', 'hello, s2');
+//   }
+// }
 
-class Synthesizer3 extends cdk.Construct {
-  public synthesize(s: cdk.ISynthesisSession) {
-    s.writeFile(this.node.uniqueId + '.txt', 'hello, s3');
-  }
-}
+// class Synthesizer3 extends cdk.Construct {
+//   public synthesize(s: cdk.ISynthesisSession) {
+//     s.writeFile(this.node.uniqueId + '.txt', 'hello, s3');
+//   }
+// }
