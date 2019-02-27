@@ -335,18 +335,8 @@ const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
 
 VPN connections can then be added:
 ```ts
-// Dynamic routing
 vpc.addVpnConnection('Dynamic', {
   ip: '1.2.3.4'
-});
-
-// Static routing
-vpc.addVpnConnection('Static', {
-  ip: '4.5.6.7',
-  staticRoutes: [
-    '192.168.10.0/24',
-    '192.168.20.0/24'
-  ]
 });
 ```
 
