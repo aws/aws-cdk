@@ -6,7 +6,7 @@ import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
 import { IVpcNetwork, IVpcSubnet, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcPlacementStrategy, VpcSubnetImportProps } from './vpc-ref';
-import { IPsec1 } from './vpn';
+import { VpnConnectionOptions, VpnConnectionType } from './vpn';
 
 /**
  * Name tag constant
@@ -120,7 +120,7 @@ export interface VpcNetworkProps {
   /**
    * Indicates whether a VPN gateway should be created and attached to this VPC.
    *
-   * @default false
+   * @default true when vpnConnections is specified, false otherwise.
    */
   vpnGateway?: boolean;
 
@@ -130,6 +130,13 @@ export interface VpcNetworkProps {
    * @default Amazon default ASN
    */
   vpnGatewayAsn?: number;
+
+  /**
+   * VPN connections to this VPC.
+   *
+   * @default no connections
+   */
+  vpnConnections?: { [id: string]: VpnConnectionOptions }
 }
 
 /**
@@ -364,10 +371,14 @@ export class VpcNetwork extends VpcNetworkBase {
       });
     }
 
-    if (props.vpnGateway) {
+    if (props.vpnConnections && props.vpnGateway === false) {
+      throw new Error('Cannot specify `vpnConnections` when `vpnGateway` is set to false.');
+    }
+
+    if (props.vpnGateway || props.vpnConnections) {
       const vpnGateway = new CfnVPNGateway(this, 'VpnGateway', {
         amazonSideAsn: props.vpnGatewayAsn,
-        type: IPsec1
+        type: VpnConnectionType.IPsec1
       });
 
       const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
@@ -379,7 +390,7 @@ export class VpcNetwork extends VpcNetworkBase {
 
       // Propagate routes on route tables associated with private subnets
       const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
-        routeTableIds: this.privateSubnets.map(subnet => subnet.routeTableId!),
+        routeTableIds: this.privateSubnets.map(subnet => subnet.routeTableId),
         vpnGatewayId: this.vpnGatewayId
       });
 
@@ -387,6 +398,11 @@ export class VpcNetwork extends VpcNetworkBase {
       // until it has successfully attached to the VPC.
       // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
       routePropagation.node.addDependency(attachment);
+
+      const vpnConnections = props.vpnConnections || {};
+      Object.keys(vpnConnections).forEach(cId => {
+        this.addVpnConnection(cId, vpnConnections[cId]);
+      });
     }
   }
 

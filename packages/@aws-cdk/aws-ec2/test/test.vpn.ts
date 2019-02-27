@@ -9,13 +9,13 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const vpc = new VpcNetwork(stack, 'VpcNetwork', {
-      vpnGateway: true,
-    });
-
-    vpc.newVpnConnection('VpnConnection', {
-      asn: 65001,
-      ip: '192.0.2.1',
+    new VpcNetwork(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          asn: 65001,
+          ip: '192.0.2.1'
+        }
+      }
     });
 
     // THEN
@@ -44,22 +44,22 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const vpc = new VpcNetwork(stack, 'VpcNetwork', {
-      vpnGateway: true,
-    });
-
-    vpc.newVpnConnection('VpnConnection', {
-      ip: '192.0.2.1',
-      staticRoutes: [
-        '192.168.10.0/24',
-        '192.168.20.0/24'
-      ]
+    new VpcNetwork(stack, 'VpcNetwork', {
+      vpnConnections: {
+        static: {
+          ip: '192.0.2.1',
+          staticRoutes: [
+            '192.168.10.0/24',
+            '192.168.20.0/24'
+          ]
+        }
+      }
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::VPNConnection', {
       CustomerGatewayId: {
-        Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF'
+        Ref: 'VpcNetworkstaticCustomerGatewayAF2651CC'
       },
       Type: 'ipsec.1',
       VpnGatewayId: {
@@ -71,14 +71,14 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::VPNConnectionRoute', {
       DestinationCidrBlock: '192.168.10.0/24',
       VpnConnectionId: {
-        Ref: 'VpcNetworkVpnConnectionFB5C15BC'
+        Ref: 'VpcNetworkstaticE33EA98C'
       }
     }));
 
     expect(stack).to(haveResource('AWS::EC2::VPNConnectionRoute', {
       DestinationCidrBlock: '192.168.20.0/24',
       VpnConnectionId: {
-        Ref: 'VpcNetworkVpnConnectionFB5C15BC'
+        Ref: 'VpcNetworkstaticE33EA98C'
       }
     }));
 
@@ -91,10 +91,27 @@ export = {
 
     const vpc = new VpcNetwork(stack, 'VpcNetwork');
 
-    test.throws(() => vpc.newVpnConnection('VpnConnection', {
+    test.throws(() => vpc.addVpnConnection('VpnConnection', {
       asn: 65000,
       ip: '192.0.2.1'
     }), /VPN gateway/);
+
+    test.done();
+  },
+
+  'fails when specifying vpnConnections with vpnGateway set to false'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+      vpnGateway: false,
+      vpnConnections: {
+        VpnConnection: {
+          asn: 65000,
+          ip: '192.0.2.1'
+        }
+      }
+    }), /`vpnConnections`.+`vpnGateway`.+false/);
 
     test.done();
   }

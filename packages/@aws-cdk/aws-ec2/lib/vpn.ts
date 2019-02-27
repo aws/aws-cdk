@@ -37,7 +37,7 @@ export interface VpnTunnelOption {
   tunnelInsideCidr: string;
 }
 
-export interface BaseVpnConnectionProps {
+export interface VpnConnectionOptions {
   /**
    * The ip address of the customer gateway.
    */
@@ -63,7 +63,7 @@ export interface BaseVpnConnectionProps {
   vpnTunnelOptions?: VpnTunnelOption[];
 }
 
-export interface VpnConnectionProps extends BaseVpnConnectionProps {
+export interface VpnConnectionProps extends VpnConnectionOptions {
   /**
    * The VPC to connect to.
    */
@@ -71,9 +71,14 @@ export interface VpnConnectionProps extends BaseVpnConnectionProps {
 }
 
 /**
- * The IPsec 1 VPN connection type.
+ * The VPN connection type.
  */
-export const IPsec1 = 'ipsec.1';
+export enum VpnConnectionType {
+  /**
+   * The IPsec 1 VPN connection type.
+   */
+  IPsec1 = 'ipsec.1'
+}
 
 export class VpnConnection extends cdk.Construct implements IVpnConnection {
   public readonly vpnId: string;
@@ -88,7 +93,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
       throw new Error('Cannot create a VPN connection when VPC has no VPN gateway.');
     }
 
-    const type = IPsec1;
+    const type = VpnConnectionType.IPsec1;
     const bgpAsn = props.asn || 65000;
 
     const customerGateway = new CfnCustomerGateway(this, 'CustomerGateway', {

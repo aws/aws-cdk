@@ -1,6 +1,6 @@
 import { Construct, IConstruct, IDependable } from "@aws-cdk/cdk";
 import { subnetName } from './util';
-import { BaseVpnConnectionProps, VpnConnection } from './vpn';
+import { VpnConnection, VpnConnectionOptions } from './vpn';
 
 export interface IVpcSubnet extends IConstruct {
   /**
@@ -83,7 +83,7 @@ export interface IVpcNetwork extends IConstruct {
   /**
    * Adds a new VPN connection to this VPC
    */
-  newVpnConnection(id: string, props: BaseVpnConnectionProps): VpnConnection;
+  addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection;
 
   /**
    * Exports this VPC so it can be consumed by another stack.
@@ -236,10 +236,10 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   /**
    * Adds a new VPN connection to this VPC
    */
-  public newVpnConnection(id: string, props: BaseVpnConnectionProps): VpnConnection {
+  public addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection {
     return new VpnConnection(this, id, {
       vpc: this,
-      ...props
+      ...options
     });
   }
 

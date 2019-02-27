@@ -306,7 +306,26 @@ selectable by instantiating one of these classes:
 
 ### VPN connections to a VPC
 
-Create your VPC with a VPN gateway:
+Create your VPC with VPN connections by specifying the `vpnConnections` props (keys are construct `id`s):
+
+```ts
+const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
+  vpnConnections: {
+    dynamic: { // Dynamic routing (BGP)
+      ip: '1.2.3.4'
+    },
+    static: { // Static routing
+      ip: '4.5.6.7',
+      staticRoutes: [
+        '192.168.10.0/24',
+        '192.168.20.0/24'
+      ]
+    }
+  }
+});
+```
+
+To export a VPC that can accept VPN connections, set `vpnGateway` to `true`:
 
 ```ts
 const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
@@ -314,16 +333,15 @@ const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
 });
 ```
 
-Then, add connections:
-
+VPN connections can then be added:
 ```ts
 // Dynamic routing
-vpc.newVpnConnection('Dynamic', {
+vpc.addVpnConnection('Dynamic', {
   ip: '1.2.3.4'
 });
 
 // Static routing
-vpc.newVpnConnection('Static', {
+vpc.addVpnConnection('Static', {
   ip: '4.5.6.7',
   staticRoutes: [
     '192.168.10.0/24',
