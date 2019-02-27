@@ -140,12 +140,6 @@ export = {
             Principal: {
               Service: "not-codedeploy.amazonaws.com"
             }
-          }, {
-            Action: "sts:AssumeRole",
-            Effect: "Allow",
-            Principal: {
-              Service: "codedeploy.amazonaws.com"
-            }
           }],
           Version: "2012-10-17"
         },
