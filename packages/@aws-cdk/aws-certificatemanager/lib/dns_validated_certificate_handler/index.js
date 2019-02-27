@@ -6,6 +6,10 @@ const sleep = function (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+// These are used for test purposes only
+let defaultResponseURL;
+let waiter;
+
 /**
  * Upload a CloudFormation response object to S3.
  *
@@ -17,7 +21,7 @@ const sleep = function (ms) {
  * @param {string} [reason] reason for failure, if any, to convey to the user
  * @returns {Promise} Promise that is resolved on success, or rejected on connection error or HTTP error response
  */
-const report = function (event, context, responseStatus, physicalResourceId, responseData, reason) {
+let report = function (event, context, responseStatus, physicalResourceId, responseData, reason) {
   return new Promise((resolve, reject) => {
     const https = require('https');
     const { URL } = require('url');
@@ -32,7 +36,7 @@ const report = function (event, context, responseStatus, physicalResourceId, res
       Data: responseData
     });
 
-    const parsedUrl = new URL(event.ResponseURL);
+    const parsedUrl = new URL(event.ResponseURL || defaultResponseURL);
     const options = {
       hostname: parsedUrl.hostname,
       port: 443,
@@ -71,9 +75,13 @@ const report = function (event, context, responseStatus, physicalResourceId, res
  * @returns {string} Validated certificate ARN
  */
 const requestCertificate = async function (requestId, domainName, subjectAlternativeNames, hostedZoneId) {
+  const crypto = require('crypto');
   const acm = new aws.ACM();
   const route53 = new aws.Route53();
-  const crypto = require('crypto');
+  if (waiter) {
+    // Used by the test suite, since waiters aren't mockable yet
+    route53.waitFor = acm.waitFor = waiter;
+  }
 
   console.log(`Requesting certificate for ${domainName}`);
 
@@ -204,4 +212,32 @@ exports.certificateRequestHandler = async function (event, context) {
     console.log(`Caught error ${err}. Uploading FAILED message to S3.`);
     await report(event, context, 'FAILED', physicalResourceId, null, err.message);
   }
+};
+
+/**
+ * @private
+ */
+exports.withReporter = function (reporter) {
+  report = reporter;
+};
+
+/**
+ * @private
+ */
+exports.withDefaultResponseURL = function (url) {
+  defaultResponseURL = url;
+};
+
+/**
+ * @private
+ */
+exports.withWaiter = function (w) {
+  waiter = w;
+};
+
+/**
+ * @private
+ */
+exports.resetWaiter = function () {
+  waiter = undefined;
 };
