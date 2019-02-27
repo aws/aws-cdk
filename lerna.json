@@ -4,8 +4,7 @@
     "examples/*",
     "packages/*",
     "packages/@aws-cdk/*",
-    "tools/*",
-    "tools/cdk-docs/gen-cdk-reference"
+    "tools/*"
   ],
   "rejectCycles": "true",
   "version": "0.24.0"
