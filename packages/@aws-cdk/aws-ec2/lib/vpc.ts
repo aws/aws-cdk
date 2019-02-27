@@ -371,8 +371,8 @@ export class VpcNetwork extends VpcNetworkBase {
       });
     }
 
-    if (props.vpnConnections && props.vpnGateway === false) {
-      throw new Error('Cannot specify `vpnConnections` when `vpnGateway` is set to false.');
+    if ((props.vpnConnections || props.vpnGatewayAsn) && props.vpnGateway === false) {
+      throw new Error('Cannot specify `vpnConnections` or `vpnGatewayAsn` when `vpnGateway` is set to false.');
     }
 
     if (props.vpnGateway || props.vpnConnections || props.vpnGatewayAsn) {

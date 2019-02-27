@@ -114,5 +114,17 @@ export = {
     }), /`vpnConnections`.+`vpnGateway`.+false/);
 
     test.done();
+  },
+
+  'fails when specifying vpnGatewayAsn with vpnGateway set to false'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+      vpnGateway: false,
+      vpnGatewayAsn: 65000,
+    }), /`vpnGatewayAsn`.+`vpnGateway`.+false/);
+
+    test.done();
   }
 };
