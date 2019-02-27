@@ -84,7 +84,7 @@ export enum VpnConnectionType {
    * Dummy member
    * TODO: remove once https://github.com/awslabs/jsii/issues/231 is fixed
    */
-  Dummy = 'ipsec.1'
+  Dummy = 'dummy'
 }
 
 export class VpnConnection extends cdk.Construct implements IVpnConnection {
