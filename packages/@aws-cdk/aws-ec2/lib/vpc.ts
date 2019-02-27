@@ -120,7 +120,7 @@ export interface VpcNetworkProps {
   /**
    * Indicates whether a VPN gateway should be created and attached to this VPC.
    *
-   * @default true when vpnConnections is specified, false otherwise.
+   * @default true when vpnGatewayAsn or vpnConnections is specified.
    */
   vpnGateway?: boolean;
 
@@ -375,7 +375,7 @@ export class VpcNetwork extends VpcNetworkBase {
       throw new Error('Cannot specify `vpnConnections` when `vpnGateway` is set to false.');
     }
 
-    if (props.vpnGateway || props.vpnConnections) {
+    if (props.vpnGateway || props.vpnConnections || props.vpnGatewayAsn) {
       const vpnGateway = new CfnVPNGateway(this, 'VpnGateway', {
         amazonSideAsn: props.vpnGatewayAsn,
         type: VpnConnectionType.IPsec1
