@@ -43,7 +43,7 @@ export interface GenericAssetProps {
  * An asset represents a local file or directory, which is automatically uploaded to S3
  * and then can be referenced within a CDK application.
  */
-export class Asset extends cdk.Construct implements cdk.ISynthesizable {
+export class Asset extends cdk.Construct {
   /**
    * Attribute that represents the name of the bucket this asset exists in.
    */
@@ -177,14 +177,6 @@ export class Asset extends cdk.Construct implements cdk.ISynthesizable {
     // and we don't want to accidentally revoke permission on old versions
     // when deploying a new version.
     this.bucket.grantRead(principal, `${this.s3Prefix}*`);
-  }
-
-  protected synthesize(session: cdk.ISynthesisSession): void {
-    session.addArtifact(this.node.uniqueId, {
-      type: cxapi.ArtifactType.S3Object,
-      }
-
-    });
   }
 }
 
