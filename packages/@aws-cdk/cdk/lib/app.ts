@@ -20,7 +20,7 @@ export class App extends Root {
 
     // both are reverse logic
     this.legacyManifest = this.node.getContext(cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT) === 'true' ? false : true;
-    this.runtimeInformation = this.node.getContext(cxapi.DISABLE_RUNTIME_INFO_CONTEXT) === 'true' ? false : true;
+    this.runtimeInformation = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) === 'true' ? false : true;
   }
 
   /**

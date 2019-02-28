@@ -10,8 +10,8 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@types/node": "^8.9.4",
-    "typescript": "^3.1.2",
+    "@types/node": "8.10.40",
+    "typescript": "^3.3.3333",
     "aws-cdk": "^%cdk-version%"
   },
   "dependencies": {

@@ -248,6 +248,19 @@ export = {
     test.done();
   },
 
+  'runtime library versions disabled'(test: Test) {
+    const context: any = {};
+    context[cxapi.DISABLE_VERSION_REPORTING] = true;
+
+    const response = withApp(context, app => {
+      const stack = new Stack(app, 'stack1');
+      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+    });
+
+    test.equals(response.runtime, undefined);
+    test.done();
+  },
+
   'runtime library versions'(test: Test) {
     const response = withApp({}, app => {
       const stack = new Stack(app, 'stack1');

@@ -169,6 +169,5 @@ export const OUTFILE_NAME = 'cdk.out';
 
 /**
  * Disable the collection and reporting of version information.
- * By default, synthesis output includes inforamtion about module versions.
  */
-export const DISABLE_RUNTIME_INFO_CONTEXT = "aws:cdk:disable-runtime-information";
+export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
