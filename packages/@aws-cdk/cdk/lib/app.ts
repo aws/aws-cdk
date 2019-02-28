@@ -45,9 +45,13 @@ export class App extends Root {
 
     const result: cxapi.SynthesizeResponse = {
       version: cxapi.PROTO_RESPONSE_VERSION,
-      stacks: this.synthesizeStacks(Object.keys(this.stacks)),
-      runtime: this.collectRuntimeInformation()
+      stacks: this.synthesizeStacks(Object.keys(this.stacks))
     };
+
+    const disableVersionReporting = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING);
+    if (!disableVersionReporting) {
+      result.runtime = this.collectRuntimeInformation();
+    }
 
     const outfile = path.join(outdir, cxapi.OUTFILE_NAME);
     fs.writeFileSync(outfile, JSON.stringify(result, undefined, 2));
