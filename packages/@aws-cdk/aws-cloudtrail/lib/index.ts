@@ -191,10 +191,11 @@ export class CloudTrail extends cdk.Construct {
    *
    * Data events: These events provide insight into the resource operations performed on or within a resource.
    * These are also known as data plane operations.
-   * @param readWriteType the configuration type to log for this data event
-   * Eg, ReadWriteType.ReadOnly will only log "read" events for S3 objects that match a filter)
+   *
+   * @param prefixes the list of object ARN prefixes to include in logging (maximum 250 entries).
+   * @param options the options to configure logging of management and data events.
    */
-  public addS3EventSelector(prefixes: string[], readWriteType: ReadWriteType) {
+  public addS3EventSelector(prefixes: string[], options: AddS3EventSelectorOptions = {}) {
     if (prefixes.length > 250) {
       throw new Error("A maximum of 250 data elements can be in one event selector");
     }
@@ -202,14 +203,33 @@ export class CloudTrail extends cdk.Construct {
       throw new Error("A maximum of 5 event selectors are supported per trail.");
     }
     this.eventSelectors.push({
-      includeManagementEvents: false,
-      readWriteType,
+      includeManagementEvents: options.includeManagementEvents,
+      readWriteType: options.readWriteType,
       dataResources: [{
         type: "AWS::S3::Object",
         values: prefixes
       }]
     });
   }
+}
+
+/**
+ * Options for adding an S3 event selector.
+ */
+export interface AddS3EventSelectorOptions {
+  /**
+   * Specifies whether to log read-only events, write-only events, or all events.
+   *
+   * @default ReadWriteType.All
+   */
+  readWriteType?: ReadWriteType;
+
+  /**
+   * Specifies whether the event selector includes management events for the trail.
+   *
+   * @default true
+   */
+  includeManagementEvents?: boolean;
 }
 
 interface EventSelector {
