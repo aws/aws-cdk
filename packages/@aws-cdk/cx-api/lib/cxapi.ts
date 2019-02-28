@@ -133,3 +133,8 @@ export const PATH_METADATA_KEY = 'aws:cdk:path';
  * Enables the embedding of the "aws:cdk:path" in CloudFormation template metadata.
  */
 export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
+
+/**
+ * Disable the collection and reporting of version information.
+ */
+export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';

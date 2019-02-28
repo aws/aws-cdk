@@ -48,9 +48,9 @@ how to use AWS. The AWS Construct Library aims to reduce the complexity and
 glue-logic required when integrating various AWS services to achieve your goals
 on AWS.
 
-[constructs]: https://awslabs.github.io/aws-cdk/constructs.html
-[stacks]: https://awslabs.github.io/aws-cdk/stacks.html
-[apps]: https://awslabs.github.io/aws-cdk/apps.html
+[constructs]: https://docs.aws.amazon.com/CDK/latest/userguide/constructs.html
+[stacks]: https://docs.aws.amazon.com/CDK/latest/userguide/stacks.html
+[apps]: https://docs.aws.amazon.com/CDK/latest/userguide/apps.html
 [User Guide]: https://docs.aws.amazon.com/CDK/latest/userguide
 [Tutorial]: https://docs.aws.amazon.com/CDK/latest/userguide/tutorial.html
 [AWS CDK Toolkit]: https://docs.aws.amazon.com/CDK/latest/userguide/tools.html

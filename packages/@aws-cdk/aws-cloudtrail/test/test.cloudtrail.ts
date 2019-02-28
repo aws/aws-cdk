@@ -75,8 +75,20 @@ export = {
         expect(stack).to(haveResource("AWS::S3::BucketPolicy", ExpectedBucketPolicyProperties));
         expect(stack).to(haveResource("AWS::Logs::LogGroup"));
         expect(stack).to(haveResource("AWS::IAM::Role"));
-        expect(stack).to(haveResource("AWS::Logs::LogGroup", {
-          RetentionInDays: 365
+        expect(stack).to(haveResource("AWS::Logs::LogGroup", { RetentionInDays: 365 }));
+        expect(stack).to(haveResource("AWS::IAM::Policy", {
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [{
+              Effect: 'Allow',
+              Action: ['logs:PutLogEvents', 'logs:CreateLogStream'],
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyAmazingCloudTrailLogsRoleF2CCF977', 'Arn'] }, ':log-stream:*']],
+              }
+            }]
+          },
+          PolicyName: 'MyAmazingCloudTrailLogsRoleDefaultPolicy61DC49E7',
+          Roles: [{ Ref: 'MyAmazingCloudTrailLogsRoleF2CCF977' }],
         }));
         const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
         test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
@@ -107,7 +119,7 @@ export = {
         const stack = getTestStack();
 
         const cloudTrail = new CloudTrail(stack, 'MyAmazingCloudTrail');
-        cloudTrail.addS3EventSelector(["arn:aws:s3:::"], ReadWriteType.All);
+        cloudTrail.addS3EventSelector(["arn:aws:s3:::"]);
 
         expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
         expect(stack).to(haveResource("AWS::S3::Bucket"));
@@ -118,7 +130,33 @@ export = {
         const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
         test.equals(trail.Properties.EventSelectors.length, 1);
         const selector = trail.Properties.EventSelectors[0];
-        test.equals(selector.ReadWriteType, "All", "Expected selector read write type to be All");
+        test.equals(selector.ReadWriteType, null, "Expected selector read write type to be undefined");
+        test.equals(selector.IncludeManagementEvents, null, "Expected management events to be undefined");
+        test.equals(selector.DataResources.length, 1, "Expected there to be one data resource");
+        const dataResource = selector.DataResources[0];
+        test.equals(dataResource.Type, "AWS::S3::Object", "Expected the data resrouce type to be AWS::S3::Object");
+        test.equals(dataResource.Values.length, 1, "Expected there to be one value");
+        test.equals(dataResource.Values[0], "arn:aws:s3:::", "Expected the first type value to be the S3 type");
+        test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
+        test.done();
+      },
+
+      'with hand-specified props'(test: Test) {
+        const stack = getTestStack();
+
+        const cloudTrail = new CloudTrail(stack, 'MyAmazingCloudTrail');
+        cloudTrail.addS3EventSelector(["arn:aws:s3:::"], { includeManagementEvents: false, readWriteType: ReadWriteType.ReadOnly });
+
+        expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
+        expect(stack).to(haveResource("AWS::S3::Bucket"));
+        expect(stack).to(haveResource("AWS::S3::BucketPolicy", ExpectedBucketPolicyProperties));
+        expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
+        expect(stack).to(not(haveResource("AWS::IAM::Role")));
+
+        const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+        test.equals(trail.Properties.EventSelectors.length, 1);
+        const selector = trail.Properties.EventSelectors[0];
+        test.equals(selector.ReadWriteType, "ReadOnly", "Expected selector read write type to be Read");
         test.equals(selector.IncludeManagementEvents, false, "Expected management events to be false");
         test.equals(selector.DataResources.length, 1, "Expected there to be one data resource");
         const dataResource = selector.DataResources[0];

@@ -414,7 +414,7 @@ export class Table extends Construct {
       actions,
       resourceArns: [
         this.tableArn,
-        new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : new cdk.Aws().noValue).toString()
+        new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : cdk.Aws.noValue).toString()
       ],
       scope: this,
     });

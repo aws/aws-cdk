@@ -29,15 +29,11 @@ main().catch(err => {
   process.exit(1);
 });
 
-async function tryAutoDetectScope() {
+async function tryAutoDetectScope(): Promise<undefined | string | string[]> {
   if (!await fs.pathExists('./package.json')) {
     return undefined;
   }
 
   const pkg = await fs.readJSON('./package.json');
-  if (!pkg['cdk-build']) {
-    return undefined;
-  }
-
-  return pkg['cdk-build'].cloudformation;
+  return pkg['cdk-build'] && pkg['cdk-build'].cloudformation;
 }

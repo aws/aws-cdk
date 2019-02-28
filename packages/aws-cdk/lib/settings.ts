@@ -7,17 +7,24 @@ import util = require('./util');
 
 export type SettingsMap = {[key: string]: any};
 
-export const DEFAULTS = 'cdk.json';
-export const PER_USER_DEFAULTS = '~/.cdk.json';
+export const PROJECT_CONFIG = 'cdk.json';
+export const PROJECT_CONTEXT = 'cdk.context.json';
+export const USER_DEFAULTS = '~/.cdk.json';
+
+const CONTEXT_KEY = 'context';
 
 /**
  * All sources of settings combined
  */
 export class Configuration {
-  public readonly commandLineArguments: Settings;
-  public readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
-  public readonly userConfig = new Settings();
-  public readonly projectConfig = new Settings();
+  public settings = new Settings();
+  public context = new Context(new Settings(), [], new Settings());
+
+  private readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
+  private readonly commandLineArguments: Settings;
+  private projectConfig: Settings;
+  private projectContext: Settings;
+  private loaded = false;
 
   constructor(commandLineArguments?: yargs.Arguments) {
     this.commandLineArguments = commandLineArguments
@@ -29,42 +36,101 @@ export class Configuration {
    * Load all config
    */
   public async load(): Promise<this> {
-    await this.userConfig.load(PER_USER_DEFAULTS);
-    await this.projectConfig.load(DEFAULTS);
+    const userConfig = await loadAndLog(USER_DEFAULTS);
+    this.projectConfig = await loadAndLog(PROJECT_CONFIG);
+    this.projectContext = await loadAndLog(PROJECT_CONTEXT);
+
+    this.context = new Context(this.projectConfig, [CONTEXT_KEY], this.projectContext);
+
+    // Build settings from what's left
+    this.settings = this.defaultConfig
+      .merge(userConfig)
+      .merge(this.projectConfig)
+      .merge(this.commandLineArguments)
+      .makeReadOnly();
+
+    this.loaded = true;
+
     return this;
   }
 
   /**
    * Save the project config
    */
-  public async saveProjectConfig(): Promise<this> {
-    await this.projectConfig.save(DEFAULTS);
+  public async saveContext(): Promise<this> {
+    if (!this.loaded) { return this; }
+
+    if (this.context.modifiedBottom) {
+      await this.projectConfig.save(PROJECT_CONFIG);
+    }
+    await this.projectContext.save(PROJECT_CONTEXT);
+
     return this;
   }
+}
 
-  /**
-   * Log the loaded defaults
-   */
-  public logDefaults() {
-    if (!this.userConfig.empty()) {
-      debug(PER_USER_DEFAULTS + ':', JSON.stringify(this.userConfig.settings, undefined, 2));
-    }
+async function loadAndLog(fileName: string): Promise<Settings> {
+  const ret = new Settings();
+  await ret.load(fileName);
+  if (!ret.empty) {
+    debug(fileName + ':', JSON.stringify(ret.get([]), undefined, 2));
+  }
+  return ret;
+}
 
-    if (!this.projectConfig.empty()) {
-      debug(DEFAULTS + ':', JSON.stringify(this.projectConfig.settings, undefined, 2));
+/**
+ * Class that supports overlaying 2 property bags
+ *
+ * Writes go to the topmost property bag, but if any writes collide between
+ * them the value will be deleted from the underlying property bag.
+ */
+export class Context {
+  public modifiedBottom = false;
+
+  constructor(private readonly bottom: Settings, private readonly bottomPrefixPath: string[], private readonly top: Settings) {
+  }
+
+  public get keys(): string[] {
+    return Object.keys(this.everything());
+  }
+
+  public has(key: string) {
+    return this.keys.indexOf(key) > -1;
+  }
+
+  public everything(): {[key: string]: any} {
+    const b = this.bottom.get(this.bottomPrefixPath) || {};
+    const t = this.top.get([]) || {};
+    return Object.assign(b, t);
+  }
+
+  public get(key: string): any {
+    let x = this.top.get([key]);
+    if (x === undefined) { x = this.bottom.get(this.bottomPrefixPath.concat([key])); }
+    return x;
+  }
+
+  public set(key: string, value: any) {
+    this.top.set([key], value);
+    if (this.bottom.get(this.bottomPrefixPath.concat([key])) !== undefined) {
+      this.bottom.unset(this.bottomPrefixPath.concat([key]));
+      this.modifiedBottom = true;
     }
   }
 
-  /**
-   * Return the combined config from all config sources
-   */
-  public get combined(): Settings {
-    return this.defaultConfig.merge(this.userConfig).merge(this.projectConfig).merge(this.commandLineArguments);
+  public unset(key: string) {
+    this.set(key, undefined);
+  }
+
+  public clear() {
+    for (const key of this.keys) {
+      this.unset(key);
+    }
   }
 }
 
 /**
- * A single set of settings
+ * A single bag of settings
  */
 export class Settings {
   /**
@@ -111,9 +177,12 @@ export class Settings {
     return ret;
   }
 
-  constructor(public settings: SettingsMap = {}) {}
+  constructor(private settings: SettingsMap = {}, private readOnly = false) {}
 
   public async load(fileName: string): Promise<this> {
+    if (this.readOnly) {
+      throw new Error(`Can't load ${fileName}: settings object is readonly`);
+    }
     this.settings = {};
 
     const expanded = expandHomeDir(fileName);
@@ -122,29 +191,11 @@ export class Settings {
     }
 
     // See https://github.com/awslabs/aws-cdk/issues/59
-    prohibitContextKey(this, 'default-account');
-    prohibitContextKey(this, 'default-region');
-    warnAboutContextKey(this, 'aws:');
+    this.prohibitContextKey('default-account', fileName);
+    this.prohibitContextKey('default-region', fileName);
+    this.warnAboutContextKey('aws:', fileName);
 
     return this;
-
-    function prohibitContextKey(self: Settings, key: string) {
-      if (!self.settings.context) { return; }
-      if (key in self.settings.context) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
-      }
-    }
-
-    function warnAboutContextKey(self: Settings, prefix: string) {
-      if (!self.settings.context) { return; }
-      for (const contextKey of Object.keys(self.settings.context)) {
-        if (contextKey.startsWith(prefix)) {
-          // tslint:disable-next-line:max-line-length
-          warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
-        }
-      }
-    }
   }
 
   public async save(fileName: string): Promise<this> {
@@ -158,7 +209,20 @@ export class Settings {
     return new Settings(util.deepMerge(this.settings, other.settings));
   }
 
-  public empty(): boolean {
+  public makeReadOnly(): Settings {
+    const ret = this.clone();
+    ret.readOnly = true;
+    return ret;
+  }
+
+  public clear() {
+    if (this.readOnly) {
+      throw new Error('Cannot clear(): settings are readonly');
+    }
+    this.settings = {};
+  }
+
+  public get empty(): boolean {
     return Object.keys(this.settings).length === 0;
   }
 
@@ -167,8 +231,42 @@ export class Settings {
   }
 
   public set(path: string[], value: any): Settings {
-    util.deepSet(this.settings, path, value);
+    if (this.readOnly) {
+      throw new Error(`Can't set ${path}: settings object is readonly`);
+    }
+    if (path.length === 0) {
+      // deepSet can't handle this case
+      this.settings = value;
+    } else {
+      util.deepSet(this.settings, path, value);
+    }
     return this;
+  }
+
+  public unset(path: string[]) {
+    this.set(path, undefined);
+  }
+
+  public clone() {
+    return new Settings({ ...this.settings });
+  }
+
+  private prohibitContextKey(key: string, fileName: string) {
+    if (!this.settings.context) { return; }
+    if (key in this.settings.context) {
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
+    }
+  }
+
+  private warnAboutContextKey(prefix: string, fileName: string) {
+    if (!this.settings.context) { return; }
+    for (const contextKey of Object.keys(this.settings.context)) {
+      if (contextKey.startsWith(prefix)) {
+        // tslint:disable-next-line:max-line-length
+        warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
+      }
+    }
   }
 }
 
