@@ -6,7 +6,7 @@ import { Test } from 'nodeunit';
 import servicediscovery = require('../lib');
 
 export = {
-  'Instance for service in HTTP namespace'(test: Test) {
+  'IpInstance for service in HTTP namespace'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -14,18 +14,15 @@ export = {
       name: 'http',
     });
 
-    const service = new servicediscovery.Service(stack, 'MyService', {
-      namespace,
+    const service = namespace.createService('MyService', {
+      name: 'service',
     });
 
-    new servicediscovery.Instance(stack, 'MyInstance', {
-      service,
-      instanceId: "41332780-d796-feed-face-02252334a661",
-      instanceAttributes: {
-        ipv4: '10.0.0.0',
-        ipv6: '0:0:0:0:0:ffff:a00:0',
-        port: '443'
-      }
+    service.registerIpInstance({
+      instanceId: "myInstance",
+      ipv4: '10.0.0.0',
+      ipv6: '0:0:0:0:0:ffff:a00:0',
+      port: 443
     });
 
     // THEN
@@ -37,17 +34,192 @@ export = {
       },
       ServiceId: {
         "Fn::GetAtt": [
-          "MyServiceA1F951EB",
+          "MyNamespaceMyService365E2470",
           "Id"
         ]
       },
-      InstanceId: "41332780-d796-feed-face-02252334a661"
+      InstanceId: "myInstance"
     }));
 
     test.done();
   },
 
-  'Instance for a load balancer'(test: Test) {
+  'IpInstance for service in PublicDnsNamespace'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'public',
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.A_AAAA
+    });
+
+    service.registerIpInstance({
+      instanceId: 'myInstance',
+      ipv4: '54.239.25.192',
+      ipv6: '0:0:0:0:0:ffff:a00:0',
+      port: 443
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+      InstanceAttributes: {
+        AWS_INSTANCE_IPV4: '54.239.25.192',
+        AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
+        AWS_INSTANCE_PORT: '443'
+      },
+      ServiceId: {
+        'Fn::GetAtt': [
+          'MyNamespaceMyService365E2470',
+          'Id'
+        ]
+      },
+      InstanceId: 'myInstance'
+    }));
+
+    test.done();
+  },
+
+  'IpInstance for service in PrivateDnsNamespace'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
+      name: 'public',
+      vpc
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.A_AAAA
+    });
+
+    service.registerIpInstance({
+      instanceId: "myInstance",
+      ipv4: '10.0.0.0',
+      ipv6: '0:0:0:0:0:ffff:a00:0',
+      port: 443
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+      InstanceAttributes: {
+        AWS_INSTANCE_IPV4: "10.0.0.0",
+        AWS_INSTANCE_IPV6: "0:0:0:0:0:ffff:a00:0",
+        AWS_INSTANCE_PORT: "443"
+      },
+      ServiceId: {
+        "Fn::GetAtt": [
+          "MyNamespaceMyService365E2470",
+          "Id"
+        ]
+      },
+      InstanceId: "myInstance"
+    }));
+
+    test.done();
+  },
+
+  'Registering IpInstance throws when omitting port for a service using SRV'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'public',
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.Srv
+    });
+
+    // THEN
+    test.throws(() => {
+      service.registerIpInstance({
+        instanceId: 'id',
+      });
+    }, /A `port` must be specified for a service using a `SRV` record./);
+
+    test.done();
+  },
+
+  'Registering IpInstance throws when omitting ipv4 and ipv6 for a service using SRV'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'dns',
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.Srv
+    });
+
+    // THEN
+    test.throws(() => {
+      service.registerIpInstance({
+        instanceId: 'id',
+        port: 3306
+      });
+    }, /At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record./);
+
+    test.done();
+  },
+
+  'Registering IpInstance throws when omitting ipv4 for a service using A records'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'dns',
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.A
+    });
+
+    // THEN
+    test.throws(() => {
+      service.registerIpInstance({
+        instanceId: 'id',
+        port: 3306
+      });
+    }, /An `ipv4` must be specified for a service using a `A` record./);
+
+    test.done();
+  },
+
+  'Registering IpInstance throws when omitting ipv6 for a service using AAAA records'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'dns',
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.AAAA
+    });
+
+    // THEN
+    test.throws(() => {
+      service.registerIpInstance({
+        instanceId: 'id',
+        port: 3306
+      });
+    }, /An `ipv6` must be specified for a service using a `AAAA` record./);
+
+    test.done();
+  },
+
+  'Registering AliasTargetInstance'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -59,17 +231,13 @@ export = {
       vpc
     });
 
-    const service = new servicediscovery.Service(stack, 'MyService', {
-      namespace,
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      loadBalancer: true,
     });
+    const customAttributes = { foo: 'bar' };
 
-    new servicediscovery.Instance(stack, 'MyInstance', {
-      service,
-      instanceId: 'id',
-      instanceAttributes: {
-        aliasDnsName: alb.asAliasRecordTarget().dnsName
-      }
-    });
+    service.registerLoadBalancer('MyLoadBalancer', alb, customAttributes );
 
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
@@ -79,21 +247,69 @@ export = {
             "MyALB911A8556",
             "DNSName"
           ]
-        }
+        },
+        foo: "bar"
       },
       ServiceId: {
         "Fn::GetAtt": [
-          "MyServiceA1F951EB",
+          "MyNamespaceMyService365E2470",
           "Id"
         ]
       },
-      InstanceId: "id"
+      InstanceId: "MyLoadBalancer"
     }));
 
     test.done();
   },
 
-  'Instance with domain name'(test: Test) {
+  'Throws when registering AliasTargetInstance with Http Namespace'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
+      name: 'http',
+    });
+
+    const service = new servicediscovery.Service(stack, 'MyService', {
+      namespace,
+    });
+
+    const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
+
+    // THEN
+    test.throws(() => {
+      service.registerLoadBalancer('MyLoadBalancer', alb);
+    }, /Namespace associated with Service must be a DNS Namespace./);
+
+    test.done();
+  },
+
+  // TODO shouldn't be allowed to do this if loadbalancer on ServiceProps is not set to true.
+  'Throws when registering AliasTargetInstance with wrong Routing Policy'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'http',
+    });
+
+    const service = namespace.createService('MyService', {
+      routingPolicy: servicediscovery.RoutingPolicy.Multivalue
+    });
+
+    const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
+
+    // THEN
+    test.throws(() => {
+      service.registerLoadBalancer('MyLoadBalancer', alb);
+    }, /Service must use `WEIGHTED` routing policy./);
+
+    test.done();
+  },
+
+  'Register CnameInstance'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -101,37 +317,35 @@ export = {
       name: 'dns',
     });
 
-    const service = new servicediscovery.Service(stack, 'MyService', {
-      namespace,
+    const service = namespace.createService('MyService', {
       dnsRecordType: servicediscovery.DnsRecordType.Cname
     });
 
-    new servicediscovery.Instance(stack, 'MyInstance', {
-      instanceId: 'id',
-      service,
-      instanceAttributes: {
-        instanceCname: 'foo.com'
-      }
+    service.registerCnameInstance({
+      instanceId: 'cnameInstance',
+      instanceCname: 'foo.com',
+      customAttributes: { 'dogs': 'good' }
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
-        AWS_INSTANCE_CNAME: "foo.com",
+        'AWS_INSTANCE_CNAME': "foo.com",
+        'dogs': 'good'
       },
       ServiceId: {
-        "Fn::GetAtt": [
-          "MyServiceA1F951EB",
-          "Id"
+        'Fn::GetAtt': [
+          'MyNamespaceMyService365E2470',
+          'Id'
         ]
       },
-      InstanceId: "id"
+      InstanceId: 'cnameInstance'
     }));
 
     test.done();
   },
 
-  'Throws when specifying both aliasDnsName and instanceCname'(test: Test) {
+  'Throws when registering CnameInstance for an HTTP namespace'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -145,20 +359,16 @@ export = {
 
     // THEN
     test.throws(() => {
-      new servicediscovery.Instance(stack, 'MyInstance', {
-        service,
-        instanceId: 'id',
-        instanceAttributes: {
-          aliasDnsName: 'alb.foo.com',
-          instanceCname: 'domain'
-        }
+      service.registerCnameInstance({
+        instanceId: 'cnameInstance',
+        instanceCname: 'foo.com',
       });
-    }, /Cannot specify both `aliasDnsName` and `instanceCname`/);
+    }, /Namespace associated with Service must be a DNS Namespace/);
 
     test.done();
   },
 
-  'Throws when specifying aliasDnsName for an HTTP only namespace'(test: Test) {
+  'Register NonIpInstance'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -166,25 +376,51 @@ export = {
       name: 'http',
     });
 
-    const service = new servicediscovery.Service(stack, 'MyService', {
-      namespace,
+    const service = namespace.createService('MyService');
+
+    service.registerNonIpInstance({
+      instanceId: 'nonIp',
+      customAttributes: { 'dogs': 'good' }
     });
 
     // THEN
-    test.throws(() => {
-      new servicediscovery.Instance(stack, 'MyInstance', {
-        service,
-        instanceId: 'id',
-        instanceAttributes: {
-          aliasDnsName: "foo.com",
-        }
-      });
-    }, /Cannot specify `aliasDnsName` or `instanceCname` for an HTTP namespace./);
+    expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
+      InstanceAttributes: {
+        'dogs': 'good'
+      },
+      ServiceId: {
+        'Fn::GetAtt': [
+          'MyNamespaceMyService365E2470',
+          'Id'
+        ]
+      },
+      InstanceId: 'nonIp'
+    }));
 
     test.done();
   },
 
-  'Throws when specifying instanceCname for an HTTP namespace'(test: Test) {
+  'Throws when registering NonIpInstance for an Public namespace'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'http',
+    });
+
+    const service = namespace.createService('MyService');
+
+    // THEN
+    test.throws(() => {
+      service.registerNonIpInstance({
+        instanceId: "nonIp",
+      });
+    }, /This type of instance can only be registered for HTTP namespaces./);
+
+    test.done();
+  },
+
+  'Throws when no custom attribues specified for NonIpInstance'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -192,153 +428,15 @@ export = {
       name: 'http',
     });
 
-    const service = new servicediscovery.Service(stack, 'MyService', {
-      namespace,
-    });
+    const service = namespace.createService('MyService');
 
     // THEN
     test.throws(() => {
-      new servicediscovery.Instance(stack, 'MyInstance', {
-        service,
-        instanceId: 'id',
-        instanceAttributes: {
-          instanceCname: "domain",
-        }
+      service.registerNonIpInstance({
+        instanceId: 'nonIp',
       });
-    }, /Cannot specify `aliasDnsName` or `instanceCname` for an HTTP namespace./);
+    }, /You must specify at least one custom attribute for this instance type./);
 
     test.done();
   },
-
-  'Throws when omitting instanceCname for a service using CNAME'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'dns',
-    });
-
-    const service = new servicediscovery.Service(stack, 'MyService', {
-      namespace,
-      dnsRecordType: servicediscovery.DnsRecordType.Cname,
-      dnsTtlSec: 300
-    });
-
-    // THEN
-    test.throws(() => {
-      new servicediscovery.Instance(stack, 'MyInstance', {
-        service,
-        instanceId: 'id',
-        instanceAttributes: {}
-      });
-    }, /A `instanceCname` must be specified for a service using a `CNAME` record./);
-
-    test.done();
-  },
-
-  'Throws when omitting port for a service using SRV'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'dns',
-    });
-
-    const service = new servicediscovery.Service(stack, 'MyService', {
-      namespace,
-      dnsRecordType: servicediscovery.DnsRecordType.Srv
-    });
-
-    // THEN
-    test.throws(() => {
-      new servicediscovery.Instance(stack, 'MyInstance', {
-        service,
-        instanceId: 'id',
-        instanceAttributes: {}
-      });
-    }, /A `port` must be specified for a service using a `SRV` record./);
-
-    test.done();
-  },
-
-  'Throws when omitting ipv4 and ipv6 for a service using SRV'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'dns',
-    });
-
-    const service = new servicediscovery.Service(stack, 'MyService', {
-      namespace,
-      dnsRecordType: servicediscovery.DnsRecordType.Srv
-    });
-
-    // THEN
-    test.throws(() => {
-      new servicediscovery.Instance(stack, 'MyInstance', {
-        service,
-        instanceId: 'id',
-        instanceAttributes: {
-          port: '3306'
-        }
-      });
-    }, /At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record./);
-
-    test.done();
-  },
-
-  'Throws when omitting ipv4 for a service using A'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'dns',
-    });
-
-    const service = new servicediscovery.Service(stack, 'MyService', {
-      namespace,
-      dnsRecordType: servicediscovery.DnsRecordType.A
-    });
-
-    // THEN
-    test.throws(() => {
-      new servicediscovery.Instance(stack, 'MyInstance', {
-        service,
-        instanceId: 'id',
-        instanceAttributes: {
-          port: '3306'
-        }
-      });
-    }, /An `ipv4` must be specified for a service using a `A` record./);
-
-    test.done();
-  },
-
-  'Throws when omitting ipv6 for a service using AAAA'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'dns',
-    });
-
-    const service = new servicediscovery.Service(stack, 'MyService', {
-      namespace,
-      dnsRecordType: servicediscovery.DnsRecordType.AAAA
-    });
-
-    // THEN
-    test.throws(() => {
-      new servicediscovery.Instance(stack, 'MyInstance', {
-        service,
-        instanceId: 'id',
-        instanceAttributes: {
-          port: '3306'
-        }
-      });
-    }, /An `ipv6` must be specified for a service using a `AAAA` record./);
-
-    test.done();
-  }
 };

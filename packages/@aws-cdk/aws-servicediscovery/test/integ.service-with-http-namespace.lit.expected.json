@@ -1,0 +1,37 @@
+{
+  "Resources": {
+    "MyNamespaceD0BB8558": {
+      "Type": "AWS::ServiceDiscovery::HttpNamespace",
+      "Properties": {
+        "Name": "covfefe"
+      }
+    },
+    "MyNamespaceService6E3133E7": {
+      "Type": "AWS::ServiceDiscovery::Service",
+      "Properties": {
+        "Description": "service description",
+        "NamespaceId": {
+          "Fn::GetAtt": [
+            "MyNamespaceD0BB8558",
+            "Id"
+          ]
+        }
+      }
+    },
+    "MyNamespaceServiceapi411ED925": {
+      "Type": "AWS::ServiceDiscovery::Instance",
+      "Properties": {
+        "InstanceAttributes": {
+          "arn": "arn:aws:s3:::mybucket"
+        },
+        "ServiceId": {
+          "Fn::GetAtt": [
+            "MyNamespaceService6E3133E7",
+            "Id"
+          ]
+        },
+        "InstanceId": "api"
+      }
+    }
+  }
+}

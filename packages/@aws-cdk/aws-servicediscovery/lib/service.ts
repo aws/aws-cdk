@@ -1,6 +1,12 @@
+import route53 = require('@aws-cdk/aws-route53');
 import cdk = require('@aws-cdk/cdk');
+import { AliasTargetInstance } from './alias-target-instance';
+import { CnameInstance, CnameInstanceBaseProps  } from './cname-instance';
+import { IInstance } from './instance';
+import { IpInstance, IpInstanceBaseProps } from './ip-instance';
 import { INamespace, NamespaceType } from './namespace';
-import { CfnService} from './servicediscovery.generated';
+import { NonIpInstance, NonIpInstanceBaseProps } from './non-ip-instance';
+import { CfnService } from './servicediscovery.generated';
 
 export interface IService extends cdk.IConstruct {
   /**
@@ -27,6 +33,13 @@ export interface IService extends cdk.IConstruct {
    * The DnsRecordType used by the service
    */
   readonly dnsRecordType: DnsRecordType;
+
+  /**
+   * The Routing Policy used by the service
+   */
+  readonly routingPolicy: RoutingPolicy;
+
+  // Possibly add boolean loadbalancer field?
 }
 
 /**
@@ -95,6 +108,14 @@ export interface DnsServiceProps extends BaseServiceProps {
    * @default WEIGHTED for CNAME records, MULTIVALUE otherwise
    */
   routingPolicy?: RoutingPolicy;
+
+  /**
+   * Whether or not this service will have an Elastic LoadBalancer registered to it as an AliasTargetInstance
+   *
+   * @default false
+   */
+
+  loadBalancer?: boolean;
 }
 
 export interface ServiceProps extends DnsServiceProps {
@@ -133,6 +154,11 @@ export class Service extends cdk.Construct implements IService {
    */
   public readonly dnsRecordType: DnsRecordType;
 
+  /**
+   * The Routing Policy used by the service
+   */
+  public readonly routingPolicy: RoutingPolicy;
+
   // FIXME make this only called through #createService on namespace classes?
   constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
     super(scope, id);
@@ -157,6 +183,11 @@ export class Service extends cdk.Construct implements IService {
       throw new Error('Cannot use `CNAME` record when routing policy is `Multivalue`.');
     }
 
+    if (props.routingPolicy === RoutingPolicy.Multivalue
+        && props.loadBalancer) {
+      throw new Error('Cannot register loadbalancers when routing policy is `Multivalue`.');
+    }
+
     if (props.healthCheckConfig
         && props.healthCheckConfig.type === HealthCheckType.Tcp
         && props.healthCheckConfig.resourcePath) {
@@ -164,11 +195,19 @@ export class Service extends cdk.Construct implements IService {
     }
 
     // Set defaults where necessary
-    const routingPolicy = props.dnsRecordType === DnsRecordType.Cname
+    const routingPolicy = (props.dnsRecordType === DnsRecordType.Cname) || props.loadBalancer
       ? RoutingPolicy.Weighted
       : RoutingPolicy.Multivalue;
 
     const dnsRecordType = props.dnsRecordType !== undefined ? props.dnsRecordType : DnsRecordType.A;
+
+    if (props.loadBalancer
+      && (!(dnsRecordType === DnsRecordType.A
+        || dnsRecordType === DnsRecordType.AAAA
+        || dnsRecordType === DnsRecordType.A_AAAA))) {
+      throw new Error('Must support `A` or `AAAA` records to register loadbalancers.');
+    }
+
     const dnsConfig = props.namespace.type === NamespaceType.Http
       ? undefined
       : {
@@ -208,6 +247,50 @@ export class Service extends cdk.Construct implements IService {
     this.serviceId = service.serviceId;
     this.namespace = props.namespace;
     this.dnsRecordType = dnsRecordType;
+    this.routingPolicy = routingPolicy;
+  }
+
+  /**
+   * Registers an ELB as a new instance with unique name instanceId in this service.
+   *
+   * FIXME don't pass in ID? not sure if id can be used as instance ID here (instanceId is arbitrary but required for
+   * cloudmap#registerInstance)
+   */
+  public registerLoadBalancer(id: string, loadBalancer: route53.IAliasRecordTarget, customAttributes?: object): IInstance {
+    return new AliasTargetInstance(this, id, {
+      service: this,
+      instanceId: id,
+      dnsName: loadBalancer.asAliasRecordTarget().dnsName,
+      customAttributes
+    });
+  }
+
+  public registerNonIpInstance(props: NonIpInstanceBaseProps): IInstance {
+    return new NonIpInstance(this, props.instanceId, {
+      service: this,
+      instanceId: props.instanceId,
+      customAttributes: props.customAttributes
+    });
+  }
+
+  public registerIpInstance(props: IpInstanceBaseProps): IInstance {
+    return new IpInstance(this, props.instanceId, {
+      service: this,
+      instanceId: props.instanceId,
+      ipv4: props.ipv4,
+      ipv6: props.ipv6,
+      port: props.port,
+      customAttributes: props.customAttributes
+    });
+  }
+
+  public registerCnameInstance(props: CnameInstanceBaseProps): IInstance {
+    return new CnameInstance(this, props.instanceId, {
+      service: this,
+      instanceId: props.instanceId,
+      instanceCname: props.instanceCname,
+      customAttributes: props.customAttributes
+    });
   }
 }
 
@@ -271,14 +354,14 @@ export interface DnsRecord {
 export interface HealthCheckConfig {
   /**
    * The type of health check that you want to create, which indicates how Route 53 determines whether an endpoint is
-   * healthy. Cannot be modified once created.
+   * healthy. Cannot be modified once created. Supported values are HTTP, HTTPS, and TCP.
    *
    * @default HTTP
    */
   type?: HealthCheckType;
 
   /**
-   * The path that you want Route 53 to request when performing health checks. DO not use when health check type is TCP.
+   * The path that you want Route 53 to request when performing health checks. Do not use when health check type is TCP.
    *
    * @default '/'
    */

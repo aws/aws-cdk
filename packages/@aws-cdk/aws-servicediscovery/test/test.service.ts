@@ -1,4 +1,5 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
+import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import servicediscovery = require('../lib');
@@ -51,7 +52,7 @@ export = {
     test.done();
   },
 
-  'Service for DNS namespace'(test: Test) {
+  'Service for Public DNS namespace'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -113,7 +114,7 @@ export = {
     test.done();
   },
 
-  'Service for DNS namespace with A and AAAA records'(test: Test) {
+  'Service for Public DNS namespace with A and AAAA records'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -170,7 +171,7 @@ export = {
     test.done();
   },
 
-  'Defaults to weighted for CNAME'(test: Test) {
+  'Defaults to WEIGHTED routing policy for CNAME'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -223,7 +224,7 @@ export = {
     test.done();
   },
 
-  'Throws when specifying both healthCheckConfig and healthCheckCustomCOnfig'(test: Test) {
+  'Throws when specifying both healthCheckConfig and healthCheckCustomConfig on PublicDnsNamespace'(test: Test) {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
@@ -246,7 +247,32 @@ export = {
     test.done();
   },
 
-  'Throws when using CNAME and Multivalue'(test: Test) {
+  'Throws when specifying healthCheckConfig on PrivateDnsNamespace'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
+      name: 'name',
+      vpc
+    });
+
+    // THEN
+    test.throws(() => {
+      namespace.createService('MyService', {
+        name: 'service',
+        healthCheckConfig: {
+          resourcePath: '/'
+        },
+        healthCheckCustomConfig: {
+          failureThreshold: 1
+        }
+      });
+    }, /`healthCheckConfig`.+`healthCheckCustomConfig`/);
+
+    test.done();
+  },
+
+  'Throws when using CNAME and Multivalue routing policy'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -261,7 +287,7 @@ export = {
         dnsRecordType: servicediscovery.DnsRecordType.Cname,
         routingPolicy: servicediscovery.RoutingPolicy.Multivalue,
       });
-    }, /`CNAME`.+`Multivalue`/);
+    }, /Cannot use `CNAME` record when routing policy is `Multivalue`./);
 
     test.done();
   },
@@ -286,7 +312,92 @@ export = {
     }, /`resourcePath`.+`TCP`/);
 
     test.done();
-  }
+  },
 
-  // TODO add tests for Private DNS namespace
+  'Throws when specifying loadbalancer with wrong DnsRecordType'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'name',
+    });
+
+    // THEN
+    test.throws(() => {
+      namespace.createService('MyService', {
+        name: 'service',
+        dnsRecordType: servicediscovery.DnsRecordType.Cname,
+        loadBalancer: true
+      });
+    }, /Must support `A` or `AAAA` records to register loadbalancers/);
+
+    test.done();
+  },
+
+  'Throws when specifying loadbalancer with Multivalue routing Policy'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'http',
+    });
+
+    // THEN
+    test.throws(() => {
+      namespace.createService('MyService', {
+        loadBalancer: true,
+        routingPolicy: servicediscovery.RoutingPolicy.Multivalue
+      });
+    }, /Cannot register loadbalancers when routing policy is `Multivalue`./);
+
+    test.done();
+  },
+
+  'Service for Private DNS namespace'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
+      name: 'private',
+      vpc
+    });
+
+    namespace.createService('MyService', {
+      name: 'service',
+      description: 'service description',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+      Name: "private"
+    }));
+
+    expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      Description: "service description",
+      DnsConfig: {
+        DnsRecords: [
+          {
+            TTL: "60",
+            Type: "A"
+          }
+        ],
+        NamespaceId: {
+          "Fn::GetAtt": [
+            "MyNamespaceD0BB8558",
+            "Id"
+          ]
+        },
+        RoutingPolicy: "MULTIVALUE"
+      },
+      Name: "service",
+      NamespaceId: {
+        "Fn::GetAtt": [
+          "MyNamespaceD0BB8558",
+          "Id"
+        ]
+      }
+    }));
+
+    test.done();
+  },
 };

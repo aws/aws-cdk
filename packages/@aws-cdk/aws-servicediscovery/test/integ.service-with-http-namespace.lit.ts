@@ -8,13 +8,14 @@ const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
   name: 'covfefe',
 });
 
-new servicediscovery.Service(stack, 'Service', {
-  name: 'service',
-  namespace,
+const service = namespace.createService('Service', {
   description: 'service description',
-  healthCheckCustomConfig: {
-    failureThreshold: 3,
-  }
+});
+
+service.registerNonIpInstance({
+  instanceId: "api",
+  customAttributes: { "arn": "arn:aws:s3:::mybucket" }
 });
 
 app.run();
+
