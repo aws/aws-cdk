@@ -345,21 +345,6 @@
     "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25": {
       "Type": "AWS::SNS::Topic"
     },
-    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicSubscriptionDA5F8A10": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
-            "Arn"
-          ]
-        },
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
-        }
-      }
-    },
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -464,6 +449,21 @@
         "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396",
         "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
       ]
+    },
+    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicSubscriptionDA5F8A10": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
+            "Arn"
+          ]
+        },
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
+        }
+      }
     },
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicE6B1EBA6": {
       "Type": "AWS::Lambda::Permission",
@@ -773,11 +773,7 @@
               }
             },
             {
-              "Action": [
-                "ecr:GetAuthorizationToken",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
+              "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
             },
