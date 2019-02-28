@@ -39,7 +39,10 @@
     "cfn2ts": "cfn2ts"
   },
   "cdk-build": {
-    "cloudformation": "AWS::KinesisAnalytics"
+    "cloudformation": [
+      "AWS::KinesisAnalytics",
+      "AWS::KinesisAnalyticsV2"
+    ]
   },
   "keywords": [
     "aws",
