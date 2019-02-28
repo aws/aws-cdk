@@ -86,9 +86,6 @@ export = {
             HostPort: 0,
             Protocol: Protocol.Tcp
           }],
-          RepositoryCredentials: {
-              CredentialsParameter: ""
-          },
           Ulimits: [{
             HardLimit: 128,
             Name: "rss",
