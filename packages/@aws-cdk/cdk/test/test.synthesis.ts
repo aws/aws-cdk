@@ -55,8 +55,11 @@ export = {
       public synthesize(s: cdk.ISynthesisSession) {
         s.store.writeJson('foo.json', { bar: 123 });
         s.addArtifact('my-random-construct', {
-          type: cxapi.ArtifactType.CloudFormationStack,
+          type: cxapi.ArtifactType.AwsCloudFormationStack,
           environment: 'aws://12345/bar',
+          properties: {
+            templateFile: 'file://boom'
+          }
         });
       }
     }
@@ -78,12 +81,13 @@ export = {
       artifacts: {
         'my-random-construct': {
           type: 'aws:cloudformation:stack',
-          environment: 'aws://12345/bar'
+          environment: 'aws://12345/bar',
+          properties: { templateFile: 'file://boom' }
         },
         'one-stack': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://unknown-account/unknown-region',
-          properties: { template: 'one-stack.template.json' }
+          properties: { templateFile: 'one-stack.template.json' }
         }
       },
     });
@@ -189,16 +193,18 @@ const storeTests = {
 
     // WHEN
     session.addArtifact('my-first-artifact', {
-      type: cxapi.ArtifactType.CloudFormationStack,
+      type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: 'aws://1222344/us-east-1',
       dependencies: ['a', 'b'],
       metadata: {
         foo: { bar: 123 }
       },
       properties: {
-        template: templateFile,
-        prop1: 1234,
-        prop2: 555
+        templateFile,
+        parameters: {
+          prop1: '1234',
+          prop2: '555'
+        }
       },
       missing: {
         foo: {
@@ -212,10 +218,10 @@ const storeTests = {
     });
 
     session.addArtifact('minimal-artifact', {
-      type: cxapi.ArtifactType.CloudFormationStack,
+      type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: 'aws://111/helo-world',
       properties: {
-        template: templateFile
+        templateFile
       }
     });
 
@@ -243,7 +249,13 @@ const storeTests = {
           environment: 'aws://1222344/us-east-1',
           dependencies: ['a', 'b'],
           metadata: { foo: { bar: 123 } },
-          properties: { template: 'foo.template.json', prop1: 1234, prop2: 555 },
+          properties: {
+            templateFile: 'foo.template.json',
+            parameters: {
+              prop1: '1234',
+              prop2: '555'
+            },
+          },
           missing: {
             foo: { provider: 'context-provider', props: { a: 'A', b: 2 } }
           }
@@ -251,7 +263,7 @@ const storeTests = {
         'minimal-artifact': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://111/helo-world',
-          properties: { template: 'foo.template.json' }
+          properties: { templateFile: 'foo.template.json' }
         }
       }
     });
@@ -265,6 +277,24 @@ const storeTests = {
       }
     });
 
+    test.done();
+  },
+
+  'stack.setParameterValue can be used to assign parameters'(test: Test) {
+    // GIVEN
+    const app = createModernApp();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const param = new cdk.Parameter(stack, 'MyParam', { type: 'string' });
+
+    // WHEN
+    stack.setParameterValue(param, 'Foo');
+
+    // THEN
+    const session = app.run();
+    const props = (session.manifest.artifacts && session.manifest.artifacts['my-stack'].properties) || {};
+    test.deepEqual(props.parameters, {
+      MyParam: 'Foo'
+    });
     test.done();
   },
 };

@@ -6,7 +6,7 @@ export enum ArtifactType {
   AwsS3Object = 'aws:s3:object'
 }
 
-export interface ArtifactMetadata {
+export interface Artifact {
   type: ArtifactType;
   environment: string; // format: aws://account/region
   metadata?: { [path: string]: any };
@@ -14,25 +14,6 @@ export interface ArtifactMetadata {
   missing?: { [key: string]: any };
   properties?: { [name: string]: any };
 }
-
-export interface AwsCloudformationStackArtifact extends ArtifactMetadata {
-  type: ArtifactType.AwsCloudFormationStack,
-  properties: {
-    templateFile: string;
-    parameters: {
-      [name: string]: string
-    }
-  }
-}
-
-export interface AwsS3ObjectArtifact extends ArtifactMetadata {
-  type: ArtifactType.AwsS3Object,
-  properties: {
-    file: string;
-  }
-}
-
-export type Artifact = AwsCloudformationStackArtifact | AwsS3ObjectArtifact;
 
 export function validateArtifact(artifcat: Artifact) {
   if (!AWS_ENV_REGEX.test(artifcat.environment)) {

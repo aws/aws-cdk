@@ -319,8 +319,8 @@ function renderLegacyStacks(artifacts: { [id: string]: cxapi.Artifact }, store: 
   const stacks = new Array<cxapi.SynthesizedStack>();
 
   for (const [ id, artifact ] of Object.entries(artifacts)) {
-    if (artifact.type === cxapi.ArtifactType.CloudFormationStack) {
-      const templateFile = (artifact.properties || {}).template;
+    if (artifact.type === cxapi.ArtifactType.AwsCloudFormationStack) {
+      const templateFile = artifact.properties && artifact.properties.templateFile;
       if (!templateFile) {
         throw new Error(`Invalid cloudformation artifact. Missing "template" property`);
       }

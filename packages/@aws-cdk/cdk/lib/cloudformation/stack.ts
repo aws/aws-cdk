@@ -5,6 +5,7 @@ import { Environment } from '../environment';
 import { ISynthesisSession } from '../synthesis';
 import { CfnReference } from './cfn-tokens';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
+import { Parameter } from './parameter';
 
 export interface StackProps {
   /**
@@ -89,6 +90,11 @@ export class Stack extends Construct {
   private readonly stackDependencies = new Set<Stack>();
 
   /**
+   * Values set for parameters in cloud assembly.
+   */
+  private readonly parameterValues: { [logicalId: string]: string } = { };
+
+  /**
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually a Program instance.
@@ -107,6 +113,15 @@ export class Stack extends Construct {
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = this.node.id;
+  }
+
+  /**
+   * Returns the environment specification for this stack (aws://account/region).
+   */
+  public get environment() {
+    const account = this.env.account || 'unknown-account';
+    const region = this.env.region || 'unknown-region';
+    return `aws://${account}/${region}`;
   }
 
   /**
@@ -377,6 +392,15 @@ export class Stack extends Construct {
   }
 
   /**
+   * Sets the value of a CloudFormation parameter.
+   * @param parameter The parameter to set the value for
+   * @param value The value, can use `${}` notation to reference other assembly block attributes.
+   */
+  public setParameterValue(parameter: Parameter, value: string) {
+    this.parameterValues[parameter.logicalId] = value;
+  }
+
+  /**
    * Validate stack name
    *
    * CloudFormation stack names can include dashes in addition to the regular identifier
@@ -419,18 +443,23 @@ export class Stack extends Construct {
   }
 
   protected synthesize(session: ISynthesisSession): void {
-    const account = this.env.account || 'unknown-account';
-    const region = this.env.region || 'unknown-region';
     const template = `${this.node.id}.template.json`;
 
     // write the CloudFormation template as a JSON file
     session.store.writeJson(template, this.toCloudFormation());
 
     const artifact: cxapi.Artifact = {
-      type: cxapi.ArtifactType.CloudFormationStack,
-      environment: `aws://${account}/${region}`,
-      properties: { template }
+      type: cxapi.ArtifactType.AwsCloudFormationStack,
+      environment: this.environment,
+      properties: {
+        templateFile: template,
+      }
     };
+
+    if (Object.keys(this.parameterValues).length > 0) {
+      artifact.properties = artifact.properties || { };
+      artifact.properties.parameters = this.node.resolve(this.parameterValues);
+    }
 
     const deps = this.dependencies().map(s => s.node.id);
     if (deps.length > 0) {
