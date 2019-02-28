@@ -85,6 +85,44 @@ export = {
     test.done();
   },
 
+  'with tunnel options'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    new VpcNetwork(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          ip: '192.0.2.1',
+          tunnelOptions: [
+            {
+              preSharedKey: 'secretkey1234',
+              tunnelInsideCidr: '169.254.10.0/30'
+            }
+          ]
+        }
+      }
+    });
+
+    expect(stack).to(haveResource('AWS::EC2::VPNConnection', {
+      CustomerGatewayId: {
+        Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF'
+      },
+      Type: 'ipsec.1',
+      VpnGatewayId: {
+        Ref: 'VpcNetworkVpnGateway501295FA'
+      },
+      StaticRoutesOnly: false,
+      VpnTunnelOptionsSpecifications: [
+        {
+          PreSharedKey: 'secretkey1234',
+          TunnelInsideCidr: '169.254.10.0/30'
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
   'fails when vpc has no vpn gateway'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -99,31 +137,126 @@ export = {
     test.done();
   },
 
-  'fails when specifying vpnConnections with vpnGateway set to false'(test: Test) {
+  'fails when ip is invalid'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
     test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
-      vpnGateway: false,
       vpnConnections: {
         VpnConnection: {
-          asn: 65000,
-          ip: '192.0.2.1'
+          ip: '192.0.2.256'
         }
       }
-    }), /`vpnConnections`.+`vpnGateway`.+false/);
+    }), /`ip`.+invalid/);
 
     test.done();
   },
 
-  'fails when specifying vpnGatewayAsn with vpnGateway set to false'(test: Test) {
+  'fails when specifying more than two tunnel options'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
     test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
-      vpnGateway: false,
-      vpnGatewayAsn: 65000,
-    }), /`vpnGatewayAsn`.+`vpnGateway`.+false/);
+      vpnConnections: {
+        VpnConnection: {
+          ip: '192.0.2.1',
+          tunnelOptions: [
+            {
+              preSharedKey: 'secretkey1234',
+            },
+            {
+              preSharedKey: 'secretkey1234',
+            },
+            {
+              preSharedKey: 'secretkey1234',
+            }
+          ]
+        }
+      }
+    }), /two.+`tunnelOptions`/);
+
+    test.done();
+  },
+
+  'fails with duplicate tunnel inside cidr'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          ip: '192.0.2.1',
+          tunnelOptions: [
+            {
+              tunnelInsideCidr: '169.254.10.0/30',
+            },
+            {
+              tunnelInsideCidr: '169.254.10.0/30',
+            }
+          ]
+        }
+      }
+    }), /`tunnelInsideCidr`.+both tunnels/);
+
+    test.done();
+  },
+
+  'fails when specifying an invalid pre-shared key'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          ip: '192.0.2.1',
+          tunnelOptions: [
+            {
+              preSharedKey: '0invalid',
+            }
+          ]
+        }
+      }
+    }), /`preSharedKey`/);
+
+    test.done();
+  },
+
+  'fails when specifying a reserved tunnel inside cidr'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          ip: '192.0.2.1',
+          tunnelOptions: [
+            {
+              tunnelInsideCidr: '169.254.1.0/30',
+            }
+          ]
+        }
+      }
+    }), /`tunnelInsideCidr`.+reserved/);
+
+    test.done();
+  },
+
+  'fails when specifying an invalid tunnel inside cidr'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          ip: '192.0.2.1',
+          tunnelOptions: [
+            {
+              tunnelInsideCidr: '169.200.10.0/30',
+            }
+          ]
+        }
+      }
+    }), /`tunnelInsideCidr`.+size/);
 
     test.done();
   }

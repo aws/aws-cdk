@@ -434,6 +434,33 @@ export = {
       }));
 
       test.done();
+    },
+    'fails when specifying vpnConnections with vpnGateway set to false'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+        vpnGateway: false,
+        vpnConnections: {
+          VpnConnection: {
+            asn: 65000,
+            ip: '192.0.2.1'
+          }
+        }
+      }), /`vpnConnections`.+`vpnGateway`.+false/);
+
+      test.done();
+    },
+    'fails when specifying vpnGatewayAsn with vpnGateway set to false'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+        vpnGateway: false,
+        vpnGatewayAsn: 65000,
+      }), /`vpnGatewayAsn`.+`vpnGateway`.+false/);
+
+      test.done();
     }
 
   },

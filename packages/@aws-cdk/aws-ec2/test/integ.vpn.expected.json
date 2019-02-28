@@ -571,6 +571,11 @@
             "Key": "Name",
             "Value": "aws-cdk-ec2-vpn/MyVpc"
           }
+        ],
+        "VpnTunnelOptionsSpecifications": [
+          {
+            "PreSharedKey": "secretkey1234"
+          }
         ]
       }
     },

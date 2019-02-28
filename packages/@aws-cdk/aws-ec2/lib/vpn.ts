@@ -27,15 +27,21 @@ export interface IVpnConnection extends cdk.IConstruct {
 export interface VpnTunnelOption {
   /**
    * The pre-shared key (PSK) to establish initial authentication between the virtual
-   * private gateway and customer gateway.
+   * private gateway and customer gateway. Allowed characters are alphanumeric characters
+   * and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).
+   *
+   * @default an Amazon generated pre-shared key
    */
-  presharedKey: string;
+  preSharedKey?: string;
 
   /**
    * The range of inside IP addresses for the tunnel. Any specified CIDR blocks must be
    * unique across all VPN connections that use the same virtual private gateway.
+   * A size /30 CIDR block from the 169.254.0.0/16 range.
+   *
+   * @default an Amazon generated inside IP CIDR
    */
-  tunnelInsideCidr: string;
+  tunnelInsideCidr?: string;
 }
 
 export interface VpnConnectionOptions {
@@ -59,9 +65,12 @@ export interface VpnConnectionOptions {
   staticRoutes?: string[];
 
   /**
-   * Tunnel options for the VPN connection.
+   * The tunnel options for the VPN connection. At most two elements (one per tunnel).
+   * Duplicates not allowed.
+   *
+   * @default Amazon generated tunnel options
    */
-  vpnTunnelOptions?: VpnTunnelOption[];
+  tunnelOptions?: VpnTunnelOption[];
 }
 
 export interface VpnConnectionProps extends VpnConnectionOptions {
@@ -100,6 +109,10 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
       throw new Error('Cannot create a VPN connection when VPC has no VPN gateway.');
     }
 
+    if (!IP_REGEX.test(props.ip)) {
+      throw new Error(`The \`ip\` ${props.ip} is invalid.`);
+    }
+
     const type = VpnConnectionType.IPsec1;
     const bgpAsn = props.asn || 65000;
 
@@ -113,12 +126,43 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
     this.customerGatewayAsn = bgpAsn;
     this.customerGatewayIp = props.ip;
 
+    // Validate tunnel options
+    if (props.tunnelOptions) {
+      if (props.tunnelOptions.length > 2) {
+        throw new Error('Cannot specify more than two `tunnelOptions`');
+      }
+
+      if (props.tunnelOptions.length === 2 && props.tunnelOptions[0].tunnelInsideCidr === props.tunnelOptions[1].tunnelInsideCidr) {
+        throw new Error(`Same ${props.tunnelOptions[0].tunnelInsideCidr} \`tunnelInsideCidr\` cannot be used for both tunnels.`);
+      }
+
+      props.tunnelOptions.forEach((options, index) => {
+        if (options.preSharedKey && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
+          // tslint:disable:max-line-length
+          throw new Error(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`);
+          // tslint:enable:max-line-length
+        }
+
+        if (options.tunnelInsideCidr) {
+          if (RESERVED_TUNNEL_INSIDE_CIDR.includes(options.tunnelInsideCidr)) {
+            throw new Error(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is a reserved inside CIDR.`);
+          }
+
+          if (!/^169\.254\.\d{1,3}\.\d{1,3}\/30$/.test(options.tunnelInsideCidr)) {
+            // tslint:disable:max-line-length
+            throw new Error(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`);
+            // tslint:enable:max-line-length
+          }
+        }
+      });
+    }
+
     const vpnConnection = new CfnVPNConnection(this, 'Resource', {
       type,
       customerGatewayId: customerGateway.customerGatewayName,
       staticRoutesOnly: props.staticRoutes ? true : false,
       vpnGatewayId: props.vpc.vpnGatewayId,
-      vpnTunnelOptionsSpecifications: props.vpnTunnelOptions
+      vpnTunnelOptionsSpecifications: props.tunnelOptions
     });
 
     this.vpnId = vpnConnection.vpnConnectionName;
@@ -133,3 +177,15 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
     }
   }
 }
+
+export const IP_REGEX = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
+
+export const RESERVED_TUNNEL_INSIDE_CIDR = [
+  '169.254.0.0/30',
+  '169.254.1.0/30',
+  '169.254.2.0/30',
+  '169.254.3.0/30',
+  '169.254.4.0/30',
+  '169.254.5.0/30',
+  '169.254.169.252/30'
+];

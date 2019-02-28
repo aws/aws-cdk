@@ -8,7 +8,12 @@ const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
   cidr: '10.10.0.0/16',
   vpnConnections: {
     Dynamic: { // Dynamic routing
-      ip: '52.85.255.164'
+      ip: '52.85.255.164',
+      tunnelOptions: [
+        {
+          preSharedKey: 'secretkey1234'
+        }
+      ]
     }
   }
 });
