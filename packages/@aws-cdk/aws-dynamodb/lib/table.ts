@@ -1,6 +1,5 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { PolicyStatement } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
 import { Construct, Token } from '@aws-cdk/cdk';
 import { CfnTable } from './dynamodb.generated';
@@ -179,12 +178,12 @@ export class Table extends Construct {
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @param principal The principal (no-op if undefined)
    */
-  public static grantListStreams(principal?: iam.IPrincipal): void {
-    if (principal) {
-      principal.addToPolicy(new PolicyStatement()
-        .addAction('dynamodb:ListStreams')
-        .addAllResources());
-    }
+  public static grantListStreams(principal?: iam.IPrincipal): iam.Grant {
+    return iam.Permissions.grantOnPrincipal({
+      principal,
+      actions: ['dynamodb:ListStreams'],
+      resourceArns: ['*'],
+    });
  }
 
   public readonly tableArn: string;
