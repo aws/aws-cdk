@@ -3,6 +3,7 @@ import colors = require('colors/safe');
 import minimatch = require('minimatch');
 import contextproviders = require('../../context-providers');
 import { debug, error, print, warning } from '../../logging';
+import { Renames } from '../../renames';
 import { Configuration } from '../../settings';
 import cdkUtil = require('../../util');
 import { SDK } from '../util/sdk';
@@ -43,6 +44,11 @@ export interface AppStacksProps {
   aws: SDK;
 
   /**
+   * Renames to apply
+   */
+  renames?: Renames;
+
+  /**
    * Callback invoked to synthesize the actual stacks
    */
   synthesizer: Synthesizer;
@@ -59,8 +65,10 @@ export class AppStacks {
    * we can invoke it once and cache the response for subsequent calls.
    */
   private cachedResponse?: cxapi.SynthesizeResponse;
+  private readonly renames: Renames;
 
   constructor(private readonly props: AppStacksProps) {
+    this.renames = props.renames || new Renames({});
   }
 
   /**
@@ -69,7 +77,7 @@ export class AppStacks {
    * It's an error if there are no stacks to select, or if one of the requested parameters
    * refers to a nonexistant stack.
    */
-  public async selectStacks(selectors: string[], extendedSelection: ExtendedStackSelection): Promise<cxapi.SynthesizedStack[]> {
+  public async selectStacks(selectors: string[], extendedSelection: ExtendedStackSelection): Promise<SelectedStack[]> {
     selectors = selectors.filter(s => s != null); // filter null/undefined
 
     const stacks: cxapi.SynthesizedStack[] = await this.listStacks();
@@ -79,7 +87,7 @@ export class AppStacks {
 
     if (selectors.length === 0) {
       debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(stacks));
-      return stacks;
+      return this.applyRenames(stacks);
     }
 
     const allStacks = new Map<string, cxapi.SynthesizedStack>();
@@ -118,7 +126,7 @@ export class AppStacks {
 
     // Only check selected stacks for errors
     this.processMessages(selectedList);
-    return selectedList;
+    return this.applyRenames(selectedList);
   }
 
   /**
@@ -128,6 +136,8 @@ export class AppStacks {
    * topologically sorted order. If there are dependencies that are not in the
    * set, they will be ignored; it is the user's responsibility that the
    * non-selected stacks have already been deployed previously.
+   *
+   * Renames are *NOT* applied in list mode.
    */
   public async listStacks(): Promise<cxapi.SynthesizedStack[]> {
     const response = await this.synthesizeStacks();
@@ -137,13 +147,13 @@ export class AppStacks {
   /**
    * Synthesize a single stack
    */
-  public async synthesizeStack(stackName: string): Promise<cxapi.SynthesizedStack> {
+  public async synthesizeStack(stackName: string): Promise<SelectedStack> {
     const resp = await this.synthesizeStacks();
     const stack = resp.stacks.find(s => s.name === stackName);
     if (!stack) {
       throw new Error(`Stack ${stackName} not found`);
     }
-    return stack;
+    return this.applyRenames([stack])[0];
   }
 
   /**
@@ -253,6 +263,21 @@ export class AppStacks {
       logFn(`  ${entry.trace.join('\n  ')}`);
     }
   }
+
+  private applyRenames(stacks: cxapi.SynthesizedStack[]): SelectedStack[] {
+    this.renames.validateSelectedStacks(stacks);
+
+    const ret = [];
+    for (const stack of stacks) {
+      ret.push({
+        ...stack,
+        originalName: stack.name,
+        name: this.renames.finalName(stack.name),
+      });
+    }
+
+    return ret;
+  }
 }
 
 /**
@@ -335,4 +360,11 @@ function includeUpstreamStacks(selectedStacks: Map<string, cxapi.SynthesizedStac
   if (added.length > 0) {
     print('Including dependency stacks: %s', colors.bold(added.join(', ')));
   }
+}
+
+export interface SelectedStack extends cxapi.SynthesizedStack {
+  /**
+   * The original name of the stack before renaming
+   */
+  originalName: string;
 }
