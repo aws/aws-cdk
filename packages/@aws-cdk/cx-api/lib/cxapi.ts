@@ -26,7 +26,12 @@ export const PROTO_RESPONSE_VERSION = '0.19.0';
 /**
  * The name of the root manifest file of the assembly.
  */
-export const MANIFEST_FILE = "manifest.json";
+export const MANIFEST_FILE = 'manifest.json';
+
+/**
+ * The name of the root file with build instructions.
+ */
+export const BUILD_FILE = 'build.json';
 
 export const OUTDIR_ENV = 'CDK_OUTDIR';
 export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';

@@ -297,6 +297,35 @@ const storeTests = {
     });
     test.done();
   },
+
+  'addBuildStep can be used to produce build.json'(test: Test) {
+    // GIVEN
+    const app = createModernApp();
+
+    // WHEN
+    class BuildMe extends cdk.Construct implements cdk.ISynthesizable {
+      public synthesize(s: cdk.ISynthesisSession) {
+        s.addBuildStep('step_id', {
+          type: 'build-step-type',
+          parameters: {
+            boom: 123
+          }
+        });
+      }
+    }
+
+    new BuildMe(app, 'hey');
+
+    // THEN
+    const session  = app.run();
+    test.deepEqual(session.store.list(), [ 'build.json', 'manifest.json' ]);
+    test.deepEqual(session.store.readJson('build.json'), {
+      steps: {
+        step_id: { type: 'build-step-type', parameters: { boom: 123 } }
+      }
+    });
+    test.done();
+  }
 };
 
 for (const [name, fn] of Object.entries(storeTests)) {

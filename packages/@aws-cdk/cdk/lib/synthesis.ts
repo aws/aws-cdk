@@ -12,6 +12,7 @@ export interface ISynthesisSession {
   readonly store: ISessionStore;
   readonly manifest: cxapi.AssemblyManifest;
   addArtifact(id: string, droplet: cxapi.Artifact): void;
+  addBuildStep(id: string, step: cxapi.BuildStep): void;
   tryGetArtifact(id: string): cxapi.Artifact | undefined;
 }
 
@@ -45,6 +46,7 @@ export class SynthesisSession implements ISynthesisSession {
   public readonly store: ISessionStore;
 
   private readonly artifacts: { [id: string]: cxapi.Artifact } = { };
+  private readonly buildSteps: { [id: string]: cxapi.BuildStep } = { };
   private _manifest?: cxapi.AssemblyManifest;
   private readonly legacyManifest: boolean;
   private readonly runtimeInfo: boolean;
@@ -72,6 +74,13 @@ export class SynthesisSession implements ISynthesisSession {
     return this.artifacts[id];
   }
 
+  public addBuildStep(id: string, step: cxapi.BuildStep) {
+    if (id in this.buildSteps) {
+      throw new Error(`Build step ${id} already exists`);
+    }
+    this.buildSteps[id] = step;
+  }
+
   public close(): cxapi.AssemblyManifest {
     const manifest: cxapi.AssemblyManifest = this._manifest = {
       version: cxapi.PROTO_RESPONSE_VERSION,
@@ -83,6 +92,15 @@ export class SynthesisSession implements ISynthesisSession {
     }
 
     this.store.writeFile(cxapi.MANIFEST_FILE, JSON.stringify(manifest, undefined, 2));
+
+    // write build manifest if we have build steps
+    if (Object.keys(this.buildSteps).length > 0) {
+      const buildManifest: cxapi.BuildManifest = {
+        steps: this.buildSteps
+      };
+
+      this.store.writeFile(cxapi.BUILD_FILE, JSON.stringify(buildManifest, undefined, 2));
+    }
 
     if (this.legacyManifest) {
       const legacy: cxapi.SynthesizeResponse = {
