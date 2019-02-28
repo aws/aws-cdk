@@ -15,7 +15,8 @@
   "scripts": {
     "build": "node ./deps.js && tsc && chmod +x bin/decdk && chmod +x bin/decdk-schema && bin/decdk-schema > cdk.schema.json",
     "watch": "tsc -w",
-    "test": "jest"
+    "test": "jest",
+    "package": "mkdir -p dist/js && cd dist/js && npm pack ../../"
   },
   "author": {
     "name": "Amazon Web Services",
