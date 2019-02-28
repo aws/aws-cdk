@@ -24,6 +24,7 @@ export class Configuration {
   private readonly commandLineArguments: Settings;
   private projectConfig: Settings;
   private projectContext: Settings;
+  private loaded = false;
 
   constructor(commandLineArguments?: yargs.Arguments) {
     this.commandLineArguments = commandLineArguments
@@ -48,6 +49,8 @@ export class Configuration {
       .merge(this.commandLineArguments)
       .makeReadOnly();
 
+    this.loaded = true;
+
     return this;
   }
 
@@ -55,6 +58,8 @@ export class Configuration {
    * Save the project config
    */
   public async saveContext(): Promise<this> {
+    if (!this.loaded) { return this; }
+
     if (this.context.modifiedBottom) {
       await this.projectConfig.save(PROJECT_CONFIG);
     }
