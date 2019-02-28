@@ -201,7 +201,7 @@ export = {
     const delegate = new PublicHostedZone(stack, 'SubZone', { zoneName: 'sub.top.test' });
 
     // WHEN
-    zone.delegateTo(delegate, { ttl: 1337 });
+    zone.addDelegation(delegate, { ttl: 1337 });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {

@@ -120,7 +120,7 @@ export class PublicHostedZone extends HostedZone {
    * @param delegate the zone being delegated to.
    * @param opts     options for creating the DNS record, if any.
    */
-  public delegateTo(delegate: PublicHostedZone, opts: ZoneDelegationOptions = {}): void {
+  public addDelegation(delegate: PublicHostedZone, opts: ZoneDelegationOptions = {}): void {
     new ZoneDelegationRecord(this, `${this.zoneName} -> ${delegate.zoneName}`, {
       zone: this,
       delegatedZoneName: delegate.zoneName,

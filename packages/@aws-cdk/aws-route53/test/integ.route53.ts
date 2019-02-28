@@ -18,7 +18,7 @@ const publicZone = new PublicHostedZone(stack, 'PublicZone', {
 const publicSubZone = new PublicHostedZone(stack, 'PublicSubZone', {
   zoneName: 'sub.cdk.test'
 });
-publicZone.delegateTo(publicSubZone);
+publicZone.addDelegation(publicSubZone);
 
 new TxtRecord(privateZone, 'TXT', {
   zone: privateZone,
