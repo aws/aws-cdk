@@ -67,6 +67,12 @@ export abstract class PrincipalBase implements IPrincipal {
     // have a PolicyDocument to add to.
     return false;
   }
+
+  public toString() {
+    // This is a first pass to make the object readable. Descendant principals
+    // should return something nicer.
+    return JSON.stringify(this.policyFragment.principalJson);
+  }
 }
 
 /**

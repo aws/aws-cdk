@@ -55,7 +55,7 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    *
    * @param identity Principal to grant consume rights to
    */
-  grantConsumeMessages(identity?: iam.IPrincipal): iam.GrantResult;
+  grantConsumeMessages(identity?: iam.IPrincipal): iam.Grant;
 
   /**
    * Grant access to send messages to a queue to the given identity.
@@ -69,7 +69,7 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    *
    * @param identity Principal to grant send rights to
    */
-  grantSendMessages(identity?: iam.IPrincipal): iam.GrantResult;
+  grantSendMessages(identity?: iam.IPrincipal): iam.Grant;
 
   /**
    * Grant an IAM principal permissions to purge all messages from the queue.
@@ -83,7 +83,7 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    * @param identity Principal to grant send rights to
    * @param queueActions additional queue actions to allow
    */
-  grantPurge(identity?: iam.IPrincipal): iam.GrantResult;
+  grantPurge(identity?: iam.IPrincipal): iam.Grant;
 
   /**
    * Grant the actions defined in queueActions to the identity Principal given
@@ -92,7 +92,7 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    * @param identity Principal to grant right to
    * @param queueActions The actions to grant
    */
-  grant(identity?: iam.IPrincipal, ...queueActions: string[]): iam.GrantResult;
+  grant(identity?: iam.IPrincipal, ...queueActions: string[]): iam.Grant;
 }
 
 /**
@@ -274,7 +274,7 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    * @param actions The actions to grant
    */
   public grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    return iam.Permissions.grant({
+    return iam.Permissions.grantWithResource({
       principal,
       actions,
       resourceArns: [this.queueArn],

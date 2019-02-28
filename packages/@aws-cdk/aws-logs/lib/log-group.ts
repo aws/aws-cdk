@@ -69,12 +69,12 @@ export interface ILogGroup extends cdk.IConstruct {
   /**
    * Give permissions to write to create and write to streams in this log group
    */
-  grantWrite(principal?: iam.IPrincipal): iam.GrantResult;
+  grantWrite(principal?: iam.IPrincipal): iam.Grant;
 
   /**
    * Give the indicated permissions on this log group and all streams
    */
-  grant(principal?: iam.IPrincipal, ...actions: string[]): iam.GrantResult;
+  grant(principal?: iam.IPrincipal, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -179,7 +179,7 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
    * Give the indicated permissions on this log group and all streams
    */
   public grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    return iam.Permissions.grant({
+    return iam.Permissions.grantOnPrincipal({
       principal,
       actions,
       // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.

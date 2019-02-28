@@ -11,7 +11,7 @@ export const resourceLinter = new Linter<ResourceLinterContext>(assembly => {
   }));
 });
 
-const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.GrantResult';
+const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
 
 interface ResourceLinterContext {
   readonly ts: reflect.TypeSystem;

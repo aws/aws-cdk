@@ -292,11 +292,11 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     return this.stages.length;
   }
 
-  public grantBucketRead(identity?: iam.IPrincipal): iam.GrantResult {
+  public grantBucketRead(identity?: iam.IPrincipal): iam.Grant {
     return this.artifactBucket.grantRead(identity);
   }
 
-  public grantBucketReadWrite(identity?: iam.IPrincipal): iam.GrantResult {
+  public grantBucketReadWrite(identity?: iam.IPrincipal): iam.Grant {
     return this.artifactBucket.grantReadWrite(identity);
   }
 

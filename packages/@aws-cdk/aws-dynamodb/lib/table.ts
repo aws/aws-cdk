@@ -408,8 +408,8 @@ export class Table extends Construct {
    * @param principal The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
-  public grant(principal?: iam.IPrincipal, ...actions: string[]): iam.GrantResult {
-    return iam.Permissions.grant({
+  public grant(principal?: iam.IPrincipal, ...actions: string[]): iam.Grant {
+    return iam.Permissions.grantOnPrincipal({
       principal,
       actions,
       resourceArns: [
@@ -427,7 +427,7 @@ export class Table extends Construct {
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    */
   public grantStream(principal?: iam.IPrincipal, ...actions: string[]) {
-    return iam.Permissions.grant({
+    return iam.Permissions.grantOnPrincipal({
       principal,
       actions,
       resourceArns: [this.tableStreamArn],

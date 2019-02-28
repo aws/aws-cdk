@@ -32,7 +32,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  grantRead(identity?: iam.IPrincipal): iam.GrantResult;
+  grantRead(identity?: iam.IPrincipal): iam.Grant;
 
   /**
    * Grant write permissions for this stream and its contents to an IAM
@@ -41,7 +41,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to ues the key to encrypt the
    * contents of the stream will also be granted.
    */
-  grantWrite(identity?: iam.IPrincipal): iam.GrantResult;
+  grantWrite(identity?: iam.IPrincipal): iam.Grant;
 
   /**
    * Grants read/write permissions for this stream and its contents to an IAM
@@ -50,7 +50,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    */
-  grantReadWrite(identity?: iam.IPrincipal): iam.GrantResult;
+  grantReadWrite(identity?: iam.IPrincipal): iam.Grant;
 }
 
 /**
@@ -228,7 +228,7 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
   }
 
   private grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    return iam.Permissions.grant({
+    return iam.Permissions.grantOnPrincipal({
       principal,
       actions,
       resourceArns: [this.streamArn],

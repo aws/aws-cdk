@@ -51,17 +51,17 @@ export interface IRepository extends cdk.IConstruct {
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
-  grant(identity?: iam.IPrincipal, ...actions: string[]): iam.GrantResult;
+  grant(identity?: iam.IPrincipal, ...actions: string[]): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull images in this repository.
    */
-  grantPull(identity?: iam.IPrincipal): iam.GrantResult;
+  grantPull(identity?: iam.IPrincipal): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
    */
-  grantPullPush(identity?: iam.IPrincipal): iam.GrantResult;
+  grantPullPush(identity?: iam.IPrincipal): iam.Grant;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -207,7 +207,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Grant the given principal identity permissions to perform the actions on this repository
    */
   public grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    return iam.Permissions.grant({
+    return iam.Permissions.grantWithResource({
       principal,
       actions,
       resourceArns: [this.repositoryArn],
@@ -221,7 +221,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   public grantPull(principal?: iam.IPrincipal) {
     const ret = this.grant(principal, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
 
-    iam.Permissions.tryGrantOnPrincipal({
+    iam.Permissions.grantOnPrincipal({
       principal,
       actions: ["ecr:GetAuthorizationToken"],
       resourceArns: ['*'],

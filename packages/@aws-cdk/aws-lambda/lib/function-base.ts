@@ -60,7 +60,7 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  grantInvoke(identity?: iam.IPrincipal): iam.GrantResult;
+  grantInvoke(identity?: iam.IPrincipal): iam.Grant;
 
   /**
    * Return the given named metric for this Lambda
@@ -246,12 +246,11 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  public grantInvoke(principal?: iam.IPrincipal): iam.GrantResult {
-    return iam.Permissions.grant({
+  public grantInvoke(principal?: iam.IPrincipal): iam.Grant {
+    return iam.Permissions.grantWithResource({
       principal,
       actions: ['lambda:InvokeFunction'],
       resourceArns: [this.functionArn],
-      scope: this,
 
       // Fake resource-like object on which to call addToResourcePolicy(), which actually
       // calls addPermission()

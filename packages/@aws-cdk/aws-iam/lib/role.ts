@@ -210,11 +210,11 @@ export class Role extends Construct implements IRole {
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
   public grant(principal?: IPrincipal, ...actions: string[]) {
-    return Permissions.grant({
+    return Permissions.grantOnPrincipal({
       principal,
       actions,
       resourceArns: [this.roleArn],
-      scope: this,
+      scope: this
     });
   }
 

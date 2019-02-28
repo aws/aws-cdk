@@ -3,15 +3,15 @@ import { PolicyStatement } from "./policy-document";
 import { IPrincipal } from "./principals";
 
 /**
- * Options for a grant operation
+ * Basic options for a grant operation
  */
-export interface GrantOptions {
+export interface CommonGrantOptions {
   /**
    * The principal to grant to
    *
    * @default No work is done
    */
-  principal: IPrincipal | undefined;
+  principal?: IPrincipal;
 
   /**
    * The actions to grant
@@ -22,16 +22,19 @@ export interface GrantOptions {
    * The resource ARNs to grant to
    */
   resourceArns: string[];
+}
 
+/**
+ * Options for a grant operation
+ */
+export interface GrantWithResourceOptions extends CommonGrantOptions {
   /**
-   * Adder to the resource policy
+   * The resource with a resource policy
    *
-   * Either 'scope' or 'resource' must be supplied.
-   *
-   * An error will be thrown if the policy could not be added to the principal,
-   * no resource is supplied given and `skipResourcePolicy` is false.
+   * The statement will be added to the resource policy if it couldn't be
+   * added to the principal policy.
    */
-  resource?: IResourceWithPolicy;
+  resource: IResourceWithPolicy;
 
   /**
    * When referring to the resource in a resource policy, use this as ARN.
@@ -41,70 +44,26 @@ export interface GrantOptions {
    * @default Same as regular resource ARNs
    */
   resourceSelfArns?: string[];
+}
 
+/**
+ * Options for a grant operation that only applies to principals
+ */
+export interface GrantOnPrincipalOptions extends CommonGrantOptions {
   /**
    * Construct to report warnings on in case grant could not be registered
-   *
-   * @default resource
    */
   scope?: cdk.IConstruct;
 }
 
 /**
- * Options for a tryGrant operation
- */
-export interface TryGrantOnIdentityOptions {
-  /**
-   * The principal to grant to
-   *
-   * @default No work is done
-   */
-  principal: IPrincipal | undefined;
-
-  /**
-   * The actions to grant
-   */
-  actions: string[];
-
-  /**
-   * The resource ARNs to grant to
-   */
-  resourceArns: string[];
-
-  /**
-   * Construct to report warnings on in case grant could not be registered
-   */
-  scope: cdk.IConstruct;
-}
-
-/**
  * Options for a grant operation to both identity and resource
  */
-export interface GrantOnIdentityAndResourceOptions {
+export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
   /**
-   * The principal to grant to
+   * The resource with a resource policy
    *
-   * @default No work is done
-   */
-  principal: IPrincipal | undefined;
-
-  /**
-   * The actions to grant
-   */
-  actions: string[];
-
-  /**
-   * The resource ARNs to grant to
-   */
-  resourceArns: string[];
-
-  /**
-   * Adder to the resource policy
-   *
-   * Either 'scope' or 'resource' must be supplied.
-   *
-   * An error will be thrown if the policy could not be added to the principal,
-   * no resource is supplied given and `skipResourcePolicy` is false.
+   * The statement will always be added to the resource policy.
    */
   resource: IResourceWithPolicy;
 
@@ -133,25 +92,13 @@ export class Permissions {
    *   case of imported resources) leads to a warning being added to the
    *   resource construct.
    */
-  public static grant(options: GrantOptions): GrantResult {
-    const scope = options.scope || options.resource;
-    if (!scope) {
-      throw new Error(`Either 'scope' or 'resource' must be supplied.`);
-    }
-
-    const result = Permissions.tryGrantOnPrincipal({
-      actions: options.actions,
-      principal: options.principal,
-      resourceArns: options.resourceArns,
-      scope
+  public static grantWithResource(options: GrantWithResourceOptions): Grant {
+    const result = Permissions.grantOnPrincipal({
+      ...options,
+      scope: options.resource
     });
 
-    if (result.addedToPrincipal || result.principalMissing) { return result; }
-
-    if (!options.resource) {
-      // tslint:disable-next-line:max-line-length
-      throw new Error(`Neither principal (${options.principal}) nor resource (${scope}) allow adding to policy. Grant to a Role instead.`);
-    }
+    if (result.success) { return result; }
 
     const statement = new PolicyStatement()
       .addActions(...options.actions)
@@ -160,7 +107,7 @@ export class Permissions {
 
     options.resource.addToResourcePolicy(statement);
 
-    return grantResult({ addedToResource: true, statement });
+    return grantResult({ addedToResource: true, statement, options });
   }
 
   /**
@@ -169,11 +116,13 @@ export class Permissions {
    * Absence of a principal leads to a warning, but failing to add
    * the permissions to a present principal is not an error.
    */
-  public static tryGrantOnPrincipal(options: TryGrantOnIdentityOptions): GrantResult {
+  public static grantOnPrincipal(options: GrantOnPrincipalOptions): Grant {
     if (!options.principal) {
-      // tslint:disable-next-line:max-line-length
-      options.scope.node.addWarning(`Could not add grant for '${options.actions}' on '${options.resourceArns}' because the principal was not available. Add the permissions by hand.`);
-      return grantResult({ principalMissing: true });
+      if (options.scope) {
+        // tslint:disable-next-line:max-line-length
+        options.scope.node.addWarning(`Could not add grant for '${options.actions}' on '${options.resourceArns}' because the principal was not available. Add the permissions by hand.`);
+      }
+      return grantResult({ principalMissing: true, options });
     }
 
     const statement = new PolicyStatement()
@@ -182,7 +131,7 @@ export class Permissions {
 
     const addedToPrincipal = options.principal.addToPolicy(statement);
 
-    return grantResult({ addedToPrincipal, statement: addedToPrincipal ? statement : undefined });
+    return grantResult({ addedToPrincipal, statement: addedToPrincipal ? statement : undefined, options });
   }
 
   /**
@@ -194,12 +143,10 @@ export class Permissions {
    *
    * Statement will be the resource statement.
    */
-  public static grantOnPrincipalAndResource(options: GrantOnIdentityAndResourceOptions): GrantResult {
-    const result = Permissions.tryGrantOnPrincipal({
-      actions: options.actions,
-      principal: options.principal,
-      resourceArns: options.resourceArns,
-      scope: options.resource
+  public static grantOnPrincipalAndResource(options: GrantOnPrincipalAndResourceOptions): Grant {
+    const result = Permissions.grantOnPrincipal({
+      ...options,
+      scope: options.resource,
     });
 
     if (result.principalMissing) { return result; }
@@ -211,7 +158,7 @@ export class Permissions {
 
     options.resource.addToResourcePolicy(statement);
 
-    return grantResult({ addedToPrincipal: result.addedToPrincipal, addedToResource: true, statement });
+    return grantResult({ addedToPrincipal: result.addedToPrincipal, addedToResource: true, statement, options });
   }
 }
 
@@ -221,7 +168,7 @@ export class Permissions {
  * This class is not instantiable by consumers on purpose, so that they will be
  * required to call the Permissions.grant() functions.
  */
-export class GrantResult {
+export class Grant {
   /**
    * There was no principal to add the permissions to
    */
@@ -247,27 +194,52 @@ export class GrantResult {
   public readonly statement?: PolicyStatement;
 
   /**
-   * Private member to make it impossible to construct object literals that structurally match this type
+   * The options originally used to set this result
+   *
+   * Private member doubles as a way to make it impossible for an object literal to
+   * be structurally the same as this class.
    */
-  private readonly _isGrantResult = true;
+  private readonly options: CommonGrantOptions;
 
-  private constructor(props: GrantResultProps) {
+  private constructor(props: GrantProps) {
+    this.options = props.options;
     this.principalMissing = !!props.principalMissing;
     this.addedToPrincipal = !!props.addedToPrincipal;
     this.addedToResource = !!props.addedToResource;
     this.statement = props.statement;
-    Array.isArray(this._isGrantResult);
   }
+
+  /**
+   * Whether the grant operation was successful
+   */
+  public get success(): boolean {
+    return this.principalMissing || this.addedToPrincipal || this.addedToResource;
+  }
+
+  /**
+   * Throw an error if this grant wasn't successful
+   */
+  public assertSuccess(): void {
+    if (!this.success) {
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`${describeGrant(this.options)} could not be added on either identity or resource policy.`);
+    }
+  }
+}
+
+function describeGrant(options: CommonGrantOptions) {
+  return `Permissions for '${options.principal}' to call '${options.actions}' on '${options.resourceArns}'`;
 }
 
 /**
  * Instantiate a grantResult (which is normally not instantiable)
  */
-function grantResult(props: GrantResultProps): GrantResult {
-  return Reflect.construct(GrantResult, [props]);
+function grantResult(props: GrantProps): Grant {
+  return Reflect.construct(Grant, [props]);
 }
 
-interface GrantResultProps {
+interface GrantProps {
+  options: CommonGrantOptions;
   principalMissing?: boolean;
   addedToPrincipal?: boolean;
   addedToResource?: boolean;

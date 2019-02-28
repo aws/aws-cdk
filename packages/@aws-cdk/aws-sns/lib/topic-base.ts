@@ -81,7 +81,7 @@ export interface ITopic extends
   /**
    * Grant topic publishing permissions to the given identity
    */
-  grantPublish(identity?: iam.IPrincipal): iam.GrantResult;
+  grantPublish(identity?: iam.IPrincipal): iam.Grant;
 }
 
 /**
@@ -264,7 +264,7 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    * Grant topic publishing permissions to the given identity
    */
   public grantPublish(principal?: iam.IPrincipal) {
-    return iam.Permissions.grant({
+    return iam.Permissions.grantWithResource({
       principal,
       actions: ['sns:Publish'],
       resourceArns: [this.topicArn],
