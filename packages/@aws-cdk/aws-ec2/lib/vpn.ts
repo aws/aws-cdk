@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import net = require('net');
 import { CfnCustomerGateway, CfnVPNConnection, CfnVPNConnectionRoute } from './ec2.generated';
 import { IVpcNetwork } from './vpc-ref';
 
@@ -109,8 +110,8 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
       throw new Error('Cannot create a VPN connection when VPC has no VPN gateway.');
     }
 
-    if (!IP_REGEX.test(props.ip)) {
-      throw new Error(`The \`ip\` ${props.ip} is invalid.`);
+    if (!net.isIPv4(props.ip)) {
+      throw new Error(`The \`ip\` ${props.ip} is not a valid IPv4 address.`);
     }
 
     const type = VpnConnectionType.IPsec1;
@@ -177,8 +178,6 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
     }
   }
 }
-
-export const IP_REGEX = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
 
 export const RESERVED_TUNNEL_INSIDE_CIDR = [
   '169.254.0.0/30',

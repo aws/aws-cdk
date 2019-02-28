@@ -147,7 +147,7 @@ export = {
           ip: '192.0.2.256'
         }
       }
-    }), /`ip`.+invalid/);
+    }), /`ip`.+IPv4/);
 
     test.done();
   },
