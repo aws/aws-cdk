@@ -35,7 +35,8 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "integ": "cdk-integ"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudTrail"
@@ -58,7 +59,8 @@
     "cdk-build-tools": "^0.24.1",
     "cfn2ts": "^0.24.1",
     "colors": "^1.2.1",
-    "pkglint": "^0.24.1"
+    "pkglint": "^0.24.1",
+    "cdk-integ-tools": "^0.24.1"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "^0.24.1",

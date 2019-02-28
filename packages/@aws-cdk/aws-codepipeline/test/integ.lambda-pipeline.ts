@@ -17,7 +17,7 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
 });
 const key = 'key';
 const trail = new cloudtrail.CloudTrail(stack, 'CloudTrail');
-trail.addS3EventSelector([bucket.arnForObjects(key)], cloudtrail.ReadWriteType.WriteOnly);
+trail.addS3EventSelector([bucket.arnForObjects(key)], { readWriteType: cloudtrail.ReadWriteType.WriteOnly, includeManagementEvents: false });
 sourceStage.addAction(new s3.PipelineSourceAction({
   actionName: 'Source',
   outputArtifactName: 'SourceArtifact',
