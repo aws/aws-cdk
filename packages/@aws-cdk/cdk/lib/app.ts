@@ -105,7 +105,7 @@ export class App extends Root {
   }
 
   private loadContext(defaults: { [key: string]: string } = { }) {
-    // primve with defaults passed through constructor
+    // prime with defaults passed through constructor
     for (const [ k, v ] of Object.entries(defaults)) {
       this.node.setContext(k, v);
     }

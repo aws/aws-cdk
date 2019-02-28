@@ -1,5 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
 
+/**
+ * Returns a list of loaded modules and their versions.
+ */
 export function collectRuntimeInformation(): cxapi.AppRuntime {
   const libraries: { [name: string]: string } = {};
 
