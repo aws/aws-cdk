@@ -54,6 +54,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **ssm:** allow referencing "latest" version of SSM parameter ([#1768](https://github.com/awslabs/aws-cdk/issues/1768)) ([9af36af](https://github.com/awslabs/aws-cdk/commit/9af36af)), closes [#1587](https://github.com/awslabs/aws-cdk/issues/1587)
 * **toolkit:** improve docker build time in CI ([#1776](https://github.com/awslabs/aws-cdk/issues/1776)) ([1060b95](https://github.com/awslabs/aws-cdk/commit/1060b95)), closes [#1748](https://github.com/awslabs/aws-cdk/issues/1748)
 * **codepipelines:** re-structure the CodePipeline Construct library API. ([#1590](https://github.com/awslabs/aws-cdk/issues/1590)) ([3c3db07](https://github.com/awslabs/aws-cdk/commit/3c3db07))
+* **decdk:** Prototype for declarative CDK (decdk) ([#1618](https://github.com/awslabs/aws-cdk/pull/1618)) ([8713ac6](https://github.com/awslabs/aws-cdk/commit/8713ac6))
 
 
 ### BREAKING CHANGES
