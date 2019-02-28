@@ -85,6 +85,14 @@ export class Context {
   constructor(private readonly bottom: Settings, private readonly bottomPrefixPath: string[], private readonly top: Settings) {
   }
 
+  public get keys(): string[] {
+    return Object.keys(this.everything());
+  }
+
+  public has(key: string) {
+    return this.keys.indexOf(key) > -1;
+  }
+
   public everything(): {[key: string]: any} {
     const b = this.bottom.get(this.bottomPrefixPath) || {};
     const t = this.top.get([]) || {};
@@ -105,18 +113,12 @@ export class Context {
     }
   }
 
-  public setAll(values: object) {
-    for (const [key, value] of Object.entries(values)) {
-      this.set(key, value);
-    }
-  }
-
   public unset(key: string) {
     this.set(key, undefined);
   }
 
   public clear() {
-    for (const key of Object.keys(this.everything())) {
+    for (const key of this.keys) {
       this.unset(key);
     }
   }
