@@ -1,4 +1,5 @@
 import cfnDiff = require('@aws-cdk/cloudformation-diff');
+import { FormatStream } from '@aws-cdk/cloudformation-diff';
 import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import { print, warning } from './logging';
@@ -13,7 +14,13 @@ import { print, warning } from './logging';
  *
  * @returns the count of differences that were rendered.
  */
-export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack, strict: boolean, context: number): number {
+export function printStackDiff(
+      oldTemplate: any,
+      newTemplate: cxapi.SynthesizedStack,
+      strict: boolean,
+      context: number,
+      stream?: FormatStream): number {
+
   if (_hasAssets(newTemplate)) {
     const issue = 'https://github.com/awslabs/aws-cdk/issues/395';
     warning(`The ${newTemplate.name} stack uses assets, which are currently not accounted for in the diff output! See ${issue}`);
@@ -32,7 +39,7 @@ export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedS
   }
 
   if (!diff.isEmpty) {
-    cfnDiff.formatDifferences(process.stderr, diff, buildLogicalToPathMap(newTemplate), context);
+    cfnDiff.formatDifferences(stream || process.stderr, diff, buildLogicalToPathMap(newTemplate), context);
   } else {
     print(colors.green('There were no differences'));
   }
