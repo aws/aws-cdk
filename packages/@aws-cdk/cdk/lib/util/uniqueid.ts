@@ -45,7 +45,7 @@ export function makeUniqueId(components: string[]) {
   // transparent migration of cloudformation templates to the CDK without the
   // need to rename all resources.
   if (components.length === 1) {
-    return components[0];
+    return removeNonAlphanumeric(components[0]);
   }
 
   const hash = pathHash(components);

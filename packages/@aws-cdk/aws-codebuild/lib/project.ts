@@ -27,7 +27,7 @@ export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
   readonly projectName: string;
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
 
   /**
    * Convenience method for creating a new {@link PipelineBuildAction CodeBuild build Action}.
@@ -182,7 +182,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
   public abstract readonly projectName: string;
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
-  public abstract readonly role?: iam.Role;
+  public abstract readonly role?: iam.IRole;
 
   /** A role used by CloudWatch events to trigger a build */
   private eventsRole?: iam.Role;
@@ -460,7 +460,7 @@ export interface CommonProjectProps {
    * Service Role to assume while running the build.
    * If not specified, a role will be created.
    */
-  role?: iam.Role;
+  role?: iam.IRole;
 
   /**
    * Encryption key to use to read and write artifacts
@@ -572,7 +572,7 @@ export class Project extends ProjectBase {
   /**
    * The IAM role for this project.
    */
-  public readonly role?: iam.Role;
+  public readonly role?: iam.IRole;
 
   /**
    * The ARN of the project.

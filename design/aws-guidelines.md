@@ -199,7 +199,7 @@ and represents an "imported resource".
 
 > <a id="import-props-interface">awslint: import-props-interface</a>
 
-The "props" argument is `XxxImportProps`, which an interface that declares
+The "props" argument is `XxxImportProps`, which is an interface that declares
 properties that allow the user to specify an external resource identity, usually
 by providing one or more resource attributes such as ARN, physical name, etc.
 
@@ -216,7 +216,7 @@ The recommended way to implement the `import` method is as follows:
 1. A public abstract base class called `XxxBase` which implements `IXxx` and
    extends `cdk.Construct`.
 2. The base class should provide as much of the implementation of `IXxx` as possible given the
-   context it has. In most cases, `grant` methods, `metric` methods, etc can be implemented at
+   context it has. In most cases, `grant` methods, `metric` methods, etc. can be implemented at
    at that level.
 5. A private class called `ImportedXxx` which extends `XxxBase` and implements
    any remaining abstract members.
@@ -320,8 +320,7 @@ export interface IFoo extends cdk.IConstruct, ISomething {
 
   // attributes
   readonly fooArn: string;
-  readonly fooFoo: string;
-  readonly fooBar: string;
+  readonly fooBoo: string;
 
   // security group connections (if applicable)
   readonly connections: ec2.Connections;
