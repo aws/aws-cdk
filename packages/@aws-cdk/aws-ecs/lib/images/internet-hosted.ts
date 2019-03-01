@@ -10,7 +10,7 @@ export interface InternetHostedImageProps {
 }
 
 /**
- * A DockerHub image
+ * A container image hosted on DockerHub or another online registry
  */
 export class InternetHostedImage extends ContainerImage {
   public readonly imageName: string;

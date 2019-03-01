@@ -4,6 +4,9 @@ import cdk = require('@aws-cdk/cdk');
 import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
 
+/**
+ * Repository Credential resources
+ */
 export interface RepositoryCreds {
   /**
    * The secret that contains credentials for the image repository
@@ -16,7 +19,7 @@ export interface RepositoryCreds {
  */
 export abstract class ContainerImage {
   /**
-   * Reference an image on DockerHub
+   * Reference an image on DockerHub or another online registry
    */
   public static fromInternet(name: string, props: InternetHostedImageProps = {}) {
     return new InternetHostedImage(name, props);
