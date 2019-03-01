@@ -14,6 +14,9 @@
     "nodeunit": "^0.11.2",
     "nyc": "^13.0.1",
     "tslint": "^5.10.0",
+    "@types/jest": "^24.0.6",
+    "jest": "^24.1.0",
+    "ts-jest": "^24.0.0",
     "typescript": "^3.2.2"
   },
   "repository": {

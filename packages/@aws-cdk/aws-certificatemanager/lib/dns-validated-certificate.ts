@@ -1,8 +1,8 @@
-import { CustomResource } from '@aws-cdk/aws-cloudformation';
-import { PolicyStatement } from '@aws-cdk/aws-iam';
-import { AssetCode, Function, Runtime } from '@aws-cdk/aws-lambda';
-import { IHostedZone } from '@aws-cdk/aws-route53';
-import { Construct, Output } from '@aws-cdk/cdk';
+import cfn = require('@aws-cdk/aws-cloudformation');
+import iam = require('@aws-cdk/aws-iam');
+import lambda = require('@aws-cdk/aws-lambda');
+import route53 = require('@aws-cdk/aws-route53');
+import cdk = require('@aws-cdk/cdk');
 import path = require('path');
 import { CertificateImportProps, CertificateProps, ICertificate } from './certificate';
 
@@ -11,20 +11,20 @@ export interface DNSValidatedCertificateProps extends CertificateProps {
      * Route 53 Hosted Zone used to perform DNS validation of the request.  The zone
      * must be authoritative for the domain name specified in the Certificate Request.
      */
-    hostedZone: IHostedZone;
+    hostedZone: route53.IHostedZone;
 }
 
 /**
  * A certificate managed by AWS Certificate Manager.  Will be automatically
  * validated using DNS validation against the specified Route 53 hosted zone.
  */
-export class DNSValidatedCertificate extends Construct implements ICertificate {
+export class DNSValidatedCertificate extends cdk.Construct implements ICertificate {
     public readonly certificateArn: string;
     private normalizedZoneName: string;
     private hostedZoneId: string;
     private domainName: string;
 
-    constructor(scope: Construct, id: string, props: DNSValidatedCertificateProps) {
+    constructor(scope: cdk.Construct, id: string, props: DNSValidatedCertificateProps) {
         super(scope, id);
 
         this.domainName = props.domainName;
@@ -37,29 +37,29 @@ export class DNSValidatedCertificate extends Construct implements ICertificate {
         // Remove any `/hostedzone/` prefix from the Hosted Zone ID
         this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
 
-        const requestorFunction = new Function(this, 'CertificateRequestorFunction', {
-            code: new AssetCode(path.join(__dirname, 'dns_validated_certificate_handler')),
+        const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
+            code: lambda.Code.asset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
             handler: 'index.certificateRequestHandler',
-            runtime: Runtime.NodeJS810,
+            runtime: lambda.Runtime.NodeJS810,
             timeout: 15 * 60 // 15 minutes
         });
         requestorFunction.addToRolePolicy(
-            new PolicyStatement()
+            new iam.PolicyStatement()
                 .addActions('acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate')
                 .addResource('*')
         );
         requestorFunction.addToRolePolicy(
-            new PolicyStatement()
+            new iam.PolicyStatement()
                 .addActions('route53:GetChange')
                 .addResource('*')
         );
         requestorFunction.addToRolePolicy(
-            new PolicyStatement()
+            new iam.PolicyStatement()
                 .addActions('route53:changeResourceRecordSets')
                 .addResource(`arn:aws:route53:::hostedzone/${this.hostedZoneId}`)
         );
 
-        const certificate = new CustomResource(this, 'CertificateRequestorResource', {
+        const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {
             lambdaProvider: requestorFunction,
             properties: {
                 DomainName: props.domainName,
@@ -76,7 +76,7 @@ export class DNSValidatedCertificate extends Construct implements ICertificate {
      */
     public export(): CertificateImportProps {
         return {
-            certificateArn: new Output(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
+            certificateArn: new cdk.Output(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
         };
     }
 
