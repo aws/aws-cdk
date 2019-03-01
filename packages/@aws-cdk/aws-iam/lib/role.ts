@@ -1,4 +1,4 @@
-import { Construct, IConstruct, Output } from '@aws-cdk/cdk';
+import { Construct, Output } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
