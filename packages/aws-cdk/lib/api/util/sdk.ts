@@ -90,6 +90,13 @@ export class SDK {
     });
   }
 
+  public async elbv1(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.ELB> {
+    return new AWS.ELB({
+      region,
+      credentials: await this.credentialsCache.get(awsAccountId, mode)
+    });
+  }
+
   public async ssm(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM> {
     return new AWS.SSM({
       region,

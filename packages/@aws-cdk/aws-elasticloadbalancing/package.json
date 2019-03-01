@@ -58,7 +58,8 @@
     "cdk-build-tools": "^0.25.0",
     "cdk-integ-tools": "^0.25.0",
     "cfn2ts": "^0.25.0",
-    "pkglint": "^0.25.0"
+    "pkglint": "^0.25.0",
+    "@aws-cdk/cx-api": "^0.25.0"
   },
   "dependencies": {
     "@aws-cdk/aws-codedeploy-api": "^0.25.0",

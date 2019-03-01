@@ -1,4 +1,5 @@
 export const VPC_PROVIDER = 'vpc-provider';
+export const LOL_PROVIDER = 'vpc-provider';
 
 /**
  * Query input for looking up a VPC

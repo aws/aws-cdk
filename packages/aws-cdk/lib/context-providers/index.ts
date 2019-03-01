@@ -3,6 +3,7 @@ import { SDK } from '../api/util/sdk';
 import { debug } from '../logging';
 import { Context } from '../settings';
 import { AZContextProviderPlugin } from './availability-zones';
+import { ElbV1ContextProviderPlugin } from './elbv1';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
 import { ContextProviderPlugin } from './provider';
 import { SSMContextProviderPlugin } from './ssm-parameters';
@@ -40,4 +41,5 @@ const availableContextProviders: ProviderMap = {
   [cxapi.SSM_PARAMETER_PROVIDER]: SSMContextProviderPlugin,
   [cxapi.HOSTED_ZONE_PROVIDER]: HostedZoneContextProviderPlugin,
   [cxapi.VPC_PROVIDER]: VpcNetworkContextProviderPlugin,
+  [cxapi.ELBV1_PROVIDER]: ElbV1ContextProviderPlugin,
 };
