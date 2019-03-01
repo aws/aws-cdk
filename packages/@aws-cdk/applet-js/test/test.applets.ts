@@ -80,16 +80,17 @@ function synthesizeApplet(yamlFile: string, direct = false) {
 
   const command = direct ? yamlFile : 'cdk-applet-js';
   const args = direct ? [] : [yamlFile];
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-applet-tests'));
 
   child_process.execFileSync(command, args, {
     env: {
       ...process.env,
-      CDK_OUTDIR: os.tmpdir(),
+      CDK_OUTDIR: outdir,
       PATH: 'bin:' + process.env.PATH
     }
   });
 
-  return JSON.parse(fs.readFileSync(path.join(os.tmpdir(), 'cdk.out'), { encoding: 'utf-8' }));
+  return JSON.parse(fs.readFileSync(path.join(outdir, 'cdk.out'), { encoding: 'utf-8' }));
 }
 
 function getStack(stackName: string, allStacks: any) {
