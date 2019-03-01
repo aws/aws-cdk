@@ -96,11 +96,19 @@ export class ArnPrincipal extends PrincipalBase {
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({ AWS: [ this.arn ] });
   }
+
+  public toString() {
+    return `ArnPrincipal(${this.arn})`;
+  }
 }
 
 export class AccountPrincipal extends ArnPrincipal {
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
+  }
+
+  public toString() {
+    return `AccountPrincipal(${this.accountId})`;
   }
 }
 
@@ -114,6 +122,10 @@ export class ServicePrincipal extends PrincipalBase {
 
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({ Service: [ this.service ] });
+  }
+
+  public toString() {
+    return `ServicePrincipal(${this.service})`;
   }
 }
 
@@ -130,6 +142,10 @@ export class OrganizationPrincipal extends PrincipalBase {
       { AWS: ['*'] },
       { StringEquals: { 'aws:PrincipalOrgID': this.organizationId } }
     );
+  }
+
+  public toString() {
+    return `OrganizationPrincipal(${this.organizationId})`;
   }
 }
 
@@ -154,6 +170,10 @@ export class CanonicalUserPrincipal extends PrincipalBase {
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({ CanonicalUser: [ this.canonicalUserId ] });
   }
+
+  public toString() {
+    return `CanonicalUserPrincipal(${this.canonicalUserId})`;
+  }
 }
 
 export class FederatedPrincipal extends PrincipalBase {
@@ -169,11 +189,19 @@ export class FederatedPrincipal extends PrincipalBase {
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({ Federated: [ this.federated ] }, this.conditions);
   }
+
+  public toString() {
+    return `FederatedPrincipal(${this.federated})`;
+  }
 }
 
 export class AccountRootPrincipal extends AccountPrincipal {
   constructor() {
     super(new StackDependentToken(stack => stack.accountId).toString());
+  }
+
+  public toString() {
+    return `AccountRootPrincipal()`;
   }
 }
 
@@ -183,6 +211,10 @@ export class AccountRootPrincipal extends AccountPrincipal {
 export class AnyPrincipal extends ArnPrincipal {
   constructor() {
     super('*');
+  }
+
+  public toString() {
+    return `AnyPrincipal()`;
   }
 }
 
@@ -231,6 +263,10 @@ export class CompositePrincipal extends PrincipalBase {
     }
 
     return new PrincipalPolicyFragment(principalJson);
+  }
+
+  public toString() {
+    return `CompositePrincipal(${this.principals})`;
   }
 }
 

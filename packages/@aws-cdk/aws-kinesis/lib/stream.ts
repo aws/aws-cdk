@@ -228,7 +228,7 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
   }
 
   private grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    return iam.Permissions.grantOnPrincipal({
+    return iam.Grant.onPrincipal({
       principal,
       actions,
       resourceArns: [this.streamArn],

@@ -274,7 +274,7 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    * @param actions The actions to grant
    */
   public grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    return iam.Permissions.grantWithResource({
+    return iam.Grant.withResource({
       principal,
       actions,
       resourceArns: [this.queueArn],

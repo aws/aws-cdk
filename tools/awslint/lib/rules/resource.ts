@@ -1,7 +1,7 @@
 import reflect = require('jsii-reflect');
 import { CfnResourceSpec, findCfnResources } from '../cfn-resources';
 import { Linter } from '../linter';
-import { classAndAncestors, CONSTRUCT_FQN, CONSTRUCT_INTERFACE_FQN, isConstruct } from '../util';
+import { CONSTRUCT_FQN, CONSTRUCT_INTERFACE_FQN, isConstruct } from '../util';
 
 export const resourceLinter = new Linter<ResourceLinterContext>(assembly => {
   return findCfnResources(assembly).map(cfn => ({
@@ -188,14 +188,12 @@ resourceLinter.add({
     if (!e.ctx.resourceClass) { return; }
 
     const grantResultType = e.ctx.ts.findFqn(GRANT_RESULT_FQN);
+    const grantMethods = e.ctx.resourceClass.getMethods(true).filter(m => m.name.startsWith('grant'));
 
-    for (const klass of classAndAncestors(e.ctx.resourceClass)) {
-      const grantMethods = klass.methods.filter(m => m.name.startsWith('grant'));
-      for (const grantMethod of grantMethods) {
-        e.assertSignature(grantMethod, {
-          returns: grantResultType
-        });
-      }
+    for (const grantMethod of grantMethods) {
+      e.assertSignature(grantMethod, {
+        returns: grantResultType
+      });
     }
   }
 });

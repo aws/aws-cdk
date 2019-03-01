@@ -104,7 +104,7 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
   public grantRead(principal?: iam.IPrincipal, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
-    const result = iam.Permissions.grantOnPrincipal({
+    const result = iam.Grant.onPrincipal({
       principal,
       actions: ['secretsmanager:GetSecretValue'],
       resourceArns: [this.secretArn],

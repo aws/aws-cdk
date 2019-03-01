@@ -77,7 +77,13 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
   resourceSelfArns?: string[];
 }
 
-export class Permissions {
+/**
+ * Result of a grant() operation
+ *
+ * This class is not instantiable by consumers on purpose, so that they will be
+ * required to call the Grant factory functions.
+ */
+export class Grant {
   /**
    * Grant the given permissions to the principal
    *
@@ -92,8 +98,8 @@ export class Permissions {
    *   case of imported resources) leads to a warning being added to the
    *   resource construct.
    */
-  public static grantWithResource(options: GrantWithResourceOptions): Grant {
-    const result = Permissions.grantOnPrincipal({
+  public static withResource(options: GrantWithResourceOptions): Grant {
+    const result = Grant.onPrincipal({
       ...options,
       scope: options.resource
     });
@@ -107,7 +113,7 @@ export class Permissions {
 
     options.resource.addToResourcePolicy(statement);
 
-    return grantResult({ addedToResource: true, statement, options });
+    return new Grant({ resourceStatement: statement, options });
   }
 
   /**
@@ -116,13 +122,13 @@ export class Permissions {
    * Absence of a principal leads to a warning, but failing to add
    * the permissions to a present principal is not an error.
    */
-  public static grantOnPrincipal(options: GrantOnPrincipalOptions): Grant {
+  public static onPrincipal(options: GrantOnPrincipalOptions): Grant {
     if (!options.principal) {
       if (options.scope) {
         // tslint:disable-next-line:max-line-length
-        options.scope.node.addWarning(`Could not add grant for '${options.actions}' on '${options.resourceArns}' because the principal was not available. Add the permissions by hand.`);
+        options.scope.node.addWarning(`Could not add grant '${options.actions}' on '${options.resourceArns}' because the principal was not available. Add the permissions by hand.`);
       }
-      return grantResult({ principalMissing: true, options });
+      return new Grant({ principalMissing: true, options });
     }
 
     const statement = new PolicyStatement()
@@ -131,7 +137,7 @@ export class Permissions {
 
     const addedToPrincipal = options.principal.addToPolicy(statement);
 
-    return grantResult({ addedToPrincipal, statement: addedToPrincipal ? statement : undefined, options });
+    return new Grant({ principalStatement: addedToPrincipal ? statement : undefined, options });
   }
 
   /**
@@ -143,8 +149,8 @@ export class Permissions {
    *
    * Statement will be the resource statement.
    */
-  public static grantOnPrincipalAndResource(options: GrantOnPrincipalAndResourceOptions): Grant {
-    const result = Permissions.grantOnPrincipal({
+  public static onPrincipalAndResource(options: GrantOnPrincipalAndResourceOptions): Grant {
+    const result = Grant.onPrincipal({
       ...options,
       scope: options.resource,
     });
@@ -158,31 +164,27 @@ export class Permissions {
 
     options.resource.addToResourcePolicy(statement);
 
-    return grantResult({ addedToPrincipal: result.addedToPrincipal, addedToResource: true, statement, options });
+    return new Grant({ principalStatement: statement, resourceStatement: result.resourceStatement, options });
   }
-}
 
-/**
- * The result of the grant() operation
- *
- * This class is not instantiable by consumers on purpose, so that they will be
- * required to call the Permissions.grant() functions.
- */
-export class Grant {
   /**
    * There was no principal to add the permissions to
    */
   public readonly principalMissing: boolean;
 
   /**
-   * The grant was added to the principal's policy
+   * The statement that was added to the principal's policy
+   *
+   * Can be accessed to (e.g.) add additional conditions to the statement.
    */
-  public readonly addedToPrincipal: boolean;
+  public readonly principalStatement?: PolicyStatement;
 
   /**
-   * The grant was added to the resource policy
+   * The statement that was added to the resource policy
+   *
+   * Can be accessed to (e.g.) add additional conditions to the statement.
    */
-  public readonly addedToResource: boolean;
+  public readonly resourceStatement?: PolicyStatement;
 
   /**
    * The policy statement that was created for this permission
@@ -204,16 +206,15 @@ export class Grant {
   private constructor(props: GrantProps) {
     this.options = props.options;
     this.principalMissing = !!props.principalMissing;
-    this.addedToPrincipal = !!props.addedToPrincipal;
-    this.addedToResource = !!props.addedToResource;
-    this.statement = props.statement;
+    this.principalStatement = props.principalStatement;
+    this.resourceStatement = props.resourceStatement;
   }
 
   /**
    * Whether the grant operation was successful
    */
   public get success(): boolean {
-    return this.principalMissing || this.addedToPrincipal || this.addedToResource;
+    return this.principalMissing || this.principalMissing !== undefined || this.resourceStatement !== undefined;
   }
 
   /**
@@ -231,19 +232,11 @@ function describeGrant(options: CommonGrantOptions) {
   return `Permissions for '${options.principal}' to call '${options.actions}' on '${options.resourceArns}'`;
 }
 
-/**
- * Instantiate a grantResult (which is normally not instantiable)
- */
-function grantResult(props: GrantProps): Grant {
-  return Reflect.construct(Grant, [props]);
-}
-
 interface GrantProps {
   options: CommonGrantOptions;
   principalMissing?: boolean;
-  addedToPrincipal?: boolean;
-  addedToResource?: boolean;
-  statement?: PolicyStatement;
+  principalStatement?: PolicyStatement;
+  resourceStatement?: PolicyStatement;
 }
 
 /**

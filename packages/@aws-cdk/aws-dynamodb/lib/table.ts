@@ -1,6 +1,5 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { PolicyStatement } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
 import { Construct, Token } from '@aws-cdk/cdk';
 import { CfnTable } from './dynamodb.generated';
@@ -179,12 +178,12 @@ export class Table extends Construct {
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @param principal The principal (no-op if undefined)
    */
-  public static grantListStreams(principal?: iam.IPrincipal): void {
-    if (principal) {
-      principal.addToPolicy(new PolicyStatement()
-        .addAction('dynamodb:ListStreams')
-        .addAllResources());
-    }
+  public static grantListStreams(principal?: iam.IPrincipal): iam.Grant {
+    return iam.Grant.onPrincipal({
+      principal,
+      actions: ['dynamodb:ListStreams'],
+      resourceArns: ['*'],
+    });
  }
 
   public readonly tableArn: string;
@@ -409,7 +408,7 @@ export class Table extends Construct {
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public grant(principal?: iam.IPrincipal, ...actions: string[]): iam.Grant {
-    return iam.Permissions.grantOnPrincipal({
+    return iam.Grant.onPrincipal({
       principal,
       actions,
       resourceArns: [
@@ -427,7 +426,7 @@ export class Table extends Construct {
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    */
   public grantStream(principal?: iam.IPrincipal, ...actions: string[]) {
-    return iam.Permissions.grantOnPrincipal({
+    return iam.Grant.onPrincipal({
       principal,
       actions,
       resourceArns: [this.tableStreamArn],

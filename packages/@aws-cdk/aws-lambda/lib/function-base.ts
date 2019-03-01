@@ -247,7 +247,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
    * Grant the given identity permissions to invoke this Lambda
    */
   public grantInvoke(principal?: iam.IPrincipal): iam.Grant {
-    return iam.Permissions.grantWithResource({
+    return iam.Grant.withResource({
       principal,
       actions: ['lambda:InvokeFunction'],
       resourceArns: [this.functionArn],
