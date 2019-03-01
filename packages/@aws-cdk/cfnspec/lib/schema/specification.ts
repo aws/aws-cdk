@@ -15,7 +15,7 @@ export interface Specification {
    * specifications, such as which properties are required, the type of allowed value for each property, and their
    * update behavior.
    */
-  PropertyTypes: { [name: string]: PropertyType };
+  PropertyTypes: { [name: string]: PropertyBag | Property };
   /**
    * The list of resources and information about each resource's properties, such as it's property names, which
    * properties are required, and their update behavior.
@@ -23,7 +23,16 @@ export interface Specification {
   ResourceTypes: { [name: string]: ResourceType };
 }
 
-export interface PropertyType extends Documented {
-  /** A list of property specifications for the subproperty type */
+/**
+ * The specifications of a property object type.
+ */
+export interface PropertyBag extends Documented {
+  /**
+   * The properties of the Property type.
+   */
   Properties: { [name: string]: Property };
+}
+
+export function isPropertyBag(propertyType: PropertyBag | Property): propertyType is PropertyBag {
+  return 'Properties' in propertyType;
 }
