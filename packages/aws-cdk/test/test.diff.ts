@@ -2,6 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { Writable } from 'stream';
 import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
+import { DeployStackOptions, DeployStackResult } from '../lib';
 import { AppStacks } from '../lib/api/cxapp/stacks';
 import { IDeploymentTarget, Template } from '../lib/api/deployment-target';
 import { SDK } from '../lib/api/util/sdk';
@@ -39,6 +40,9 @@ export = {
     const provisioner: IDeploymentTarget = {
       async readCurrentTemplate(_stack: cxapi.SynthesizedStack): Promise<Template> {
         return {};
+      },
+      async deployStack(_options: DeployStackOptions): Promise<DeployStackResult> {
+        return { noOp: true, outputs: {}, stackArn: ''};
       }
     };
     const toolkit = new CdkToolkit({ appStacks, provisioner });

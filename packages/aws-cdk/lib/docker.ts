@@ -30,10 +30,18 @@ import { PleaseHold } from './util/please-hold';
  */
 export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEntry,
                                             toolkitInfo: ToolkitInfo,
+                                            reuse: boolean,
                                             ci?: boolean): Promise<CloudFormation.Parameter[]> {
+
+  if (reuse) {
+    return [
+      { ParameterKey: asset.imageNameParameter, UsePreviousValue: true },
+    ];
+  }
+
   debug(' 👑  Preparing Docker image asset:', asset.path);
 
-  const buildHold = new PleaseHold(` ⌛ Building Docker image for ${asset.path}; this may take a while.`);
+  const buildHold = new PleaseHold(` ⌛ Building Asset Docker image ${asset.id} from ${asset.path}; this may take a while.`);
   try {
     const ecr = await toolkitInfo.prepareEcrRepository(asset.id);
     const latest = `${ecr.repositoryUri}:latest`;
