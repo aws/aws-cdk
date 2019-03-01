@@ -5,6 +5,7 @@ import { makeUniqueId } from '../util/uniqueid';
 import { IDependable } from './dependency';
 import { Token, unresolved } from './tokens';
 import { resolve } from './tokens/resolve';
+
 export const PATH_SEP = '/';
 
 /**
@@ -188,17 +189,24 @@ export class ConstructNode {
   /**
    * Return this construct and all of its children in the given order
    */
-  public findAll(order: ConstructOrder = ConstructOrder.DepthFirst): IConstruct[] {
+  public findAll(order: ConstructOrder = ConstructOrder.PreOrder): IConstruct[] {
     const ret = new Array<IConstruct>();
-    const queue: IConstruct[] = [this.host];
-
-    while (queue.length > 0) {
-      const next = order === ConstructOrder.BreadthFirst ? queue.splice(0, 1)[0] : queue.pop()!;
-      ret.push(next);
-      queue.push(...next.node.children);
-    }
-
+    visit(this.host);
     return ret;
+
+    function visit(node: IConstruct) {
+      if (order === ConstructOrder.PreOrder) {
+        ret.push(node);
+      }
+
+      for (const child of node.node.children) {
+        visit(child);
+      }
+
+      if (order === ConstructOrder.PostOrder) {
+        ret.push(node);
+      }
+    }
   }
 
   /**
@@ -319,7 +327,7 @@ export class ConstructNode {
    * Run 'prepare()' on all constructs in the tree
    */
   public prepareTree() {
-    const constructs = this.host.node.findAll(ConstructOrder.BreadthFirst);
+    const constructs = this.host.node.findAll(ConstructOrder.PreOrder);
     // Aspects are applied root to leaf
     for (const construct of constructs) {
       construct.node.invokeAspects();
@@ -626,9 +634,8 @@ export class Construct implements IConstruct {
    * understand the implications.
    */
   protected prepare(): void {
-    // Intentionally left blank
+    return;
   }
-
 }
 
 /**
@@ -689,14 +696,14 @@ function createStackTrace(below: Function): string[] {
  */
 export enum ConstructOrder {
   /**
-   * Breadth first
+   * Depth-first, pre-order
    */
-  BreadthFirst,
+  PreOrder,
 
   /**
-   * Depth first
+   * Depth-first, post-order (leaf nodes first)
    */
-  DepthFirst
+  PostOrder
 }
 
 /**
