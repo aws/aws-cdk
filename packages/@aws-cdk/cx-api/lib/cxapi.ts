@@ -2,6 +2,7 @@
  * File with definitions for the interface between the Cloud Executable and the CDK toolkit.
  */
 
+import { Artifact } from './artifacts';
 import { Environment } from './environment';
 
 /**
@@ -22,7 +23,16 @@ import { Environment } from './environment';
  */
 export const PROTO_RESPONSE_VERSION = '0.19.0';
 
-export const OUTFILE_NAME = 'cdk.out';
+/**
+ * The name of the root manifest file of the assembly.
+ */
+export const MANIFEST_FILE = 'manifest.json';
+
+/**
+ * The name of the root file with build instructions.
+ */
+export const BUILD_FILE = 'build.json';
+
 export const OUTDIR_ENV = 'CDK_OUTDIR';
 export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 
@@ -38,13 +48,28 @@ export interface MissingContext {
   };
 }
 
-export interface SynthesizeResponse {
+export interface AssemblyManifest {
   /**
    * Protocol version
    */
   version: string;
-  stacks: SynthesizedStack[];
+
+  /**
+   * The set of artifacts in this assembly.
+   */
+  artifacts?: { [id: string]: Artifact };
+
+  /**
+   * Runtime information.
+   */
   runtime?: AppRuntime;
+}
+
+/**
+ * @deprecated use `AssemblyManifest`
+ */
+export interface SynthesizeResponse extends AssemblyManifest {
+  stacks: SynthesizedStack[];
 }
 
 /**
@@ -133,3 +158,21 @@ export const PATH_METADATA_KEY = 'aws:cdk:path';
  * Enables the embedding of the "aws:cdk:path" in CloudFormation template metadata.
  */
 export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
+
+/**
+ * Disables the emission of `cdk.out`
+ */
+export const DISABLE_LEGACY_MANIFEST_CONTEXT = 'aws:cdk:disable-legacy-manifest';
+
+/**
+ * The name of the pre 0.25.0 manifest file. Will only be emitted if
+ * aws:cdk:disable-legacy-manifest is not defined.
+ *
+ * @deprecated Use `MANIFEST_FILE`
+ */
+export const OUTFILE_NAME = 'cdk.out';
+
+/**
+ * Disable the collection and reporting of version information.
+ */
+export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';

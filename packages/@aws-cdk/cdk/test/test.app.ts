@@ -1,32 +1,17 @@
 import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
 import { Construct, Resource, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
 
-function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void) {
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-app-test'));
-  process.env[cxapi.OUTDIR_ENV] = outdir;
-
-  if (context) {
-    process.env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
-  } else {
-    delete process.env[cxapi.CONTEXT_ENV];
-  }
-
-  const app = new App();
+function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void): cxapi.SynthesizeResponse {
+  const app = new App(context);
 
   block(app);
 
-  app.run();
+  const session = app.run();
 
-  const outfile = path.join(outdir, cxapi.OUTFILE_NAME);
-  const response = JSON.parse(fs.readFileSync(outfile).toString());
-  fs.unlinkSync(outfile);
-  fs.rmdirSync(outdir);
-  return response;
+  // return the legacy manifest
+  return session.store.readJson(cxapi.OUTFILE_NAME);
 }
 
 function synth(context?: { [key: string]: any }): cxapi.SynthesizeResponse {
@@ -69,6 +54,7 @@ export = {
     // clean up metadata so assertion will be sane
     response.stacks.forEach(s => delete s.metadata);
     delete response.runtime;
+    delete response.artifacts;
 
     test.deepEqual(response, {
       version: '0.19.0',
@@ -100,13 +86,7 @@ export = {
     const stack = new Stack(prog, 'MyStack');
     new Resource(stack, 'MyResource', { type: 'MyResourceType' });
 
-    let throws;
-    try {
-      prog.synthesizeStacks(['foo']);
-    } catch (e) {
-      throws = e.message;
-    }
-    test.ok(throws.indexOf('Cannot find stack foo') !== -1);
+    test.throws(() => prog.synthesizeStacks(['foo']), /foo/);
 
     test.deepEqual(prog.synthesizeStack('MyStack').template,
       { Resources: { MyResource: { Type: 'MyResourceType' } } });
@@ -212,7 +192,7 @@ export = {
 
     test.throws(() => {
       app.synthesizeStacks(['Parent']);
-    }, /Stack validation failed with the following errors/);
+    }, /Validation failed with the following errors/);
 
     test.done();
   },
@@ -268,13 +248,26 @@ export = {
     test.done();
   },
 
+  'runtime library versions disabled'(test: Test) {
+    const context: any = {};
+    context[cxapi.DISABLE_VERSION_REPORTING] = true;
+
+    const response = withApp(context, app => {
+      const stack = new Stack(app, 'stack1');
+      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+    });
+
+    test.equals(response.runtime, undefined);
+    test.done();
+  },
+
   'runtime library versions'(test: Test) {
     const response = withApp({}, app => {
       const stack = new Stack(app, 'stack1');
       new Resource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
-    const libs = response.runtime.libraries;
+    const libs = (response.runtime && response.runtime.libraries) || { };
 
     const version = require('../package.json').version;
     test.deepEqual(libs['@aws-cdk/cdk'], version);
@@ -291,7 +284,7 @@ export = {
       new Resource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
-    const libs = response.runtime.libraries;
+    const libs = (response.runtime && response.runtime.libraries) || { };
     test.deepEqual(libs['jsii-runtime'], `Java/1.2.3.4`);
 
     delete process.env.JSII_AGENT;
@@ -304,7 +297,7 @@ export = {
       new Resource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
-    const libs = response.runtime.libraries;
+    const libs = (response.runtime && response.runtime.libraries) || { };
 
     const version = require('../package.json').version;
     test.deepEqual(libs, {

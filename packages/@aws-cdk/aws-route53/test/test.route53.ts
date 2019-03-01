@@ -192,7 +192,27 @@ export = {
     // THEN
     test.throws(() => zone.addVpc(vpc), /Cannot associate public hosted zones with a VPC/);
     test.done();
-  }
+  },
+
+  'setting up zone delegation'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const zone = new PublicHostedZone(stack, 'TopZone', { zoneName: 'top.test' });
+    const delegate = new PublicHostedZone(stack, 'SubZone', { zoneName: 'sub.top.test' });
+
+    // WHEN
+    zone.addDelegation(delegate, { ttl: 1337 });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Type: 'NS',
+      Name: 'sub.top.test.',
+      HostedZoneId: zone.node.resolve(zone.hostedZoneId),
+      ResourceRecords: zone.node.resolve(delegate.hostedZoneNameServers),
+      TTL: '1337',
+    }));
+    test.done();
+  },
 };
 
 class TestApp {

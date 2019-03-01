@@ -1,106 +1,102 @@
 import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import path = require('path');
-import { Stack } from './cloudformation/stack';
-import { IConstruct, MetadataEntry, PATH_SEP, Root } from './core/construct';
+import { ConstructOrder, Root } from './core/construct';
+import { FileSystemStore, InMemoryStore, ISynthesisSession, SynthesisSession } from './synthesis';
 
 /**
  * Represents a CDK program.
  */
 export class App extends Root {
-  private prepared = false;
+  private _session?: ISynthesisSession;
+  private readonly legacyManifest: boolean;
+  private readonly runtimeInformation: boolean;
 
   /**
    * Initializes a CDK application.
    * @param request Optional toolkit request (e.g. for tests)
    */
-  constructor() {
+  constructor(context?: { [key: string]: string }) {
     super();
-    this.loadContext();
-  }
+    this.loadContext(context);
 
-  private get stacks() {
-    const out: { [name: string]: Stack } = { };
-    for (const child of this.node.children) {
-      if (!Stack.isStack(child)) {
-        throw new Error(`The child ${child.toString()} of App must be a Stack`);
-      }
-
-      out[child.node.id] = child as Stack;
-    }
-    return out;
+    // both are reverse logic
+    this.legacyManifest = this.node.getContext(cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT) ? false : true;
+    this.runtimeInformation = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
   }
 
   /**
    * Runs the program. Output is written to output directory as specified in the request.
    */
-  public run(): void {
-    const outdir = process.env[cxapi.OUTDIR_ENV];
-    if (!outdir) {
-      process.stderr.write(`ERROR: The environment variable "${cxapi.OUTDIR_ENV}" is not defined\n`);
-      process.stderr.write('AWS CDK Toolkit (>= 0.11.0) is required in order to interact with this program.\n');
-      process.exit(1);
-      return;
+  public run(): ISynthesisSession {
+    // this app has already been executed, no-op for you
+    if (this._session) {
+      return this._session;
     }
 
-    const result: cxapi.SynthesizeResponse = {
-      version: cxapi.PROTO_RESPONSE_VERSION,
-      stacks: this.synthesizeStacks(Object.keys(this.stacks)),
-      runtime: this.collectRuntimeInformation()
-    };
+    const outdir = process.env[cxapi.OUTDIR_ENV];
+    let store;
+    if (outdir) {
+      store = new FileSystemStore({ outdir });
+    } else {
+      store = new InMemoryStore();
+    }
 
-    const outfile = path.join(outdir, cxapi.OUTFILE_NAME);
-    fs.writeFileSync(outfile, JSON.stringify(result, undefined, 2));
+    const session = this._session = new SynthesisSession({
+      store,
+      legacyManifest: this.legacyManifest,
+      runtimeInformation: this.runtimeInformation
+    });
+
+    // the three holy phases of synthesis: prepare, validate and synthesize
+
+    // prepare
+    this.node.prepareTree();
+
+    // validate
+    const errors = this.node.validateTree();
+    if (errors.length > 0) {
+      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+      throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
+    }
+
+    // synthesize (leaves first)
+    for (const c of this.node.findAll(ConstructOrder.PostOrder)) {
+      if (SynthesisSession.isSynthesizable(c)) {
+        c.synthesize(session);
+      }
+    }
+
+    // write session manifest and lock store
+    session.close();
+
+    return session;
   }
 
   /**
-   * Synthesize and validate a single stack
+   * Synthesize and validate a single stack.
    * @param stackName The name of the stack to synthesize
+   * @deprecated This method is going to be deprecated in a future version of the CDK
    */
   public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
-    const stack = this.getStack(stackName);
-
-    if (!this.prepared) {
-      // Maintain the existing contract that the tree will be prepared even if
-      // 'synthesizeStack' is called by itself. But only prepare the tree once.
-      this.node.prepareTree();
-      this.prepared = true;
+    if (!this.legacyManifest) {
+      throw new Error('No legacy manifest available, return an old-style stack output');
     }
 
-    // first, validate this stack and stop if there are errors.
-    const errors = stack.node.validateTree();
-    if (errors.length > 0) {
-      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-      throw new Error(`Stack validation failed with the following errors:\n  ${errorList}`);
+    const session = this.run();
+    const legacy: cxapi.SynthesizeResponse = session.store.readJson(cxapi.OUTFILE_NAME);
+
+    const res = legacy.stacks.find(s => s.name === stackName);
+    if (!res) {
+      throw new Error(`Stack "${stackName}" not found`);
     }
 
-    const account = stack.env.account || 'unknown-account';
-    const region = stack.env.region || 'unknown-region';
-
-    const environment: cxapi.Environment = {
-      name: `${account}/${region}`,
-      account,
-      region
-    };
-
-    const missing = Object.keys(stack.missingContext).length ? stack.missingContext : undefined;
-    return {
-      name: stack.node.id,
-      environment,
-      missing,
-      template: stack.toCloudFormation(),
-      metadata: this.collectMetadata(stack),
-      dependsOn: noEmptyArray(stack.dependencies().map(s => s.node.id)),
-    };
+    return res;
   }
 
   /**
    * Synthesizes multiple stacks
+   * @deprecated This method is going to be deprecated in a future version of the CDK
    */
   public synthesizeStacks(stackNames: string[]): cxapi.SynthesizedStack[] {
-    this.node.prepareTree();
-    this.prepared = true;
-
     const ret: cxapi.SynthesizedStack[] = [];
     for (const stackName of stackNames) {
       ret.push(this.synthesizeStack(stackName));
@@ -108,138 +104,20 @@ export class App extends Root {
     return ret;
   }
 
-  /**
-   * Returns metadata for all constructs in the stack.
-   */
-  public collectMetadata(stack: Stack) {
-    const output: { [id: string]: MetadataEntry[] } = { };
-
-    visit(stack);
-
-    // add app-level metadata under "."
-    if (this.node.metadata.length > 0) {
-      output[PATH_SEP] = this.node.metadata;
+  private loadContext(defaults: { [key: string]: string } = { }) {
+    // prime with defaults passed through constructor
+    for (const [ k, v ] of Object.entries(defaults)) {
+      this.node.setContext(k, v);
     }
 
-    return output;
-
-    function visit(node: IConstruct) {
-      if (node.node.metadata.length > 0) {
-        // Make the path absolute
-        output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as MetadataEntry);
-      }
-
-      for (const child of node.node.children) {
-        visit(child);
-      }
-    }
-  }
-
-  private collectRuntimeInformation(): cxapi.AppRuntime {
-    const libraries: { [name: string]: string } = {};
-
-    for (const fileName of Object.keys(require.cache)) {
-      const pkg = findNpmPackage(fileName);
-      if (pkg && !pkg.private) {
-        libraries[pkg.name] = pkg.version;
-      }
-    }
-
-    // include only libraries that are in the @aws-cdk npm scope
-    for (const name of Object.keys(libraries)) {
-      if (!name.startsWith('@aws-cdk/')) {
-        delete libraries[name];
-      }
-    }
-
-    // add jsii runtime version
-    libraries['jsii-runtime'] = getJsiiAgentVersion();
-
-    return { libraries };
-  }
-
-  private getStack(stackname: string) {
-    if (stackname == null) {
-      throw new Error('Stack name must be defined');
-    }
-
-    const stack = this.stacks[stackname];
-    if (!stack) {
-      throw new Error(`Cannot find stack ${stackname}`);
-    }
-    return stack;
-  }
-
-  private loadContext() {
+    // read from environment
     const contextJson = process.env[cxapi.CONTEXT_ENV];
-    const context = !contextJson ? { } : JSON.parse(contextJson);
-    for (const key of Object.keys(context)) {
-      this.node.setContext(key, context[key]);
+    const contextFromEnvironment = contextJson
+      ? JSON.parse(contextJson)
+      : { };
+
+    for (const [ k, v ] of Object.entries(contextFromEnvironment)) {
+      this.node.setContext(k, v);
     }
   }
-}
-
-/**
- * Determines which NPM module a given loaded javascript file is from.
- *
- * The only infromation that is available locally is a list of Javascript files,
- * and every source file is associated with a search path to resolve the further
- * ``require`` calls made from there, which includes its own directory on disk,
- * and parent directories - for example:
- *
- * [ '...repo/packages/aws-cdk-resources/lib/cfn/node_modules',
- *   '...repo/packages/aws-cdk-resources/lib/node_modules',
- *   '...repo/packages/aws-cdk-resources/node_modules',
- *   '...repo/packages/node_modules',
- *   // etc...
- * ]
- *
- * We are looking for ``package.json`` that is anywhere in the tree, except it's
- * in the parent directory, not in the ``node_modules`` directory. For this
- * reason, we strip the ``/node_modules`` suffix off each path and use regular
- * module resolution to obtain a reference to ``package.json``.
- *
- * @param fileName a javascript file name.
- * @returns the NPM module infos (aka ``package.json`` contents), or
- *      ``undefined`` if the lookup was unsuccessful.
- */
-function findNpmPackage(fileName: string): { name: string, version: string, private?: boolean } | undefined {
-  const mod = require.cache[fileName];
-  const paths = mod.paths.map(stripNodeModules);
-
-  try {
-    const packagePath = require.resolve('package.json', { paths });
-    return require(packagePath);
-  } catch (e) {
-    return undefined;
-  }
-
-  /**
-   * @param s a path.
-   * @returns ``s`` with any terminating ``/node_modules``
-   *      (or ``\\node_modules``) stripped off.)
-   */
-  function stripNodeModules(s: string): string {
-    if (s.endsWith('/node_modules') || s.endsWith('\\node_modules')) {
-      // /node_modules is 13 characters
-      return s.substr(0, s.length - 13);
-    }
-    return s;
-  }
-}
-
-function getJsiiAgentVersion() {
-  let jsiiAgent = process.env.JSII_AGENT;
-
-  // if JSII_AGENT is not specified, we will assume this is a node.js runtime
-  // and plug in our node.js version
-  if (!jsiiAgent) {
-    jsiiAgent = `node.js/${process.version}`;
-  }
-
-  return jsiiAgent;
-}
-
-function noEmptyArray<T>(xs: T[]): T[] | undefined {
-  return xs.length > 0 ? xs : undefined;
 }
