@@ -41,7 +41,7 @@ function isStackClassInstance(x: api.SynthesizedStack | cdk.Stack): x is cdk.Sta
 
 function collectStackMetadata(root: cdk.ConstructNode): api.StackMetadata {
   const result: api.StackMetadata = {};
-  for (const construct of root.findAll(cdk.ConstructOrder.DepthFirst)) {
+  for (const construct of root.findAll(cdk.ConstructOrder.PreOrder)) {
     const path = `/${root.id}/${construct.node.path}`;
     for (const entry of construct.node.metadata) {
       result[path] = result[path] || [];
