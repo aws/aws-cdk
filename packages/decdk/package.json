@@ -10,7 +10,7 @@
   },
   "bin": {
     "decdk": "bin/decdk",
-    "decdk-schema": "bin/recdk-schema"
+    "decdk-schema": "bin/decdk-schema"
   },
   "scripts": {
     "build": "node ./deps.js && tsc && chmod +x bin/decdk && chmod +x bin/decdk-schema && bin/decdk-schema > cdk.schema.json",
