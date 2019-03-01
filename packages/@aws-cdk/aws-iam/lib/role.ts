@@ -229,7 +229,7 @@ export class Role extends Construct implements IRole {
 /**
  * A Role object
  */
-export interface IRole extends IConstruct, IIdentity {
+export interface IRole extends IIdentity {
   /**
    * Returns the ARN of this role.
    */
