@@ -1,5 +1,4 @@
 *.js
-!lib/dns_validated_certificate_handler/**/*.js
 *.js.map
 *.d.ts
 tsconfig.json
