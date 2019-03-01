@@ -129,6 +129,8 @@ export class User extends Construct implements IIdentity {
 
   /**
    * Adds an IAM statement to the default policy.
+   *
+   * @returns true
    */
   public addToPolicy(statement: PolicyStatement): boolean {
     if (!this.defaultPolicy) {

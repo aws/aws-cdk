@@ -121,21 +121,17 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
       resourceArns: [this.secretArn],
       scope: this
     });
-    if (versionStages != null) {
-      result.statement!.addCondition('ForAnyValue:StringEquals', {
+    if (versionStages != null && result.principalStatement) {
+      result.principalStatement.addCondition('ForAnyValue:StringEquals', {
         'secretsmanager:VersionStage': versionStages
       });
     }
 
     if (this.encryptionKey && principal) {
       // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
-      this.encryptionKey.addToResourcePolicy(new iam.PolicyStatement()
-        .addPrincipal(principal)
-        .addAction('kms:Decrypt')
-        .addAllResources()
-        .addCondition('StringEquals', {
-          'kms:ViaService': `secretsmanager.${this.node.stack.region}.amazonaws.com`
-        }));
+      this.encryptionKey.grantDecrypt(
+        new kms.ViaServicePrincipal(`secretsmanager.${this.node.stack.region}.amazonaws.com`, principal)
+      );
     }
 
     return result;

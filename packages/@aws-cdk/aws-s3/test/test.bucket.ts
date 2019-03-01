@@ -1274,7 +1274,7 @@ export = {
 
       // WHEN
       const result = bucket.grantPublicAccess();
-      result.statement!.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+      result.resourceStatement!.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
 
       // THEN
       expect(stack).to(haveResource('AWS::S3::BucketPolicy', {

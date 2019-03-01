@@ -9,7 +9,7 @@ export interface CommonGrantOptions {
   /**
    * The principal to grant to
    *
-   * @default No work is done
+   * @default if principal is undefined, no work is done.
    */
   principal?: IPrincipal;
 
@@ -145,7 +145,7 @@ export class Grant {
    *
    * As long as any principal is given, granting on the pricipal may fail (in
    * case of a non-identity principal), but granting on the resource will
-   * always be done.
+   * never fail.
    *
    * Statement will be the resource statement.
    */
@@ -187,15 +187,6 @@ export class Grant {
   public readonly resourceStatement?: PolicyStatement;
 
   /**
-   * The policy statement that was created for this permission
-   *
-   * Can be accessed to (e.g.) add additional conditions to the statement.
-   *
-   * Only set if either addedToPrincipal or addedToResource are true.
-   */
-  public readonly statement?: PolicyStatement;
-
-  /**
    * The options originally used to set this result
    *
    * Private member doubles as a way to make it impossible for an object literal to
@@ -214,7 +205,7 @@ export class Grant {
    * Whether the grant operation was successful
    */
   public get success(): boolean {
-    return this.principalMissing || this.principalMissing !== undefined || this.resourceStatement !== undefined;
+    return this.principalMissing || this.principalStatement !== undefined || this.resourceStatement !== undefined;
   }
 
   /**

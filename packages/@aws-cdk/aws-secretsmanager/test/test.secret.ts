@@ -80,7 +80,7 @@ export = {
           },
           Resource: "*"
         }, {
-          Action: "kms:Decrypt",
+          Action: ["kms:Decrypt", "kms:DescribeKey"],
           Condition: {
             StringEquals: {
               "kms:ViaService": {
@@ -179,7 +179,7 @@ export = {
           },
           Resource: "*"
         }, {
-          Action: "kms:Decrypt",
+          Action: ["kms:Decrypt", "kms:DescribeKey"],
           Condition: {
             StringEquals: {
               "kms:ViaService": {

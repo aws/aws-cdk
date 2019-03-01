@@ -1,10 +1,11 @@
+import cdk = require('@aws-cdk/cdk');
 import { Policy } from "./policy";
 import { IPrincipal } from "./principals";
 
 /**
  * A construct that represents an IAM principal, such as a user, group or role.
  */
-export interface IIdentity extends IPrincipal {
+export interface IIdentity extends IPrincipal, cdk.IConstruct {
   /**
    * Attaches an inline policy to this principal.
    * This is the same as calling `policy.addToXxx(principal)`.
