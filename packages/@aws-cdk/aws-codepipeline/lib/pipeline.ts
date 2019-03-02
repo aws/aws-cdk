@@ -1,5 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
+import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Action, IPipeline, IStage } from "./action";
@@ -159,7 +160,10 @@ export class Pipeline extends cdk.Construct implements IPipeline {
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = props.artifactBucket;
     if (!propsBucket) {
+      const encryptionKey = new kms.EncryptionKey(this, 'ArtifactsBucketEncryptionKey');
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
+        encryptionKey,
+        encryption: s3.BucketEncryption.Kms,
         removalPolicy: cdk.RemovalPolicy.Orphan
       });
     }
