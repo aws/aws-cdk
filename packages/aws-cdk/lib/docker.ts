@@ -86,7 +86,7 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
       await shell(['docker', 'tag', imageId, qualifiedImageName]);
 
       // There's no way to make this quiet, so we can't use a PleaseHold. Print a header message.
-      print(` ⌛ Pusing Docker image for ${asset.path}; this may take a while.`);
+      print(` ⌛ Pushing Docker image for ${asset.path}; this may take a while.`);
       await shell(['docker', 'push', qualifiedImageName]);
       debug(` 👑  Docker image for ${asset.path} pushed.`);
     }
