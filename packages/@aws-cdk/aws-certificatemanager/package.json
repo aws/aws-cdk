@@ -60,11 +60,18 @@
     "pkglint": "^0.25.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-cloudformation": "^0.25.0",
     "@aws-cdk/aws-iam": "^0.25.0",
+    "@aws-cdk/aws-lambda": "^0.25.0",
+    "@aws-cdk/aws-route53": "^0.25.0",
     "@aws-cdk/cdk": "^0.25.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-cloudformation": "^0.25.0",
+    "@aws-cdk/aws-iam": "^0.25.0",
+    "@aws-cdk/aws-lambda": "^0.25.0",
+    "@aws-cdk/aws-route53": "^0.25.0",
     "@aws-cdk/cdk": "^0.25.0"
   },
   "engines": {

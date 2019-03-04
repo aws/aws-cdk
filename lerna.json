@@ -3,6 +3,7 @@
   "packages": [
     "packages/*",
     "packages/@aws-cdk/*",
+    "packages/@aws-cdk/*/lambda-packages/*",
     "tools/*"
   ],
   "rejectCycles": "true",
