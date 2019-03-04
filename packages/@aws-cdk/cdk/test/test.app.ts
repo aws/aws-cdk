@@ -4,7 +4,7 @@ import { Construct, Resource, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
 
 function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void): cxapi.SynthesizeResponse {
-  const app = new App(context);
+  const app = new App({ context, autoRun: false });
 
   block(app);
 

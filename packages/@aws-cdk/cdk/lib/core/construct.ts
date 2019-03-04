@@ -105,7 +105,8 @@ export class ConstructNode {
   }
 
   /**
-   * The full path of this construct in the tree.
+   * The full, absolute path of this construct in the tree.
+   *
    * Components are separated by '/'.
    */
   public get path(): string {
@@ -533,6 +534,15 @@ export class ConstructNode {
   }
 
   /**
+   * Return the path of components up to but excluding the root
+   */
+  public rootPath(): IConstruct[] {
+    const ancestors = this.ancestors();
+    ancestors.shift();
+    return ancestors;
+  }
+
+  /**
    * Triggers each aspect to invoke visit
    */
   private invokeAspects(): void {
@@ -544,15 +554,6 @@ export class ConstructNode {
       descendants.forEach( member => aspect.visit(member));
       this.invokedAspects.push(aspect);
     }
-  }
-
-  /**
-   * Return the path of components up to but excluding the root
-   */
-  private rootPath(): IConstruct[] {
-    const ancestors = this.ancestors();
-    ancestors.shift();
-    return ancestors;
   }
 
   /**

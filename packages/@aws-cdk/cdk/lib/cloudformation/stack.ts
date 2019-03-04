@@ -17,6 +17,13 @@ export interface StackProps {
   env?: Environment;
 
   /**
+   * Name to deploy the stack with
+   *
+   * @default Derived from construct IDs
+   */
+  stackName?: string;
+
+  /**
    * Strategy for logical ID generation
    *
    * Optional. If not supplied, the HashedNamingScheme will be used.
@@ -95,13 +102,20 @@ export class Stack extends Construct {
   private readonly parameterValues: { [logicalId: string]: string } = { };
 
   /**
+   * Environment as configured via props
+   *
+   * (Both on Stack and inherited from App)
+   */
+  private readonly configuredEnv: Environment;
+
+  /**
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually a Program instance.
    * @param name The name of the CloudFormation stack. Defaults to "Stack".
    * @param props Stack properties.
    */
-  public constructor(scope?: App, name?: string, private readonly props?: StackProps) {
+  public constructor(scope?: Construct, name?: string, props: StackProps = {}) {
     // For unit test convenience parents are optional, so bypass the type check when calling the parent.
     super(scope!, name!);
 
@@ -109,10 +123,11 @@ export class Stack extends Construct {
       throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
 
-    this.env = this.parseEnvironment(props);
+    this.configuredEnv = props.env || {};
+    this.env = this.parseEnvironment(props.env);
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
-    this.name = this.node.id;
+    this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
   }
 
   /**
@@ -261,8 +276,8 @@ export class Stack extends Construct {
    * to the correct account at deployment time.
    */
   public get accountId(): string {
-    if (this.props && this.props.env && this.props.env.account) {
-      return this.props.env.account;
+    if (this.configuredEnv.account) {
+      return this.configuredEnv.account;
     }
     // Does not need to be scoped, the only situation in which
     // Export/Fn::ImportValue would work if { Ref: "AWS::AccountId" } is the
@@ -278,8 +293,8 @@ export class Stack extends Construct {
    * to the correct region at deployment time.
    */
   public get region(): string {
-    if (this.props && this.props.env && this.props.env.region) {
-      return this.props.env.region;
+    if (this.configuredEnv.region) {
+      return this.configuredEnv.region;
     }
     // Does not need to be scoped, the only situation in which
     // Export/Fn::ImportValue would work if { Ref: "AWS::AccountId" } is the
@@ -482,21 +497,20 @@ export class Stack extends Construct {
   /**
    * Applied defaults to environment attributes.
    */
-  private parseEnvironment(props?: StackProps) {
-    // start with `env`.
-    const env: Environment = (props && props.env) || { };
+  private parseEnvironment(env: Environment = {}) {
+    const ret: Environment = {...env};
 
     // if account is not specified, attempt to read from context.
-    if (!env.account) {
-      env.account = this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY);
+    if (!ret.account) {
+      ret.account = this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY);
     }
 
     // if region is not specified, attempt to read from context.
-    if (!env.region) {
-      env.region = this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY);
+    if (!ret.region) {
+      ret.region = this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY);
     }
 
-    return env;
+    return ret;
   }
 
   /**
@@ -532,6 +546,19 @@ export class Stack extends Construct {
         visit(child);
       }
     }
+  }
+
+  /**
+   * Calculcate the stack name based on the construct path
+   */
+  private calculateStackName() {
+    // In tests, it's possible for this stack to be the root object, in which case
+    // we need to not ignore it.
+    const rootPath = this.node.scope !== undefined ? this.node.rootPath() : [this];
+
+    return rootPath
+        .map(c => c.node.id)
+        .join('-');
   }
 }
 
