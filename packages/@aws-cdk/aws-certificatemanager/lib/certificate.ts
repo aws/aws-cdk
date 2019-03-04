@@ -53,7 +53,7 @@ export interface CertificateProps {
 }
 
 /**
- * A certificate managed by Amazon Certificate Manager
+ * A certificate managed by AWS Certificate Manager
  *
  * IMPORTANT: if you are creating a certificate as part of your stack, the stack
  * will not complete creating until you read and follow the instructions in the
