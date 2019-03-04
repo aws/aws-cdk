@@ -40,14 +40,6 @@ export = {
           "retentionInDays": 90
         }
       },
-      "Update": {
-        "service": "CloudWatchLogs",
-        "action": "putRetentionPolicy",
-        "parameters": {
-          "logGroupName": "/aws/lambda/loggroup",
-          "retentionInDays": 90
-        }
-      },
       "Delete": {
         "service": "CloudWatchLogs",
         "action": "deleteRetentionPolicy",
@@ -60,11 +52,6 @@ export = {
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       "PolicyDocument": {
         "Statement": [
-          {
-            "Action": "logs:PutRetentionPolicy",
-            "Effect": "Allow",
-            "Resource": "*"
-          },
           {
             "Action": "logs:PutRetentionPolicy",
             "Effect": "Allow",

@@ -44,12 +44,14 @@ export interface AwsSdkJsCustomResourceProps {
   /**
    * The AWS SDK call to make when the resource is updated
    *
-   * @default the call when the resource is created
+   * @default no call
    */
   onUpdate?: AwsSdkCall;
 
   /**
    * THe AWS SDK call to make when the resource is deleted
+   *
+   * @default no call
    */
   onDelete?: AwsSdkCall;
 
@@ -96,7 +98,7 @@ export class AwsSdkJsCustomResource extends cdk.Construct {
     }
 
     this.onCreate = props.onCreate || props.onUpdate;
-    this.onUpdate = props.onUpdate || props.onCreate;
+    this.onUpdate = props.onUpdate;
     this.onDelete = props.onDelete;
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
