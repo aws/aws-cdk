@@ -12,7 +12,7 @@ import { SDK } from '../util/sdk';
 export async function execProgram(aws: SDK, config: Configuration): Promise<cxapi.SynthesizeResponse> {
   const env: { [key: string]: string } = { };
 
-  const context = config.context.everything();
+  const context = config.context.all;
   await populateDefaultEnvironmentIfNeeded(aws, context);
 
   let pathMetadata: boolean = config.settings.get(['pathMetadata']);
