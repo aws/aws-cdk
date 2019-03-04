@@ -3,7 +3,7 @@
     "TopicBFC7AF6E": {
       "Type": "AWS::SNS::Topic"
     },
-    "AwsSdkE966FE43": {
+    "Publish2E9BDF73": {
       "Type": "AWS::CloudFormation::CustomResource",
       "Properties": {
         "ServiceToken": {
@@ -79,6 +79,16 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Resource": "*"
+            },
+            {
+              "Action": "sns:ListTopics",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "sns:ListTopics",
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -145,6 +155,25 @@
         "SingletonLambda679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicy4215D22C",
         "SingletonLambda679f53fac002430cb0da5b7982bd2287ServiceRole905CAE98"
       ]
+    },
+    "ListTopicsCE1E0341": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "SingletonLambda679f53fac002430cb0da5b7982bd2287AF41E197",
+            "Arn"
+          ]
+        },
+        "Create": {
+          "service": "SNS",
+          "action": "listTopics"
+        },
+        "Update": {
+          "service": "SNS",
+          "action": "listTopics"
+        }
+      }
     }
   },
   "Parameters": {
@@ -155,6 +184,24 @@
     "SingletonLambda679f53fac002430cb0da5b7982bd2287CodeS3VersionKey7868E97C": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-sdk-js/SingletonLambda679f53fac002430cb0da5b7982bd2287/Code\""
+    }
+  },
+  "Outputs": {
+    "MessageId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Publish2E9BDF73",
+          "MessageId"
+        ]
+      }
+    },
+    "TopicArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ListTopicsCE1E0341",
+          "Topics.0.TopicArn"
+        ]
+      }
     }
   }
 }

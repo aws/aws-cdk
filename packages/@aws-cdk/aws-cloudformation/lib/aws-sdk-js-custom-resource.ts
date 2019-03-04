@@ -29,7 +29,7 @@ export interface AwsSdkCall {
   /**
    * The parameters for the service action
    */
-  parameters: any;
+  parameters?: any;
 }
 
 export interface AwsSdkJsCustomResourceProps {
@@ -83,6 +83,11 @@ export class AwsSdkJsCustomResource extends cdk.Construct {
    */
   public readonly policyStatements: iam.PolicyStatement[];
 
+  /**
+   * The custom resource making the AWS SDK calls.
+   */
+  private readonly customResource: CustomResource;
+
   constructor(scope: cdk.Construct, id: string, props: AwsSdkJsCustomResourceProps) {
     super(scope, id);
 
@@ -120,7 +125,7 @@ export class AwsSdkJsCustomResource extends cdk.Construct {
       });
     }
 
-    new CustomResource(this, 'Resource', {
+    this.customResource = new CustomResource(this, 'Resource', {
       lambdaProvider: fn,
       properties: {
         create: this.onCreate,
@@ -128,6 +133,16 @@ export class AwsSdkJsCustomResource extends cdk.Construct {
         delete: this.onDelete
       }
     });
+  }
+
+  /**
+   * Returns response data for the AWS SDK call.
+   * Example for S3 / listBucket : 'Buckets.0.Name'
+   *
+   * @param dataPath the path to the data
+   */
+  public getData(dataPath: string) {
+    return this.customResource.getAtt(dataPath);
   }
 }
 
