@@ -80,4 +80,9 @@ export interface VpcContextResponse {
    * Element count: #(isolatedGroups)
    */
   isolatedSubnetNames?: string[];
+
+  /**
+   * The VPN gateway ID
+   */
+  vpnGatewayId?: string;
 }
