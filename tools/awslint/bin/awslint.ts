@@ -103,44 +103,51 @@ async function main() {
     const excludesToSave = new Array<string>();
     let errors = 0;
 
+    const results = [];
+
     for (const linter of LINTERS) {
-      const results = linter.eval(assembly, {
+      results.push(...linter.eval(assembly, {
         include: args.include,
         exclude: args.exclude,
-      });
+      }));
+    }
 
-      // process results
+    // Sort errors to the top (highest severity first)
+    results.sort((a, b) => b.level - a.level);
 
-      for (const diag of results) {
-        let color;
-        switch (diag.level) {
-          case DiagnosticLevel.Success:
-            if (args.verbose) {
-              color = colors.gray;
-            }
-            break;
-          case DiagnosticLevel.Error:
-            errors++;
-            color = colors.red;
-            if (args.save) {
-              excludesToSave.push(`${diag.rule.code}:${diag.scope}`);
-            }
-            break;
-          case DiagnosticLevel.Warning:
-            if (!args.quiet) {
-              color = colors.yellow;
-            }
-            break;
-          case DiagnosticLevel.Skipped:
-            if (!args.quiet) {
-              color = colors.blue;
-            }
-            break;
-        }
+    // process results
 
-        if (color) {
-          console.error(color(`${colors.bold(diag.scope)} -- ${DiagnosticLevel[diag.level].toLowerCase()}: ${diag.message} [${diag.rule.code}]`));
-        }
+    for (const diag of results) {
+      const suppressionKey = `${diag.rule.code}:${colors.bold(diag.scope)}`;
+
+      let color;
+      switch (diag.level) {
+        case DiagnosticLevel.Success:
+          if (args.verbose) {
+            color = colors.gray;
+          }
+          break;
+        case DiagnosticLevel.Error:
+          errors++;
+          color = colors.red;
+          if (args.save) {
+            excludesToSave.push(suppressionKey);
+          }
+          break;
+        case DiagnosticLevel.Warning:
+          if (!args.quiet) {
+            color = colors.yellow;
+          }
+          break;
+        case DiagnosticLevel.Skipped:
+          if (!args.quiet) {
+            color = colors.blue;
+          }
+          break;
+      }
+
+      if (color) {
+        console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: ${diag.message} [${suppressionKey}]`));
       }
     }
 
