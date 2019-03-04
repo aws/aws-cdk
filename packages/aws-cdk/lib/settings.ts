@@ -18,7 +18,7 @@ const CONTEXT_KEY = 'context';
  */
 export class Configuration {
   public settings = new Settings();
-  public context = new Context(new Settings());
+  public context = new Context();
 
   private readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
   private readonly commandLineArguments: Settings;
@@ -121,8 +121,8 @@ async function loadAndLog(fileName: string): Promise<Settings> {
 export class Context {
   private readonly bags: Settings[];
 
-  constructor(bag: Settings, ...bags: Settings[]) {
-    this.bags = [bag, ...bags];
+  constructor(...bags: Settings[]) {
+    this.bags = bags.length > 0 ? bags : [new Settings()];
   }
 
   public get keys(): string[] {
