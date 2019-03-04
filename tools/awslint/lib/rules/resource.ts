@@ -99,10 +99,10 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'resource-interface-extends-construct',
-  message: 'resource interface must extends cdk.IConstruct',
+  message: 'resource interface must extend cdk.IConstruct',
   eval: e => {
     if (!e.ctx.resourceInterface) { return; }
-    e.assert(e.ctx.resourceInterface.interfaces.some(i => i.fqn === CONSTRUCT_INTERFACE_FQN), e.ctx.resourceInterface.fqn);
+    e.assert(e.ctx.resourceInterface.getInterfaces(true).some(i => i.fqn === CONSTRUCT_INTERFACE_FQN), e.ctx.resourceInterface.fqn);
   }
 });
 
