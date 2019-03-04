@@ -27,7 +27,7 @@ export function handler(args: yargs.Arguments) {
 export async function realHandler(options: CommandOptions): Promise<number> {
   const { configuration, args } = options;
 
-  const contextValues = configuration.context.everything();
+  const contextValues = configuration.context.all;
 
   if (args.clear) {
     configuration.context.clear();
