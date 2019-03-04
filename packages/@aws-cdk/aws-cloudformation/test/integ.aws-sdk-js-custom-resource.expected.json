@@ -12,6 +12,9 @@
             "Arn"
           ]
         },
+        "PhysicalResourceId": {
+          "Ref": "TopicBFC7AF6E"
+        },
         "Create": {
           "service": "SNS",
           "action": "publish",
@@ -164,6 +167,9 @@
             "SingletonLambda679f53fac002430cb0da5b7982bd2287AF41E197",
             "Arn"
           ]
+        },
+        "PhysicalResourceId": {
+          "Ref": "TopicBFC7AF6E"
         },
         "Create": {
           "service": "SNS",

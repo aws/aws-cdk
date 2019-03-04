@@ -13,6 +13,7 @@ export = {
 
     // WHEN
     new AwsSdkJsCustomResource(stack, 'AwsSdk', {
+      physicalResourceId: 'id1234',
       onCreate: {
         service: 'CloudWatchLogs',
         action: 'putRetentionPolicy',
@@ -32,6 +33,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+      "PhysicalResourceId": "id1234",
       "Create": {
         "service": "CloudWatchLogs",
         "action": "putRetentionPolicy",
@@ -76,6 +78,7 @@ export = {
 
     // WHEN
     new AwsSdkJsCustomResource(stack, 'AwsSdk', {
+      physicalResourceId: 'id1234',
       onUpdate: {
         service: 's3',
         action: 'putObject',
@@ -89,6 +92,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+      "PhysicalResourceId": "id1234",
       "Create": {
         "service": "s3",
         "action": "putObject",
@@ -118,6 +122,7 @@ export = {
 
     // WHEN
     new AwsSdkJsCustomResource(stack, 'AwsSdk', {
+      physicalResourceId: 'id1234',
       onUpdate: {
         service: 'S3',
         action: 'putObject',
@@ -155,7 +160,7 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => {
-      new AwsSdkJsCustomResource(stack, 'AwsSdk', {});
+      new AwsSdkJsCustomResource(stack, 'AwsSdk', { physicalResourceId: 'id1234' });
     }, /`onCreate`.+`onUpdate`.+`onDelete`/);
 
     test.done();

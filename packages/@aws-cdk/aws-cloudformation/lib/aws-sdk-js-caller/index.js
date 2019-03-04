@@ -22,6 +22,8 @@ exports.handler = async function(event, context) {
 
     let data = {};
 
+    const physicalResourceId = event.ResourceProperties.PhysicalResourceId;
+
     if (event.ResourceProperties[event.RequestType]) {
       const { service, action, parameters = {} } = event.ResourceProperties[event.RequestType];
 
@@ -32,7 +34,7 @@ exports.handler = async function(event, context) {
       data = flatten(response);
     }
 
-    await respond('SUCCESS', 'OK', event.LogicalResourceId, data);
+    await respond('SUCCESS', 'OK', physicalResourceId, data);
   } catch (e) {
     console.log(e);
     await respond('FAILED', e.message, context.logStreamName, {});

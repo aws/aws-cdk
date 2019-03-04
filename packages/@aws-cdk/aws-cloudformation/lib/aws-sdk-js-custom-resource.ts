@@ -34,6 +34,11 @@ export interface AwsSdkCall {
 
 export interface AwsSdkJsCustomResourceProps {
   /**
+   * The physical resource id of the custom resource.
+   */
+  physicalResourceId: string;
+
+  /**
    * The AWS SDK call to make when the resource is created.
    * At least onCreate, onUpdate or onDelete must be specified.
    *
@@ -65,6 +70,11 @@ export interface AwsSdkJsCustomResourceProps {
 }
 
 export class AwsSdkJsCustomResource extends cdk.Construct {
+  /**
+   * The physical resource id of the custom resource.
+   */
+  public readonly physicalResourceId: string;
+
   /**
    * The AWS SDK call made when the resource is created.
    */
@@ -100,6 +110,7 @@ export class AwsSdkJsCustomResource extends cdk.Construct {
     this.onCreate = props.onCreate || props.onUpdate;
     this.onUpdate = props.onUpdate;
     this.onDelete = props.onDelete;
+    this.physicalResourceId = props.physicalResourceId;
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
       code: lambda.Code.asset(path.join(__dirname, 'aws-sdk-js-caller')),
@@ -130,6 +141,7 @@ export class AwsSdkJsCustomResource extends cdk.Construct {
     this.customResource = new CustomResource(this, 'Resource', {
       lambdaProvider: fn,
       properties: {
+        physicalResourceId: this.physicalResourceId,
         create: this.onCreate,
         update: this.onUpdate,
         delete: this.onDelete
