@@ -59,7 +59,7 @@ async function parseCommandLineArguments() {
       .option('numbered', { type: 'boolean', alias: 'n', desc: 'prefix filenames with numbers to indicate deployment ordering' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment')
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
-      .option('reuse-asset', { type: 'array', alias: 'R', nargs: 1, desc: 'do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
+      .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' }))
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
@@ -198,7 +198,7 @@ async function initCommandLine() {
           roleArn: args.roleArn,
           requireApproval: configuration.settings.get(['requireApproval']),
           ci: args.ci,
-          reuseAssets: args['reuse-asset']
+          reuseAssets: args['build-exclude']
         });
 
       case 'destroy':
