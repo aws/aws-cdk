@@ -5,7 +5,9 @@ import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from '../core/
 import { CfnCondition } from './cfn-condition';
 import { CfnReference } from './cfn-tokens';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { Referenceable } from './stack-element';
+// import required to be here, otherwise causes a cycle when running the generated JavaScript
+// tslint:disable-next-line:ordered-imports
+import { Referenceable } from './cfn-element';
 
 export interface CfnResourceProps {
   /**

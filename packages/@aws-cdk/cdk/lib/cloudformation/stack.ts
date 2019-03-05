@@ -602,9 +602,9 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 
 // These imports have to be at the end to prevent circular imports
 import { ArnComponents, arnFromComponents, parseArn } from './arn';
+import { CfnElement } from './cfn-element';
 import { CfnResource } from './cfn-resource';
 import { Aws, ScopedAws } from './pseudo';
-import { CfnElement } from './stack-element';
 
 /**
  * Find all resources in a set of constructs

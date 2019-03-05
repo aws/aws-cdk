@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { CfnElement } from './stack-element';
+import { CfnElement } from './cfn-element';
 
 export interface IncludeProps {
   /**

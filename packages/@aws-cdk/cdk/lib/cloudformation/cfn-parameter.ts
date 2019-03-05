@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { Ref, Referenceable } from './stack-element';
+import { Ref, Referenceable } from './cfn-element';
 
 export interface CfnParameterProps {
   /**

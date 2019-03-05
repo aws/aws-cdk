@@ -1,5 +1,5 @@
 import { makeUniqueId } from '../util/uniqueid';
-import { CfnElement } from './stack-element';
+import { CfnElement } from './cfn-element';
 
 const PATH_SEP = '/';
 
