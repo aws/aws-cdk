@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, Condition, Construct, Include, CfnOutput, Parameter, Resource, ScopedAws, Stack, Token } from '../../lib';
+import { App, CfnCondition, Construct, Include, CfnOutput, Parameter, Resource, ScopedAws, Stack, Token } from '../../lib';
 
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
@@ -119,7 +119,7 @@ export = {
 
     const p = new Parameter(stack, 'MyParam', { type: 'String' });
     const o = new CfnOutput(stack, 'MyOutput');
-    const c = new Condition(stack, 'MyCondition');
+    const c = new CfnCondition(stack, 'MyCondition');
 
     test.equal(stack.node.findChild(p.node.path), p);
     test.equal(stack.node.findChild(o.node.path), o);

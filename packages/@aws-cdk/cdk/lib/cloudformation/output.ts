@@ -41,7 +41,7 @@ export interface CfnOutputProps {
    * value. If the condition evaluates to `false`, this output value will not
    * be included in the stack.
    */
-  condition?: Condition;
+  condition?: CfnCondition;
 }
 
 export class CfnOutput extends StackElement {
@@ -64,7 +64,7 @@ export class CfnOutput extends StackElement {
    * value. If the condition evaluates to `false`, this output value will not
    * be included in the stack.
    */
-  public readonly condition?: Condition;
+  public readonly condition?: CfnCondition;
 
   private _value?: any;
 
@@ -201,7 +201,7 @@ export interface StringListCfnOutputProps {
    * value. If the condition evaluates to `false`, this output value will not
    * be included in the stack.
    */
-  readonly condition?: Condition;
+  readonly condition?: CfnCondition;
 }
 
 /**
@@ -261,4 +261,4 @@ function fn() {
   return require('./fn').Fn;
 }
 
-import { Condition } from './condition';
+import { CfnCondition } from './condition';

@@ -3,7 +3,7 @@ import { Construct, IConstruct } from '../core/construct';
 import { TagManager } from '../core/tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from '../core/util';
 import { CfnReference } from './cfn-tokens';
-import { Condition } from './condition';
+import { CfnCondition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { Referenceable } from './stack-element';
 
@@ -270,7 +270,7 @@ export interface ResourceOptions {
    * is deployed, the resource will be included. This is provided to allow CDK projects to produce legacy templates, but noramlly
    * there is no need to use it in CDK projects.
    */
-  condition?: Condition;
+  condition?: CfnCondition;
 
   /**
    * Associate the CreationPolicy attribute with a resource to prevent its status from reaching create complete until

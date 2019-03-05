@@ -2,7 +2,7 @@ import { Construct } from '../core/construct';
 import { ResolveContext } from '../core/tokens';
 import { Referenceable } from './stack-element';
 
-export interface ConditionProps {
+export interface CfnConditionProps {
   expression?: IConditionExpression;
 }
 
@@ -10,7 +10,7 @@ export interface ConditionProps {
  * Represents a CloudFormation condition, for resources which must be conditionally created and
  * the determination must be made at deploy time.
  */
-export class Condition extends Referenceable implements IConditionExpression {
+export class CfnCondition extends Referenceable implements IConditionExpression {
   /**
    * The condition statement.
    */
@@ -20,7 +20,7 @@ export class Condition extends Referenceable implements IConditionExpression {
    * Build a new condition. The condition must be constructed with a condition token,
    * that the condition is based on.
    */
-  constructor(scope: Construct, id: string, props?: ConditionProps) {
+  constructor(scope: Construct, id: string, props?: CfnConditionProps) {
     super(scope, id);
     this.expression = props && props.expression;
   }
