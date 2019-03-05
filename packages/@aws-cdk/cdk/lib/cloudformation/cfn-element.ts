@@ -6,7 +6,7 @@ const LOGICAL_ID_MD = 'aws:cdk:logicalId';
 /**
  * An element of a CloudFormation stack.
  */
-export abstract class StackElement extends Construct {
+export abstract class CfnElement extends Construct {
   /**
    * Returns `true` if a construct is a stack element (i.e. part of the
    * synthesized cloudformation template).
@@ -16,7 +16,7 @@ export abstract class StackElement extends Construct {
    *
    * @returns The construct as a stack element or undefined if it is not a stack element.
    */
-  public static isStackElement(construct: IConstruct): construct is StackElement {
+  public static isCfnElement(construct: IConstruct): construct is CfnElement {
     return ('logicalId' in construct && 'toCloudFormation' in construct);
   }
 
@@ -104,7 +104,7 @@ export abstract class StackElement extends Construct {
   public abstract toCloudFormation(): object;
 
   /**
-   * Automatically detect references in this StackElement
+   * Automatically detect references in this CfnElement
    */
   protected prepare() {
     try {
@@ -130,7 +130,7 @@ import { CfnReference } from "./cfn-tokens";
  * A generic, untyped reference to a Stack Element
  */
 export class Ref extends CfnReference {
-  constructor(element: StackElement) {
+  constructor(element: CfnElement) {
     super({ Ref: element.logicalId }, 'Ref', element);
   }
 }
@@ -145,7 +145,7 @@ export class Ref extends CfnReference {
  * own, more specific types returned from the .ref attribute. Also, some
  * resources aren't referenceable at all (such as BucketPolicies or GatewayAttachments).
  */
-export abstract class Referenceable extends StackElement {
+export abstract class Referenceable extends CfnElement {
   /**
    * Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID.
    */

@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { ResolveContext } from '../core/tokens';
-import { Referenceable } from './stack-element';
+import { Referenceable } from './cfn-element';
 
 export interface CfnConditionProps {
   expression?: IConditionExpression;

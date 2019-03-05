@@ -20,7 +20,7 @@ export * from './cloudformation/resource';
 export * from './cloudformation/resource-policy';
 export * from './cloudformation/rule';
 export * from './cloudformation/stack';
-export * from './cloudformation/stack-element';
+export * from './cloudformation/cfn-element';
 export * from './cloudformation/dynamic-reference';
 export * from './cloudformation/tag';
 export * from './cloudformation/removal-policy';

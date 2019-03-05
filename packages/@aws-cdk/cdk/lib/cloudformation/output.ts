@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { StackElement } from './stack-element';
+import { CfnElement } from './cfn-element';
 
 export interface CfnOutputProps {
   /**
@@ -44,7 +44,7 @@ export interface CfnOutputProps {
   condition?: CfnCondition;
 }
 
-export class CfnOutput extends StackElement {
+export class CfnOutput extends CfnElement {
   /**
    * A String type that describes the output value.
    * The description can be a maximum of 4 K in length.

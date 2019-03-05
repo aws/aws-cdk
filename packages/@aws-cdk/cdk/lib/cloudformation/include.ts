@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { StackElement } from './stack-element';
+import { CfnElement } from './cfn-element';
 
 export interface IncludeProps {
   /**
@@ -12,7 +12,7 @@ export interface IncludeProps {
  * Includes a CloudFormation template into a stack. All elements of the template will be merged into
  * the current stack, together with any elements created programmatically.
  */
-export class Include extends StackElement {
+export class Include extends CfnElement {
   /**
    * The included template.
    */

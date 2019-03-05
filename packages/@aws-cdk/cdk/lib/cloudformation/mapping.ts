@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
+import { Referenceable } from './cfn-element';
 import { Fn } from './fn';
-import { Referenceable } from './stack-element';
 
 export interface MappingProps {
   mapping?: { [k1: string]: { [k2: string]: any } };

@@ -157,7 +157,7 @@ export class Stack extends Construct {
         Metadata: this.templateOptions.metadata
       };
 
-      const elements = stackElements(this);
+      const elements = cfnElements(this);
       const fragments = elements.map(e => this.node.resolve(e.toCloudFormation()));
 
       // merge in all CloudFormation fragments collected from the tree
@@ -582,19 +582,19 @@ export interface TemplateOptions {
 }
 
 /**
- * Collect all StackElements from a construct
+ * Collect all CfnElements from a construct
  *
- * @param node Root node to collect all StackElements from
- * @param into Array to append StackElements to
+ * @param node Root node to collect all CfnElements from
+ * @param into Array to append CfnElements to
  * @returns The same array as is being collected into
  */
-function stackElements(node: IConstruct, into: StackElement[] = []): StackElement[] {
-  if (StackElement.isStackElement(node)) {
+function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
+  if (CfnElement.isCfnElement(node)) {
     into.push(node);
   }
 
   for (const child of node.node.children) {
-    stackElements(child, into);
+    cfnElements(child, into);
   }
 
   return into;
@@ -602,9 +602,9 @@ function stackElements(node: IConstruct, into: StackElement[] = []): StackElemen
 
 // These imports have to be at the end to prevent circular imports
 import { ArnComponents, arnFromComponents, parseArn } from './arn';
+import { CfnElement } from './cfn-element';
 import { Aws, ScopedAws } from './pseudo';
 import { Resource } from './resource';
-import { StackElement } from './stack-element';
 
 /**
  * Find all resources in a set of constructs
