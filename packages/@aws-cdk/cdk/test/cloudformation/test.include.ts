@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CfnOutput, CfnParameter, Include, Resource, Stack } from '../../lib';
+import { CfnOutput, CfnParameter, CfnResource, Include, Stack } from '../../lib';
 
 export = {
   'the Include construct can be used to embed an existing template as-is into a stack'(test: Test) {
@@ -20,7 +20,7 @@ export = {
     const stack = new Stack();
 
     new Include(stack, 'T1', { template: clone(template) });
-    new Resource(stack, 'MyResource3', { type: 'ResourceType3', properties: { P3: 'Hello' } });
+    new CfnResource(stack, 'MyResource3', { type: 'ResourceType3', properties: { P3: 'Hello' } });
     new CfnOutput(stack, 'MyOutput', { description: 'Out!', disableExport: true });
     new CfnParameter(stack, 'MyParam2', { type: 'Integer' });
 
@@ -42,7 +42,7 @@ export = {
     const stack = new Stack();
 
     new Include(stack, 'T1', { template });
-    new Resource(stack, 'MyResource3', { type: 'ResourceType3', properties: { P3: 'Hello' } });
+    new CfnResource(stack, 'MyResource3', { type: 'ResourceType3', properties: { P3: 'Hello' } });
     new CfnOutput(stack, 'MyOutput', { description: 'Out!' });
     new CfnParameter(stack, 'MyParam', { type: 'Integer' }); // duplicate!
 

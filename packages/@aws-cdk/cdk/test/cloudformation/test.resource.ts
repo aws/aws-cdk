@@ -1,14 +1,14 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, applyRemovalPolicy, CfnCondition, Construct,
-    DeletionPolicy, Fn, HashedAddressingScheme, RemovalPolicy,
-    Resource, Root, Stack } from '../../lib';
+import { App, applyRemovalPolicy, CfnCondition, CfnResource,
+    Construct, DeletionPolicy, Fn, HashedAddressingScheme,
+    RemovalPolicy, Root, Stack } from '../../lib';
 
 export = {
   'all resources derive from Resource, which derives from Entity'(test: Test) {
     const stack = new Stack();
 
-    new Resource(stack, 'MyResource', {
+    new CfnResource(stack, 'MyResource', {
       type: 'MyResourceType',
       properties: {
         Prop1: 'p1', Prop2: 123
@@ -32,7 +32,7 @@ export = {
 
   'resources must reside within a Stack and fail upon creation if not'(test: Test) {
     const root = new Root();
-    test.throws(() => new Resource(root, 'R1', { type: 'ResourceType' }));
+    test.throws(() => new CfnResource(root, 'R1', { type: 'ResourceType' }));
     test.done();
   },
 
@@ -41,8 +41,8 @@ export = {
     const level1 = new Construct(stack, 'level1');
     const level2 = new Construct(level1, 'level2');
     const level3 = new Construct(level2, 'level3');
-    const res1 = new Resource(level1, 'childoflevel1', { type: 'MyResourceType1' });
-    const res2 = new Resource(level3, 'childoflevel3', { type: 'MyResourceType2' });
+    const res1 = new CfnResource(level1, 'childoflevel1', { type: 'MyResourceType1' });
+    const res2 = new CfnResource(level3, 'childoflevel3', { type: 'MyResourceType2' });
 
     test.equal(withoutHash(stack.node.resolve(res1.logicalId)), 'level1childoflevel1');
     test.equal(withoutHash(stack.node.resolve(res2.logicalId)), 'level1level2level3childoflevel3');
@@ -69,7 +69,7 @@ export = {
     const stack = new Stack();
     const res = new Counter(stack, 'MyResource', { Count: 10 });
 
-    new Resource(stack, 'YourResource', {
+    new CfnResource(stack, 'YourResource', {
       type: 'Type',
       properties: {
         CounterName: res.getAtt('Name'),
@@ -98,7 +98,7 @@ export = {
   'ARN-type resource attributes have some common functionality'(test: Test) {
     const stack = new Stack();
     const res = new Counter(stack, 'MyResource', { Count: 1 });
-    new Resource(stack, 'MyResource2', {
+    new CfnResource(stack, 'MyResource2', {
       type: 'Type',
       properties: {
         Perm: res.arn
@@ -126,7 +126,7 @@ export = {
     const stack = new Stack();
     const r1 = new Counter(stack, 'Counter1', { Count: 1 });
     const r2 = new Counter(stack, 'Counter2', { Count: 1 });
-    const r3 = new Resource(stack, 'Resource3', { type: 'MyResourceType' });
+    const r3 = new CfnResource(stack, 'Resource3', { type: 'MyResourceType' });
     r2.node.addDependency(r1);
     r2.node.addDependency(r3);
 
@@ -156,7 +156,7 @@ export = {
     // GIVEN
     const stack = new Stack();
     const r1 = new Counter(stack, 'Counter1', { Count: 1 });
-    const dependent = new Resource(stack, 'Dependent', { type: 'R' });
+    const dependent = new CfnResource(stack, 'Dependent', { type: 'R' });
 
     // WHEN
     dependent.addDependsOn(r1);
@@ -187,7 +187,7 @@ export = {
 
   'conditions can be attached to a resource'(test: Test) {
     const stack = new Stack();
-    const r1 = new Resource(stack, 'Resource', { type: 'Type' });
+    const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
     const cond = new CfnCondition(stack, 'MyCondition', { expression: Fn.conditionNot(Fn.conditionEquals('a', 'b')) });
     r1.options.condition = cond;
 
@@ -201,7 +201,7 @@ export = {
 
   'creation/update/updateReplace/deletion policies can be set on a resource'(test: Test) {
     const stack = new Stack();
-    const r1 = new Resource(stack, 'Resource', { type: 'Type' });
+    const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
     r1.options.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
     // tslint:disable-next-line:max-line-length
@@ -242,7 +242,7 @@ export = {
 
   'update policies UseOnlineResharding flag'(test: Test) {
     const stack = new Stack();
-    const r1 = new Resource(stack, 'Resource', { type: 'Type' });
+    const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
     r1.options.updatePolicy = { useOnlineResharding: true };
 
@@ -262,7 +262,7 @@ export = {
 
   'metadata can be set on a resource'(test: Test) {
     const stack = new Stack();
-    const r1 = new Resource(stack, 'Resource', { type: 'Type' });
+    const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
     r1.options.metadata = {
       MyKey: 10,
@@ -286,16 +286,16 @@ export = {
 
   'the "type" property is required when creating a resource'(test: Test) {
     const stack = new Stack();
-    test.throws(() => new Resource(stack, 'Resource', { notypehere: true } as any));
+    test.throws(() => new CfnResource(stack, 'Resource', { notypehere: true } as any));
     test.done();
   },
 
   'removal policy is a high level abstraction of deletion policy used by l2'(test: Test) {
     const stack = new Stack();
 
-    const orphan = new Resource(stack, 'Orphan', { type: 'T1' });
-    const forbid = new Resource(stack, 'Forbid', { type: 'T2' });
-    const destroy = new Resource(stack, 'Destroy', { type: 'T3' });
+    const orphan = new CfnResource(stack, 'Orphan', { type: 'T1' });
+    const forbid = new CfnResource(stack, 'Forbid', { type: 'T2' });
+    const destroy = new CfnResource(stack, 'Destroy', { type: 'T3' });
 
     applyRemovalPolicy(orphan, RemovalPolicy.Orphan);
     applyRemovalPolicy(forbid, RemovalPolicy.Forbid);
@@ -311,24 +311,24 @@ export = {
   'addDependency adds all dependencyElements of dependent constructs'(test: Test) {
 
     class C1 extends Construct {
-      public readonly r1: Resource;
-      public readonly r2: Resource;
+      public readonly r1: CfnResource;
+      public readonly r2: CfnResource;
 
       constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        this.r1 = new Resource(this, 'R1', { type: 'T1' });
-        this.r2 = new Resource(this, 'R2', { type: 'T2' });
+        this.r1 = new CfnResource(this, 'R1', { type: 'T1' });
+        this.r2 = new CfnResource(this, 'R2', { type: 'T2' });
       }
     }
 
     class C2 extends Construct {
-      public readonly r3: Resource;
+      public readonly r3: CfnResource;
 
       constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        this.r3 = new Resource(this, 'R3', { type: 'T3' });
+        this.r3 = new CfnResource(this, 'R3', { type: 'T3' });
       }
     }
 
@@ -347,7 +347,7 @@ export = {
     const c2 = new C2(stack, 'MyC2');
     const c3 = new C3(stack, 'MyC3');
 
-    const dependingResource = new Resource(stack, 'MyResource', { type: 'R' });
+    const dependingResource = new CfnResource(stack, 'MyResource', { type: 'R' });
     dependingResource.node.addDependency(c1, c2);
     dependingResource.node.addDependency(c3);
 
@@ -369,7 +369,7 @@ export = {
 
   'resource.ref returns the {Ref} token'(test: Test) {
     const stack = new Stack();
-    const r = new Resource(stack, 'MyResource', { type: 'R' });
+    const r = new CfnResource(stack, 'MyResource', { type: 'R' });
 
     test.deepEqual(stack.node.resolve(r.ref), { Ref: 'MyResource' });
     test.done();
@@ -379,7 +379,7 @@ export = {
     'addOverride(p, v) allows assigning arbitrary values to synthesized resource definitions'(test: Test) {
       // GIVEN
       const stack = new Stack();
-      const r = new Resource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
+      const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
 
       // WHEN
       r.addOverride('Type', 'YouCanEvenOverrideTheType');
@@ -400,7 +400,7 @@ export = {
       // GIVEN
       const stack = new Stack();
 
-      const r = new Resource(stack, 'MyResource', {
+      const r = new CfnResource(stack, 'MyResource', {
         type: 'AWS::Resource::Type',
         properties: {
           Hello: {
@@ -428,7 +428,7 @@ export = {
       // GIVEN
       const stack = new Stack();
 
-      const r = new Resource(stack, 'MyResource', {
+      const r = new CfnResource(stack, 'MyResource', {
         type: 'AWS::Resource::Type',
         properties: {
           Hello: {
@@ -456,7 +456,7 @@ export = {
       // GIVEN
       const stack = new Stack();
 
-      const r = new Resource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
+      const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
 
       // WHEN
       r.addPropertyOverride('Tree.Exists', 42);
@@ -475,7 +475,7 @@ export = {
       // GIVEN
       const stack = new Stack();
 
-      const r = new Resource(stack, 'MyResource', {
+      const r = new CfnResource(stack, 'MyResource', {
         type: 'AWS::Resource::Type',
         properties: {
           Hello: {
@@ -504,7 +504,7 @@ export = {
     'addOverride(p, v) will overwrite any non-objects along the path'(test: Test) {
       // GIVEN
       const stack = new Stack();
-      const r = new Resource(stack, 'MyResource', {
+      const r = new CfnResource(stack, 'MyResource', {
         type: 'AWS::Resource::Type',
         properties: {
           Hello: {
@@ -533,7 +533,7 @@ export = {
     'addPropertyOverride(pp, v) is a sugar for overriding properties'(test: Test) {
       // GIVEN
       const stack = new Stack();
-      const r = new Resource(stack, 'MyResource', {
+      const r = new CfnResource(stack, 'MyResource', {
         type: 'AWS::Resource::Type',
         properties: { Hello: { World: 42 } }
       });
@@ -604,7 +604,7 @@ export = {
 
     const parent = new Construct(stack, 'Parent');
 
-    new Resource(parent, 'MyResource', {
+    new CfnResource(parent, 'MyResource', {
       type: 'MyResourceType',
     });
 
@@ -620,9 +620,9 @@ export = {
     // GIVEN
     const app = new App();
     const stackA = new Stack(app, 'StackA');
-    const resA = new Resource(stackA, 'Resource', { type: 'R' });
+    const resA = new CfnResource(stackA, 'Resource', { type: 'R' });
     const stackB = new Stack(app, 'StackB');
-    const resB = new Resource(stackB, 'Resource', { type: 'R' });
+    const resB = new CfnResource(stackB, 'Resource', { type: 'R' });
 
     // WHEN
     resB.node.addDependency(resA);
@@ -648,7 +648,7 @@ interface CounterProps {
   Count: number;
 }
 
-class Counter extends Resource {
+class Counter extends CfnResource {
   public readonly arn: string;
   public readonly url: string;
 
@@ -667,7 +667,7 @@ function withoutHash(logId: string) {
   return logId.substr(0, logId.length - 8);
 }
 
-class CustomizableResource extends Resource {
+class CustomizableResource extends CfnResource {
   constructor(scope: Construct, id: string, props?: any) {
     super(scope, id, { type: 'MyResourceType', properties: props });
   }

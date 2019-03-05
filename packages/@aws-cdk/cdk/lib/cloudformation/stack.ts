@@ -129,7 +129,7 @@ export class Stack extends Construct {
    *
    * @returns The Resource or undefined if not found
    */
-  public findResource(path: string): Resource | undefined {
+  public findResource(path: string): CfnResource | undefined {
     const r = this.node.findChild(path);
     if (!r) { return undefined; }
 
@@ -138,7 +138,7 @@ export class Stack extends Construct {
       throw new Error(`Found a stack element for ${path} but it is not a resource: ${r.toString()}`);
     }
 
-    return r as Resource;
+    return r as CfnResource;
   }
 
   /**
@@ -603,16 +603,16 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 // These imports have to be at the end to prevent circular imports
 import { ArnComponents, arnFromComponents, parseArn } from './arn';
 import { CfnElement } from './cfn-element';
+import { CfnResource } from './cfn-resource';
 import { Aws, ScopedAws } from './pseudo';
-import { Resource } from './resource';
 
 /**
  * Find all resources in a set of constructs
  */
-function findResources(roots: Iterable<IConstruct>): Resource[] {
-  const ret = new Array<Resource>();
+function findResources(roots: Iterable<IConstruct>): CfnResource[] {
+  const ret = new Array<CfnResource>();
   for (const root of roots) {
-    ret.push(...root.node.findAll().filter(Resource.isResource));
+    ret.push(...root.node.findAll().filter(CfnResource.isResource));
   }
   return ret;
 }

@@ -1,4 +1,4 @@
-import { ITaggable, Resource } from '../cloudformation/resource';
+import { CfnResource, ITaggable } from '../cloudformation/cfn-resource';
 import { IConstruct } from '../core/construct';
 import { IAspect } from './aspect';
 
@@ -71,11 +71,11 @@ export abstract class TagBase implements IAspect {
   }
 
   public visit(construct: IConstruct): void {
-    if (!Resource.isResource(construct)) {
+    if (!CfnResource.isResource(construct)) {
       return;
     }
-    const resource = construct as Resource;
-    if (Resource.isTaggable(resource)) {
+    const resource = construct as CfnResource;
+    if (CfnResource.isTaggable(resource)) {
       this.applyTag(resource);
     }
   }

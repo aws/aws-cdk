@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, CfnCondition, CfnOutput, CfnParameter, Construct, Include, Resource, ScopedAws, Stack, Token } from '../../lib';
+import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, Include, ScopedAws, Stack, Token } from '../../lib';
 
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
@@ -32,7 +32,7 @@ export = {
 
   'stack.id is not included in the logical identities of resources within it'(test: Test) {
     const stack = new Stack(undefined, 'MyStack');
-    new Resource(stack, 'MyResource', { type: 'MyResourceType' });
+    new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
 
     test.deepEqual(stack.toCloudFormation(), { Resources: { MyResource: { Type: 'MyResourceType' } } });
     test.done();
@@ -66,7 +66,7 @@ export = {
 
     const stack = new StackWithPostProcessor();
 
-    new Resource(stack, 'myResource', {
+    new CfnResource(stack, 'myResource', {
       type: 'AWS::MyResource',
       properties: {
         MyProp1: 'hello',
@@ -93,11 +93,11 @@ export = {
 
     test.ok(!stack.node.tryFindChild('foo'), 'empty stack');
 
-    const r1 = new Resource(stack, 'Hello', { type: 'MyResource' });
+    const r1 = new CfnResource(stack, 'Hello', { type: 'MyResource' });
     test.equal(stack.findResource(r1.stackPath), r1, 'look up top-level');
 
     const child = new Construct(stack, 'Child');
-    const r2 = new Resource(child, 'Hello', { type: 'MyResource' });
+    const r2 = new CfnResource(child, 'Hello', { type: 'MyResource' });
 
     test.equal(stack.findResource(r2.stackPath), r2, 'look up child');
 
@@ -353,10 +353,10 @@ export = {
   'overrideLogicalId(id) can be used to override the logical ID of a resource'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const bonjour = new Resource(stack, 'BonjourResource', { type: 'Resource::Type' });
+    const bonjour = new CfnResource(stack, 'BonjourResource', { type: 'Resource::Type' });
 
     // { Ref } and { GetAtt }
-    new Resource(stack, 'RefToBonjour', { type: 'Other::Resource', properties: {
+    new CfnResource(stack, 'RefToBonjour', { type: 'Other::Resource', properties: {
       RefToBonjour: bonjour.ref.toString(),
       GetAttBonjour: bonjour.getAtt('TheAtt').toString()
     }});

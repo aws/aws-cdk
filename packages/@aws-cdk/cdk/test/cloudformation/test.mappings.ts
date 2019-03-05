@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Mapping, Resource, Stack } from '../../lib';
+import { CfnResource, Mapping, Stack } from '../../lib';
 
 export = {
   'mappings can be added as another type of entity, and mapping.findInMap can be used to get a token'(test: Test) {
@@ -15,7 +15,7 @@ export = {
     } });
 
     // findInMap can be used to take a reference
-    new Resource(stack, 'MyResource', {
+    new CfnResource(stack, 'MyResource', {
       type: 'R',
       properties: {
         RefToValueInMap: mapping.findInMap('TopLevelKey1', 'SecondLevelKey1')

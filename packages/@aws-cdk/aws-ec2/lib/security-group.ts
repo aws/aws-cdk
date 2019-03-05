@@ -1,4 +1,4 @@
-import { Construct, IConstruct, CfnOutput, Token } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IConstruct, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';

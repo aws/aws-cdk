@@ -1,4 +1,4 @@
-import { Construct, IConstruct, CfnOutput } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IConstruct } from '@aws-cdk/cdk';
 import { CfnRole } from './iam.generated';
 import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';

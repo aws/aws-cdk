@@ -1,4 +1,4 @@
-import { Resource } from './resource';
+import { CfnResource } from './cfn-resource';
 import { DeletionPolicy } from './resource-policy';
 
 export enum RemovalPolicy {
@@ -21,7 +21,7 @@ export enum RemovalPolicy {
   Forbid
 }
 
-export function applyRemovalPolicy(resource: Resource, removalPolicy: RemovalPolicy | undefined) {
+export function applyRemovalPolicy(resource: CfnResource, removalPolicy: RemovalPolicy | undefined) {
   if (removalPolicy === RemovalPolicy.Orphan || removalPolicy === RemovalPolicy.Forbid) {
     resource.options.deletionPolicy = DeletionPolicy.Retain;
   }

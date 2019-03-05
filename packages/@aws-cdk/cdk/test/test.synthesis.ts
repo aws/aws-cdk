@@ -98,10 +98,10 @@ export = {
     // GIVEN
     const app = new cdk.App();
     const stack1 = new cdk.Stack(app, 'stack1');
-    new cdk.Resource(stack1, 'Resource1', { type: 'AWS::CDK::Resource' });
-    new cdk.Resource(stack1, 'Resource2', { type: 'AWS::CDK::Resource' });
+    new cdk.CfnResource(stack1, 'Resource1', { type: 'AWS::CDK::Resource' });
+    new cdk.CfnResource(stack1, 'Resource2', { type: 'AWS::CDK::Resource' });
     const stack2 = new cdk.Stack(app, 'stack2');
-    new cdk.Resource(stack2, 'ResourceA', { type: 'AWS::CDK::Resource' });
+    new cdk.CfnResource(stack2, 'ResourceA', { type: 'AWS::CDK::Resource' });
 
     // WHEN
     const session = app.run();

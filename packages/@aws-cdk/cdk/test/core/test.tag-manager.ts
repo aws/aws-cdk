@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { TagType } from '../../lib/cloudformation/resource';
+import { TagType } from '../../lib/cloudformation/cfn-resource';
 import { TagManager } from '../../lib/core/tag-manager';
 
 export = {

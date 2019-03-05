@@ -7,7 +7,7 @@ import { CfnReference } from './cfn-tokens';
 import { CfnCondition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 
-export interface ResourceProps {
+export interface CfnResourceProps {
   /**
    * CloudFormation resource type.
    */
@@ -28,7 +28,7 @@ export interface ITaggable {
 /**
  * Represents a CloudFormation resource.
  */
-export class Resource extends Referenceable {
+export class CfnResource extends Referenceable {
   /**
    * A decoration used to create a CloudFormation attribute property.
    * @param customName Custom name for the attribute (default is the name of the property)
@@ -48,7 +48,7 @@ export class Resource extends Referenceable {
   /**
    * Check whether the given construct is a Resource
    */
-  public static isResource(construct: IConstruct): construct is Resource {
+  public static isResource(construct: IConstruct): construct is CfnResource {
     return (construct as any).resourceType !== undefined;
   }
 
@@ -98,13 +98,13 @@ export class Resource extends Referenceable {
    *
    * Is filled during prepare().
    */
-  private readonly dependsOn = new Set<Resource>();
+  private readonly dependsOn = new Set<CfnResource>();
 
   /**
    * Creates a resource construct.
    * @param resourceType The CloudFormation type of this resource (e.g. AWS::DynamoDB::Table)
    */
-  constructor(scope: Construct, id: string, props: ResourceProps) {
+  constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id);
 
     if (!props.type) {
@@ -197,7 +197,7 @@ export class Resource extends Referenceable {
    * Indicates that this resource depends on another resource and cannot be provisioned
    * unless the other resource has been successfully provisioned.
    */
-  public addDependsOn(resource: Resource) {
+  public addDependsOn(resource: CfnResource) {
     this.dependsOn.add(resource);
   }
 
@@ -207,7 +207,7 @@ export class Resource extends Referenceable {
   public toCloudFormation(): object {
     try {
       // merge property overrides onto properties and then render (and validate).
-      const tags = Resource.isTaggable(this) ? this.tags.renderTags() : undefined;
+      const tags = CfnResource.isTaggable(this) ? this.tags.renderTags() : undefined;
       const properties = this.renderProperties(deepMerge(
         this.properties || {},
         { tags },
@@ -244,7 +244,7 @@ export class Resource extends Referenceable {
 
     // returns the set of logical ID (tokens) this resource depends on
     // sorted by construct paths to ensure test determinism
-    function renderDependsOn(dependsOn: Set<Resource>) {
+    function renderDependsOn(dependsOn: Set<CfnResource>) {
       return Array
         .from(dependsOn)
         .sort((x, y) => x.node.path.localeCompare(y.node.path))

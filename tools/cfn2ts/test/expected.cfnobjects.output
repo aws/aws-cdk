@@ -596,7 +596,7 @@ export namespace aws.apigateway {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-resource.html
      */
-    export class ResourceProps {
+    export class CfnResourceProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-resource.html#cfn-apigateway-resource-parentid
          */
@@ -621,7 +621,7 @@ export namespace aws.apigateway {
         /**
          * Resource properties
          */
-        public Properties = new ResourceProps();
+        public Properties = new CfnResourceProps();
 
         static readonly RESOURCE_TYPE = 'AWS::ApiGateway::Resource'
         static readonly REQUIRED_TRANSFORM = ''

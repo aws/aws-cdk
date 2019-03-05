@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Construct, HashedAddressingScheme, IAddressingScheme, Ref, Resource, Stack } from '../../lib';
+import { CfnResource, Construct, HashedAddressingScheme, IAddressingScheme, Ref, Stack } from '../../lib';
 
 /**
  * These tests are executed once (for specific ID schemes)
@@ -10,11 +10,11 @@ const uniqueTests = {
     const stack = new Stack(undefined, 'TestStack', { namingScheme: new HashedAddressingScheme() });
 
     const A = new Construct(stack, 'A');
-    new Resource(A, 'BC', { type: 'Resource' });
+    new CfnResource(A, 'BC', { type: 'Resource' });
 
     // WHEN
     const AB = new Construct(stack, 'AB');
-    new Resource(AB, 'C', { type: 'Resource' });
+    new CfnResource(AB, 'C', { type: 'Resource' });
 
     // THEN: no exception
 
@@ -26,7 +26,7 @@ const uniqueTests = {
     const stack = new Stack(undefined, 'TestStack', { namingScheme: new HashedAddressingScheme() });
 
     // WHEN
-    const r = new Resource(stack, 'MyAwesomeness', { type: 'Resource' });
+    const r = new CfnResource(stack, 'MyAwesomeness', { type: 'Resource' });
 
     // THEN
     test.equal(stack.node.resolve(r.logicalId), 'MyAwesomeness');
@@ -41,7 +41,7 @@ const uniqueTests = {
 
     // WHEN
     const parent = new Construct(stack, 'Parent');
-    new Resource(parent, 'ThingResource', { type: 'AWS::TAAS::Thing' });
+    new CfnResource(parent, 'ThingResource', { type: 'AWS::TAAS::Thing' });
 
     // THEN
     const template = stack.toCloudFormation();
@@ -73,11 +73,11 @@ const uniqueTests = {
 
     // WHEN
     const parent = new Construct(stack, 'Parent');
-    new Resource(parent, 'ThingResource1', { type: 'AWS::TAAS::Thing' });
+    new CfnResource(parent, 'ThingResource1', { type: 'AWS::TAAS::Thing' });
 
     // THEN
     test.throws(() => {
-      new Resource(parent, 'ThingResource2', { type: 'AWS::TAAS::Thing' });
+      new CfnResource(parent, 'ThingResource2', { type: 'AWS::TAAS::Thing' });
     });
 
     test.done();
@@ -92,7 +92,7 @@ const uniqueTests = {
     const child1 = new Construct(parent, 'Child');
     const child2 = new Construct(child1, 'Resource');
 
-    new Resource(child2, 'HeyThere', { type: 'AWS::TAAS::Thing' });
+    new CfnResource(child2, 'HeyThere', { type: 'AWS::TAAS::Thing' });
 
     // THEN
     const template = stack.toCloudFormation();
@@ -111,7 +111,7 @@ const uniqueTests = {
     // GIVEN
     const stack1 = new Stack();
     const parent1 = new Construct(stack1, 'Parent');
-    new Resource(parent1, 'HeyThere', { type: 'AWS::TAAS::Thing' });
+    new CfnResource(parent1, 'HeyThere', { type: 'AWS::TAAS::Thing' });
     const template1 = stack1.toCloudFormation();
 
     // AND
@@ -122,7 +122,7 @@ const uniqueTests = {
     const stack2 = new Stack();
     const parent2 = new Construct(stack2, 'Parent');
     const invisibleWrapper = new Construct(parent2, 'Default');
-    new Resource(invisibleWrapper, 'HeyThere', { type: 'AWS::TAAS::Thing' });
+    new CfnResource(invisibleWrapper, 'HeyThere', { type: 'AWS::TAAS::Thing' });
     const template2 = stack1.toCloudFormation();
 
     const theId2 = Object.keys(template2.Resources)[0];
@@ -169,7 +169,7 @@ const allSchemesTests: {[name: string]: (scheme: IAddressingScheme, test: Test) 
 
     // WHEN
     test.throws(() => {
-       new Resource(stack, '.', { type: 'R' });
+       new CfnResource(stack, '.', { type: 'R' });
     });
     test.done();
   },
@@ -186,8 +186,8 @@ const allSchemesTests: {[name: string]: (scheme: IAddressingScheme, test: Test) 
     // The shared part has now exceeded the maximum length of CloudFormation identifiers
     // so the identity generator will have to something smart
 
-    const C1 = new Resource(B, firstPart + generateString(40), { type: 'Resource' });
-    const C2 = new Resource(B, firstPart + generateString(40), { type: 'Resource' });
+    const C1 = new CfnResource(B, firstPart + generateString(40), { type: 'Resource' });
+    const C2 = new CfnResource(B, firstPart + generateString(40), { type: 'Resource' });
 
     // THEN
     test.ok(C1.logicalId.length <= 255);
@@ -203,10 +203,10 @@ const allSchemesTests: {[name: string]: (scheme: IAddressingScheme, test: Test) 
     stack.renameLogical('OriginalName', 'NewName');
 
     // WHEN
-    const c1 = new Resource(stack, 'OriginalName', { type: 'R1' });
+    const c1 = new CfnResource(stack, 'OriginalName', { type: 'R1' });
     const ref = new Ref(c1);
 
-    const c2 = new Resource(stack, 'Construct2', { type: 'R2', properties: { ReferenceToR1: ref } });
+    const c2 = new CfnResource(stack, 'Construct2', { type: 'R2', properties: { ReferenceToR1: ref } });
     c2.node.addDependency(c1);
 
     // THEN

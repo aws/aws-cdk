@@ -515,7 +515,7 @@ export namespace aws.apigateway {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-resource.html
      */
-    export class ResourceProps extends core.ConstructProps {
+    export class CfnResourceProps extends core.ConstructProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-resource.html#cfn-apigateway-resource-parentid
          */
@@ -537,7 +537,7 @@ export namespace aws.apigateway {
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-resource.html
      */
     export class Resource extends core.Resource {
-        constructor(parent: core.Construct, props?: ResourceProps) {
+        constructor(parent: core.Construct, props?: CfnResourceProps) {
             super(parent, { type: 'AWS::ApiGateway::Resource', ...props });
         }
     }

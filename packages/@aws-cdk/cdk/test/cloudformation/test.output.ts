@@ -1,10 +1,10 @@
 import { Test } from 'nodeunit';
-import { CfnOutput, Ref, Resource, Stack } from '../../lib';
+import { CfnOutput, CfnResource, Ref, Stack } from '../../lib';
 
 export = {
   'outputs can be added to the stack'(test: Test) {
     const stack = new Stack();
-    const res = new Resource(stack, 'MyResource', { type: 'R' });
+    const res = new CfnResource(stack, 'MyResource', { type: 'R' });
     const ref = new Ref(res);
 
     new CfnOutput(stack, 'MyOutput', {

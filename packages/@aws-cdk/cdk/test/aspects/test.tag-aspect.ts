@@ -1,7 +1,7 @@
 import { Test } from 'nodeunit';
-import { Construct, RemoveTag, Resource, ResourceProps, Stack, Tag, TagManager, TagType } from '../../lib';
+import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType } from '../../lib';
 
-class TaggableResource extends Resource {
+class TaggableResource extends CfnResource {
   public readonly tags: TagManager;
   constructor(scope: Construct, id: string, props: ResourceProps) {
     super(scope, id, props);

@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CfnParameter, Construct, Resource, Stack } from '../../lib';
+import { CfnParameter, CfnResource, Construct, Stack } from '../../lib';
 
 export = {
   'parameters can be used and referenced using param.ref'(test: Test) {
@@ -12,7 +12,7 @@ export = {
       description: 'My first parameter'
     });
 
-    new Resource(stack, 'Resource', { type: 'Type', properties: { ReferenceToParam: param.ref } });
+    new CfnResource(stack, 'Resource', { type: 'Type', properties: { ReferenceToParam: param.ref } });
 
     test.deepEqual(stack.toCloudFormation(), {
       Parameters: {

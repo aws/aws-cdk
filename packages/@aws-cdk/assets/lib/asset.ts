@@ -156,7 +156,7 @@ export class Asset extends cdk.Construct {
    * @param resourceProperty The property name where this asset is referenced
    * (e.g. "Code" for AWS::Lambda::Function)
    */
-  public addResourceMetadata(resource: cdk.Resource, resourceProperty: string) {
+  public addResourceMetadata(resource: cdk.CfnResource, resourceProperty: string) {
     if (!this.node.getContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       return; // not enabled
     }
