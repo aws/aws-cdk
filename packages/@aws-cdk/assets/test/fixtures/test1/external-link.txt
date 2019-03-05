@@ -1,0 +1,1 @@
+../symlinks/normal-file.txt

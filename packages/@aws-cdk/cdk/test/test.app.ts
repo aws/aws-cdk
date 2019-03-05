@@ -11,7 +11,7 @@ function withApp(context: { [key: string]: any } | undefined, block: (app: App) 
   const session = app.run();
 
   // return the legacy manifest
-  return session.store.readJson(cxapi.OUTFILE_NAME);
+  return session.assembly.readJson(cxapi.OUTFILE_NAME);
 }
 
 function synth(context?: { [key: string]: any }): cxapi.SynthesizeResponse {
@@ -86,9 +86,11 @@ export = {
     const stack = new Stack(prog, 'MyStack');
     new Resource(stack, 'MyResource', { type: 'MyResourceType' });
 
-    test.throws(() => prog.synthesizeStacks(['foo']), /foo/);
+    const session = prog.run();
+    const templateFile = session.getArtifact('MyStack').properties!.template;
+    const template = session.assembly.readJson(templateFile);
 
-    test.deepEqual(prog.synthesizeStack('MyStack').template,
+    test.deepEqual(template,
       { Resources: { MyResource: { Type: 'MyResourceType' } } });
     test.done();
   },
@@ -190,10 +192,7 @@ export = {
     new Child(parent, 'C1');
     new Child(parent, 'C2');
 
-    test.throws(() => {
-      app.synthesizeStacks(['Parent']);
-    }, /Validation failed with the following errors/);
-
+    test.throws(() => app.run(), /Validation failed with the following errors/);
     test.done();
   },
 

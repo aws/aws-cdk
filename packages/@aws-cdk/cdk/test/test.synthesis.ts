@@ -4,14 +4,16 @@ import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
 import cdk = require('../lib');
-import { FileSystemStore, InMemoryStore, SynthesisSession } from '../lib';
+import { FileSystemStore, SynthesisSession } from '../lib';
 
 const storeTestMatrix: any = {};
 
 function createModernApp() {
   return new cdk.App({
-    [cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT]: 'true',
-    [cxapi.DISABLE_VERSION_REPORTING]: 'true', // for test reproducibility
+    context: {
+      [cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT]: 'true',
+      [cxapi.DISABLE_VERSION_REPORTING]: 'true', // for test reproducibility
+    }
   });
 }
 
@@ -25,8 +27,8 @@ export = {
 
     // THEN
     test.same(app.run(), session); // same session if we run() again
-    test.deepEqual(session.store.list(), [ 'manifest.json' ]);
-    test.deepEqual(session.store.readJson('manifest.json').artifacts, {});
+    test.deepEqual(session.assembly.list(), [ 'manifest.json' ]);
+    test.deepEqual(session.assembly.readJson('manifest.json').artifacts, {});
     test.done();
   },
 
@@ -39,7 +41,7 @@ export = {
     const session = app.run();
 
     // THEN
-    test.deepEqual(session.store.list(), [
+    test.deepEqual(session.assembly.list(), [
       'manifest.json',
       'one-stack.template.json'
     ]);
@@ -53,7 +55,7 @@ export = {
 
     class MyConstruct extends cdk.Construct implements cdk.ISynthesizable {
       public synthesize(s: cdk.ISynthesisSession) {
-        s.store.writeJson('foo.json', { bar: 123 });
+        s.assembly.writeJson('foo.json', { bar: 123 });
         s.addArtifact('my-random-construct', {
           type: cxapi.ArtifactType.AwsCloudFormationStack,
           environment: 'aws://12345/bar',
@@ -70,12 +72,12 @@ export = {
     const session = app.run();
 
     // THEN
-    test.deepEqual(session.store.list(), [
+    test.deepEqual(session.assembly.list(), [
       'foo.json',
       'manifest.json',
       'one-stack.template.json'
     ]);
-    test.deepEqual(session.store.readJson('foo.json'), { bar: 123 });
+    test.deepEqual(session.assembly.readJson('foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
       version: '0.19.0',
       artifacts: {
@@ -90,37 +92,6 @@ export = {
           properties: { templateFile: 'one-stack.template.json' }
         }
       },
-    });
-    test.done();
-  },
-
-  'backwards compatibility: cdk.out contains all synthesized stacks'(test: Test) {
-    // GIVEN
-    const app = new cdk.App();
-    const stack1 = new cdk.Stack(app, 'stack1');
-    new cdk.Resource(stack1, 'Resource1', { type: 'AWS::CDK::Resource' });
-    new cdk.Resource(stack1, 'Resource2', { type: 'AWS::CDK::Resource' });
-    const stack2 = new cdk.Stack(app, 'stack2');
-    new cdk.Resource(stack2, 'ResourceA', { type: 'AWS::CDK::Resource' });
-
-    // WHEN
-    const session = app.run();
-    const legacy: cxapi.SynthesizeResponse = session.store.readJson(cxapi.OUTFILE_NAME);
-
-    // THEN
-    const t1 = legacy.stacks.find(s => s.name === 'stack1')!.template;
-    const t2 = legacy.stacks.find(s => s.name === 'stack2')!.template;
-
-    test.deepEqual(t1, {
-      Resources: {
-        Resource1: { Type: 'AWS::CDK::Resource' },
-        Resource2: { Type: 'AWS::CDK::Resource' }
-      }
-    });
-    test.deepEqual(t2, {
-      Resources: {
-        ResourceA: { Type: 'AWS::CDK::Resource' }
-      }
     });
     test.done();
   },
@@ -225,7 +196,7 @@ const storeTests = {
       }
     });
 
-    session.store.writeJson(templateFile, {
+    session.assembly.writeJson(templateFile, {
       Resources: {
         MyTopic: {
           Type: 'AWS::S3::Topic'
@@ -235,7 +206,7 @@ const storeTests = {
 
     session.close();
 
-    const manifest = session.store.readJson(cxapi.MANIFEST_FILE);
+    const manifest = session.assembly.readJson(cxapi.MANIFEST_FILE);
 
     // THEN
     delete manifest.runtime; // deterministic tests
@@ -269,7 +240,7 @@ const storeTests = {
     });
 
     // verify we have a template file
-    test.deepEqual(session.store.readJson(templateFile), {
+    test.deepEqual(session.assembly.readJson(templateFile), {
       Resources: {
         MyTopic: {
           Type: 'AWS::S3::Topic'
@@ -318,8 +289,8 @@ const storeTests = {
 
     // THEN
     const session  = app.run();
-    test.deepEqual(session.store.list(), [ 'build.json', 'manifest.json' ]);
-    test.deepEqual(session.store.readJson('build.json'), {
+    test.deepEqual(session.assembly.list(), [ 'build.json', 'manifest.json' ]);
+    test.deepEqual(session.assembly.readJson('build.json'), {
       steps: {
         step_id: { type: 'build-step-type', parameters: { boom: 123 } }
       }
@@ -330,8 +301,6 @@ const storeTests = {
 
 for (const [name, fn] of Object.entries(storeTests)) {
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'synthesis-tests'));
-  const fsStore = new FileSystemStore({ outdir });
-  const memoryStore = new InMemoryStore();
+  const fsStore = new FileSystemStore({ path: outdir });
   storeTestMatrix[`FileSystemStore - ${name}`] = (test: Test) => fn(test, fsStore);
-  storeTestMatrix[`InMemoryStore - ${name}`] = (test: Test) => fn(test, memoryStore);
 }

@@ -446,7 +446,7 @@ export class Stack extends Construct {
     const template = `${this.node.id}.template.json`;
 
     // write the CloudFormation template as a JSON file
-    session.store.writeJson(template, this.toCloudFormation());
+    session.assembly.writeJson(template, this.toCloudFormation());
 
     const artifact: cxapi.Artifact = {
       type: cxapi.ArtifactType.AwsCloudFormationStack,

@@ -1,0 +1,19 @@
+{
+  "steps": {
+    "zip_dir1": {
+      "type": "zip",
+      "parameters": {
+        "src": "staging/dir1",
+        "dest": "output/aaabbb.zip"
+      }
+    },
+    "dup_zip_result": {
+      "type": "copy",
+      "parameters": {
+        "src": "output/aaabbb.zip",
+        "dest": "output/dup.zip"
+      },
+      "depends": [ "zip_dir1" ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`the "copy" can be used to copy files 1`] = `
+"This is a file which we will use for tests.
+"
+`;
+
+exports[`the "copy" task will no-op if the destination already exists 1`] = `"hello, I exist!"`;

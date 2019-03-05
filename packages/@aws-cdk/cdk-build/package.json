@@ -1,0 +1,82 @@
+{
+  "name": "@aws-cdk/cdk-build",
+  "version": "0.25.0",
+  "description": "CDK build system",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "bin": {
+    "cdk-build": "bin/cdk-build.js"
+  },
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.build",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-build"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.Build",
+        "packageId": "Amazon.CDK.Build",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "sphinx": {}
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "jest",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "build",
+    "toolkit",
+    "jsii",
+    "cdk-core"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/archiver": "^2.1.2",
+    "@types/fs-extra": "^5.0.5",
+    "@types/jest": "^24.0.9",
+    "@types/unzip": "^0.1.1",
+    "cdk-build-tools": "^0.25.0",
+    "jest": "^24.1.0",
+    "pkglint": "^0.25.0",
+    "unzip": "^0.1.11"
+  },
+  "dependencies": {
+    "@aws-cdk/cx-api": "^0.25.0",
+    "archiver": "^3.0.0",
+    "fs-extra": "^7.0.1"
+  },
+  "bundledDependencies": [
+    "archiver",
+    "fs-extra"
+  ],
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/cx-api": "^0.25.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  }
+}

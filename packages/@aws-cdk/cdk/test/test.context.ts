@@ -101,10 +101,15 @@ export = {
     test.deepEqual(new AvailabilityZoneProvider(stack).availabilityZones, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
     test.deepEqual(new SSMParameterProvider(child, {parameterName: 'foo'}).parameterValue(), 'dummy');
 
-    const output = app.synthesizeStack(stack.node.id);
+    const session = app.run();
+    const output = session.getArtifact('test-stack');
 
-    const azError: MetadataEntry | undefined = output.metadata['/test-stack'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
-    const ssmError: MetadataEntry | undefined = output.metadata['/test-stack/ChildConstruct'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
+    if (!output.metadata) {
+      throw new Error('no metadata');
+    }
+
+    const azError: MetadataEntry | undefined = output.metadata['/test-stack'].find((x: any) => x.type === cxapi.ERROR_METADATA_KEY);
+    const ssmError: MetadataEntry | undefined = output.metadata['/test-stack/ChildConstruct'].find((x: any) => x.type === cxapi.ERROR_METADATA_KEY);
 
     test.ok(azError && (azError.data as string).includes('Cannot determine scope for context provider availability-zones'));
     test.ok(ssmError && (ssmError.data as string).includes('Cannot determine scope for context provider ssm'));

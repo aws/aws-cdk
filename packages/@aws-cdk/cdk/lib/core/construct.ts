@@ -276,7 +276,8 @@ export class ConstructNode {
     if (data == null) {
       return;
     }
-    const trace = createStackTrace(from || this.addMetadata);
+
+    const trace = this.getContext(cxapi.DISABLE_STACK_TRACE) ? [ ] : createStackTrace(from || this.addMetadata);
     this._metadata.push({ type, data, trace });
   }
 
@@ -363,6 +364,17 @@ export class ConstructNode {
     }
 
     return ret;
+  }
+
+  /**
+   * @returns the root construct.
+   */
+  public get root(): Construct {
+    if (!this.scope) {
+      return this.host;
+    }
+
+    return this.scope.node.root;
   }
 
   /**

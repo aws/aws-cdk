@@ -3,16 +3,29 @@ import path = require('path');
 import { PackageJson } from "./packagejson";
 
 /**
- * Expect a particular JSON key to be a given value
+ * Expect a particular JSON key to be a given one of the allowed values.
+ * Fixable if oneOf contains a single value.
  */
-export function expectJSON(ruleName: string, pkg: PackageJson, jsonPath: string, expected: any, ignore?: RegExp, caseInsensitive: boolean = false) {
+export function expectJSONOneOf(ruleName: string, pkg: PackageJson, jsonPath: string, oneOf: any[],
+                                ignore?: RegExp, caseInsensitive: boolean = false) {
+
   const parts = jsonPath.split('.');
   const actual = deepGet(pkg.json, parts);
-  if (applyCaseInsensitive(applyIgnore(actual)) !== applyCaseInsensitive(applyIgnore(expected))) {
+
+  let found = false;
+  for (const expected of oneOf) {
+    if (applyCaseInsensitive(applyIgnore(actual)) === applyCaseInsensitive(applyIgnore(expected))) {
+      found = true;
+    }
+  }
+
+  if (!found) {
+    const fix = oneOf.length > 1 ? undefined : () => { deepSet(pkg.json, parts, oneOf[0]); };
+
     pkg.report({
       ruleName,
-      message: `${jsonPath} should be ${JSON.stringify(expected)}${ignore ? ` (ignoring ${ignore})` : ''}, is ${JSON.stringify(actual)}`,
-      fix: () => { deepSet(pkg.json, parts, expected); }
+      message: `${jsonPath} should be one of ${JSON.stringify(oneOf)}${ignore ? ` (ignoring ${ignore})` : ''}, is ${JSON.stringify(actual)}`,
+      fix
     });
   }
 
@@ -27,6 +40,10 @@ export function expectJSON(ruleName: string, pkg: PackageJson, jsonPath: string,
     const str = JSON.stringify(val);
     return str.toLowerCase();
   }
+}
+
+export function expectJSON(ruleName: string, pkg: PackageJson, jsonPath: string, expected: any, ignore?: RegExp, caseInsensitive: boolean = false) {
+  expectJSONOneOf(ruleName, pkg, jsonPath, [ expected ], ignore, caseInsensitive);
 }
 
 /**

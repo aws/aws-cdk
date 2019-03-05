@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Construct, IConstruct, PATH_SEP } from "../core/construct";
 import { Token } from '../core/tokens';
 
@@ -43,7 +44,9 @@ export abstract class StackElement extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    this.node.addMetadata(LOGICAL_ID_MD, new (require("../core/tokens/token").Token)(() => this.logicalId), this.constructor);
+    if (this.node.getContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+      this.node.addMetadata(LOGICAL_ID_MD, new (require("../core/tokens/token").Token)(() => this.logicalId), this.constructor);
+    }
 
     this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
     this.logicalId = new Token(() => this._logicalId).toString();

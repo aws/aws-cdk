@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`the "zip" task can be used to zip a directory 1`] = `"../file1.txt"`;
+
+exports[`the "zip" task can be used to zip a directory 2`] = `
+"this is file #2
+"
+`;
+
+exports[`the "zip" task can be used to zip a directory 3`] = `"file3"`;

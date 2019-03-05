@@ -2,8 +2,8 @@ import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import path = require('path');
+import { AssetArtifact } from './artifact';
+import { FollowMode } from './follow-mode';
 
 /**
  * Defines the way an asset is packaged before it is uploaded to S3.
@@ -33,6 +33,26 @@ export interface GenericAssetProps {
   packaging: AssetPackaging;
 
   /**
+   * How to treat symlinks in the asset directory (only applicable if this is a directory)
+   * @default External only follows symlinks that are external to the source directory
+   */
+  follow?: FollowMode;
+
+  /**
+   * Glob patterns to exclude from the copy.
+   * Only applicable for directories.
+   */
+  exclude?: string[];
+
+  /**
+   * An extra string to include in the asset's fingerprint. This can be used to
+   * incorporate things like build commands and settings into the asset hash so
+   * that it will be invalidated based on those as well as on the content
+   * itself.
+   */
+  extra?: string;
+
+  /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
    */
@@ -40,8 +60,13 @@ export interface GenericAssetProps {
 }
 
 /**
- * An asset represents a local file or directory, which is automatically uploaded to S3
- * and then can be referenced within a CDK application.
+ * An asset represents a local file or directory, which is automatically
+ * uploaded to S3 and then can be referenced within a CDK application.
+ *
+ * Assets are deduplicated at the CDK app level based on their content hash
+ * (fingerprint). This means that two `Asset` objects that refer to the same
+ * asset (with the same copy options) will materialize in synthesis as a single
+ * artifact.
  */
 export class Asset extends cdk.Construct {
   /**
@@ -55,15 +80,15 @@ export class Asset extends cdk.Construct {
   public readonly s3ObjectKey: string;
 
   /**
+   * Deploy-time attribute with the SHA-256 hash of the asset as it is uploaded to S3.
+   */
+  public readonly contentSha256: string;
+
+  /**
    * Attribute which represents the S3 URL of this asset.
    * @example https://s3.us-west-1.amazonaws.com/bucket/key
    */
   public readonly s3Url: string;
-
-  /**
-   * Resolved full-path location of this asset.
-   */
-  public readonly assetPath: string;
 
   /**
    * The S3 bucket in which this asset resides.
@@ -77,63 +102,42 @@ export class Asset extends cdk.Construct {
   public readonly isZipArchive: boolean;
 
   /**
+   * The fingerprint (content hash) of this asset.
+   */
+  public readonly fingerprint: string;
+
+  /**
    * The S3 prefix where all different versions of this asset are stored
    */
   private readonly s3Prefix: string;
 
+  /**
+   * Path of source
+   */
+  private readonly sourcePath: string;
+
   constructor(scope: cdk.Construct, id: string, props: GenericAssetProps) {
     super(scope, id);
 
-    // resolve full path
-    this.assetPath = path.resolve(props.path);
+    this.sourcePath = props.path;
+
+    const artifact = AssetArtifact.forAsset(this, props);
+    const params = artifact.wireToStack(this.node.stack);
 
     // sets isZipArchive based on the type of packaging and file extension
     const allowedExtensions: string[] = ['.jar', '.zip'];
     this.isZipArchive = props.packaging === AssetPackaging.ZipDirectory
       ? true
-      : allowedExtensions.some(ext => this.assetPath.toLowerCase().endsWith(ext));
+      : allowedExtensions.some(ext => props.path.toLowerCase().endsWith(ext));
 
-    validateAssetOnDisk(this.assetPath, props.packaging);
-
-    // add parameters for s3 bucket and s3 key. those will be set by
-    // the toolkit or by CI/CD when the stack is deployed and will include
-    // the name of the bucket and the S3 key where the code lives.
-
-    const bucketParam = new cdk.Parameter(this, 'S3Bucket', {
-      type: 'String',
-      description: `S3 bucket for asset "${this.node.path}"`,
-    });
-
-    const keyParam = new cdk.Parameter(this, 'S3VersionKey', {
-      type: 'String',
-      description: `S3 key for asset version "${this.node.path}"`
-    });
-
-    this.s3BucketName = bucketParam.stringValue;
-    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
-    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
+    this.fingerprint = artifact.fingerprint;
+    this.s3BucketName = params.bucket.stringValue;
+    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, params.key.stringValue)).toString();
+    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, params.key.stringValue)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
-
-    this.bucket = s3.Bucket.import(this, 'AssetBucket', {
-      bucketName: this.s3BucketName
-    });
-
-    // form the s3 URL of the object key
+    this.bucket = s3.Bucket.import(this, 'AssetBucket', { bucketName: this.s3BucketName });
     this.s3Url = this.bucket.urlForObject(this.s3ObjectKey);
-
-    // attach metadata to the lambda function which includes information
-    // for tooling to be able to package and upload a directory to the
-    // s3 bucket and plug in the bucket name and key in the correct
-    // parameters.
-    const asset: cxapi.FileAssetMetadataEntry = {
-      path: this.assetPath,
-      id: this.node.uniqueId,
-      packaging: props.packaging,
-      s3BucketParameter: bucketParam.logicalId,
-      s3KeyParameter: keyParam.logicalId,
-    };
-
-    this.node.addMetadata(cxapi.ASSET_METADATA, asset);
+    this.contentSha256 = params.sha256.stringValue;
 
     for (const reader of (props.readers || [])) {
       this.grantRead(reader);
@@ -164,7 +168,7 @@ export class Asset extends cdk.Construct {
     // tell tools such as SAM CLI that the "Code" property of this resource
     // points to a local path in order to enable local invocation of this function.
     resource.options.metadata = resource.options.metadata || { };
-    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
+    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.sourcePath;
     resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
 
@@ -221,28 +225,5 @@ export interface ZipDirectoryAssetProps {
 export class ZipDirectoryAsset extends Asset {
   constructor(scope: cdk.Construct, id: string, props: ZipDirectoryAssetProps) {
     super(scope, id, { packaging: AssetPackaging.ZipDirectory, ...props });
-  }
-}
-
-function validateAssetOnDisk(assetPath: string, packaging: AssetPackaging) {
-  if (!fs.existsSync(assetPath)) {
-    throw new Error(`Cannot find asset at ${assetPath}`);
-  }
-
-  switch (packaging) {
-    case AssetPackaging.ZipDirectory:
-      if (!fs.statSync(assetPath).isDirectory()) {
-        throw new Error(`${assetPath} is expected to be a directory when asset packaging is 'zip'`);
-      }
-      break;
-
-    case AssetPackaging.File:
-      if (!fs.statSync(assetPath).isFile()) {
-        throw new Error(`${assetPath} is expected to be a regular file when asset packaging is 'file'`);
-      }
-      break;
-
-    default:
-      throw new Error(`Unsupported asset packaging format: ${packaging}`);
   }
 }

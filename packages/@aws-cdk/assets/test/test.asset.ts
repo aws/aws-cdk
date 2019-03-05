@@ -2,37 +2,41 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
+import fs = require('fs');
 import { Test } from 'nodeunit';
+import os = require('os');
 import path = require('path');
 import { FileAsset, ZipDirectoryAsset } from '../lib/asset';
+
+const SAMPLE_ASSET_DIRECTORY = path.join(__dirname, 'sample-asset-directory');
 
 export = {
   'simple use case'(test: Test)  {
     const stack = new cdk.Stack();
-    const dirPath = path.join(__dirname, 'sample-asset-directory');
-    const asset = new ZipDirectoryAsset(stack, 'MyAsset', {
-      path: dirPath
+
+    new ZipDirectoryAsset(stack, 'MyAsset', {
+      path: SAMPLE_ASSET_DIRECTORY
     });
 
     // verify that metadata contains an "aws:cdk:asset" entry with
     // the correct information
-    const entry = asset.node.metadata.find(m => m.type === 'aws:cdk:asset');
-    test.ok(entry, 'found metadata entry');
+    const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
+    test.ok(entry, 'metadata entry not found');
 
     // console.error(JSON.stringify(stack.node.resolve(entry!.data)));
 
     test.deepEqual(stack.node.resolve(entry!.data), {
-      path: dirPath,
-      id: 'MyAsset',
+      path: SAMPLE_ASSET_DIRECTORY,
+      id: 'asset.b55390fe84158c95af1195e7d42c27e0',
       packaging: 'zip',
-      s3BucketParameter: 'MyAssetS3Bucket68C9B344',
-      s3KeyParameter: 'MyAssetS3VersionKey68E1A45D',
+      s3BucketParameter: 'assetb55390fe84158c95af1195e7d42c27e0S3Bucket',
+      s3KeyParameter: 'assetb55390fe84158c95af1195e7d42c27e0S3Key',
     });
 
     // verify that now the template contains parameters for this asset
     const template = stack.toCloudFormation();
-    test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
-    test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
+    test.equal(template.Parameters.assetb55390fe84158c95af1195e7d42c27e0S3Bucket.Type, 'String');
+    test.equal(template.Parameters.assetb55390fe84158c95af1195e7d42c27e0S3Key.Type, 'String');
 
     test.done();
   },
@@ -40,20 +44,19 @@ export = {
   'verify that the app resolves tokens in metadata'(test: Test) {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'my-stack');
-    const dirPath = path.resolve(__dirname, 'sample-asset-directory');
 
     new ZipDirectoryAsset(stack, 'MyAsset', {
-      path: dirPath
+      path: SAMPLE_ASSET_DIRECTORY
     });
 
     const synth = app.synthesizeStack(stack.name);
 
-    test.deepEqual(synth.metadata['/my-stack/MyAsset'][0].data, {
-      path: dirPath,
-      id: "mystackMyAssetD6B1B593",
+    test.deepEqual(synth.metadata['/my-stack'][0].data, {
+      path: SAMPLE_ASSET_DIRECTORY,
+      id: "asset.b55390fe84158c95af1195e7d42c27e0",
       packaging: "zip",
-      s3BucketParameter: "MyAssetS3Bucket68C9B344",
-      s3KeyParameter: "MyAssetS3VersionKey68E1A45D"
+      s3BucketParameter: "assetb55390fe84158c95af1195e7d42c27e0S3Bucket",
+      s3KeyParameter: "assetb55390fe84158c95af1195e7d42c27e0S3Key"
     });
 
     test.done();
@@ -62,21 +65,22 @@ export = {
   '"file" assets'(test: Test) {
     const stack = new cdk.Stack();
     const filePath = path.join(__dirname, 'file-asset.txt');
-    const asset = new FileAsset(stack, 'MyAsset', { path: filePath });
-    const entry = asset.node.metadata.find(m => m.type === 'aws:cdk:asset');
+    new FileAsset(stack, 'MyAsset', { path: filePath });
+
+    const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
     test.ok(entry, 'found metadata entry');
     test.deepEqual(stack.node.resolve(entry!.data), {
       path: filePath,
       packaging: 'file',
-      id: 'MyAsset',
-      s3BucketParameter: 'MyAssetS3Bucket68C9B344',
-      s3KeyParameter: 'MyAssetS3VersionKey68E1A45D',
+      id: 'asset.79b1fc4ccf3c001c3dc7aa7b45dd071f',
+      s3BucketParameter: 'asset79b1fc4ccf3c001c3dc7aa7b45dd071fS3Bucket',
+      s3KeyParameter: 'asset79b1fc4ccf3c001c3dc7aa7b45dd071fS3Key',
     });
 
     // verify that now the template contains parameters for this asset
     const template = stack.toCloudFormation();
-    test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
-    test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
+    test.equal(template.Parameters.asset79b1fc4ccf3c001c3dc7aa7b45dd071fS3Bucket.Type, 'String');
+    test.equal(template.Parameters.asset79b1fc4ccf3c001c3dc7aa7b45dd071fS3Key.Type, 'String');
 
     test.done();
   },
@@ -87,7 +91,7 @@ export = {
     const group = new iam.Group(stack, 'MyGroup');
 
     const asset = new ZipDirectoryAsset(stack, 'MyAsset', {
-      path: path.join(__dirname, 'sample-asset-directory'),
+      path: SAMPLE_ASSET_DIRECTORY,
       readers: [ user ]
     });
 
@@ -101,12 +105,12 @@ export = {
             Action: ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
             Effect: 'Allow',
             Resource: [
-              { "Fn::Join": ["", ["arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "MyAssetS3Bucket68C9B344"}]] },
+              { "Fn::Join": ["", ["arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "assetb55390fe84158c95af1195e7d42c27e0S3Bucket"}]] },
               { "Fn::Join": ["",
                 [
-                  "arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "MyAssetS3Bucket68C9B344"},
+                  "arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "assetb55390fe84158c95af1195e7d42c27e0S3Bucket"},
                   "/",
-                  { "Fn::Select": [0, { "Fn::Split": [ "||", { Ref: "MyAssetS3VersionKey68E1A45D" }] }] },
+                  { "Fn::Select": [0, { "Fn::Split": [ "||", { Ref: "assetb55390fe84158c95af1195e7d42c27e0S3Key" }] }] },
                   "*"
                 ]
               ] }
@@ -118,6 +122,7 @@ export = {
 
     test.done();
   },
+
   'fails if directory not found'(test: Test) {
     const stack = new cdk.Stack();
     test.throws(() => new ZipDirectoryAsset(stack, 'MyDirectory', {
@@ -128,14 +133,18 @@ export = {
 
   'multiple assets under the same parent'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
 
     // WHEN
-    new ZipDirectoryAsset(stack, 'MyDirectory1', { path: '.' });
-    new ZipDirectoryAsset(stack, 'MyDirectory2', { path: '.' });
+    new ZipDirectoryAsset(stack, 'MyDirectory1', { path: SAMPLE_ASSET_DIRECTORY });
+    new ZipDirectoryAsset(stack, 'MyDirectory2', { path: SAMPLE_ASSET_DIRECTORY });
 
-    // THEN: no error
-
+    // THEN
+    const output = app.run();
+    const s = (output.manifest.artifacts || {}).stack;
+    const assets = Object.values(s.metadata || {}).reduce((a, m) => [ ...a, ...m.filter((x: any) => x.type === cxapi.ASSET_METADATA) ], []);
+    test.deepEqual(assets.length, 1); // we have a single asset because they point to the same directory
     test.done();
   },
 
@@ -145,19 +154,19 @@ export = {
 
     // WHEN
     const nonZipAsset = new FileAsset(stack, 'NonZipAsset', {
-      path: path.join(__dirname, 'sample-asset-directory', 'sample-asset-file.txt')
+      path: path.join(SAMPLE_ASSET_DIRECTORY, 'sample-asset-file.txt')
     });
 
     const zipDirectoryAsset = new ZipDirectoryAsset(stack, 'ZipDirectoryAsset', {
-      path: path.join(__dirname, 'sample-asset-directory')
+      path: SAMPLE_ASSET_DIRECTORY
     });
 
     const zipFileAsset = new FileAsset(stack, 'ZipFileAsset', {
-      path: path.join(__dirname, 'sample-asset-directory', 'sample-zip-asset.zip')
+      path: path.join(SAMPLE_ASSET_DIRECTORY, 'sample-zip-asset.zip')
     });
 
     const jarFileAsset = new FileAsset(stack, 'JarFileAsset', {
-      path: path.join(__dirname, 'sample-asset-directory', 'sample-jar-asset.jar')
+      path: path.join(SAMPLE_ASSET_DIRECTORY, 'sample-jar-asset.jar')
     });
 
     // THEN
@@ -173,7 +182,7 @@ export = {
     const stack = new cdk.Stack();
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
-    const location = path.join(__dirname, 'sample-asset-directory');
+    const location = SAMPLE_ASSET_DIRECTORY;
     const resource = new cdk.Resource(stack, 'MyResource', { type: 'My::Resource::Type' });
     const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: location });
 
@@ -194,7 +203,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const location = path.join(__dirname, 'sample-asset-directory');
+    const location = SAMPLE_ASSET_DIRECTORY;
     const resource = new cdk.Resource(stack, 'MyResource', { type: 'My::Resource::Type' });
     const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: location });
 
@@ -210,5 +219,44 @@ export = {
     }, ResourcePart.CompleteDefinition));
 
     test.done();
-  }
+  },
+
+  'if the asset directory looks like a temporary directory, copy the asset to CDK_OUTDIR so it will be available after the program ends'(test: Test) {
+    const outdir = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out')));
+
+    const app = new cdk.App({ outdir });
+    const stack = new cdk.Stack(app, 'mystack');
+
+    const assetPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'asset')), 'asset.txt');
+    fs.writeFileSync(assetPath, 'hello, my asset');
+
+    new FileAsset(stack, 'ExternousAsset', {
+      path: assetPath
+    });
+
+    const session = app.run();
+
+    const assets = findAssets(session.manifest);
+
+    test.deepEqual(assets.length, 1);
+    test.deepEqual(assets[0].data.path, 'foo');
+
+    test.done();
+  },
 };
+
+function findAssets(manifest: cxapi.AssemblyManifest): cxapi.MetadataEntry[] {
+  return Array.from(gen());
+
+  function* gen() {
+    for (const artifact of Object.values(manifest.artifacts || {})) {
+      for (const cmd of Object.values(artifact.metadata || {})) {
+        for (const md of cmd) {
+          if (md.type === cxapi.ASSET_METADATA) {
+            yield md;
+          }
+        }
+      }
+    }
+  }
+}

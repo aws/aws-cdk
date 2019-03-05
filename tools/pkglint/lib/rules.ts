@@ -4,7 +4,7 @@ import path = require('path');
 import semver = require('semver');
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
-import { deepGet, deepSet, expectDevDependency, expectJSON, fileShouldBe, fileShouldContain, monoRepoVersion } from './util';
+import { deepGet, deepSet, expectDevDependency, expectJSON, expectJSONOneOf, fileShouldBe, fileShouldContain, monoRepoVersion } from './util';
 
 /**
  * Verify that the package name matches the directory name
@@ -171,7 +171,6 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
     if (!isJSII(pkg)) { return; }
 
     const moduleName = cdkModuleName(pkg.json.name);
-
     expectJSON(this.name, pkg, 'jsii.targets.java.maven.groupId', 'software.amazon.awscdk');
     expectJSON(this.name, pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId, /-/g);
 
@@ -290,6 +289,7 @@ export class NoAtTypesInDependencies extends ValidationRule {
 function cdkModuleName(name: string) {
   const isCdkPkg = name === '@aws-cdk/cdk';
 
+  name = name.replace(/^@aws-cdk\/cdk-/, '');
   name = name.replace(/^aws-cdk-/, '');
   name = name.replace(/^@aws-cdk\//, '');
 
@@ -511,9 +511,9 @@ export class MustUseCDKTest extends ValidationRule {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
     if (!hasTestDirectory(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.test', 'cdk-test');
+    expectJSONOneOf(this.name, pkg, 'scripts.test', [ 'cdk-test', 'jest' ]);
 
-    // 'cdk-test' will calculate coverage, so have the appropriate
+    // 'cdk-test' or 'jest' will calculate coverage, so have the appropriate
     // files in .gitignore.
     fileShouldContain(this.name, pkg, '.gitignore', '.nyc_output');
     fileShouldContain(this.name, pkg, '.gitignore', 'coverage');

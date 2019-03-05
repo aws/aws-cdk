@@ -1,0 +1,226 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`file assets 1`] = `
+Object {
+  "assembly": Object {
+    "manifest.json": Object {
+      "artifacts": Object {
+        "asset_4be9b497d3aade053d066e81efc93fbd": Object {
+          "environment": "aws://unknown-account/unknown-region",
+          "properties": Object {
+            "file": "4be9b497d3aade053d066e81efc93fbd.txt",
+          },
+          "type": "aws:s3:object",
+        },
+        "stack1": Object {
+          "environment": "aws://unknown-account/unknown-region",
+          "properties": Object {
+            "parameters": Object {
+              "asset4be9b497d3aade053d066e81efc93fbdS3Bucket": "\${asset_4be9b497d3aade053d066e81efc93fbd}.s3bucket",
+              "asset4be9b497d3aade053d066e81efc93fbdS3ContentHash": "\${asset_4be9b497d3aade053d066e81efc93fbd}.sha256",
+              "asset4be9b497d3aade053d066e81efc93fbdS3Key": "\${asset_4be9b497d3aade053d066e81efc93fbd}.s3key",
+            },
+            "templateFile": "stack1.template.json",
+          },
+          "type": "aws:cloudformation:stack",
+        },
+      },
+      "version": "0.19.0",
+    },
+    "stack1.template.json": Object {
+      "Parameters": Object {
+        "asset4be9b497d3aade053d066e81efc93fbdS3Bucket": Object {
+          "Description": "S3 bucket for asset 4be9b497d3aade053d066e81efc93fbd from /Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/test/fixtures/test1/file1.txt",
+          "Type": "String",
+        },
+        "asset4be9b497d3aade053d066e81efc93fbdS3ContentHash": Object {
+          "Description": "SHA-256 hash of the asset as it was uploaded to S3",
+          "Type": "String",
+        },
+        "asset4be9b497d3aade053d066e81efc93fbdS3Key": Object {
+          "Description": "S3 key for asset 4be9b497d3aade053d066e81efc93fbd from /Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/test/fixtures/test1/file1.txt",
+          "Type": "String",
+        },
+      },
+    },
+  },
+  "build.json": Object {
+    "steps": Object {
+      "asset_4be9b497d3aade053d066e81efc93fbd": Object {
+        "parameters": Object {
+          "dest": "assembly/4be9b497d3aade053d066e81efc93fbd.txt",
+          "src": "staging/4be9b497d3aade053d066e81efc93fbd/file1.txt",
+        },
+        "type": "CopyFileTask",
+      },
+    },
+  },
+  "staging": Object {
+    "4be9b497d3aade053d066e81efc93fbd": Object {
+      "file1.txt": "file1",
+    },
+  },
+}
+`;
+
+exports[`two assets with the same source will result in a single artifact 1`] = `
+Object {
+  "assembly": Object {
+    "manifest.json": Object {
+      "artifacts": Object {
+        "asset_6a2bd71840ef97020185c6357b101a70": Object {
+          "environment": "aws://unknown-account/unknown-region",
+          "properties": Object {
+            "file": "6a2bd71840ef97020185c6357b101a70.zip",
+          },
+          "type": "aws:s3:object",
+        },
+        "stack1": Object {
+          "environment": "aws://unknown-account/unknown-region",
+          "properties": Object {
+            "parameters": Object {
+              "asset6a2bd71840ef97020185c6357b101a70S3Bucket": "\${asset_6a2bd71840ef97020185c6357b101a70}.s3bucket",
+              "asset6a2bd71840ef97020185c6357b101a70S3ContentHash": "\${asset_6a2bd71840ef97020185c6357b101a70}.sha256",
+              "asset6a2bd71840ef97020185c6357b101a70S3Key": "\${asset_6a2bd71840ef97020185c6357b101a70}.s3key",
+            },
+            "templateFile": "stack1.template.json",
+          },
+          "type": "aws:cloudformation:stack",
+        },
+      },
+      "runtime": Object {
+        "libraries": Object {
+          "jsii-runtime": "node.js/v10.13.0",
+        },
+      },
+      "version": "0.19.0",
+    },
+    "stack1.template.json": Object {
+      "Parameters": Object {
+        "asset6a2bd71840ef97020185c6357b101a70S3Bucket": Object {
+          "Description": "S3 bucket for asset 6a2bd71840ef97020185c6357b101a70 from /Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/test/fixtures/test1",
+          "Type": "String",
+        },
+        "asset6a2bd71840ef97020185c6357b101a70S3ContentHash": Object {
+          "Description": "SHA-256 hash of the asset as it was uploaded to S3",
+          "Type": "String",
+        },
+        "asset6a2bd71840ef97020185c6357b101a70S3Key": Object {
+          "Description": "S3 key for asset 6a2bd71840ef97020185c6357b101a70 from /Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/test/fixtures/test1",
+          "Type": "String",
+        },
+      },
+    },
+  },
+  "build.json": Object {
+    "steps": Object {
+      "asset_6a2bd71840ef97020185c6357b101a70": Object {
+        "parameters": Object {
+          "dest": "assembly/6a2bd71840ef97020185c6357b101a70.zip",
+          "src": "staging/6a2bd71840ef97020185c6357b101a70",
+        },
+        "type": "ZipDirectoryTask",
+      },
+    },
+  },
+  "staging": Object {
+    "6a2bd71840ef97020185c6357b101a70": Object {
+      "external-link.txt": "this is a normal file",
+      "file1.txt": "file1",
+      "local-link.txt": "file1",
+      "subdir": Object {
+        "file2.txt": "file2 in subdir",
+      },
+      "subdir2": Object {
+        "empty-subdir": Object {
+          ".hidden": "hidden file",
+        },
+        "subdir3": Object {
+          "file3.txt": "file3 in subdir2/subdir3",
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`zip directory assets 1`] = `
+Object {
+  "assembly": Object {
+    "manifest.json": Object {
+      "artifacts": Object {
+        "asset_6a2bd71840ef97020185c6357b101a70": Object {
+          "environment": "aws://unknown-account/unknown-region",
+          "properties": Object {
+            "file": "6a2bd71840ef97020185c6357b101a70.zip",
+          },
+          "type": "aws:s3:object",
+        },
+        "stack1": Object {
+          "environment": "aws://unknown-account/unknown-region",
+          "properties": Object {
+            "parameters": Object {
+              "asset6a2bd71840ef97020185c6357b101a70S3Bucket": "\${asset_6a2bd71840ef97020185c6357b101a70}.s3bucket",
+              "asset6a2bd71840ef97020185c6357b101a70S3ContentHash": "\${asset_6a2bd71840ef97020185c6357b101a70}.sha256",
+              "asset6a2bd71840ef97020185c6357b101a70S3Key": "\${asset_6a2bd71840ef97020185c6357b101a70}.s3key",
+            },
+            "templateFile": "stack1.template.json",
+          },
+          "type": "aws:cloudformation:stack",
+        },
+      },
+      "runtime": Object {
+        "libraries": Object {
+          "jsii-runtime": "node.js/v10.13.0",
+        },
+      },
+      "version": "0.19.0",
+    },
+    "stack1.template.json": Object {
+      "Parameters": Object {
+        "asset6a2bd71840ef97020185c6357b101a70S3Bucket": Object {
+          "Description": "S3 bucket for asset 6a2bd71840ef97020185c6357b101a70 from /Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/test/fixtures/test1",
+          "Type": "String",
+        },
+        "asset6a2bd71840ef97020185c6357b101a70S3ContentHash": Object {
+          "Description": "SHA-256 hash of the asset as it was uploaded to S3",
+          "Type": "String",
+        },
+        "asset6a2bd71840ef97020185c6357b101a70S3Key": Object {
+          "Description": "S3 key for asset 6a2bd71840ef97020185c6357b101a70 from /Users/benisrae/code/cdk/aws-cdk-3/packages/@aws-cdk/assets/test/fixtures/test1",
+          "Type": "String",
+        },
+      },
+    },
+  },
+  "build.json": Object {
+    "steps": Object {
+      "asset_6a2bd71840ef97020185c6357b101a70": Object {
+        "parameters": Object {
+          "dest": "assembly/6a2bd71840ef97020185c6357b101a70.zip",
+          "src": "staging/6a2bd71840ef97020185c6357b101a70",
+        },
+        "type": "ZipDirectoryTask",
+      },
+    },
+  },
+  "staging": Object {
+    "6a2bd71840ef97020185c6357b101a70": Object {
+      "external-link.txt": "this is a normal file",
+      "file1.txt": "file1",
+      "local-link.txt": "file1",
+      "subdir": Object {
+        "file2.txt": "file2 in subdir",
+      },
+      "subdir2": Object {
+        "empty-subdir": Object {
+          ".hidden": "hidden file",
+        },
+        "subdir3": Object {
+          "file3.txt": "file3 in subdir2/subdir3",
+        },
+      },
+    },
+  },
+}
+`;

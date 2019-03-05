@@ -1,6 +1,26 @@
 import cxapi = require('@aws-cdk/cx-api');
+import fs = require('fs');
+import os = require('os');
 import { ConstructOrder, Root } from './core/construct';
-import { FileSystemStore, InMemoryStore, ISynthesisSession, SynthesisSession } from './synthesis';
+import { FileSystemStore, ISynthesisSession, SynthesisSession } from './synthesis';
+
+export interface AppProps {
+  /**
+   * App-level context key/value pairs.
+   *
+   * If the environment variable `CDK_CONTEXT_JSON` is set, it is parsed as a JSON object
+   * and merged with this hash to form the application's context.
+   */
+  context?: { [key: string]: string };
+
+  /**
+   * Output directory for the CDK application (takes precedence on `CDK_OUTDIR`)
+   *
+   * @default if the environment variable `CDK_OUTDIR` is set, it will be used
+   * as the default value. Otherwise a temporary directory will be used.
+   */
+  outdir?: string;
+}
 
 /**
  * Represents a CDK program.
@@ -9,18 +29,20 @@ export class App extends Root {
   private _session?: ISynthesisSession;
   private readonly legacyManifest: boolean;
   private readonly runtimeInformation: boolean;
+  private readonly outdir: string;
 
   /**
    * Initializes a CDK application.
    * @param request Optional toolkit request (e.g. for tests)
    */
-  constructor(context?: { [key: string]: string }) {
+  constructor(props: AppProps = { }) {
     super();
-    this.loadContext(context);
+    this.loadContext(props.context);
 
     // both are reverse logic
     this.legacyManifest = this.node.getContext(cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT) ? false : true;
     this.runtimeInformation = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
+    this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV] || fs.mkdtempSync(os.tmpdir());
   }
 
   /**
@@ -32,13 +54,7 @@ export class App extends Root {
       return this._session;
     }
 
-    const outdir = process.env[cxapi.OUTDIR_ENV];
-    let store;
-    if (outdir) {
-      store = new FileSystemStore({ outdir });
-    } else {
-      store = new InMemoryStore();
-    }
+    const store = new FileSystemStore({ path: this.outdir });
 
     const session = this._session = new SynthesisSession({
       store,
@@ -69,39 +85,6 @@ export class App extends Root {
     session.close();
 
     return session;
-  }
-
-  /**
-   * Synthesize and validate a single stack.
-   * @param stackName The name of the stack to synthesize
-   * @deprecated This method is going to be deprecated in a future version of the CDK
-   */
-  public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
-    if (!this.legacyManifest) {
-      throw new Error('No legacy manifest available, return an old-style stack output');
-    }
-
-    const session = this.run();
-    const legacy: cxapi.SynthesizeResponse = session.store.readJson(cxapi.OUTFILE_NAME);
-
-    const res = legacy.stacks.find(s => s.name === stackName);
-    if (!res) {
-      throw new Error(`Stack "${stackName}" not found`);
-    }
-
-    return res;
-  }
-
-  /**
-   * Synthesizes multiple stacks
-   * @deprecated This method is going to be deprecated in a future version of the CDK
-   */
-  public synthesizeStacks(stackNames: string[]): cxapi.SynthesizedStack[] {
-    const ret: cxapi.SynthesizedStack[] = [];
-    for (const stackName of stackNames) {
-      ret.push(this.synthesizeStack(stackName));
-    }
-    return ret;
   }
 
   private loadContext(defaults: { [key: string]: string } = { }) {
