@@ -13,7 +13,7 @@ export = {
     });
 
     // THEN
-    test.equal(stack.node.resolve(ref.value), '{{resolve:ssm:a:b:c}}');
+    test.equal(stack.node.resolve(ref.stringValue), '{{resolve:ssm:a:b:c}}');
 
     test.done();
   },

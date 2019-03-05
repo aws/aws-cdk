@@ -1,9 +1,11 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
-import { Construct, IConstruct } from '../core/construct';
+import { Construct, IConstruct, PATH_SEP } from '../core/construct';
 import { Environment } from '../environment';
+import { ISynthesisSession } from '../synthesis';
 import { CfnReference } from './cfn-tokens';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
+import { Parameter } from './parameter';
 
 export interface StackProps {
   /**
@@ -88,6 +90,11 @@ export class Stack extends Construct {
   private readonly stackDependencies = new Set<Stack>();
 
   /**
+   * Values set for parameters in cloud assembly.
+   */
+  private readonly parameterValues: { [logicalId: string]: string } = { };
+
+  /**
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually a Program instance.
@@ -106,6 +113,15 @@ export class Stack extends Construct {
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = this.node.id;
+  }
+
+  /**
+   * Returns the environment specification for this stack (aws://account/region).
+   */
+  public get environment() {
+    const account = this.env.account || 'unknown-account';
+    const region = this.env.region || 'unknown-region';
+    return `aws://${account}/${region}`;
   }
 
   /**
@@ -248,7 +264,10 @@ export class Stack extends Construct {
     if (this.props && this.props.env && this.props.env.account) {
       return this.props.env.account;
     }
-    return new Aws(this).accountId;
+    // Does not need to be scoped, the only situation in which
+    // Export/Fn::ImportValue would work if { Ref: "AWS::AccountId" } is the
+    // same for provider and consumer anyway.
+    return Aws.accountId;
   }
 
   /**
@@ -262,21 +281,27 @@ export class Stack extends Construct {
     if (this.props && this.props.env && this.props.env.region) {
       return this.props.env.region;
     }
-    return new Aws(this).region;
+    // Does not need to be scoped, the only situation in which
+    // Export/Fn::ImportValue would work if { Ref: "AWS::AccountId" } is the
+    // same for provider and consumer anyway.
+    return Aws.region;
   }
 
   /**
    * The partition in which this stack is defined
    */
   public get partition(): string {
-    return new Aws(this).partition;
+    // Always return a non-scoped partition intrinsic. These will usually
+    // be used to construct an ARN, but there are no cross-partition
+    // calls anyway.
+    return Aws.partition;
   }
 
   /**
    * The Amazon domain suffix for the region in which this stack is defined
    */
   public get urlSuffix(): string {
-    return new Aws(this).urlSuffix;
+    return new ScopedAws(this).urlSuffix;
   }
 
   /**
@@ -285,7 +310,7 @@ export class Stack extends Construct {
    * @example After resolving, looks like arn:aws:cloudformation:us-west-2:123456789012:stack/teststack/51af3dc0-da77-11e4-872e-1234567db123
    */
   public get stackId(): string {
-    return new Aws(this).stackId;
+    return new ScopedAws(this).stackId;
   }
 
   /**
@@ -294,14 +319,14 @@ export class Stack extends Construct {
    * Only available at deployment time.
    */
   public get stackName(): string {
-    return new Aws(this).stackName;
+    return new ScopedAws(this).stackName;
   }
 
   /**
    * Returns the list of notification Amazon Resource Names (ARNs) for the current stack.
    */
   public get notificationArns(): string[] {
-    return new Aws(this).notificationArns;
+    return new ScopedAws(this).notificationArns;
   }
 
   /**
@@ -367,6 +392,15 @@ export class Stack extends Construct {
   }
 
   /**
+   * Sets the value of a CloudFormation parameter.
+   * @param parameter The parameter to set the value for
+   * @param value The value, can use `${}` notation to reference other assembly block attributes.
+   */
+  public setParameterValue(parameter: Parameter, value: string) {
+    this.parameterValues[parameter.logicalId] = value;
+  }
+
+  /**
    * Validate stack name
    *
    * CloudFormation stack names can include dashes in addition to the regular identifier
@@ -408,6 +442,43 @@ export class Stack extends Construct {
     }
   }
 
+  protected synthesize(session: ISynthesisSession): void {
+    const template = `${this.node.id}.template.json`;
+
+    // write the CloudFormation template as a JSON file
+    session.store.writeJson(template, this.toCloudFormation());
+
+    const artifact: cxapi.Artifact = {
+      type: cxapi.ArtifactType.AwsCloudFormationStack,
+      environment: this.environment,
+      properties: {
+        templateFile: template,
+      }
+    };
+
+    if (Object.keys(this.parameterValues).length > 0) {
+      artifact.properties = artifact.properties || { };
+      artifact.properties.parameters = this.node.resolve(this.parameterValues);
+    }
+
+    const deps = this.dependencies().map(s => s.node.id);
+    if (deps.length > 0) {
+      artifact.dependencies = deps;
+    }
+
+    const meta = this.collectMetadata();
+    if (Object.keys(meta).length > 0) {
+      artifact.metadata = meta;
+    }
+
+    if (this.missingContext && Object.keys(this.missingContext).length > 0) {
+      artifact.missing = this.missingContext;
+    }
+
+    // add an artifact that represents this stack
+    session.addArtifact(this.node.id, artifact);
+  }
+
   /**
    * Applied defaults to environment attributes.
    */
@@ -437,6 +508,30 @@ export class Stack extends Construct {
       if (dep.dependsOnStack(other)) { return true; }
     }
     return false;
+  }
+
+  private collectMetadata() {
+    const output: { [id: string]: cxapi.MetadataEntry[] } = { };
+
+    visit(this);
+
+    const app = this.parentApp();
+    if (app && app.node.metadata.length > 0) {
+      output[PATH_SEP] = app.node.metadata;
+    }
+
+    return output;
+
+    function visit(node: IConstruct) {
+      if (node.node.metadata.length > 0) {
+        // Make the path absolute
+        output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
+      }
+
+      for (const child of node.node.children) {
+        visit(child);
+      }
+    }
   }
 }
 
@@ -507,7 +602,7 @@ function stackElements(node: IConstruct, into: StackElement[] = []): StackElemen
 
 // These imports have to be at the end to prevent circular imports
 import { ArnComponents, arnFromComponents, parseArn } from './arn';
-import { Aws } from './pseudo';
+import { Aws, ScopedAws } from './pseudo';
 import { Resource } from './resource';
 import { StackElement } from './stack-element';
 

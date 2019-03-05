@@ -35,12 +35,17 @@ const prodStage = {
       changeSetName,
       adminPermissions: true,
       templatePath: source.outputArtifact.atPath('template.yaml'),
+      runOrder: 1,
     }),
-    new codepipeline.ManualApprovalAction({ actionName: 'ApproveChanges' }),
+    new codepipeline.ManualApprovalAction({
+      actionName: 'ApproveChanges',
+      runOrder: 2,
+    }),
     new cfn.PipelineExecuteChangeSetAction({
       actionName: 'ExecuteChanges',
       stackName,
       changeSetName,
+      runOrder: 3,
     }),
   ],
 };

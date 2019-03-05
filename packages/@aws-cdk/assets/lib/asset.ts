@@ -109,9 +109,9 @@ export class Asset extends cdk.Construct {
       description: `S3 key for asset version "${this.node.path}"`
     });
 
-    this.s3BucketName = bucketParam.value.toString();
-    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
-    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
+    this.s3BucketName = bucketParam.stringValue;
+    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
+    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
 
     this.bucket = s3.Bucket.import(this, 'AssetBucket', {

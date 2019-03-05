@@ -33,7 +33,11 @@ async function main() {
 
   // See if we need to call cfn2ts
   if (options.cloudformation) {
-    await shell(['cfn2ts', `--scope=${options.cloudformation}`], timers);
+    if (typeof options.cloudformation === 'string') {
+      // There can be multiple scopes, ensuring it's always an array.
+      options.cloudformation = [options.cloudformation];
+    }
+    await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], timers);
   }
 
   await compileCurrentPackage(timers, { jsii: args.jsii, tsc: args.tsc });

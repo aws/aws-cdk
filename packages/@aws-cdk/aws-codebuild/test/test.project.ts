@@ -57,6 +57,7 @@ export = {
         source: new codebuild.GitHubSource({
           owner: 'testowner',
           repo: 'testrepo',
+          cloneDepth: 3,
           oauthToken: new cdk.Secret("test_oauth_token")
         })
       });
@@ -71,6 +72,7 @@ export = {
           },
           Location: 'https://github.com/testowner/testrepo.git',
           ReportBuildStatus: true,
+          GitCloneDepth: 3,
         }
       }));
 
@@ -135,6 +137,7 @@ export = {
       source: new codebuild.GitHubEnterpriseSource({
         httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
         ignoreSslErrors: true,
+        cloneDepth: 4,
         oauthToken: new cdk.Secret("test_oauth_token")
       })
     });
@@ -148,6 +151,7 @@ export = {
           Resource: 'test_oauth_token'
         },
         InsecureSsl: true,
+        GitCloneDepth: 4,
         Location: 'https://github.testcompany.com/testowner/testrepo'
       }
     }));
@@ -164,6 +168,7 @@ export = {
       source: new codebuild.BitBucketSource({
         owner: 'testowner',
         repo: 'testrepo',
+        cloneDepth: 5,
       })
     });
 
@@ -172,6 +177,7 @@ export = {
       Source: {
         Type: 'BITBUCKET',
         Location: 'https://bitbucket.org/testowner/testrepo.git',
+        GitCloneDepth: 5,
       },
     }));
 
