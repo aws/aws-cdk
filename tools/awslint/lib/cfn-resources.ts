@@ -64,7 +64,11 @@ export function findCfnResources(assembly: reflect.Assembly): CfnResourceSpec[] 
   }
 
   function isCfnResource(c: reflect.ClassType) {
-    const resourceBaseClass = c.system.findFqn('@aws-cdk/cdk.Resource');
+    const cdkAssembly = '@aws-cdk/cdk';
+    if (!c.system.includesAssembly(cdkAssembly)) {
+      return false;
+    }
+    const resourceBaseClass = c.system.findFqn(`${cdkAssembly}.Resource`);
 
     if (!isConstruct(c)) {
       return false;
