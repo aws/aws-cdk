@@ -14,7 +14,7 @@ export * from './cloudformation/include';
 export * from './cloudformation/logical-id';
 export * from './cloudformation/mapping';
 export * from './cloudformation/cfn-output';
-export * from './cloudformation/parameter';
+export * from './cloudformation/cfn-parameter';
 export * from './cloudformation/pseudo';
 export * from './cloudformation/cfn-resource';
 export * from './cloudformation/resource-policy';

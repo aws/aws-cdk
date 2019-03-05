@@ -3,9 +3,9 @@ import { App } from '../app';
 import { Construct, IConstruct, PATH_SEP } from '../core/construct';
 import { Environment } from '../environment';
 import { ISynthesisSession } from '../synthesis';
+import { CfnParameter } from './cfn-parameter';
 import { CfnReference } from './cfn-tokens';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
-import { CfnParameter } from './parameter';
 
 export interface StackProps {
   /**

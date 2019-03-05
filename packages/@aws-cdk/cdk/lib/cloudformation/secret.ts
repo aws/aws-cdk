@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { CfnParameter } from './parameter';
+import { CfnParameter } from './cfn-parameter';
 
 /**
  * A token that represents a value that's expected to be a secret, like
