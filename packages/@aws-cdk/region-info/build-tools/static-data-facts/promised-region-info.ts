@@ -1,4 +1,4 @@
-import { IRegionInfo } from '../../lib/iregion-info';
+import { IRegionInfo } from '../../lib/region-info-api';
 import { AwsServiceNames } from './index';
 import { servicePrincipal } from './service-principals';
 

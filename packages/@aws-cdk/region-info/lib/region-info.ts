@@ -1,7 +1,7 @@
 import os = require('os');
 import path = require('path');
 import process = require('process');
-import { IRegionInfo } from './iregion-info';
+import { IRegionInfo } from './region-info-api';
 import builtIns = require('./static.generated');
 import { loadUserData } from './user-data';
 

@@ -1,6 +1,6 @@
 import fs = require('fs');
 import jsonschema = require('jsonschema');
-import { IRegionInfo } from './iregion-info';
+import { IRegionInfo } from './region-info-api';
 import builtIns = require('./static.generated');
 
 export interface IUserSuppliedRegionInfo {

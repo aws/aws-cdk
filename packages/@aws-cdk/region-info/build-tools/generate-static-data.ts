@@ -4,7 +4,7 @@ import facts = require('./static-data-facts');
 
 async function main(): Promise<void> {
   const lines = [
-    "import { IRegionInfo } from './iregion-info';",
+    "import { IRegionInfo } from './region-info-api';",
     '',
     '// This code is generated when running `npm run build`.',
     '// Do NOT edit manually, but check in any change, so they are reviewed.',
