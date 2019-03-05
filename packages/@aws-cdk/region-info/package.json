@@ -25,10 +25,11 @@
   },
   "cdk-build": {
     "pre": [
-      "bash build-tools/pre-build.sh"
+      "npm run gen"
     ]
   },
   "scripts": {
+    "gen": "bash build-tools/generate.sh",
     "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
@@ -46,13 +47,16 @@
     "@types/fs-extra": "^5.0.5",
     "cdk-build-tools": "^0.25.1",
     "fs-extra": "^7.0.1",
-    "pkglint": "^0.25.1",
-    "typescript-json-schema": "^0.36.0"
+    "pkglint": "^0.25.1"
   },
-  "dependencies": {
-    "jsonschema": "^1.2.4"
+  "jest": {
+    "coverageReporters": ["lcov", "text-summary"],
+    "coverageThreshold": {
+      "global": {
+        "statements": 80
+      }
+    }
   },
-  "bundledDependencies": ["jsonschema"],
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
     "type": "git"
