@@ -1,0 +1,13 @@
+
+dist
+tsconfig.json
+.LAST_PACKAGE
+.LAST_BUILD
+.jsii
+*.d.ts
+*.js
+*.snk
+
+.nyc_output
+coverage
+.nycrc
