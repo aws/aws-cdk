@@ -99,12 +99,12 @@ export class Asset extends cdk.Construct {
     // the toolkit or by CI/CD when the stack is deployed and will include
     // the name of the bucket and the S3 key where the code lives.
 
-    const bucketParam = new cdk.Parameter(this, 'S3Bucket', {
+    const bucketParam = new cdk.CfnParameter(this, 'S3Bucket', {
       type: 'String',
       description: `S3 bucket for asset "${this.node.path}"`,
     });
 
-    const keyParam = new cdk.Parameter(this, 'S3VersionKey', {
+    const keyParam = new cdk.CfnParameter(this, 'S3VersionKey', {
       type: 'String',
       description: `S3 key for asset version "${this.node.path}"`
     });

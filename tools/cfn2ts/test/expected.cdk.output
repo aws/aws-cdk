@@ -10904,7 +10904,7 @@ export namespace aws.ssm {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html
      */
-    export class ParameterProps extends core.ConstructProps {
+    export class CfnParameterProps extends core.ConstructProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html#cfn-ssm-parameter-type
          */
@@ -10946,7 +10946,7 @@ export namespace aws.ssm {
          */
         public readonly parameterValue: ParameterValueAttribute
 
-        constructor(parent: core.Construct, props?: ParameterProps) {
+        constructor(parent: core.Construct, props?: CfnParameterProps) {
             super(parent, { type: 'AWS::SSM::Parameter', ...props });
             this.parameterType = new ParameterTypeAttribute(this, 'Type');
             this.parameterValue = new ParameterValueAttribute(this, 'Value');

@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { Parameter } from './parameter';
+import { CfnParameter } from './parameter';
 
 /**
  * A token that represents a value that's expected to be a secret, like
@@ -77,7 +77,7 @@ export class SecretParameter extends Construct {
   constructor(scope: Construct, id: string, props: SecretParameterProps) {
     super(scope, id);
 
-    const param = new Parameter(this, 'Parameter', {
+    const param = new CfnParameter(this, 'Parameter', {
       type: 'AWS::SSM::Parameter::Value<String>',
       default: props.ssmParameter,
       description: props.description,

@@ -2,7 +2,7 @@ import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
 import { Ref, Referenceable } from './stack-element';
 
-export interface ParameterProps {
+export interface CfnParameterProps {
   /**
    * The data type for the parameter (DataType).
    */
@@ -70,7 +70,7 @@ export interface ParameterProps {
  * Parameters enable you to input custom values to your template each time you create or
  * update a stack.
  */
-export class Parameter extends Referenceable {
+export class CfnParameter extends Referenceable {
   /**
    * A token that represents the actual value of this parameter.
    */
@@ -86,7 +86,7 @@ export class Parameter extends Referenceable {
    */
   public stringListValue: string[];
 
-  private properties: ParameterProps;
+  private properties: CfnParameterProps;
 
   /**
    * Creates a parameter construct.
@@ -96,7 +96,7 @@ export class Parameter extends Referenceable {
    * @param parent The parent construct.
    * @param props The parameter properties.
    */
-  constructor(scope: Construct, id: string, props: ParameterProps) {
+  constructor(scope: Construct, id: string, props: CfnParameterProps) {
     super(scope, id);
     this.properties = props;
     this.value = new Ref(this);

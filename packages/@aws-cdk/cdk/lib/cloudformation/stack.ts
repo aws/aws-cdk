@@ -5,7 +5,7 @@ import { Environment } from '../environment';
 import { ISynthesisSession } from '../synthesis';
 import { CfnReference } from './cfn-tokens';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
-import { Parameter } from './parameter';
+import { CfnParameter } from './parameter';
 
 export interface StackProps {
   /**
@@ -396,7 +396,7 @@ export class Stack extends Construct {
    * @param parameter The parameter to set the value for
    * @param value The value, can use `${}` notation to reference other assembly block attributes.
    */
-  public setParameterValue(parameter: Parameter, value: string) {
+  public setParameterValue(parameter: CfnParameter, value: string) {
     this.parameterValues[parameter.logicalId] = value;
   }
 

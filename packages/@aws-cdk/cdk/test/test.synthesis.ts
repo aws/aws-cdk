@@ -284,7 +284,7 @@ const storeTests = {
     // GIVEN
     const app = createModernApp();
     const stack = new cdk.Stack(app, 'my-stack');
-    const param = new cdk.Parameter(stack, 'MyParam', { type: 'string' });
+    const param = new cdk.CfnParameter(stack, 'MyParam', { type: 'string' });
 
     // WHEN
     stack.setParameterValue(param, 'Foo');

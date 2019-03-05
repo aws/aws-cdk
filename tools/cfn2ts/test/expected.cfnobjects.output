@@ -11725,7 +11725,7 @@ export namespace aws.ssm {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html
      */
-    export class ParameterProps {
+    export class CfnParameterProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html#cfn-ssm-parameter-type
          */
@@ -11760,7 +11760,7 @@ export namespace aws.ssm {
         /**
          * Resource properties
          */
-        public Properties = new ParameterProps();
+        public Properties = new CfnParameterProps();
 
         /**
          * @cloudformation_attribute Type
