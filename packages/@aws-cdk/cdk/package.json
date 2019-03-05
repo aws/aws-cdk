@@ -61,7 +61,6 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/js-base64": "^2.3.1",
     "@types/lodash": "^4.14.118",
     "cdk-build-tools": "^0.25.1",
     "cfn2ts": "^0.25.1",
@@ -70,9 +69,7 @@
     "pkglint": "^0.25.1"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.25.1",
-    "js-base64": "^2.4.5",
-    "json-diff": "^0.3.1"
+    "@aws-cdk/cx-api": "^0.25.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
