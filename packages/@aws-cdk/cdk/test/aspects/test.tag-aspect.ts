@@ -1,19 +1,40 @@
 import { Test } from 'nodeunit';
-import { RemoveTag, Resource, Stack, Tag, TagManager, TagType } from '../../lib';
+import { Construct, RemoveTag, Resource, ResourceProps, Stack, Tag, TagManager, TagType } from '../../lib';
 
 class TaggableResource extends Resource {
-  public readonly tags = new TagManager(TagType.Standard, 'AWS::Fake::Resource');
+  public readonly tags: TagManager;
+  constructor(scope: Construct, id: string, props: ResourceProps) {
+    super(scope, id, props);
+    const tags = props.properties === undefined ? undefined : props.properties.tags;
+    this.tags = new TagManager(TagType.Standard, 'AWS::Fake::Resource', tags);
+  }
   public testProperties() {
     return this.properties;
   }
 }
 
-class AsgTaggableResource extends TaggableResource {
-  public readonly tags = new TagManager(TagType.AutoScalingGroup, 'AWS::Fake::Resource');
+class AsgTaggableResource extends Resource {
+  public readonly tags: TagManager;
+  constructor(scope: Construct, id: string, props: ResourceProps) {
+    super(scope, id, props);
+    const tags = props.properties === undefined ? undefined : props.properties.tags;
+    this.tags = new TagManager(TagType.AutoScalingGroup, 'AWS::Fake::Resource', tags);
+  }
+  public testProperties() {
+    return this.properties;
+  }
 }
 
-class MapTaggableResource extends TaggableResource {
-  public readonly tags = new TagManager(TagType.Map, 'AWS::Fake::Resource');
+class MapTaggableResource extends Resource {
+  public readonly tags: TagManager;
+  constructor(scope: Construct, id: string, props: ResourceProps) {
+    super(scope, id, props);
+    const tags = props.properties === undefined ? undefined : props.properties.tags;
+    this.tags = new TagManager(TagType.Map, 'AWS::Fake::Resource', tags);
+  }
+  public testProperties() {
+    return this.properties;
+  }
 }
 
 export = {
@@ -136,8 +157,8 @@ export = {
       type: 'AWS::Fake::Thing',
       properties: {
         tags: [
-          {key: 'cfn', value: 'is cool'},
           {key: 'aspects', value: 'overwrite'},
+          {key: 'cfn', value: 'is cool'},
         ],
       },
     });
@@ -145,8 +166,8 @@ export = {
       type: 'AWS::Fake::Thing',
       properties: {
         tags: [
+          {key: 'aspects', value: 'overwrite', propagateAtLaunch: false},
           {key: 'cfn', value: 'is cool', propagateAtLaunch: true},
-          {key: 'aspects', value: 'overwrite'},
         ],
       },
     });
@@ -154,8 +175,8 @@ export = {
       type: 'AWS::Fake::Thing',
       properties: {
         tags: {
-          cfn: 'is cool',
           aspects: 'overwrite',
+          cfn: 'is cool',
         },
       },
     });
@@ -184,30 +205,44 @@ export = {
   'when invalid tag properties are passed from L1s': {
     'map passed instead of array it raises'(test: Test) {
       const root = new Stack();
-      new TaggableResource(root, 'FakeBranchA', {
-        type: 'AWS::Fake::Thing',
-        properties: {
-          tags: {
-            cfn: 'is cool',
-            aspects: 'overwrite',
+      test.throws(() => {
+        new TaggableResource(root, 'FakeBranchA', {
+          type: 'AWS::Fake::Thing',
+          properties: {
+            tags: {
+              cfn: 'is cool',
+              aspects: 'overwrite',
+            },
           },
-        },
+        });
       });
-      test.throws(() => root.node.prepareTree());
+      test.throws(() => {
+        new AsgTaggableResource(root, 'FakeBranchA', {
+          type: 'AWS::Fake::Thing',
+          properties: {
+            tags: {
+              cfn: 'is cool',
+              aspects: 'overwrite',
+              propagateAtLaunch: true,
+            },
+          },
+        });
+      });
       test.done();
     },
     'if array is passed instead of map it raises'(test: Test) {
       const root = new Stack();
-      new MapTaggableResource(root, 'FakeSam', {
-        type: 'AWS::Fake::Thing',
-        properties: {
-          tags: [
-            {key: 'cfn', value: 'is cool', propagateAtLaunch: true},
-            {key: 'aspects', value: 'overwrite'},
-          ],
-        },
+      test.throws(() => {
+        new MapTaggableResource(root, 'FakeSam', {
+          type: 'AWS::Fake::Thing',
+          properties: {
+            tags: [
+              {key: 'cfn', value: 'is cool', propagateAtLaunch: true},
+              {key: 'aspects', value: 'overwrite'},
+            ],
+          },
+        });
       });
-      test.throws(() => root.node.prepareTree());
       test.done();
     },
   },

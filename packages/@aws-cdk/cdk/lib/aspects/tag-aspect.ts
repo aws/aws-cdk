@@ -43,10 +43,12 @@ export class Tag extends TagBase {
    */
   public readonly value: string;
 
+  private readonly defaultPriority = 100;
+
   constructor(key: string, value: string, props: TagProps = {}) {
     super(key, props);
     this.props.applyToLaunchedInstances = props.applyToLaunchedInstances !== false;
-    this.props.priority = props.priority === undefined ? 0 : props.priority;
+    this.props.priority = props.priority === undefined ? this.defaultPriority : props.priority;
     if (value === undefined) {
       throw new Error('Tag must have a value');
     }
@@ -63,9 +65,11 @@ export class Tag extends TagBase {
  */
 export class RemoveTag extends TagBase {
 
+  private readonly defaultPriority = 200;
+
   constructor(key: string, props: TagProps = {}) {
     super(key, props);
-    this.props.priority = props.priority === undefined ? 1 : props.priority;
+    this.props.priority = props.priority === undefined ? this.defaultPriority : props.priority;
   }
 
   protected applyTag(resource: ITaggable): void {

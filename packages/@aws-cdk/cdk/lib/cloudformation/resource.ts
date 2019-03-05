@@ -208,7 +208,7 @@ export class Resource extends Referenceable {
     try {
       // merge property overrides onto properties and then render (and validate).
       const tags = Resource.isTaggable(this) ?
-        this.tags.renderTags(this.properties.tags) : undefined;
+        this.tags.renderTags() : undefined;
       const properties = this.renderProperties(
         deepMerge(
           deepMerge(this.properties || { }, {tags}),
