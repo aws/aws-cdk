@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, Condition, Construct, Include, Output, Parameter, Resource, ScopedAws, Stack, Token } from '../../lib';
+import { App, Condition, Construct, Include, CfnOutput, Parameter, Resource, ScopedAws, Stack, Token } from '../../lib';
 
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
@@ -118,7 +118,7 @@ export = {
     const stack = new Stack();
 
     const p = new Parameter(stack, 'MyParam', { type: 'String' });
-    const o = new Output(stack, 'MyOutput');
+    const o = new CfnOutput(stack, 'MyOutput');
     const c = new Condition(stack, 'MyCondition');
 
     test.equal(stack.node.findChild(p.node.path), p);
@@ -229,7 +229,7 @@ export = {
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN - used in another stack
-    new Output(stack2, 'DemOutput', { value: stack1.region });
+    new CfnOutput(stack2, 'DemOutput', { value: stack1.region });
 
     // THEN
     // Need to do this manually now, since we're in testing mode. In a normal CDK app,

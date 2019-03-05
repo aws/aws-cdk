@@ -96,12 +96,12 @@ export class CfnReference extends Token {
       stackExports = new Construct(producingStack, exportsName);
     }
 
-    // Ensure a singleton Output for this value
+    // Ensure a singleton CfnOutput for this value
     const resolved = producingStack.node.resolve(tokenValue);
     const id = 'Output' + JSON.stringify(resolved);
-    let output = stackExports.node.tryFindChild(id) as Output;
+    let output = stackExports.node.tryFindChild(id) as CfnOutput;
     if (!output) {
-      output = new Output(stackExports, id, { value: tokenValue });
+      output = new CfnOutput(stackExports, id, { value: tokenValue });
     }
 
     // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
@@ -112,5 +112,5 @@ export class CfnReference extends Token {
 }
 
 import { Construct } from "../core/construct";
-import { Output } from "./output";
+import { CfnOutput } from "./output";
 import { Stack } from "./stack";

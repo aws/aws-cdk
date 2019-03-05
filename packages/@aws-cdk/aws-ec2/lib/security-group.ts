@@ -1,4 +1,4 @@
-import { Construct, IConstruct, Output, Token } from '@aws-cdk/cdk';
+import { Construct, IConstruct, CfnOutput, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
@@ -296,7 +296,7 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   public export(): SecurityGroupImportProps {
     return {
-      securityGroupId: new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
+      securityGroupId: new CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
     };
   }
 

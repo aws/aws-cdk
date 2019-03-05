@@ -1911,7 +1911,7 @@ new codepipeline.PipelineResource(this, {
 - Introducing **CDK Applets** which allow instantiating specific CDK stacks using a declarative YAML syntax.
 - As a first step to enable diagnostics features in the toolkit, record logical ID (and stack trace) in metadata for stack elements.
 - Introduce a new scheme for generating CloudFormation logical IDs which adds a hash of the construct path to the generated ID to avoid ID collisions. To opt-in for the new scheme, set `hashedLogicalIDs` to `true` when creating a **Stack**.
-- Allow specifying explicit **logicalID** for stack elements like **Resource** **Parameter** and **Output**.
+- Allow specifying explicit **logicalID** for stack elements like **Resource** **Parameter** and **CfnOutput**.
 - `async exec()` changed to `run()` and `validate` was changed to be a synchronous method instead of async.
 - Merged **@aws-cdk/core** into **aws-cdk**, which now where the core classes of the CDK framework live.
 - The **Runtime Values** library, which was under **@aws-cdk/rtv** is now **@aws-cdk/rtv**.

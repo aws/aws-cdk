@@ -44,7 +44,7 @@ export interface RestApiProps extends ResourceOptions {
    * deployment. To customize the stage options, use the `deployStageOptions`
    * property.
    *
-   * A CloudFormation Output will also be defined with the root URL endpoint
+   * A CloudFormation CfnOutput will also be defined with the root URL endpoint
    * of this REST API.
    *
    * @default true
@@ -230,7 +230,7 @@ export class RestApi extends cdk.Construct implements IRestApi {
    */
   public export(): RestApiImportProps {
     return {
-      restApiId: new cdk.Output(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
+      restApiId: new cdk.CfnOutput(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
     };
   }
 
@@ -317,7 +317,7 @@ export class RestApi extends cdk.Construct implements IRestApi {
         ...props.deployOptions
       });
 
-      new cdk.Output(this, 'Endpoint', { value: this.urlForPath() });
+      new cdk.CfnOutput(this, 'Endpoint', { value: this.urlForPath() });
     } else {
       if (props.deployOptions) {
         throw new Error(`Cannot set 'deployOptions' if 'deploy' is disabled`);

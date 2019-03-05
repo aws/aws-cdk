@@ -245,7 +245,7 @@ it in another stack through an `Xxx.import` call.
 The implementation of `export` is different between internal resources (`Xxx`) and
 external imported resource (`ImportedXxx` as recommended above):
 
-For internal resources, the `export` method should produce a CloudFormation Output
+For internal resources, the `export` method should produce a CloudFormation CfnOutput
 for each resource attribute, and return a set of `{ "Fn::ImportValue" }` tokens
 so they can be imported to another stack.
 
@@ -253,8 +253,8 @@ so they can be imported to another stack.
 class Xxx extends XxxBase {
   public export(): XxxImportProps {
     return {
-      attr1: new cdk.Output(this, 'Attr1', { value: this.attr1 }).makeImportValue().toString(),
-      attr2: new cdk.Output(this, 'Attr2', { value: this.attr2 }).makeImportValue().toString(),
+      attr1: new cdk.CfnOutput(this, 'Attr1', { value: this.attr1 }).makeImportValue().toString(),
+      attr2: new cdk.CfnOutput(this, 'Attr2', { value: this.attr2 }).makeImportValue().toString(),
     }
   }
 }
@@ -405,8 +405,8 @@ export class Foo extends FooBase implements IAnotherInterface {
   // for them so they can be imported to another stack.
   public export(): FooAttributes {
     return {
-      fooArn: new cdk.Output(this, 'Arn', { value: this.fooArn }).makeImportValue().toString(), // represent Fn::ImportValue as a string
-      fooBoo: new cdk.Output(this, 'Boo', { value: this.fooBoo }).makeImportValue().toList() // represent as string[]
+      fooArn: new cdk.CfnOutput(this, 'Arn', { value: this.fooArn }).makeImportValue().toString(), // represent Fn::ImportValue as a string
+      fooBoo: new cdk.CfnOutput(this, 'Boo', { value: this.fooBoo }).makeImportValue().toList() // represent as string[]
       // ...
     }
   }

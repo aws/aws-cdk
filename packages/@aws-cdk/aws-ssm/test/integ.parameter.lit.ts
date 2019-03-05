@@ -30,7 +30,7 @@ const listParameter = new ssm.StringListParameter(stack, 'StringListParameter', 
 });
 /// !hide
 
-new cdk.Output(stack, 'StringListOutput', {
+new cdk.CfnOutput(stack, 'StringListOutput', {
   value: cdk.Fn.join('+', listParameter.stringListValue),
 });
 

@@ -8122,7 +8122,7 @@ export namespace aws.kinesisanalytics {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalytics-applicationoutput.html#cfn-kinesisanalytics-applicationoutput-output
          */
-        Output: aws.kinesisanalytics.ApplicationOutput.OutputProperty;
+        CfnOutput: aws.kinesisanalytics.ApplicationOutput.OutputProperty;
 
     }
 

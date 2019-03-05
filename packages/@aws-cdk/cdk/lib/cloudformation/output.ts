@@ -1,7 +1,7 @@
 import { Construct } from '../core/construct';
 import { StackElement } from './stack-element';
 
-export interface OutputProps {
+export interface CfnOutputProps {
   /**
    * A String type that describes the output value.
    * The description can be a maximum of 4 K in length.
@@ -44,7 +44,7 @@ export interface OutputProps {
   condition?: Condition;
 }
 
-export class Output extends StackElement {
+export class CfnOutput extends StackElement {
   /**
    * A String type that describes the output value.
    * The description can be a maximum of 4 K in length.
@@ -53,9 +53,9 @@ export class Output extends StackElement {
 
   /**
    * The name of the resource output to be exported for a cross-stack reference.
-   * By default, the logical ID of the Output element is used as it's export name.
+   * By default, the logical ID of the CfnOutput element is used as it's export name.
    *
-   * May be undefined if the Output hasn't been exported yet.
+   * May be undefined if the CfnOutput hasn't been exported yet.
    */
   public export?: string;
 
@@ -71,11 +71,11 @@ export class Output extends StackElement {
   private disableExport: boolean;
 
   /**
-   * Creates an Output value for this stack.
+   * Creates an CfnOutput value for this stack.
    * @param parent The parent construct.
-   * @param props Output properties.
+   * @param props CfnOutput properties.
    */
-  constructor(scope: Construct, id: string, props: OutputProps = {}) {
+  constructor(scope: Construct, id: string, props: CfnOutputProps = {}) {
     super(scope, id);
 
     this.description = props.description;
@@ -129,7 +129,7 @@ export class Output extends StackElement {
   }
 
   /**
-   * Allocate an export name for this `Output` if not already done.
+   * Allocate an export name for this `CfnOutput` if not already done.
    */
   public obtainExportName(): string {
     if (!this.export && this.disableExport) {
@@ -158,7 +158,7 @@ export class Output extends StackElement {
 /**
  * Properties for ListOutput
  */
-export interface StringListOutputProps {
+export interface StringListCfnOutputProps {
   /**
    * A String type that describes the output value.
    * The description can be a maximum of 4 K in length.
@@ -207,10 +207,10 @@ export interface StringListOutputProps {
 /**
  * An output for a list of strings.
  *
- * Exports a list of Tokens via an Output variable, and return a list of Tokens
+ * Exports a list of Tokens via an CfnOutput variable, and return a list of Tokens
  * that selects the imported values for them.
  */
-export class StringListOutput extends Construct {
+export class StringListCfnOutput extends Construct {
   /**
    * Number of elements in the stringlist
    */
@@ -222,17 +222,17 @@ export class StringListOutput extends Construct {
   private readonly separator: string;
 
   /**
-   * The Output object that was created
+   * The CfnOutput object that was created
    */
-  private readonly output: Output;
+  private readonly output: CfnOutput;
 
-  constructor(scope: Construct, id: string, props: StringListOutputProps) {
+  constructor(scope: Construct, id: string, props: StringListCfnOutputProps) {
     super(scope, id);
 
     this.separator = props.separator || ',';
     this.length = props.values.length;
 
-    this.output = new Output(this, 'Resource', {
+    this.output = new CfnOutput(this, 'Resource', {
       description: props.description,
       condition: props.condition,
       disableExport: props.disableExport,
@@ -242,7 +242,7 @@ export class StringListOutput extends Construct {
   }
 
   /**
-   * Return an array of imported values for this Output
+   * Return an array of imported values for this CfnOutput
    */
   public makeImportValues(): string[] {
     const combined = this.output.makeImportValue();

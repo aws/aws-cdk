@@ -24,7 +24,7 @@ export class App extends Root {
   }
 
   /**
-   * Runs the program. Output is written to output directory as specified in the request.
+   * Runs the program. CfnOutput is written to output directory as specified in the request.
    */
   public run(): ISynthesisSession {
     // this app has already been executed, no-op for you

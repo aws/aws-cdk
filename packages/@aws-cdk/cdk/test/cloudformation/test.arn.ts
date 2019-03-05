@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, Output, ScopedAws, Stack, Token } from '../../lib';
+import { ArnComponents, CfnOutput, ScopedAws, Stack, Token } from '../../lib';
 
 export = {
   'create from components with defaults'(test: Test) {
@@ -216,7 +216,7 @@ export = {
       resource: 'thing',
       resourceName: 'thong',
     });
-    new Output(stack2, 'SomeValue', { value: arn });
+    new CfnOutput(stack2, 'SomeValue', { value: arn });
 
     // THEN
     test.deepEqual(stack2.node.resolve(stack2.toCloudFormation()), {
