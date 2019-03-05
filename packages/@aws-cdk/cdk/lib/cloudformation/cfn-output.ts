@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { CfnElement } from './cfn-element';
+import { CfnElement } from './stack-element';
 
 export interface CfnOutputProps {
   /**

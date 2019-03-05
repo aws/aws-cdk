@@ -3,9 +3,9 @@ import { Construct, IConstruct } from '../core/construct';
 import { TagManager } from '../core/tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from '../core/util';
 import { CfnCondition } from './cfn-condition';
-import { Referenceable } from './cfn-element';
 import { CfnReference } from './cfn-tokens';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
+import { Referenceable } from './stack-element';
 
 export interface CfnResourceProps {
   /**
