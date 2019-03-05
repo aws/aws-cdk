@@ -1,4 +1,4 @@
-import { Construct, IConstruct, CfnOutput } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IConstruct } from '@aws-cdk/cdk';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 

@@ -8,12 +8,12 @@ export * from './core/dependency';
 
 export * from './cloudformation/cloudformation-json';
 export * from './cloudformation/cfn-tokens';
-export * from './cloudformation/condition';
+export * from './cloudformation/cfn-condition';
 export * from './cloudformation/fn';
 export * from './cloudformation/include';
 export * from './cloudformation/logical-id';
 export * from './cloudformation/mapping';
-export * from './cloudformation/output';
+export * from './cloudformation/cfn-output';
 export * from './cloudformation/parameter';
 export * from './cloudformation/pseudo';
 export * from './cloudformation/cfn-resource';

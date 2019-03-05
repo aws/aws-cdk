@@ -1,7 +1,7 @@
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames } from '../core/util';
+import { IConditionExpression } from './cfn-condition';
 import { Referenceable } from './cfn-element';
-import { IConditionExpression } from './condition';
 
 /**
  * A rule can include a RuleCondition property and must include an Assertions property.

@@ -1,4 +1,4 @@
-import { Construct, CfnOutput, Token } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { TargetInputTemplate } from './input-options';

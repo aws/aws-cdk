@@ -2,9 +2,9 @@ import cxapi = require('@aws-cdk/cx-api');
 import { Construct, IConstruct } from '../core/construct';
 import { TagManager } from '../core/tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from '../core/util';
+import { CfnCondition } from './cfn-condition';
 import { Referenceable } from './cfn-element';
 import { CfnReference } from './cfn-tokens';
-import { CfnCondition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 
 export interface CfnResourceProps {

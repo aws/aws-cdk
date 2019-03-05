@@ -112,5 +112,5 @@ export class CfnReference extends Token {
 }
 
 import { Construct } from "../core/construct";
-import { CfnOutput } from "./output";
+import { CfnOutput } from "./cfn-output";
 import { Stack } from "./stack";

@@ -1,6 +1,6 @@
 import { ResolveContext, Token, unresolved } from '../core/tokens';
 import { resolve } from '../core/tokens/resolve';
-import { IConditionExpression } from './condition';
+import { IConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './instrinsics';
 
 // tslint:disable:max-line-length

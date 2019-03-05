@@ -1,5 +1,5 @@
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, IConstruct, CfnOutput } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, DeletionPolicy, IConstruct } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
 import { CfnKey } from './kms.generated';
 

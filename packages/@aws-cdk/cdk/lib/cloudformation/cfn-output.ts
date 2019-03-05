@@ -261,4 +261,4 @@ function fn() {
   return require('./fn').Fn;
 }
 
-import { CfnCondition } from './condition';
+import { CfnCondition } from './cfn-condition';

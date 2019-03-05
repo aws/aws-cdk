@@ -1,4 +1,4 @@
-import { Construct, CfnOutput } from '@aws-cdk/cdk';
+import { CfnOutput, Construct } from '@aws-cdk/cdk';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase, TopicImportProps } from './topic-base';
 
