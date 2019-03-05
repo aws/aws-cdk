@@ -566,7 +566,7 @@ export default class CodeGenerator {
   /**
    * Return the native type expression for the given propSpec
    */
-  private findNativeType(resourceContext: genspec.CodeName, propSpec: schema.Property, propName: string): string {
+  private findNativeType(resourceContext: genspec.CodeName, propSpec: schema.Property, propName?: string): string {
     const alternatives: string[] = [];
 
     if (schema.isCollectionProperty(propSpec)) {
