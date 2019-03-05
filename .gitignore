@@ -17,3 +17,4 @@ coverage
 
 # we don't want tsconfig at the root
 /tsconfig.json
+cdk.context.json
