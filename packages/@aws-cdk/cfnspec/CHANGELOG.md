@@ -1,4 +1,54 @@
 
+# CloudFormation Resource Specification v2.25.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::ApiGateway::Authorizer Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudWatch::Alarm Metrics (__added__)
+* AWS::EC2::VPCEndpoint VPCEndpointType (__deleted__)
+* AWS::EC2::VPCEndpoint VpcEndpointType (__added__)
+* AWS::ECS::Cluster Tags (__deleted__)
+* AWS::ECS::Service Tags (__deleted__)
+* AWS::ECS::TaskDefinition Tags (__deleted__)
+* AWS::ElasticLoadBalancingV2::TargetGroup HealthCheckEnabled (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup Port.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::TargetGroup Protocol.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::TargetGroup VpcId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SNS::Subscription Protocol.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SNS::Subscription TopicArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SSM::MaintenanceWindow Tags (__added__)
+
+## Property Type Changes
+
+* AWS::CloudWatch::Alarm.Metric (__added__)
+* AWS::CloudWatch::Alarm.MetricDataQuery (__added__)
+* AWS::CloudWatch::Alarm.MetricStat (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+
+
 # CloudFormation Resource Specification v2.24.0
 
 ## New Resource Types
