@@ -237,7 +237,7 @@ export interface S3OriginConfig {
   /**
    * The source bucket to serve content from
    */
-  readonly s3BucketSource: s3.Bucket,
+  readonly s3BucketSource: s3.IBucket,
 
   /**
    * The optional origin identity cloudfront will use when calling your s3 bucket.
