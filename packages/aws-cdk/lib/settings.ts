@@ -186,7 +186,7 @@ export class Settings {
     const context: any = {};
 
     // Turn list of KEY=VALUE strings into an object
-    for (const assignment of (argv.context || [])) {
+    for (const assignment of ((argv as any).context || [])) {
       const parts = assignment.split('=', 2);
       if (parts.length === 2) {
         debug('CLI argument context: %s=%s', parts[0], parts[1]);

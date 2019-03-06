@@ -10,8 +10,11 @@ import { zipDirectory } from './archive';
 import { prepareContainerAsset } from './docker';
 import { debug, success } from './logging';
 
-export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo, ci?: boolean): Promise<CloudFormation.Parameter[]> {
+// tslint:disable-next-line:max-line-length
+export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo, ci?: boolean, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
+  reuse = reuse || [];
   const assets = findAssets(stack.metadata);
+
   if (assets.length === 0) {
     return [];
   }
@@ -21,40 +24,51 @@ export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: Toolk
     throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue("cdk bootstrap " + stack.environment!.name)}")`);
   }
 
-  debug('Preparing assets');
   let params = new Array<CloudFormation.Parameter>();
   for (const asset of assets) {
-    debug(` - ${asset.path} (${asset.packaging})`);
+    // FIXME: Should have excluded by construct path here instead of by unique ID, preferably using
+    // minimatch so we can support globs. Maybe take up during artifact refactoring.
+    const reuseAsset = reuse.indexOf(asset.id) > -1;
 
-    params = params.concat(await prepareAsset(asset, toolkitInfo, ci));
+    if (reuseAsset) {
+      debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)} (reusing)`);
+    } else {
+      debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)}`);
+    }
+
+    params = params.concat(await prepareAsset(asset, toolkitInfo, reuseAsset, ci));
   }
 
   return params;
 }
 
-async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo, ci?: boolean): Promise<CloudFormation.Parameter[]> {
-  debug('Preparing asset', JSON.stringify(asset));
+// tslint:disable-next-line:max-line-length
+async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean, ci?: boolean): Promise<CloudFormation.Parameter[]> {
   switch (asset.packaging) {
     case 'zip':
-      return await prepareZipAsset(asset, toolkitInfo);
+      return await prepareZipAsset(asset, toolkitInfo, reuse);
     case 'file':
-      return await prepareFileAsset(asset, toolkitInfo);
+      return await prepareFileAsset(asset, toolkitInfo, reuse);
     case 'container-image':
-      return await prepareContainerAsset(asset, toolkitInfo, ci);
+      return await prepareContainerAsset(asset, toolkitInfo, reuse, ci);
     default:
       // tslint:disable-next-line:max-line-length
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
   }
 }
 
-async function prepareZipAsset(asset: FileAssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
+async function prepareZipAsset(asset: FileAssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean): Promise<CloudFormation.Parameter[]> {
+  if (reuse) {
+    return await prepareFileAsset(asset, toolkitInfo, reuse);
+  }
+
   debug('Preparing zip asset from directory:', asset.path);
   const staging = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-assets'));
   try {
     const archiveFile = path.join(staging, 'archive.zip');
     await zipDirectory(asset.path, archiveFile);
     debug('zip archive:', archiveFile);
-    return await prepareFileAsset(asset, toolkitInfo, archiveFile, 'application/zip');
+    return await prepareFileAsset(asset, toolkitInfo, reuse, archiveFile, 'application/zip');
   } finally {
     await fs.remove(staging);
   }
@@ -69,8 +83,16 @@ async function prepareZipAsset(asset: FileAssetMetadataEntry, toolkitInfo: Toolk
 async function prepareFileAsset(
     asset: FileAssetMetadataEntry,
     toolkitInfo: ToolkitInfo,
+    reuse: boolean,
     filePath?: string,
     contentType?: string): Promise<CloudFormation.Parameter[]> {
+
+  if (reuse) {
+    return [
+      { ParameterKey: asset.s3BucketParameter, UsePreviousValue: true },
+      { ParameterKey: asset.s3KeyParameter, UsePreviousValue: true },
+    ];
+  }
 
   filePath = filePath || asset.path;
   debug('Preparing file asset:', filePath);

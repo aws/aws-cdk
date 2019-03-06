@@ -2,7 +2,11 @@ import cxapi = require('@aws-cdk/cx-api');
 import { debug } from '../logging';
 import { deserializeStructure } from '../serialize';
 import { Mode } from './aws-auth/credentials';
+import { deployStack, DeployStackResult } from './deploy-stack';
+import { loadToolkitInfo } from './toolkit-info';
 import { SDK } from './util/sdk';
+
+export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
 export type Template = { [key: string]: any };
 
@@ -13,6 +17,17 @@ export type Template = { [key: string]: any };
  */
 export interface IDeploymentTarget {
   readCurrentTemplate(stack: cxapi.SynthesizedStack): Promise<Template>;
+  deployStack(options: DeployStackOptions): Promise<DeployStackResult>;
+}
+
+export interface DeployStackOptions {
+  stack: cxapi.SynthesizedStack;
+  roleArn?: string;
+  deployName?: string;
+  quiet?: boolean;
+  ci?: boolean;
+  toolkitStackName?: string;
+  reuseAssets?: string[];
 }
 
 export interface ProvisionerProps {
@@ -23,13 +38,16 @@ export interface ProvisionerProps {
  * Default provisioner (applies to CloudFormation).
  */
 export class CloudFormationDeploymentTarget implements IDeploymentTarget {
-  constructor(private readonly props: ProvisionerProps) {
+  private readonly aws: SDK;
+
+  constructor(props: ProvisionerProps) {
+    this.aws = props.aws;
   }
 
   public async readCurrentTemplate(stack: cxapi.SynthesizedStack): Promise<Template> {
     debug(`Reading existing template for stack ${stack.name}.`);
 
-    const cfn = await this.props.aws.cloudFormation(stack.environment, Mode.ForReading);
+    const cfn = await this.aws.cloudFormation(stack.environment, Mode.ForReading);
     try {
       const response = await cfn.getTemplate({ StackName: stack.name }).promise();
       return (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};
@@ -40,5 +58,19 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
         throw e;
       }
     }
+  }
+
+  public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
+    const toolkitInfo = await loadToolkitInfo(options.stack.environment, this.aws, options.toolkitStackName || DEFAULT_TOOLKIT_STACK_NAME);
+    return deployStack({
+      stack: options.stack,
+      deployName: options.deployName,
+      roleArn: options.roleArn,
+      quiet: options.quiet,
+      sdk: this.aws,
+      ci: options.ci,
+      reuseAssets: options.reuseAssets,
+      toolkitInfo,
+    });
   }
 }

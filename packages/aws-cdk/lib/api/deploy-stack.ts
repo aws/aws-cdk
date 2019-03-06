@@ -31,6 +31,7 @@ export interface DeployStackOptions {
   deployName?: string;
   quiet?: boolean;
   ci?: boolean;
+  reuseAssets?: string[];
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -40,7 +41,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     throw new Error(`The stack ${options.stack.name} does not have an environment`);
   }
 
-  const params = await prepareAssets(options.stack, options.toolkitInfo, options.ci);
+  const params = await prepareAssets(options.stack, options.toolkitInfo, options.ci, options.reuseAssets);
 
   const deployName = options.deployName || options.stack.name;
 
