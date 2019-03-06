@@ -704,6 +704,33 @@ export class Cfn2Ts extends ValidationRule {
   }
 }
 
+export class JestCoverageTarget extends ValidationRule {
+  public name = 'jest-coverage-target';
+
+  public validate(pkg: PackageJson) {
+    if (pkg.json.jest) {
+      // We enforce the key exists, but the value is just a default
+      const defaults: { [key: string]: number } = {
+        branches: 80,
+        statements: 80
+      };
+      for (const key of Object.keys(defaults)) {
+        const deepPath = ['coverageThreshold', 'global', key];
+        const setting = deepGet(pkg.json.jest, deepPath);
+        if (setting == null) {
+          pkg.report({
+            ruleName: this.name,
+            message: `When jest is used, jest.coverageThreshold.global.${key} must be set`,
+            fix: () => {
+              deepSet(pkg.json.jest, deepPath, defaults[key]);
+            },
+          });
+        }
+      }
+    }
+  }
+}
+
 /**
  * Determine whether this is a JSII package
  *
