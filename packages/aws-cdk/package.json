@@ -50,6 +50,7 @@
     "@aws-cdk/applet-js": "^0.25.1",
     "@aws-cdk/cloudformation-diff": "^0.25.1",
     "@aws-cdk/cx-api": "^0.25.1",
+    "@aws-cdk/region-info": "^0.25.1",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.259.1",
     "camelcase": "^5.0.0",

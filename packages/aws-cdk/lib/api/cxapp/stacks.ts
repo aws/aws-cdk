@@ -1,4 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { Facts, RegionInfo } from '@aws-cdk/region-info';
 import colors = require('colors/safe');
 import minimatch = require('minimatch');
 import contextproviders = require('../../context-providers');
@@ -188,7 +189,9 @@ export class AppStacks {
           if (!stack.template.Resources) {
             stack.template.Resources = {};
           }
-          if (!stack.template.Resources.CDKMetadata) {
+          const resourcePresent = stack.environment.region === 'default-region'
+            || RegionInfo.find(stack.environment.region, Facts.cdkMetadataResourcePresent) === 'YES';
+          if (!stack.template.Resources.CDKMetadata && resourcePresent) {
             stack.template.Resources.CDKMetadata = {
               Type: 'AWS::CDK::Metadata',
               Properties: {
