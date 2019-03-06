@@ -1,7 +1,5 @@
-export * from './promised-region-info';
-
 /** The names of all (known) AWS regions */
-export const AwsRegionNames = [
+export const AWS_REGIONS = [
   'us-east-2',
   'us-east-1',
   'us-west-1',
@@ -21,10 +19,10 @@ export const AwsRegionNames = [
   'eu-west-3',
   'eu-north-1',
   'sa-east-1',
-];
+].sort();
 
 /** Possibly non-exaustive list of all service names, used to locate service principals */
-export const AwsServiceNames = [
+export const AWS_SERVICES = [
   'application-autoscaling',
   'autoscaling',
   'codedeploy',
@@ -36,4 +34,4 @@ export const AwsServiceNames = [
   'sns',
   'sqs',
   'states',
-];
+].sort();

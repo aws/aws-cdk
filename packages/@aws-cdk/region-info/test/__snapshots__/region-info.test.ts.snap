@@ -1,15 +1,13 @@
-import { IRegionInfo } from './region-info-api';
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
-// This code is generated when running `npm run build`.
-// Do NOT edit manually, but check in any change, so they are reviewed.
-
-// tslint:disable:object-literal-key-quotes -- This is generated code
-const staticData: { [region: string]: IRegionInfo } = {
-  "ap-northeast-1": {
-    "name": "ap-northeast-1",
+exports[`built-in data is correct 1`] = `
+Object {
+  "ap-northeast-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website-ap-northeast-1.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website-ap-northeast-1.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-northeast-1.amazonaws.com",
@@ -20,15 +18,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.ap-northeast-1.amazonaws.com"
+      "states": "states.ap-northeast-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "ap-northeast-2": {
-    "name": "ap-northeast-2",
+  "ap-northeast-2": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website.ap-northeast-2.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.ap-northeast-2.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-northeast-2.amazonaws.com",
@@ -39,15 +37,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.ap-northeast-2.amazonaws.com"
+      "states": "states.ap-northeast-2.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "ap-northeast-3": {
-    "name": "ap-northeast-3",
+  "ap-northeast-3": Object {
+    "cdkMetadataResourcePresent": "NO",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website.ap-northeast-3.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.ap-northeast-3.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-northeast-3.amazonaws.com",
@@ -58,15 +56,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.ap-northeast-3.amazonaws.com"
+      "states": "states.ap-northeast-3.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": false
   },
-  "ap-south-1": {
-    "name": "ap-south-1",
+  "ap-south-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website.ap-south-1.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.ap-south-1.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-south-1.amazonaws.com",
@@ -77,15 +75,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.ap-south-1.amazonaws.com"
+      "states": "states.ap-south-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "ap-southeast-1": {
-    "name": "ap-southeast-1",
+  "ap-southeast-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website-ap-southeast-1.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website-ap-southeast-1.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-southeast-1.amazonaws.com",
@@ -96,15 +94,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.ap-southeast-1.amazonaws.com"
+      "states": "states.ap-southeast-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "ap-southeast-2": {
-    "name": "ap-southeast-2",
+  "ap-southeast-2": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website-ap-southeast-2.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website-ap-southeast-2.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ap-southeast-2.amazonaws.com",
@@ -115,15 +113,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.ap-southeast-2.amazonaws.com"
+      "states": "states.ap-southeast-2.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "ca-central-1": {
-    "name": "ca-central-1",
+  "ca-central-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website.ca-central-1.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.ca-central-1.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.ca-central-1.amazonaws.com",
@@ -134,15 +132,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.ca-central-1.amazonaws.com"
+      "states": "states.ca-central-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "cn-north-1": {
-    "name": "cn-north-1",
+  "cn-north-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com.cn",
     "partition": "aws-cn",
-    "s3WebsiteEndpoint": "s3-website.cn-north-1.amazonaws.com.cn",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.cn-north-1.amazonaws.com.cn",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com.cn",
       "autoscaling": "autoscaling.amazonaws.com.cn",
       "codedeploy": "codedeploy.cn-north-1.amazonaws.com.cn",
@@ -153,15 +151,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.cn-north-1.amazonaws.com"
+      "states": "states.cn-north-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "cn-northwest-1": {
-    "name": "cn-northwest-1",
+  "cn-northwest-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com.cn",
     "partition": "aws-cn",
-    "s3WebsiteEndpoint": "s3-website.cn-northwest-1.amazonaws.com.cn",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.cn-northwest-1.amazonaws.com.cn",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com.cn",
       "autoscaling": "autoscaling.amazonaws.com.cn",
       "codedeploy": "codedeploy.cn-northwest-1.amazonaws.com.cn",
@@ -172,15 +170,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.cn-northwest-1.amazonaws.com"
+      "states": "states.cn-northwest-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "eu-central-1": {
-    "name": "eu-central-1",
+  "eu-central-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website.eu-central-1.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.eu-central-1.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-central-1.amazonaws.com",
@@ -191,15 +189,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.eu-central-1.amazonaws.com"
+      "states": "states.eu-central-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "eu-north-1": {
-    "name": "eu-north-1",
+  "eu-north-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website.eu-north-1.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.eu-north-1.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-north-1.amazonaws.com",
@@ -210,15 +208,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.eu-north-1.amazonaws.com"
+      "states": "states.eu-north-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "eu-west-1": {
-    "name": "eu-west-1",
+  "eu-west-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website.eu-west-1.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.eu-west-1.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-west-1.amazonaws.com",
@@ -229,15 +227,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.eu-west-1.amazonaws.com"
+      "states": "states.eu-west-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "eu-west-2": {
-    "name": "eu-west-2",
+  "eu-west-2": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website.eu-west-2.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.eu-west-2.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-west-2.amazonaws.com",
@@ -248,15 +246,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.eu-west-2.amazonaws.com"
+      "states": "states.eu-west-2.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "eu-west-3": {
-    "name": "eu-west-3",
+  "eu-west-3": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website.eu-west-3.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.eu-west-3.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.eu-west-3.amazonaws.com",
@@ -267,15 +265,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.eu-west-3.amazonaws.com"
+      "states": "states.eu-west-3.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "sa-east-1": {
-    "name": "sa-east-1",
+  "sa-east-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website-sa-east-1.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website-sa-east-1.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.sa-east-1.amazonaws.com",
@@ -286,15 +284,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.sa-east-1.amazonaws.com"
+      "states": "states.sa-east-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "us-east-1": {
-    "name": "us-east-1",
+  "us-east-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website-us-east-1.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website-us-east-1.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.us-east-1.amazonaws.com",
@@ -305,15 +303,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.us-east-1.amazonaws.com"
+      "states": "states.us-east-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "us-east-2": {
-    "name": "us-east-2",
+  "us-east-2": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website.us-east-2.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website.us-east-2.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.us-east-2.amazonaws.com",
@@ -324,15 +322,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.us-east-2.amazonaws.com"
+      "states": "states.us-east-2.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "us-west-1": {
-    "name": "us-west-1",
+  "us-west-1": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website-us-west-1.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website-us-west-1.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.us-west-1.amazonaws.com",
@@ -343,15 +341,15 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.us-west-1.amazonaws.com"
+      "states": "states.us-west-1.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-  "us-west-2": {
-    "name": "us-west-2",
+  "us-west-2": Object {
+    "cdkMetadataResourcePresent": "YES",
+    "domainSuffix": "amazonaws.com",
     "partition": "aws",
-    "s3WebsiteEndpoint": "s3-website-us-west-2.amazonaws.com",
-    "servicePrincipals": {
+    "s3StaticWebsiteEndpoint": "s3-website-us-west-2.amazonaws.com",
+    "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
       "codedeploy": "codedeploy.us-west-2.amazonaws.com",
@@ -362,10 +360,8 @@ const staticData: { [region: string]: IRegionInfo } = {
       "s3": "s3.amazonaws.com",
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
-      "states": "states.us-west-2.amazonaws.com"
+      "states": "states.us-west-2.amazonaws.com",
     },
-    "cdkMetadataResourcePresent": true
   },
-};
-
-export = staticData;
+}
+`;

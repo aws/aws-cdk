@@ -47,15 +47,31 @@
     "@types/fs-extra": "^5.0.5",
     "cdk-build-tools": "^0.25.1",
     "fs-extra": "^7.0.1",
-    "pkglint": "^0.25.1"
+    "pkglint": "^0.25.1",
+    "ts-jest": "^24.0.0"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": "0.25.1"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cdk": "0.25.1"
   },
   "jest": {
-    "coverageReporters": ["lcov", "text-summary"],
+    "coverageReporters": [
+      "lcov",
+      "text-summary"
+    ],
     "coverageThreshold": {
       "global": {
-        "statements": 80
+        "statements": 80,
+        "branches": 80
       }
-    }
+    },
+    "preset": "ts-jest",
+    "testMatch": [
+      "**/__tests__/**/*.ts?(x)",
+      "**/?(*.)+(spec|test).ts?(x)"
+    ]
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
