@@ -1,45 +1,79 @@
-## AWS region information, such as service principal names
-### Usage
-Information pertaining to an AWS Region can be obtained using the `RegionInfo`
-class:
+# AWS Region-Specific Information Directory
+## Usage
+Some information used in CDK Applications differs from one AWS region to
+another, such as service principals used in IAM policies, S3 static website
+endpoints, ...
+
+### Direct Access
+This library offers a primitive database of such information so that CDK
+constructs can easily access regional information. The `Facts` class provides a
+list of known fact names, which can then be used with the `RegionInfo` to
+retrieve a particular value:
 
 ```ts
-const dublin = RegionInfo.forRegion('eu-west-1');
+import { Facts, RegionInfo } from '@aws-cdk/region-info';
+
+const codeDeployPrincipal = RegionInfo.find('us-east-1', Facts.servicePrincipal('codedeploy.amazonaws.com'));
+// => codedeploy.us-east-1.amazonaws.com
+
+const staticWebsite = RegionInfo.find('ap-northeast-1', Facts.s3StaticWebsiteEndpoint);
+// => s3-website-ap-northeast-1.amazonaws.com
 ```
 
-### User-supplied region information
-The library comes pre-loaded with information about all publicly available AWS
-regions as of the release date of a particular version. It is possible this
-information is incomplete (or possibly incorrect). A user can provide their own
-region information by placing data in a JSON document at
-`~/.cdk/region-info.json`. The location of the file can be customized either by
-setting the `CDK_REGION_INFO_PATH` environment variable, or by setting the
-`RegionInfo.userDataPath` property.
+### Token Access
+Often, CDK constructs are not able to access the name of the region for which a
+fact is requested (becase this information will not be available before the
+synthesis is underway). To make usage in such scenarios easier, the library
+provides a `RegionInfoToken` class:
 
-The file must contain a single region information object, or an array of region
-information objects, which must conform to the JSON-Schema found in this
-package's `schema/region-info.schema.json` file, for example:
+```ts
+import { Facts, RegionInfoToken } from '@aws-cdk/region-info';
 
-```json
-[
-  {
-    // Obviously not a "real" region:
-    "name": "bermuda-triangle-42",
-    "partition": "aws-phony",
-    "s3WebsiteEndpoint": "s3-website.bermuda-triangle-42.amazonawstest.com",
-    "servicePrincipals": {
-      "codedeploy": "codedeploy.bermuda-triangle-42.amazonawstest.com",
-      "s3": "s3.amazonawstest.com",
-      "sqs": "sqs.amazonaws.com"
-    }
-  }
-]
+const staticWebsite = new RegionInfoToken(Facts.s3StaticWebsiteEndpoint);
 ```
 
-User-supplied region information has a higher precedence than built-in
-information, so any region specified in the user data file will effectively
-replace any built-in data (this helps guarantee stability of the results of the
-call when upgrading this library).
+Tokens initialized in this way will resolve during the systesis phase, according
+to the region name that was determined as part of the synthesis process.
+
+In certain cases, it can be desirable to provide a default value for such tokens
+(for example, where there is a value that is known to work in most regions):
+
+```ts
+// The SNS service principal is almost always "sns.amazonaws.com", so it's a pretty safe default!
+const snsServicePrincipal = new RegionInfoToken(Facts.servicePrincipal('sns.amazonaws.com'), 'sns.amazonaws.com');
+```
+
+## Supplying new or missing information
+As new regions are released, it might happen that a particular fact you need is
+missing from the library. In such cases, the `RegionInfo.register` method can be
+used to inject facts into the database:
+
+```ts
+RegionInfo.register({
+  region: 'bermuda-triangle-1',
+  name: Facts.servicePrincipal('s3.amazonaws.com'),
+  value: 's3-website.bermuda-triangle-1.nowhere.com',
+});
+```
+
+## Overriding incorrect information
+In the event information provided by the library is incorrect, it can be
+overridden using the same `RegionInfo.register` method demonstrated above,
+simply adding an extra boolean argument:
+
+```ts
+RegionInfo.register({
+  region: 'us-east-1',
+  name: Fact.servicePrincipal('service.amazonaws.com'),
+  value: 'the-correct-principal.amazonaws.com',
+}, true /* Allow overriding information */);
+```
+
+If you happen to have stumbled upon incorrect data built into this library, it
+is always a good idea to report your findings in a [GitHub issue], so we can fix
+it for everyone else!
+
+[GitHub issue]: https://github.com/awslabs/aws-cdk/issues
 
 ---
 
