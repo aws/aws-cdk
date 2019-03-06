@@ -150,7 +150,7 @@ export class CloudTrail extends cdk.Construct {
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
 
-      const streamArn = `${logsRole.roleArn}:log-stream:*`;
+      const streamArn = `${logGroup.logGroupArn}:*`;
       logsRole.addToPolicy(new iam.PolicyStatement()
         .addActions("logs:PutLogEvents", "logs:CreateLogStream")
         .addResource(streamArn));
@@ -181,6 +181,11 @@ export class CloudTrail extends cdk.Construct {
     this.cloudTrailArn = trail.trailArn;
     const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
     trail.node.addDependency(s3BucketPolicy);
+
+    if (logsRole !== undefined) {
+      const logsRolePolicy = logsRole.node.findChild("DefaultPolicy").node.findChild("Resource");
+      trail.node.addDependency(logsRolePolicy);
+    }
   }
 
   /**
