@@ -190,7 +190,7 @@ export class AppStacks {
             stack.template.Resources = {};
           }
           const resourcePresent = stack.environment.region === 'default-region'
-            || RegionInfo.find(stack.environment.region, Facts.cdkMetadataResourcePresent) === 'YES';
+            || RegionInfo.find(stack.environment.region, Facts.cdkMetadataResourceAvailable) === 'YES';
           if (!stack.template.Resources.CDKMetadata && resourcePresent) {
             stack.template.Resources.CDKMetadata = {
               Type: 'AWS::CDK::Metadata',

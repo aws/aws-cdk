@@ -90,7 +90,7 @@ test('built-in data is correct', () => {
     snapshot[region] = {
       partition: RegionInfo.find(region, Facts.partition),
       domainSuffix: RegionInfo.find(region, Facts.domainSuffix),
-      cdkMetadataResourcePresent: RegionInfo.find(region, Facts.cdkMetadataResourcePresent),
+      cdkMetadataResourcePresent: RegionInfo.find(region, Facts.cdkMetadataResourceAvailable),
       s3StaticWebsiteEndpoint: RegionInfo.find(region, Facts.s3StaticWebsiteEndpoint),
       servicePrincipals,
     };

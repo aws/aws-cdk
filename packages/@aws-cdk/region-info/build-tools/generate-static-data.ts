@@ -60,7 +60,7 @@ async function main(): Promise<void> {
     const domainSuffix = partition === 'aws' ? 'amazonaws.com' : 'amazonaws.com.cn';
     registerFact(region, 'domainSuffix', domainSuffix);
 
-    registerFact(region, 'cdkMetadataResourcePresent', AWS_CDK_METADATA.has(region) ? 'YES' : 'NO');
+    registerFact(region, 'cdkMetadataResourceAvailable', AWS_CDK_METADATA.has(region) ? 'YES' : 'NO');
 
     registerFact(region, 's3StaticWebsiteEndpoint', AWS_OLDER_REGIONS.has(region)
       ? `s3-website-${region}.${domainSuffix}`

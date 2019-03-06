@@ -86,10 +86,10 @@ export class Facts {
   public static readonly domainSuffix = 'domainSuffix';
 
   /**
-   * Whether the AWS::CDK::Metadata CloudFormation Resource is present in-region or not. The value is a boolean modelled
-   * as `YES` or `NO`.
+   * Whether the AWS::CDK::Metadata CloudFormation Resource is available in-region or not. The value is a boolean
+   * modelled as `YES` or `NO`.
    */
-  public static readonly cdkMetadataResourcePresent = 'cdk:metadata-resource:present';
+  public static readonly cdkMetadataResourceAvailable = 'cdk:metadata-resource:available';
 
   /**
    * The endpoint used for hosting S3 static websites
