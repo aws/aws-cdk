@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { Facts, RegionInfo, RegionInfoToken } from '@aws-cdk/region-info';
 
 export class PolicyDocument extends cdk.Token {
   private statements = new Array<PolicyStatement>();
@@ -90,12 +91,16 @@ export class AccountPrincipal extends ArnPrincipal {
  * An IAM principal that represents an AWS service (i.e. sqs.amazonaws.com).
  */
 export class ServicePrincipal extends PolicyPrincipal {
-  constructor(public readonly service: string) {
+  constructor(public readonly service: string, private readonly region?: string) {
     super();
   }
 
   public policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ Service: [ this.service ] });
+    const factName = Facts.servicePrincipal(this.service);
+    const principal = this.region != null
+      ? RegionInfo.find(this.region, factName) || this.service
+      : new RegionInfoToken(factName, this.service).toString();
+    return new PrincipalPolicyFragment({ Service: [ principal ] });
   }
 }
 
@@ -258,8 +263,14 @@ export class PolicyStatement extends cdk.Token {
     return this.addAwsPrincipal(arn);
   }
 
-  public addServicePrincipal(service: string): this {
-    return this.addPrincipal(new ServicePrincipal(service));
+  /**
+   * Adds a service principal to this policy statement.
+   *
+   * @param service the service name for which a service principal is requested (e.g: `s3.amazonaws.com`).
+   * @param region  the region in which the service principal lives (defaults to the current stack's region).
+   */
+  public addServicePrincipal(service: string, region?: string): this {
+    return this.addPrincipal(new ServicePrincipal(service, region));
   }
 
   public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}): this {

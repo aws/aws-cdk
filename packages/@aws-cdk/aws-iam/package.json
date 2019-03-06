@@ -63,11 +63,13 @@
     "pkglint": "^0.25.1"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.25.1"
+    "@aws-cdk/cdk": "^0.25.1",
+    "@aws-cdk/region-info": "^0.25.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.25.1"
+    "@aws-cdk/cdk": "^0.25.1",
+    "@aws-cdk/region-info": "^0.25.1"
   },
   "engines": {
     "node": ">= 8.10.0"
