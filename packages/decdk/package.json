@@ -120,6 +120,7 @@
     "@aws-cdk/cdk": "^0.25.1",
     "@aws-cdk/cfnspec": "^0.25.1",
     "@aws-cdk/cx-api": "^0.25.1",
+    "@aws-cdk/region-info": "^0.25.1",
     "@aws-cdk/runtime-values": "^0.25.1",
     "fs-extra": "^7.0.1",
     "jsii-reflect": "^0.7.15",
