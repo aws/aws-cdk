@@ -108,7 +108,7 @@ $ awslint
 
 If `--save` is specified, `awslint` will always exit with status code 0.
 
-## CfnOutput Options
+## Output Options
 
 * Use `--verbose` to print all passing linter rules (disabled by default).
 * Use `--quiet` to hide all warnings and skips (just prints errors)

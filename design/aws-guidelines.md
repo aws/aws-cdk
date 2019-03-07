@@ -245,7 +245,7 @@ it in another stack through an `Xxx.import` call.
 The implementation of `export` is different between internal resources (`Xxx`) and
 external imported resource (`ImportedXxx` as recommended above):
 
-For internal resources, the `export` method should produce a CloudFormation CfnOutput
+For internal resources, the `export` method should produce a CloudFormation Output
 for each resource attribute, and return a set of `{ "Fn::ImportValue" }` tokens
 so they can be imported to another stack.
 

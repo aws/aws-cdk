@@ -154,7 +154,7 @@ defined in your CDK app. This means that when you deploy your app, your API will
 be have open access from the internet via the stage URL.
 
 The URL of your API can be obtained from the attribute `restApi.url`, and is
-also exported as an `CfnOutput` from your stack, so it's printed when you `cdk
+also exported as an `Output` from your stack, so it's printed when you `cdk
 deploy` your app:
 
 ```

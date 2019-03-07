@@ -167,7 +167,7 @@ DocProject/Help/html
 # Click-Once directory
 publish/
 
-# Publish Web CfnOutput
+# Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
 # Note: Comment the next line if you want to checkin your web deploy settings,
@@ -192,7 +192,7 @@ PublishScripts/
 *.nuget.props
 *.nuget.targets
 
-# Microsoft Azure Build CfnOutput
+# Microsoft Azure Build Output
 csx/
 *.build.csdef
 
