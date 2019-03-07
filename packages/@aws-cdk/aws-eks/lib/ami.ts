@@ -37,7 +37,7 @@ const LATEST_KUBERNETES_VERSION = '1.11';
 /**
  * Whether the worker nodes should support GPU or just normal instances
  */
-export const enum NodeType {
+export enum NodeType {
   /**
    * Normal instances
    */
