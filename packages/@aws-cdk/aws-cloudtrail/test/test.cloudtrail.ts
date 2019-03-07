@@ -50,6 +50,9 @@ const ExpectedBucketPolicyProperties = {
   }
 };
 
+const logsRolePolicyName = 'MyAmazingCloudTrailLogsRoleDefaultPolicy61DC49E7';
+const logsRoleName = 'MyAmazingCloudTrailLogsRoleF2CCF977';
+
 export = {
   'constructs the expected resources': {
     'with no properties'(test: Test) {
@@ -83,15 +86,15 @@ export = {
               Effect: 'Allow',
               Action: ['logs:PutLogEvents', 'logs:CreateLogStream'],
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyAmazingCloudTrailLogsRoleF2CCF977', 'Arn'] }, ':log-stream:*']],
+                'Fn::GetAtt': ['MyAmazingCloudTrailLogGroupAAD65144', 'Arn'],
               }
             }]
           },
-          PolicyName: 'MyAmazingCloudTrailLogsRoleDefaultPolicy61DC49E7',
+          PolicyName: logsRolePolicyName,
           Roles: [{ Ref: 'MyAmazingCloudTrailLogsRoleF2CCF977' }],
         }));
         const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
-        test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
+        test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
         test.done();
       },
       'enabled and custom retention'(test: Test) {
@@ -110,7 +113,7 @@ export = {
           RetentionInDays: 7
         }));
         const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
-        test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
+        test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
         test.done();
       },
     },
