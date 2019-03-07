@@ -90,7 +90,14 @@ export enum FargatePlatformVersion {
   Latest = 'LATEST',
 
   /**
-   * Version 1.2
+   * Version 1.3.0
+   *
+   * Supports secrets, task recycling.
+   */
+  Version1_3 = '1.3.0',
+
+  /**
+   * Version 1.2.0
    *
    * Supports private registries.
    */
