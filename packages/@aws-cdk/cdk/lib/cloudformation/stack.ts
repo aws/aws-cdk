@@ -612,7 +612,7 @@ import { Aws, ScopedAws } from './pseudo';
 function findResources(roots: Iterable<IConstruct>): CfnResource[] {
   const ret = new Array<CfnResource>();
   for (const root of roots) {
-    ret.push(...root.node.findAll().filter(CfnResource.isResource));
+    ret.push(...root.node.findAll().filter(CfnResource.isCfnResource));
   }
   return ret;
 }

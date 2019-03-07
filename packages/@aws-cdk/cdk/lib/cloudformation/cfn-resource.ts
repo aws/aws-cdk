@@ -48,9 +48,9 @@ export class CfnResource extends Referenceable {
   }
 
   /**
-   * Check whether the given construct is a Resource
+   * Check whether the given construct is a CfnResource
    */
-  public static isResource(construct: IConstruct): construct is CfnResource {
+  public static isCfnResource(construct: IConstruct): construct is CfnResource {
     return (construct as any).resourceType !== undefined;
   }
 

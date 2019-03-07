@@ -71,7 +71,7 @@ export abstract class TagBase implements IAspect {
   }
 
   public visit(construct: IConstruct): void {
-    if (!CfnResource.isResource(construct)) {
+    if (!CfnResource.isCfnResource(construct)) {
       return;
     }
     const resource = construct as CfnResource;
