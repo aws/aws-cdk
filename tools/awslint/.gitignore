@@ -56,7 +56,7 @@ typings/
 # Optional REPL history
 .node_repl_history
 
-# CfnOutput of 'npm pack'
+# Output of 'npm pack'
 *.tgz
 
 # Yarn Integrity file
