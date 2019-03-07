@@ -32,7 +32,7 @@ function main() {
     return isJsii && matches;
   });
 
-  // CfnOutput the JSII directories
+  // Output the JSII directories
   for (const pkg of packages) {
     process.stdout.write(pkg.directory + '\n');
   }
