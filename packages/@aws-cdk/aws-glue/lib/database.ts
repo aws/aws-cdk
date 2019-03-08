@@ -1,0 +1,136 @@
+import s3 = require('@aws-cdk/aws-s3');
+import cdk = require('@aws-cdk/cdk');
+import { CfnDatabase } from './glue.generated';
+
+export interface IDatabase extends cdk.IConstruct {
+  /**
+   * The ARN of the catalog.
+   */
+  readonly catalogArn: string;
+
+  /**
+   * The catalog id of the database (usually, the AWS account id)
+   */
+  readonly catalogId: string;
+
+  /**
+   * The ARN of the database.
+   */
+  readonly databaseArn: string;
+
+  /**
+   * The name of the database.
+   */
+  readonly databaseName: string;
+
+  /**
+   * The location of the database (for example, an HDFS path).
+   */
+  readonly locationUri: string;
+}
+
+export interface DatabaseImportProps {
+  catalogArn: string;
+  catalogId: string;
+  databaseArn: string;
+  databaseName: string;
+  locationUri: string;
+}
+
+export interface DatabaseProps {
+  /**
+   * The name of the database.
+   */
+  databaseName: string;
+
+  /**
+   * The location of the database (for example, an HDFS path).
+   *
+   * @default a bucket is created and the database is stored under s3://<bucket-name>/<database-name>
+   */
+  locationUri?: string;
+}
+
+/**
+ * A Glue database.
+ */
+export class Database extends cdk.Construct {
+  /**
+   * Creates a Database cosntruct that represents an external database.
+   *
+   * @param scope The scope creating construct (usually `this`).
+   * @param id The construct's id.
+   * @param props A `DatabaseImportProps` object. Can be obtained from a call to `database.export()` or manually created.
+   */
+  public static import(scope: cdk.Construct, id: string, props: DatabaseImportProps): IDatabase {
+    return new ImportedDatabase(scope, id, props);
+  }
+
+  public readonly catalogArn: string;
+  public readonly catalogId: string;
+  public readonly databaseArn: string;
+  public readonly databaseName: string;
+  public readonly locationUri: string;
+
+  constructor(parent: cdk.Construct, name: string, props: DatabaseProps) {
+    super(parent, name);
+
+    if (props.locationUri) {
+      this.locationUri = props.locationUri;
+    } else {
+      const bucket = new s3.Bucket(this, 'Bucket');
+      this.locationUri = cdk.Fn.join('', ['s3://', bucket.bucketName, props.databaseName]);
+    }
+
+    this.catalogId = this.node.stack.accountId;
+    const resource = new CfnDatabase(this, 'Resource', {
+      catalogId: this.catalogId,
+      databaseInput: {
+        name: props.databaseName,
+        locationUri: this.locationUri
+      }
+    });
+
+    // see https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html#data-catalog-resource-arns
+    this.databaseName = resource.ref;
+    this.databaseArn = this.node.stack.formatArn({
+      service: 'glue',
+      resource: 'database',
+      resourceName: this.databaseName
+    });
+    this.catalogArn = this.node.stack.formatArn({
+      service: 'glue',
+      resource: 'catalog'
+    });
+  }
+
+  /**
+   * Exports this database from the stack.
+   */
+  public export(): DatabaseImportProps {
+    return {
+      catalogArn: new cdk.Output(this, 'CatalogArn', { value: this.catalogArn }).makeImportValue().toString(),
+      catalogId: new cdk.Output(this, 'CatalogId', { value: this.catalogId }).makeImportValue().toString(),
+      databaseArn: new cdk.Output(this, 'DatabaseArn', { value: this.databaseArn }).makeImportValue().toString(),
+      databaseName: new cdk.Output(this, 'DatabaseName', { value: this.databaseName }).makeImportValue().toString(),
+      locationUri: new cdk.Output(this, 'LocationURI', { value: this.locationUri }).makeImportValue().toString()
+    };
+  }
+}
+
+class ImportedDatabase extends cdk.Construct implements IDatabase {
+  public readonly catalogArn: string;
+  public readonly catalogId: string;
+  public readonly databaseArn: string;
+  public readonly databaseName: string;
+  public readonly locationUri: string;
+
+  constructor(parent: cdk.Construct, name: string, props: DatabaseImportProps) {
+    super(parent, name);
+    this.catalogArn = props.catalogArn;
+    this.catalogId = props.catalogId;
+    this.databaseArn = props.databaseArn;
+    this.databaseName = props.databaseName;
+    this.locationUri = props.locationUri;
+  }
+}
