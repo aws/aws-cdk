@@ -47,7 +47,7 @@ export abstract class ContainerImage {
   /**
    * Optional credentials for a private image registry
    */
-  public abstract readonly credentials?: RepositoryCreds;
+  protected abstract readonly credentials?: RepositoryCreds;
 
   /**
    * Called when the image is used by a ContainerDefinition
@@ -57,11 +57,7 @@ export abstract class ContainerImage {
   /**
    * Render the Repository credentials to the CloudFormation object
    */
-  public renderRepositoryCredentials(): CfnTaskDefinition.RepositoryCredentialsProperty {
-    return {
-        credentialsParameter: this.credentials ? this.credentials.secret.secretArn : ''
-    };
-  }
+  public abstract renderRepositoryCredentials(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined;
 }
 
 import { AssetImage, AssetImageProps } from './images/asset-image';

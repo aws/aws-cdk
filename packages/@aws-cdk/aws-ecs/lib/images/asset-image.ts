@@ -14,7 +14,7 @@ export interface AssetImageProps {
  * An image that will be built at synthesis time
  */
 export class AssetImage extends ContainerImage {
-  public readonly credentials?: RepositoryCreds;
+  protected readonly credentials?: RepositoryCreds;
   private readonly asset: DockerImageAsset;
 
   constructor(scope: cdk.Construct, id: string, props: AssetImageProps) {
@@ -24,6 +24,10 @@ export class AssetImage extends ContainerImage {
 
   public bind(containerDefinition: ContainerDefinition): void {
     this.asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
+  }
+
+  public renderRepositoryCredentials(): undefined {
+      return undefined;
   }
 
   public get imageName() {

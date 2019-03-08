@@ -7,7 +7,7 @@ import { ContainerImage, RepositoryCreds } from '../container-image';
  */
 export class EcrImage extends ContainerImage {
   public readonly imageName: string;
-  public readonly credentials?: RepositoryCreds;
+  protected readonly credentials?: RepositoryCreds;
   private readonly repository: ecr.IRepository;
 
   constructor(repository: ecr.IRepository, tag: string) {
@@ -18,5 +18,9 @@ export class EcrImage extends ContainerImage {
 
   public bind(containerDefinition: ContainerDefinition): void {
     this.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
+  }
+
+  public renderRepositoryCredentials(): undefined {
+    return undefined;
   }
 }

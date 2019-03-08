@@ -1,6 +1,7 @@
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import { ContainerDefinition } from "../container-definition";
 import { ContainerImage, RepositoryCreds } from "../container-image";
+import { CfnTaskDefinition } from '../ecs.generated';
 
 export interface InternetHostedImageProps {
     /**
@@ -14,7 +15,7 @@ export interface InternetHostedImageProps {
  */
 export class InternetHostedImage extends ContainerImage {
   public readonly imageName: string;
-  public readonly credentials?: RepositoryCreds;
+  protected readonly credentials?: RepositoryCreds;
 
   constructor(imageName: string, props: InternetHostedImageProps = {}) {
     super();
@@ -29,5 +30,12 @@ export class InternetHostedImage extends ContainerImage {
     if (this.credentials !== undefined) {
         this.credentials.secret.grantRead(containerDefinition.taskDefinition.obtainExecutionRole());
     }
+  }
+
+  public renderRepositoryCredentials(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined {
+    if (!this.credentials) { return undefined; }
+    return {
+        credentialsParameter: this.credentials.secret.secretArn
+    };
   }
 }
