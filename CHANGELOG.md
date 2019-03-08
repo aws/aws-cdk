@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.25.2](https://github.com/awslabs/aws-cdk/compare/v0.25.1...v0.25.2) (2019-03-07)
+
+
+### Bug Fixes
+
+* **awslint:** Don't fail if the `@aws-cdk/cdk` module is not present ([#1953](https://github.com/awslabs/aws-cdk/issues/1953)) ([929e854](https://github.com/awslabs/aws-cdk/commit/929e854))
+* **cdk-integ:** Update cdk-integ to use new context file ([#1962](https://github.com/awslabs/aws-cdk/issues/1962)) ([dbd2401](https://github.com/awslabs/aws-cdk/commit/dbd2401))
+* **cloudfront:** allow IBucket as CloudFront source ([855f1f5](https://github.com/awslabs/aws-cdk/commit/855f1f5)), closes [#1946](https://github.com/awslabs/aws-cdk/issues/1946)
+* **cloudfront:** pass `viewerProtocolPolicy` to the distribution's behaviors ([#1932](https://github.com/awslabs/aws-cdk/issues/1932)) ([615ecd4](https://github.com/awslabs/aws-cdk/commit/615ecd4))
+* **eks:** remove 'const' from NodeType enum ([#1970](https://github.com/awslabs/aws-cdk/issues/1970)) ([ac52989](https://github.com/awslabs/aws-cdk/commit/ac52989)), closes [#1969](https://github.com/awslabs/aws-cdk/issues/1969)
+* **init:** update the C# init sample with the new `App` API ([#1919](https://github.com/awslabs/aws-cdk/issues/1919)) ([02f991d](https://github.com/awslabs/aws-cdk/commit/02f991d))
+
+
+### Features
+
+* **aws-certificatemanager:** add DNSValidatedCertificate ([#1797](https://github.com/awslabs/aws-cdk/issues/1797)) ([ae8870d](https://github.com/awslabs/aws-cdk/commit/ae8870d)), closes [#605](https://github.com/awslabs/aws-cdk/issues/605)
+* **aws-ecs:** add Fargate version 1.3.0 ([#1968](https://github.com/awslabs/aws-cdk/issues/1968)) ([b529ad7](https://github.com/awslabs/aws-cdk/commit/b529ad7))
+* **core:** democratize synthesis and introduce artifacts ([#1889](https://github.com/awslabs/aws-cdk/issues/1889)) ([4ab1cd3](https://github.com/awslabs/aws-cdk/commit/4ab1cd3)), closes [#1716](https://github.com/awslabs/aws-cdk/issues/1716) [#1893](https://github.com/awslabs/aws-cdk/issues/1893)
+* **ec2:** add support for vpn connections ([#1899](https://github.com/awslabs/aws-cdk/issues/1899)) ([e150648](https://github.com/awslabs/aws-cdk/commit/e150648)), closes [awslabs/jsii#231](https://github.com/awslabs/jsii/issues/231)
+* **toolkit:** add '--reuse-asset' option ([#1918](https://github.com/awslabs/aws-cdk/issues/1918)) ([1767b61](https://github.com/awslabs/aws-cdk/commit/1767b61)), closes [#1916](https://github.com/awslabs/aws-cdk/issues/1916)
+
+
 ## [0.25.1](https://github.com/awslabs/aws-cdk/compare/v0.25.0...v0.25.1) (2019-03-04)
 
 

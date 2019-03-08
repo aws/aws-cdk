@@ -6,14 +6,14 @@ import fs = require('fs-extra');
 import util = require('util');
 import yargs = require('yargs');
 
-import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, SDK } from '../lib';
+import { bootstrapEnvironment, destroyStack, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';
-import { CloudFormationDeploymentTarget } from '../lib/api/deployment-target';
+import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from '../lib/api/deployment-target';
 import { leftPad } from '../lib/api/util/string-manipulation';
 import { CdkToolkit } from '../lib/cdk-toolkit';
-import { printSecurityDiff, RequireApproval } from '../lib/diff';
+import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
 import { data, debug, error, highlight, print, setVerbose, success } from '../lib/logging';
@@ -26,8 +26,6 @@ import { VERSION } from '../lib/version';
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
 const confirm = util.promisify(promptly.confirm);
-
-const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
@@ -61,6 +59,7 @@ async function parseCommandLineArguments() {
       .option('numbered', { type: 'boolean', alias: 'n', desc: 'prefix filenames with numbers to indicate deployment ordering' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment')
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
+      .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' }))
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
@@ -87,6 +86,7 @@ async function parseCommandLineArguments() {
     ].join('\n\n'))
     .argv;
 }
+
 if (!process.stdout.isTTY) {
   colors.disable();
 }
@@ -191,7 +191,15 @@ async function initCommandLine() {
         return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
 
       case 'deploy':
-        return await cliDeploy(args.STACKS, args.exclusively, toolkitStackName, args.roleArn, configuration.settings.get(['requireApproval']), args.ci);
+        return await cli.deploy({
+          stackNames: args.STACKS,
+          exclusively: args.exclusively,
+          toolkitStackName,
+          roleArn: args.roleArn,
+          requireApproval: configuration.settings.get(['requireApproval']),
+          ci: args.ci,
+          reuseAssets: args['build-exclude']
+        });
 
       case 'destroy':
         return await cliDestroy(args.STACKS, args.exclusively, args.force, args.roleArn);
@@ -338,73 +346,6 @@ async function initCommandLine() {
     }
 
     return 0; // exit-code
-  }
-
-  async function cliDeploy(stackNames: string[],
-                           exclusively: boolean,
-                           toolkitStackName: string,
-                           roleArn: string | undefined,
-                           requireApproval: RequireApproval,
-                           ci: boolean) {
-    if (requireApproval === undefined) { requireApproval = RequireApproval.Broadening; }
-
-    const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
-
-    for (const stack of stacks) {
-      if (stacks.length !== 1) { highlight(stack.name); }
-      if (!stack.environment) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
-      }
-      const toolkitInfo = await loadToolkitInfo(stack.environment, aws, toolkitStackName);
-
-      if (requireApproval !== RequireApproval.Never) {
-        const currentTemplate = await provisioner.readCurrentTemplate(stack);
-        if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
-
-          // only talk to user if we STDIN is a terminal (otherwise, fail)
-          if (!process.stdin.isTTY) {
-            throw new Error(
-              '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
-              'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
-          }
-
-          const confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
-          if (!confirmed) { throw new Error('Aborted by user'); }
-        }
-      }
-
-      if (stack.name !== stack.originalName) {
-        print('%s: deploying... (was %s)', colors.bold(stack.name), colors.bold(stack.originalName));
-      } else {
-        print('%s: deploying...', colors.bold(stack.name));
-      }
-
-      try {
-        const result = await deployStack({ stack, sdk: aws, toolkitInfo, deployName: stack.name, roleArn, ci });
-        const message = result.noOp
-          ? ` ✅  %s (no changes)`
-          : ` ✅  %s`;
-
-        success('\n' + message, stack.name);
-
-        if (Object.keys(result.outputs).length > 0) {
-          print('\nOutputs:');
-        }
-
-        for (const name of Object.keys(result.outputs)) {
-          const value = result.outputs[name];
-          print('%s.%s = %s', colors.cyan(stack.name), colors.cyan(name), colors.underline(colors.cyan(value)));
-        }
-
-        print('\nStack ARN:');
-
-        data(result.stackArn);
-      } catch (e) {
-        error('\n ❌  %s failed: %s', colors.bold(stack.name), e);
-        throw e;
-      }
-    }
   }
 
   async function cliDestroy(stackNames: string[], exclusively: boolean, force: boolean, roleArn: string | undefined) {
