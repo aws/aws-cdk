@@ -13,9 +13,8 @@ const service = namespace.createService('Service', {
 });
 
 service.registerNonIpInstance({
-  instanceId: "api",
-  customAttributes: { "arn": "arn:aws:s3:::mybucket" }
+  instanceId: 'api',
+  customAttributes: { arn: 'arn:aws:s3:::mybucket' }
 });
 
 app.run();
-

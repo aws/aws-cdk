@@ -10,19 +10,13 @@ const namespace = new servicediscovery.PublicDnsNamespace(stack, 'Namespace', {
 
 const service = namespace.createService('Service', {
   name: 'foo',
-  dnsRecordType: servicediscovery.DnsRecordType.A,
-  dnsTtlSec: 30,
-  healthCheckConfig: {
-    type: servicediscovery.HealthCheckType.Https,
-    resourcePath: '/healthcheck',
-    failureThreshold: 2
-  }
+  dnsRecordType: servicediscovery.DnsRecordType.Cname,
+  dnsTtlSec: 30
 });
 
-service.registerIpInstance({
+service.registerCnameInstance({
   instanceId: 'myInstance',
-  ipv4: '54.239.25.192',
-  port: 443
+  instanceCname: 'service.pizza',
 });
 
 app.run();

@@ -9,12 +9,12 @@ const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');
 const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
 
 const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'Namespace', {
-  name: "boobar.com",
+  name: 'boobar.com',
   vpc,
 });
 
 const service = namespace.createService('Service', {
-  name: "boo",
+  name: 'boo',
   dnsRecordType: servicediscovery.DnsRecordType.A_AAAA,
   dnsTtlSec: 30,
   loadBalancer: true

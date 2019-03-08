@@ -19,7 +19,7 @@ export = {
     });
 
     service.registerIpInstance({
-      instanceId: "myInstance",
+      instanceId: 'myInstance',
       ipv4: '10.0.0.0',
       ipv6: '0:0:0:0:0:ffff:a00:0',
       port: 443
@@ -28,17 +28,17 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
-        AWS_INSTANCE_IPV4: "10.0.0.0",
-        AWS_INSTANCE_IPV6: "0:0:0:0:0:ffff:a00:0",
-        AWS_INSTANCE_PORT: "443"
+        AWS_INSTANCE_IPV4: '10.0.0.0',
+        AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
+        AWS_INSTANCE_PORT: '443'
       },
       ServiceId: {
-        "Fn::GetAtt": [
-          "MyNamespaceMyService365E2470",
-          "Id"
+        'Fn::GetAtt': [
+          'MyNamespaceMyService365E2470',
+          'Id'
         ]
       },
-      InstanceId: "myInstance"
+      InstanceId: 'myInstance'
     }));
 
     test.done();
@@ -99,7 +99,7 @@ export = {
     });
 
     service.registerIpInstance({
-      instanceId: "myInstance",
+      instanceId: 'myInstance',
       ipv4: '10.0.0.0',
       ipv6: '0:0:0:0:0:ffff:a00:0',
       port: 443
@@ -108,17 +108,17 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
-        AWS_INSTANCE_IPV4: "10.0.0.0",
-        AWS_INSTANCE_IPV6: "0:0:0:0:0:ffff:a00:0",
-        AWS_INSTANCE_PORT: "443"
+        AWS_INSTANCE_IPV4: '10.0.0.0',
+        AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
+        AWS_INSTANCE_PORT: '443'
       },
       ServiceId: {
-        "Fn::GetAtt": [
-          "MyNamespaceMyService365E2470",
-          "Id"
+        'Fn::GetAtt': [
+          'MyNamespaceMyService365E2470',
+          'Id'
         ]
       },
-      InstanceId: "myInstance"
+      InstanceId: 'myInstance'
     }));
 
     test.done();
@@ -243,20 +243,20 @@ export = {
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
         AWS_ALIAS_DNS_NAME: {
-          "Fn::GetAtt": [
-            "MyALB911A8556",
-            "DNSName"
+          'Fn::GetAtt': [
+            'MyALB911A8556',
+            'DNSName'
           ]
         },
-        foo: "bar"
+        foo: 'bar'
       },
       ServiceId: {
-        "Fn::GetAtt": [
-          "MyNamespaceMyService365E2470",
-          "Id"
+        'Fn::GetAtt': [
+          'MyNamespaceMyService365E2470',
+          'Id'
         ]
       },
-      InstanceId: "MyLoadBalancer"
+      InstanceId: 'MyLoadBalancer'
     }));
 
     test.done();
@@ -324,14 +324,14 @@ export = {
     service.registerCnameInstance({
       instanceId: 'cnameInstance',
       instanceCname: 'foo.com',
-      customAttributes: { 'dogs': 'good' }
+      customAttributes: { dogs: 'good' }
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
-        'AWS_INSTANCE_CNAME': "foo.com",
-        'dogs': 'good'
+        AWS_INSTANCE_CNAME: 'foo.com',
+        dogs: 'good'
       },
       ServiceId: {
         'Fn::GetAtt': [
@@ -380,13 +380,13 @@ export = {
 
     service.registerNonIpInstance({
       instanceId: 'nonIp',
-      customAttributes: { 'dogs': 'good' }
+      customAttributes: { dogs: 'good' }
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
       InstanceAttributes: {
-        'dogs': 'good'
+        dogs: 'good'
       },
       ServiceId: {
         'Fn::GetAtt': [
@@ -413,7 +413,7 @@ export = {
     // THEN
     test.throws(() => {
       service.registerNonIpInstance({
-        instanceId: "nonIp",
+        instanceId: 'nonIp',
       });
     }, /This type of instance can only be registered for HTTP namespaces./);
 
