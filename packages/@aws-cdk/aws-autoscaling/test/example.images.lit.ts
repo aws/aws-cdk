@@ -2,7 +2,7 @@ import ec2 = require("@aws-cdk/aws-ec2");
 
 /// !show
 // Pick a Windows edition to use
-const windows = new ec2.WindowsImage(ec2.WindowsVersion.WindowsServer2016EnglishNanoBase);
+const windows = new ec2.WindowsImage(ec2.WindowsVersion.WindowsServer2019EnglishFullBase);
 
 // Pick the right Amazon Linux edition. All arguments shown are optional
 // and will default to these values when omitted.
