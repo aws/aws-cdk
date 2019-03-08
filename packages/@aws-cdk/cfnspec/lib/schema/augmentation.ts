@@ -6,6 +6,28 @@ export interface ResourceAugmentation {
    * Metric augmentations for this resource type
    */
   metrics?: ResourceMetricAugmentations;
+
+  /**
+   * Overrides for this resource augmentation
+   */
+  overrides?: ResourceOverrides;
+}
+
+export interface ResourceOverrides {
+  /**
+   * The name of the resource class
+   */
+  class?: string;
+
+  /**
+   * The name of the resource interface
+   */
+  interface?: string;
+
+  /**
+   * The name of the module
+   */
+  module?: string;
 }
 
 export interface ResourceMetricAugmentations {

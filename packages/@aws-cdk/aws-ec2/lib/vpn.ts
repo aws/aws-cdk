@@ -1,3 +1,4 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import net = require('net');
 import { CfnCustomerGateway, CfnVPNConnection, CfnVPNConnectionRoute } from './ec2.generated';
@@ -98,6 +99,44 @@ export enum VpnConnectionType {
 }
 
 export class VpnConnection extends cdk.Construct implements IVpnConnection {
+  /**
+   * Return the given named metric for all VPN connections.
+   */
+  public static metricAll(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/VPN',
+      metricName,
+      ...props
+    });
+  }
+
+  /**
+   * Metric for the tunnel state of all VPN connections.
+   *
+   * @default average over 5 minutes
+   */
+  public static metricAllTunnelState(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('TunnelSate', { statistic: 'avg', ...props });
+  }
+
+  /**
+   * Metric for the tunnel data in of all VPN connections.
+   *
+   * @default sum over 5 minutes
+   */
+  public static metricAllTunnelDataIn(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('TunnelDataIn', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the tunnel data out of all VPN connections.
+   *
+   * @default sum over 5 minutes
+   */
+  public static metricAllTunnelDataOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metricAll('TunnelDataOut', { statistic: 'sum', ...props });
+  }
+
   public readonly vpnId: string;
   public readonly customerGatewayId: string;
   public readonly customerGatewayIp: string;

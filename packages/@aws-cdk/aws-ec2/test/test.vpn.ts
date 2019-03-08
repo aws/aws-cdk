@@ -1,7 +1,7 @@
 import { expect, haveResource,  } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { VpcNetwork } from '../lib';
+import { VpcNetwork, VpnConnection } from '../lib';
 
 export = {
   'can add a vpn connection to a vpc with a vpn gateway'(test: Test) {
@@ -257,6 +257,45 @@ export = {
         }
       }
     }), /`tunnelInsideCidr`.+size/);
+
+    test.done();
+  },
+
+  'can use metricTunnelState on a vpn connection'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const vpc = new VpcNetwork(stack, 'VpcNetwork', {
+      vpnGateway: true
+    });
+
+    const vpn = vpc.addVpnConnection('Vpn', {
+      ip: '192.0.2.1'
+    });
+
+    // THEN
+    test.deepEqual(stack.node.resolve(vpn.metricTunnelState()), {
+      dimensions: { VpnId: { Ref: 'VpcNetworkVpnA476C58D' } },
+      namespace: 'AWS/VPN',
+      metricName: 'TunnelState',
+      periodSec: 300,
+      statistic: 'Average'
+    });
+
+    test.done();
+  },
+
+  'can use metricAllTunnelDataOut'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    test.deepEqual(stack.node.resolve(VpnConnection.metricAllTunnelDataOut()), {
+      namespace: 'AWS/VPN',
+      metricName: 'TunnelDataOut',
+      periodSec: 300,
+      statistic: 'Sum'
+    });
 
     test.done();
   }

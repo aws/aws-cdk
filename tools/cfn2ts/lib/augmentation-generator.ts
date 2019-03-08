@@ -24,7 +24,7 @@ export class AugmentationGenerator {
 
       if (aug.metrics) {
         this.code.line('import cloudwatch = require("@aws-cdk/aws-cloudwatch");');
-        this.emitMetricAugmentations(resourceTypeName, aug.metrics);
+        this.emitMetricAugmentations(resourceTypeName, aug.metrics, aug.overrides);
         hadAugmentations = true;
       }
     }
@@ -39,14 +39,15 @@ export class AugmentationGenerator {
     return await this.code.save(dir);
   }
 
-  private emitMetricAugmentations(resourceTypeName: string, metrics: schema.ResourceMetricAugmentations) {
+  private emitMetricAugmentations(resourceTypeName: string, metrics: schema.ResourceMetricAugmentations, overrides?: schema.ResourceOverrides) {
     const cfnName = SpecName.parse(resourceTypeName);
     const resourceName = genspec.CodeName.forCfnResource(cfnName, this.affix);
     const l2ClassName = resourceName.className.replace(/^Cfn/, '');
+    const kebabL2ClassName = l2ClassName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 
-    const baseClassName = l2ClassName + 'Base';
-    const interfaceName = 'I' + l2ClassName;
-    const baseClassModule = `./${l2ClassName.toLowerCase()}-base`;
+    const baseClassName = (overrides && overrides.class) || l2ClassName + 'Base';
+    const interfaceName = (overrides && overrides.interface) || 'I' + l2ClassName;
+    const baseClassModule = `./${(overrides && overrides.module) || `${kebabL2ClassName}-base`}`;
 
     this.code.line(`import { ${baseClassName} } from "${baseClassModule}";`);
 

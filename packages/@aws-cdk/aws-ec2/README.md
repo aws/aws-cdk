@@ -341,3 +341,5 @@ vpc.addVpnConnection('Dynamic', {
 ```
 
 Routes will be propagated on the route tables associated with the private subnets.
+
+VPN connections expose metric across all tunnels and per connection.
