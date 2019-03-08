@@ -20,26 +20,18 @@ export interface IInstance extends cdk.IConstruct {
 export interface BaseInstanceProps {
   /**
    * The id of the instance resource
+   *
+   * @default CloudFormation-generated name
    */
-  instanceId: string;
+  instanceId?: string;
 
   /**
    * Custom attributes of the instance.
    *
    * @default none
    */
-  customAttributes?: object;
+  customAttributes?: {[key: string]: string};
 
-}
-
-/**
- * Properties to define ServiceDiscovery Instance
- */
-export interface InstanceProps extends BaseInstanceProps {
-  /**
-   * The Cloudmap service this resource is registered to.
-   */
-  service: IService;
 }
 
 export abstract class InstanceBase extends cdk.Construct implements IInstance {

@@ -3,6 +3,9 @@ import { BaseInstanceProps, InstanceBase } from './instance';
 import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 
+/*
+ * Properties for a IpInstance used for service#registerIpInstance
+ */
 export interface IpInstanceBaseProps extends BaseInstanceProps {
   /**
    * The port on the endpoint that you want AWS Cloud Map to perform health checks on. This value is also used for
@@ -30,6 +33,9 @@ export interface IpInstanceBaseProps extends BaseInstanceProps {
   ipv6?: string;
 }
 
+/*
+ * Properties for an IpInstance
+ */
 export interface IpInstanceProps extends IpInstanceBaseProps {
   /**
    * The Cloudmap service this resource is registered to.
@@ -37,6 +43,9 @@ export interface IpInstanceProps extends IpInstanceBaseProps {
   service: IService;
 }
 
+/*
+ * Instance that is accessible using an IP address.
+ */
 export class IpInstance extends InstanceBase {
   /**
    * The Id of the instance

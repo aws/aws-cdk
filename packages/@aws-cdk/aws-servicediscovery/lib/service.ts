@@ -256,7 +256,7 @@ export class Service extends cdk.Construct implements IService {
    * FIXME don't pass in ID? not sure if id can be used as instance ID here (instanceId is arbitrary but required for
    * cloudmap#registerInstance)
    */
-  public registerLoadBalancer(id: string, loadBalancer: route53.IAliasRecordTarget, customAttributes?: object): IInstance {
+  public registerLoadBalancer(id: string, loadBalancer: route53.IAliasRecordTarget, customAttributes?: {[key: string]: string}): IInstance {
     return new AliasTargetInstance(this, id, {
       service: this,
       instanceId: id,

@@ -84,6 +84,7 @@ export abstract class NamespaceBase extends cdk.Construct implements INamespace 
   public abstract readonly type: NamespaceType;
 }
 
+// FIXME don't export
 export class ImportedNamespace extends NamespaceBase {
   public readonly namespaceId: string;
   public readonly namespaceArn: string;
@@ -99,7 +100,6 @@ export class ImportedNamespace extends NamespaceBase {
     this.type = props.type;
   }
 
-  // FIXME not sure this is quite right?
   public export() {
     return this.props;
   }

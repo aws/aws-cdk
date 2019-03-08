@@ -8,6 +8,9 @@ import { CfnInstance } from './servicediscovery.generated';
 export interface NonIpInstanceBaseProps extends BaseInstanceProps {
 }
 
+/*
+ * Properties for a NonIpInstance
+ */
 export interface NonIpInstanceProps extends NonIpInstanceBaseProps {
   /**
    * The Cloudmap service this resource is registered to.
@@ -15,6 +18,10 @@ export interface NonIpInstanceProps extends NonIpInstanceBaseProps {
   service: IService;
 }
 
+/*
+ * Instance accessible using values other than an IP address or a domain name (CNAME).
+ * Specify the other values in Custom attributes.
+ */
 export class NonIpInstance extends InstanceBase {
   /**
    * The Id of the instance

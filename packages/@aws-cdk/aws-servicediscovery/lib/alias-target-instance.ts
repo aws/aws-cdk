@@ -4,6 +4,9 @@ import { NamespaceType } from './namespace';
 import { DnsRecordType, IService, RoutingPolicy } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 
+/*
+ * Properties for an AliasTargetInstance
+ */
 export interface AliasTargetInstanceProps extends BaseInstanceProps {
   /**
    * DNS name of the target
@@ -16,6 +19,10 @@ export interface AliasTargetInstanceProps extends BaseInstanceProps {
   service: IService;
 }
 
+/*
+ * Instance that uses Route 53 Alias record type. Currently, the only resource types supported are Elastic Load
+ * Balancers.
+ */
 export class AliasTargetInstance extends InstanceBase {
   /**
    * The Id of the instance

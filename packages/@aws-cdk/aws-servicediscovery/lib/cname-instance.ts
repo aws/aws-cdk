@@ -4,15 +4,21 @@ import { NamespaceType } from './namespace';
 import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 
+/*
+ * Properties for a CnameInstance used for service#registerCnameInstance
+ */
 export interface CnameInstanceBaseProps extends BaseInstanceProps {
   /**
-   * If the service configuration includes a CNAME record, the domain name that you want Route 53 to return in
-   * response to DNS queries, for example, example.com. This value is required if the service specified by ServiceId
-   * includes settings for an CNAME record.
+   * If the service configuration includes a CNAME record, the domain name that you want Route 53 to
+   * return in response to DNS queries, for example, example.com. This value is required if the
+   * service specified by ServiceId includes settings for an CNAME record.
    */
   instanceCname: string;
 }
 
+/*
+ * Properties for a CnameInstance
+ */
 export interface CnameInstanceProps extends CnameInstanceBaseProps {
   /**
    * The Cloudmap service this resource is registered to.
@@ -20,6 +26,9 @@ export interface CnameInstanceProps extends CnameInstanceBaseProps {
   service: IService;
 }
 
+/*
+ * Instance that is accessible using a domain name (CNAME).
+ */
 export class CnameInstance extends InstanceBase {
   /**
    * The Id of the instance
