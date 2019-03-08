@@ -18,7 +18,7 @@
         }
       }
     },
-    "MyNamespaceServiceapi411ED925": {
+    "MyNamespaceServiceNonIpInstance59424747": {
       "Type": "AWS::ServiceDiscovery::Instance",
       "Properties": {
         "InstanceAttributes": {
@@ -30,7 +30,7 @@
             "Id"
           ]
         },
-        "InstanceId": "api"
+        "InstanceId": "awsservicediscoveryintegMyNamespaceServiceNonIpInstance360FCE8A"
       }
     }
   }

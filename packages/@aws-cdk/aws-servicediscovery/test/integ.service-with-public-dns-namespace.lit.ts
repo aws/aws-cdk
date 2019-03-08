@@ -20,7 +20,6 @@ const service = namespace.createService('Service', {
 });
 
 service.registerIpInstance({
-  instanceId: 'myInstance',
   ipv4: '54.239.25.192',
   port: 443
 });

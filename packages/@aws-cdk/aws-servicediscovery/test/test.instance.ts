@@ -19,7 +19,6 @@ export = {
     });
 
     service.registerIpInstance({
-      instanceId: 'myInstance',
       ipv4: '10.0.0.0',
       ipv6: '0:0:0:0:0:ffff:a00:0',
       port: 443
@@ -38,7 +37,7 @@ export = {
           'Id'
         ]
       },
-      InstanceId: 'myInstance'
+      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2'
     }));
 
     test.done();
@@ -58,7 +57,6 @@ export = {
     });
 
     service.registerIpInstance({
-      instanceId: 'myInstance',
       ipv4: '54.239.25.192',
       ipv6: '0:0:0:0:0:ffff:a00:0',
       port: 443
@@ -77,7 +75,7 @@ export = {
           'Id'
         ]
       },
-      InstanceId: 'myInstance'
+      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2'
     }));
 
     test.done();
@@ -99,7 +97,6 @@ export = {
     });
 
     service.registerIpInstance({
-      instanceId: 'myInstance',
       ipv4: '10.0.0.0',
       ipv6: '0:0:0:0:0:ffff:a00:0',
       port: 443
@@ -118,7 +115,7 @@ export = {
           'Id'
         ]
       },
-      InstanceId: 'myInstance'
+      InstanceId: 'MyNamespaceMyServiceIpInstanceBACEB9D2'
     }));
 
     test.done();
@@ -163,7 +160,6 @@ export = {
     // THEN
     test.throws(() => {
       service.registerIpInstance({
-        instanceId: 'id',
         port: 3306
       });
     }, /At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record./);
@@ -187,7 +183,6 @@ export = {
     // THEN
     test.throws(() => {
       service.registerIpInstance({
-        instanceId: 'id',
         port: 3306
       });
     }, /An `ipv4` must be specified for a service using a `A` record./);
@@ -211,7 +206,6 @@ export = {
     // THEN
     test.throws(() => {
       service.registerIpInstance({
-        instanceId: 'id',
         port: 3306
       });
     }, /An `ipv6` must be specified for a service using a `AAAA` record./);
@@ -237,7 +231,7 @@ export = {
     });
     const customAttributes = { foo: 'bar' };
 
-    service.registerLoadBalancer('MyLoadBalancer', alb, customAttributes );
+    service.registerLoadBalancer(alb, customAttributes);
 
     // THEN
     expect(stack).to(haveResource('AWS::ServiceDiscovery::Instance', {
@@ -256,7 +250,7 @@ export = {
           'Id'
         ]
       },
-      InstanceId: 'MyLoadBalancer'
+      InstanceId: 'MyNamespaceMyServiceLoadbalancerD1112A76'
     }));
 
     test.done();
@@ -279,7 +273,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerLoadBalancer('MyLoadBalancer', alb);
+      service.registerLoadBalancer(alb);
     }, /Namespace associated with Service must be a DNS Namespace./);
 
     test.done();
@@ -303,7 +297,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerLoadBalancer('MyLoadBalancer', alb);
+      service.registerLoadBalancer(alb);
     }, /Service must use `WEIGHTED` routing policy./);
 
     test.done();
@@ -322,7 +316,6 @@ export = {
     });
 
     service.registerCnameInstance({
-      instanceId: 'cnameInstance',
       instanceCname: 'foo.com',
       customAttributes: { dogs: 'good' }
     });
@@ -339,7 +332,7 @@ export = {
           'Id'
         ]
       },
-      InstanceId: 'cnameInstance'
+      InstanceId: 'MyNamespaceMyServiceCnameInstance0EB1C98D'
     }));
 
     test.done();
@@ -360,7 +353,6 @@ export = {
     // THEN
     test.throws(() => {
       service.registerCnameInstance({
-        instanceId: 'cnameInstance',
         instanceCname: 'foo.com',
       });
     }, /Namespace associated with Service must be a DNS Namespace/);
@@ -379,7 +371,6 @@ export = {
     const service = namespace.createService('MyService');
 
     service.registerNonIpInstance({
-      instanceId: 'nonIp',
       customAttributes: { dogs: 'good' }
     });
 
@@ -394,7 +385,7 @@ export = {
           'Id'
         ]
       },
-      InstanceId: 'nonIp'
+      InstanceId: 'MyNamespaceMyServiceNonIpInstance7EFD703A'
     }));
 
     test.done();

@@ -14,7 +14,6 @@ const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'Namespace', {
 });
 
 const service = namespace.createService('Service', {
-  name: 'boo',
   dnsRecordType: servicediscovery.DnsRecordType.A_AAAA,
   dnsTtlSec: 30,
   loadBalancer: true
@@ -22,6 +21,6 @@ const service = namespace.createService('Service', {
 
 const loadbalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, internetFacing: true });
 
-service.registerLoadBalancer('LoadBalancer', loadbalancer);
+service.registerLoadBalancer(loadbalancer);
 
 app.run();

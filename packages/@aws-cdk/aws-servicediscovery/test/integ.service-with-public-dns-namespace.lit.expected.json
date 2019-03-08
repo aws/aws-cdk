@@ -38,7 +38,7 @@
         }
       }
     },
-    "NamespaceServicemyInstanceECEB093F": {
+    "NamespaceServiceIpInstanceCCED93E7": {
       "Type": "AWS::ServiceDiscovery::Instance",
       "Properties": {
         "InstanceAttributes": {
@@ -51,7 +51,7 @@
             "Id"
           ]
         },
-        "InstanceId": "myInstance"
+        "InstanceId": "awsservicediscoveryintegNamespaceServiceIpInstance5A6845D4"
       }
     }
   }

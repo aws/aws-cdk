@@ -252,21 +252,17 @@ export class Service extends cdk.Construct implements IService {
 
   /**
    * Registers an ELB as a new instance with unique name instanceId in this service.
-   *
-   * FIXME don't pass in ID? not sure if id can be used as instance ID here (instanceId is arbitrary but required for
-   * cloudmap#registerInstance)
    */
-  public registerLoadBalancer(id: string, loadBalancer: route53.IAliasRecordTarget, customAttributes?: {[key: string]: string}): IInstance {
-    return new AliasTargetInstance(this, id, {
+  public registerLoadBalancer(loadBalancer: route53.IAliasRecordTarget, customAttributes?: {[key: string]: string}): IInstance {
+    return new AliasTargetInstance(this, "Loadbalancer", {
       service: this,
-      instanceId: id,
       dnsName: loadBalancer.asAliasRecordTarget().dnsName,
       customAttributes
     });
   }
 
   public registerNonIpInstance(props: NonIpInstanceBaseProps): IInstance {
-    return new NonIpInstance(this, props.instanceId, {
+    return new NonIpInstance(this, "NonIpInstance", {
       service: this,
       instanceId: props.instanceId,
       customAttributes: props.customAttributes
@@ -274,7 +270,7 @@ export class Service extends cdk.Construct implements IService {
   }
 
   public registerIpInstance(props: IpInstanceBaseProps): IInstance {
-    return new IpInstance(this, props.instanceId, {
+    return new IpInstance(this, "IpInstance", {
       service: this,
       instanceId: props.instanceId,
       ipv4: props.ipv4,
@@ -285,7 +281,7 @@ export class Service extends cdk.Construct implements IService {
   }
 
   public registerCnameInstance(props: CnameInstanceBaseProps): IInstance {
-    return new CnameInstance(this, props.instanceId, {
+    return new CnameInstance(this, "CnameInstance", {
       service: this,
       instanceId: props.instanceId,
       instanceCname: props.instanceCname,

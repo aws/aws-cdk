@@ -15,7 +15,6 @@ const service = namespace.createService('Service', {
 });
 
 service.registerCnameInstance({
-  instanceId: 'myInstance',
   instanceCname: 'service.pizza',
 });
 

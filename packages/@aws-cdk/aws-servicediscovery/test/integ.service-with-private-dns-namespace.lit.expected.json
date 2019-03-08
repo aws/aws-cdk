@@ -374,7 +374,6 @@
           },
           "RoutingPolicy": "WEIGHTED"
         },
-        "Name": "boo",
         "NamespaceId": {
           "Fn::GetAtt": [
             "Namespace9B63B8C8",
@@ -383,7 +382,7 @@
         }
       }
     },
-    "NamespaceServiceLoadBalancer0AF75CE8": {
+    "NamespaceServiceLoadbalancerD271391A": {
       "Type": "AWS::ServiceDiscovery::Instance",
       "Properties": {
         "InstanceAttributes": {
@@ -400,7 +399,7 @@
             "Id"
           ]
         },
-        "InstanceId": "LoadBalancer"
+        "InstanceId": "awsservicediscoveryintegNamespaceServiceLoadbalancerA3D252B2"
       }
     },
     "LB8A12904C": {
