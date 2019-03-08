@@ -2,6 +2,7 @@ import { DockerImageAsset } from '@aws-cdk/assets-docker';
 import cdk = require('@aws-cdk/cdk');
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, RepositoryCreds } from '../container-image';
+import { CfnTaskDefinition } from '../ecs.generated';
 
 export interface AssetImageProps {
   /**
@@ -26,7 +27,7 @@ export class AssetImage extends ContainerImage {
     this.asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
   }
 
-  public renderRepositoryCredentials(): undefined {
+  public renderRepositoryCredentials(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined {
       return undefined;
   }
 
