@@ -7,12 +7,15 @@ import { Column } from './schema';
 import { StorageType } from './storage-type';
 
 export interface ITable extends cdk.IConstruct {
-  readonly database: IDatabase;
-  readonly bucket: s3.Bucket;
-  readonly prefix: string;
-
-  readonly tableName: string;
   readonly tableArn: string;
+  readonly tableName: string;
+
+  export(): TableImportProps;
+}
+
+export interface TableImportProps {
+  tableArn: string;
+  tableName: string;
 }
 
 export interface TableProps {
@@ -83,6 +86,17 @@ export interface TableProps {
  * A Glue table.
  */
 export class Table extends cdk.Construct implements ITable {
+  /**
+   * Creates a Table construct that represents an external table.
+   *
+   * @param scope The scope creating construct (usually `this`).
+   * @param id The construct's id.
+   * @param props A `TableImportProps` object. Can be obtained from a call to `table.export()` or manually created.
+   */
+  public static import(scope: cdk.Construct, id: string, props: TableImportProps): ITable {
+    return new ImportedTable(scope, id, props);
+  }
+
   public readonly database: IDatabase;
   public readonly bucket: s3.Bucket;
   public readonly prefix: string;
@@ -134,6 +148,13 @@ export class Table extends cdk.Construct implements ITable {
     this.tableArn = cdk.Fn.join('', [this.database.databaseArn, '/', this.tableName]);
   }
 
+  public export(): TableImportProps {
+    return {
+      tableName: new cdk.Output(this, 'TableName', { value: this.tableName }).makeImportValue().toString(),
+      tableArn: new cdk.Output(this, 'TableArn', { value: this.tableArn }).makeImportValue().toString(),
+    };
+  }
+
   /**
    * Grant read permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
@@ -167,7 +188,7 @@ export class Table extends cdk.Construct implements ITable {
   private grant(identity: iam.IPrincipal, permissions: string[]) {
     identity.addToPolicy(new iam.PolicyStatement()
       .addResource(this.tableArn)
-      .addActions(...readPermissions.concat(writePermissions)));
+      .addActions(...permissions));
   }
 }
 
@@ -200,4 +221,19 @@ function renderColumns(columns?: Array<Column | Column>) {
       comment: column.comment
     };
   });
+}
+
+class ImportedTable extends cdk.Construct implements ITable {
+  public readonly tableArn: string;
+  public readonly tableName: string;
+
+  constructor(scope: cdk.Construct, id: string, private readonly props: TableImportProps) {
+    super(scope, id);
+    this.tableArn = props.tableArn;
+    this.tableName = props.tableName;
+  }
+
+  public export(): TableImportProps {
+    return this.props;
+  }
 }

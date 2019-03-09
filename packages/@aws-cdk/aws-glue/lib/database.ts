@@ -27,6 +27,8 @@ export interface IDatabase extends cdk.IConstruct {
    * The location of the database (for example, an HDFS path).
    */
   readonly locationUri: string;
+
+  export(): DatabaseImportProps;
 }
 
 export interface DatabaseImportProps {
@@ -56,7 +58,7 @@ export interface DatabaseProps {
  */
 export class Database extends cdk.Construct {
   /**
-   * Creates a Database cosntruct that represents an external database.
+   * Creates a Database construct that represents an external database.
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
@@ -72,8 +74,8 @@ export class Database extends cdk.Construct {
   public readonly databaseName: string;
   public readonly locationUri: string;
 
-  constructor(parent: cdk.Construct, name: string, props: DatabaseProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: DatabaseProps) {
+    super(scope, id);
 
     if (props.locationUri) {
       this.locationUri = props.locationUri;
@@ -125,12 +127,16 @@ class ImportedDatabase extends cdk.Construct implements IDatabase {
   public readonly databaseName: string;
   public readonly locationUri: string;
 
-  constructor(parent: cdk.Construct, name: string, props: DatabaseImportProps) {
+  constructor(parent: cdk.Construct, name: string, private readonly props: DatabaseImportProps) {
     super(parent, name);
     this.catalogArn = props.catalogArn;
     this.catalogId = props.catalogId;
     this.databaseArn = props.databaseArn;
     this.databaseName = props.databaseName;
     this.locationUri = props.locationUri;
+  }
+
+  public export() {
+    return this.props;
   }
 }

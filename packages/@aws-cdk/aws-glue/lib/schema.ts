@@ -115,6 +115,8 @@ export class Schema {
   /**
    * Creates a decimal type.
    *
+   * TODO: Bounds
+   *
    * @param precision the total number of digits
    * @param scale the number of digits in fractional part, the default is 0
    */
@@ -185,7 +187,7 @@ export class Schema {
     }
     return {
       isPrimitive: false,
-      inputString: `map<string,${valueType.inputString}>`
+      inputString: `map<${keyType.inputString},${valueType.inputString}>`
     };
   }
 
@@ -201,8 +203,6 @@ export class Schema {
         if (column.comment === undefined) {
           return `${column.name}:${column.type.inputString}`;
         } else {
-          // TODO: is this right?
-          // STRUCT < col_name : data_type [COMMENT col_comment] [, ...] >
           return `${column.name}:${column.type.inputString} COMMENT '${column.comment}'`;
         }
       }).join(',')}>`
