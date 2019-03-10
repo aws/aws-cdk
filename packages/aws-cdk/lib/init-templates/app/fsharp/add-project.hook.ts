@@ -4,9 +4,9 @@ import { InvokeHook } from '../../../init';
 
 export const invoke: InvokeHook = async (targetDirectory: string) => {
   const slnPath = path.join(targetDirectory, "src", "HelloCdk.sln");
-  const csprojPath = path.join(targetDirectory, "src", "HelloCdk", "HelloCdk.csproj");
+  const fsprojPath = path.join(targetDirectory, "src", "HelloCdk", "HelloCdk.fsproj");
 
-  const child = child_process.spawn('dotnet', [ 'sln', slnPath, 'add', csprojPath ], {
+  const child = child_process.spawn('dotnet', [ 'sln', slnPath, 'add', fsprojPath ], {
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
     stdio: [ 'ignore', 'pipe', 'inherit' ]
@@ -26,7 +26,7 @@ export const invoke: InvokeHook = async (targetDirectory: string) => {
       if (code === 0) {
         resolve(Buffer.concat(stdout).toString('utf-8'));
       } else {
-        reject(new Error(`Could not add project HelloCdk.csproj to solution HelloCdk.sln. Error code: ${code}`));
+        reject(new Error(`Could not add project HelloCdk.fsproj to solution HelloCdk.sln. Error code: ${code}`));
       }
     });
   });
