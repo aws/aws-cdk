@@ -1,32 +1,31 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
 import util = require('util');
 import yargs = require('yargs');
 
-import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
+import { bootstrapEnvironment, destroyStack, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';
+import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from '../lib/api/deployment-target';
 import { leftPad } from '../lib/api/util/string-manipulation';
-import { printSecurityDiff, printStackDiff, RequireApproval } from '../lib/diff';
+import { CdkToolkit } from '../lib/cdk-toolkit';
+import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
 import { data, debug, error, highlight, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
-import { deserializeStructure, serializeStructure } from '../lib/serialize';
+import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
 import { VERSION } from '../lib/version';
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
 const confirm = util.promisify(promptly.confirm);
-
-const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
@@ -60,13 +59,15 @@ async function parseCommandLineArguments() {
       .option('numbered', { type: 'boolean', alias: 'n', desc: 'prefix filenames with numbers to indicate deployment ordering' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment')
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
+      .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' }))
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'x', desc: 'only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
-    .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
+    .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'number of context lines to include in arbitrary JSON diff rendering', default: 3 })
       .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' })
       .option('strict', { type: 'boolean', desc: 'do not filter out AWS::CDK::Metadata resources', default: false }))
@@ -85,6 +86,7 @@ async function parseCommandLineArguments() {
     ].join('\n\n'))
     .argv;
 }
+
 if (!process.stdout.isTTY) {
   colors.disable();
 }
@@ -107,13 +109,17 @@ async function initCommandLine() {
   const configuration = new Configuration(argv);
   await configuration.load();
 
+  const provisioner = new CloudFormationDeploymentTarget({ aws });
+
   const appStacks = new AppStacks({
     verbose: argv.trace || argv.verbose,
     ignoreErrors: argv.ignoreErrors,
     strict: argv.strict,
-    configuration, aws, synthesizer: execProgram });
-
-  const renames = parseRenames(argv.rename);
+    configuration,
+    aws,
+    synthesizer: execProgram,
+    renames: parseRenames(argv.rename)
+  });
 
   /** Function to load plug-ins, using configurations additively. */
   function loadPlugins(...settings: Settings[]) {
@@ -165,19 +171,35 @@ async function initCommandLine() {
     args.STACKS = args.STACKS || [];
     args.ENVIRONMENTS = args.ENVIRONMENTS || [];
 
+    const cli = new CdkToolkit({ appStacks, provisioner });
+
     switch (command) {
       case 'ls':
       case 'list':
         return await cliList({ long: args.long });
 
       case 'diff':
-        return await diffStack(await findStack(args.STACK), args.template, args.strict, args.contextLines);
+        return await cli.diff({
+          stackNames: args.STACKS,
+          exclusively: args.exclusively,
+          templatePath: args.template,
+          strict: args.strict,
+          contextLines: args.contextLines
+        });
 
       case 'bootstrap':
         return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
 
       case 'deploy':
-        return await cliDeploy(args.STACKS, args.exclusively, toolkitStackName, args.roleArn, configuration.settings.get(['requireApproval']), args.ci);
+        return await cli.deploy({
+          stackNames: args.STACKS,
+          exclusively: args.exclusively,
+          toolkitStackName,
+          roleArn: args.roleArn,
+          requireApproval: configuration.settings.get(['requireApproval']),
+          ci: args.ci,
+          reuseAssets: args['build-exclude']
+        });
 
       case 'destroy':
         return await cliDestroy(args.STACKS, args.exclusively, args.force, args.roleArn);
@@ -258,7 +280,6 @@ async function initCommandLine() {
     const autoSelectDependencies = !exclusively && outputDir !== undefined;
 
     const stacks = await appStacks.selectStacks(stackNames, autoSelectDependencies ? ExtendedStackSelection.Upstream : ExtendedStackSelection.None);
-    renames.validateSelectedStacks(stacks);
 
     if (doInteractive) {
       if (stacks.length !== 1) {
@@ -294,9 +315,8 @@ async function initCommandLine() {
 
     let i = 0;
     for (const stack of stacks) {
-      const finalName = renames.finalName(stack.name);
       const prefix = numbered ? leftPad(`${i}`, 3, '0') + '.' : '';
-      const fileName = `${outputDir}/${prefix}${finalName}.template.${json ? 'json' : 'yaml'}`;
+      const fileName = `${outputDir}/${prefix}${stack.name}.template.${json ? 'json' : 'yaml'}`;
       highlight(fileName);
       await fs.writeFile(fileName, toJsonOrYaml(stack.template));
       i++;
@@ -328,82 +348,11 @@ async function initCommandLine() {
     return 0; // exit-code
   }
 
-  async function cliDeploy(stackNames: string[],
-                           exclusively: boolean,
-                           toolkitStackName: string,
-                           roleArn: string | undefined,
-                           requireApproval: RequireApproval,
-                           ci: boolean) {
-    if (requireApproval === undefined) { requireApproval = RequireApproval.Broadening; }
-
-    const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
-    renames.validateSelectedStacks(stacks);
-
-    for (const stack of stacks) {
-      if (stacks.length !== 1) { highlight(stack.name); }
-      if (!stack.environment) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
-      }
-      const toolkitInfo = await loadToolkitInfo(stack.environment, aws, toolkitStackName);
-      const deployName = renames.finalName(stack.name);
-
-      if (requireApproval !== RequireApproval.Never) {
-        const currentTemplate = await readCurrentTemplate(stack);
-        if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
-
-          // only talk to user if we STDIN is a terminal (otherwise, fail)
-          if (!process.stdin.isTTY) {
-            throw new Error(
-              '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
-              'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
-          }
-
-          const confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
-          if (!confirmed) { throw new Error('Aborted by user'); }
-        }
-      }
-
-      if (deployName !== stack.name) {
-        print('%s: deploying... (was %s)', colors.bold(deployName), colors.bold(stack.name));
-      } else {
-        print('%s: deploying...', colors.bold(stack.name));
-      }
-
-      try {
-        const result = await deployStack({ stack, sdk: aws, toolkitInfo, deployName, roleArn, ci });
-        const message = result.noOp
-          ? ` ✅  %s (no changes)`
-          : ` ✅  %s`;
-
-        success('\n' + message, stack.name);
-
-        if (Object.keys(result.outputs).length > 0) {
-          print('\nOutputs:');
-        }
-
-        for (const name of Object.keys(result.outputs)) {
-          const value = result.outputs[name];
-          print('%s.%s = %s', colors.cyan(deployName), colors.cyan(name), colors.underline(colors.cyan(value)));
-        }
-
-        print('\nStack ARN:');
-
-        data(result.stackArn);
-      } catch (e) {
-        error('\n ❌  %s failed: %s', colors.bold(stack.name), e);
-        throw e;
-      }
-    }
-  }
-
   async function cliDestroy(stackNames: string[], exclusively: boolean, force: boolean, roleArn: string | undefined) {
     const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream);
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
     stacks.reverse();
-
-    renames.validateSelectedStacks(stacks);
 
     if (!force) {
       // tslint:disable-next-line:max-line-length
@@ -414,56 +363,14 @@ async function initCommandLine() {
     }
 
     for (const stack of stacks) {
-      const deployName = renames.finalName(stack.name);
-
-      success('%s: destroying...', colors.blue(deployName));
+      success('%s: destroying...', colors.blue(stack.name));
       try {
-        await destroyStack({ stack, sdk: aws, deployName, roleArn });
-        success('\n ✅  %s: destroyed', colors.blue(deployName));
+        await destroyStack({ stack, sdk: aws, deployName: stack.name, roleArn });
+        success('\n ✅  %s: destroyed', colors.blue(stack.name));
       } catch (e) {
-        error('\n ❌  %s: destroy failed', colors.blue(deployName), e);
+        error('\n ❌  %s: destroy failed', colors.blue(stack.name), e);
         throw e;
       }
-    }
-  }
-
-  async function diffStack(stackName: string, templatePath: string | undefined, strict: boolean, context: number): Promise<number> {
-    const stack = await appStacks.synthesizeStack(stackName);
-    const currentTemplate = await readCurrentTemplate(stack, templatePath);
-    if (printStackDiff(currentTemplate, stack, strict, context) === 0) {
-      return 0;
-    } else {
-      return 1;
-    }
-  }
-
-  async function readCurrentTemplate(stack: cxapi.SynthesizedStack, templatePath?: string): Promise<{ [key: string]: any }> {
-    if (templatePath) {
-      if (!await fs.pathExists(templatePath)) {
-        throw new Error(`There is no file at ${templatePath}`);
-      }
-      const fileContent = await fs.readFile(templatePath, { encoding: 'UTF-8' });
-      return parseTemplate(fileContent);
-    } else {
-      const stackName = renames.finalName(stack.name);
-      debug(`Reading existing template for stack ${stackName}.`);
-
-      const cfn = await aws.cloudFormation(stack.environment, Mode.ForReading);
-      try {
-        const response = await cfn.getTemplate({ StackName: stackName }).promise();
-        return (response.TemplateBody && parseTemplate(response.TemplateBody)) || {};
-      } catch (e) {
-        if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
-          return {};
-        } else {
-          throw e;
-        }
-      }
-    }
-
-    /* Attempt to parse YAML, fall back to JSON. */
-    function parseTemplate(text: string): any {
-      return deserializeStructure(text);
     }
   }
 

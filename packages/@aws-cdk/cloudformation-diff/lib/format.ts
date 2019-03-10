@@ -11,6 +11,10 @@ import { SecurityGroupChanges } from './network/security-group-changes';
 // tslint:disable-next-line:no-var-requires
 const { structuredPatch } = require('diff');
 
+export interface FormatStream extends NodeJS.WritableStream {
+  columns?: number;
+}
+
 /**
  * Renders template differences to the process' console.
  *
@@ -20,7 +24,7 @@ const { structuredPatch } = require('diff');
  *                         case there is no aws:cdk:path metadata in the template.
  * @param context          the number of context lines to use in arbitrary JSON diff (defaults to 3).
  */
-export function formatDifferences(stream: NodeJS.WriteStream,
+export function formatDifferences(stream: FormatStream,
                                   templateDiff: TemplateDiff,
                                   logicalToPathMap: { [logicalId: string]: string } = { },
                                   context: number = 3) {
@@ -72,7 +76,7 @@ const UPDATE   = colors.yellow('[~]');
 const REMOVAL  = colors.red('[-]');
 
 class Formatter {
-  constructor(private readonly stream: NodeJS.WriteStream,
+  constructor(private readonly stream: FormatStream,
               private readonly logicalToPathMap: { [logicalId: string]: string },
               diff?: TemplateDiff,
               private readonly context: number = 3) {

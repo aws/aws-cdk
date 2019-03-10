@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
-  "version": "0.24.1",
+  "version": "0.25.2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -33,21 +33,21 @@
     "awslint": "cdk-awslint"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.24.1",
-    "@aws-cdk/aws-codebuild": "^0.24.1",
-    "@aws-cdk/aws-codepipeline-api": "^0.24.1",
-    "@aws-cdk/aws-iam": "^0.24.1",
-    "@aws-cdk/cdk": "^0.24.1",
-    "@aws-cdk/cx-api": "^0.24.1"
+    "@aws-cdk/aws-cloudformation": "^0.25.2",
+    "@aws-cdk/aws-codebuild": "^0.25.2",
+    "@aws-cdk/aws-codepipeline-api": "^0.25.2",
+    "@aws-cdk/aws-iam": "^0.25.2",
+    "@aws-cdk/cdk": "^0.25.2",
+    "@aws-cdk/cx-api": "^0.25.2"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^0.24.1",
-    "@aws-cdk/aws-codepipeline": "^0.24.1",
-    "@aws-cdk/aws-s3": "^0.24.1",
-    "cdk-build-tools": "^0.24.1",
-    "cdk-integ-tools": "^0.24.1",
+    "@aws-cdk/assert": "^0.25.2",
+    "@aws-cdk/aws-codepipeline": "^0.25.2",
+    "@aws-cdk/aws-s3": "^0.25.2",
+    "cdk-build-tools": "^0.25.2",
+    "cdk-integ-tools": "^0.25.2",
     "fast-check": "^1.7.0",
-    "pkglint": "^0.24.1"
+    "pkglint": "^0.25.2"
   },
   "repository": {
     "type": "git",
@@ -65,10 +65,10 @@
     "cdk"
   ],
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.24.1",
-    "@aws-cdk/aws-codepipeline-api": "^0.24.1",
-    "@aws-cdk/aws-iam": "^0.24.1",
-    "@aws-cdk/cdk": "^0.24.1"
+    "@aws-cdk/aws-cloudformation": "^0.25.2",
+    "@aws-cdk/aws-codepipeline-api": "^0.25.2",
+    "@aws-cdk/aws-iam": "^0.25.2",
+    "@aws-cdk/cdk": "^0.25.2"
   },
   "engines": {
     "node": ">= 8.10.0"

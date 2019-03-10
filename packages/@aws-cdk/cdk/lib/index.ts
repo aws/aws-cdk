@@ -32,3 +32,5 @@ export * from './context';
 export * from './environment';
 
 export * from './runtime';
+
+export * from './synthesis';

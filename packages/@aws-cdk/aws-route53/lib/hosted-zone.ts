@@ -1,6 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { HostedZoneImportProps, IHostedZone } from './hosted-zone-ref';
+import { ZoneDelegationRecord } from './records';
 import { CfnHostedZone } from './route53.generated';
 import { validateZoneName } from './util';
 
@@ -112,6 +113,41 @@ export class PublicHostedZone extends HostedZone {
   public addVpc(_vpc: ec2.IVpcNetwork) {
     throw new Error('Cannot associate public hosted zones with a VPC');
   }
+
+  /**
+   * Adds a delegation from this zone to a designated zone.
+   *
+   * @param delegate the zone being delegated to.
+   * @param opts     options for creating the DNS record, if any.
+   */
+  public addDelegation(delegate: PublicHostedZone, opts: ZoneDelegationOptions = {}): void {
+    new ZoneDelegationRecord(this, `${this.zoneName} -> ${delegate.zoneName}`, {
+      zone: this,
+      delegatedZoneName: delegate.zoneName,
+      nameServers: delegate.hostedZoneNameServers!, // PublicHostedZones always have name servers!
+      comment: opts.comment,
+      ttl: opts.ttl,
+    });
+  }
+}
+
+/**
+ * Options available when creating a delegation relationship from one PublicHostedZone to another.
+ */
+export interface ZoneDelegationOptions {
+  /**
+   * A comment to add on the DNS record created to incorporate the delegation.
+   *
+   * @default none
+   */
+  comment?: string;
+
+  /**
+   * The TTL (Time To Live) of the DNS delegation record in DNS caches.
+   *
+   * @default 172800
+   */
+  ttl?: number;
 }
 
 export interface PrivateHostedZoneProps extends CommonHostedZoneProps {

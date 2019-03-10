@@ -2,7 +2,7 @@ import colors = require('colors/safe');
 import yargs = require('yargs');
 import { CommandOptions } from '../command-api';
 import { print } from '../logging';
-import { PROJECT_CONFIG } from '../settings';
+import { Context, PROJECT_CONFIG } from '../settings';
 import { renderTable } from '../util';
 
 export const command = 'context';
@@ -27,15 +27,14 @@ export function handler(args: yargs.Arguments) {
 export async function realHandler(options: CommandOptions): Promise<number> {
   const { configuration, args } = options;
 
-  const contextValues = configuration.context.everything();
+  const contextValues = configuration.context.all;
 
   if (args.clear) {
     configuration.context.clear();
     await configuration.saveContext();
     print('All context values cleared.');
   } else if (args.reset) {
-    invalidateContext(contextValues, args.reset);
-    configuration.context.setAll(contextValues);
+    invalidateContext(configuration.context, args.reset);
     await configuration.saveContext();
   } else {
     // List -- support '--json' flag
@@ -77,7 +76,7 @@ function listContext(context: any) {
   print(`Run ${colors.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 
-function invalidateContext(context: any, key: string) {
+function invalidateContext(context: Context, key: string) {
   const i = parseInt(key, 10);
   if (`${i}` === key) {
     // Twas a number and we fully parsed it.
@@ -85,8 +84,8 @@ function invalidateContext(context: any, key: string) {
   }
 
   // Unset!
-  if (key in context) {
-    delete context[key];
+  if (context.has(key)) {
+    context.unset(key);
     print(`Context value ${colors.blue(key)} reset. It will be refreshed on the next SDK synthesis run.`);
   } else {
     print(`No context value with key ${colors.blue(key)}`);
