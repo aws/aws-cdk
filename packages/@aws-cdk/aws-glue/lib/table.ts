@@ -41,7 +41,7 @@ export interface TableProps {
    *
    * @default one is created for you
    */
-  bucket?: s3.Bucket;
+  bucket?: s3.IBucket;
 
   /**
    * S3 prefix under which table objects are stored.
@@ -98,7 +98,7 @@ export class Table extends cdk.Construct implements ITable {
   }
 
   public readonly database: IDatabase;
-  public readonly bucket: s3.Bucket;
+  public readonly bucket: s3.IBucket;
   public readonly prefix: string;
 
   public readonly tableName: string;
@@ -135,10 +135,10 @@ export class Table extends cdk.Construct implements ITable {
           compressed: props.compressed === undefined ? false : props.compressed,
           storedAsSubDirectories: props.storedAsSubDirectories === undefined ? false : props.storedAsSubDirectories,
           columns: renderColumns(props.columns),
-          inputFormat: props.storageType.inputFormat,
-          outputFormat: props.storageType.outputFormat,
+          inputFormat: props.storageType.inputFormat.className,
+          outputFormat: props.storageType.outputFormat.className,
           serdeInfo: {
-            serializationLibrary: props.storageType.serializationLibrary
+            serializationLibrary: props.storageType.serializationLibrary.className
           }
         },
 

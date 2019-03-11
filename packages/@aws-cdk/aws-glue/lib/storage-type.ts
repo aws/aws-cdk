@@ -1,7 +1,7 @@
 /**
  * Absolute class name of the Hadoop `InputFormat` to use when reading table files.
  */
-export enum InputFormat {
+export class InputFormat {
   /**
    * An InputFormat for plain text files. Files are broken into lines. Either linefeed or
    * carriage-return are used to signal end of line. Keys are the position in the file, and
@@ -9,19 +9,23 @@ export enum InputFormat {
    *
    * @see https://hadoop.apache.org/docs/stable/api/org/apache/hadoop/mapred/TextInputFormat.html
    */
-  TextInputFormat = 'org.apache.hadoop.mapred.TextInputFormat'
+  public static readonly TextInputFormat = new InputFormat('org.apache.hadoop.mapred.TextInputFormat');
+
+  constructor(public readonly className: string) {}
 }
 
 /**
  * Absolute class name of the Hadoop `OutputFormat` to use when writing table files.
  */
-export enum OutputFormat {
+export class OutputFormat {
   /**
    * Writes text data with a null key (value only).
    *
    * @see https://hive.apache.org/javadocs/r2.2.0/api/org/apache/hadoop/hive/ql/io/HiveIgnoreKeyTextOutputFormat.html
    */
-  HiveIgnoreKeyTextOutputFormat = 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+  public static readonly HiveIgnoreKeyTextOutputFormat = new OutputFormat('org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat');
+
+  constructor(public readonly className: string) {}
 }
 
 /**
@@ -29,16 +33,18 @@ export enum OutputFormat {
  *
  * @see https://cwiki.apache.org/confluence/display/Hive/SerDe
  */
-export enum SerializationLibrary {
+export class SerializationLibrary {
   /**
    * @see https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL#LanguageManualDDL-JSON
    */
-  HiveJson = 'org.apache.hive.hcatalog.data.JsonSerDe',
+  public static readonly HiveJson = new SerializationLibrary('org.apache.hive.hcatalog.data.JsonSerDe');
 
   /**
    * @see https://github.com/rcongiu/Hive-JSON-Serde
    */
-  OpenXJson = 'org.openx.data.jsonserde.JsonSerDe'
+  public static readonly OpenXJson = new SerializationLibrary('org.openx.data.jsonserde.JsonSerDe');
+
+  constructor(public readonly className: string) {}
 }
 
 /**
@@ -48,17 +54,17 @@ export interface StorageType {
   /**
    * `InputFormat` for this storage type.
    */
-  inputFormat: string;
+  inputFormat: InputFormat;
 
   /**
    * `OutputFormat` for this storage type.
    */
-  outputFormat: string;
+  outputFormat: OutputFormat;
 
   /**
    * Serialization library for this storage type.
    */
-  serializationLibrary: string;
+  serializationLibrary: SerializationLibrary;
 }
 
 export namespace StorageType {
