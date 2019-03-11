@@ -100,7 +100,7 @@ export enum VpnConnectionType {
 
 export class VpnConnection extends cdk.Construct implements IVpnConnection {
   /**
-   * Return the given named metric for all VPN connections.
+   * Return the given named metric for all VPN connections in the account/region.
    */
   public static metricAll(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
     return new cloudwatch.Metric({
@@ -111,7 +111,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
   }
 
   /**
-   * Metric for the tunnel state of all VPN connections.
+   * Metric for the tunnel state of all VPN connections in the account/region.
    *
    * @default average over 5 minutes
    */
@@ -120,7 +120,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
   }
 
   /**
-   * Metric for the tunnel data in of all VPN connections.
+   * Metric for the tunnel data in of all VPN connections in the account/region.
    *
    * @default sum over 5 minutes
    */
