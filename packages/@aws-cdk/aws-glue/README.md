@@ -68,3 +68,37 @@ new glue.Table(stack, 'MyTable', {
   storageType: glue.StorageType.Json
 });
 ```
+
+### Types
+
+A table's schema is a collection of columns, each of which have a `name` and a `type`. Types are recursive structures, consisting of primitive and complex types:
+
+#### Primitive
+
+Numeric:
+* `bigint`
+* `float`
+* `integer`
+* `smallint`
+* `tinyint`
+
+Date and Time:
+* `date`
+* `timestamp`
+
+String Types:
+
+* `string`
+* `decimal`
+* `char`
+* `varchar`
+
+Misc:
+* `boolean`
+* `binary`
+
+#### Complex
+
+* `array` - array of some other type.
+* `map` - map of some primitive key type to any value type.
+* `struct` - nested structure containing individually named and typed columns.

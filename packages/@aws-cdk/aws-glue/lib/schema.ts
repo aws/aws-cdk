@@ -192,7 +192,7 @@ export class Schema {
   }
 
   /**
-   * Creates a nested structure containing individuall named and typed columns.
+   * Creates a nested structure containing individually named and typed columns.
    *
    * @param columns the columns of the structure.
    */
