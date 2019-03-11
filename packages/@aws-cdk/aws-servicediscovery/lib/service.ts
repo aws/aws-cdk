@@ -38,8 +38,6 @@ export interface IService extends cdk.IConstruct {
    * The Routing Policy used by the service
    */
   readonly routingPolicy: RoutingPolicy;
-
-  // Possibly add boolean loadbalancer field?
 }
 
 /**
@@ -92,10 +90,9 @@ export interface DnsServiceProps extends BaseServiceProps {
   dnsTtlSec?: number;
 
   /**
-   * A complex type that contains settings for an optional health check.
-   * If you specify settings for a health check, AWS Cloud Map associates the health check with the
-   * records that you specify in DnsConfig.
-   * Public DNS namespaces only. Only one of healthCheckConfig or healthCheckCustomConfig can be specified.
+   * Settings for an optional health check.  If you specify health check settings, AWS Cloud Map associates the
+   * health check with the records that you specify in DnsConfig. Public DNS namespaces only. Only one of
+   * healthCheckConfig or healthCheckCustomConfig can be specified.
    *
    * @default none
    */
@@ -114,7 +111,6 @@ export interface DnsServiceProps extends BaseServiceProps {
    *
    * @default false
    */
-
   loadBalancer?: boolean;
 }
 
@@ -159,7 +155,6 @@ export class Service extends cdk.Construct implements IService {
    */
   public readonly routingPolicy: RoutingPolicy;
 
-  // FIXME make this only called through #createService on namespace classes?
   constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
@@ -199,7 +194,7 @@ export class Service extends cdk.Construct implements IService {
       ? RoutingPolicy.Weighted
       : RoutingPolicy.Multivalue;
 
-    const dnsRecordType = props.dnsRecordType !== undefined ? props.dnsRecordType : DnsRecordType.A;
+    const dnsRecordType = props.dnsRecordType || DnsRecordType.A;
 
     if (props.loadBalancer
       && (!(dnsRecordType === DnsRecordType.A
@@ -211,7 +206,7 @@ export class Service extends cdk.Construct implements IService {
     const dnsConfig = props.namespace.type === NamespaceType.Http
       ? undefined
       : {
-          dnsRecords: _getDnsRecords(dnsRecordType, props.dnsTtlSec),
+          dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtlSec),
           namespaceId: props.namespace.namespaceId,
           routingPolicy,
         };
@@ -224,13 +219,8 @@ export class Service extends cdk.Construct implements IService {
         : undefined
     };
 
-    const healthCheckConfig = props.healthCheckConfig
-        ? { ...healthCheckConfigDefaults, ...props.healthCheckConfig }
-        : undefined;
-
-    const healthCheckCustomConfig = props.healthCheckCustomConfig
-        ? props.healthCheckCustomConfig
-        : undefined;
+    const healthCheckConfig = props.healthCheckConfig && { ...healthCheckConfigDefaults, ...props.healthCheckConfig };
+    const healthCheckCustomConfig = props.healthCheckCustomConfig;
 
     // Create service
     const service = new CfnService(this, 'Resource', {
@@ -261,6 +251,9 @@ export class Service extends cdk.Construct implements IService {
     });
   }
 
+  /**
+   * Registers a resource that is accessible using values other than an IP address or a domain name (CNAME).
+   */
   public registerNonIpInstance(props: NonIpInstanceBaseProps): IInstance {
     return new NonIpInstance(this, "NonIpInstance", {
       service: this,
@@ -269,6 +262,9 @@ export class Service extends cdk.Construct implements IService {
     });
   }
 
+  /**
+   * Registers a resource that is accessible using an IP address.
+   */
   public registerIpInstance(props: IpInstanceBaseProps): IInstance {
     return new IpInstance(this, "IpInstance", {
       service: this,
@@ -280,6 +276,9 @@ export class Service extends cdk.Construct implements IService {
     });
   }
 
+  /**
+   * Registers a resource that is accessible using a CNAME.
+   */
   public registerCnameInstance(props: CnameInstanceBaseProps): IInstance {
     return new CnameInstance(this, "CnameInstance", {
       service: this,
@@ -290,7 +289,7 @@ export class Service extends cdk.Construct implements IService {
   }
 }
 
-function _getDnsRecords(dnsRecordType: DnsRecordType, dnsTtlSec?: number): DnsRecord[] {
+function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtlSec?: number): DnsRecord[] {
   const ttl = dnsTtlSec !== undefined ? dnsTtlSec.toString() : '60';
 
   if (dnsRecordType === DnsRecordType.A_AAAA) {

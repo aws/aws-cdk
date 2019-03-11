@@ -59,6 +59,9 @@ export class PrivateDnsNamespace extends NamespaceBase {
     this.vpc = props.vpc;
   }
 
+  /**
+   * Creates a service within the namespace
+   */
   public createService(id: string, props?: DnsServiceProps): Service {
     return new Service(this, id, {
       namespace: this,

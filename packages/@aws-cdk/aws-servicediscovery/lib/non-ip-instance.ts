@@ -40,7 +40,7 @@ export class NonIpInstance extends InstanceBase {
       throw new Error('This type of instance can only be registered for HTTP namespaces.');
     }
 
-    if (props.customAttributes === undefined) {
+    if (props.customAttributes === undefined || Object.keys(props.customAttributes).length === 0) {
       throw new Error('You must specify at least one custom attribute for this instance type.');
     }
 

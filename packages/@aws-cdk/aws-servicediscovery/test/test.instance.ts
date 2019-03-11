@@ -213,6 +213,29 @@ export = {
     test.done();
   },
 
+  'Registering IpInstance throws with wrong DNS record type'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'dns',
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.Cname
+    });
+
+    // THEN
+    test.throws(() => {
+      service.registerIpInstance({
+        port: 3306
+      });
+    }, /Service must support `A`, `AAAA` or `SRV` records to register this instance type./);
+
+    test.done();
+  },
+
   'Registering AliasTargetInstance'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -425,6 +448,27 @@ export = {
     test.throws(() => {
       service.registerNonIpInstance({
         instanceId: 'nonIp',
+      });
+    }, /You must specify at least one custom attribute for this instance type./);
+
+    test.done();
+  },
+
+  'Throws when custom attribues are emptyfor NonIpInstance'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
+      name: 'http',
+    });
+
+    const service = namespace.createService('MyService');
+
+    // THEN
+    test.throws(() => {
+      service.registerNonIpInstance({
+        instanceId: 'nonIp',
+        customAttributes: {}
       });
     }, /You must specify at least one custom attribute for this instance type./);
 

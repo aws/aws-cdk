@@ -58,12 +58,12 @@ export class IpInstance extends InstanceBase {
   public readonly service: IService;
 
   /**
-   * The Ipv4 address of the instance
+   * The Ipv4 address of the instance, or blank string if none available
    */
   public readonly ipv4: string;
 
   /**
-   * The Ipv6 address of the instance
+   * The Ipv6 address of the instance, or blank string if none available
    */
   public readonly ipv6: string;
 
@@ -76,6 +76,9 @@ export class IpInstance extends InstanceBase {
     super(scope, id);
     const dnsRecordType = props.service.dnsRecordType;
 
+    if (dnsRecordType === DnsRecordType.Cname) {
+        throw new Error('Service must support `A`, `AAAA` or `SRV` records to register this instance type.');
+    }
     if (dnsRecordType === DnsRecordType.Srv) {
       if (!props.port) {
         throw new Error('A `port` must be specified for a service using a `SRV` record.');
@@ -95,7 +98,7 @@ export class IpInstance extends InstanceBase {
       throw new Error('An `ipv6` must be specified for a service using a `AAAA` record.');
     }
 
-    const port = props.port !== undefined ? props.port : 80;
+    const port = props.port || 80;
 
     const resource = new CfnInstance(this, 'Resource', {
       instanceAttributes: {

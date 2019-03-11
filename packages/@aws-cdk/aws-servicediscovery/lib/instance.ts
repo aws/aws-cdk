@@ -21,7 +21,7 @@ export interface BaseInstanceProps {
   /**
    * The id of the instance resource
    *
-   * @default CloudFormation-generated name
+   * @default Automatically generated name
    */
   instanceId?: string;
 
@@ -30,8 +30,7 @@ export interface BaseInstanceProps {
    *
    * @default none
    */
-  customAttributes?: {[key: string]: string};
-
+  customAttributes?: { [key: string]: string };
 }
 
 export abstract class InstanceBase extends cdk.Construct implements IInstance {

@@ -44,6 +44,9 @@ export class HttpNamespace extends NamespaceBase {
     this.type = NamespaceType.Http;
   }
 
+  /**
+   * Creates a service within the namespace
+   */
   public createService(id: string, props?: BaseServiceProps): Service {
     return new Service(this, id, {
       namespace: this,

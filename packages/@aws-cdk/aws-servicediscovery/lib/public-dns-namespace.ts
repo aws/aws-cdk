@@ -44,6 +44,9 @@ export class PublicDnsNamespace extends NamespaceBase {
     this.type = NamespaceType.DnsPublic;
   }
 
+  /**
+   * Creates a service within the namespace
+   */
   public createService(id: string, props?: DnsServiceProps): Service {
     return new Service(this, id, {
       namespace: this,

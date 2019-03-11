@@ -17,7 +17,7 @@ export interface INamespace extends cdk.IConstruct {
   readonly namespaceArn: string;
 
   /**
-   * Type of Namespace. Valid values: HTTP, DNS_PUBLIC, or DNS_PRIVATE
+   * Type of Namespace
    */
   readonly type: NamespaceType;
 }
@@ -82,25 +82,4 @@ export abstract class NamespaceBase extends cdk.Construct implements INamespace 
   public abstract readonly namespaceArn: string;
   public abstract readonly namespaceName: string;
   public abstract readonly type: NamespaceType;
-}
-
-// FIXME don't export
-export class ImportedNamespace extends NamespaceBase {
-  public readonly namespaceId: string;
-  public readonly namespaceArn: string;
-  public readonly namespaceName: string;
-  public readonly type: NamespaceType;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: NamespaceImportProps) {
-    super(scope, id);
-
-    this.namespaceId = props.namespaceId;
-    this.namespaceArn = props.namespaceArn;
-    this.namespaceName = props.namespaceName || '';
-    this.type = props.type;
-  }
-
-  public export() {
-    return this.props;
-  }
 }
