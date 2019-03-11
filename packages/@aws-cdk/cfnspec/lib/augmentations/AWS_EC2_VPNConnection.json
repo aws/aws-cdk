@@ -1,8 +1,8 @@
 {
-  "overrides": {
-    "interface": "IVpnConnection",
+  "options": {
+    "classFile": "vpn",
     "class": "VpnConnection",
-    "module": "vpn"
+    "interface": "IVpnConnection"
   },
   "metrics": {
     "namespace": "AWS/VPN",

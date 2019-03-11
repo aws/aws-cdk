@@ -8,26 +8,34 @@ export interface ResourceAugmentation {
   metrics?: ResourceMetricAugmentations;
 
   /**
-   * Overrides for this resource augmentation
+   * Options for this resource augmentation
+   *
+   * @default no options
    */
-  overrides?: ResourceOverrides;
+  options?: AugmentationOptions;
 }
 
-export interface ResourceOverrides {
+export interface AugmentationOptions {
   /**
-   * The name of the resource class
+   * The name of the file containing the class to be "augmented".
+   *
+   * @default kebab cased CloudFormation resource name + '-base'
+   */
+  classFile?: string;
+
+  /**
+   * The name of the class to be "augmented".
+   *
+   * @default CloudFormation resource name + 'Base'
    */
   class?: string;
 
   /**
-   * The name of the resource interface
+   * The name of the interface to be "augmented".
+   *
+   * @default 'I' + CloudFormation resource name
    */
   interface?: string;
-
-  /**
-   * The name of the module
-   */
-  module?: string;
 }
 
 export interface ResourceMetricAugmentations {
