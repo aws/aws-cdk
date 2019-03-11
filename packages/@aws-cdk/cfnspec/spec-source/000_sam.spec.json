@@ -5,8 +5,8 @@
             "Properties": {
                 "Authorizers": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api-auth-object",
+                    "PrimitiveType": "Json",
                     "Required": false,
-                    "Type": "String",
                     "UpdateType": "Immutable"
                 },
                 "DefaultAuthorizer": {
@@ -546,7 +546,9 @@
             "Properties": {
                 "Location": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication",
-                    "PrimitiveType": "String",
+                    "PrimitiveTypes": [
+                        "String"
+                    ],
                     "Required": true,
                     "Types": [
                         "ApplicationLocation"
