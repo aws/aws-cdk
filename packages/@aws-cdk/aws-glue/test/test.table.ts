@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -16,7 +17,7 @@ export = {
     const tableStack = new cdk.Stack();
     new glue.Table(tableStack, 'Table', {
       database,
-      name: 'table',
+      tableName: 'table',
       columns: [{
         name: 'col',
         type: Schema.string
@@ -87,7 +88,7 @@ export = {
     const tableStack = new cdk.Stack();
     new glue.Table(tableStack, 'Table', {
       database,
-      name: 'table',
+      tableName: 'table',
       columns: [{
         name: 'col',
         type: Schema.string
@@ -167,7 +168,7 @@ export = {
 
     new glue.Table(stack, 'Table', {
       database,
-      name: 'table',
+      tableName: 'table',
       columns: [{
         name: 'col',
         type: Schema.string
@@ -232,7 +233,7 @@ export = {
       database,
       bucket,
       prefix: 'prefix/',
-      name: 'table',
+      tableName: 'table',
       columns: [{
         name: 'col',
         type: Schema.string
@@ -292,5 +293,331 @@ export = {
       }
     });
     test.done();
+  },
+
+  'grants': {
+    'read only'(test: Test) {
+      const stack = new cdk.Stack();
+      const user = new iam.User(stack, 'User');
+      const database = new glue.Database(stack, 'Database', {
+        databaseName: 'database'
+      });
+
+      const table = new glue.Table(stack, 'Table', {
+        database,
+        tableName: 'table',
+        columns: [{
+          name: 'col',
+          type: Schema.string
+        }],
+        compressed: true,
+        storageType: glue.StorageType.Json,
+      });
+
+      table.grantRead(user);
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                "glue:BatchDeletePartition",
+                "glue:BatchGetPartition",
+                "glue:GetPartition",
+                "glue:GetPartitions",
+                "glue:GetTable",
+                "glue:GetTables",
+                "glue:GetTableVersions"
+              ],
+              Effect: "Allow",
+              Resource: {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      Ref: "AWS::Partition"
+                    },
+                    ":glue:",
+                    {
+                      Ref: "AWS::Region"
+                    },
+                    ":",
+                    {
+                      Ref: "AWS::AccountId"
+                    },
+                    ":database/",
+                    {
+                      Ref: "DatabaseB269D8BB"
+                    },
+                    "/",
+                    {
+                      Ref: "Table4C2D914F"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              Action: [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              Effect: "Allow",
+              Resource: [
+                {
+                  "Fn::GetAtt": [
+                    "TableBucketDA42407C",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TableBucketDA42407C",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          Version: "2012-10-17"
+        },
+        PolicyName: "UserDefaultPolicy1F97781E",
+        Users: [
+          {
+            Ref: "User00B015A1"
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    'write only'(test: Test) {
+      const stack = new cdk.Stack();
+      const user = new iam.User(stack, 'User');
+      const database = new glue.Database(stack, 'Database', {
+        databaseName: 'database'
+      });
+
+      const table = new glue.Table(stack, 'Table', {
+        database,
+        tableName: 'table',
+        columns: [{
+          name: 'col',
+          type: Schema.string
+        }],
+        compressed: true,
+        storageType: glue.StorageType.Json,
+      });
+
+      table.grantWrite(user);
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                "glue:BatchCreatePartition",
+                "glue:BatchDeletePartition",
+                "glue:CreatePartition",
+                "glue:DeletePartition",
+                "glue:UpdatePartition"
+              ],
+              Effect: "Allow",
+              Resource: {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      Ref: "AWS::Partition"
+                    },
+                    ":glue:",
+                    {
+                      Ref: "AWS::Region"
+                    },
+                    ":",
+                    {
+                      Ref: "AWS::AccountId"
+                    },
+                    ":database/",
+                    {
+                      Ref: "DatabaseB269D8BB"
+                    },
+                    "/",
+                    {
+                      Ref: "Table4C2D914F"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              Action: [
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              Effect: "Allow",
+              Resource: [
+                {
+                  "Fn::GetAtt": [
+                    "TableBucketDA42407C",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TableBucketDA42407C",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          Version: "2012-10-17"
+        },
+        PolicyName: "UserDefaultPolicy1F97781E",
+        Users: [
+          {
+            Ref: "User00B015A1"
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    'read and write'(test: Test) {
+      const stack = new cdk.Stack();
+      const user = new iam.User(stack, 'User');
+      const database = new glue.Database(stack, 'Database', {
+        databaseName: 'database'
+      });
+
+      const table = new glue.Table(stack, 'Table', {
+        database,
+        tableName: 'table',
+        columns: [{
+          name: 'col',
+          type: Schema.string
+        }],
+        compressed: true,
+        storageType: glue.StorageType.Json,
+      });
+
+      table.grantReadWrite(user);
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                "glue:BatchDeletePartition",
+                "glue:BatchGetPartition",
+                "glue:GetPartition",
+                "glue:GetPartitions",
+                "glue:GetTable",
+                "glue:GetTables",
+                "glue:GetTableVersions",
+                "glue:BatchCreatePartition",
+                "glue:BatchDeletePartition",
+                "glue:CreatePartition",
+                "glue:DeletePartition",
+                "glue:UpdatePartition"
+              ],
+              Effect: "Allow",
+              Resource: {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      Ref: "AWS::Partition"
+                    },
+                    ":glue:",
+                    {
+                      Ref: "AWS::Region"
+                    },
+                    ":",
+                    {
+                      Ref: "AWS::AccountId"
+                    },
+                    ":database/",
+                    {
+                      Ref: "DatabaseB269D8BB"
+                    },
+                    "/",
+                    {
+                      Ref: "Table4C2D914F"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              Action: [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              Effect: "Allow",
+              Resource: [
+                {
+                  "Fn::GetAtt": [
+                    "TableBucketDA42407C",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "TableBucketDA42407C",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          Version: "2012-10-17"
+        },
+        PolicyName: "UserDefaultPolicy1F97781E",
+        Users: [
+          {
+            Ref: "User00B015A1"
+          }
+        ]
+      }));
+
+      test.done();
+    }
   }
 };
