@@ -22,7 +22,7 @@ new glue.Database(stack, 'MyDatabase', {
 
 ### Table
 
-A Glue table describes the structure (column names and types),location of data (S3 objects with a common prefix in a S3 bucket) and format of the files (Json, Avro, Parquet, etc.):
+A Glue table describes the structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket) and format of the files (Json, Avro, Parquet, etc.):
 
 ```ts
 new glue.Table(stack, 'MyTable', {

@@ -109,7 +109,9 @@ export class Table extends cdk.Construct implements ITable {
   public readonly partitionKeys?: Column[];
 
   constructor(scope: cdk.Construct, id: string, props: TableProps) {
+    validateProps(props);
     super(scope, id);
+
     this.database = props.database;
     this.bucket = props.bucket || new s3.Bucket(this, 'Bucket');
     this.storageType = props.storageType;
@@ -190,6 +192,24 @@ export class Table extends cdk.Construct implements ITable {
       .addResource(this.tableArn)
       .addActions(...permissions));
   }
+}
+
+/**
+ * Check there is at least one column and no duplicated column names or partition keys.
+ *
+ * @param props the TableProps
+ */
+function validateProps(props: TableProps): void {
+  if (props.columns.length === 0) {
+    throw new Error('you must specify at least one column for the table');
+  }
+  const names = new Set<string>();
+  (props.columns.concat(props.partitionKeys || [])).forEach(column => {
+    if (names.has(column.name)) {
+      throw new Error(`column names and partition keys must be unique, but 'p1' is duplicated`);
+    }
+    names.add(column.name);
+  });
 }
 
 const readPermissions = [

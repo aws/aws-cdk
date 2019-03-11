@@ -619,5 +619,81 @@ export = {
 
       test.done();
     }
+  },
+
+  'validate': {
+    'at least one column'(test: Test) {
+      test.throws(() => {
+        createTable({
+          columns: [],
+          tableName: 'name',
+        });
+      }, undefined, 'you must specify at least one column for the table');
+
+      test.done();
+    },
+
+    'unique column names'(test: Test) {
+      test.throws(() => {
+        createTable({
+          tableName: 'name',
+          columns: [{
+            name: 'col1',
+            type: glue.Schema.string
+          }, {
+            name: 'col1',
+            type: glue.Schema.string
+          }]
+        });
+      }, undefined, "column names and partition keys must be unique, but 'col1' is duplicated.");
+
+      test.done();
+    },
+
+    'unique partition keys'(test: Test) {
+      test.throws(() => createTable({
+        tableName: 'name',
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.string
+        }],
+        partitionKeys: [{
+          name: 'p1',
+          type: glue.Schema.string
+        }, {
+          name: 'p1',
+          type: glue.Schema.string
+        }]
+      }), undefined, "column names and partition keys must be unique, but 'p1' is duplicated");
+
+      test.done();
+    },
+
+    'column names and partition keys are all unique'(test: Test) {
+      test.throws(() => createTable({
+        tableName: 'name',
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.string
+        }],
+        partitionKeys: [{
+          name: 'col1',
+          type: glue.Schema.string
+        }]
+      }), "column names and partition keys must be unique, but 'col1' is duplicated");
+
+      test.done();
+    }
   }
 };
+
+function createTable(props: Pick<glue.TableProps, Exclude<keyof glue.TableProps, 'database' | 'storageType'>>): void {
+  const stack = new cdk.Stack();
+  new glue.Table(stack, 'table', {
+    ...props,
+    database: new glue.Database(stack, 'db', {
+      databaseName: 'database_name'
+    }),
+    storageType: glue.StorageType.Json
+  });
+}
