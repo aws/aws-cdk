@@ -146,7 +146,7 @@ export class Table extends cdk.Construct implements ITable {
       }
     });
 
-    this.tableName = tableResource.ref;
+    this.tableName = tableResource.tableName;
     this.tableArn = cdk.Fn.join('', [this.database.databaseArn, '/', this.tableName]);
   }
 

@@ -94,12 +94,13 @@ export class Database extends cdk.Construct {
     });
 
     // see https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html#data-catalog-resource-arns
-    this.databaseName = resource.ref;
+    this.databaseName = resource.databaseName;
     this.databaseArn = this.node.stack.formatArn({
       service: 'glue',
       resource: 'database',
       resourceName: this.databaseName
     });
+    // catalogId is implicitly the accountId, which is why we don't pass the catalogId here
     this.catalogArn = this.node.stack.formatArn({
       service: 'glue',
       resource: 'catalog'
