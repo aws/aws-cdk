@@ -26,7 +26,8 @@
         "lib/init-templates/**/*"
     ],
     "files": [
-        "lib/init-templates/app/csharp/add-project.hook.ts"
+        "lib/init-templates/app/csharp/add-project.hook.ts",
+        "lib/init-templates/app/fsharp/add-project.hook.ts"
     ]
 }
 
