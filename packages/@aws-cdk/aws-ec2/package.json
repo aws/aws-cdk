@@ -62,11 +62,13 @@
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "^0.25.2",
+    "@aws-cdk/aws-cloudwatch": "^0.25.2",
     "@aws-cdk/cdk": "^0.25.2",
     "@aws-cdk/cx-api": "^0.25.2"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-cloudwatch": "^0.25.2",
     "@aws-cdk/cdk": "^0.25.2",
     "@aws-cdk/cx-api": "^0.25.2"
   },
