@@ -273,5 +273,5 @@ As you might have observed, whenever users need to reference a type in deCDK tem
 
 ### Special Types
 
-`iam.PolicyDocument` is be tricky since it utilizes a fluent API. We need to think whether we want to revise the PolicyDocument API to be more compatible or add a utility class that can help.
+`iam.PolicyDocument` is tricky since it utilizes a fluent API. We need to think whether we want to revise the PolicyDocument API to be more compatible or add a utility class that can help.
 - We should enable shorthand tags for intrinsics in YAML
