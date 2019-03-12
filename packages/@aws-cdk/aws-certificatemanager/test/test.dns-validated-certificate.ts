@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { DNSValidatedCertificate } from '../lib/dns-validated-certificate';
+import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
 export = {
   'creates CloudFormation Custom Resource'(test: Test) {
@@ -12,7 +12,7 @@ export = {
       zoneName: 'example.com'
     });
 
-    const cert = new DNSValidatedCertificate(stack, 'Certificate', {
+    new DnsValidatedCertificate(stack, 'Certificate', {
       domainName: 'test.example.com',
       hostedZone: exampleDotComZone,
     });
@@ -77,9 +77,6 @@ export = {
       }
     }));
 
-    const errors = cert.validate();
-    test.equal(errors.length, 0);
-
     test.done();
   },
 
@@ -90,7 +87,7 @@ export = {
       zoneName: 'hello.com'
     });
 
-    const refProps = new DNSValidatedCertificate(stack, 'Cert', {
+    const refProps = new DnsValidatedCertificate(stack, 'Cert', {
       domainName: 'hello.com',
       hostedZone: helloDotComZone,
     }).export();
@@ -106,14 +103,13 @@ export = {
       zoneName: 'hello.com'
     });
 
-    const cert = new DNSValidatedCertificate(stack, 'Cert', {
+    new DnsValidatedCertificate(stack, 'Cert', {
       domainName: 'example.com',
       hostedZone: helloDotComZone,
     });
 
-    const errors = cert.validate();
-    test.equal(errors.length, 1);
-
+    // a bit of a hack: expect(stack) will trigger validation.
+    test.throws(() => expect(stack), /DNS zone hello.com is not authoritative for certificate domain name example.com/);
     test.done();
   },
 };
