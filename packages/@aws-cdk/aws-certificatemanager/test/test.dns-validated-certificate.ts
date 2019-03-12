@@ -12,7 +12,7 @@ export = {
       zoneName: 'example.com'
     });
 
-    const cert = new DnsValidatedCertificate(stack, 'Certificate', {
+    new DnsValidatedCertificate(stack, 'Certificate', {
       domainName: 'test.example.com',
       hostedZone: exampleDotComZone,
     });
@@ -77,9 +77,6 @@ export = {
       }
     }));
 
-    const errors = cert.validate();
-    test.equal(errors.length, 0);
-
     test.done();
   },
 
@@ -106,14 +103,13 @@ export = {
       zoneName: 'hello.com'
     });
 
-    const cert = new DnsValidatedCertificate(stack, 'Cert', {
+    new DnsValidatedCertificate(stack, 'Cert', {
       domainName: 'example.com',
       hostedZone: helloDotComZone,
     });
 
-    const errors = cert.validate();
-    test.equal(errors.length, 1);
-
+    // a bit of a hack: expect(stack) will trigger validation.
+    test.throws(() => expect(stack), /DNS zone hello.com is not authoritative for certificate domain name example.com/);
     test.done();
   },
 };
