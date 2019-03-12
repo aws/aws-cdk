@@ -59,6 +59,16 @@ export interface BaseServiceProps {
   description?: string;
 
   /**
+   * Settings for an optional health check.  If you specify health check settings, AWS Cloud Map associates the health
+   * check with the records that you specify in DnsConfig. Only one of healthCheckConfig or healthCheckCustomConfig can
+   * be specified. Not valid for PrivateDnsNamespaces. If you use healthCheck, you can only register IP instances to
+   * this service.
+   *
+   * @default none
+   */
+  healthCheck?: HealthCheckConfig;
+
+  /**
    * Structure containing failure threshold for a custom health checker.
    * Only one of healthCheckConfig or healthCheckCustomConfig can be specified.
    * See: https://docs.aws.amazon.com/cloud-map/latest/api/API_HealthCheckCustomConfig.html
@@ -88,15 +98,6 @@ export interface DnsServiceProps extends BaseServiceProps {
    * @default 60
    */
   dnsTtlSec?: number;
-
-  /**
-   * Settings for an optional health check.  If you specify health check settings, AWS Cloud Map associates the
-   * health check with the records that you specify in DnsConfig. Public DNS namespaces only. Only one of
-   * healthCheckConfig or healthCheckCustomConfig can be specified.
-   *
-   * @default none
-   */
-  healthCheck?: HealthCheckConfig;
 
   /**
    * The routing policy that you want to apply to all DNS records that AWS Cloud Map creates when you
@@ -172,8 +173,8 @@ export class Service extends cdk.Construct implements IService {
       throw new Error('Cannot specify both `healthCheckConfig` and `healthCheckCustomConfig`.');
     }
 
-    if (namespaceType !== NamespaceType.DnsPublic && props.healthCheck) {
-      throw new Error('Can only use `healthCheckConfig` for a Public DNS namespace.');
+    if (namespaceType === NamespaceType.DnsPrivate && props.healthCheck) {
+      throw new Error('Cannot specify `healthCheckConfig` for a Private DNS namespace.');
     }
 
     if (props.routingPolicy === RoutingPolicy.Multivalue

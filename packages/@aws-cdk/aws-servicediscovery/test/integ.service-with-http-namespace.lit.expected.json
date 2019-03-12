@@ -6,10 +6,10 @@
         "Name": "covfefe"
       }
     },
-    "MyNamespaceService6E3133E7": {
+    "MyNamespaceNonIpService3B425009": {
       "Type": "AWS::ServiceDiscovery::Service",
       "Properties": {
-        "Description": "service description",
+        "Description": "service registering non-ip instances",
         "NamespaceId": {
           "Fn::GetAtt": [
             "MyNamespaceD0BB8558",
@@ -18,7 +18,7 @@
         }
       }
     },
-    "MyNamespaceServiceNonIpInstance59424747": {
+    "MyNamespaceNonIpServiceNonIpInstanceFF8FB3DE": {
       "Type": "AWS::ServiceDiscovery::Instance",
       "Properties": {
         "InstanceAttributes": {
@@ -26,11 +26,44 @@
         },
         "ServiceId": {
           "Fn::GetAtt": [
-            "MyNamespaceService6E3133E7",
+            "MyNamespaceNonIpService3B425009",
             "Id"
           ]
         },
-        "InstanceId": "awsservicediscoveryintegMyNamespaceServiceNonIpInstance360FCE8A"
+        "InstanceId": "ervicediscoveryintegMyNamespaceNonIpServiceNonIpInstance45389A2A"
+      }
+    },
+    "MyNamespaceIpService220F547F": {
+      "Type": "AWS::ServiceDiscovery::Service",
+      "Properties": {
+        "Description": "service registering ip instances",
+        "HealthCheckConfig": {
+          "FailureThreshold": 1,
+          "ResourcePath": "/check",
+          "Type": "HTTP"
+        },
+        "NamespaceId": {
+          "Fn::GetAtt": [
+            "MyNamespaceD0BB8558",
+            "Id"
+          ]
+        }
+      }
+    },
+    "MyNamespaceIpServiceIpInstance8CD1B210": {
+      "Type": "AWS::ServiceDiscovery::Instance",
+      "Properties": {
+        "InstanceAttributes": {
+          "AWS_INSTANCE_IPV4": "54.239.25.192",
+          "AWS_INSTANCE_PORT": "80"
+        },
+        "ServiceId": {
+          "Fn::GetAtt": [
+            "MyNamespaceIpService220F547F",
+            "Id"
+          ]
+        },
+        "InstanceId": "awsservicediscoveryintegMyNamespaceIpServiceIpInstance56070746"
       }
     }
   }

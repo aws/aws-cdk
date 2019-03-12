@@ -5,7 +5,7 @@ import { Test } from 'nodeunit';
 import servicediscovery = require('../lib');
 
 export = {
-  'Service for HTTP namespace'(test: Test) {
+  'Service for HTTP namespace with custom health check'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -36,6 +36,56 @@ export = {
             Description: "service description",
             HealthCheckCustomConfig: {
               FailureThreshold: 3,
+            },
+            Name: "service",
+            NamespaceId: {
+              "Fn::GetAtt": [
+                "MyNamespaceD0BB8558",
+                "Id"
+              ]
+            }
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'Service for HTTP namespace with health check'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
+      name: 'http',
+    });
+
+    namespace.createService('MyService', {
+      name: 'service',
+      description: 'service description',
+      healthCheck: {
+        type: servicediscovery.HealthCheckType.Http,
+        resourcePath: '/check'
+      }
+    });
+
+    // THEN
+    expect(stack).toMatch({
+      Resources: {
+        MyNamespaceD0BB8558: {
+          Type: "AWS::ServiceDiscovery::HttpNamespace",
+          Properties: {
+            Name: "http"
+          },
+        },
+        MyNamespaceMyService365E2470: {
+          Type: "AWS::ServiceDiscovery::Service",
+          Properties: {
+            Description: "service description",
+            HealthCheckConfig: {
+              FailureThreshold: 1,
+              ResourcePath: "/check",
+              Type: "HTTP"
             },
             Name: "service",
             NamespaceId: {
