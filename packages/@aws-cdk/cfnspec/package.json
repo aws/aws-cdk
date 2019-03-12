@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/cfnspec",
   "description": "The CloudFormation resource specification used by @aws-cdk packages",
-  "version": "0.25.2",
+  "version": "0.25.3",
   "scripts": {
     "update": "cdk-build && /bin/bash build-tools/update.sh",
     "build": "cdk-build && node build-tools/build",
@@ -22,11 +22,11 @@
   "devDependencies": {
     "@types/fs-extra": "^5.0.4",
     "@types/md5": "^2.1.32",
-    "cdk-build-tools": "^0.25.2",
+    "cdk-build-tools": "^0.25.3",
     "fast-json-patch": "^2.0.6",
     "fs-extra": "^7.0.0",
     "json-diff": "^0.3.1",
-    "pkglint": "^0.25.2",
+    "pkglint": "^0.25.3",
     "sort-json": "^2.0.0"
   },
   "dependencies": {
