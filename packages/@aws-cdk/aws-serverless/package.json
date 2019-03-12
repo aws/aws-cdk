@@ -20,7 +20,11 @@
           "artifactId": "serverless"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "SAM",
+        "tags": ["serverless"]
+      }
     }
   },
   "repository": {

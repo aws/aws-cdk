@@ -20,7 +20,11 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "Route 53",
+        "tags": ["network"]
+      }
     }
   },
   "repository": {

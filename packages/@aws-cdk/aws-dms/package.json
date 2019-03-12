@@ -20,7 +20,10 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "DMS"
+      }
     }
   },
   "repository": {

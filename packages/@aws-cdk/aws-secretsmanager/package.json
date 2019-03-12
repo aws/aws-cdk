@@ -20,7 +20,11 @@
           "artifactId": "secretsmanager"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "SecretsManager",
+        "tags": ["security"]
+      }
     }
   },
   "repository": {

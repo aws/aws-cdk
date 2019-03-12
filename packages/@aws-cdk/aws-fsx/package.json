@@ -20,7 +20,11 @@
           "artifactId": "fsx"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "FSx",
+        "tags": []
+      }
     }
   },
   "repository": {

@@ -20,7 +20,11 @@
           "artifactId": "neptune"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "Neptune",
+        "tags": ["data"]
+      }
     }
   },
   "repository": {

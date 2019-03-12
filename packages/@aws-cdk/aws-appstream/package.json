@@ -20,7 +20,11 @@
           "artifactId": "appstream"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "AppStream",
+        "tags": []
+      }
     }
   },
   "repository": {

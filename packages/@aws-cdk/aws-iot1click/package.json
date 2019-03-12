@@ -20,7 +20,11 @@
           "artifactId": "iot1click"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "IoT 1-click",
+        "tags": []
+      }
     }
   },
   "repository": {

@@ -20,7 +20,11 @@
           "artifactId": "dlm"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "DLM",
+        "tags": []
+      }
     }
   },
   "repository": {

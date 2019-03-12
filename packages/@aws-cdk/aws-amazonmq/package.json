@@ -20,7 +20,11 @@
           "artifactId": "amazonmq"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "AmazonMQ",
+        "tags": []
+      }
     }
   },
   "repository": {

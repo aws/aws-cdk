@@ -20,7 +20,11 @@
           "artifactId": "ram"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "RAM",
+        "tags": []
+      }
     }
   },
   "repository": {

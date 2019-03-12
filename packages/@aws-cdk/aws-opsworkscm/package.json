@@ -20,7 +20,11 @@
           "artifactId": "opsworkscm"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "OpsWorks CM",
+        "tags": []
+      }
     }
   },
   "repository": {

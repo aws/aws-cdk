@@ -20,7 +20,11 @@
           "artifactId": "alexa-ask"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "Alexa Ask",
+        "tags": ["alexa"]
+      }
     }
   },
   "repository": {

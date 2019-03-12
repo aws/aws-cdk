@@ -20,7 +20,11 @@
           "artifactId": "robomaker"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "RoboMaker",
+        "tags": ["data"]
+      }
     }
   },
   "repository": {

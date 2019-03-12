@@ -20,7 +20,11 @@
           "artifactId": "route53resolver"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "Route53 Resolver",
+        "tags": ["network"]
+      }
     }
   },
   "repository": {

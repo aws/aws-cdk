@@ -20,7 +20,11 @@
           "artifactId": "docdb"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "DocDB",
+        "tags": ["data"]
+      }
     }
   },
   "repository": {

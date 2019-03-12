@@ -20,7 +20,11 @@
           "artifactId": "iotanalytics"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "awsdocs": {
+        "title": "IoT Analytics",
+        "tags": []
+      }
     }
   },
   "repository": {
