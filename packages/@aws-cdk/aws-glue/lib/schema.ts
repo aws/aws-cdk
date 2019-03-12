@@ -20,6 +20,9 @@ export interface Column {
   comment?: string;
 }
 
+/**
+ * Represents a type of a column in a table schema.
+ */
 export interface Type {
   /**
    * Indicates whether this type is a primitive data type.
