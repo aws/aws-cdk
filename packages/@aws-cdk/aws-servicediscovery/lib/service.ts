@@ -174,7 +174,7 @@ export class Service extends cdk.Construct implements IService {
     }
 
     if (props.routingPolicy === RoutingPolicy.Multivalue
-        && props.dnsRecordType === DnsRecordType.Cname) {
+        && props.dnsRecordType === DnsRecordType.CNAME) {
       throw new Error('Cannot use `CNAME` record when routing policy is `Multivalue`.');
     }
 
@@ -190,7 +190,7 @@ export class Service extends cdk.Construct implements IService {
     }
 
     // Set defaults where necessary
-    const routingPolicy = (props.dnsRecordType === DnsRecordType.Cname) || props.loadBalancer
+    const routingPolicy = (props.dnsRecordType === DnsRecordType.CNAME) || props.loadBalancer
       ? RoutingPolicy.Weighted
       : RoutingPolicy.Multivalue;
 
@@ -403,12 +403,12 @@ export enum DnsRecordType {
   /**
    * A Srv record
    */
-  Srv = "SRV",
+  SRV = "SRV",
 
   /**
    * A CNAME record
    */
-  Cname = "CNAME",
+  CNAME = "CNAME",
 }
 
 export enum RoutingPolicy {

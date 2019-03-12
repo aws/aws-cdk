@@ -10,7 +10,7 @@ const namespace = new servicediscovery.PublicDnsNamespace(stack, 'Namespace', {
 
 const service = namespace.createService('Service', {
   name: 'foo',
-  dnsRecordType: servicediscovery.DnsRecordType.Cname,
+  dnsRecordType: servicediscovery.DnsRecordType.CNAME,
   dnsTtlSec: 30
 });
 

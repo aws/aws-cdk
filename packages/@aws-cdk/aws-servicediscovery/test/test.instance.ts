@@ -131,7 +131,7 @@ export = {
 
     const service = namespace.createService('MyService', {
       name: 'service',
-      dnsRecordType: servicediscovery.DnsRecordType.Srv
+      dnsRecordType: servicediscovery.DnsRecordType.SRV
     });
 
     // THEN
@@ -154,7 +154,7 @@ export = {
 
     const service = namespace.createService('MyService', {
       name: 'service',
-      dnsRecordType: servicediscovery.DnsRecordType.Srv
+      dnsRecordType: servicediscovery.DnsRecordType.SRV
     });
 
     // THEN
@@ -223,7 +223,7 @@ export = {
 
     const service = namespace.createService('MyService', {
       name: 'service',
-      dnsRecordType: servicediscovery.DnsRecordType.Cname
+      dnsRecordType: servicediscovery.DnsRecordType.CNAME
     });
 
     // THEN
@@ -335,7 +335,7 @@ export = {
     });
 
     const service = namespace.createService('MyService', {
-      dnsRecordType: servicediscovery.DnsRecordType.Cname
+      dnsRecordType: servicediscovery.DnsRecordType.CNAME
     });
 
     service.registerCnameInstance({

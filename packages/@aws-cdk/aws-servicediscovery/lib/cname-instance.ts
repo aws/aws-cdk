@@ -52,7 +52,7 @@ export class CnameInstance extends InstanceBase {
       throw new Error('Namespace associated with Service must be a DNS Namespace.');
     }
 
-    if (props.service.dnsRecordType === DnsRecordType.Cname) {
+    if (props.service.dnsRecordType === DnsRecordType.CNAME) {
       if (!props.instanceCname) {
         throw new Error('A `instanceCname` must be specified for a service using a `CNAME` record.');
       }

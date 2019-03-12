@@ -180,7 +180,7 @@ export = {
     });
 
     namespace.createService('MyService', {
-      dnsRecordType: servicediscovery.DnsRecordType.Cname
+      dnsRecordType: servicediscovery.DnsRecordType.CNAME
     });
 
     // THEN
@@ -284,7 +284,7 @@ export = {
     test.throws(() => {
       namespace.createService('MyService', {
         name: 'service',
-        dnsRecordType: servicediscovery.DnsRecordType.Cname,
+        dnsRecordType: servicediscovery.DnsRecordType.CNAME,
         routingPolicy: servicediscovery.RoutingPolicy.Multivalue,
       });
     }, /Cannot use `CNAME` record when routing policy is `Multivalue`./);
@@ -325,7 +325,7 @@ export = {
     test.throws(() => {
       namespace.createService('MyService', {
         name: 'service',
-        dnsRecordType: servicediscovery.DnsRecordType.Cname,
+        dnsRecordType: servicediscovery.DnsRecordType.CNAME,
         loadBalancer: true
       });
     }, /Must support `A` or `AAAA` records to register loadbalancers/);
