@@ -107,7 +107,7 @@ export class IpInstance extends InstanceBase {
         AWS_INSTANCE_PORT: port.toString(),
         ...props.customAttributes
       },
-      instanceId: props.instanceId || this.node.uniqueId,
+      instanceId: props.instanceId || this.uniqueInstanceId(),
       serviceId: props.service.serviceId
     });
 

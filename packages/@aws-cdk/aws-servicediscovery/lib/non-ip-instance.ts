@@ -45,7 +45,7 @@ export class NonIpInstance extends InstanceBase {
     }
 
     const resource = new CfnInstance(this, 'Resource', {
-      instanceId: props.instanceId || this.node.uniqueId,
+      instanceId: props.instanceId || this.uniqueInstanceId(),
       serviceId: props.service.serviceId,
       instanceAttributes: {
         ...props.customAttributes

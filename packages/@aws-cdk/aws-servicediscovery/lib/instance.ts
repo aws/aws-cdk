@@ -43,4 +43,13 @@ export abstract class InstanceBase extends cdk.Construct implements IInstance {
    * The Cloudmap service to which the instance is registered.
    */
   public abstract readonly service: IService;
+
+  /**
+   * Generate a unique instance Id that is safe to pass to CloudMap
+   */
+  protected uniqueInstanceId() {
+    // Max length of 64 chars, get the last 64 chars
+    const id = this.node.uniqueId;
+    return id.substring(Math.max(id.length - 64, 0), id.length);
+  }
 }
