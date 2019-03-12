@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { RegionInfo } from '@aws-cdk/region-info';
+import { Default, RegionInfo } from '@aws-cdk/region-info';
 
 export class PolicyDocument extends cdk.Token {
   private statements = new Array<PolicyStatement>();
@@ -483,10 +483,7 @@ class ServicePrincipalToken extends cdk.Token {
   public resolve(ctx: cdk.ResolveContext) {
     const region = this.opts.region || ctx.scope.node.stack.region;
     const fact = RegionInfo.get(region).servicePrincipal(this.service);
-    if (!fact) {
-      ctx.scope.node.addWarning(`No regional service principal found for ${this.service} in ${region}.`);
-    }
-    return fact || this.service;
+    return fact || Default.servicePrincipal(this.service, region, ctx.scope.node.stack.urlSuffix);
   }
 }
 

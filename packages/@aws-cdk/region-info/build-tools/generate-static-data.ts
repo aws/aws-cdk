@@ -1,5 +1,6 @@
 import fs = require('fs-extra');
 import path = require('path');
+import { Default } from '../lib/default';
 import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 
 async function main(): Promise<void> {
@@ -67,7 +68,7 @@ async function main(): Promise<void> {
       : `s3-website.${region}.${domainSuffix}`);
 
     for (const service of AWS_SERVICES) {
-      registerFact(region, ['servicePrincipal', service], servicePrincipal(region, service, domainSuffix));
+      registerFact(region, ['servicePrincipal', service], Default.servicePrincipal(service, region, domainSuffix));
     }
   }
   lines.push('  }');
@@ -80,33 +81,6 @@ async function main(): Promise<void> {
   function registerFact(region: string, name: string | string[], value: string) {
     const factName = typeof name === 'string' ? name : `${name[0]}(${name.slice(1).map(s => JSON.stringify(s)).join(', ')})`;
     lines.push(`    Fact.register({ region: ${JSON.stringify(region)}, name: FactName.${factName}, value: ${JSON.stringify(value)} });`);
-  }
-
-  function servicePrincipal(region: string, service: string, domainSuffix: string): string {
-    switch (service) {
-      // Services with a regional AND partitional principal
-      case 'codedeploy':
-      case 'logs':
-        return `${service}.${region}.${domainSuffix}`;
-
-      // Services with a partitional principal
-      case 'application-autoscaling':
-      case 'autoscaling':
-      case 'ec2':
-      case 'events':
-      case 'lambda':
-        return `${service}.${domainSuffix}`;
-
-      // Services with a regional principal
-      case 'states':
-        return `${service}.${region}.amazonaws.com`;
-
-      // Services with a universal principal across all regions/partitions
-      case 'sns':
-      case 'sqs':
-      default:
-        return `${service}.amazonaws.com`;
-    }
   }
 }
 

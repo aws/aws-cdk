@@ -9,7 +9,13 @@ test('built-in data is correct', () => {
     const servicePrincipals: { [service: string]: string | undefined } = {};
     AWS_SERVICES.forEach(service => servicePrincipals[service] = region.servicePrincipal(service));
 
-    snapshot[name] = { ...region, servicePrincipals };
+    snapshot[name] = {
+      cdkMetadataResourceAvailable: region.cdkMetadataResourceAvailable,
+      domainSuffix: region.domainSuffix,
+      partition: region.partition,
+      s3StaticWebsiteEndpoint: region.s3StaticWebsiteEndpoint,
+      servicePrincipals
+    };
   }
   expect(snapshot).toMatchSnapshot();
 });

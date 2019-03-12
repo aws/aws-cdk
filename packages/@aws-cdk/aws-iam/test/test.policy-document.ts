@@ -301,14 +301,14 @@ export = {
     const stack = new Stack();
     const s = new PolicyStatement()
       .addAwsPrincipal('349494949494')
-      .addServicePrincipal('ec2.amazonaws.com')
+      .addServicePrincipal('test.service')
       .addResource('resource')
       .addAction('action');
 
     test.deepEqual(stack.node.resolve(s), {
       Action: 'action',
       Effect: 'Allow',
-      Principal: { AWS: '349494949494', Service: 'ec2.amazonaws.com' },
+      Principal: { AWS: '349494949494', Service: 'test.service' },
       Resource: 'resource'
     });
 
