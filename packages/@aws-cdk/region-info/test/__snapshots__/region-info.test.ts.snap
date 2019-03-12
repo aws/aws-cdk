@@ -3,10 +3,7 @@
 exports[`built-in data is correct 1`] = `
 Object {
   "ap-northeast-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website-ap-northeast-1.amazonaws.com",
+    "name": "ap-northeast-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -22,10 +19,7 @@ Object {
     },
   },
   "ap-northeast-2": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website.ap-northeast-2.amazonaws.com",
+    "name": "ap-northeast-2",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -41,10 +35,7 @@ Object {
     },
   },
   "ap-northeast-3": Object {
-    "cdkMetadataResourcePresent": "NO",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website.ap-northeast-3.amazonaws.com",
+    "name": "ap-northeast-3",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -60,10 +51,7 @@ Object {
     },
   },
   "ap-south-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website.ap-south-1.amazonaws.com",
+    "name": "ap-south-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -79,10 +67,7 @@ Object {
     },
   },
   "ap-southeast-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website-ap-southeast-1.amazonaws.com",
+    "name": "ap-southeast-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -98,10 +83,7 @@ Object {
     },
   },
   "ap-southeast-2": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website-ap-southeast-2.amazonaws.com",
+    "name": "ap-southeast-2",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -117,10 +99,7 @@ Object {
     },
   },
   "ca-central-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website.ca-central-1.amazonaws.com",
+    "name": "ca-central-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -136,10 +115,7 @@ Object {
     },
   },
   "cn-north-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com.cn",
-    "partition": "aws-cn",
-    "s3StaticWebsiteEndpoint": "s3-website.cn-north-1.amazonaws.com.cn",
+    "name": "cn-north-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com.cn",
       "autoscaling": "autoscaling.amazonaws.com.cn",
@@ -155,10 +131,7 @@ Object {
     },
   },
   "cn-northwest-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com.cn",
-    "partition": "aws-cn",
-    "s3StaticWebsiteEndpoint": "s3-website.cn-northwest-1.amazonaws.com.cn",
+    "name": "cn-northwest-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com.cn",
       "autoscaling": "autoscaling.amazonaws.com.cn",
@@ -174,10 +147,7 @@ Object {
     },
   },
   "eu-central-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website.eu-central-1.amazonaws.com",
+    "name": "eu-central-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -193,10 +163,7 @@ Object {
     },
   },
   "eu-north-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website.eu-north-1.amazonaws.com",
+    "name": "eu-north-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -212,10 +179,7 @@ Object {
     },
   },
   "eu-west-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website.eu-west-1.amazonaws.com",
+    "name": "eu-west-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -231,10 +195,7 @@ Object {
     },
   },
   "eu-west-2": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website.eu-west-2.amazonaws.com",
+    "name": "eu-west-2",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -250,10 +211,7 @@ Object {
     },
   },
   "eu-west-3": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website.eu-west-3.amazonaws.com",
+    "name": "eu-west-3",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -269,10 +227,7 @@ Object {
     },
   },
   "sa-east-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website-sa-east-1.amazonaws.com",
+    "name": "sa-east-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -288,10 +243,7 @@ Object {
     },
   },
   "us-east-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website-us-east-1.amazonaws.com",
+    "name": "us-east-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -307,10 +259,7 @@ Object {
     },
   },
   "us-east-2": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website.us-east-2.amazonaws.com",
+    "name": "us-east-2",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -326,10 +275,7 @@ Object {
     },
   },
   "us-west-1": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website-us-west-1.amazonaws.com",
+    "name": "us-west-1",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",
@@ -345,10 +291,7 @@ Object {
     },
   },
   "us-west-2": Object {
-    "cdkMetadataResourcePresent": "YES",
-    "domainSuffix": "amazonaws.com",
-    "partition": "aws",
-    "s3StaticWebsiteEndpoint": "s3-website-us-west-2.amazonaws.com",
+    "name": "us-west-2",
     "servicePrincipals": Object {
       "application-autoscaling": "application-autoscaling.amazonaws.com",
       "autoscaling": "autoscaling.amazonaws.com",

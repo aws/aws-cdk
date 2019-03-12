@@ -4,7 +4,7 @@ import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 
 async function main(): Promise<void> {
   const lines = [
-    "import { Fact, FactName } from './region-info';",
+    "import { Fact, FactName } from './fact';",
     '',
     '// tslint:disable:object-literal-key-quotes',
     '// tslint:disable:max-line-length',
