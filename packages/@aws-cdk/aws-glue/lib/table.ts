@@ -1,4 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
+import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { IDatabase } from './database';
@@ -11,6 +12,36 @@ export interface ITable extends cdk.IConstruct {
   readonly tableName: string;
 
   export(): TableImportProps;
+}
+
+/**
+ * Encryption options for a Table.
+ *
+ * @see https://docs.aws.amazon.com/athena/latest/ug/encryption.html
+ */
+export enum TableEncryption {
+  /**
+   * Server side encryption (SSE) with an Amazon S3-managed key.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
+   */
+  SSE_S3 = 'SSE-S3',
+
+  /**
+   * Server-side encryption (SSE) with an AWS KMS customer managed key.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
+   */
+  SSE_KMS = 'SSE-KMS',
+
+  /**
+   * Client-side encryption (CSE) with an AWS KMS customer managed key.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
+   *
+   * TODO: implement. It's not clear what properties to set on a table to support client-side encryption.
+   */
+  // CSE_KMS = 'CSE-KMS'
 }
 
 export interface TableImportProps {
@@ -75,6 +106,28 @@ export interface TableProps {
   compressed?: boolean;
 
   /**
+   * The kind of encryption to secure the data with.
+   *
+   * You can only provide this option if you are not explicitly passing in a Bucket.
+   *
+   * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
+   * encryption key is not specified, a key will automatically be created.
+   *
+   * @default Unencrypted
+   */
+  encryption?: TableEncryption;
+
+  /**
+   * External KMS key to use for bucket encryption.
+   *
+   * The 'encryption' property must be either un-specified or set to "SSE-KMS".
+   *
+   * @default If encryption is set to "Kms" and this property is undefined, a
+   * new KMS key will be created and associated with this bucket.
+   */
+  encryptionKey?: kms.IEncryptionKey;
+
+  /**
    * Indicates whether the table data is stored in subdirectories.
    *
    * @default false
@@ -113,7 +166,11 @@ export class Table extends cdk.Construct implements ITable {
     super(scope, id);
 
     this.database = props.database;
-    this.bucket = props.bucket || new s3.Bucket(this, 'Bucket');
+    const encryption = parseEncryption(props);
+    this.bucket = props.bucket || new s3.Bucket(this, 'Bucket', {
+      encryption: encryption ? encryption.encryption : undefined,
+      encryptionKey: encryption ? encryption.encryptionKey : undefined
+    });
     this.storageType = props.storageType;
     this.prefix = props.prefix || 'data/';
     this.columns = props.columns;
@@ -200,6 +257,9 @@ export class Table extends cdk.Construct implements ITable {
  * @param props the TableProps
  */
 function validateProps(props: TableProps): void {
+  if (props.bucket && (props.encryption || props.encryptionKey)) {
+    throw new Error('you can not specify both an encryption key and s3 bucket');
+  }
   if (props.columns.length === 0) {
     throw new Error('you must specify at least one column for the table');
   }
@@ -210,6 +270,35 @@ function validateProps(props: TableProps): void {
     }
     names.add(column.name);
   });
+}
+
+function parseEncryption(props: TableProps): {
+  encryption: s3.BucketEncryption;
+  encryptionKey?: kms.IEncryptionKey;
+} | undefined {
+  if (props.encryption === undefined) {
+    return undefined;
+  }
+
+  if (props.encryption === TableEncryption.SSE_KMS) {
+    if (props.encryptionKey === undefined) {
+      return {
+        encryption: s3.BucketEncryption.KmsManaged
+      };
+    } else {
+      return {
+        encryption: s3.BucketEncryption.Kms,
+        encryptionKey: props.encryptionKey
+      };
+    }
+  } else {
+    if (props.encryptionKey) {
+      throw new Error('a customer managed KMS key cannot be used with SSE-S3 encryption');
+    }
+    return {
+      encryption: s3.BucketEncryption.S3Managed
+    };
+  }
 }
 
 const readPermissions = [
