@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { DNSValidatedCertificate } from '../lib/dns-validated-certificate';
+import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
 export = {
   'creates CloudFormation Custom Resource'(test: Test) {
@@ -12,7 +12,7 @@ export = {
       zoneName: 'example.com'
     });
 
-    const cert = new DNSValidatedCertificate(stack, 'Certificate', {
+    const cert = new DnsValidatedCertificate(stack, 'Certificate', {
       domainName: 'test.example.com',
       hostedZone: exampleDotComZone,
     });
@@ -90,7 +90,7 @@ export = {
       zoneName: 'hello.com'
     });
 
-    const refProps = new DNSValidatedCertificate(stack, 'Cert', {
+    const refProps = new DnsValidatedCertificate(stack, 'Cert', {
       domainName: 'hello.com',
       hostedZone: helloDotComZone,
     }).export();
@@ -106,7 +106,7 @@ export = {
       zoneName: 'hello.com'
     });
 
-    const cert = new DNSValidatedCertificate(stack, 'Cert', {
+    const cert = new DnsValidatedCertificate(stack, 'Cert', {
       domainName: 'example.com',
       hostedZone: helloDotComZone,
     });
