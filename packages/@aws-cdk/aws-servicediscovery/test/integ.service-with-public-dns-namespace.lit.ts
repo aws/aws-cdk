@@ -12,7 +12,7 @@ const service = namespace.createService('Service', {
   name: 'foo',
   dnsRecordType: servicediscovery.DnsRecordType.A,
   dnsTtlSec: 30,
-  healthCheckConfig: {
+  healthCheck: {
     type: servicediscovery.HealthCheckType.Https,
     resourcePath: '/healthcheck',
     failureThreshold: 2

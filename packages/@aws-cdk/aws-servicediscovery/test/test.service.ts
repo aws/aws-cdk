@@ -16,7 +16,7 @@ export = {
     namespace.createService('MyService', {
       name: 'service',
       description: 'service description',
-      healthCheckCustomConfig: {
+      customHealthCheck: {
         failureThreshold: 3,
       }
     });
@@ -63,7 +63,7 @@ export = {
     namespace.createService('MyService', {
       name: 'service',
       description: 'service description',
-      healthCheckCustomConfig: {
+      customHealthCheck: {
         failureThreshold: 3,
       }
     });
@@ -235,10 +235,10 @@ export = {
     test.throws(() => {
       namespace.createService('MyService', {
         name: 'service',
-        healthCheckConfig: {
+        healthCheck: {
           resourcePath: '/'
         },
-        healthCheckCustomConfig: {
+        customHealthCheck: {
           failureThreshold: 1
         }
       });
@@ -260,10 +260,10 @@ export = {
     test.throws(() => {
       namespace.createService('MyService', {
         name: 'service',
-        healthCheckConfig: {
+        healthCheck: {
           resourcePath: '/'
         },
-        healthCheckCustomConfig: {
+        customHealthCheck: {
           failureThreshold: 1
         }
       });
@@ -304,7 +304,7 @@ export = {
     test.throws(() => {
       namespace.createService('MyService', {
         name: 'service',
-        healthCheckConfig: {
+        healthCheck: {
           type: servicediscovery.HealthCheckType.Tcp,
           resourcePath: '/check'
         }

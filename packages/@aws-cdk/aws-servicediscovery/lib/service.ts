@@ -65,7 +65,7 @@ export interface BaseServiceProps {
    *
    * @default none
    */
-  healthCheckCustomConfig?: HealthCheckCustomConfig;
+  customHealthCheck?: HealthCheckCustomConfig;
 }
 
 /**
@@ -96,7 +96,7 @@ export interface DnsServiceProps extends BaseServiceProps {
    *
    * @default none
    */
-  healthCheckConfig?: HealthCheckConfig;
+  healthCheck?: HealthCheckConfig;
 
   /**
    * The routing policy that you want to apply to all DNS records that AWS Cloud Map creates when you
@@ -165,11 +165,11 @@ export class Service extends cdk.Construct implements IService {
       throw new Error('Cannot specify `routingPolicy` or `dnsRecord` when using an HTTP namespace.');
     }
 
-    if (props.healthCheckConfig && props.healthCheckCustomConfig) {
+    if (props.healthCheck && props.customHealthCheck) {
       throw new Error('Cannot specify both `healthCheckConfig` and `healthCheckCustomConfig`.');
     }
 
-    if (namespaceType !== NamespaceType.DnsPublic && props.healthCheckConfig) {
+    if (namespaceType !== NamespaceType.DnsPublic && props.healthCheck) {
       throw new Error('Can only use `healthCheckConfig` for a Public DNS namespace.');
     }
 
@@ -183,9 +183,9 @@ export class Service extends cdk.Construct implements IService {
       throw new Error('Cannot register loadbalancers when routing policy is `Multivalue`.');
     }
 
-    if (props.healthCheckConfig
-        && props.healthCheckConfig.type === HealthCheckType.Tcp
-        && props.healthCheckConfig.resourcePath) {
+    if (props.healthCheck
+        && props.healthCheck.type === HealthCheckType.Tcp
+        && props.healthCheck.resourcePath) {
           throw new Error('Cannot specify `resourcePath` when using a `TCP` health check.');
     }
 
@@ -214,13 +214,13 @@ export class Service extends cdk.Construct implements IService {
     const healthCheckConfigDefaults = {
       type: HealthCheckType.Http,
       failureThreshold: 1,
-      resourcePath: props.healthCheckConfig && props.healthCheckConfig.type !== HealthCheckType.Tcp
+      resourcePath: props.healthCheck && props.healthCheck.type !== HealthCheckType.Tcp
         ? '/'
         : undefined
     };
 
-    const healthCheckConfig = props.healthCheckConfig && { ...healthCheckConfigDefaults, ...props.healthCheckConfig };
-    const healthCheckCustomConfig = props.healthCheckCustomConfig;
+    const healthCheckConfig = props.healthCheck && { ...healthCheckConfigDefaults, ...props.healthCheck };
+    const healthCheckCustomConfig = props.customHealthCheck;
 
     // Create service
     const service = new CfnService(this, 'Resource', {
