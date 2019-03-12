@@ -31,6 +31,8 @@ export function renderFullSchema(typeSystem: jsiiReflect.TypeSystem, options: Re
 
   const output = require('../cloudformation.schema.json');
 
+  output.definitions = output.definitions || { };
+
   const ctx = SchemaContext.root(output.definitions);
 
   for (const deco of deconstructs) {
