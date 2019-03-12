@@ -104,10 +104,8 @@ export default class CodeGenerator {
     }
   }
 
-  private openClass(name: genspec.CodeName, docLink?: string, superClasses?: string, deprecation?: string) {
+  private openClass(name: genspec.CodeName, superClasses?: string) {
     const extendsPostfix = superClasses ? ` extends ${superClasses}` : '';
-    const before = deprecation ? [ `@deprecated ${deprecation}` ] : [ ];
-    this.docLink(docLink, ...before);
     this.code.openBlock(`export class ${name.className}${extendsPostfix}`);
     return name.className;
   }
@@ -120,7 +118,7 @@ export default class CodeGenerator {
     if (!spec.Properties || Object.keys(spec.Properties).length === 0) { return; }
     const name = genspec.CodeName.forResourceProperties(resourceContext);
 
-    this.docLink(spec.Documentation);
+    this.docLink(spec.Documentation, `Properties for defining a \`${resourceContext.specName!.fqn}\``);
     this.code.openBlock(`export interface ${name.className}`);
 
     const conversionTable = this.emitPropsTypeProperties(resourceContext, spec.Properties);
@@ -172,6 +170,8 @@ export default class CodeGenerator {
   private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType, deprecated?: genspec.CodeName): void {
     this.beginNamespace(resourceName);
 
+    const cfnName = resourceName.specName!.fqn;
+
     //
     // Props Bag for this Resource
     //
@@ -185,13 +185,19 @@ export default class CodeGenerator {
       `"cloudformation.${resourceName.fqn}" will be deprecated in a future release ` +
       `in favor of "${deprecated.fqn}" (see https://github.com/awslabs/aws-cdk/issues/878)`;
 
-    this.openClass(resourceName, spec.Documentation, RESOURCE_BASE_CLASS, deprecation);
+    this.docLink(spec.Documentation, ...[
+      `A CloudFormation \`${cfnName}\``,
+      '',
+      `@cloudformationResource ${cfnName}`,
+      ...(deprecation ? [ `@deprecated ${deprecation}` ] : [ ]),
+    ]);
+    this.openClass(resourceName, RESOURCE_BASE_CLASS);
 
     //
     // Static inspectors.
     //
 
-    const resourceTypeName = `${JSON.stringify(resourceName.specName!.fqn)}`;
+    const resourceTypeName = `${JSON.stringify(cfnName)}`;
     this.code.line('/**');
     this.code.line(` * The CloudFormation resource type name for this resource class.`);
     this.code.line(' */');
@@ -258,7 +264,7 @@ export default class CodeGenerator {
 
     this.code.line();
     this.code.line('/**');
-    this.code.line(` * Creates a new ${quoteCode(resourceName.specName!.fqn)}.`);
+    this.code.line(` * Create a new ${quoteCode(resourceName.specName!.fqn)}.`);
     this.code.line(' *');
     this.code.line(` * @param scope - scope in which this resource is defined`);
     this.code.line(` * @param id    - scoped id of the resource`);
@@ -622,7 +628,7 @@ export default class CodeGenerator {
   private docLink(link: string | undefined, ...before: string[]) {
     if (!link && before.length === 0) { return; }
     this.code.line('/**');
-    before.forEach(line => this.code.line(` * ${line}`));
+    before.forEach(line => this.code.line(` * ${line}`.trimRight()));
     if (link) {
       this.code.line(` * @see ${link}`);
     }
