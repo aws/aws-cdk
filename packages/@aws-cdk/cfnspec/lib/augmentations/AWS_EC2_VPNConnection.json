@@ -1,0 +1,27 @@
+{
+  "options": {
+    "classFile": "vpn",
+    "class": "VpnConnection",
+    "interface": "IVpnConnection"
+  },
+  "metrics": {
+    "namespace": "AWS/VPN",
+    "dimensions": { "VpnId": "this.vpnId" },
+    "metrics": [
+      {
+        "name": "TunnelState",
+        "documentation": "The state of the tunnel. 0 indicates DOWN and 1 indicates UP."
+      },
+      {
+        "name": "TunnelDataIn",
+        "documentation": "The bytes received through the VPN tunnel.",
+        "type": "count"
+      },
+      {
+        "name": "TunnelDataOut",
+        "documentation": "The bytes sent through the VPN tunnel.",
+        "type": "count"
+      }
+    ]
+  }
+}

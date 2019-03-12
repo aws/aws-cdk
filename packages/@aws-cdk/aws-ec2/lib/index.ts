@@ -10,3 +10,5 @@ export * from './vpn';
 
 // AWS::EC2 CloudFormation Resources:
 export * from './ec2.generated';
+
+import './ec2-augmentations.generated';

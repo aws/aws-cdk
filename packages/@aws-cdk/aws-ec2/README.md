@@ -341,3 +341,15 @@ vpc.addVpnConnection('Dynamic', {
 ```
 
 Routes will be propagated on the route tables associated with the private subnets.
+
+VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
+```ts
+// Across all tunnels in the account/region
+const allDataOut = VpnConnection.metricAllTunnelDataOut();
+
+// For a specific vpn connection
+const vpnConnection = vpc.addVpnConnection('Dynamic', {
+  ip: '1.2.3.4'
+});
+const state = vpnConnection.metricTunnelState();
+```
