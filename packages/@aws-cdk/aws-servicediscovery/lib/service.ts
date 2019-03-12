@@ -102,7 +102,7 @@ export interface DnsServiceProps extends BaseServiceProps {
    * The routing policy that you want to apply to all DNS records that AWS Cloud Map creates when you
    * register an instance and specify this service.
    *
-   * @default WEIGHTED for CNAME records, MULTIVALUE otherwise
+   * @default WEIGHTED for CNAME records and when loadBalancer is true, MULTIVALUE otherwise
    */
   routingPolicy?: RoutingPolicy;
 
@@ -310,43 +310,6 @@ function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtlSec?: number): Dns
   } else {
     return [{ type: dnsRecordType, ttl }];
   }
-}
-
-/**
- * An optional complex type that contains information about the DNS records that you want AWS Cloud Map to create when
- * you register an instance.
- */
-export interface DnsConfig {
-  /**
-   * List of DNS record that you want AWS Cloud Map to create when you register an instance.
-   */
-  dnsRecords: DnsRecord[];
-
-  /**
-   * The ID of the namespace that you want to use for DNS configuration.
-   */
-  namespaceId: string;
-
-  /**
-   * The routing policy that you want to apply to all Route 53 DNS records that AWS Cloud Map creates when you
-   * register an instance and specify this service.
-   */
-  routingPolicy?: RoutingPolicy;
-}
-
-/**
- * Settings for one DNS record that you want AWS Cloud Map to create when you register an instance.
- */
-export interface DnsRecord {
-  /**
-   * The record type
-   */
-  type: DnsRecordType;
-
-  /**
-   * The time to live for the record
-   */
-  ttl: string;
 }
 
 /**
