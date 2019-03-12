@@ -69,6 +69,33 @@ new glue.Table(stack, 'MyTable', {
 });
 ```
 
+### [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
+
+You can enable encryption on a S3 bucket:
+* [SSE-S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - Server side encryption (SSE) with an Amazon S3-managed key.
+```ts
+new glue.Table(stack, 'MyTable', {
+  encryption: glue.TableEncryption.SSE_S3
+  ...
+});
+```
+* [SSE-KMS](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (SSE) with a AWS Key Management Service customer managed key.
+
+```ts
+// with a KMS managed key
+new glue.Table(stack, 'MyTable', {
+  encryption: glue.TableEncryption.SSE_KMS
+  ...
+});
+
+// with a customer-managed KMS key
+new glue.Table(stack, 'MyTable', {
+  encryption: glue.TableEncryption.SSE_KMS,
+  encryptionKey: new kms.EncryptionKey(stack, 'MyKey')
+  ...
+});
+```
+
 ### Types
 
 A table's schema is a collection of columns, each of which have a `name` and a `type`. Types are recursive structures, consisting of primitive and complex types:
