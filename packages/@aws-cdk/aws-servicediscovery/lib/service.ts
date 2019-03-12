@@ -107,7 +107,10 @@ export interface DnsServiceProps extends BaseServiceProps {
   routingPolicy?: RoutingPolicy;
 
   /**
-   * Whether or not this service will have an Elastic LoadBalancer registered to it as an AliasTargetInstance
+   * Whether or not this service will have an Elastic LoadBalancer registered to it as an AliasTargetInstance.
+   *
+   * Setting this to `true` correctly configures the `routingPolicy`
+   * and performs some additional validation.
    *
    * @default false
    */
@@ -178,6 +181,10 @@ export class Service extends cdk.Construct implements IService {
       throw new Error('Cannot use `CNAME` record when routing policy is `Multivalue`.');
     }
 
+    // Additional validation for eventual attachment of LBs
+    // The same validation happens later on during the actual attachment
+    // of LBs, but we need the property for the correct configuration of
+    // routingPolicy anyway, so might as well do the validation as well.
     if (props.routingPolicy === RoutingPolicy.Multivalue
         && props.loadBalancer) {
       throw new Error('Cannot register loadbalancers when routing policy is `Multivalue`.');
@@ -243,8 +250,8 @@ export class Service extends cdk.Construct implements IService {
   /**
    * Registers an ELB as a new instance with unique name instanceId in this service.
    */
-  public registerLoadBalancer(loadBalancer: route53.IAliasRecordTarget, customAttributes?: {[key: string]: string}): IInstance {
-    return new AliasTargetInstance(this, "Loadbalancer", {
+  public registerLoadBalancer(id: string, loadBalancer: route53.IAliasRecordTarget, customAttributes?: {[key: string]: string}): IInstance {
+    return new AliasTargetInstance(this, id, {
       service: this,
       dnsName: loadBalancer.asAliasRecordTarget().dnsName,
       customAttributes

@@ -16,17 +16,17 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
  */
 export class PrivateDnsNamespace extends NamespaceBase {
   /**
-   * A name for the PrivateDnsNamespace.
+   * The name of the PrivateDnsNamespace.
    */
   public readonly namespaceName: string;
 
   /**
-   * Namespace Id for the PrivateDnsNamespace.
+   * Namespace Id of the PrivateDnsNamespace.
    */
   public readonly namespaceId: string;
 
   /**
-   * Namespace Arn for the namespace.
+   * Namespace Arn of the namespace.
    */
   public readonly namespaceArn: string;
 
