@@ -22,7 +22,7 @@ new glue.Database(stack, 'MyDatabase', {
 
 ### Table
 
-A Glue table describes the structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket) and format of the files (Json, Avro, Parquet, etc.):
+A Glue table describes a table of data in S3 - its structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket) and format of the files (Json, Avro, Parquet, etc.):
 
 ```ts
 new glue.Table(stack, 'MyTable', {
@@ -36,7 +36,7 @@ new glue.Table(stack, 'MyTable', {
 });
 ```
 
-By default, a S3 bucket will created to store the table's data but you can manually pass the `bucket` and `prefix`:
+By default, a S3 bucket will be created to store the table's data but you can manually pass the `bucket` and `prefix`:
 
 ```ts
 new glue.Table(stack, 'MyTable', {
@@ -72,6 +72,7 @@ new glue.Table(stack, 'MyTable', {
 ### [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
 You can enable encryption on a Table's data:
+* `Unencrypted` - files are not encrypted.
 * [SSE_S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - Server side encryption (SSE) with an Amazon S3-managed key.
 ```ts
 new glue.Table(stack, 'MyTable', {
