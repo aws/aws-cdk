@@ -301,7 +301,7 @@ function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtlSec?: number): Dns
       ttl,
     }];
   } else {
-    return [ { type: dnsRecordType, ttl} ];
+    return [{ type: dnsRecordType, ttl }];
   }
 }
 
