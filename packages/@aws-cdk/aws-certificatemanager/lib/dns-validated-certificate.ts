@@ -80,7 +80,7 @@ export class DnsValidatedCertificate extends cdk.Construct implements ICertifica
         };
     }
 
-    public validate(): string[] {
+    protected validate(): string[] {
         const errors: string[] = [];
         // Ensure the zone name is a parent zone of the certificate domain name
         if (!this.domainName.endsWith('.' + this.normalizedZoneName)) {
