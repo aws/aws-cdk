@@ -210,7 +210,7 @@ export class Service extends cdk.Construct implements IService {
       throw new Error('Must support `A` or `AAAA` records to register loadbalancers.');
     }
 
-    const dnsConfig = props.namespace.type === NamespaceType.Http
+    const dnsConfig: CfnService.DnsConfigProperty | undefined = props.namespace.type === NamespaceType.Http
       ? undefined
       : {
           dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtlSec),
@@ -296,7 +296,7 @@ export class Service extends cdk.Construct implements IService {
   }
 }
 
-function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtlSec?: number): DnsRecord[] {
+function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtlSec?: number): CfnService.DnsRecordProperty[] {
   const ttl = dnsTtlSec !== undefined ? dnsTtlSec.toString() : '60';
 
   if (dnsRecordType === DnsRecordType.A_AAAA) {
