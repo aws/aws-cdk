@@ -72,25 +72,47 @@ new glue.Table(stack, 'MyTable', {
 ### [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
 You can enable encryption on a S3 bucket:
-* [SSE-S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - Server side encryption (SSE) with an Amazon S3-managed key.
+* [SSE_S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - Server side encryption (SSE) with an Amazon S3-managed key.
 ```ts
 new glue.Table(stack, 'MyTable', {
   encryption: glue.TableEncryption.SSE_S3
   ...
 });
 ```
-* [SSE-KMS](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (SSE) with a AWS Key Management Service customer managed key.
+* [SSE_KMS](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (SSE) with an AWS Key Management Service managed by the account owner.
 
 ```ts
-// with a KMS managed key
+// KMS key is created automatically
 new glue.Table(stack, 'MyTable', {
   encryption: glue.TableEncryption.SSE_KMS
   ...
 });
 
-// with a customer-managed KMS key
+// with an explicit KMS key
 new glue.Table(stack, 'MyTable', {
   encryption: glue.TableEncryption.SSE_KMS,
+  encryptionKey: new kms.EncryptionKey(stack, 'MyKey')
+  ...
+});
+```
+* [SSE_KMS_MANAGED](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (SSE), like `SSE_KMS`, except with an AWS KMS Key managed by the AWS Key Management Service.
+```ts
+new glue.Table(stack, 'MyTable', {
+  encryption: glue.TableEncryption.SSE_KMS_MANAGED
+  ...
+});
+```
+* [CSE_KMS](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html#client-side-encryption-kms-managed-master-key-intro) - Client-side encryption (CSE) with an AWS Key Management Service managed by the account owner.
+```ts
+// KMS key is created automatically
+new glue.Table(stack, 'MyTable', {
+  encryption: glue.TableEncryption.CSE_KMS
+  ...
+});
+
+// with an explicit KMS key
+new glue.Table(stack, 'MyTable', {
+  encryption: glue.TableEncryption.CSE_KMS,
   encryptionKey: new kms.EncryptionKey(stack, 'MyKey')
   ...
 });

@@ -30,20 +30,23 @@ export enum TableEncryption {
   SSE_S3 = 'SSE-S3',
 
   /**
-   * Server-side encryption (SSE) with an AWS KMS customer managed key.
+   * Server-side encryption (SSE) with an AWS KMS key managed by KMS.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
    */
   SSE_KMS = 'SSE-KMS',
 
   /**
-   * Client-side encryption (CSE) with an AWS KMS customer managed key.
+   * Server-side encryption (SSE) with an AWS KMS key managed by the account owner.
+   */
+  SSE_KMS_MANAGED = 'SSE-KMS-MANAGED',
+
+  /**
+   * Client-side encryption (CSE) with an AWS KMS key managed by the account owner.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
-   *
-   * TODO: implement. It's not clear what properties to set on a table to support client-side encryption.
    */
-  // CSE_KMS = 'CSE-KMS'
+  CSE_KMS = 'CSE-KMS'
 }
 
 export interface TableImportProps {
@@ -110,10 +113,10 @@ export interface TableProps {
   /**
    * The kind of encryption to secure the data with.
    *
-   * You can only provide this option if you are not explicitly passing in a Bucket.
+   * You can only provide this option if you are not explicitly passing in a bucket.
    *
-   * If you choose SSE-KMS, you can specify a KMS key via `encryptionKey`. If
-   * encryption key is not specified, a key will automatically be created.
+   * If you choose `SSE-KMS`, you *can* provide an un-managed KMS key with `encryptionKey`.
+   * If you choose `CSE-KMS`, you *must* provide an un-managed KMS key with `encryptionKey`.
    *
    * @default Unencrypted
    */
@@ -122,10 +125,9 @@ export interface TableProps {
   /**
    * External KMS key to use for bucket encryption.
    *
-   * The 'encryption' property must be either un-specified or set to "SSE-KMS".
+   * The `encryption` property must be `SSE-KMS` or `CSE-KMS`.
    *
-   * @default If encryption is set to "Kms" and this property is undefined, a
-   * new KMS key will be created and associated with this bucket.
+   * @default key is managed by KMS.
    */
   encryptionKey?: kms.IEncryptionKey;
 
@@ -153,6 +155,8 @@ export class Table extends cdk.Construct implements ITable {
   }
 
   public readonly database: IDatabase;
+  public readonly encryption: TableEncryption;
+  public readonly encryptionKey?: kms.IEncryptionKey;
   public readonly bucket: s3.IBucket;
   public readonly prefix: string;
 
@@ -168,11 +172,27 @@ export class Table extends cdk.Construct implements ITable {
     super(scope, id);
 
     this.database = props.database;
-    const encryption = parseEncryption(props);
-    this.bucket = props.bucket || new s3.Bucket(this, 'Bucket', {
-      encryption: encryption ? encryption.encryption : undefined,
-      encryptionKey: encryption ? encryption.encryptionKey : undefined
-    });
+    this.encryption = props.encryption === undefined ? TableEncryption.Unencrypted : props.encryption;
+    if (props.bucket) {
+      this.bucket = props.bucket;
+    } else {
+      const bucketProps: s3.BucketProps = {};
+      bucketProps.encryption = encryptionMappings[this.encryption];
+      if (this.encryption === TableEncryption.CSE_KMS) {
+        if (props.encryptionKey === undefined) {
+          this.encryptionKey = new kms.EncryptionKey(this, 'Key');
+        } else {
+          this.encryptionKey = props.encryptionKey;
+        }
+      } else {
+        bucketProps.encryptionKey = props.encryptionKey;
+      }
+      this.bucket = new s3.Bucket(this, 'Bucket', bucketProps);
+      if (!this.encryptionKey) {
+        this.encryptionKey = this.bucket.encryptionKey;
+      }
+    }
+
     this.storageType = props.storageType;
     this.prefix = props.prefix || 'data/';
     this.columns = props.columns;
@@ -189,6 +209,9 @@ export class Table extends cdk.Construct implements ITable {
 
         partitionKeys: renderColumns(props.partitionKeys),
 
+        parameters: {
+          has_encrypted_data: this.encryption !== TableEncryption.Unencrypted
+        },
         storageDescriptor: {
           location: cdk.Fn.join('', ['s3://', this.bucket.bucketName, '/', this.prefix]),
           compressed: props.compressed === undefined ? false : props.compressed,
@@ -198,7 +221,7 @@ export class Table extends cdk.Construct implements ITable {
           outputFormat: props.storageType.outputFormat.className,
           serdeInfo: {
             serializationLibrary: props.storageType.serializationLibrary.className
-          }
+          },
         },
 
         tableType: 'EXTERNAL_TABLE'
@@ -222,7 +245,10 @@ export class Table extends cdk.Construct implements ITable {
    * @param identity the principal
    */
   public grantRead(identity: iam.IPrincipal): void {
-    this.grant(identity, readPermissions);
+    this.grant(identity, {
+      permissions: readPermissions,
+      kmsActions: ['kms:Decrypt']
+    });
     this.bucket.grantRead(identity, this.prefix);
   }
 
@@ -232,7 +258,10 @@ export class Table extends cdk.Construct implements ITable {
    * @param identity the principal
    */
   public grantWrite(identity: iam.IPrincipal): void {
-    this.grant(identity, writePermissions);
+    this.grant(identity, {
+      permissions: writePermissions,
+      kmsActions: ['kms:Encrypt', 'kms:GenerateDataKey']
+    });
     this.bucket.grantWrite(identity, this.prefix);
   }
 
@@ -242,14 +271,25 @@ export class Table extends cdk.Construct implements ITable {
    * @param identity the principal
    */
   public grantReadWrite(identity: iam.IPrincipal): void {
-    this.grant(identity, readPermissions.concat(writePermissions));
+    this.grant(identity, {
+      permissions: readPermissions.concat(writePermissions),
+      kmsActions: ['kms:Decrypt', 'kms:Encrypt', 'kms:GenerateDataKey']
+    });
     this.bucket.grantReadWrite(identity, this.prefix);
   }
 
-  private grant(identity: iam.IPrincipal, permissions: string[]) {
+  private grant(identity: iam.IPrincipal, props: {
+    permissions: string[];
+    kmsActions?: string[]; // TODO: this should be a grant method on the key itself.
+  }) {
     identity.addToPolicy(new iam.PolicyStatement()
       .addResource(this.tableArn)
-      .addActions(...permissions));
+      .addActions(...props.permissions));
+    if (this.encryption === TableEncryption.CSE_KMS) {
+      identity.addToPolicy(new iam.PolicyStatement()
+        .addResource(this.encryptionKey!.keyArn)
+        .addActions(...props.kmsActions!));
+    }
   }
 }
 
@@ -274,34 +314,13 @@ function validateProps(props: TableProps): void {
   });
 }
 
-function parseEncryption(props: TableProps): {
-  encryption: s3.BucketEncryption;
-  encryptionKey?: kms.IEncryptionKey;
-} | undefined {
-  if (props.encryption === undefined || props.encryption === TableEncryption.Unencrypted) {
-    return undefined;
-  }
-
-  if (props.encryption === TableEncryption.SSE_KMS) {
-    if (props.encryptionKey === undefined) {
-      return {
-        encryption: s3.BucketEncryption.KmsManaged
-      };
-    } else {
-      return {
-        encryption: s3.BucketEncryption.Kms,
-        encryptionKey: props.encryptionKey
-      };
-    }
-  } else {
-    if (props.encryptionKey) {
-      throw new Error('a customer managed KMS key cannot be used with SSE-S3 encryption');
-    }
-    return {
-      encryption: s3.BucketEncryption.S3Managed
-    };
-  }
-}
+const encryptionMappings = {
+  [TableEncryption.SSE_S3]: s3.BucketEncryption.S3Managed,
+  [TableEncryption.SSE_KMS_MANAGED]: s3.BucketEncryption.KmsManaged,
+  [TableEncryption.SSE_KMS]: s3.BucketEncryption.Kms,
+  [TableEncryption.CSE_KMS]: s3.BucketEncryption.Unencrypted,
+  [TableEncryption.Unencrypted]: s3.BucketEncryption.Unencrypted,
+};
 
 const readPermissions = [
   'glue:BatchDeletePartition',
