@@ -192,6 +192,8 @@ Outputs:
 
 If deCDK doesn't identify a resource type as a CDK resource, it will just pass it through to the resulting output. This means that any existing CloudFormation/SAM resources (such as `AWS::SQS::Queue`) can be used as-is.
 
+The decdk JSON schema will simply pass through any resources that have a type that includes `::`, so don't expect any validation of raw CloudFormation resource properties.
+
 ## Roadmap
 
 There is much more we can do here. This section lists API surfaces with ideas on how to deconstruct them.
@@ -269,8 +271,7 @@ deCDK can deconstruct APIs that adhere to the standards defined by __awslint__ a
 
 As you might have observed, whenever users need to reference a type in deCDK templates they are required to reference the fully qualified name (e.g. `@aws-cdk/aws-s3.Bucket`). We can obvsiouly come up with a more concise way to reference these types, as long as it will be possible to deterministically translate back and forth.
 
-### Misc
+### Special Types
 
-- `iam.PolicyDocument` is be tricky since it utilizes a fluent API. We need to think whether we want to revise the PolicyDocument API to be more compatible or add a utility class that can help.
+`iam.PolicyDocument` is tricky since it utilizes a fluent API. We need to think whether we want to revise the PolicyDocument API to be more compatible or add a utility class that can help.
 - We should enable shorthand tags for intrinsics in YAML
-

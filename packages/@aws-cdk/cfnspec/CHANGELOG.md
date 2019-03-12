@@ -1,3 +1,52 @@
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Application Location.PrimitiveType (__deleted__)
+* AWS::Serverless::Application Location.PrimitiveTypes (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.Auth Authorizers.Type (__deleted__)
+* AWS::Serverless::Api.Auth Authorizers.PrimitiveType (__added__)
+
+# CloudFormation Resource Specification v2.26.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::SSM::PatchBaseline Tags (__added__)
+* AWS::StepFunctions::Activity Tags (__added__)
+* AWS::StepFunctions::StateMachine Tags (__added__)
+
+## Property Type Changes
+
+* AWS::StepFunctions::Activity.TagsEntry (__added__)
+* AWS::StepFunctions::StateMachine.TagsEntry (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+* Tag Key.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
 
 # CloudFormation Resource Specification v2.25.0
 
