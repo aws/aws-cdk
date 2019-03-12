@@ -17,14 +17,14 @@ zone `example.com` that provides authoritative records for the domain.
 
 ```ts
 import { HostedZoneProvider } from '@aws-cdk/aws-route53';
-import { DNSValidatedCertificate } from '@aws-cdk/aws-certificatemanager';
+import { DnsValidatedCertificate } from '@aws-cdk/aws-certificatemanager';
 
 const hostedZone = new HostedZoneProvider(this, {
     domainName: 'example.com',
     privateZone: false
 }).findAndImport(this, 'ExampleDotCom');
 
-const certificate = new DNSValidatedCertificate(this, 'TestCertificate', {
+const certificate = new DnsValidatedCertificate(this, 'TestCertificate', {
     domainName: 'test.example.com',
     hostedZone: hostedZone
 });
