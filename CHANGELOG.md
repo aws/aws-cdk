@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.25.3](https://github.com/awslabs/aws-cdk/compare/v0.25.2...v0.25.3) (2019-03-12)
+
+
+### Bug Fixes
+
+* **aws-cloudtrail:** correct created log policy when sendToCloudWatchLogs is true ([#1966](https://github.com/awslabs/aws-cdk/issues/1966)) ([f06ff8e](https://github.com/awslabs/aws-cdk/commit/f06ff8e))
+* **aws-ec2:** All SSM WindowsVersion entries ([#1977](https://github.com/awslabs/aws-cdk/issues/1977)) ([85a1840](https://github.com/awslabs/aws-cdk/commit/85a1840))
+* **decdk:** relax validation when not using constructs ([#1999](https://github.com/awslabs/aws-cdk/issues/1999)) ([afbd591](https://github.com/awslabs/aws-cdk/commit/afbd591))
+
+
+### Features
+
+* **core:** add fsharp init-template ([#1912](https://github.com/awslabs/aws-cdk/issues/1912)) ([dfefb58](https://github.com/awslabs/aws-cdk/commit/dfefb58))
+* **ec2:** vpn metrics ([#1979](https://github.com/awslabs/aws-cdk/issues/1979)) ([9319e13](https://github.com/awslabs/aws-cdk/commit/9319e13))
+
 ## [0.25.2](https://github.com/awslabs/aws-cdk/compare/v0.25.1...v0.25.2) (2019-03-07)
 
 
