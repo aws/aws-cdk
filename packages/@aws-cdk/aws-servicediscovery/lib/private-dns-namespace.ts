@@ -35,11 +35,6 @@ export class PrivateDnsNamespace extends NamespaceBase {
    */
   public readonly type: NamespaceType;
 
-  /**
-   * The Amazon VPC that you want to associate the namespace with.
-   */
-  public readonly vpc: ec2.IVpcNetwork;
-
   constructor(scope: cdk.Construct, id: string, props: PrivateDnsNamespaceProps) {
     super(scope, id);
     if (props.vpc === undefined) {
@@ -56,7 +51,6 @@ export class PrivateDnsNamespace extends NamespaceBase {
     this.namespaceId = ns.privateDnsNamespaceId;
     this.namespaceArn = ns.privateDnsNamespaceArn;
     this.type = NamespaceType.DnsPrivate;
-    this.vpc = props.vpc;
   }
 
   /**
