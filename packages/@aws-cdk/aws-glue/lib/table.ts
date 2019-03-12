@@ -20,6 +20,8 @@ export interface ITable extends cdk.IConstruct {
  * @see https://docs.aws.amazon.com/athena/latest/ug/encryption.html
  */
 export enum TableEncryption {
+  Unencrypted = 'Unecrypted',
+
   /**
    * Server side encryption (SSE) with an Amazon S3-managed key.
    *
@@ -110,7 +112,7 @@ export interface TableProps {
    *
    * You can only provide this option if you are not explicitly passing in a Bucket.
    *
-   * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
+   * If you choose SSE-KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
    * @default Unencrypted
@@ -221,7 +223,7 @@ export class Table extends cdk.Construct implements ITable {
    */
   public grantRead(identity: iam.IPrincipal): void {
     this.grant(identity, readPermissions);
-    this.bucket.grantRead(identity);
+    this.bucket.grantRead(identity, this.prefix);
   }
 
   /**
@@ -231,7 +233,7 @@ export class Table extends cdk.Construct implements ITable {
    */
   public grantWrite(identity: iam.IPrincipal): void {
     this.grant(identity, writePermissions);
-    this.bucket.grantWrite(identity);
+    this.bucket.grantWrite(identity, this.prefix);
   }
 
   /**
@@ -241,7 +243,7 @@ export class Table extends cdk.Construct implements ITable {
    */
   public grantReadWrite(identity: iam.IPrincipal): void {
     this.grant(identity, readPermissions.concat(writePermissions));
-    this.bucket.grantReadWrite(identity);
+    this.bucket.grantReadWrite(identity, this.prefix);
   }
 
   private grant(identity: iam.IPrincipal, permissions: string[]) {
@@ -276,7 +278,7 @@ function parseEncryption(props: TableProps): {
   encryption: s3.BucketEncryption;
   encryptionKey?: kms.IEncryptionKey;
 } | undefined {
-  if (props.encryption === undefined) {
+  if (props.encryption === undefined || props.encryption === TableEncryption.Unencrypted) {
     return undefined;
   }
 
