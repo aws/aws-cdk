@@ -71,7 +71,7 @@ new glue.Table(stack, 'MyTable', {
 
 ### [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
-You can enable encryption on a S3 bucket:
+You can enable encryption on a Table's data:
 * [SSE_S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - Server side encryption (SSE) with an Amazon S3-managed key.
 ```ts
 new glue.Table(stack, 'MyTable', {
@@ -79,7 +79,7 @@ new glue.Table(stack, 'MyTable', {
   ...
 });
 ```
-* [SSE_KMS](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (SSE) with an AWS Key Management Service managed by the account owner.
+* [SSE_KMS](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (SSE) with an AWS KMS Key managed by the account owner.
 
 ```ts
 // KMS key is created automatically
@@ -102,7 +102,7 @@ new glue.Table(stack, 'MyTable', {
   ...
 });
 ```
-* [CSE_KMS](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html#client-side-encryption-kms-managed-master-key-intro) - Client-side encryption (CSE) with an AWS Key Management Service managed by the account owner.
+* [CSE_KMS](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html#client-side-encryption-kms-managed-master-key-intro) - Client-side encryption (CSE) with an AWS KMS Key managed by the account owner.
 ```ts
 // KMS key is created automatically
 new glue.Table(stack, 'MyTable', {
