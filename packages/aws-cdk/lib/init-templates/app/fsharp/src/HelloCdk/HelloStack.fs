@@ -17,5 +17,5 @@ type MyStack(scope, name, props) as this =
     let user = User(this, "MyUser", UserProps())
 
     do
-        topic.SubscribeQueue(queue) |> ignore
+        topic.SubscribeQueue(queue, Nullable false) |> ignore
         hello.GrantRead(user)
