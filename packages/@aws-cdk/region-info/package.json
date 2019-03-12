@@ -50,12 +50,6 @@
     "pkglint": "^0.25.2",
     "ts-jest": "^24.0.0"
   },
-  "dependencies": {
-    "@aws-cdk/cdk": "0.25.2"
-  },
-  "peerDependencies": {
-    "@aws-cdk/cdk": "0.25.2"
-  },
   "jest": {
     "coverageReporters": [
       "lcov",

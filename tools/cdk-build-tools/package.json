@@ -35,11 +35,13 @@
   "dependencies": {
     "awslint": "^0.25.2",
     "fs-extra": "^7.0.1",
-    "jest": "^24.1.0",
+    "jest": "^24.4.0",
     "jsii": "^0.7.15",
     "jsii-pacmak": "^0.7.15",
     "nodeunit": "^0.11.3",
     "nyc": "^13.3.0",
+    "ts-jest": "^24.0.0",
+    "tslint": "^5.13.1",
     "typescript": "^3.3.3333",
     "yargs": "^13.2.1"
   },

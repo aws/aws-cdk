@@ -6,17 +6,17 @@ endpoints, ...
 
 ### Direct Access
 This library offers a primitive database of such information so that CDK
-constructs can easily access regional information. The `Facts` class provides a
-list of known fact names, which can then be used with the `RegionInfo` to
+constructs can easily access regional information. The `FactName` class provides
+a list of known fact names, which can then be used with the `RegionInfo` to
 retrieve a particular value:
 
 ```ts
-import { Facts, RegionInfo } from '@aws-cdk/region-info';
+import { Fact, FactName } from '@aws-cdk/region-info';
 
-const codeDeployPrincipal = RegionInfo.find('us-east-1', Facts.servicePrincipal('codedeploy.amazonaws.com'));
+const codeDeployPrincipal = Fact.find('us-east-1', FactName.servicePrincipal('codedeploy.amazonaws.com'));
 // => codedeploy.us-east-1.amazonaws.com
 
-const staticWebsite = RegionInfo.find('ap-northeast-1', Facts.s3StaticWebsiteEndpoint);
+const staticWebsite = Fact.find('ap-northeast-1', FactName.s3StaticWebsiteEndpoint);
 // => s3-website-ap-northeast-1.amazonaws.com
 ```
 
@@ -27,9 +27,9 @@ synthesis is underway). To make usage in such scenarios easier, the library
 provides a `RegionInfoToken` class:
 
 ```ts
-import { Facts, RegionInfoToken } from '@aws-cdk/region-info';
+import { FactName, RegionInfoToken } from '@aws-cdk/region-info';
 
-const staticWebsite = new RegionInfoToken(Facts.s3StaticWebsiteEndpoint);
+const staticWebsite = new RegionInfoToken(FactName.s3StaticWebsiteEndpoint);
 ```
 
 Tokens initialized in this way will resolve during the systesis phase, according
@@ -40,31 +40,31 @@ In certain cases, it can be desirable to provide a default value for such tokens
 
 ```ts
 // The SNS service principal is almost always "sns.amazonaws.com", so it's a pretty safe default!
-const snsServicePrincipal = new RegionInfoToken(Facts.servicePrincipal('sns.amazonaws.com'), 'sns.amazonaws.com');
+const snsServicePrincipal = new RegionInfoToken(FactName.servicePrincipal('sns.amazonaws.com'), 'sns.amazonaws.com');
 ```
 
 ## Supplying new or missing information
 As new regions are released, it might happen that a particular fact you need is
-missing from the library. In such cases, the `RegionInfo.register` method can be
-used to inject facts into the database:
+missing from the library. In such cases, the `Fact.register` method can be used
+to inject FactName into the database:
 
 ```ts
-RegionInfo.register({
+Fact.register({
   region: 'bermuda-triangle-1',
-  name: Facts.servicePrincipal('s3.amazonaws.com'),
+  name: FactName.servicePrincipal('s3.amazonaws.com'),
   value: 's3-website.bermuda-triangle-1.nowhere.com',
 });
 ```
 
 ## Overriding incorrect information
 In the event information provided by the library is incorrect, it can be
-overridden using the same `RegionInfo.register` method demonstrated above,
-simply adding an extra boolean argument:
+overridden using the same `Fact.register` method demonstrated above, simply
+adding an extra boolean argument:
 
 ```ts
-RegionInfo.register({
+Fact.register({
   region: 'us-east-1',
-  name: Fact.servicePrincipal('service.amazonaws.com'),
+  name: FactName.servicePrincipal('service.amazonaws.com'),
   value: 'the-correct-principal.amazonaws.com',
 }, true /* Allow overriding information */);
 ```

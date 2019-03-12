@@ -1,12 +1,12 @@
 /**
  * A database of regional information.
  */
-export class RegionInfo {
+export class Fact {
   /**
-   * Retrieves a fact from this RegionInfo database.
+   * Retrieves a fact from this Fact database.
    *
    * @param region the name of the region (e.g: `us-east-1`)
-   * @param name   the name of the fact being looked up (see the `Facts` class for details)
+   * @param name   the name of the fact being looked up (see the `FactName` class for details)
    *
    * @returns the fact value if it is known, and `undefined` otherwise.
    */
@@ -16,12 +16,12 @@ export class RegionInfo {
   }
 
   /**
-   * Registers a new fact in this RegionInfo database.
+   * Registers a new fact in this Fact database.
    *
    * @param fact           the new fact to be registered.
    * @param allowReplacing whether new facts can replace existing facts or not.
    */
-  public static register(fact: Fact, allowReplacing = false): void {
+  public static register(fact: IFact, allowReplacing = false): void {
     const regionFacts = this.database[fact.region] || (this.database[fact.region] = {});
     if (fact.name in regionFacts && regionFacts[fact.name] !== fact.value && !allowReplacing) {
       throw new Error(`Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`);
@@ -47,14 +47,14 @@ export class RegionInfo {
   private static readonly database: { [region: string]: { [name: string]: string } } = {};
 
   private constructor() {
-    throw new Error('Use the static methods of RegionInfo instead!');
+    throw new Error('Use the static methods of Fact instead!');
   }
 }
 
 /**
  * A fact that can be registered about a particular region.
  */
-export interface Fact {
+export interface IFact {
   /**
    * The region for which this fact applies.
    */
@@ -74,7 +74,7 @@ export interface Fact {
 /**
  * All standardized fact names.
  */
-export class Facts {
+export class FactName {
   /**
    * The name of the partition for a region (e.g: 'aws', 'aws-cn', ...)
    */

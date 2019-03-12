@@ -335,7 +335,7 @@ export = {
       const stack = new Stack(undefined, undefined, { env: { region: 'cn-northeast-1' } });
       const s = new PolicyStatement()
         .addAction('test:Action')
-        .addServicePrincipal('codedeploy.amazonaws.com', 'cn-north-1');
+        .addServicePrincipal('codedeploy.amazonaws.com', { region: 'cn-north-1' });
 
       test.deepEqual(stack.node.resolve(s), {
         Effect: 'Allow',

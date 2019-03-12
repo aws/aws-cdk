@@ -4,7 +4,7 @@ import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 
 async function main(): Promise<void> {
   const lines = [
-    "import { Facts, RegionInfo } from './region-info';",
+    "import { Fact, FactName } from './region-info';",
     '',
     '// tslint:disable:object-literal-key-quotes',
     '// tslint:disable:max-line-length',
@@ -79,7 +79,7 @@ async function main(): Promise<void> {
 
   function registerFact(region: string, name: string | string[], value: string) {
     const factName = typeof name === 'string' ? name : `${name[0]}(${name.slice(1).map(s => JSON.stringify(s)).join(', ')})`;
-    lines.push(`    RegionInfo.register({ region: ${JSON.stringify(region)}, name: Facts.${factName}, value: ${JSON.stringify(value)} });`);
+    lines.push(`    Fact.register({ region: ${JSON.stringify(region)}, name: FactName.${factName}, value: ${JSON.stringify(value)} });`);
   }
 
   function servicePrincipal(region: string, service: string, domainSuffix: string): string {

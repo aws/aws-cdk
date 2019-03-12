@@ -1,4 +1,8 @@
-/** The names of all (known) AWS regions */
+/**
+ * The names of all (known) AWS regions
+ *
+ * Not in the list ==> no built-in data for that region.
+ */
 export const AWS_REGIONS = [
   'us-east-2',
   'us-east-1',
@@ -21,7 +25,11 @@ export const AWS_REGIONS = [
   'sa-east-1',
 ].sort();
 
-/** Possibly non-exaustive list of all service names, used to locate service principals */
+/**
+ * Possibly non-exaustive list of all service names, used to locate service principals.
+ *
+ * Not in the list ==> no built-in service principal mappings.
+ */
 export const AWS_SERVICES = [
   'application-autoscaling',
   'autoscaling',
