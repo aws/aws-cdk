@@ -199,7 +199,7 @@ export default class CodeGenerator {
 
     if (spec.RequiredTransform) {
       this.code.line('/**');
-      this.code.line(' * The ``Transform`` a template must use in order to use this resource');
+      this.code.line(' * The `Transform` a template must use in order to use this resource');
       this.code.line(' */');
       this.code.line(`public static readonly requiredTransform = ${JSON.stringify(spec.RequiredTransform)};`);
     }
@@ -216,7 +216,7 @@ export default class CodeGenerator {
 
         this.code.line();
 
-        this.docLink(undefined, `@cloudformation_attribute ${attributeName}`);
+        this.docLink(undefined, `@cloudformationAttribute ${attributeName}`);
         const attr = genspec.attributeDefinition(resourceName, attributeName, attributeSpec);
 
         this.code.line(`public readonly ${attr.propertyName}: ${attr.attributeType};`);
@@ -242,11 +242,11 @@ export default class CodeGenerator {
     if (tagEnum !== `${TAG_TYPE}.NotTaggable`) {
       this.code.line();
       this.code.line('/**');
-      this.code.line(' * The ``TagManager`` handles setting, removing and formatting tags');
+      this.code.line(' * The `TagManager` handles setting, removing and formatting tags');
       this.code.line(' *');
       this.code.line(' * Tags should be managed either passing them as properties during');
       this.code.line(' * initiation or by calling methods on this object. If both techniques are');
-      this.code.line(' * used only the tags from the TagManager will be used. ``Tag`` (aspect)');
+      this.code.line(' * used only the tags from the TagManager will be used. `Tag` (aspect)');
       this.code.line(' * will use the manager.');
       this.code.line(' */');
       this.code.line(`public readonly tags = new ${TAG_MANAGER}(${tagEnum}, ${resourceTypeName});`);
@@ -260,9 +260,9 @@ export default class CodeGenerator {
     this.code.line('/**');
     this.code.line(` * Creates a new ${quoteCode(resourceName.specName!.fqn)}.`);
     this.code.line(' *');
-    this.code.line(` * @param scope scope in which this resource is defined`);
-    this.code.line(` * @param id    scoped id of the resource`);
-    this.code.line(` * @param props resource properties`);
+    this.code.line(` * @param scope - scope in which this resource is defined`);
+    this.code.line(` * @param id    - scoped id of the resource`);
+    this.code.line(` * @param props - resource properties`);
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required || false);
     const propsArgument = propsType ? `, props${optionalProps ? '?' : ''}: ${propsType.className}` : '';
@@ -362,7 +362,7 @@ export default class CodeGenerator {
     this.code.line('/**');
     this.code.line(` * Renders the AWS CloudFormation properties of an ${quoteCode(typeName.specName!.fqn)} resource`);
     this.code.line(' *');
-    this.code.line(` * @param properties the TypeScript properties of a ${quoteCode(typeName.className)}`);
+    this.code.line(` * @param properties - the TypeScript properties of a ${quoteCode(typeName.className)}`);
     this.code.line(' *');
     this.code.line(` * @returns the AWS CloudFormation properties of an ${quoteCode(typeName.specName!.fqn)} resource.`);
     this.code.line(' */');
@@ -448,7 +448,7 @@ export default class CodeGenerator {
     this.code.line('/**');
     this.code.line(` * Determine whether the given properties match those of a ${quoteCode(typeName.className)}`);
     this.code.line(' *');
-    this.code.line(` * @param properties the TypeScript properties of a ${quoteCode(typeName.className)}`);
+    this.code.line(` * @param properties - the TypeScript properties of a ${quoteCode(typeName.className)}`);
     this.code.line(' *');
     this.code.line(' * @returns the result of the validation.');
     this.code.line(' */');
@@ -624,7 +624,7 @@ export default class CodeGenerator {
     this.code.line('/**');
     before.forEach(line => this.code.line(` * ${line}`));
     if (link) {
-      this.code.line(` * @link ${link}`);
+      this.code.line(` * @see ${link}`);
     }
     this.code.line(' */');
     return;
@@ -639,14 +639,14 @@ export default class CodeGenerator {
 
 /**
  * Quotes a code name for inclusion in a JSDoc comment, so it will render properly
- * in the Sphinx output.
+ * in the Markdown output.
  *
  * @param code a code name to be quoted.
  *
  * @returns the code name surrounded by double backticks.
  */
 function quoteCode(code: string): string {
-  return '``' + code + '``';
+  return '`' + code + '`';
 }
 
 function tokenizableType(alternatives: string[]) {
