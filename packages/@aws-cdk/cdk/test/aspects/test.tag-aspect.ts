@@ -1,19 +1,40 @@
 import { Test } from 'nodeunit';
-import { RemoveTag, Resource, Stack, Tag, TagManager, TagType } from '../../lib';
+import { Construct, RemoveTag, Resource, ResourceProps, Stack, Tag, TagManager, TagType } from '../../lib';
 
 class TaggableResource extends Resource {
-  public readonly tags = new TagManager(TagType.Standard, 'AWS::Fake::Resource');
+  public readonly tags: TagManager;
+  constructor(scope: Construct, id: string, props: ResourceProps) {
+    super(scope, id, props);
+    const tags = props.properties === undefined ? undefined : props.properties.tags;
+    this.tags = new TagManager(TagType.Standard, 'AWS::Fake::Resource', tags);
+  }
   public testProperties() {
     return this.properties;
   }
 }
 
-class AsgTaggableResource extends TaggableResource {
-  public readonly tags = new TagManager(TagType.AutoScalingGroup, 'AWS::Fake::Resource');
+class AsgTaggableResource extends Resource {
+  public readonly tags: TagManager;
+  constructor(scope: Construct, id: string, props: ResourceProps) {
+    super(scope, id, props);
+    const tags = props.properties === undefined ? undefined : props.properties.tags;
+    this.tags = new TagManager(TagType.AutoScalingGroup, 'AWS::Fake::Resource', tags);
+  }
+  public testProperties() {
+    return this.properties;
+  }
 }
 
-class MapTaggableResource extends TaggableResource {
-  public readonly tags = new TagManager(TagType.Map, 'AWS::Fake::Resource');
+class MapTaggableResource extends Resource {
+  public readonly tags: TagManager;
+  constructor(scope: Construct, id: string, props: ResourceProps) {
+    super(scope, id, props);
+    const tags = props.properties === undefined ? undefined : props.properties.tags;
+    this.tags = new TagManager(TagType.Map, 'AWS::Fake::Resource', tags);
+  }
+  public testProperties() {
+    return this.properties;
+  }
 }
 
 export = {
@@ -130,14 +151,33 @@ export = {
     test.deepEqual(res2.tags.renderTags(), [{key: 'key', value: 'value'}]);
     test.done();
   },
-  'Aspects are mutually exclusive with tags created by L1 Constructor'(test: Test) {
+  'Aspects are merged with tags created by L1 Constructor'(test: Test) {
     const root = new Stack();
     const aspectBranch = new TaggableResource(root, 'FakeBranchA', {
       type: 'AWS::Fake::Thing',
       properties: {
         tags: [
+          {key: 'aspects', value: 'overwrite'},
           {key: 'cfn', value: 'is cool'},
         ],
+      },
+    });
+    const asgResource = new AsgTaggableResource(aspectBranch, 'FakeAsg', {
+      type: 'AWS::Fake::Thing',
+      properties: {
+        tags: [
+          {key: 'aspects', value: 'overwrite', propagateAtLaunch: false},
+          {key: 'cfn', value: 'is cool', propagateAtLaunch: true},
+        ],
+      },
+    });
+    const mapTaggable = new MapTaggableResource(aspectBranch, 'FakeSam', {
+      type: 'AWS::Fake::Thing',
+      properties: {
+        tags: {
+          aspects: 'overwrite',
+          cfn: 'is cool',
+        },
       },
     });
     const cfnBranch = new TaggableResource(root, 'FakeBranchB', {
@@ -150,8 +190,60 @@ export = {
     });
     aspectBranch.node.apply(new Tag('aspects', 'rule'));
     root.node.prepareTree();
-    test.deepEqual(aspectBranch.tags.renderTags(), [{key: 'aspects', value: 'rule'}]);
+    test.deepEqual(aspectBranch.testProperties().tags, [{key: 'aspects', value: 'rule'}, {key: 'cfn', value: 'is cool'}]);
+    test.deepEqual(asgResource.testProperties().tags, [
+      {key: 'aspects', value: 'rule', propagateAtLaunch: true},
+      {key: 'cfn', value: 'is cool', propagateAtLaunch: true}
+    ]);
+    test.deepEqual(mapTaggable.testProperties().tags, {
+      aspects: 'rule',
+      cfn: 'is cool',
+    });
     test.deepEqual(cfnBranch.testProperties().tags, [{key: 'cfn', value: 'is cool'}]);
     test.done();
+  },
+  'when invalid tag properties are passed from L1s': {
+    'map passed instead of array it raises'(test: Test) {
+      const root = new Stack();
+      test.throws(() => {
+        new TaggableResource(root, 'FakeBranchA', {
+          type: 'AWS::Fake::Thing',
+          properties: {
+            tags: {
+              cfn: 'is cool',
+              aspects: 'overwrite',
+            },
+          },
+        });
+      });
+      test.throws(() => {
+        new AsgTaggableResource(root, 'FakeBranchA', {
+          type: 'AWS::Fake::Thing',
+          properties: {
+            tags: {
+              cfn: 'is cool',
+              aspects: 'overwrite',
+              propagateAtLaunch: true,
+            },
+          },
+        });
+      });
+      test.done();
+    },
+    'if array is passed instead of map it raises'(test: Test) {
+      const root = new Stack();
+      test.throws(() => {
+        new MapTaggableResource(root, 'FakeSam', {
+          type: 'AWS::Fake::Thing',
+          properties: {
+            tags: [
+              {key: 'cfn', value: 'is cool', propagateAtLaunch: true},
+              {key: 'aspects', value: 'overwrite'},
+            ],
+          },
+        });
+      });
+      test.done();
+    },
   },
 };

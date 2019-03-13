@@ -206,12 +206,13 @@ export class Resource extends Referenceable {
    */
   public toCloudFormation(): object {
     try {
-      if (Resource.isTaggable(this)) {
-        const tags = this.tags.renderTags();
-        this.properties.tags = tags === undefined ? this.properties.tags : tags;
-      }
       // merge property overrides onto properties and then render (and validate).
-      const properties = this.renderProperties(deepMerge(this.properties || { }, this.untypedPropertyOverrides));
+      const tags = Resource.isTaggable(this) ? this.tags.renderTags() : undefined;
+      const properties = this.renderProperties(deepMerge(
+        this.properties || {},
+        { tags },
+        this.untypedPropertyOverrides
+      ));
 
       return {
         Resources: {
@@ -254,7 +255,6 @@ export class Resource extends Referenceable {
   protected renderProperties(properties: any): { [key: string]: any } {
     return properties;
   }
-
 }
 
 export enum TagType {
@@ -312,33 +312,35 @@ export interface ResourceOptions {
  * Merges `source` into `target`, overriding any existing values.
  * `null`s will cause a value to be deleted.
  */
-export function deepMerge(target: any, source: any) {
-  if (typeof(source) !== 'object' || typeof(target) !== 'object') {
-    throw new Error(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
-  }
+export function deepMerge(target: any, ...sources: any[]) {
+  for (const source of sources) {
+    if (typeof(source) !== 'object' || typeof(target) !== 'object') {
+      throw new Error(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
+    }
 
-  for (const key of Object.keys(source)) {
-    const value = source[key];
-    if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
-      // if the value at the target is not an object, override it with an
-      // object so we can continue the recursion
-      if (typeof(target[key]) !== 'object') {
-        target[key] = { };
-      }
+    for (const key of Object.keys(source)) {
+      const value = source[key];
+      if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
+        // if the value at the target is not an object, override it with an
+        // object so we can continue the recursion
+        if (typeof(target[key]) !== 'object') {
+          target[key] = { };
+        }
 
-      deepMerge(target[key], value);
+        deepMerge(target[key], value);
 
-      // if the result of the merge is an empty object, it's because the
-      // eventual value we assigned is `undefined`, and there are no
-      // sibling concrete values alongside, so we can delete this tree.
-      const output = target[key];
-      if (typeof(output) === 'object' && Object.keys(output).length === 0) {
+        // if the result of the merge is an empty object, it's because the
+        // eventual value we assigned is `undefined`, and there are no
+        // sibling concrete values alongside, so we can delete this tree.
+        const output = target[key];
+        if (typeof(output) === 'object' && Object.keys(output).length === 0) {
+          delete target[key];
+        }
+      } else if (value === undefined) {
         delete target[key];
+      } else {
+        target[key] = value;
       }
-    } else if (value === undefined) {
-      delete target[key];
-    } else {
-      target[key] = value;
     }
   }
 
