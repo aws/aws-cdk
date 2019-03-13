@@ -1,4 +1,4 @@
-import { IConstruct } from '../construct';
+import { IConstruct } from './construct';
 import { containsListToken, TOKEN_MAP } from "./encoding";
 import { RESOLVE_OPTIONS } from "./options";
 import { isResolvedValuePostProcessor, RESOLVE_METHOD, ResolveContext, Token } from "./token";

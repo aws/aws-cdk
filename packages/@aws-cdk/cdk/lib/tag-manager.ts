@@ -1,5 +1,5 @@
-import { TagType } from '../cloudformation/cfn-resource';
-import { CfnTag } from '../cloudformation/tag';
+import { TagType } from './cloudformation/cfn-resource';
+import { CfnTag } from './cloudformation/tag';
 
 interface Tag {
   key: string;

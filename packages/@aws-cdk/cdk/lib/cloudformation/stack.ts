@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
-import { Construct, IConstruct, PATH_SEP } from '../core/construct';
+import { Construct, IConstruct, PATH_SEP } from '../construct';
 import { Environment } from '../environment';
 import { ISynthesisSession } from '../synthesis';
 import { CfnParameter } from './cfn-parameter';

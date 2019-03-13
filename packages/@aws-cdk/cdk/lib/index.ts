@@ -1,10 +1,11 @@
 export * from './aspect';
 export * from './tag-aspect';
 
-export * from './core/construct';
-export * from './core/tokens';
-export * from './core/tag-manager';
-export * from './core/dependency';
+export * from './construct';
+export * from './token';
+export * from './unresolved';
+export * from './tag-manager';
+export * from './dependency';
 
 export * from './cloudformation/cloudformation-json';
 export * from './cloudformation/reference';

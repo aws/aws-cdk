@@ -19,4 +19,4 @@ export function cloudFormationConcat(left: any | undefined, right: any | undefin
   return { 'Fn::Join': ['', minimalCloudFormationJoin('', parts)] };
 }
 
-import { minimalCloudFormationJoin } from "../../cloudformation/instrinsics";
+import { minimalCloudFormationJoin } from "./cloudformation/instrinsics";

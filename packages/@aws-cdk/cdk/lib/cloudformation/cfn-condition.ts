@@ -1,5 +1,5 @@
-import { Construct } from '../core/construct';
-import { ResolveContext } from '../core/tokens';
+import { Construct } from '../construct';
+import { ResolveContext } from '../token';
 import { CfnRefElement } from './cfn-element';
 
 export interface CfnConditionProps {

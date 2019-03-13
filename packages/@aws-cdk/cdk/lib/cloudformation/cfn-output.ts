@@ -1,4 +1,4 @@
-import { Construct } from '../core/construct';
+import { Construct } from '../construct';
 import { CfnElement } from './cfn-element';
 
 export interface CfnOutputProps {

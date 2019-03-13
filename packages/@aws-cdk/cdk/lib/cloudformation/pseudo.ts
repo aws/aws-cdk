@@ -1,5 +1,5 @@
-import { Construct } from '../core/construct';
-import { Token } from '../core/tokens';
+import { Construct } from '../construct';
+import { Token } from '../token';
 import { Reference } from './reference';
 
 /**

@@ -1,5 +1,6 @@
-import { ResolveContext, Token, unresolved } from '../core/tokens';
-import { resolve } from '../core/tokens/resolve';
+import { resolve } from '../resolve';
+import { ResolveContext, Token } from '../token';
+import { unresolved } from '../unresolved';
 import { ICfnConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './instrinsics';
 

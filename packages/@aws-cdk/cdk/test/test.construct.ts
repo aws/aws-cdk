@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { ArnComponents, Construct, ConstructOrder, Root, Stack, Token } from '../../lib';
+import { ArnComponents, Construct, ConstructOrder, Root, Stack, Token } from '../lib';
 
 // tslint:disable:variable-name
 // tslint:disable:max-line-length

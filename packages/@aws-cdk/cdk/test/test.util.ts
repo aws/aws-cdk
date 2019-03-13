@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
-import { Root } from '../../lib';
-import { capitalizePropertyNames, ignoreEmpty } from '../../lib/core/util';
+import { Root } from '../lib';
+import { capitalizePropertyNames, ignoreEmpty } from '../lib/util';
 
 export = {
   'capitalizeResourceProperties capitalizes all keys of an object (recursively) from camelCase to PascalCase'(test: Test) {

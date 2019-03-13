@@ -1,5 +1,5 @@
-import { Construct } from '../core/construct';
-import { capitalizePropertyNames } from '../core/util';
+import { Construct } from '../construct';
+import { capitalizePropertyNames } from '../util';
 import { ICfnConditionExpression } from './cfn-condition';
 import { CfnRefElement } from './cfn-element';
 

@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
 import { IAspect } from '../lib/aspect';
-import { IConstruct, Root } from '../lib/core/construct';
+import { IConstruct, Root } from '../lib/construct';
 
 class MyConstruct extends Root {
   public static IsMyConstruct(x: any): x is MyConstruct {

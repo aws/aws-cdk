@@ -1,10 +1,11 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { IAspect } from '../aspect';
-import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
-import { makeUniqueId } from '../uniqueid';
+import { IAspect } from './aspect';
+import { CloudFormationJSON } from './cloudformation/cloudformation-json';
 import { IDependable } from './dependency';
-import { Token, unresolved } from './tokens';
-import { resolve } from './tokens/resolve';
+import { resolve } from './resolve';
+import { Token } from './token';
+import { makeUniqueId } from './uniqueid';
+import { unresolved } from './unresolved';
 
 export const PATH_SEP = '/';
 
@@ -737,4 +738,4 @@ export interface Dependency {
 }
 
 // Import this _after_ everything else to help node work the classes out in the correct order...
-import { Stack } from '../cloudformation/stack';
+import { Stack } from './cloudformation/stack';

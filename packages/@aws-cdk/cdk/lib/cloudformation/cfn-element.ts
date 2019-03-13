@@ -1,5 +1,5 @@
-import { Construct, IConstruct, PATH_SEP } from "../core/construct";
-import { Token } from '../core/tokens';
+import { Construct, IConstruct, PATH_SEP } from "../construct";
+import { Token } from '../token';
 
 const LOGICAL_ID_MD = 'aws:cdk:logicalId';
 
@@ -43,7 +43,7 @@ export abstract class CfnElement extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    this.node.addMetadata(LOGICAL_ID_MD, new (require("../core/tokens/token").Token)(() => this.logicalId), this.constructor);
+    this.node.addMetadata(LOGICAL_ID_MD, new (require("../token").Token)(() => this.logicalId), this.constructor);
 
     this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
     this.logicalId = new Token(() => this._logicalId).toString();
@@ -154,4 +154,4 @@ export abstract class CfnRefElement extends CfnElement {
   }
 }
 
-import { findTokens } from "../core/tokens/resolve";
+import { findTokens } from "../resolve";

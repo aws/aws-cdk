@@ -1,4 +1,4 @@
-import { Construct } from '../core/construct';
+import { Construct } from '../construct';
 import { CfnRefElement } from './cfn-element';
 import { Fn } from './fn';
 

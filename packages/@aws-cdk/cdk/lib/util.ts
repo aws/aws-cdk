@@ -1,5 +1,5 @@
 import { IConstruct } from "./construct";
-import { IResolvedValuePostProcessor, ResolveContext, Token } from "./tokens";
+import { IResolvedValuePostProcessor, ResolveContext, Token } from "./token";
 
 /**
  * Given an object, converts all keys to PascalCase given they are currently in camel case.

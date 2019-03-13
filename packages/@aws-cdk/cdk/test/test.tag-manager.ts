@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
-import { TagType } from '../../lib/cloudformation/cfn-resource';
-import { TagManager } from '../../lib/core/tag-manager';
+import { TagType } from '../lib/cloudformation/cfn-resource';
+import { TagManager } from '../lib/tag-manager';
 
 export = {
   '#setTag() supports setting a tag regardless of Type'(test: Test) {

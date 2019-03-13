@@ -55,4 +55,4 @@ export function canEvaluateToList(x: any) {
   return isIntrinsic(x) && ['Ref', 'Fn::GetAtt', 'Fn::GetAZs', 'Fn::Split', 'Fn::FindInMap', 'Fn::ImportValue'].includes(Object.keys(x)[0]);
 }
 
-import { unresolved } from "../core/tokens/unresolved";
+import { unresolved } from "../unresolved";

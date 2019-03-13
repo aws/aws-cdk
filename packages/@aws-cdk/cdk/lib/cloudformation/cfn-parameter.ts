@@ -1,5 +1,5 @@
-import { Construct } from '../core/construct';
-import { Token } from '../core/tokens';
+import { Construct } from '../construct';
+import { Token } from '../token';
 import { CfnRefElement, Ref } from './cfn-element';
 
 export interface CfnParameterProps {

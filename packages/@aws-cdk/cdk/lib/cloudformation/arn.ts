@@ -1,5 +1,5 @@
 import { Fn } from '../cloudformation/fn';
-import { unresolved } from '../core/tokens';
+import { unresolved } from '../unresolved';
 import { Stack } from './stack';
 
 /**

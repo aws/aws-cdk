@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
-import { Fn, Root, Token, unresolved } from '../../lib';
-import { evaluateCFN } from '../cloudformation/evaluate-cfn';
+import { Fn, Root, Token, unresolved } from '../lib';
+import { evaluateCFN } from './cloudformation/evaluate-cfn';
 
 export = {
   'resolve a plain old object should just return the object'(test: Test) {

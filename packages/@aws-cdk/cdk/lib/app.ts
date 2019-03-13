@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { ConstructOrder, Root } from './core/construct';
+import { ConstructOrder, Root } from './construct';
 import { FileSystemStore, InMemoryStore, ISynthesisSession, SynthesisSession } from './synthesis';
 
 /**

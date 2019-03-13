@@ -1,4 +1,4 @@
-import { ResolveContext, Token } from "../core/tokens";
+import { ResolveContext, Token } from "../token";
 
 /**
  * A Token that represents a CloudFormation reference to another resource
@@ -111,6 +111,6 @@ export class Reference extends Token {
 
 }
 
-import { Construct } from "../core/construct";
+import { Construct } from "../construct";
 import { CfnOutput } from "./cfn-output";
 import { Stack } from "./stack";

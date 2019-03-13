@@ -1,4 +1,4 @@
-import { IConstruct } from './core/construct';
+import { IConstruct } from './construct';
 
 /**
  * Represents an Aspect

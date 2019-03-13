@@ -1,6 +1,6 @@
-import { IConstruct } from "../core/construct";
-import { Token } from "../core/tokens";
-import { resolve } from "../core/tokens/resolve";
+import { IConstruct } from "../construct";
+import { resolve } from "../resolve";
+import { Token } from "../token";
 import { isIntrinsic } from "./instrinsics";
 
 /**
