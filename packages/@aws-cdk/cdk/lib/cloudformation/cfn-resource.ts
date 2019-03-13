@@ -7,7 +7,7 @@ import { Reference } from './reference';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
-import { Referenceable } from './cfn-element';
+import { CfnRefElement } from './cfn-element';
 
 export interface CfnResourceProps {
   /**
@@ -30,7 +30,7 @@ export interface ITaggable {
 /**
  * Represents a CloudFormation resource.
  */
-export class CfnResource extends Referenceable {
+export class CfnResource extends CfnRefElement {
   /**
    * A decoration used to create a CloudFormation attribute property.
    * @param customName Custom name for the attribute (default is the name of the property)

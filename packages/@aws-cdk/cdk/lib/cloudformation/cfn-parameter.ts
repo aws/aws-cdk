@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { Ref, Referenceable } from './cfn-element';
+import { CfnRefElement, Ref } from './cfn-element';
 
 export interface CfnParameterProps {
   /**
@@ -70,7 +70,7 @@ export interface CfnParameterProps {
  * Parameters enable you to input custom values to your template each time you create or
  * update a stack.
  */
-export class CfnParameter extends Referenceable {
+export class CfnParameter extends CfnRefElement {
   /**
    * A token that represents the actual value of this parameter.
    */

@@ -1,7 +1,7 @@
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames } from '../core/util';
 import { IConditionExpression } from './cfn-condition';
-import { Referenceable } from './cfn-element';
+import { CfnRefElement } from './cfn-element';
 
 /**
  * A rule can include a RuleCondition property and must include an Assertions property.
@@ -52,7 +52,7 @@ export interface CfnRuleProps {
  *
  * @link https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html
  */
-export class CfnRule extends Referenceable {
+export class CfnRule extends CfnRefElement {
   /**
    * If the rule condition evaluates to false, the rule doesn't take effect.
    * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.

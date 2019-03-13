@@ -141,11 +141,11 @@ export class Ref extends Reference {
  * These constructs are things like Conditions and Parameters, can be
  * referenced by taking the `.ref` attribute.
  *
- * Resource constructs do not inherit from Referenceable because they have their
+ * Resource constructs do not inherit from CfnRefElement because they have their
  * own, more specific types returned from the .ref attribute. Also, some
  * resources aren't referenceable at all (such as BucketPolicies or GatewayAttachments).
  */
-export abstract class Referenceable extends CfnElement {
+export abstract class CfnRefElement extends CfnElement {
   /**
    * Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID.
    */
