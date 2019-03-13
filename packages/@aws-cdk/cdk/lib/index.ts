@@ -12,7 +12,7 @@ export * from './cloudformation/cfn-condition';
 export * from './cloudformation/fn';
 export * from './cloudformation/include';
 export * from './cloudformation/logical-id';
-export * from './cloudformation/mapping';
+export * from './cloudformation/cfn-mapping';
 export * from './cloudformation/cfn-output';
 export * from './cloudformation/cfn-parameter';
 export * from './cloudformation/pseudo';

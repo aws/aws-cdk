@@ -2,17 +2,17 @@ import { Construct } from '../core/construct';
 import { Referenceable } from './cfn-element';
 import { Fn } from './fn';
 
-export interface MappingProps {
+export interface CfnMappingProps {
   mapping?: { [k1: string]: { [k2: string]: any } };
 }
 
 /**
  * Represents a CloudFormation mapping.
  */
-export class Mapping extends Referenceable {
+export class CfnMapping extends Referenceable {
   private mapping: { [k1: string]: { [k2: string]: any } } = { };
 
-  constructor(scope: Construct, id: string, props: MappingProps) {
+  constructor(scope: Construct, id: string, props: CfnMappingProps) {
     super(scope, id);
     this.mapping = props.mapping || { };
   }

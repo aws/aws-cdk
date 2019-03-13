@@ -1,10 +1,10 @@
 import { Test } from 'nodeunit';
-import { CfnResource, Mapping, Stack } from '../../lib';
+import { CfnMapping, CfnResource, Stack } from '../../lib';
 
 export = {
   'mappings can be added as another type of entity, and mapping.findInMap can be used to get a token'(test: Test) {
     const stack = new Stack();
-    const mapping = new Mapping(stack, 'MyMapping', { mapping: {
+    const mapping = new CfnMapping(stack, 'MyMapping', { mapping: {
       TopLevelKey1: {
         SecondLevelKey1: [ 1, 2, 3 ],
         SecondLevelKey2: { Hello: 'World' }
