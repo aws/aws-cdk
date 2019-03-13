@@ -124,12 +124,12 @@ export abstract class CfnElement extends Construct {
   }
 }
 
-import { CfnReference } from "./cfn-tokens";
+import { Reference } from "./reference";
 
 /**
  * A generic, untyped reference to a Stack Element
  */
-export class Ref extends CfnReference {
+export class Ref extends Reference {
   constructor(element: CfnElement) {
     super({ Ref: element.logicalId }, 'Ref', element);
   }

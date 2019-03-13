@@ -4,8 +4,8 @@ import { Construct, IConstruct, PATH_SEP } from '../core/construct';
 import { Environment } from '../environment';
 import { ISynthesisSession } from '../synthesis';
 import { CfnParameter } from './cfn-parameter';
-import { CfnReference } from './cfn-tokens';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
+import { Reference } from './reference';
 
 export interface StackProps {
   /**
@@ -422,7 +422,7 @@ export class Stack extends Construct {
   protected prepare() {
     // References
     for (const ref of this.node.findReferences()) {
-      if (CfnReference.isCfnReference(ref)) {
+      if (Reference.isReference(ref)) {
         ref.consumeFromStack(this);
       }
     }

@@ -3,7 +3,7 @@ import { Construct, IConstruct } from '../core/construct';
 import { TagManager } from '../core/tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from '../core/util';
 import { CfnCondition } from './cfn-condition';
-import { CfnReference } from './cfn-tokens';
+import { Reference } from './reference';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
@@ -133,7 +133,7 @@ export class CfnResource extends Referenceable {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, attributeName, this);
+    return new Reference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, attributeName, this);
   }
 
   /**

@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { CfnReference } from './cfn-tokens';
+import { Reference } from './reference';
 
 /**
  * Accessor for pseudo parameters
@@ -85,7 +85,7 @@ export class ScopedAws {
   }
 }
 
-class PseudoParameter extends CfnReference {
+class PseudoParameter extends Reference {
   constructor(name: string, scope: Construct | undefined) {
       super({ Ref: name }, name, scope);
   }

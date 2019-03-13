@@ -7,7 +7,7 @@ export * from './core/tag-manager';
 export * from './core/dependency';
 
 export * from './cloudformation/cloudformation-json';
-export * from './cloudformation/cfn-tokens';
+export * from './cloudformation/reference';
 export * from './cloudformation/cfn-condition';
 export * from './cloudformation/fn';
 export * from './cloudformation/include';

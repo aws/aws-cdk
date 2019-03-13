@@ -14,11 +14,11 @@ import { ResolveContext, Token } from "../core/tokens";
  * `consumeFromStack` on these Tokens and if they happen to be exported by a different
  * Stack, we'll register the dependency.
  */
-export class CfnReference extends Token {
+export class Reference extends Token {
   /**
-   * Check whether this is actually a CfnReference
+   * Check whether this is actually a Reference
    */
-  public static isCfnReference(x: Token): x is CfnReference {
+  public static isReference(x: Token): x is Reference {
     return (x as any).consumeFromStack !== undefined;
   }
 
@@ -36,7 +36,7 @@ export class CfnReference extends Token {
 
   constructor(value: any, displayName?: string, scope?: Construct) {
     if (typeof(value) === 'function') {
-        throw new Error('CfnReference can only hold CloudFormation intrinsics (not a function)');
+        throw new Error('Reference can only hold CloudFormation intrinsics (not a function)');
     }
     // prepend scope path to display name
     if (displayName && scope) {
