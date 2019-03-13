@@ -44,7 +44,7 @@ export interface RestApiProps extends ResourceOptions {
    * deployment. To customize the stage options, use the `deployStageOptions`
    * property.
    *
-   * A CloudFormation CfnOutput will also be defined with the root URL endpoint
+   * A CloudFormation Output will also be defined with the root URL endpoint
    * of this REST API.
    *
    * @default true
