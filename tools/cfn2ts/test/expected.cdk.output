@@ -7188,7 +7188,7 @@ export namespace aws.events {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html
      */
-    export class RuleProps extends core.ConstructProps {
+    export class CfnRuleProps extends core.ConstructProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-description
          */
@@ -7235,7 +7235,7 @@ export namespace aws.events {
          */
         public readonly ruleArn: RuleArnAttribute
 
-        constructor(parent: core.Construct, props?: RuleProps) {
+        constructor(parent: core.Construct, props?: CfnRuleProps) {
             super(parent, { type: 'AWS::Events::Rule', ...props });
             this.ruleArn = new RuleArnAttribute(this, 'Arn');
         }
@@ -11269,7 +11269,7 @@ export namespace aws.waf {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html
      */
-    export class RuleProps extends core.ConstructProps {
+    export class CfnRuleProps extends core.ConstructProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html#cfn-waf-rule-metricname
          */
@@ -11291,7 +11291,7 @@ export namespace aws.waf {
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html
      */
     export class Rule extends core.Resource {
-        constructor(parent: core.Construct, props?: RuleProps) {
+        constructor(parent: core.Construct, props?: CfnRuleProps) {
             super(parent, { type: 'AWS::WAF::Rule', ...props });
         }
     }
@@ -11473,7 +11473,7 @@ export namespace aws.wafregional {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html
      */
-    export class RuleProps extends core.ConstructProps {
+    export class CfnRuleProps extends core.ConstructProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html#cfn-wafregional-rule-metricname
          */
@@ -11495,7 +11495,7 @@ export namespace aws.wafregional {
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html
      */
     export class Rule extends core.Resource {
-        constructor(parent: core.Construct, props?: RuleProps) {
+        constructor(parent: core.Construct, props?: CfnRuleProps) {
             super(parent, { type: 'AWS::WAFRegional::Rule', ...props });
         }
     }

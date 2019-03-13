@@ -18,7 +18,7 @@ export * from './cloudformation/cfn-parameter';
 export * from './cloudformation/pseudo';
 export * from './cloudformation/cfn-resource';
 export * from './cloudformation/resource-policy';
-export * from './cloudformation/rule';
+export * from './cloudformation/cfn-rule';
 export * from './cloudformation/stack';
 export * from './cloudformation/cfn-element';
 export * from './cloudformation/dynamic-reference';

@@ -24,7 +24,7 @@ import { Referenceable } from './cfn-element';
  *
  * https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html
  */
-export interface RuleProps {
+export interface CfnRuleProps {
   /**
    * If the rule condition evaluates to false, the rule doesn't take effect.
    * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
@@ -52,7 +52,7 @@ export interface RuleProps {
  *
  * @link https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html
  */
-export class Rule extends Referenceable {
+export class CfnRule extends Referenceable {
   /**
    * If the rule condition evaluates to false, the rule doesn't take effect.
    * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
@@ -69,7 +69,7 @@ export class Rule extends Referenceable {
    * @param parent The parent construct.
    * @param props The rule props.
    */
-  constructor(scope: Construct, id: string, props?: RuleProps) {
+  constructor(scope: Construct, id: string, props?: CfnRuleProps) {
     super(scope, id);
 
     this.ruleCondition = props && props.ruleCondition;
