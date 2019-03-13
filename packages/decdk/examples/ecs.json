@@ -30,7 +30,7 @@
         "essential": true,
         "memoryLimitMiB": 1024,
         "image": {
-          "fromRepository": {
+          "fromRegistry": {
             "name": "redis"
           }
         }

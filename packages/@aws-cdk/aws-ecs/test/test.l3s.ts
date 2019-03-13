@@ -18,7 +18,7 @@ export = {
     new ecs.LoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromRepository('test'),
+      image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
       environment: {
         TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
@@ -63,7 +63,7 @@ export = {
     // WHEN
     new ecs.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRepository('test'),
+      image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
       environment: {
         TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
@@ -119,7 +119,7 @@ export = {
     // WHEN
     new ecs.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRepository('test'),
+      image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
       createLogs: false,
       environment: {
@@ -166,7 +166,7 @@ export = {
     // WHEN
     new ecs.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromRepository('test'),
+      image: ecs.ContainerImage.fromRegistry('test'),
       domainName: 'api.example.com',
       domainZone: zone,
       certificate: Certificate.import(stack, 'Cert', { certificateArn: 'helloworld' })
@@ -212,7 +212,7 @@ export = {
     test.throws(() => {
       new ecs.LoadBalancedFargateService(stack, 'Service', {
         cluster,
-        image: ecs.ContainerImage.fromRepository('test'),
+        image: ecs.ContainerImage.fromRegistry('test'),
         domainName: 'api.example.com'
       });
     });

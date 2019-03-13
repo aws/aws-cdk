@@ -10,7 +10,7 @@ export abstract class ContainerImage {
   /**
    * Reference an image on DockerHub or another online registry
    */
-  public static fromRepository(name: string, props: RepositoryImageProps = {}) {
+  public static fromRegistry(name: string, props: RepositoryImageProps = {}) {
     return new RepositoryImage(name, props);
   }
 

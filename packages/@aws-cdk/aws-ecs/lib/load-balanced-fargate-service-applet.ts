@@ -132,7 +132,7 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
       memoryMiB: props.memoryMiB,
       publicLoadBalancer: props.publicLoadBalancer,
       publicTasks: props.publicTasks,
-      image: ContainerImage.fromRepository(props.image),
+      image: ContainerImage.fromRegistry(props.image),
       desiredCount: props.desiredCount,
       environment: props.environment,
       certificate,
