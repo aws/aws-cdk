@@ -1,9 +1,9 @@
 import { Test } from 'nodeunit';
-import { CfnResource, CfnResourceProps, RemoveTag, Stack, Tag, TagManager, TagType } from '../../lib';
+import { CfnResource, CfnResourceProps, Construct, RemoveTag, Stack, Tag, TagManager, TagType } from '../../lib';
 
 class TaggableResource extends CfnResource {
   public readonly tags: TagManager;
-  constructor(scope: Construct, id: string, props: ResourceProps) {
+  constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id, props);
     const tags = props.properties === undefined ? undefined : props.properties.tags;
     this.tags = new TagManager(TagType.Standard, 'AWS::Fake::Resource', tags);
@@ -13,9 +13,9 @@ class TaggableResource extends CfnResource {
   }
 }
 
-class AsgTaggableResource extends Resource {
+class AsgTaggableResource extends CfnResource {
   public readonly tags: TagManager;
-  constructor(scope: Construct, id: string, props: ResourceProps) {
+  constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id, props);
     const tags = props.properties === undefined ? undefined : props.properties.tags;
     this.tags = new TagManager(TagType.AutoScalingGroup, 'AWS::Fake::Resource', tags);
@@ -25,9 +25,9 @@ class AsgTaggableResource extends Resource {
   }
 }
 
-class MapTaggableResource extends Resource {
+class MapTaggableResource extends CfnResource {
   public readonly tags: TagManager;
-  constructor(scope: Construct, id: string, props: ResourceProps) {
+  constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id, props);
     const tags = props.properties === undefined ? undefined : props.properties.tags;
     this.tags = new TagManager(TagType.Map, 'AWS::Fake::Resource', tags);

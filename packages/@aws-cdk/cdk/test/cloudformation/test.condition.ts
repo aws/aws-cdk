@@ -36,7 +36,7 @@ export = {
     const propValue: string = cdk.Fn.conditionIf('Cond', 'A', 'B').toString();
 
     // WHEN
-    new cdk.Resource(stack, 'MyResource', {
+    new cdk.CfnResource(stack, 'MyResource', {
       type: 'AWS::Foo::Bar',
       properties: {
         StringProp: propValue
