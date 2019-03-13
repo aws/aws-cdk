@@ -79,6 +79,7 @@
     "@aws-cdk/aws-logs": "^0.25.3",
     "@aws-cdk/aws-route53": "^0.25.3",
     "@aws-cdk/aws-sns": "^0.25.3",
+    "@aws-cdk/aws-secretsmanager": "^0.25.3",
     "@aws-cdk/cdk": "^0.25.3",
     "@aws-cdk/cx-api": "^0.25.3"
   },
@@ -97,6 +98,7 @@
     "@aws-cdk/aws-iam": "^0.25.3",
     "@aws-cdk/aws-logs": "^0.25.3",
     "@aws-cdk/aws-route53": "^0.25.3",
+    "@aws-cdk/aws-secretsmanager": "^0.25.3",
     "@aws-cdk/cdk": "^0.25.3"
   },
   "engines": {
