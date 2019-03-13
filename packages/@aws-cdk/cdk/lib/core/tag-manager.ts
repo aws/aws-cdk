@@ -168,26 +168,22 @@ export class TagManager {
   private readonly resourceTypeName: string;
   private readonly initialTagPriority = 50;
 
-  constructor(tagType: TagType, resourceTypeName: string, tags?: any) {
+  constructor(tagType: TagType, resourceTypeName: string, tagStructure?: any) {
     this.resourceTypeName = resourceTypeName;
     this.tagFormatter = TAG_FORMATTERS[tagType];
-    if (tags !== undefined) {
-      for (const tag of this.tagFormatter.parseTags(tags, this.initialTagPriority)) {
-        this.setTag(tag);
-      }
+    if (tagStructure !== undefined) {
+      this._setTag(...this.tagFormatter.parseTags(tagStructure, this.initialTagPriority));
     }
   }
 
   /**
    * Adds the specified tag to the array of tags
    *
-   * @param tag The tag to set
    */
-  public setTag(tag: Tag): void {
-    if (tag.priority >= (this.priorities.get(tag.key) || 0)) {
-      this.tags.set(tag.key, tag);
-      this.priorities.set(tag.key, tag.priority);
-    }
+  public setTag(key: string, value: string, priority = 0, applyToLaunchedInstances = true): void {
+    // This method mostly exists because we don't want to expose the 'Tag' type used (it will be confusing
+    // to users).
+    this._setTag({ key, value, priority, applyToLaunchedInstances });
   }
 
   /**
@@ -219,5 +215,14 @@ export class TagManager {
     }
 
     return true;
+  }
+
+  private _setTag(...tags: Tag[]) {
+    for (const tag of tags) {
+      if (tag.priority >= (this.priorities.get(tag.key) || 0)) {
+        this.tags.set(tag.key, tag);
+        this.priorities.set(tag.key, tag.priority);
+      }
+    }
   }
 }

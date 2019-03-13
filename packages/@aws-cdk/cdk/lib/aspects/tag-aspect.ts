@@ -105,12 +105,12 @@ export class Tag extends TagBase {
 
   protected applyTag(resource: ITaggable) {
     if (resource.tags.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes)) {
-      resource.tags.setTag({
-        key: this.key,
-        value: this.value,
-        priority: this.props.priority !== undefined ? this.props.priority : this.defaultPriority,
-        applyToLaunchedInstances: this.props.applyToLaunchedInstances !== false
-      });
+      resource.tags.setTag(
+        this.key,
+        this.value,
+        this.props.priority !== undefined ? this.props.priority : this.defaultPriority,
+        this.props.applyToLaunchedInstances !== false
+      );
     }
   }
 }

@@ -5,7 +5,7 @@ import { TagManager } from '../../lib/core/tag-manager';
 export = {
   '#setTag() supports setting a tag regardless of Type'(test: Test) {
     const notTaggable = new TagManager(TagType.NotTaggable, 'AWS::Resource::Type');
-    notTaggable.setTag({ key: 'key', value: 'value', priority: 0 });
+    notTaggable.setTag('key', 'value');
     test.deepEqual(notTaggable.renderTags(), undefined);
     test.done();
   },
@@ -17,7 +17,7 @@ export = {
     },
     '#setTag() creates the tag'(test: Test) {
       const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
-      mgr.setTag({ key: 'dne', value: 'notanymore', priority: 0 });
+      mgr.setTag('dne', 'notanymore');
       test.deepEqual(mgr.renderTags(), [{key: 'dne', value: 'notanymore'}]);
       test.done();
     }
@@ -25,15 +25,15 @@ export = {
   'when a tag does exist': {
     '#removeTag() deletes the tag'(test: Test) {
       const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
-      mgr.setTag({ key: 'dne', value: 'notanymore', priority: 0 });
+      mgr.setTag('dne', 'notanymore', 0);
       mgr.removeTag('dne', 0);
       test.deepEqual(mgr.renderTags(), undefined);
       test.done();
     },
     '#setTag() overwrites the tag'(test: Test) {
       const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
-      mgr.setTag({ key: 'dne', value: 'notanymore', priority: 0 });
-      mgr.setTag({ key: 'dne', value: 'iwin', priority: 0 });
+      mgr.setTag('dne', 'notanymore');
+      mgr.setTag('dne', 'iwin');
       test.deepEqual(mgr.renderTags(), [{key: 'dne', value: 'iwin'}]);
       test.done();
     }
@@ -54,8 +54,8 @@ export = {
     tagged.push(asg);
     tagged.push(mapper);
     for (const res of tagged) {
-      res.setTag({ key: 'foo', value: 'bar', priority: 0 });
-      res.setTag({ key: 'asg', value: 'only', priority: 0, applyToLaunchedInstances: false });
+      res.setTag('foo', 'bar');
+      res.setTag('asg', 'only', 0, false);
     }
     test.deepEqual(standard.renderTags(), [
       {key: 'foo', value: 'bar'},
@@ -73,8 +73,8 @@ export = {
   },
   'tags with higher or equal priority always take precedence'(test: Test) {
     const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
-    mgr.setTag({ key: 'key', value: 'myVal', priority: 2 });
-    mgr.setTag({ key: 'key', value :'newVal', priority: 1 });
+    mgr.setTag('key', 'myVal', 2);
+    mgr.setTag('key', 'newVal', 1);
     test.deepEqual(mgr.renderTags(), [
       {key: 'key', value: 'myVal'},
     ]);
