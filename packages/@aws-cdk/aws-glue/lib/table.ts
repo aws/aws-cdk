@@ -2,10 +2,10 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
+import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
 import { Column } from './schema';
-import { StorageType } from './storage-type';
 
 export interface ITable extends cdk.IConstruct {
   readonly tableArn: string;
@@ -101,7 +101,7 @@ export interface TableProps {
   /**
    * Storage type of the table's data.
    */
-  storageType: StorageType;
+  dataFormat: DataFormat;
 
   /**
    * Indicates whether the table's data is compressed or not.
@@ -192,7 +192,7 @@ export class Table extends cdk.Construct implements ITable {
   /**
    * Format of this table's data files.
    */
-  public readonly storageType: StorageType;
+  public readonly storageType: DataFormat;
 
   /**
    * This table's columns.
@@ -230,7 +230,7 @@ export class Table extends cdk.Construct implements ITable {
       }
     }
 
-    this.storageType = props.storageType;
+    this.storageType = props.dataFormat;
     this.s3Prefix = props.s3Prefix || 'data/';
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
@@ -254,10 +254,10 @@ export class Table extends cdk.Construct implements ITable {
           compressed: props.compressed === undefined ? false : props.compressed,
           storedAsSubDirectories: props.storedAsSubDirectories === undefined ? false : props.storedAsSubDirectories,
           columns: renderColumns(props.columns),
-          inputFormat: props.storageType.inputFormat.className,
-          outputFormat: props.storageType.outputFormat.className,
+          inputFormat: props.dataFormat.inputFormat.className,
+          outputFormat: props.dataFormat.outputFormat.className,
           serdeInfo: {
-            serializationLibrary: props.storageType.serializationLibrary.className
+            serializationLibrary: props.dataFormat.serializationLibrary.className
           },
         },
 

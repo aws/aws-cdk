@@ -3,5 +3,5 @@ export * from './glue.generated';
 
 export * from './database';
 export * from './schema';
-export * from './storage-type';
+export * from './data-format';
 export * from './table';

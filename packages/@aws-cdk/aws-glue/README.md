@@ -32,7 +32,7 @@ new glue.Table(stack, 'MyTable', {
     name: 'col1',
     type: glue.Schema.string
   }]
-  storageType: glue.StorageType.Json
+  dataFormat: glue.DataFormat.Json
 });
 ```
 
@@ -65,7 +65,7 @@ new glue.Table(stack, 'MyTable', {
     name: 'month',
     type: glue.Schema.smallint
   }],
-  storageType: glue.StorageType.Json
+  dataFormat: glue.DataFormat.Json
 });
 ```
 

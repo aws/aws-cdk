@@ -48,9 +48,9 @@ export class SerializationLibrary {
 }
 
 /**
- * Defines the input/output formats and ser/de for a single StorageType.
+ * Defines the input/output formats and ser/de for a single DataFormat.
  */
-export interface StorageType {
+export interface DataFormat {
   /**
    * `InputFormat` for this storage type.
    */
@@ -67,7 +67,7 @@ export interface StorageType {
   serializationLibrary: SerializationLibrary;
 }
 
-export namespace StorageType {
+export namespace DataFormat {
   /**
    * Stored as plain text files in JSON format.
    *
@@ -75,7 +75,7 @@ export namespace StorageType {
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/json.html
    */
-  export const Json: StorageType = {
+  export const Json: DataFormat = {
     inputFormat: InputFormat.TextInputFormat,
     outputFormat: OutputFormat.HiveIgnoreKeyTextOutputFormat,
     serializationLibrary: SerializationLibrary.OpenXJson

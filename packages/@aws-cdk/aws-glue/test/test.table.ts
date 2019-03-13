@@ -22,7 +22,7 @@ export = {
         name: 'col',
         type: glue.Schema.string
       }],
-      storageType: glue.StorageType.Json,
+      dataFormat: glue.DataFormat.Json,
     });
     test.equals(table.encryption, glue.TableEncryption.Unencrypted);
 
@@ -96,7 +96,7 @@ export = {
         name: 'year',
         type: glue.Schema.smallint
       }],
-      storageType: glue.StorageType.Json,
+      dataFormat: glue.DataFormat.Json,
     });
     test.equals(table.encryption, glue.TableEncryption.Unencrypted);
     test.equals(table.encryptionKey, undefined);
@@ -169,7 +169,7 @@ export = {
         type: glue.Schema.string
       }],
       compressed: true,
-      storageType: glue.StorageType.Json,
+      dataFormat: glue.DataFormat.Json,
     });
     test.equals(table.encryptionKey, undefined);
     test.equals(table.bucket.encryptionKey, undefined);
@@ -236,7 +236,7 @@ export = {
           type: glue.Schema.string
         }],
         encryption: glue.TableEncryption.SSE_S3,
-        storageType: glue.StorageType.Json,
+        dataFormat: glue.DataFormat.Json,
       });
       test.equals(table.encryption, glue.TableEncryption.SSE_S3);
       test.equals(table.encryptionKey, undefined);
@@ -315,7 +315,7 @@ export = {
           type: glue.Schema.string
         }],
         encryption: glue.TableEncryption.SSE_KMS,
-        storageType: glue.StorageType.Json,
+        dataFormat: glue.DataFormat.Json,
       });
       test.equals(table.encryption, glue.TableEncryption.SSE_KMS);
       test.equals(table.encryptionKey, table.bucket.encryptionKey);
@@ -446,7 +446,7 @@ export = {
         }],
         encryption: glue.TableEncryption.SSE_KMS,
         encryptionKey,
-        storageType: glue.StorageType.Json,
+        dataFormat: glue.DataFormat.Json,
       });
       test.equals(table.encryption, glue.TableEncryption.SSE_KMS);
       test.equals(table.encryptionKey, table.bucket.encryptionKey);
@@ -575,7 +575,7 @@ export = {
           type: glue.Schema.string
         }],
         encryption: glue.TableEncryption.SSE_KMS_MANAGED,
-        storageType: glue.StorageType.Json,
+        dataFormat: glue.DataFormat.Json,
       });
       test.equals(table.encryption, glue.TableEncryption.SSE_KMS_MANAGED);
       test.equals(table.encryptionKey, undefined);
@@ -654,7 +654,7 @@ export = {
           type: glue.Schema.string
         }],
         encryption: glue.TableEncryption.CSE_KMS,
-        storageType: glue.StorageType.Json,
+        dataFormat: glue.DataFormat.Json,
       });
       test.equals(table.encryption, glue.TableEncryption.CSE_KMS);
       test.notEqual(table.encryptionKey, undefined);
@@ -767,7 +767,7 @@ export = {
         }],
         encryption: glue.TableEncryption.CSE_KMS,
         encryptionKey,
-        storageType: glue.StorageType.Json,
+        dataFormat: glue.DataFormat.Json,
       });
       test.equals(table.encryption, glue.TableEncryption.CSE_KMS);
       test.notEqual(table.encryptionKey, undefined);
@@ -882,7 +882,7 @@ export = {
         name: 'col',
         type: glue.Schema.string
       }],
-      storageType: glue.StorageType.Json,
+      dataFormat: glue.DataFormat.Json,
     });
 
     expect(stack).to(haveResource('AWS::Glue::Table', {
@@ -948,7 +948,7 @@ export = {
           type: glue.Schema.string
         }],
         compressed: true,
-        storageType: glue.StorageType.Json,
+        dataFormat: glue.DataFormat.Json,
       });
 
       table.grantRead(user);
@@ -1054,7 +1054,7 @@ export = {
           type: glue.Schema.string
         }],
         compressed: true,
-        storageType: glue.StorageType.Json,
+        dataFormat: glue.DataFormat.Json,
       });
 
       table.grantWrite(user);
@@ -1158,7 +1158,7 @@ export = {
           type: glue.Schema.string
         }],
         compressed: true,
-        storageType: glue.StorageType.Json,
+        dataFormat: glue.DataFormat.Json,
       });
 
       table.grantReadWrite(user);
@@ -1347,13 +1347,13 @@ export = {
   }
 };
 
-function createTable(props: Pick<glue.TableProps, Exclude<keyof glue.TableProps, 'database' | 'storageType'>>): void {
+function createTable(props: Pick<glue.TableProps, Exclude<keyof glue.TableProps, 'database' | 'dataFormat'>>): void {
   const stack = new cdk.Stack();
   new glue.Table(stack, 'table', {
     ...props,
     database: new glue.Database(stack, 'db', {
       databaseName: 'database_name'
     }),
-    storageType: glue.StorageType.Json
+    dataFormat: glue.DataFormat.Json
   });
 }

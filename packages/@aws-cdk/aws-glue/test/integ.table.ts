@@ -39,7 +39,7 @@ const ordinaryTable = new glue.Table(stack, 'MyTable', {
     name: 'year',
     type: glue.Schema.smallint
   }],
-  storageType: glue.StorageType.Json
+  dataFormat: glue.DataFormat.Json
 });
 
 const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
@@ -69,7 +69,7 @@ const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
     name: 'year',
     type: glue.Schema.smallint
   }],
-  storageType: glue.StorageType.Json,
+  dataFormat: glue.DataFormat.Json,
   encryption: glue.TableEncryption.SSE_KMS,
   encryptionKey: new kms.EncryptionKey(stack, 'MyKey')
 });
