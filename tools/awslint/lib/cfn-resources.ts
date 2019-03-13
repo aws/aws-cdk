@@ -40,7 +40,7 @@ export function findCfnResources(assembly: reflect.Assembly): CfnResourceSpec[] 
 
     // HACK: extract full CFN name from initializer docs
     const initializerDoc = (layer1.initializer && layer1.initializer.docs.docs.comment) || '';
-    const out = /Creates a new ``([^`]+)``/.exec(initializerDoc);
+    const out = /a new `([^`]+)`/.exec(initializerDoc);
     const fullname = out && out[1];
     if (!fullname) {
       throw new Error('Unable to extract CloudFormation resource name from initializer documentation');
