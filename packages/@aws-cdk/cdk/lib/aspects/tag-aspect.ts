@@ -1,7 +1,57 @@
 import { ITaggable, Resource } from '../cloudformation/resource';
 import { IConstruct } from '../core/construct';
-import { TagProps } from '../core/tag-manager';
 import { IAspect } from './aspect';
+
+/**
+ * Properties for a tag
+ */
+export interface TagProps {
+  /**
+   * Whether the tag should be applied to instances in an AutoScalingGroup
+   *
+   * @default true
+   */
+  applyToLaunchedInstances?: boolean;
+
+  /**
+   * An array of Resource Types that will not receive this tag
+   *
+   * An empty array will allow this tag to be applied to all resources. A
+   * non-empty array will apply this tag only if the Resource type is not in
+   * this array.
+   * @default []
+   */
+  excludeResourceTypes?: string[];
+
+  /**
+   * An array of Resource Types that will receive this tag
+   *
+   * An empty array will match any Resource. A non-empty array will apply this
+   * tag only to Resource types that are included in this array.
+   * @default []
+   */
+  includeResourceTypes?: string[];
+
+  /**
+   * Priority of the tag operation
+   *
+   * Higher or equal priority tags will take precedence.
+   *
+   * Setting priority will enable the user to control tags when they need to not
+   * follow the default precedence pattern of last applied and closest to the
+   * construct in the tree.
+   *
+   * @default
+   *
+   * Default priorities:
+   *
+   * - 100 for {@link SetTag}
+   * - 200 for {@link RemoveTag}
+   * - 50 for tags added directly to CloudFormation resources
+   *
+   */
+  priority?: number;
+}
 
 /**
  * The common functionality for Tag and Remove Tag Aspects
@@ -47,8 +97,6 @@ export class Tag extends TagBase {
 
   constructor(key: string, value: string, props: TagProps = {}) {
     super(key, props);
-    this.props.applyToLaunchedInstances = props.applyToLaunchedInstances !== false;
-    this.props.priority = props.priority === undefined ? this.defaultPriority : props.priority;
     if (value === undefined) {
       throw new Error('Tag must have a value');
     }
@@ -56,7 +104,14 @@ export class Tag extends TagBase {
   }
 
   protected applyTag(resource: ITaggable) {
-    resource.tags.setTag(this.key, this.value!, this.props);
+    if (resource.tags.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes)) {
+      resource.tags.setTag({
+        key: this.key,
+        value: this.value,
+        priority: this.props.priority !== undefined ? this.props.priority : this.defaultPriority,
+        applyToLaunchedInstances: this.props.applyToLaunchedInstances !== false
+      });
+    }
   }
 }
 
@@ -69,11 +124,11 @@ export class RemoveTag extends TagBase {
 
   constructor(key: string, props: TagProps = {}) {
     super(key, props);
-    this.props.priority = props.priority === undefined ? this.defaultPriority : props.priority;
   }
 
   protected applyTag(resource: ITaggable): void {
-    resource.tags.removeTag(this.key, this.props);
-    return;
+    if (resource.tags.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes)) {
+      resource.tags.removeTag(this.key, this.props.priority !== undefined ? this.props.priority : this.defaultPriority);
+    }
   }
 }
