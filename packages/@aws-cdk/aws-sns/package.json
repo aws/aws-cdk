@@ -20,7 +20,11 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.sns",
+        "module": "aws_cdk.sns"
+      }
     },
     "excludeTypescript": [
       "examples"

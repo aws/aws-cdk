@@ -20,7 +20,11 @@
           "artifactId": "greengrass"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.greengrass",
+        "module": "aws_cdk.greengrass"
+      }
     }
   },
   "repository": {

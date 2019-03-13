@@ -191,6 +191,19 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
   }
 }
 
+export class JSIIPythonTarget extends ValidationRule {
+  public readonly name = 'jsii/python';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    const moduleName = cdkModuleName(pkg.json.name);
+
+    expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
+    expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
+  }
+}
+
 export class JSIISphinxTarget extends ValidationRule {
   public readonly name = 'jsii/sphinx';
 
@@ -297,13 +310,19 @@ function cdkModuleName(name: string) {
     .map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s))
     .join('.');
 
+  const pythonName = name.replace(/^@/g, "").replace(/\//g, ".").split(".").map(caseUtils.kebab).join(".").replace(/^aws\-/, "");
+
   return {
     javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId:
       isCdkPkg ? 'cdk'
                : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
                                                                       : `cdk-${name}`,
-    dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`
+    dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
+    python: {
+      distName: `aws-cdk.${pythonName}`,
+      module: `aws_cdk.${pythonName.replace(/-/g, "_")}`,
+    },
   };
 }
 

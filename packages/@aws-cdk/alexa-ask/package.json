@@ -20,7 +20,11 @@
           "artifactId": "alexa-ask"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.alexa-ask",
+        "module": "aws_cdk.alexa_ask"
+      }
     }
   },
   "repository": {

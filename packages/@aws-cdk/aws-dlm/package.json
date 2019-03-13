@@ -20,7 +20,11 @@
           "artifactId": "dlm"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.dlm",
+        "module": "aws_cdk.dlm"
+      }
     }
   },
   "repository": {

@@ -20,7 +20,11 @@
           "artifactId": "route53resolver"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.route53resolver",
+        "module": "aws_cdk.route53resolver"
+      }
     }
   },
   "repository": {

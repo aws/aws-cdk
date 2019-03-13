@@ -20,7 +20,11 @@
           "artifactId": "docdb"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.docdb",
+        "module": "aws_cdk.docdb"
+      }
     }
   },
   "repository": {

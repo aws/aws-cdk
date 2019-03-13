@@ -20,7 +20,11 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.stepfunctions",
+        "module": "aws_cdk.stepfunctions"
+      }
     }
   },
   "repository": {

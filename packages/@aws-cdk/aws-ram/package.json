@@ -20,7 +20,11 @@
           "artifactId": "ram"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.ram",
+        "module": "aws_cdk.ram"
+      }
     }
   },
   "repository": {

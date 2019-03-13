@@ -20,7 +20,11 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.lambda-event-sources",
+        "module": "aws_cdk.lambda_event_sources"
+      }
     }
   },
   "repository": {

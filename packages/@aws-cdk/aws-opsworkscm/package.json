@@ -20,7 +20,11 @@
           "artifactId": "opsworkscm"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.opsworkscm",
+        "module": "aws_cdk.opsworkscm"
+      }
     }
   },
   "repository": {

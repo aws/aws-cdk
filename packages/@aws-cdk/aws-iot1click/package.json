@@ -20,7 +20,11 @@
           "artifactId": "iot1click"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.iot1click",
+        "module": "aws_cdk.iot1click"
+      }
     }
   },
   "repository": {
