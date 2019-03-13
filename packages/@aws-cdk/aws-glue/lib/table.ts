@@ -154,17 +154,54 @@ export class Table extends cdk.Construct implements ITable {
     return new ImportedTable(scope, id, props);
   }
 
+  /**
+   * Database this table belongs to.
+   */
   public readonly database: IDatabase;
-  public readonly encryption: TableEncryption;
-  public readonly encryptionKey?: kms.IEncryptionKey;
-  public readonly bucket: s3.IBucket;
-  public readonly prefix: string;
 
+  /**
+   * The type of encryption enabled for the table.
+   */
+  public readonly encryption: TableEncryption;
+
+  /**
+   * The KMS key used to secure the data if `encryption` is set to `CSE-KMS` or `SSE-KMS`. Otherwise, `undefined`.
+   */
+  public readonly encryptionKey?: kms.IEncryptionKey;
+
+  /**
+   * S3 bucket in which the table's data resides.
+   */
+  public readonly bucket: s3.IBucket;
+
+  /**
+   * S3 Key Prefix under which this table's files are stored in S3.
+   */
+  public readonly s3Prefix: string;
+
+  /**
+   * Name of this table.
+   */
   public readonly tableName: string;
+
+  /**
+   * ARN of this table.
+   */
   public readonly tableArn: string;
 
+  /**
+   * Format of this table's data files.
+   */
   public readonly storageType: StorageType;
+
+  /**
+   * This table's columns.
+   */
   public readonly columns: Column[];
+
+  /**
+   * This table's partition keys if the table is partitioned.
+   */
   public readonly partitionKeys?: Column[];
 
   constructor(scope: cdk.Construct, id: string, props: TableProps) {
@@ -194,7 +231,7 @@ export class Table extends cdk.Construct implements ITable {
     }
 
     this.storageType = props.storageType;
-    this.prefix = props.s3Prefix || 'data/';
+    this.s3Prefix = props.s3Prefix || 'data/';
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
 
@@ -213,7 +250,7 @@ export class Table extends cdk.Construct implements ITable {
           has_encrypted_data: this.encryption !== TableEncryption.Unencrypted
         },
         storageDescriptor: {
-          location: cdk.Fn.join('', ['s3://', this.bucket.bucketName, '/', this.prefix]),
+          location: cdk.Fn.join('', ['s3://', this.bucket.bucketName, '/', this.s3Prefix]),
           compressed: props.compressed === undefined ? false : props.compressed,
           storedAsSubDirectories: props.storedAsSubDirectories === undefined ? false : props.storedAsSubDirectories,
           columns: renderColumns(props.columns),
@@ -249,7 +286,7 @@ export class Table extends cdk.Construct implements ITable {
       permissions: readPermissions,
       kmsActions: ['kms:Decrypt']
     });
-    this.bucket.grantRead(identity, this.prefix);
+    this.bucket.grantRead(identity, this.s3Prefix);
   }
 
   /**
@@ -262,7 +299,7 @@ export class Table extends cdk.Construct implements ITable {
       permissions: writePermissions,
       kmsActions: ['kms:Encrypt', 'kms:GenerateDataKey']
     });
-    this.bucket.grantWrite(identity, this.prefix);
+    this.bucket.grantWrite(identity, this.s3Prefix);
   }
 
   /**
@@ -275,7 +312,7 @@ export class Table extends cdk.Construct implements ITable {
       permissions: readPermissions.concat(writePermissions),
       kmsActions: ['kms:Decrypt', 'kms:Encrypt', 'kms:GenerateDataKey']
     });
-    this.bucket.grantReadWrite(identity, this.prefix);
+    this.bucket.grantReadWrite(identity, this.s3Prefix);
   }
 
   private grant(identity: iam.IPrincipal, props: {

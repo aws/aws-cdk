@@ -33,7 +33,7 @@ export = {
                     {
                       Ref: "DatabaseBucket318AF64F"
                     },
-                    "test_database"
+                    "/test_database"
                   ]
                 ]
               },
@@ -105,7 +105,7 @@ export = {
                     {
                       Ref: "DatabaseBucket318AF64F"
                     },
-                    "test_database"
+                    "/test_database"
                   ]
                 ]
               },
@@ -193,7 +193,7 @@ export = {
                 {
                   Ref: "DatabaseBucket318AF64F"
                 },
-                "test_database"
+                "/test_database"
               ]
             ]
           },

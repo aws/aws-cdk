@@ -19,7 +19,7 @@
                 {
                   "Ref": "MyDatabaseBucketCA6D21E6"
                 },
-                "my_database"
+                "/my_database"
               ]
             ]
           },

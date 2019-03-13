@@ -68,10 +68,29 @@ export class Database extends cdk.Construct {
     return new ImportedDatabase(scope, id, props);
   }
 
+  /**
+   * ARN of the Glue catalog in which this database is stored.
+   */
   public readonly catalogArn: string;
+
+  /**
+   * ID of the Glue catalog in which this database is stored.
+   */
   public readonly catalogId: string;
+
+  /**
+   * ARN of this database.
+   */
   public readonly databaseArn: string;
+
+  /**
+   * Name of this database.
+   */
   public readonly databaseName: string;
+
+  /**
+   * Location URI of this database.
+   */
   public readonly locationUri: string;
 
   constructor(scope: cdk.Construct, id: string, props: DatabaseProps) {
@@ -81,7 +100,7 @@ export class Database extends cdk.Construct {
       this.locationUri = props.locationUri;
     } else {
       const bucket = new s3.Bucket(this, 'Bucket');
-      this.locationUri = cdk.Fn.join('', ['s3://', bucket.bucketName, props.databaseName]);
+      this.locationUri = `s3://${bucket.bucketName}/${props.databaseName}`;
     }
 
     this.catalogId = this.node.stack.accountId;
