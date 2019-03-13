@@ -12,7 +12,7 @@ export = {
   'when a tag does not exist': {
     '#removeTag() does not throw an error'(test: Test) {
       const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
-      test.doesNotThrow(() => (mgr.removeTag('dne')));
+      test.doesNotThrow(() => (mgr.removeTag('dne', 0)));
       test.done();
     },
     '#setTag() creates the tag'(test: Test) {
@@ -25,8 +25,8 @@ export = {
   'when a tag does exist': {
     '#removeTag() deletes the tag'(test: Test) {
       const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
-      mgr.setTag('dne', 'notanymore');
-      mgr.removeTag('dne');
+      mgr.setTag('dne', 'notanymore', 0);
+      mgr.removeTag('dne', 0);
       test.deepEqual(mgr.renderTags(), undefined);
       test.done();
     },
@@ -55,7 +55,7 @@ export = {
     tagged.push(mapper);
     for (const res of tagged) {
       res.setTag('foo', 'bar');
-      res.setTag('asg', 'only', {applyToLaunchedInstances: false});
+      res.setTag('asg', 'only', 0, false);
     }
     test.deepEqual(standard.renderTags(), [
       {key: 'foo', value: 'bar'},
@@ -73,32 +73,33 @@ export = {
   },
   'tags with higher or equal priority always take precedence'(test: Test) {
     const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
-    mgr.setTag('key', 'myVal', {
-      priority: 2,
-    });
-    mgr.setTag('key', 'newVal', {
-      priority: 1,
-    });
-    mgr.removeTag('key', {priority: 1});
+    mgr.setTag('key', 'myVal', 2);
+    mgr.setTag('key', 'newVal', 1);
     test.deepEqual(mgr.renderTags(), [
       {key: 'key', value: 'myVal'},
     ]);
-    mgr.removeTag('key', {priority: 2});
+    mgr.removeTag('key', 1);
+    test.deepEqual(mgr.renderTags(), [
+      {key: 'key', value: 'myVal'},
+    ]);
+    mgr.removeTag('key', 2);
     test.deepEqual(mgr.renderTags(), undefined);
     test.done();
   },
   'excludeResourceTypes only tags resources that do not match'(test: Test) {
     const mgr = new TagManager(TagType.Standard, 'AWS::Fake::Resource');
-    mgr.setTag('key', 'value', {excludeResourceTypes: ['AWS::Fake::Resource']});
-    mgr.setTag('sticky', 'value', {excludeResourceTypes: ['AWS::Wrong::Resource']});
-    test.deepEqual(mgr.renderTags(), [{key: 'sticky', value: 'value'}]);
+
+    test.equal(false, mgr.applyTagAspectHere([], ['AWS::Fake::Resource']));
+    test.equal(true, mgr.applyTagAspectHere([], ['AWS::Wrong::Resource']));
+
     test.done();
   },
   'includeResourceTypes only tags resources that match'(test: Test) {
     const mgr = new TagManager(TagType.Standard, 'AWS::Fake::Resource');
-    mgr.setTag('key', 'value', {includeResourceTypes: ['AWS::Fake::Resource']});
-    mgr.setTag('sticky', 'value', {includeResourceTypes: ['AWS::Wrong::Resource']});
-    test.deepEqual(mgr.renderTags(), [{key: 'key', value: 'value'}]);
+
+    test.equal(true, mgr.applyTagAspectHere(['AWS::Fake::Resource'], []));
+    test.equal(false, mgr.applyTagAspectHere(['AWS::Wrong::Resource'], []));
+
     test.done();
   }
 };

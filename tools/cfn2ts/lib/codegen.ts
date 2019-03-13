@@ -255,7 +255,7 @@ export default class CodeGenerator {
       this.code.line(' * used only the tags from the TagManager will be used. `Tag` (aspect)');
       this.code.line(' * will use the manager.');
       this.code.line(' */');
-      this.code.line(`public readonly tags = new ${TAG_MANAGER}(${tagEnum}, ${resourceTypeName});`);
+      this.code.line(`public readonly tags: ${TAG_MANAGER};`);
     }
 
     //
@@ -307,6 +307,10 @@ export default class CodeGenerator {
 
     if (deprecated) {
       this.code.line(`this.node.addWarning('DEPRECATION: ${deprecation}');`);
+    }
+    if (tagEnum !== `${TAG_TYPE}.NotTaggable`) {
+      this.code.line('const tags = props === undefined ? undefined : props.tags;');
+      this.code.line(`this.tags = new ${TAG_MANAGER}(${tagEnum}, ${resourceTypeName}, tags);`);
     }
 
     this.code.closeBlock();
@@ -515,7 +519,7 @@ export default class CodeGenerator {
     const javascriptPropertyName = genspec.cloudFormationToScriptName(propName);
 
     this.docLink(spec.Documentation, additionalDocs);
-    this.code.line(`${javascriptPropertyName}${question}: ${this.findNativeType(context, spec)};`);
+    this.code.line(`${javascriptPropertyName}${question}: ${this.findNativeType(context, spec, propName)};`);
 
     return javascriptPropertyName;
   }
@@ -568,14 +572,17 @@ export default class CodeGenerator {
   /**
    * Return the native type expression for the given propSpec
    */
-  private findNativeType(resourceContext: genspec.CodeName, propSpec: schema.Property): string {
+  private findNativeType(resourceContext: genspec.CodeName, propSpec: schema.Property, propName?: string): string {
     const alternatives: string[] = [];
 
     if (schema.isCollectionProperty(propSpec)) {
       // render the union of all item types
       const itemTypes = genspec.specTypesToCodeTypes(resourceContext, itemTypeNames(propSpec));
-      // Always accept a token in place of any list element
-      itemTypes.push(genspec.TOKEN_NAME);
+
+      if (propName !== 'Tags') {
+        // Always accept a token in place of any list element
+        itemTypes.push(genspec.TOKEN_NAME);
+      }
 
       const union = this.renderTypeUnion(resourceContext, itemTypes);
 
@@ -587,7 +594,7 @@ export default class CodeGenerator {
         if (union.indexOf('|') !== -1) {
           alternatives.push(`Array<${union}>`);
         } else {
-          alternatives.push(`(${union})[]`);
+          alternatives.push(`${union}[]`);
         }
       }
     }
@@ -605,7 +612,7 @@ export default class CodeGenerator {
     // everything to be tokenizable because there are languages that do not
     // support union types (i.e. Java, .NET), so we lose type safety if we have
     // a union.
-    if (!tokenizableType(alternatives)) {
+    if (!tokenizableType(alternatives) && propName !== 'Tags') {
       alternatives.push(genspec.TOKEN_NAME.fqn);
     }
 
