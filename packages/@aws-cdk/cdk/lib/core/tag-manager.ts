@@ -178,10 +178,9 @@ export class TagManager {
    *
    * @param key The key value of the tag
    * @param value The value value of the tag
-   * @param props A `TagProps` defaulted to applyToLaunchInstances true
+   * @param tagProps A `TagProps` defaulted to applyToLaunchInstances true
    */
-  public setTag(key: string, value: string, props?: TagProps): void {
-    const tagProps: TagProps = props || {};
+  public setTag(key: string, value: string, tagProps: TagProps = {}): void {
     tagProps.applyToLaunchedInstances = tagProps.applyToLaunchedInstances !== false;
     tagProps.priority = tagProps.priority === undefined ? 0 : tagProps.priority;
 
@@ -198,8 +197,7 @@ export class TagManager {
    *
    * @param key The key of the tag to remove
    */
-  public removeTag(key: string, props?: TagProps): void {
-    const tagProps = props || {};
+  public removeTag(key: string, tagProps: TagProps = {}): void {
     tagProps.priority = tagProps.priority === undefined ? 0 : tagProps.priority;
     if (!this.canApplyTag(key, tagProps)) {
       // can't apply tag so return doing nothing
