@@ -28,5 +28,33 @@ export = {
           { 'Fn::Not': [ { Condition: 'Condition3' } ] } ] } } });
 
     test.done();
+  },
+
+  'condition expressions can be embedded as strings'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const propValue: string = cdk.Fn.conditionIf('Cond', 'A', 'B').toString();
+
+    // WHEN
+    new cdk.Resource(stack, 'MyResource', {
+      type: 'AWS::Foo::Bar',
+      properties: {
+        StringProp: propValue
+      }
+    });
+
+    // THEN
+    test.ok(cdk.unresolved(propValue));
+    test.deepEqual(stack.toCloudFormation(), {
+      Resources: {
+        MyResource: {
+          Type: 'AWS::Foo::Bar',
+          Properties: {
+            StringProp: { 'Fn::If': [ 'Cond', 'A', 'B' ] }
+          }
+        }
+      }
+    });
+    test.done();
   }
 };

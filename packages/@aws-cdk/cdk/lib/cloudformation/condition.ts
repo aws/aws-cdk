@@ -74,4 +74,23 @@ export interface IConditionExpression {
    * Returns a JSON node that represents this condition expression
    */
   resolve(context: ResolveContext): any;
+
+  /**
+   * Returns a string token representation of this condition expression, which
+   * resolves to the CloudFormation condition JSON during synthesis.
+   *
+   * You can use `toString` when you wish to embed a condition expression
+   * in a property value that accepts a `string`. For example:
+   *
+   * ```ts
+   * new sqs.Queue(this, 'MyQueue', {
+   *   queueName: Fn.conditionIf('Condition', 'Hello', 'World').toString()
+   * });
+   * ```
+   *
+   * NOTE: we need this explicitly here despite the fact that in JavaScript this would
+   * "just work" since conditions are eventually tokens that implement `toString`,
+   * in order for jsii languages like Java to proxy this to jsii.
+   */
+  toString(): string;
 }
