@@ -120,6 +120,7 @@
     "@aws-cdk/cdk": "^0.25.3",
     "@aws-cdk/cfnspec": "^0.25.3",
     "@aws-cdk/cx-api": "^0.25.3",
+    "@aws-cdk/region-info": "^0.25.3",
     "@aws-cdk/runtime-values": "^0.25.3",
     "fs-extra": "^7.0.1",
     "jsii-reflect": "^0.7.15",
@@ -132,7 +133,7 @@
     "@types/jest": "^24.0.1",
     "@types/yaml": "1.0.1",
     "@types/yargs": "^12.0.8",
-    "jest": "^24.1.0",
+    "jest": "^24.4.0",
     "jsii": "^0.7.15"
   },
   "keywords": [

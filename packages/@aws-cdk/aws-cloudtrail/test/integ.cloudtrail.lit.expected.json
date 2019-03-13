@@ -19,7 +19,17 @@
               "Action": "s3:GetBucketAcl",
               "Effect": "Allow",
               "Principal": {
-                "Service": "cloudtrail.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "cloudtrail.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               },
               "Resource": {
                 "Fn::GetAtt": [
@@ -37,7 +47,17 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": "cloudtrail.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "cloudtrail.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               },
               "Resource": {
                 "Fn::Join": [

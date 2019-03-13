@@ -10,7 +10,7 @@ export = nodeunit.testCase({
 
     // WHEN
     new iam.LazyRole(stack, 'Lazy', {
-      assumedBy: new iam.ServicePrincipal('test.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('test.service')
     });
 
     // THEN
@@ -24,7 +24,7 @@ export = nodeunit.testCase({
 
     // WHEN
     const roleArn = new iam.LazyRole(stack, 'Lazy', {
-      assumedBy: new iam.ServicePrincipal('test.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('test.service')
     }).roleArn;
 
     // THEN
@@ -35,7 +35,7 @@ export = nodeunit.testCase({
         Statement: [{
           Action: 'sts:AssumeRole',
           Effect: 'Allow',
-          Principal: { Service: 'test.amazonaws.com' }
+          Principal: { Service: 'test.service' }
         }]
       }
     }));
@@ -48,7 +48,7 @@ export = nodeunit.testCase({
 
     // WHEN
     const role = new iam.LazyRole(stack, 'Lazy', {
-      assumedBy: new iam.ServicePrincipal('test.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('test.service')
     });
 
     // THEN

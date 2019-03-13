@@ -1,5 +1,13 @@
 {
   "Resources": {
+    "PipelineBucketB967BD35": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      }
+    },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain"
@@ -13,7 +21,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codepipeline.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "codepipeline.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -176,14 +194,6 @@
         "PipelineRoleDefaultPolicyC7A05455",
         "PipelineRoleD68726F7"
       ]
-    },
-    "PipelineBucketB967BD35": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "VersioningConfiguration": {
-          "Status": "Enabled"
-        }
-      }
     }
   }
 }

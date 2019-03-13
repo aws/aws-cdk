@@ -118,7 +118,7 @@ export = {
     const stack = new Stack();
 
     const role = new Role(stack, 'MyRole', {
-      assumedBy: new ServicePrincipal('service'),
+      assumedBy: new ServicePrincipal('test.service'),
       managedPolicyArns: [ 'managed1', 'managed2' ]
     });
 
@@ -131,7 +131,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'service' } } ],
+              Principal: { Service: 'test.service' } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns: [ 'managed1', 'managed2', 'managed3' ] } } } });
     test.done();
@@ -228,7 +228,7 @@ export = {
 
     new Role(stack, 'MyRole', {
       assumedBy: new CompositePrincipal(
-        new ServicePrincipal('boom.amazonaws.com'),
+        new ServicePrincipal('boom.amazonaws.test'),
         new ArnPrincipal('1111111')
       )
     });
@@ -240,7 +240,7 @@ export = {
             Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
-              Service: "boom.amazonaws.com",
+              Service: "boom.amazonaws.test",
               AWS: "1111111"
             }
           }

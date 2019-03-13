@@ -94,7 +94,7 @@ export = {
         },
         "Effect": "Allow",
         "Principal": {
-          "Service": "s3.amazonaws.com"
+          "Service": { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
         },
         "Resource": {
           "Ref": "TopicBFC7AF6E"

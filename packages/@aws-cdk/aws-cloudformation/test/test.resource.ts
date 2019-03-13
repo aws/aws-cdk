@@ -28,7 +28,7 @@ export = {
             "Action": "sts:AssumeRole",
             "Effect": "Allow",
             "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
             }
             }
           ],

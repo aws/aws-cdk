@@ -11,9 +11,6 @@
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
-          "detail-type": [
-            "CodeCommit Repository State Change"
-          ],
           "source": [
             "aws.codecommit"
           ],
@@ -24,6 +21,9 @@
                 "Arn"
               ]
             }
+          ],
+          "detail-type": [
+            "CodeCommit Repository State Change"
           ],
           "detail": {
             "event": [
@@ -51,15 +51,25 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Sid": "0",
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Principal": {
-                "Service": "events.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "events.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               },
               "Resource": {
                 "Ref": "MyTopic86869434"
-              }
+              },
+              "Sid": "0"
             }
           ],
           "Version": "2012-10-17"

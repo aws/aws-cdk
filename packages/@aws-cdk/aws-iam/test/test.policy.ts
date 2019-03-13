@@ -73,7 +73,7 @@ export = {
     const user1 = new User(stack, 'User1');
     const group1 = new Group(stack, 'Group1');
     const role1 = new Role(stack, 'Role1', {
-      assumedBy: new ServicePrincipal('lambda.amazonaws.com')
+      assumedBy: new ServicePrincipal('test.service')
     });
 
     new Policy(stack, 'MyTestPolicy', {
@@ -94,7 +94,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: 'test.service' } } ],
              Version: '2012-10-17' } } },
         MyTestPolicy316BDB50:
          { Type: 'AWS::IAM::Policy',
@@ -146,7 +146,7 @@ export = {
     p.attachToUser(new User(stack, 'User1'));
     p.attachToUser(new User(stack, 'User2'));
     p.attachToGroup(new Group(stack, 'Group1'));
-    p.attachToRole(new Role(stack, 'Role1', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') }));
+    p.attachToRole(new Role(stack, 'Role1', { assumedBy: new ServicePrincipal('test.service') }));
     p.addStatement(new PolicyStatement().addResource('*').addAction('dynamodb:GetItem'));
 
     test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
@@ -171,7 +171,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: 'test.service' } } ],
              Version: '2012-10-17' } } } } });
     test.done();
   },
@@ -183,7 +183,7 @@ export = {
     const policy = new Policy(stack, 'MyPolicy');
     const user = new User(stack, 'MyUser');
     const group = new Group(stack, 'MyGroup');
-    const role = new Role(stack, 'MyRole', { assumedBy: new ServicePrincipal('foo') });
+    const role = new Role(stack, 'MyRole', { assumedBy: new ServicePrincipal('test.service') });
 
     user.attachInlinePolicy(policy);
     group.attachInlinePolicy(policy);
@@ -211,7 +211,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'foo' } } ],
+              Principal: { Service: 'test.service' } } ],
              Version: '2012-10-17' } } } } });
     test.done();
   },
