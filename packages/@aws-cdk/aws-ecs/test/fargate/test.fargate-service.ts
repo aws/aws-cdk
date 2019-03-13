@@ -16,7 +16,7 @@ export = {
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
       });
 
       new ecs.FargateService(stack, "FargateService", {
@@ -109,7 +109,7 @@ export = {
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
       });
 
       new ecs.FargateService(stack, "FargateService", {
@@ -138,7 +138,7 @@ export = {
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
       });
 
       new ecs.FargateService(stack, "FargateService", {
@@ -166,7 +166,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromDockerHub('hello'),
+        image: ContainerImage.fromRegistry('hello'),
       });
 
       // WHEN
@@ -193,7 +193,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
-        image: ContainerImage.fromDockerHub('hello'),
+        image: ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
       const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });

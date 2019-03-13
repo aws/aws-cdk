@@ -30,7 +30,7 @@ cluster.addDefaultAutoScalingGroupCapacity('Capacity', {
 const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
-  image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 ```
 
@@ -134,7 +134,7 @@ To add containers to a task definition, call `addContainer()`:
 ```ts
 const container = fargateTaskDefinition.addContainer("WebContainer", {
   // Use an image from DockerHub
-  image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   // ... other options here ...
 });
 ```
@@ -148,7 +148,7 @@ const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
 
 const container = ec2TaskDefinition.addContainer("WebContainer", {
   // Use an image from DockerHub
-  image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 1024
   // ... other options here ...
 });
@@ -183,8 +183,8 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
 Images supply the software that runs inside the container. Images can be
 obtained from either DockerHub or from ECR repositories, or built directly from a local Dockerfile.
 
-* `ecs.ContainerImage.fromDockerHub(imageName)`: use a publicly available image from
-  DockerHub.
+* `ecs.ContainerImage.fromRegistry(imageName)`: use a public image.
+* `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
 * `ecs.ContainerImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
   to start. If no tag is provided, "latest" is assumed.
 * `ecs.ContainerImage.fromAsset(this, 'Image', { directory: './image' })`: build and upload an

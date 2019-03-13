@@ -1,17 +1,17 @@
 import ecr = require('@aws-cdk/aws-ecr');
 import cdk = require('@aws-cdk/cdk');
-
 import { ContainerDefinition } from './container-definition';
+import { CfnTaskDefinition } from './ecs.generated';
 
 /**
  * Constructs for types of container images
  */
 export abstract class ContainerImage {
   /**
-   * Reference an image on DockerHub
+   * Reference an image on DockerHub or another online registry
    */
-  public static fromDockerHub(name: string) {
-    return new DockerHubImage(name);
+  public static fromRegistry(name: string, props: RepositoryImageProps = {}) {
+    return new RepositoryImage(name, props);
   }
 
   /**
@@ -37,8 +37,13 @@ export abstract class ContainerImage {
    * Called when the image is used by a ContainerDefinition
    */
   public abstract bind(containerDefinition: ContainerDefinition): void;
+
+  /**
+   * Render the Repository credentials to the CloudFormation object
+   */
+  public abstract toRepositoryCredentialsJson(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined;
 }
 
 import { AssetImage, AssetImageProps } from './images/asset-image';
-import { DockerHubImage } from './images/dockerhub';
 import { EcrImage } from './images/ecr';
+import { RepositoryImage, RepositoryImageProps } from './images/repository';
