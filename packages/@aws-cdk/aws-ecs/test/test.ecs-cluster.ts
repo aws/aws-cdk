@@ -120,7 +120,7 @@ export = {
               Action: "sts:AssumeRole",
               Effect: "Allow",
               Principal: {
-                Service: "ec2.amazonaws.com"
+                Service: { "Fn::Join": ["", ["ec2.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
           ],

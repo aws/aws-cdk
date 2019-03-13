@@ -3,8 +3,8 @@ open HelloCdk
 
 [<EntryPoint>]
 let main _ =
-    let app = App()
+    let app = App(null)
     MyStack(app, "hello-cdk-1", StackProps()) |> ignore
     MyStack(app, "hello-cdk-2", StackProps()) |> ignore
-    app.Run()
+    app.Run() |> ignore
     0
