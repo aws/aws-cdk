@@ -362,7 +362,9 @@ export = {
           },
           "Effect": "Allow",
           "Principal": {
-            "Service": "s3.amazonaws.com"
+            "Service": {
+              "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]]
+            }
           },
           "Resource": {
             "Fn::GetAtt": [
@@ -463,7 +465,9 @@ export = {
           ],
           "Effect": "Allow",
           "Principal": {
-            "Service": "s3.amazonaws.com"
+            "Service": {
+              "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]]
+            }
           },
           "Resource": "*"
           }

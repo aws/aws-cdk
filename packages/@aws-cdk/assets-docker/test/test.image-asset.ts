@@ -104,7 +104,7 @@ export = {
     // WHEN
     asset.repository.addToResourcePolicy(new iam.PolicyStatement()
       .addAction('BOOM')
-      .addPrincipal(new iam.ServicePrincipal('DAMN')));
+      .addPrincipal(new iam.ServicePrincipal('test.service')));
 
     // THEN
     expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {
@@ -117,7 +117,7 @@ export = {
             "Action": "BOOM",
             "Effect": "Allow",
             "Principal": {
-              "Service": "DAMN"
+              "Service": "test.service"
             }
           }
         ],
