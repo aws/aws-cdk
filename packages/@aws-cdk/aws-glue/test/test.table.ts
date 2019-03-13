@@ -1322,7 +1322,7 @@ export = {
       test.done();
     },
 
-    'can not specify an explicit bucket and encryption key'(test: Test) {
+    'can not specify an explicit bucket and encryption'(test: Test) {
       test.throws(() => createTable({
         tableName: 'name',
         columns: [{
@@ -1331,17 +1331,46 @@ export = {
         }],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
         encryption: glue.TableEncryption.Kms
-      }), undefined, 'you can not specify both an encryption key and s3 bucket');
+      }), undefined, 'you can not specify encryption settings if you also provide a bucket');
+      test.done();
+    },
 
-      test.throws(() => createTable({
+    'can explicitly pass bucket if Encryption undefined'(test: Test) {
+      test.doesNotThrow(() => createTable({
         tableName: 'name',
         columns: [{
           name: 'col1',
           type: glue.Schema.string
         }],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-        encryptionKey: new kms.EncryptionKey(new cdk.Stack(), 'Key')
-      }), undefined, 'you can not specify both an encryption key and s3 bucket');
+        encryption: undefined
+      }));
+      test.done();
+    },
+
+    'can explicitly pass bucket if Unencrypted'(test: Test) {
+      test.doesNotThrow(() => createTable({
+        tableName: 'name',
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.string
+        }],
+        bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
+        encryption: undefined
+      }));
+      test.done();
+    },
+
+    'can explicitly pass bucket if ClientSideKms'(test: Test) {
+      test.doesNotThrow(() => createTable({
+        tableName: 'name',
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.string
+        }],
+        bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
+        encryption: glue.TableEncryption.ClientSideKms
+      }));
       test.done();
     }
   }

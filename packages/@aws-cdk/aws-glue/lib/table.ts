@@ -192,7 +192,7 @@ export class Table extends cdk.Construct implements ITable {
   /**
    * Format of this table's data files.
    */
-  public readonly storageType: DataFormat;
+  public readonly dataFormat: DataFormat;
 
   /**
    * This table's columns.
@@ -205,35 +205,20 @@ export class Table extends cdk.Construct implements ITable {
   public readonly partitionKeys?: Column[];
 
   constructor(scope: cdk.Construct, id: string, props: TableProps) {
-    validateProps(props);
     super(scope, id);
 
     this.database = props.database;
-    this.encryption = props.encryption === undefined ? TableEncryption.Unencrypted : props.encryption;
-    if (props.bucket) {
-      this.bucket = props.bucket;
-    } else {
-      const bucketProps: s3.BucketProps = {};
-      bucketProps.encryption = encryptionMappings[this.encryption];
-      if (this.encryption === TableEncryption.ClientSideKms) {
-        if (props.encryptionKey === undefined) {
-          this.encryptionKey = new kms.EncryptionKey(this, 'Key');
-        } else {
-          this.encryptionKey = props.encryptionKey;
-        }
-      } else {
-        bucketProps.encryptionKey = props.encryptionKey;
-      }
-      this.bucket = new s3.Bucket(this, 'Bucket', bucketProps);
-      if (!this.encryptionKey) {
-        this.encryptionKey = this.bucket.encryptionKey;
-      }
-    }
-
-    this.storageType = props.dataFormat;
+    this.dataFormat = props.dataFormat;
     this.s3Prefix = props.s3Prefix || 'data/';
+
+    validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
+
+    const {bucket, encryption, encryptionKey} = createBucket(this, props);
+    this.bucket = bucket;
+    this.encryption = encryption;
+    this.encryptionKey = encryptionKey;
 
     const tableResource = new CfnTable(this, 'Table', {
       catalogId: props.database.catalogId,
@@ -250,7 +235,7 @@ export class Table extends cdk.Construct implements ITable {
           has_encrypted_data: this.encryption !== TableEncryption.Unencrypted
         },
         storageDescriptor: {
-          location: cdk.Fn.join('', ['s3://', this.bucket.bucketName, '/', this.s3Prefix]),
+          location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
           compressed: props.compressed === undefined ? false : props.compressed,
           storedAsSubDirectories: props.storedAsSubDirectories === undefined ? false : props.storedAsSubDirectories,
           columns: renderColumns(props.columns),
@@ -317,7 +302,9 @@ export class Table extends cdk.Construct implements ITable {
 
   private grant(identity: iam.IPrincipal, props: {
     permissions: string[];
-    kmsActions?: string[]; // TODO: this should be a grant method on the key itself.
+    // CSE-KMS needs to grant its own KMS policies because the bucket is unaware of the key.
+    // TODO: we wouldn't need this if kms.EncryptionKey exposed grant methods.
+    kmsActions?: string[];
   }) {
     identity.addToPolicy(new iam.PolicyStatement()
       .addResource(this.tableArn)
@@ -330,20 +317,13 @@ export class Table extends cdk.Construct implements ITable {
   }
 }
 
-/**
- * Check there is at least one column and no duplicated column names or partition keys.
- *
- * @param props the TableProps
- */
-function validateProps(props: TableProps): void {
-  if (props.bucket && (props.encryption || props.encryptionKey)) {
-    throw new Error('you can not specify both an encryption key and s3 bucket');
-  }
-  if (props.columns.length === 0) {
+function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
+  if (columns.length === 0) {
     throw new Error('you must specify at least one column for the table');
   }
+  // Check there is at least one column and no duplicated column names or partition keys.
   const names = new Set<string>();
-  (props.columns.concat(props.partitionKeys || [])).forEach(column => {
+  (columns.concat(partitionKeys || [])).forEach(column => {
     if (names.has(column.name)) {
       throw new Error(`column names and partition keys must be unique, but 'p1' is duplicated`);
     }
@@ -351,6 +331,7 @@ function validateProps(props: TableProps): void {
   });
 }
 
+// map TableEncryption to bucket's SSE configuration (s3.BucketEncryption)
 const encryptionMappings = {
   [TableEncryption.S3Managed]: s3.BucketEncryption.S3Managed,
   [TableEncryption.KmsManaged]: s3.BucketEncryption.KmsManaged,
@@ -358,6 +339,44 @@ const encryptionMappings = {
   [TableEncryption.ClientSideKms]: s3.BucketEncryption.Unencrypted,
   [TableEncryption.Unencrypted]: s3.BucketEncryption.Unencrypted,
 };
+
+// create the bucket to store a table's data depending on the `encryption` and `encryptionKey` properties.
+function createBucket(table: Table, props: TableProps) {
+  const encryption = props.encryption === undefined ? TableEncryption.Unencrypted : props.encryption;
+  let bucket = props.bucket;
+
+  if (bucket && (encryption !== TableEncryption.Unencrypted && encryption !== TableEncryption.ClientSideKms)) {
+    throw new Error('you can not specify encryption settings if you also provide a bucket');
+  }
+
+  let encryptionKey: kms.IEncryptionKey | undefined;
+  if (encryption === TableEncryption.ClientSideKms && props.encryptionKey === undefined) {
+    // CSE-KMS should behave the same as SSE-KMS - use the provided key or create one automatically
+    // Since Bucket only knows about SSE, we repeat the logic for CSE-KMS at the Table level.
+    encryptionKey = new kms.EncryptionKey(table, 'Key');
+  } else {
+    encryptionKey = props.encryptionKey;
+  }
+
+  // create the bucket if none was provided
+  if (!bucket) {
+    if (encryption === TableEncryption.ClientSideKms) {
+      bucket = new s3.Bucket(table, 'Bucket');
+    } else {
+      bucket = new s3.Bucket(table, 'Bucket', {
+        encryption: encryptionMappings[encryption],
+        encryptionKey
+      });
+      encryptionKey = bucket.encryptionKey;
+    }
+  }
+
+  return {
+    bucket,
+    encryption,
+    encryptionKey
+  };
+}
 
 const readPermissions = [
   'glue:BatchDeletePartition',

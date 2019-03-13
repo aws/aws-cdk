@@ -52,17 +52,17 @@ export class SerializationLibrary {
  */
 export interface DataFormat {
   /**
-   * `InputFormat` for this storage type.
+   * `InputFormat` for this data format.
    */
   inputFormat: InputFormat;
 
   /**
-   * `OutputFormat` for this storage type.
+   * `OutputFormat` for this data format.
    */
   outputFormat: OutputFormat;
 
   /**
-   * Serialization library for this storage type.
+   * Serialization library for this data format.
    */
   serializationLibrary: SerializationLibrary;
 }
