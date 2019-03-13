@@ -1,18 +1,7 @@
 import ecr = require('@aws-cdk/aws-ecr');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
-
-/**
- * Repository Credential resources
- */
-export interface RepositoryCreds {
-  /**
-   * The secret that contains credentials for the image repository
-   */
-  readonly secret: secretsmanager.ISecret;
-}
 
 /**
  * Constructs for types of container images
@@ -21,8 +10,8 @@ export abstract class ContainerImage {
   /**
    * Reference an image on DockerHub or another online registry
    */
-  public static fromInternet(name: string, props: InternetHostedImageProps = {}) {
-    return new InternetHostedImage(name, props);
+  public static fromRepository(name: string, props: RepositoryImageProps = {}) {
+    return new RepositoryImage(name, props);
   }
 
   /**
@@ -45,11 +34,6 @@ export abstract class ContainerImage {
   public abstract readonly imageName: string;
 
   /**
-   * Optional credentials for a private image registry
-   */
-  protected abstract readonly credentials?: RepositoryCreds;
-
-  /**
    * Called when the image is used by a ContainerDefinition
    */
   public abstract bind(containerDefinition: ContainerDefinition): void;
@@ -57,9 +41,9 @@ export abstract class ContainerImage {
   /**
    * Render the Repository credentials to the CloudFormation object
    */
-  public abstract renderRepositoryCredentials(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined;
+  public abstract toRepositoryCredentialsJson(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined;
 }
 
 import { AssetImage, AssetImageProps } from './images/asset-image';
 import { EcrImage } from './images/ecr';
-import { InternetHostedImage, InternetHostedImageProps } from './images/internet-hosted';
+import { RepositoryImage, RepositoryImageProps } from './images/repository';

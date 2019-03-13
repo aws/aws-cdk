@@ -21,7 +21,7 @@ export * from './load-balanced-ecs-service';
 export * from './load-balanced-fargate-service-applet';
 
 export * from './images/asset-image';
-export * from './images/internet-hosted';
+export * from './images/repository';
 export * from './images/ecr';
 
 export * from './log-drivers/aws-log-driver';

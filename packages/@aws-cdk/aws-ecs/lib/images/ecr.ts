@@ -1,6 +1,6 @@
 import ecr = require('@aws-cdk/aws-ecr');
 import { ContainerDefinition } from '../container-definition';
-import { ContainerImage, RepositoryCreds } from '../container-image';
+import { ContainerImage } from '../container-image';
 import { CfnTaskDefinition } from '../ecs.generated';
 
 /**
@@ -8,7 +8,6 @@ import { CfnTaskDefinition } from '../ecs.generated';
  */
 export class EcrImage extends ContainerImage {
   public readonly imageName: string;
-  protected readonly credentials?: RepositoryCreds;
   private readonly repository: ecr.IRepository;
 
   constructor(repository: ecr.IRepository, tag: string) {
@@ -21,7 +20,7 @@ export class EcrImage extends ContainerImage {
     this.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
   }
 
-  public renderRepositoryCredentials(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined {
+  public toRepositoryCredentialsJson(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined {
     return undefined;
   }
 }

@@ -16,7 +16,7 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
 });
 
 const container = taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromInternet("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRepository("amazon/amazon-ecs-sample"),
 });
 
 container.addPortMappings({
