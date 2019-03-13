@@ -1,4 +1,4 @@
-import { makeUniqueId } from '../util/uniqueid';
+import { makeUniqueId } from '../uniqueid';
 import { CfnElement } from './cfn-element';
 
 const PATH_SEP = '/';
