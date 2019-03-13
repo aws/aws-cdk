@@ -11,7 +11,7 @@ new glue.Database(stack, 'MyDatabase', {
 });
 ```
 
-By default, a S3 bucket is created where the Database is stored under  `s3://<bucket-name>/`, but you can manually specify another location:
+By default, a S3 bucket is created and the Database is stored under  `s3://<bucket-name>/`, but you can manually specify another location:
 
 ```ts
 new glue.Database(stack, 'MyDatabase', {
@@ -22,7 +22,7 @@ new glue.Database(stack, 'MyDatabase', {
 
 ### Table
 
-A Glue table describes a table of data in S3 - its structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket) and format of the files (Json, Avro, Parquet, etc.):
+A Glue table describes a table of data in S3: its structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket), and format for the files (Json, Avro, Parquet, etc.):
 
 ```ts
 new glue.Table(stack, 'MyTable', {
@@ -123,6 +123,8 @@ new glue.Table(stack, 'MyTable', {
 });
 ```
 
+*Note: you cannot provide a `Bucket` when creating the `Table` if you wish to use server-side encryption (`Kms`, `KmsManaged` or `S3Managed`)*.
+
 ### Types
 
 A table's schema is a collection of columns, each of which have a `name` and a `type`. Types are recursive structures, consisting of primitive and complex types:
@@ -147,9 +149,9 @@ new glue.Table(stack, 'MyTable', {
     type: glue.Schema.struct([{
       name: 'nested_column',
       type: glue.Schema.date,
-      comment: 'nested'
+      comment: 'nested comment'
     }]),
-    comment: "struct<nested_column:date COMMENT 'nested'>"
+    comment: "struct<nested_column:date COMMENT 'nested comment'>"
   }],
   ...
 ```

@@ -342,7 +342,7 @@ const encryptionMappings = {
 
 // create the bucket to store a table's data depending on the `encryption` and `encryptionKey` properties.
 function createBucket(table: Table, props: TableProps) {
-  const encryption = props.encryption === undefined ? TableEncryption.Unencrypted : props.encryption;
+  const encryption = props.encryption || TableEncryption.Unencrypted;
   let bucket = props.bucket;
 
   if (bucket && (encryption !== TableEncryption.Unencrypted && encryption !== TableEncryption.ClientSideKms)) {
