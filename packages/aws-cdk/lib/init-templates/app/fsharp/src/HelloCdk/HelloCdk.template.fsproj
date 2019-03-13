@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="HelloConstruct.fs" />
+    <Compile Include="HelloStack.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Amazon.CDK" Version="%cdk-version%" />
     <PackageReference Include="Amazon.CDK.AWS.IAM" Version="%cdk-version%" />
     <PackageReference Include="Amazon.CDK.AWS.SNS" Version="%cdk-version%" />
