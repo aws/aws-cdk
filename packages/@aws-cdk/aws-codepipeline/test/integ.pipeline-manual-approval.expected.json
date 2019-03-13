@@ -13,7 +13,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codepipeline.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "codepipeline.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -185,11 +195,11 @@
     "PipelineApproveManualApprovalTopicResourceSubscriptionadamruka85gmailcom76398FFA": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
-        "Endpoint": "adamruka85@gmail.com",
         "Protocol": "email",
         "TopicArn": {
           "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
-        }
+        },
+        "Endpoint": "adamruka85@gmail.com"
       }
     }
   }
