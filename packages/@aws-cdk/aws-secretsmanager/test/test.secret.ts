@@ -21,6 +21,29 @@ export = {
     test.done();
   },
 
+  'templated secret string'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({ username: 'username' }),
+        generateStringKey: 'password'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        SecretStringTemplate: '{"username":"username"}',
+        GenerateStringKey: 'password'
+      }
+    }));
+
+    test.done();
+  },
+
   'grantRead'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

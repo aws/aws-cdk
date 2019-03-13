@@ -75,7 +75,7 @@ export interface SecretProps {
    * @default 32 characters with upper-case letters, lower-case letters, punctuation and numbers (at least one from each
    *          category), per the default values of ``SecretStringGenerator``.
    */
-  generateSecretString?: SecretStringGenerator;
+  generateSecretString?: SecretStringGenerator | TemplatedSecretStringGenerator;
 
   /**
    * A name for the secret. Note that deleting secrets from SecretsManager does not happen immediately, but after a 7 to
