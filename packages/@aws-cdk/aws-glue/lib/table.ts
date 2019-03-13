@@ -84,7 +84,7 @@ export interface TableProps {
    *
    * @default data/
    */
-  prefix?: string;
+  s3Prefix?: string;
 
   /**
    * Columns of the table.
@@ -194,7 +194,7 @@ export class Table extends cdk.Construct implements ITable {
     }
 
     this.storageType = props.storageType;
-    this.prefix = props.prefix || 'data/';
+    this.prefix = props.s3Prefix || 'data/';
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
 
