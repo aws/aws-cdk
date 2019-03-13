@@ -70,7 +70,7 @@ const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
     type: glue.Schema.smallint
   }],
   dataFormat: glue.DataFormat.Json,
-  encryption: glue.TableEncryption.SSE_KMS,
+  encryption: glue.TableEncryption.Kms,
   encryptionKey: new kms.EncryptionKey(stack, 'MyKey')
 });
 

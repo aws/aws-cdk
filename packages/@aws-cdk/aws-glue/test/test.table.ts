@@ -235,10 +235,10 @@ export = {
           name: 'col',
           type: glue.Schema.string
         }],
-        encryption: glue.TableEncryption.SSE_S3,
+        encryption: glue.TableEncryption.S3Managed,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.SSE_S3);
+      test.equals(table.encryption, glue.TableEncryption.S3Managed);
       test.equals(table.encryptionKey, undefined);
       test.equals(table.bucket.encryptionKey, undefined);
 
@@ -314,10 +314,10 @@ export = {
           name: 'col',
           type: glue.Schema.string
         }],
-        encryption: glue.TableEncryption.SSE_KMS,
+        encryption: glue.TableEncryption.Kms,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.SSE_KMS);
+      test.equals(table.encryption, glue.TableEncryption.Kms);
       test.equals(table.encryptionKey, table.bucket.encryptionKey);
 
       expect(stack).to(haveResource('AWS::KMS::Key', {
@@ -444,11 +444,11 @@ export = {
           name: 'col',
           type: glue.Schema.string
         }],
-        encryption: glue.TableEncryption.SSE_KMS,
+        encryption: glue.TableEncryption.Kms,
         encryptionKey,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.SSE_KMS);
+      test.equals(table.encryption, glue.TableEncryption.Kms);
       test.equals(table.encryptionKey, table.bucket.encryptionKey);
       test.notEqual(table.encryptionKey, undefined);
 
@@ -574,10 +574,10 @@ export = {
           name: 'col',
           type: glue.Schema.string
         }],
-        encryption: glue.TableEncryption.SSE_KMS_MANAGED,
+        encryption: glue.TableEncryption.KmsManaged,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.SSE_KMS_MANAGED);
+      test.equals(table.encryption, glue.TableEncryption.KmsManaged);
       test.equals(table.encryptionKey, undefined);
       test.equals(table.bucket.encryptionKey, undefined);
 
@@ -653,10 +653,10 @@ export = {
           name: 'col',
           type: glue.Schema.string
         }],
-        encryption: glue.TableEncryption.CSE_KMS,
+        encryption: glue.TableEncryption.ClientSideKms,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.CSE_KMS);
+      test.equals(table.encryption, glue.TableEncryption.ClientSideKms);
       test.notEqual(table.encryptionKey, undefined);
       test.equals(table.bucket.encryptionKey, undefined);
 
@@ -765,11 +765,11 @@ export = {
           name: 'col',
           type: glue.Schema.string
         }],
-        encryption: glue.TableEncryption.CSE_KMS,
+        encryption: glue.TableEncryption.ClientSideKms,
         encryptionKey,
         dataFormat: glue.DataFormat.Json,
       });
-      test.equals(table.encryption, glue.TableEncryption.CSE_KMS);
+      test.equals(table.encryption, glue.TableEncryption.ClientSideKms);
       test.notEqual(table.encryptionKey, undefined);
       test.equals(table.bucket.encryptionKey, undefined);
 
@@ -1330,7 +1330,7 @@ export = {
           type: glue.Schema.string
         }],
         bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-        encryption: glue.TableEncryption.SSE_KMS
+        encryption: glue.TableEncryption.Kms
       }), undefined, 'you can not specify both an encryption key and s3 bucket');
 
       test.throws(() => createTable({

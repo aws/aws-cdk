@@ -30,18 +30,22 @@ new glue.Table(stack, 'MyTable', {
   tableName: 'my_table',
   columns: [{
     name: 'col1',
-    type: glue.Schema.string
+    type: glue.Schema.string,
+  }, {
+    name: 'col2',
+    type: glue.Schema.array(Schema.string),
+    comment: 'col2 is an array of strings' // comment is optional
   }]
   dataFormat: glue.DataFormat.Json
 });
 ```
 
-By default, a S3 bucket will be created to store the table's data but you can manually pass the `bucket` and `prefix`:
+By default, a S3 bucket will be created to store the table's data but you can manually pass the `bucket` and `s3Prefix`:
 
 ```ts
 new glue.Table(stack, 'MyTable', {
   bucket: myBucket,
-  prefix: 'my-table/'
+  s3Prefix: 'my-table/'
   ...
 });
 ```
@@ -72,48 +76,48 @@ new glue.Table(stack, 'MyTable', {
 ### [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
 You can enable encryption on a Table's data:
-* `Unencrypted` - files are not encrypted.
-* [SSE_S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - Server side encryption (SSE) with an Amazon S3-managed key.
+* `Unencrypted` - files are not encrypted. The default encryption setting.
+* [S3Managed](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - Server side encryption (`SSE-S3`) with an Amazon S3-managed key.
 ```ts
 new glue.Table(stack, 'MyTable', {
-  encryption: glue.TableEncryption.SSE_S3
+  encryption: glue.TableEncryption.S3Managed
   ...
 });
 ```
-* [SSE_KMS](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (SSE) with an AWS KMS Key managed by the account owner.
+* [Kms](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (`SSE-KMS`) with an AWS KMS Key managed by the account owner.
 
 ```ts
 // KMS key is created automatically
 new glue.Table(stack, 'MyTable', {
-  encryption: glue.TableEncryption.SSE_KMS
+  encryption: glue.TableEncryption.Kms
   ...
 });
 
 // with an explicit KMS key
 new glue.Table(stack, 'MyTable', {
-  encryption: glue.TableEncryption.SSE_KMS,
+  encryption: glue.TableEncryption.Kms,
   encryptionKey: new kms.EncryptionKey(stack, 'MyKey')
   ...
 });
 ```
-* [SSE_KMS_MANAGED](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (SSE), like `SSE_KMS`, except with an AWS KMS Key managed by the AWS Key Management Service.
+* [KmsManaged](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) - Server-side encryption (`SSE-KMS`), like `Kms`, except with an AWS KMS Key managed by the AWS Key Management Service.
 ```ts
 new glue.Table(stack, 'MyTable', {
-  encryption: glue.TableEncryption.SSE_KMS_MANAGED
+  encryption: glue.TableEncryption.KmsManaged
   ...
 });
 ```
-* [CSE_KMS](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html#client-side-encryption-kms-managed-master-key-intro) - Client-side encryption (CSE) with an AWS KMS Key managed by the account owner.
+* [ClientSideKms](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html#client-side-encryption-kms-managed-master-key-intro) - Client-side encryption (`CSE-KMS`) with an AWS KMS Key managed by the account owner.
 ```ts
 // KMS key is created automatically
 new glue.Table(stack, 'MyTable', {
-  encryption: glue.TableEncryption.CSE_KMS
+  encryption: glue.TableEncryption.ClientSideKms
   ...
 });
 
 // with an explicit KMS key
 new glue.Table(stack, 'MyTable', {
-  encryption: glue.TableEncryption.CSE_KMS,
+  encryption: glue.TableEncryption.ClientSideKms,
   encryptionKey: new kms.EncryptionKey(stack, 'MyKey')
   ...
 });
@@ -122,6 +126,33 @@ new glue.Table(stack, 'MyTable', {
 ### Types
 
 A table's schema is a collection of columns, each of which have a `name` and a `type`. Types are recursive structures, consisting of primitive and complex types:
+
+```ts
+new glue.Table(stack, 'MyTable', {
+  columns: [{
+    name: 'primitive_column',
+    type: glue.Schema.string
+  }, {
+    name: 'array_column',
+    type: glue.Schema.array(glue.Schema.integer),
+    comment: 'array<integer>'
+  }, {
+    name: 'map_column',
+    type: glue.Schema.map(
+      glue.Schema.string,
+      glue.Schema.timestamp),
+    comment: 'map<string,string>'
+  }, {
+    name: 'struct_column',
+    type: glue.Schema.struct([{
+      name: 'nested_column',
+      type: glue.Schema.date,
+      comment: 'nested'
+    }]),
+    comment: "struct<nested_column:date COMMENT 'nested'>"
+  }],
+  ...
+```
 
 #### Primitive
 
@@ -149,6 +180,6 @@ Misc:
 
 #### Complex
 
-* `array` - array of some other type.
+* `array` - array of some other type
 * `map` - map of some primitive key type to any value type.
 * `struct` - nested structure containing individually named and typed columns.

@@ -20,33 +20,33 @@ export interface ITable extends cdk.IConstruct {
  * @see https://docs.aws.amazon.com/athena/latest/ug/encryption.html
  */
 export enum TableEncryption {
-  Unencrypted = 'Unecrypted',
+  Unencrypted = 'Unencrypted',
 
   /**
    * Server side encryption (SSE) with an Amazon S3-managed key.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
    */
-  SSE_S3 = 'SSE-S3',
-
-  /**
-   * Server-side encryption (SSE) with an AWS KMS key managed by KMS.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
-   */
-  SSE_KMS = 'SSE-KMS',
+  S3Managed = 'SSE-S3',
 
   /**
    * Server-side encryption (SSE) with an AWS KMS key managed by the account owner.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
    */
-  SSE_KMS_MANAGED = 'SSE-KMS-MANAGED',
+  Kms = 'SSE-KMS',
+
+  /**
+   * Server-side encryption (SSE) with an AWS KMS key managed by the KMS service.
+   */
+  KmsManaged = 'SSE-KMS-MANAGED',
 
   /**
    * Client-side encryption (CSE) with an AWS KMS key managed by the account owner.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
    */
-  CSE_KMS = 'CSE-KMS'
+  ClientSideKms = 'CSE-KMS'
 }
 
 export interface TableImportProps {
@@ -215,7 +215,7 @@ export class Table extends cdk.Construct implements ITable {
     } else {
       const bucketProps: s3.BucketProps = {};
       bucketProps.encryption = encryptionMappings[this.encryption];
-      if (this.encryption === TableEncryption.CSE_KMS) {
+      if (this.encryption === TableEncryption.ClientSideKms) {
         if (props.encryptionKey === undefined) {
           this.encryptionKey = new kms.EncryptionKey(this, 'Key');
         } else {
@@ -322,7 +322,7 @@ export class Table extends cdk.Construct implements ITable {
     identity.addToPolicy(new iam.PolicyStatement()
       .addResource(this.tableArn)
       .addActions(...props.permissions));
-    if (this.encryption === TableEncryption.CSE_KMS) {
+    if (this.encryption === TableEncryption.ClientSideKms) {
       identity.addToPolicy(new iam.PolicyStatement()
         .addResource(this.encryptionKey!.keyArn)
         .addActions(...props.kmsActions!));
@@ -352,10 +352,10 @@ function validateProps(props: TableProps): void {
 }
 
 const encryptionMappings = {
-  [TableEncryption.SSE_S3]: s3.BucketEncryption.S3Managed,
-  [TableEncryption.SSE_KMS_MANAGED]: s3.BucketEncryption.KmsManaged,
-  [TableEncryption.SSE_KMS]: s3.BucketEncryption.Kms,
-  [TableEncryption.CSE_KMS]: s3.BucketEncryption.Unencrypted,
+  [TableEncryption.S3Managed]: s3.BucketEncryption.S3Managed,
+  [TableEncryption.KmsManaged]: s3.BucketEncryption.KmsManaged,
+  [TableEncryption.Kms]: s3.BucketEncryption.Kms,
+  [TableEncryption.ClientSideKms]: s3.BucketEncryption.Unencrypted,
   [TableEncryption.Unencrypted]: s3.BucketEncryption.Unencrypted,
 };
 
