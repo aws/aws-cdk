@@ -6,7 +6,6 @@ import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 
 import glue = require('../lib');
-import { Schema, TableEncryption } from '../lib';
 
 export = {
   'unpartitioned JSON table'(test: Test) {
@@ -21,7 +20,7 @@ export = {
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: Schema.string
+        type: glue.Schema.string
       }],
       storageType: glue.StorageType.Json,
     });
@@ -96,11 +95,11 @@ export = {
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: Schema.string
+        type: glue.Schema.string
       }],
       partitionKeys: [{
         name: 'year',
-        type: Schema.smallint
+        type: glue.Schema.smallint
       }],
       storageType: glue.StorageType.Json,
     });
@@ -182,7 +181,7 @@ export = {
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: Schema.string
+        type: glue.Schema.string
       }],
       compressed: true,
       storageType: glue.StorageType.Json,
@@ -249,7 +248,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: Schema.string
+          type: glue.Schema.string
         }],
         encryption: glue.TableEncryption.SSE_S3,
         storageType: glue.StorageType.Json,
@@ -365,7 +364,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: Schema.string
+          type: glue.Schema.string
         }],
         encryption: glue.TableEncryption.SSE_KMS,
         storageType: glue.StorageType.Json,
@@ -535,7 +534,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: Schema.string
+          type: glue.Schema.string
         }],
         encryption: glue.TableEncryption.SSE_KMS,
         encryptionKey,
@@ -705,7 +704,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: Schema.string
+          type: glue.Schema.string
         }],
         encryption: glue.TableEncryption.SSE_KMS_MANAGED,
         storageType: glue.StorageType.Json,
@@ -821,7 +820,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: Schema.string
+          type: glue.Schema.string
         }],
         encryption: glue.TableEncryption.CSE_KMS,
         storageType: glue.StorageType.Json,
@@ -974,7 +973,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: Schema.string
+          type: glue.Schema.string
         }],
         encryption: glue.TableEncryption.CSE_KMS,
         encryptionKey,
@@ -1132,7 +1131,7 @@ export = {
       tableName: 'table',
       columns: [{
         name: 'col',
-        type: Schema.string
+        type: glue.Schema.string
       }],
       storageType: glue.StorageType.Json,
     });
@@ -1207,7 +1206,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: Schema.string
+          type: glue.Schema.string
         }],
         compressed: true,
         storageType: glue.StorageType.Json,
@@ -1313,7 +1312,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: Schema.string
+          type: glue.Schema.string
         }],
         compressed: true,
         storageType: glue.StorageType.Json,
@@ -1417,7 +1416,7 @@ export = {
         tableName: 'table',
         columns: [{
           name: 'col',
-          type: Schema.string
+          type: glue.Schema.string
         }],
         compressed: true,
         storageType: glue.StorageType.Json,

@@ -2088,6 +2088,24 @@ Object {
 }
 `;
 
+exports[`pure-cfn.json: pure-cfn 1`] = `
+Object {
+  "Resources": Object {
+    "Hello4A628BD4": Object {
+      "Type": "AWS::SQS::Queue",
+    },
+    "MyLogGroup": Object {
+      "Properties": Object {
+        "LogGroupName": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Logs::LogGroup",
+    },
+  },
+}
+`;
+
 exports[`queue-kms.json: queue-kms 1`] = `
 Object {
   "Resources": Object {

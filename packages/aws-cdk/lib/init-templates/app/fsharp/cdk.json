@@ -1,0 +1,4 @@
+{
+  "app": "dotnet src/HelloCdk/bin/Debug/netcoreapp2.1/HelloCdk.dll"
+}
+  
