@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames } from '../core/util';
-import { IConditionExpression } from './cfn-condition';
+import { ICfnConditionExpression } from './cfn-condition';
 import { CfnRefElement } from './cfn-element';
 
 /**
@@ -29,7 +29,7 @@ export interface CfnRuleProps {
    * If the rule condition evaluates to false, the rule doesn't take effect.
    * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
    */
-  ruleCondition?: IConditionExpression;
+  ruleCondition?: ICfnConditionExpression;
 
   /**
    * Assertions which define the rule.
@@ -57,7 +57,7 @@ export class CfnRule extends CfnRefElement {
    * If the rule condition evaluates to false, the rule doesn't take effect.
    * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
    */
-  public ruleCondition?: IConditionExpression;
+  public ruleCondition?: ICfnConditionExpression;
 
   /**
    * Assertions which define the rule.
@@ -81,7 +81,7 @@ export class CfnRule extends CfnRefElement {
    * @param condition The expression to evaluation.
    * @param description The description of the assertion.
    */
-  public addAssertion(condition: IConditionExpression, description: string) {
+  public addAssertion(condition: ICfnConditionExpression, description: string) {
     if (!this.assertions) {
       this.assertions = [];
     }
@@ -111,7 +111,7 @@ export interface RuleAssertion {
   /**
    * The assertion.
    */
-  assert: IConditionExpression;
+  assert: ICfnConditionExpression;
 
   /**
    * The assertion description.

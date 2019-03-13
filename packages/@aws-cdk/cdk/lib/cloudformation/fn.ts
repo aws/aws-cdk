@@ -1,6 +1,6 @@
 import { ResolveContext, Token, unresolved } from '../core/tokens';
 import { resolve } from '../core/tokens/resolve';
-import { IConditionExpression } from './cfn-condition';
+import { ICfnConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './instrinsics';
 
 // tslint:disable:max-line-length
@@ -150,7 +150,7 @@ export class Fn {
    * @param conditions conditions to AND
    * @returns an FnCondition token
    */
-  public static conditionAnd(...conditions: IConditionExpression[]): IConditionExpression {
+  public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
     return new FnAnd(...conditions);
   }
 
@@ -161,7 +161,7 @@ export class Fn {
    * @param rhs A value of any type that you want to compare.
    * @returns an FnCondition token
    */
-  public static conditionEquals(lhs: any, rhs: any): IConditionExpression {
+  public static conditionEquals(lhs: any, rhs: any): ICfnConditionExpression {
     return new FnEquals(lhs, rhs);
   }
 
@@ -180,7 +180,7 @@ export class Fn {
    * evaluates to false.
    * @returns an FnCondition token
    */
-  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): IConditionExpression {
+  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): ICfnConditionExpression {
     return new FnIf(conditionId, valueIfTrue, valueIfFalse);
   }
 
@@ -191,7 +191,7 @@ export class Fn {
    * or false.
    * @returns an FnCondition token
    */
-  public static conditionNot(condition: IConditionExpression): IConditionExpression {
+  public static conditionNot(condition: ICfnConditionExpression): ICfnConditionExpression {
     return new FnNot(condition);
   }
 
@@ -203,7 +203,7 @@ export class Fn {
    * @param conditions conditions that evaluates to true or false.
    * @returns an FnCondition token
    */
-  public static conditionOr(...conditions: IConditionExpression[]): IConditionExpression {
+  public static conditionOr(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
     return new FnOr(...conditions);
   }
 
@@ -214,7 +214,7 @@ export class Fn {
    * @param value A string, such as "A", that you want to compare against a list of strings.
    * @returns an FnCondition token
    */
-  public static conditionContains(listOfStrings: string[], value: string): IConditionExpression {
+  public static conditionContains(listOfStrings: string[], value: string): ICfnConditionExpression {
     return new FnContains(listOfStrings, value);
   }
 
@@ -225,7 +225,7 @@ export class Fn {
    * of strings.
    * @returns an FnCondition token
    */
-  public conditionEachMemberEquals(listOfStrings: string[], value: string): IConditionExpression {
+  public conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnConditionExpression {
     return new FnEachMemberEquals(listOfStrings, value);
   }
 
@@ -240,7 +240,7 @@ export class Fn {
    * strings_to_check parameter.
    * @returns an FnCondition token
    */
-  public conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string): IConditionExpression {
+  public conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string): ICfnConditionExpression {
     return new FnEachMemberIn(stringsToCheck, stringsToMatch);
   }
 
@@ -444,7 +444,7 @@ class FnCidr extends FnBase {
   }
 }
 
-class FnConditionBase extends Token implements IConditionExpression {
+class FnConditionBase extends Token implements ICfnConditionExpression {
   constructor(type: string, value: any) {
     super({ [type]: value });
   }
@@ -456,7 +456,7 @@ class FnConditionBase extends Token implements IConditionExpression {
  * conditions that you can include is 2, and the maximum is 10.
  */
 class FnAnd extends FnConditionBase {
-  constructor(...condition: IConditionExpression[]) {
+  constructor(...condition: ICfnConditionExpression[]) {
     super('Fn::And', condition);
   }
 }
@@ -504,7 +504,7 @@ class FnNot extends FnConditionBase {
    * Creates an ``Fn::Not`` condition function.
    * @param condition A condition such as ``Fn::Equals`` that evaluates to true or false.
    */
-  constructor(condition: IConditionExpression) {
+  constructor(condition: ICfnConditionExpression) {
     super('Fn::Not', [ condition ]);
   }
 }
@@ -519,7 +519,7 @@ class FnOr extends FnConditionBase {
    * Creates an ``Fn::Or`` condition function.
    * @param condition A condition that evaluates to true or false.
    */
-  constructor(...condition: IConditionExpression[]) {
+  constructor(...condition: ICfnConditionExpression[]) {
     super('Fn::Or', condition);
   }
 }

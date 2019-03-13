@@ -3,18 +3,18 @@ import { ResolveContext } from '../core/tokens';
 import { CfnRefElement } from './cfn-element';
 
 export interface CfnConditionProps {
-  expression?: IConditionExpression;
+  expression?: ICfnConditionExpression;
 }
 
 /**
  * Represents a CloudFormation condition, for resources which must be conditionally created and
  * the determination must be made at deploy time.
  */
-export class CfnCondition extends CfnRefElement implements IConditionExpression {
+export class CfnCondition extends CfnRefElement implements ICfnConditionExpression {
   /**
    * The condition statement.
    */
-  public expression?: IConditionExpression;
+  public expression?: ICfnConditionExpression;
 
   /**
    * Build a new condition. The condition must be constructed with a condition token,
@@ -69,7 +69,7 @@ export class CfnCondition extends CfnRefElement implements IConditionExpression 
  * capabilities to save costs. With conditions, you can define which resources
  * are created and how they're configured for each environment type.
  */
-export interface IConditionExpression {
+export interface ICfnConditionExpression {
   /**
    * Returns a JSON node that represents this condition expression
    */
