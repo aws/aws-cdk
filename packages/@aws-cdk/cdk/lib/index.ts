@@ -1,5 +1,5 @@
-export * from './aspects/aspect';
-export * from './aspects/tag-aspect';
+export * from './aspect';
+export * from './tag-aspect';
 
 export * from './core/construct';
 export * from './core/tokens';

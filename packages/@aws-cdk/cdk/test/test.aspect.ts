@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { IAspect } from '../lib/aspects/aspect';
+import { IAspect } from '../lib/aspect';
 import { IConstruct, Root } from '../lib/core/construct';
 
 class MyConstruct extends Root {

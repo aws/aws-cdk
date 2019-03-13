@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { IAspect } from '../aspects/aspect';
+import { IAspect } from '../aspect';
 import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
 import { makeUniqueId } from '../util/uniqueid';
 import { IDependable } from './dependency';

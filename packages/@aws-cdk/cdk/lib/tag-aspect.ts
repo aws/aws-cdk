@@ -1,6 +1,6 @@
-import { CfnResource, ITaggable } from '../cloudformation/cfn-resource';
-import { IConstruct } from '../core/construct';
 import { IAspect } from './aspect';
+import { CfnResource, ITaggable } from './cloudformation/cfn-resource';
+import { IConstruct } from './core/construct';
 
 /**
  * Properties for a tag

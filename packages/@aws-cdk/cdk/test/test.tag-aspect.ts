@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CfnResource, CfnResourceProps, Construct, RemoveTag, Stack, Tag, TagManager, TagType } from '../../lib';
+import { CfnResource, CfnResourceProps, Construct, RemoveTag, Stack, Tag, TagManager, TagType } from '../lib';
 
 class TaggableResource extends CfnResource {
   public readonly tags: TagManager;
