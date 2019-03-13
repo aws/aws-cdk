@@ -1,5 +1,5 @@
 import { IAspect } from './aspect';
-import { CfnResource, ITaggable } from './cloudformation/cfn-resource';
+import { CfnResource, ITaggable } from './cfn-resource';
 import { IConstruct } from './construct';
 
 /**

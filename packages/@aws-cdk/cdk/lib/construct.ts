@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
-import { CloudFormationJSON } from './cloudformation/cloudformation-json';
+import { CloudFormationJSON } from './cloudformation-json';
 import { IDependable } from './dependency';
 import { resolve } from './resolve';
 import { Token } from './token';
@@ -738,4 +738,4 @@ export interface Dependency {
 }
 
 // Import this _after_ everything else to help node work the classes out in the correct order...
-import { Stack } from './cloudformation/stack';
+import { Stack } from './stack';
