@@ -157,7 +157,6 @@ const TAG_FORMATTERS: {[key: string]: ITagFormatter} = {
 export class TagManager {
 
   private readonly tags = new Map<string, {value: string, props: TagProps}>();
-  private readonly removedTags = new Map<string, number>();
   private readonly priorities = new Map<string, number>();
   private readonly tagFormatter: ITagFormatter;
   private readonly resourceTypeName: string;
@@ -192,8 +191,6 @@ export class TagManager {
     }
     this.tags.set(key, {value, props: tagProps});
     this.priorities.set(key, tagProps.priority);
-    // ensure nothing is left in removeTags
-    this.removedTags.delete(key);
   }
 
   /**
@@ -210,7 +207,6 @@ export class TagManager {
     }
     this.tags.delete(key);
     this.priorities.set(key, tagProps.priority);
-    this.removedTags.set(key, tagProps.priority);
   }
 
   /**
