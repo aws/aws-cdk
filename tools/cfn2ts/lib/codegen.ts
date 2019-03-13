@@ -104,10 +104,8 @@ export default class CodeGenerator {
     }
   }
 
-  private openClass(name: genspec.CodeName, docLink?: string, superClasses?: string, deprecation?: string) {
+  private openClass(name: genspec.CodeName, superClasses?: string) {
     const extendsPostfix = superClasses ? ` extends ${superClasses}` : '';
-    const before = deprecation ? [ `@deprecated ${deprecation}` ] : [ ];
-    this.docLink(docLink, ...before);
     this.code.openBlock(`export class ${name.className}${extendsPostfix}`);
     return name.className;
   }
@@ -120,7 +118,7 @@ export default class CodeGenerator {
     if (!spec.Properties || Object.keys(spec.Properties).length === 0) { return; }
     const name = genspec.CodeName.forResourceProperties(resourceContext);
 
-    this.docLink(spec.Documentation);
+    this.docLink(spec.Documentation, `Properties for defining a \`${resourceContext.specName!.fqn}\``);
     this.code.openBlock(`export interface ${name.className}`);
 
     const conversionTable = this.emitPropsTypeProperties(resourceContext, spec.Properties);
@@ -172,6 +170,8 @@ export default class CodeGenerator {
   private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType, deprecated?: genspec.CodeName): void {
     this.beginNamespace(resourceName);
 
+    const cfnName = resourceName.specName!.fqn;
+
     //
     // Props Bag for this Resource
     //
@@ -185,13 +185,19 @@ export default class CodeGenerator {
       `"cloudformation.${resourceName.fqn}" will be deprecated in a future release ` +
       `in favor of "${deprecated.fqn}" (see https://github.com/awslabs/aws-cdk/issues/878)`;
 
-    this.openClass(resourceName, spec.Documentation, RESOURCE_BASE_CLASS, deprecation);
+    this.docLink(spec.Documentation, ...[
+      `A CloudFormation \`${cfnName}\``,
+      '',
+      `@cloudformationResource ${cfnName}`,
+      ...(deprecation ? [ `@deprecated ${deprecation}` ] : [ ]),
+    ]);
+    this.openClass(resourceName, RESOURCE_BASE_CLASS);
 
     //
     // Static inspectors.
     //
 
-    const resourceTypeName = `${JSON.stringify(resourceName.specName!.fqn)}`;
+    const resourceTypeName = `${JSON.stringify(cfnName)}`;
     this.code.line('/**');
     this.code.line(` * The CloudFormation resource type name for this resource class.`);
     this.code.line(' */');
@@ -199,7 +205,7 @@ export default class CodeGenerator {
 
     if (spec.RequiredTransform) {
       this.code.line('/**');
-      this.code.line(' * The ``Transform`` a template must use in order to use this resource');
+      this.code.line(' * The `Transform` a template must use in order to use this resource');
       this.code.line(' */');
       this.code.line(`public static readonly requiredTransform = ${JSON.stringify(spec.RequiredTransform)};`);
     }
@@ -216,7 +222,7 @@ export default class CodeGenerator {
 
         this.code.line();
 
-        this.docLink(undefined, `@cloudformation_attribute ${attributeName}`);
+        this.docLink(undefined, `@cloudformationAttribute ${attributeName}`);
         const attr = genspec.attributeDefinition(resourceName, attributeName, attributeSpec);
 
         this.code.line(`public readonly ${attr.propertyName}: ${attr.attributeType};`);
@@ -242,11 +248,11 @@ export default class CodeGenerator {
     if (tagEnum !== `${TAG_TYPE}.NotTaggable`) {
       this.code.line();
       this.code.line('/**');
-      this.code.line(' * The ``TagManager`` handles setting, removing and formatting tags');
+      this.code.line(' * The `TagManager` handles setting, removing and formatting tags');
       this.code.line(' *');
       this.code.line(' * Tags should be managed either passing them as properties during');
       this.code.line(' * initiation or by calling methods on this object. If both techniques are');
-      this.code.line(' * used only the tags from the TagManager will be used. ``Tag`` (aspect)');
+      this.code.line(' * used only the tags from the TagManager will be used. `Tag` (aspect)');
       this.code.line(' * will use the manager.');
       this.code.line(' */');
       this.code.line(`public readonly tags = new ${TAG_MANAGER}(${tagEnum}, ${resourceTypeName});`);
@@ -258,11 +264,11 @@ export default class CodeGenerator {
 
     this.code.line();
     this.code.line('/**');
-    this.code.line(` * Creates a new ${quoteCode(resourceName.specName!.fqn)}.`);
+    this.code.line(` * Create a new ${quoteCode(resourceName.specName!.fqn)}.`);
     this.code.line(' *');
-    this.code.line(` * @param scope scope in which this resource is defined`);
-    this.code.line(` * @param id    scoped id of the resource`);
-    this.code.line(` * @param props resource properties`);
+    this.code.line(` * @param scope - scope in which this resource is defined`);
+    this.code.line(` * @param id    - scoped id of the resource`);
+    this.code.line(` * @param props - resource properties`);
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required || false);
     const propsArgument = propsType ? `, props${optionalProps ? '?' : ''}: ${propsType.className}` : '';
@@ -362,7 +368,7 @@ export default class CodeGenerator {
     this.code.line('/**');
     this.code.line(` * Renders the AWS CloudFormation properties of an ${quoteCode(typeName.specName!.fqn)} resource`);
     this.code.line(' *');
-    this.code.line(` * @param properties the TypeScript properties of a ${quoteCode(typeName.className)}`);
+    this.code.line(` * @param properties - the TypeScript properties of a ${quoteCode(typeName.className)}`);
     this.code.line(' *');
     this.code.line(` * @returns the AWS CloudFormation properties of an ${quoteCode(typeName.specName!.fqn)} resource.`);
     this.code.line(' */');
@@ -448,7 +454,7 @@ export default class CodeGenerator {
     this.code.line('/**');
     this.code.line(` * Determine whether the given properties match those of a ${quoteCode(typeName.className)}`);
     this.code.line(' *');
-    this.code.line(` * @param properties the TypeScript properties of a ${quoteCode(typeName.className)}`);
+    this.code.line(` * @param properties - the TypeScript properties of a ${quoteCode(typeName.className)}`);
     this.code.line(' *');
     this.code.line(' * @returns the result of the validation.');
     this.code.line(' */');
@@ -622,9 +628,9 @@ export default class CodeGenerator {
   private docLink(link: string | undefined, ...before: string[]) {
     if (!link && before.length === 0) { return; }
     this.code.line('/**');
-    before.forEach(line => this.code.line(` * ${line}`));
+    before.forEach(line => this.code.line(` * ${line}`.trimRight()));
     if (link) {
-      this.code.line(` * @link ${link}`);
+      this.code.line(` * @see ${link}`);
     }
     this.code.line(' */');
     return;
@@ -639,14 +645,14 @@ export default class CodeGenerator {
 
 /**
  * Quotes a code name for inclusion in a JSDoc comment, so it will render properly
- * in the Sphinx output.
+ * in the Markdown output.
  *
  * @param code a code name to be quoted.
  *
  * @returns the code name surrounded by double backticks.
  */
 function quoteCode(code: string): string {
-  return '``' + code + '``';
+  return '`' + code + '`';
 }
 
 function tokenizableType(alternatives: string[]) {
