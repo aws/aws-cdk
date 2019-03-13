@@ -85,7 +85,9 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
         }
       ]
     }).promise();
-    const vpnGatewayId = vpnGatewayResponse.VpnGateways ? vpnGatewayResponse.VpnGateways[0].VpnGatewayId : undefined;
+    const vpnGatewayId = vpnGatewayResponse.VpnGateways && vpnGatewayResponse.VpnGateways.length === 1
+      ? vpnGatewayResponse.VpnGateways[0].VpnGatewayId
+      : undefined;
 
     return {
       vpcId,
