@@ -263,6 +263,12 @@ export abstract class Action {
     if (this._actionInputArtifacts.indexOf(artifact) !== -1) {
       return this;
     }
+
+    // however, a _different_ input with the same name is an error
+    if (this._actionInputArtifacts.find(input => input.artifactName === artifact.artifactName)) {
+      throw new Error(`Action ${this.actionName} already has an input with the name '${artifact.artifactName}'`);
+    }
+
     this._actionInputArtifacts.push(artifact);
     return this;
   }

@@ -152,7 +152,7 @@ export = {
 
   'input Artifacts': {
     'can be added multiple times to an Action safely'(test: Test) {
-      const artifact = new actions.Artifact('Artifact');
+      const artifact = new actions.Artifact('SomeArtifact');
 
       const stack = new cdk.Stack();
       const project = new codebuild.PipelineProject(stack, 'Project');
@@ -166,7 +166,25 @@ export = {
 
       test.done();
     },
-  }
+
+    'cannot have duplicate names'(test: Test) {
+      const artifact1 = new actions.Artifact('SomeArtifact');
+      const artifact2 = new actions.Artifact('SomeArtifact');
+
+      const stack = new cdk.Stack();
+      const project = new codebuild.PipelineProject(stack, 'Project');
+
+      test.throws(() =>
+        project.toCodePipelineBuildAction({
+          actionName: 'CodeBuild',
+          inputArtifact: artifact1,
+          additionalInputArtifacts: [artifact2],
+        })
+      , /SomeArtifact/);
+
+      test.done();
+    },
+  },
 };
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {
