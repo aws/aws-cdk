@@ -259,7 +259,17 @@ export = {
             },
             Effect: 'Allow',
             Principal: {
-              Service: 'ses.amazonaws.com'
+              Service: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'ses.',
+                    {
+                      Ref: 'AWS::URLSuffix'
+                    }
+                  ]
+                ]
+              }
             },
             Resource: {
               'Fn::Join': [
@@ -338,7 +348,17 @@ export = {
             },
             Effect: 'Allow',
             Principal: {
-              Service: 'ses.amazonaws.com'
+              Service: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'ses.',
+                    {
+                      Ref: 'AWS::URLSuffix'
+                    }
+                  ]
+                ]
+              }
             },
             Resource: '*'
           }
