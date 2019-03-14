@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`hey 1`] = `
+Object {
+  "children": Array [
+    Object {
+      "children": Array [
+        Object {
+          "children": Array [
+            Object {
+              "id": "group1-resource1",
+              "metadata": Object {
+                "logicalId": "group1group1resource1C98E375E",
+                "resourceType": "my-resource-type",
+              },
+              "path": "myapp/group1/group1-resource1",
+            },
+            Object {
+              "id": "group1-resource2",
+              "metadata": Object {
+                "logicalId": "group1group1resource2E9646EF4",
+                "resourceType": "my-resource-type-2",
+              },
+              "path": "myapp/group1/group1-resource2",
+            },
+          ],
+          "id": "group1",
+          "path": "myapp/group1",
+        },
+        Object {
+          "children": Array [
+            Object {
+              "id": "group2-resource3",
+              "links": Array [
+                Object {
+                  "sourcePath": "myapp/group2/group2-resource3",
+                  "targetPath": "myapp/group1/group1-resource1",
+                },
+                Object {
+                  "attribute": "Boom",
+                  "sourcePath": "myapp/group2/group2-resource3",
+                  "targetPath": "myapp/group1/group1-resource1",
+                },
+              ],
+              "path": "myapp/group2/group2-resource3",
+            },
+          ],
+          "id": "group2",
+          "path": "myapp/group2",
+        },
+      ],
+      "id": "myapp",
+      "path": "myapp",
+    },
+    Object {
+      "id": "mirror",
+      "path": "mirror",
+    },
+  ],
+  "id": "App",
+  "path": "",
+}
+`;
