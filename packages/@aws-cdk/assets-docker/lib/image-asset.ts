@@ -46,7 +46,7 @@ export class DockerImageAsset extends cdk.Construct {
       throw new Error(`No 'Dockerfile' found in ${this.directory}`);
     }
 
-    const imageNameParameter = new cdk.Parameter(this, 'ImageName', {
+    const imageNameParameter = new cdk.CfnParameter(this, 'ImageName', {
       type: 'String',
       description: `ECR repository name and tag asset "${this.node.path}"`,
     });

@@ -35,7 +35,7 @@ export class ParameterStoreString extends cdk.Construct {
     // * Specific - use a Dynamic Reference.
     if (props.version === undefined) {
       // Construct/get a singleton parameter under the stack
-      const param = new cdk.Parameter(this, 'Parameter', {
+      const param = new cdk.CfnParameter(this, 'Parameter', {
         type: 'AWS::SSM::Parameter::Value<String>',
         default: props.parameterName
       });

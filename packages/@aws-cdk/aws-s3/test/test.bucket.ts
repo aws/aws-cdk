@@ -1049,9 +1049,9 @@ export = {
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
-    new cdk.Output(stack, 'BucketURL', { value: bucket.bucketUrl });
-    new cdk.Output(stack, 'MyFileURL', { value: bucket.urlForObject('my/file.txt') });
-    new cdk.Output(stack, 'YourFileURL', { value: bucket.urlForObject('/your/file.txt') }); // "/" is optional
+    new cdk.CfnOutput(stack, 'BucketURL', { value: bucket.bucketUrl });
+    new cdk.CfnOutput(stack, 'MyFileURL', { value: bucket.urlForObject('my/file.txt') });
+    new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.urlForObject('/your/file.txt') }); // "/" is optional
 
     expect(stack).toMatch({
       "Resources": {

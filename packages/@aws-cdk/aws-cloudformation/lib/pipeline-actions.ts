@@ -59,7 +59,7 @@ export interface PipelineCloudFormationActionProps extends codepipeline.CommonAc
  */
 export abstract class PipelineCloudFormationAction extends codepipeline.Action {
   /**
-   * Output artifact containing the CloudFormation call response
+   * CfnOutput artifact containing the CloudFormation call response
    *
    * Only present if configured by passing `outputFileName`.
    */

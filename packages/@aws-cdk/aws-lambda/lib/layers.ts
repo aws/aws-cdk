@@ -87,7 +87,7 @@ export abstract class LayerVersionBase extends cdk.Construct implements ILayerVe
 
   public export(): LayerVersionImportProps {
     return {
-      layerVersionArn: new cdk.Output(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
+      layerVersionArn: new cdk.CfnOutput(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
       compatibleRuntimes: this.compatibleRuntimes,
     };
   }
