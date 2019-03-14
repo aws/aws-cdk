@@ -9,7 +9,7 @@ Aspects are a mechanism to extend the CDK without having to directly impact the
 class hierarchy. We have implemented aspects using the [Visitor
 Pattern](https://en.wikipedia.org/wiki/Visitor_pattern).
 
-An aspect in the CDK is defined by this [interface](lib/aspects/aspect.ts)
+An aspect in the CDK is defined by this [interface](lib/aspect.ts)
 
 Aspects can be applied to any construct. During the tree
 "prepare" phase the aspect will visit each construct in the tree once.

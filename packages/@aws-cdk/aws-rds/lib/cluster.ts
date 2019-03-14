@@ -225,13 +225,13 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
   public export(): DatabaseClusterImportProps {
     // tslint:disable:max-line-length
     return {
-      port: new cdk.Output(this, 'Port', { value: this.clusterEndpoint.port, }).makeImportValue().toString(),
-      securityGroupId: new cdk.Output(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue().toString(),
-      clusterIdentifier: new cdk.Output(this, 'ClusterIdentifier', { value: this.clusterIdentifier, }).makeImportValue().toString(),
-      instanceIdentifiers: new cdk.StringListOutput(this, 'InstanceIdentifiers', { values: this.instanceIdentifiers }).makeImportValues().map(x => x.toString()),
-      clusterEndpointAddress: new cdk.Output(this, 'ClusterEndpointAddress', { value: this.clusterEndpoint.hostname, }).makeImportValue().toString(),
-      readerEndpointAddress: new cdk.Output(this, 'ReaderEndpointAddress', { value: this.readerEndpoint.hostname, }).makeImportValue().toString(),
-      instanceEndpointAddresses: new cdk.StringListOutput(this, 'InstanceEndpointAddresses', { values: this.instanceEndpoints.map(e => e.hostname) }).makeImportValues().map(x => x.toString()),
+      port: new cdk.CfnOutput(this, 'Port', { value: this.clusterEndpoint.port, }).makeImportValue().toString(),
+      securityGroupId: new cdk.CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue().toString(),
+      clusterIdentifier: new cdk.CfnOutput(this, 'ClusterIdentifier', { value: this.clusterIdentifier, }).makeImportValue().toString(),
+      instanceIdentifiers: new cdk.StringListCfnOutput(this, 'InstanceIdentifiers', { values: this.instanceIdentifiers }).makeImportValues().map(x => x.toString()),
+      clusterEndpointAddress: new cdk.CfnOutput(this, 'ClusterEndpointAddress', { value: this.clusterEndpoint.hostname, }).makeImportValue().toString(),
+      readerEndpointAddress: new cdk.CfnOutput(this, 'ReaderEndpointAddress', { value: this.readerEndpoint.hostname, }).makeImportValue().toString(),
+      instanceEndpointAddresses: new cdk.StringListCfnOutput(this, 'InstanceEndpointAddresses', { values: this.instanceEndpoints.map(e => e.hostname) }).makeImportValues().map(x => x.toString()),
     };
     // tslint:enable:max-line-length
   }

@@ -230,7 +230,7 @@ export class RestApi extends cdk.Construct implements IRestApi {
    */
   public export(): RestApiImportProps {
     return {
-      restApiId: new cdk.Output(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
+      restApiId: new cdk.CfnOutput(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
     };
   }
 
@@ -317,7 +317,7 @@ export class RestApi extends cdk.Construct implements IRestApi {
         ...props.deployOptions
       });
 
-      new cdk.Output(this, 'Endpoint', { value: this.urlForPath() });
+      new cdk.CfnOutput(this, 'Endpoint', { value: this.urlForPath() });
     } else {
       if (props.deployOptions) {
         throw new Error(`Cannot set 'deployOptions' if 'deploy' is disabled`);
