@@ -3,7 +3,7 @@ import { IAspect } from '../aspects/aspect';
 import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
 import { makeUniqueId } from '../util/uniqueid';
 import { IDependable } from './dependency';
-import { Token, unresolved } from './tokens';
+import { Reference, unresolved } from './tokens';
 import { resolve } from './tokens/resolve';
 
 export const PATH_SEP = '/';
@@ -45,7 +45,7 @@ export class ConstructNode {
   private readonly _children: { [name: string]: IConstruct } = { };
   private readonly context: { [key: string]: any } = { };
   private readonly _metadata = new Array<MetadataEntry>();
-  private readonly references = new Set<Token>();
+  private readonly _references = new Set<Reference>();
   private readonly dependencies = new Set<IDependable>();
 
   /** Will be used to cache the value of ``this.stack``. */
@@ -366,6 +366,13 @@ export class ConstructNode {
   }
 
   /**
+   * @returns the root node of the tree.
+   */
+  public get root() {
+    return this.ancestors()[0];
+  }
+
+  /**
    * Throws if the `props` bag doesn't include the property `name`.
    * In the future we can add some type-checking here, maybe even auto-generate during compilation.
    * @param props The props bag.
@@ -467,33 +474,53 @@ export class ConstructNode {
   /**
    * Record a reference originating from this construct node
    */
-  public recordReference(...refs: Token[]) {
+  public recordReference(...refs: Reference[]) {
     for (const ref of refs) {
-      if (ref.isReference) {
-        this.references.add(ref);
-      }
+      this._references.add(ref);
     }
   }
 
   /**
-   * Return all references of the given type originating from this node or any of its children
+   * Returns all references that originate from this construct.
+   * Note that only references reported by `recordReference` will be returned.
    */
-  public findReferences(): Token[] {
-    const ret = new Set<Token>();
+  public get references(): Reference[] {
+    return Array.from(this._references);
+  }
 
-    function recurse(node: ConstructNode) {
+  /**
+   * Return all references of the given type originating from this node or any of its children
+   * @returns A list of `Edge`s, which include the source, target and reference.
+   */
+  public findReferences(options: FindReferencesOptions = { }): Edge[] {
+    const ret = new Array<Edge>();
+
+    const recursive = options.recursive !== undefined ? options.recursive : true;
+
+    function visit(node: ConstructNode) {
       for (const ref of node.references) {
-        ret.add(ref);
+        // skip references without a target (HACKY)
+        if (!ref.target) {
+          continue;
+        }
+
+        ret.push({
+          source: node.host,
+          target: ref.target,
+          reference: ref
+        });
       }
 
-      for (const child of node.children) {
-        recurse(child.node);
+      if (recursive) {
+        for (const child of node.children) {
+          visit(child.node);
+        }
       }
     }
 
-    recurse(this);
+    visit(this);
 
-    return Array.from(ret);
+    return ret;
   }
 
   /**
@@ -734,6 +761,20 @@ export interface Dependency {
    * Target of the dependency
    */
   target: IConstruct;
+}
+
+export interface Edge {
+  source: IConstruct;
+  target: IConstruct;
+  reference: Reference;
+}
+
+export interface FindReferencesOptions {
+  /**
+   * Returns all links originating from this subtree and not just the node.
+   * @default true
+   */
+  recursive?: boolean;
 }
 
 // Import this _after_ everything else to help node work the classes out in the correct order...

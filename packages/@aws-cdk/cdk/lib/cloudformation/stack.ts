@@ -421,9 +421,9 @@ export class Stack extends Construct {
    */
   protected prepare() {
     // References
-    for (const ref of this.node.findReferences()) {
-      if (CfnReference.isCfnReference(ref)) {
-        ref.consumeFromStack(this);
+    for (const edge of this.node.findReferences()) {
+      if (CfnReference.isCfnReference(edge.reference)) {
+        edge.reference.consumeFromStack(this);
       }
     }
 

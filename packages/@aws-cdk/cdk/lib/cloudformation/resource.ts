@@ -2,10 +2,10 @@ import cxapi = require('@aws-cdk/cx-api');
 import { Construct, IConstruct } from '../core/construct';
 import { TagManager } from '../core/tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from '../core/util';
-import { CfnReference } from './cfn-tokens';
+import './cfn-tokens';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { Referenceable } from './stack-element';
+import { GetAtt, Referenceable } from './stack-element';
 
 export interface ResourceProps {
   /**
@@ -131,7 +131,7 @@ export class Resource extends Referenceable {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, attributeName, this);
+    return new GetAtt(this, attributeName);
   }
 
   /**

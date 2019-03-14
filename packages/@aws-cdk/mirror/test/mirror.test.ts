@@ -27,14 +27,14 @@ interface MyResourceProps {
   resource: Resource
 }
 
-class MyResource extends Construct {
-  public readonly someRef: string;
-  public readonly someAttribute: string;
-
+class MyResource extends Resource {
   constructor(scope: Construct, id: string, props: MyResourceProps) {
-    super(scope, id);
-
-    this.someRef = props.resource.ref;
-    this.someAttribute = props.resource.getAtt('Boom').toString();
+    super(scope, id, {
+      type: 'resource-type',
+      properties: {
+        SomeRef: props.resource.ref,
+        SomeAttribute: props.resource.getAtt('Boom').toString()
+      }
+    });
   }
 }

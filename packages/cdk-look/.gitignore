@@ -23,4 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 !*.js
-app.json
+mirror.json
+

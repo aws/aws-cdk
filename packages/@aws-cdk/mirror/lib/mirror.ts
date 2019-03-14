@@ -2,44 +2,48 @@ import cdk = require('@aws-cdk/cdk');
 import fs = require('fs');
 import { Link, Node, NodeLinks, NodeMetadata } from './model';
 
-// tslint:disable-next-line:no-empty-interface
-export interface MirrorProps {
-}
-
 /**
  * @experimental
  */
 export class Mirror extends cdk.Construct {
   public static readonly FileName = 'mirror.json';
 
-  constructor(scope: cdk.Construct, id: string, props: MirrorProps = {}) {
+  constructor(scope: cdk.Construct, id: string) {
     super(scope, id);
-
-    // tslint:disable-next-line:no-console
-    console.error(props);
   }
 
   protected synthesize(session: cdk.ISynthesisSession) {
-    const root = this.node.ancestors()[0];
+    const lookup: { [path: string]: Node } = { };
 
     const visit = (construct: cdk.IConstruct): Node => {
       const children = construct.node.children.map(visit);
-      const links = this.renderLinks(construct);
       const metadata = this.renderMetadata(construct);
-
-      return {
+      const node: Node = {
         id: construct.node.id || 'App',
         path: construct.node.path,
         children: children.length === 0 ? undefined : children,
         metadata: Object.keys(metadata).length === 0 ? undefined : metadata,
-        links: Object.keys(links).length === 0 ? undefined : links
       };
+
+      lookup[node.path] = node;
+
+      return node;
     };
 
-    const model = visit(root);
-    fs.writeFileSync('app.json', JSON.stringify(model, undefined, 2));
+    const root = visit(this.node.root);
 
-    session.store.writeJson(Mirror.FileName, model);
+    // add links to all nodes (in both sides of the edge).
+    for (const link of this.findLinks()) {
+      const sourceNode = lookup[link.sourcePath];
+      const targetNode = lookup[link.targetPath];
+      sourceNode.links = [ ...sourceNode.links || [], link ];
+      targetNode.links = [ ...targetNode.links || [], link ];
+    }
+
+    // temporary workaround until toolkit actually retains the cloud assembly
+    fs.writeFileSync(Mirror.FileName, JSON.stringify(root, undefined, 2));
+
+    session.store.writeJson(Mirror.FileName, root);
   }
 
   private renderMetadata(construct: cdk.IConstruct): NodeMetadata {
@@ -53,78 +57,24 @@ export class Mirror extends cdk.Construct {
     return {};
   }
 
-  private renderLinks(construct: cdk.IConstruct): NodeLinks {
+  private findLinks(): NodeLinks {
     const links = new Array<Link>();
 
-    for (const prop of Object.getOwnPropertyNames(construct)) {
-      if (prop.startsWith('_')) {
-        continue;
-      }
-      const value = (construct as any)[prop];
-      if (typeof(value) !== 'string') {
-        continue;
-      }
-      const resolvedValue = construct.node.resolve(value);
-      const refs = findReferences(resolvedValue);
-
-      for (const ref of refs) {
-
-        const target = this.findResource(construct.node.stack, ref.logicalId);
-        if (!target) {
-          this.node.addWarning(`cannot find resource with logical ID ${ref.logicalId}`);
-          continue;
-        }
-
+    for (const edge of this.node.root.node.findReferences()) {
+      if (cdk.GetAtt.isGetAtt(edge.reference)) {
         links.push({
-          sourcePath: construct.node.path,
-          targetPath: target.node.path,
-          attribute: ref.attribute
+          sourcePath: edge.source.node.path,
+          targetPath: edge.target.node.path,
+          attribute: edge.reference.attributeName
+        });
+      } else if (cdk.Ref.isRef(edge.reference)) {
+        links.push({
+          sourcePath: edge.source.node.path,
+          targetPath: edge.target.node.path
         });
       }
     }
 
     return links;
-  }
-
-  private findResource(stack: cdk.Stack, logicalId: string): cdk.Resource | undefined {
-    return stack.node.findAll()
-      .find(c => cdk.Resource.isResource(c) && stack.node.resolve(c.logicalId) === logicalId) as cdk.Resource;
-  }
-}
-
-interface CloudFormationReference {
-  logicalId: string;
-  attribute?: string;
-}
-
-function findReferences(obj: any): CloudFormationReference[] {
-  if (typeof(obj) !== 'object') {
-    return [];
-  }
-
-  const result = new Array<CloudFormationReference>();
-  if (Array.isArray(obj)) {
-    for (const item of obj) {
-      result.push(...findReferences(item));
-    }
-
-    return result;
-  } else {
-    const asRef = obj.Ref;
-    if (asRef) {
-      return [{ logicalId: asRef }];
-    }
-
-    const asGetAtt = obj['Fn::GetAtt'];
-    if (asGetAtt) {
-      return [{ logicalId: asGetAtt[0], attribute: asGetAtt[1] }];
-    }
-
-    // this is an object
-    for (const v of Object.values(obj)) {
-      result.push(...findReferences(v));
-    }
-
-    return result;
   }
 }

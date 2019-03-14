@@ -1,5 +1,5 @@
 import { Construct, IConstruct, PATH_SEP } from "../core/construct";
-import { Token } from '../core/tokens';
+import { Reference, Token } from '../core/tokens';
 
 const LOGICAL_ID_MD = 'aws:cdk:logicalId';
 
@@ -117,7 +117,14 @@ export abstract class StackElement extends Construct {
       // This does make the assumption that the error will not be rectified,
       // but the error will be thrown later on anyway. If the error doesn't
       // get thrown down the line, we may miss references.
-      this.node.recordReference(...findTokens(this, () => this.toCloudFormation()));
+      const tokens = findTokens(this, () => this.toCloudFormation());
+      const refs = new Array<Reference>();
+      for (const token of tokens) {
+        if (Reference.isReference(token)) {
+          refs.push(token);
+        }
+      }
+      this.node.recordReference(...refs);
     } catch (e) {
       if (e.type !== 'CfnSynthesisError') { throw e; }
     }
@@ -130,8 +137,28 @@ import { CfnReference } from "./cfn-tokens";
  * A generic, untyped reference to a Stack Element
  */
 export class Ref extends CfnReference {
-  constructor(element: StackElement) {
+  public static isRef(token: any): token is Ref {
+    return token.refMerker === this.TYPE_MARKER;
+  }
+
+  private static readonly TYPE_MARKER = '1B95272C-D038-4FA1-8C75-7DABD7C3F3EC';
+
+  constructor(public readonly element: StackElement) {
     super({ Ref: element.logicalId }, 'Ref', element);
+    Object.defineProperty(this, 'refMarker', { value: Ref.TYPE_MARKER, enumerable: false });
+  }
+}
+
+export class GetAtt extends CfnReference {
+  public static isGetAtt(token: any): token is GetAtt {
+    return token.getAttMarker === this.TYPE_MARKER;
+  }
+
+  private static readonly TYPE_MARKER = '3629022D-1635-4CDA-8A4D-C51F4684E533';
+
+  constructor(public readonly element: StackElement, public readonly attributeName: string) {
+    super({ 'Fn::GetAtt': [element.logicalId, attributeName] }, attributeName, element);
+    Object.defineProperty(this, 'getAttMarker', { value: GetAtt.TYPE_MARKER, enumerable: false });
   }
 }
 

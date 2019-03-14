@@ -1,7 +1,6 @@
 'use strict';
 
-const appdata = require('./app.json');
-
+const appdata = require('./mirror.json');
 
 function constructDataToTreeData(constructData, prefix) {
   const path = prefix + '/' + constructData.id;

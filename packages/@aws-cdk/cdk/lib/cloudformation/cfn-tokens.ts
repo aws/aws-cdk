@@ -1,4 +1,4 @@
-import { ResolveContext, Token } from "../core/tokens";
+import { Reference, ResolveContext, Token } from "../core/tokens";
 
 /**
  * A Token that represents a CloudFormation reference to another resource
@@ -14,7 +14,7 @@ import { ResolveContext, Token } from "../core/tokens";
  * `consumeFromStack` on these Tokens and if they happen to be exported by a different
  * Stack, we'll register the dependency.
  */
-export class CfnReference extends Token {
+export class CfnReference extends Reference {
   /**
    * Check whether this is actually a CfnReference
    */
@@ -22,7 +22,7 @@ export class CfnReference extends Token {
     return (x as any).consumeFromStack !== undefined;
   }
 
-  public readonly isReference?: boolean;
+  public readonly target?: IConstruct;
 
   /**
    * What stack this Token is pointing to
@@ -44,11 +44,12 @@ export class CfnReference extends Token {
     }
     super(value, displayName);
     this.replacementTokens = new Map<Stack, Token>();
-    this.isReference = true;
 
     if (scope !== undefined) {
       this.producingStack = scope.node.stack;
     }
+
+    this.target = scope;
   }
 
   public resolve(context: ResolveContext): any {
@@ -111,6 +112,6 @@ export class CfnReference extends Token {
 
 }
 
-import { Construct } from "../core/construct";
+import { Construct, IConstruct } from "../core/construct";
 import { Output } from "./output";
 import { Stack } from "./stack";

@@ -9,6 +9,13 @@ Object {
           "children": Array [
             Object {
               "id": "group1-resource1",
+              "links": Array [
+                Object {
+                  "attribute": "Boom",
+                  "sourcePath": "myapp/group2/group2-resource3",
+                  "targetPath": "myapp/group1/group1-resource1",
+                },
+              ],
               "metadata": Object {
                 "logicalId": "group1group1resource1C98E375E",
                 "resourceType": "my-resource-type",
@@ -33,15 +40,15 @@ Object {
               "id": "group2-resource3",
               "links": Array [
                 Object {
-                  "sourcePath": "myapp/group2/group2-resource3",
-                  "targetPath": "myapp/group1/group1-resource1",
-                },
-                Object {
                   "attribute": "Boom",
                   "sourcePath": "myapp/group2/group2-resource3",
                   "targetPath": "myapp/group1/group1-resource1",
                 },
               ],
+              "metadata": Object {
+                "logicalId": "group2group2resource385A87E2A",
+                "resourceType": "resource-type",
+              },
               "path": "myapp/group2/group2-resource3",
             },
           ],

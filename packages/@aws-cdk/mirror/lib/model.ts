@@ -12,5 +12,5 @@ export interface Node {
   path: string;
   children?: Node[];
   metadata?: NodeMetadata;
-  links?: NodeLinks;
+  links?: Link[];
 }
