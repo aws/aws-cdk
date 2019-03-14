@@ -9,7 +9,7 @@ import { IBucket } from './bucket';
  */
 export interface CommonPipelineSourceActionProps extends codepipeline.CommonActionProps {
   /**
-   * The name of the source's output artifact. Output artifacts are used by CodePipeline as
+   * The name of the source's output artifact. CfnOutput artifacts are used by CodePipeline as
    * inputs into other actions.
    *
    * @default a name will be auto-generated

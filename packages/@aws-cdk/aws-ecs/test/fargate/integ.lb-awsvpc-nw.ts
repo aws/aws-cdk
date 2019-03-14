@@ -40,6 +40,6 @@ listener.addTargets('Fargate', {
   targets: [service]
 });
 
-new cdk.Output(stack, 'LoadBalancerDNS', { value: lb.dnsName, });
+new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.dnsName, });
 
 app.run();

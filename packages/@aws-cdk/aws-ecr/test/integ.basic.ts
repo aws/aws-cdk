@@ -7,7 +7,7 @@ const stack = new cdk.Stack(app, 'aws-ecr-integ-stack');
 const repo = new ecr.Repository(stack, 'Repo');
 repo.addLifecycleRule({ maxImageCount: 5 });
 
-new cdk.Output(stack, 'RepositoryURI', {
+new cdk.CfnOutput(stack, 'RepositoryURI', {
   value: repo.repositoryUri
 });
 

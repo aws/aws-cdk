@@ -82,7 +82,7 @@ export class HostedZone extends cdk.Construct implements IHostedZone {
 
   public export(): HostedZoneImportProps {
     return {
-      hostedZoneId: new cdk.Output(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
+      hostedZoneId: new cdk.CfnOutput(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
       zoneName: this.zoneName,
     };
   }

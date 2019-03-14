@@ -32,7 +32,7 @@ export class BucketNotifications extends cdk.Construct {
   private readonly lambdaNotifications = new Array<LambdaFunctionConfiguration>();
   private readonly queueNotifications = new Array<QueueConfiguration>();
   private readonly topicNotifications = new Array<TopicConfiguration>();
-  private resource?: cdk.Resource;
+  private resource?: cdk.CfnResource;
   private readonly bucket: Bucket;
 
   constructor(scope: cdk.Construct, id: string, props: NotificationsProps) {
@@ -102,7 +102,7 @@ export class BucketNotifications extends cdk.Construct {
     if (!this.resource) {
       const handlerArn = NotificationsResourceHandler.singleton(this);
 
-      this.resource = new cdk.Resource(this, 'Resource', {
+      this.resource = new cdk.CfnResource(this, 'Resource', {
         type: 'Custom::S3BucketNotifications',
         properties: {
           ServiceToken: handlerArn,

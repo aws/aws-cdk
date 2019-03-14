@@ -272,7 +272,7 @@ export class LogGroup extends LogGroupBase {
    */
   public export(): LogGroupImportProps {
     return {
-      logGroupArn: new cdk.Output(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue().toString()
+      logGroupArn: new cdk.CfnOutput(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue().toString()
     };
   }
 }

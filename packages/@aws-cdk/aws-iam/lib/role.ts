@@ -1,4 +1,4 @@
-import { Construct, IConstruct, Output } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IConstruct } from '@aws-cdk/cdk';
 import { CfnRole } from './iam.generated';
 import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
@@ -165,8 +165,8 @@ export class Role extends Construct implements IRole {
 
   public export(): RoleImportProps {
     return {
-      roleArn: new Output(this, 'RoleArn', { value: this.roleArn }).makeImportValue(),
-      roleId: new Output(this, 'RoleId', { value: this.roleId }).makeImportValue()
+      roleArn: new CfnOutput(this, 'RoleArn', { value: this.roleArn }).makeImportValue(),
+      roleId: new CfnOutput(this, 'RoleId', { value: this.roleId }).makeImportValue()
     };
   }
 

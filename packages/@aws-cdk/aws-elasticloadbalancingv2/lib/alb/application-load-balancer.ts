@@ -110,7 +110,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    */
   public export(): ApplicationLoadBalancerImportProps {
     return {
-      loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString(),
+      loadBalancerArn: new cdk.CfnOutput(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString(),
       securityGroupId: this.securityGroup.export().securityGroupId,
     };
   }

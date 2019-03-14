@@ -1,4 +1,4 @@
-import { Construct } from './core/construct';
+import { Construct } from './construct';
 
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS

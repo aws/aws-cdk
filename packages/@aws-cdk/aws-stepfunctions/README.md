@@ -387,9 +387,9 @@ ARN into your worker pool:
 ```ts
 const activity = new stepfunctions.Activity(this, 'Activity');
 
-// Read this Output from your application and use it to poll for work on
+// Read this CloudFormation Output from your application and use it to poll for work on
 // the activity.
-new cdk.Output(this, 'ActivityArn', { value: activity.activityArn });
+new cdk.CfnOutput(this, 'ActivityArn', { value: activity.activityArn });
 ```
 
 ## Metrics

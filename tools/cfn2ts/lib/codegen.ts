@@ -6,7 +6,7 @@ import genspec = require('./genspec');
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 
 const CORE = genspec.CORE_NAMESPACE;
-const RESOURCE_BASE_CLASS = `${CORE}.Resource`; // base class for all resources
+const RESOURCE_BASE_CLASS = `${CORE}.CfnResource`; // base class for all resources
 const CONSTRUCT_CLASS = `${CORE}.Construct`;
 const TAG_TYPE = `${CORE}.TagType`;
 const TAG_MANAGER = `${CORE}.TagManager`;

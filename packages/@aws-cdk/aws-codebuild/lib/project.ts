@@ -683,7 +683,7 @@ export class Project extends ProjectBase {
    */
   public export(): ProjectImportProps {
     return {
-      projectName: new cdk.Output(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
+      projectName: new cdk.CfnOutput(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
     };
   }
 

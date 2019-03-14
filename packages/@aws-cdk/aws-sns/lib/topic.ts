@@ -1,4 +1,4 @@
-import { Construct, Output } from '@aws-cdk/cdk';
+import { CfnOutput, Construct } from '@aws-cdk/cdk';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase, TopicImportProps } from './topic-base';
 
@@ -58,8 +58,8 @@ export class Topic extends TopicBase {
    */
   public export(): TopicImportProps {
     return {
-      topicArn: new Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue().toString(),
-      topicName: new Output(this, 'TopicName', { value: this.topicName }).makeImportValue().toString(),
+      topicArn: new CfnOutput(this, 'TopicArn', { value: this.topicArn }).makeImportValue().toString(),
+      topicName: new CfnOutput(this, 'TopicName', { value: this.topicName }).makeImportValue().toString(),
     };
   }
 }

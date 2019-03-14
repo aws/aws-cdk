@@ -321,7 +321,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   public export(): ServerDeploymentGroupImportProps {
     return {
       application: this.application,
-      deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', {
+      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
         value: this.deploymentGroupName
       }).makeImportValue().toString(),
       deploymentConfig: this.deploymentConfig,

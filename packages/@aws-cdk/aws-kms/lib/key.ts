@@ -1,5 +1,5 @@
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, IConstruct, Output } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, DeletionPolicy, IConstruct } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -174,7 +174,7 @@ export class EncryptionKey extends EncryptionKeyBase {
    */
   public export(): EncryptionKeyImportProps {
     return {
-      keyArn: new Output(this, 'KeyArn', { value: this.keyArn }).makeImportValue().toString()
+      keyArn: new CfnOutput(this, 'KeyArn', { value: this.keyArn }).makeImportValue().toString()
     };
   }
 

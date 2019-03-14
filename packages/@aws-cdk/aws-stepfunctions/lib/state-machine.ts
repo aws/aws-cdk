@@ -194,7 +194,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine, events
      */
     public export(): StateMachineImportProps {
         return {
-            stateMachineArn: new cdk.Output(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
+            stateMachineArn: new cdk.CfnOutput(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
         };
     }
 }

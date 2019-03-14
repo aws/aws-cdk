@@ -65,7 +65,7 @@ export class ExportSubnetGroup {
 
   private exportIds(scope: cdk.Construct, name: string): string[] | undefined {
     if (this.subnets.length === 0) { return undefined; }
-    return new cdk.StringListOutput(scope, name, { values: this.subnets.map(s => s.subnetId) }).makeImportValues().map(x => x.toString());
+    return new cdk.StringListCfnOutput(scope, name, { values: this.subnets.map(s => s.subnetId) }).makeImportValues().map(x => x.toString());
   }
 
   /**

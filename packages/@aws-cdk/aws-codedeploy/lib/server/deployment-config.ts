@@ -133,7 +133,7 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
 
   public export(): ServerDeploymentConfigImportProps {
     return {
-      deploymentConfigName: new cdk.Output(this, 'DeploymentConfigName', {
+      deploymentConfigName: new cdk.CfnOutput(this, 'DeploymentConfigName', {
         value: this.deploymentConfigName,
       }).makeImportValue().toString(),
     };

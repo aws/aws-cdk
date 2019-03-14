@@ -433,8 +433,8 @@ export class VpcNetwork extends VpcNetworkBase {
     const iso = new ExportSubnetGroup(this, 'IsolatedSubnetIDs', this.isolatedSubnets, SubnetType.Isolated, this.availabilityZones.length);
 
     return {
-      vpcId: new cdk.Output(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
-      vpnGatewayId: new cdk.Output(this, 'VpnGatewayId', { value: this.vpnGatewayId }).makeImportValue().toString(),
+      vpcId: new cdk.CfnOutput(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
+      vpnGatewayId: new cdk.CfnOutput(this, 'VpnGatewayId', { value: this.vpnGatewayId }).makeImportValue().toString(),
       availabilityZones: this.availabilityZones,
       publicSubnetIds: pub.ids,
       publicSubnetNames: pub.names,
@@ -633,8 +633,8 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
 
   public export(): VpcSubnetImportProps {
     return {
-      availabilityZone: new cdk.Output(this, 'AvailabilityZone', { value: this.availabilityZone }).makeImportValue().toString(),
-      subnetId: new cdk.Output(this, 'VpcSubnetId', { value: this.subnetId }).makeImportValue().toString(),
+      availabilityZone: new cdk.CfnOutput(this, 'AvailabilityZone', { value: this.availabilityZone }).makeImportValue().toString(),
+      subnetId: new cdk.CfnOutput(this, 'VpcSubnetId', { value: this.subnetId }).makeImportValue().toString(),
     };
   }
 

@@ -212,11 +212,11 @@ function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.SynthesizedStack {
   return app.synthesizeStack(stack.name);
 }
 
-interface TestResourceProps extends cdk.ResourceProps {
+interface TestResourceProps extends cdk.CfnResourceProps {
   type: string;
 }
 
-class TestResource extends cdk.Resource {
+class TestResource extends cdk.CfnResource {
   constructor(scope: cdk.Construct, id: string, props: TestResourceProps) {
     super(scope, id, props);
   }

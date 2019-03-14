@@ -66,7 +66,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
       .addAllResources());
 
     const resourceType = 'AWS::Lambda::Function';
-    class InLineLambda extends cdk.Resource {
+    class InLineLambda extends cdk.CfnResource {
       public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.Standard, resourceType);
 
       protected renderProperties(properties: any): { [key: string]: any } {

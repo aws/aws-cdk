@@ -121,7 +121,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
       this.targetGroup = this.listener.addTargets('ECS', targetProps);
     }
 
-    new cdk.Output(this, 'LoadBalancerDNS', { value: this.loadBalancer.dnsName });
+    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.dnsName });
   }
 
   protected addServiceAsTarget(service: BaseService) {

@@ -49,7 +49,7 @@ class SucceedingStack extends cdk.Stack {
     });
 
     // Publish the custom resource output
-    new cdk.Output(this, 'ResponseMessage', {
+    new cdk.CfnOutput(this, 'ResponseMessage', {
       description: 'The message that came back from the Custom Resource',
       value: resource.response
     });

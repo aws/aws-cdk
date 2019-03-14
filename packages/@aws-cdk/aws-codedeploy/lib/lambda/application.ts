@@ -65,7 +65,7 @@ export class LambdaApplication extends cdk.Construct implements ILambdaApplicati
 
   public export(): LambdaApplicationImportProps {
     return {
-      applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
+      applicationName: new cdk.CfnOutput(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
     };
   }
 }

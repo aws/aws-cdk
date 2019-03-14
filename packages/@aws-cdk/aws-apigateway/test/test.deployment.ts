@@ -164,7 +164,7 @@ export = {
     const deployment = new apigateway.Deployment(stack, 'deployment', { api });
     api.root.addMethod('GET');
 
-    const dep = new cdk.Resource(stack, 'MyResource', { type: 'foo' });
+    const dep = new cdk.CfnResource(stack, 'MyResource', { type: 'foo' });
 
     // WHEN
     deployment.node.addDependency(dep);

@@ -63,7 +63,7 @@ export abstract class ClusterBase extends cdk.Construct implements ICluster {
   }
 
   private makeOutput(name: string, value: any): string {
-    return new cdk.Output(this, name, { value }).makeImportValue().toString();
+    return new cdk.CfnOutput(this, name, { value }).makeImportValue().toString();
   }
 }
 

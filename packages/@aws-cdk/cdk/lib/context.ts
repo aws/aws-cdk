@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Construct } from './core/construct';
+import { Construct } from './construct';
 
 type ContextProviderProps = {[key: string]: any};
 /**

@@ -295,7 +295,7 @@ export = {
     const stack = new Stack();
 
     const bucket = new s3.Bucket(stack, 'Bucket');
-    const dependent = new cdk.Resource(stack, 'Dependent', { type: 'DependOnMe' });
+    const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'DependOnMe' });
     const dest: s3n.IBucketNotificationDestination = {
       asBucketNotificationDestination: () => ({
         arn: 'arn',

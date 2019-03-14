@@ -178,7 +178,7 @@ export class Cluster extends ClusterBase {
     this.clusterEndpoint = resource.clusterEndpoint;
     this.clusterCertificateAuthorityData = resource.clusterCertificateAuthorityData;
 
-    new cdk.Output(this, 'ClusterName', { value: this.clusterName, disableExport: true });
+    new cdk.CfnOutput(this, 'ClusterName', { value: this.clusterName, disableExport: true });
   }
 
   /**
@@ -249,8 +249,8 @@ export class Cluster extends ClusterBase {
     // EKS Required Tags
     autoScalingGroup.node.apply(new cdk.Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
 
-    // Create an Output for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
-    new cdk.Output(autoScalingGroup, 'InstanceRoleARN', {
+    // Create an CfnOutput for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
+    new cdk.CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
       disableExport: true,
       value: autoScalingGroup.role.roleArn
     });

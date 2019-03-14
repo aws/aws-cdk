@@ -517,7 +517,7 @@ export = {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
-    const resource = new cdk.Resource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
+    const resource = new cdk.CfnResource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
 
     // WHEN
     resource.node.addDependency(api);
