@@ -1,0 +1,710 @@
+{
+  "id": "App",
+  "path": "",
+  "children": [
+    {
+      "id": "CdkWorkshopStack",
+      "path": "CdkWorkshopStack",
+      "children": [
+        {
+          "id": "HelloHandler",
+          "path": "CdkWorkshopStack/HelloHandler",
+          "children": [
+            {
+              "id": "ServiceRole",
+              "path": "CdkWorkshopStack/HelloHandler/ServiceRole",
+              "children": [
+                {
+                  "id": "Resource",
+                  "path": "CdkWorkshopStack/HelloHandler/ServiceRole/Resource",
+                  "metadata": {
+                    "resourceType": "AWS::IAM::Role",
+                    "logicalId": "HelloHandlerServiceRole11EF7C63"
+                  },
+                  "links": [
+                    {
+                      "sourcePath": "CdkWorkshopStack/HelloHandler/Resource",
+                      "targetPath": "CdkWorkshopStack/HelloHandler/ServiceRole/Resource",
+                      "attribute": "Arn"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "Resource",
+              "path": "CdkWorkshopStack/HelloHandler/Resource",
+              "metadata": {
+                "resourceType": "AWS::Lambda::Function",
+                "logicalId": "HelloHandler2E4FBA4D"
+              },
+              "links": [
+                {
+                  "sourcePath": "CdkWorkshopStack/HelloHandler/Resource",
+                  "targetPath": "CdkWorkshopStack/HelloHandler/ServiceRole/Resource",
+                  "attribute": "Arn"
+                },
+                {
+                  "sourcePath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ServiceRole/DefaultPolicy/Resource",
+                  "targetPath": "CdkWorkshopStack/HelloHandler/Resource",
+                  "attribute": "Arn"
+                }
+              ]
+            },
+            {
+              "id": "Code",
+              "path": "CdkWorkshopStack/HelloHandler/Code",
+              "children": [
+                {
+                  "id": "S3Bucket",
+                  "path": "CdkWorkshopStack/HelloHandler/Code/S3Bucket"
+                },
+                {
+                  "id": "S3VersionKey",
+                  "path": "CdkWorkshopStack/HelloHandler/Code/S3VersionKey"
+                },
+                {
+                  "id": "AssetBucket",
+                  "path": "CdkWorkshopStack/HelloHandler/Code/AssetBucket"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "HelloHitCounter",
+          "path": "CdkWorkshopStack/HelloHitCounter",
+          "children": [
+            {
+              "id": "Hits",
+              "path": "CdkWorkshopStack/HelloHitCounter/Hits",
+              "children": [
+                {
+                  "id": "Resource",
+                  "path": "CdkWorkshopStack/HelloHitCounter/Hits/Resource",
+                  "metadata": {
+                    "resourceType": "AWS::DynamoDB::Table",
+                    "logicalId": "HelloHitCounterHits7AAEBF80"
+                  },
+                  "links": [
+                    {
+                      "sourcePath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ServiceRole/DefaultPolicy/Resource",
+                      "targetPath": "CdkWorkshopStack/HelloHitCounter/Hits/Resource",
+                      "attribute": "Arn"
+                    },
+                    {
+                      "sourcePath": "CdkWorkshopStack/ViewHitCounter/Rendered/ServiceRole/DefaultPolicy/Resource",
+                      "targetPath": "CdkWorkshopStack/HelloHitCounter/Hits/Resource",
+                      "attribute": "Arn"
+                    }
+                  ]
+                },
+                {
+                  "id": "ScalingRole",
+                  "path": "CdkWorkshopStack/HelloHitCounter/Hits/ScalingRole"
+                }
+              ]
+            },
+            {
+              "id": "HitCounterHandler",
+              "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler",
+              "children": [
+                {
+                  "id": "ServiceRole",
+                  "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ServiceRole",
+                  "children": [
+                    {
+                      "id": "Resource",
+                      "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ServiceRole/Resource",
+                      "metadata": {
+                        "resourceType": "AWS::IAM::Role",
+                        "logicalId": "HelloHitCounterHitCounterHandlerServiceRoleD45002B8"
+                      },
+                      "links": [
+                        {
+                          "sourcePath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/Resource",
+                          "targetPath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ServiceRole/Resource",
+                          "attribute": "Arn"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "DefaultPolicy",
+                      "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ServiceRole/DefaultPolicy",
+                      "children": [
+                        {
+                          "id": "Resource",
+                          "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ServiceRole/DefaultPolicy/Resource",
+                          "metadata": {
+                            "resourceType": "AWS::IAM::Policy",
+                            "logicalId": "HelloHitCounterHitCounterHandlerServiceRoleDefaultPolicy1487A60A"
+                          },
+                          "links": [
+                            {
+                              "sourcePath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ServiceRole/DefaultPolicy/Resource",
+                              "targetPath": "CdkWorkshopStack/HelloHitCounter/Hits/Resource",
+                              "attribute": "Arn"
+                            },
+                            {
+                              "sourcePath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ServiceRole/DefaultPolicy/Resource",
+                              "targetPath": "CdkWorkshopStack/HelloHandler/Resource",
+                              "attribute": "Arn"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "Resource",
+                  "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/Resource",
+                  "metadata": {
+                    "resourceType": "AWS::Lambda::Function",
+                    "logicalId": "HelloHitCounterHitCounterHandlerDAEA7B37"
+                  },
+                  "links": [
+                    {
+                      "sourcePath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/Resource",
+                      "targetPath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ServiceRole/Resource",
+                      "attribute": "Arn"
+                    },
+                    {
+                      "sourcePath": "CdkWorkshopStack/Endpoint/Default/{proxy+}/ANY/Resource",
+                      "targetPath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/Resource",
+                      "attribute": "Arn"
+                    },
+                    {
+                      "sourcePath": "CdkWorkshopStack/Endpoint/Default/ANY/Resource",
+                      "targetPath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/Resource",
+                      "attribute": "Arn"
+                    }
+                  ]
+                },
+                {
+                  "id": "Code",
+                  "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/Code",
+                  "children": [
+                    {
+                      "id": "S3Bucket",
+                      "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/Code/S3Bucket"
+                    },
+                    {
+                      "id": "S3VersionKey",
+                      "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/Code/S3VersionKey"
+                    },
+                    {
+                      "id": "AssetBucket",
+                      "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/Code/AssetBucket"
+                    }
+                  ]
+                },
+                {
+                  "id": "ApiPermission.ANY..",
+                  "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ApiPermission.ANY..",
+                  "metadata": {
+                    "resourceType": "AWS::Lambda::Permission",
+                    "logicalId": "HelloHitCounterHitCounterHandlerApiPermissionANYBC1D138C"
+                  }
+                },
+                {
+                  "id": "ApiPermission.Test.ANY..",
+                  "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ApiPermission.Test.ANY..",
+                  "metadata": {
+                    "resourceType": "AWS::Lambda::Permission",
+                    "logicalId": "HelloHitCounterHitCounterHandlerApiPermissionTestANY1DD26B5F"
+                  }
+                },
+                {
+                  "id": "ApiPermission.ANY..{proxy+}",
+                  "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ApiPermission.ANY..{proxy+}",
+                  "metadata": {
+                    "resourceType": "AWS::Lambda::Permission",
+                    "logicalId": "HelloHitCounterHitCounterHandlerApiPermissionANYproxy4F7D3D9D"
+                  }
+                },
+                {
+                  "id": "ApiPermission.Test.ANY..{proxy+}",
+                  "path": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/ApiPermission.Test.ANY..{proxy+}",
+                  "metadata": {
+                    "resourceType": "AWS::Lambda::Permission",
+                    "logicalId": "HelloHitCounterHitCounterHandlerApiPermissionTestANYproxyDBD04C8D"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Endpoint",
+          "path": "CdkWorkshopStack/Endpoint",
+          "children": [
+            {
+              "id": "Resource",
+              "path": "CdkWorkshopStack/Endpoint/Resource",
+              "metadata": {
+                "resourceType": "AWS::ApiGateway::RestApi",
+                "logicalId": "EndpointEEF1FD8F"
+              },
+              "links": [
+                {
+                  "sourcePath": "CdkWorkshopStack/Endpoint/Default/{proxy+}/Resource",
+                  "targetPath": "CdkWorkshopStack/Endpoint/Resource",
+                  "attribute": "RootResourceId"
+                },
+                {
+                  "sourcePath": "CdkWorkshopStack/Endpoint/Default/ANY/Resource",
+                  "targetPath": "CdkWorkshopStack/Endpoint/Resource",
+                  "attribute": "RootResourceId"
+                }
+              ]
+            },
+            {
+              "id": "Deployment",
+              "path": "CdkWorkshopStack/Endpoint/Deployment",
+              "children": [
+                {
+                  "id": "Resource",
+                  "path": "CdkWorkshopStack/Endpoint/Deployment/Resource",
+                  "metadata": {
+                    "resourceType": "AWS::ApiGateway::Deployment",
+                    "logicalId": "EndpointDeployment318525DA741e521b7179af57a3425e580c915cc2"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "DeploymentStage.prod",
+              "path": "CdkWorkshopStack/Endpoint/DeploymentStage.prod",
+              "children": [
+                {
+                  "id": "Resource",
+                  "path": "CdkWorkshopStack/Endpoint/DeploymentStage.prod/Resource",
+                  "metadata": {
+                    "resourceType": "AWS::ApiGateway::Stage",
+                    "logicalId": "EndpointDeploymentStageprodB78BEEA0"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "Endpoint",
+              "path": "CdkWorkshopStack/Endpoint/Endpoint"
+            },
+            {
+              "id": "CloudWatchRole",
+              "path": "CdkWorkshopStack/Endpoint/CloudWatchRole",
+              "children": [
+                {
+                  "id": "Resource",
+                  "path": "CdkWorkshopStack/Endpoint/CloudWatchRole/Resource",
+                  "metadata": {
+                    "resourceType": "AWS::IAM::Role",
+                    "logicalId": "EndpointCloudWatchRoleC3C64E0F"
+                  },
+                  "links": [
+                    {
+                      "sourcePath": "CdkWorkshopStack/Endpoint/Account",
+                      "targetPath": "CdkWorkshopStack/Endpoint/CloudWatchRole/Resource",
+                      "attribute": "Arn"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "Account",
+              "path": "CdkWorkshopStack/Endpoint/Account",
+              "metadata": {
+                "resourceType": "AWS::ApiGateway::Account",
+                "logicalId": "EndpointAccountB8304247"
+              },
+              "links": [
+                {
+                  "sourcePath": "CdkWorkshopStack/Endpoint/Account",
+                  "targetPath": "CdkWorkshopStack/Endpoint/CloudWatchRole/Resource",
+                  "attribute": "Arn"
+                }
+              ]
+            },
+            {
+              "id": "Default",
+              "path": "CdkWorkshopStack/Endpoint/Default",
+              "children": [
+                {
+                  "id": "{proxy+}",
+                  "path": "CdkWorkshopStack/Endpoint/Default/{proxy+}",
+                  "children": [
+                    {
+                      "id": "Resource",
+                      "path": "CdkWorkshopStack/Endpoint/Default/{proxy+}/Resource",
+                      "metadata": {
+                        "resourceType": "AWS::ApiGateway::Resource",
+                        "logicalId": "Endpointproxy39E2174E"
+                      },
+                      "links": [
+                        {
+                          "sourcePath": "CdkWorkshopStack/Endpoint/Default/{proxy+}/Resource",
+                          "targetPath": "CdkWorkshopStack/Endpoint/Resource",
+                          "attribute": "RootResourceId"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "ANY",
+                      "path": "CdkWorkshopStack/Endpoint/Default/{proxy+}/ANY",
+                      "children": [
+                        {
+                          "id": "Resource",
+                          "path": "CdkWorkshopStack/Endpoint/Default/{proxy+}/ANY/Resource",
+                          "metadata": {
+                            "resourceType": "AWS::ApiGateway::Method",
+                            "logicalId": "EndpointproxyANYC09721C5"
+                          },
+                          "links": [
+                            {
+                              "sourcePath": "CdkWorkshopStack/Endpoint/Default/{proxy+}/ANY/Resource",
+                              "targetPath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/Resource",
+                              "attribute": "Arn"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "ANY",
+                  "path": "CdkWorkshopStack/Endpoint/Default/ANY",
+                  "children": [
+                    {
+                      "id": "Resource",
+                      "path": "CdkWorkshopStack/Endpoint/Default/ANY/Resource",
+                      "metadata": {
+                        "resourceType": "AWS::ApiGateway::Method",
+                        "logicalId": "EndpointANY485C938B"
+                      },
+                      "links": [
+                        {
+                          "sourcePath": "CdkWorkshopStack/Endpoint/Default/ANY/Resource",
+                          "targetPath": "CdkWorkshopStack/Endpoint/Resource",
+                          "attribute": "RootResourceId"
+                        },
+                        {
+                          "sourcePath": "CdkWorkshopStack/Endpoint/Default/ANY/Resource",
+                          "targetPath": "CdkWorkshopStack/HelloHitCounter/HitCounterHandler/Resource",
+                          "attribute": "Arn"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ViewHitCounter",
+          "path": "CdkWorkshopStack/ViewHitCounter",
+          "children": [
+            {
+              "id": "Rendered",
+              "path": "CdkWorkshopStack/ViewHitCounter/Rendered",
+              "children": [
+                {
+                  "id": "ServiceRole",
+                  "path": "CdkWorkshopStack/ViewHitCounter/Rendered/ServiceRole",
+                  "children": [
+                    {
+                      "id": "Resource",
+                      "path": "CdkWorkshopStack/ViewHitCounter/Rendered/ServiceRole/Resource",
+                      "metadata": {
+                        "resourceType": "AWS::IAM::Role",
+                        "logicalId": "ViewHitCounterRenderedServiceRole254DB4EA"
+                      },
+                      "links": [
+                        {
+                          "sourcePath": "CdkWorkshopStack/ViewHitCounter/Rendered/Resource",
+                          "targetPath": "CdkWorkshopStack/ViewHitCounter/Rendered/ServiceRole/Resource",
+                          "attribute": "Arn"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "DefaultPolicy",
+                      "path": "CdkWorkshopStack/ViewHitCounter/Rendered/ServiceRole/DefaultPolicy",
+                      "children": [
+                        {
+                          "id": "Resource",
+                          "path": "CdkWorkshopStack/ViewHitCounter/Rendered/ServiceRole/DefaultPolicy/Resource",
+                          "metadata": {
+                            "resourceType": "AWS::IAM::Policy",
+                            "logicalId": "ViewHitCounterRenderedServiceRoleDefaultPolicy9ADB8C83"
+                          },
+                          "links": [
+                            {
+                              "sourcePath": "CdkWorkshopStack/ViewHitCounter/Rendered/ServiceRole/DefaultPolicy/Resource",
+                              "targetPath": "CdkWorkshopStack/HelloHitCounter/Hits/Resource",
+                              "attribute": "Arn"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "Resource",
+                  "path": "CdkWorkshopStack/ViewHitCounter/Rendered/Resource",
+                  "metadata": {
+                    "resourceType": "AWS::Lambda::Function",
+                    "logicalId": "ViewHitCounterRendered9C783E45"
+                  },
+                  "links": [
+                    {
+                      "sourcePath": "CdkWorkshopStack/ViewHitCounter/Rendered/Resource",
+                      "targetPath": "CdkWorkshopStack/ViewHitCounter/Rendered/ServiceRole/Resource",
+                      "attribute": "Arn"
+                    },
+                    {
+                      "sourcePath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/{proxy+}/ANY/Resource",
+                      "targetPath": "CdkWorkshopStack/ViewHitCounter/Rendered/Resource",
+                      "attribute": "Arn"
+                    },
+                    {
+                      "sourcePath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/ANY/Resource",
+                      "targetPath": "CdkWorkshopStack/ViewHitCounter/Rendered/Resource",
+                      "attribute": "Arn"
+                    }
+                  ]
+                },
+                {
+                  "id": "Code",
+                  "path": "CdkWorkshopStack/ViewHitCounter/Rendered/Code",
+                  "children": [
+                    {
+                      "id": "S3Bucket",
+                      "path": "CdkWorkshopStack/ViewHitCounter/Rendered/Code/S3Bucket"
+                    },
+                    {
+                      "id": "S3VersionKey",
+                      "path": "CdkWorkshopStack/ViewHitCounter/Rendered/Code/S3VersionKey"
+                    },
+                    {
+                      "id": "AssetBucket",
+                      "path": "CdkWorkshopStack/ViewHitCounter/Rendered/Code/AssetBucket"
+                    }
+                  ]
+                },
+                {
+                  "id": "ApiPermission.ANY..",
+                  "path": "CdkWorkshopStack/ViewHitCounter/Rendered/ApiPermission.ANY..",
+                  "metadata": {
+                    "resourceType": "AWS::Lambda::Permission",
+                    "logicalId": "ViewHitCounterRenderedApiPermissionANY72263B1A"
+                  }
+                },
+                {
+                  "id": "ApiPermission.Test.ANY..",
+                  "path": "CdkWorkshopStack/ViewHitCounter/Rendered/ApiPermission.Test.ANY..",
+                  "metadata": {
+                    "resourceType": "AWS::Lambda::Permission",
+                    "logicalId": "ViewHitCounterRenderedApiPermissionTestANYA4794B81"
+                  }
+                },
+                {
+                  "id": "ApiPermission.ANY..{proxy+}",
+                  "path": "CdkWorkshopStack/ViewHitCounter/Rendered/ApiPermission.ANY..{proxy+}",
+                  "metadata": {
+                    "resourceType": "AWS::Lambda::Permission",
+                    "logicalId": "ViewHitCounterRenderedApiPermissionANYproxy42B9E676"
+                  }
+                },
+                {
+                  "id": "ApiPermission.Test.ANY..{proxy+}",
+                  "path": "CdkWorkshopStack/ViewHitCounter/Rendered/ApiPermission.Test.ANY..{proxy+}",
+                  "metadata": {
+                    "resourceType": "AWS::Lambda::Permission",
+                    "logicalId": "ViewHitCounterRenderedApiPermissionTestANYproxy104CA88E"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "ViewerEndpoint",
+              "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint",
+              "children": [
+                {
+                  "id": "Resource",
+                  "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Resource",
+                  "metadata": {
+                    "resourceType": "AWS::ApiGateway::RestApi",
+                    "logicalId": "ViewHitCounterViewerEndpoint5A0EF326"
+                  },
+                  "links": [
+                    {
+                      "sourcePath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/{proxy+}/Resource",
+                      "targetPath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Resource",
+                      "attribute": "RootResourceId"
+                    },
+                    {
+                      "sourcePath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/ANY/Resource",
+                      "targetPath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Resource",
+                      "attribute": "RootResourceId"
+                    }
+                  ]
+                },
+                {
+                  "id": "Deployment",
+                  "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Deployment",
+                  "children": [
+                    {
+                      "id": "Resource",
+                      "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Deployment/Resource",
+                      "metadata": {
+                        "resourceType": "AWS::ApiGateway::Deployment",
+                        "logicalId": "ViewHitCounterViewerEndpointDeployment1CE7C5768689ca8f54dfa4f161d3df0ebffcdcff"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "DeploymentStage.prod",
+                  "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/DeploymentStage.prod",
+                  "children": [
+                    {
+                      "id": "Resource",
+                      "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/DeploymentStage.prod/Resource",
+                      "metadata": {
+                        "resourceType": "AWS::ApiGateway::Stage",
+                        "logicalId": "ViewHitCounterViewerEndpointDeploymentStageprodF3901FC7"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "Endpoint",
+                  "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Endpoint"
+                },
+                {
+                  "id": "CloudWatchRole",
+                  "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/CloudWatchRole",
+                  "children": [
+                    {
+                      "id": "Resource",
+                      "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/CloudWatchRole/Resource",
+                      "metadata": {
+                        "resourceType": "AWS::IAM::Role",
+                        "logicalId": "ViewHitCounterViewerEndpointCloudWatchRole87B94D6A"
+                      },
+                      "links": [
+                        {
+                          "sourcePath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Account",
+                          "targetPath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/CloudWatchRole/Resource",
+                          "attribute": "Arn"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "Account",
+                  "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Account",
+                  "metadata": {
+                    "resourceType": "AWS::ApiGateway::Account",
+                    "logicalId": "ViewHitCounterViewerEndpointAccount0B75E76A"
+                  },
+                  "links": [
+                    {
+                      "sourcePath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Account",
+                      "targetPath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/CloudWatchRole/Resource",
+                      "attribute": "Arn"
+                    }
+                  ]
+                },
+                {
+                  "id": "Default",
+                  "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default",
+                  "children": [
+                    {
+                      "id": "{proxy+}",
+                      "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/{proxy+}",
+                      "children": [
+                        {
+                          "id": "Resource",
+                          "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/{proxy+}/Resource",
+                          "metadata": {
+                            "resourceType": "AWS::ApiGateway::Resource",
+                            "logicalId": "ViewHitCounterViewerEndpointproxy2F4C239F"
+                          },
+                          "links": [
+                            {
+                              "sourcePath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/{proxy+}/Resource",
+                              "targetPath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Resource",
+                              "attribute": "RootResourceId"
+                            }
+                          ]
+                        },
+                        {
+                          "id": "ANY",
+                          "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/{proxy+}/ANY",
+                          "children": [
+                            {
+                              "id": "Resource",
+                              "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/{proxy+}/ANY/Resource",
+                              "metadata": {
+                                "resourceType": "AWS::ApiGateway::Method",
+                                "logicalId": "ViewHitCounterViewerEndpointproxyANYFF4B8F5B"
+                              },
+                              "links": [
+                                {
+                                  "sourcePath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/{proxy+}/ANY/Resource",
+                                  "targetPath": "CdkWorkshopStack/ViewHitCounter/Rendered/Resource",
+                                  "attribute": "Arn"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "id": "ANY",
+                      "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/ANY",
+                      "children": [
+                        {
+                          "id": "Resource",
+                          "path": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/ANY/Resource",
+                          "metadata": {
+                            "resourceType": "AWS::ApiGateway::Method",
+                            "logicalId": "ViewHitCounterViewerEndpointANY66F2285B"
+                          },
+                          "links": [
+                            {
+                              "sourcePath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/ANY/Resource",
+                              "targetPath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Resource",
+                              "attribute": "RootResourceId"
+                            },
+                            {
+                              "sourcePath": "CdkWorkshopStack/ViewHitCounter/ViewerEndpoint/Default/ANY/Resource",
+                              "targetPath": "CdkWorkshopStack/ViewHitCounter/Rendered/Resource",
+                              "attribute": "Arn"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Mirror",
+      "path": "Mirror"
+    }
+  ]
+}
