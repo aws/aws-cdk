@@ -293,8 +293,7 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
     });
 
     this.addInputArtifact(props.templatePath.artifact);
-    if (props.templateConfiguration &&
-        props.templateConfiguration.artifact.artifactName !== props.templatePath.artifact.artifactName) {
+    if (props.templateConfiguration) {
       this.addInputArtifact(props.templateConfiguration.artifact);
     }
 
@@ -357,8 +356,7 @@ export class PipelineCreateUpdateStackAction extends PipelineCloudFormationDeplo
     });
 
     this.addInputArtifact(props.templatePath.artifact);
-    if (props.templateConfiguration &&
-        props.templateConfiguration.artifact.artifactName !== props.templatePath.artifact.artifactName) {
+    if (props.templateConfiguration) {
       this.addInputArtifact(props.templateConfiguration.artifact);
     }
 
