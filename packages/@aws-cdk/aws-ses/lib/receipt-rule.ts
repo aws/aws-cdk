@@ -147,7 +147,7 @@ export interface ReceiptRuleImportProps {
    */
   name: string;
 }
-export class ImportedReceiptRule extends cdk.Construct implements IReceiptRule {
+class ImportedReceiptRule extends cdk.Construct implements IReceiptRule {
   public readonly name: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: ReceiptRuleImportProps) {

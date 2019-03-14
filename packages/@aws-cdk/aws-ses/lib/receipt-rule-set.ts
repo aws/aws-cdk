@@ -124,7 +124,7 @@ export interface ReceiptRuleSetImportProps {
   name: string;
 }
 
-export class ImportedReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSet {
+class ImportedReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSet {
   public readonly name: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: ReceiptRuleSetImportProps) {
