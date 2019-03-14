@@ -18,7 +18,7 @@ export class Reference extends Token {
   /**
    * Check whether this is actually a Reference
    */
-  public static isReference(x: Token): x is Reference {
+  public static isReferenceToken(x: Token): x is Reference {
     return (x as any).consumeFromStack !== undefined;
   }
 

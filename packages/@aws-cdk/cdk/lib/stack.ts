@@ -422,7 +422,7 @@ export class Stack extends Construct {
   protected prepare() {
     // References
     for (const ref of this.node.findReferences()) {
-      if (Reference.isReference(ref)) {
+      if (Reference.isReferenceToken(ref)) {
         ref.consumeFromStack(this);
       }
     }
