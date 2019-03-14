@@ -258,6 +258,11 @@ export abstract class Action {
   }
 
   protected addInputArtifact(artifact: Artifact): Action {
+    // adding the same artifact multiple times doesn't do anything -
+    // addInputArtifact is idempotent
+    if (this._actionInputArtifacts.indexOf(artifact) !== -1) {
+      return this;
+    }
     this._actionInputArtifacts.push(artifact);
     return this;
   }

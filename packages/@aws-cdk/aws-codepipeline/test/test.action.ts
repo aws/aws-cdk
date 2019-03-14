@@ -1,4 +1,3 @@
-// import { validateArtifactBounds, validateSourceAction } from '../lib/validation';
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
@@ -150,6 +149,24 @@ export = {
 
     test.done();
   },
+
+  'input Artifacts': {
+    'can be added multiple times to an Action safely'(test: Test) {
+      const artifact = new actions.Artifact('Artifact');
+
+      const stack = new cdk.Stack();
+      const project = new codebuild.PipelineProject(stack, 'Project');
+      const action = project.toCodePipelineBuildAction({
+        actionName: 'CodeBuild',
+        inputArtifact: artifact,
+        additionalInputArtifacts: [artifact],
+      });
+
+      test.equal(action._inputArtifacts.length, 1);
+
+      test.done();
+    },
+  }
 };
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {
