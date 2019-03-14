@@ -131,11 +131,11 @@ export class Database extends cdk.Construct {
    */
   public export(): DatabaseImportProps {
     return {
-      catalogArn: new cdk.Output(this, 'CatalogArn', { value: this.catalogArn }).makeImportValue().toString(),
-      catalogId: new cdk.Output(this, 'CatalogId', { value: this.catalogId }).makeImportValue().toString(),
-      databaseArn: new cdk.Output(this, 'DatabaseArn', { value: this.databaseArn }).makeImportValue().toString(),
-      databaseName: new cdk.Output(this, 'DatabaseName', { value: this.databaseName }).makeImportValue().toString(),
-      locationUri: new cdk.Output(this, 'LocationURI', { value: this.locationUri }).makeImportValue().toString()
+      catalogArn: new cdk.CfnOutput(this, 'CatalogArn', { value: this.catalogArn }).makeImportValue().toString(),
+      catalogId: new cdk.CfnOutput(this, 'CatalogId', { value: this.catalogId }).makeImportValue().toString(),
+      databaseArn: new cdk.CfnOutput(this, 'DatabaseArn', { value: this.databaseArn }).makeImportValue().toString(),
+      databaseName: new cdk.CfnOutput(this, 'DatabaseName', { value: this.databaseName }).makeImportValue().toString(),
+      locationUri: new cdk.CfnOutput(this, 'LocationURI', { value: this.locationUri }).makeImportValue().toString()
     };
   }
 }

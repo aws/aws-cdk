@@ -256,8 +256,8 @@ export class Table extends cdk.Construct implements ITable {
 
   public export(): TableImportProps {
     return {
-      tableName: new cdk.Output(this, 'TableName', { value: this.tableName }).makeImportValue().toString(),
-      tableArn: new cdk.Output(this, 'TableArn', { value: this.tableArn }).makeImportValue().toString(),
+      tableName: new cdk.CfnOutput(this, 'TableName', { value: this.tableName }).makeImportValue().toString(),
+      tableArn: new cdk.CfnOutput(this, 'TableArn', { value: this.tableArn }).makeImportValue().toString(),
     };
   }
 
