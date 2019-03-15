@@ -666,7 +666,24 @@ export = {
 
       test.done();
     },
+
+    'selecting default subnets in a VPC with only public subnets'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = VpcNetwork.import(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
+      });
+
+      test.throws(() => {
+        vpc.subnetIds();
+      }, /There are no 'Private' subnets in this VPC/);
+
+      test.done();
+    }
   },
+
 };
 
 function getTestStack(): Stack {

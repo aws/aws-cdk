@@ -291,8 +291,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       });
     }
 
-    const subnets = props.vpc.subnets(props.vpcPlacement);
-    asgProps.vpcZoneIdentifier = subnets.map(n => n.subnetId);
+    asgProps.vpcZoneIdentifier = props.vpc.subnetIds(props.vpcPlacement);
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;

@@ -504,6 +504,8 @@ export class Function extends FunctionBase {
 
     // Pick subnets, make sure they're not Public. Routing through an IGW
     // won't work because the ENIs don't get a Public IP.
+    // Why are we not simply forcing vpcPlacement? Because you might still be choosing
+    // Isolated networks or selecting among 2 sets of Private subnets by name.
     const subnets = props.vpc.subnets(props.vpcPlacement);
     for (const subnet of subnets) {
       if (props.vpc.isPublicSubnet(subnet)) {
@@ -511,8 +513,12 @@ export class Function extends FunctionBase {
       }
     }
 
+    // List can't be empty here, if we got this far you intended to put your Lambda
+    // in subnets. We're going to guarantee that we get the nice error message by
+    // making VpcNetwork do the selection again.
+
     return {
-      subnetIds: subnets.map(s => s.subnetId),
+      subnetIds: props.vpc.subnetIds(props.vpcPlacement),
       securityGroupIds: [securityGroup.securityGroupId]
     };
   }

@@ -139,16 +139,16 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
   constructor(scope: cdk.Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
 
-    const subnets = props.instanceProps.vpc.subnets(props.instanceProps.vpcPlacement);
+    const subnetIds = props.instanceProps.vpc.subnetIds(props.instanceProps.vpcPlacement);
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
-    if (subnets.length < 2) {
-      throw new Error(`Cluster requires at least 2 subnets, got ${subnets.length}`);
+    if (subnetIds.length < 2) {
+      throw new Error(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
       dbSubnetGroupDescription: `Subnets for ${id} database`,
-      subnetIds: subnets.map(s => s.subnetId)
+      subnetIds,
     });
 
     const securityGroup = props.instanceProps.securityGroup !== undefined ?
@@ -187,6 +187,8 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
       throw new Error('At least one instance is required');
     }
 
+    // Get the actual subnet objects so we can depend on internet connectivity.
+    const subnets = props.instanceProps.vpc.subnets(props.instanceProps.vpcPlacement);
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 

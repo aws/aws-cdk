@@ -1,5 +1,5 @@
 import { Construct, IConstruct, IDependable } from "@aws-cdk/cdk";
-import { subnetName } from './util';
+import { DEFAULT_SUBNET_NAME, subnetName } from './util';
 import { VpnConnection, VpnConnectionOptions } from './vpn';
 
 export interface IVpcSubnet extends IConstruct {
@@ -62,8 +62,22 @@ export interface IVpcNetwork extends IConstruct {
 
   /**
    * Return the subnets appropriate for the placement strategy
+   *
+   * Prefer using {@link subnetIds} if you need to pass subnet IDs to a
+   * CloudFormation Resource.
    */
   subnets(placement?: VpcPlacementStrategy): IVpcSubnet[];
+
+  /**
+   * Return IDs of the subnets appropriate for the given placement strategy
+   *
+   * Requires that at least once subnet is matched, throws a descriptive
+   * error message otherwise.
+   *
+   * Prefer to use this method over {@link subnets} if you need to pass subnet
+   * IDs to a CloudFormation Resource.
+   */
+  subnetIds(placement?: VpcPlacementStrategy): string[];
 
   /**
    * Return whether the given subnet is one of this VPC's public subnets.
@@ -203,9 +217,7 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
    * Return the subnets appropriate for the placement strategy
    */
   public subnets(placement: VpcPlacementStrategy = {}): IVpcSubnet[] {
-    if (placement.subnetsToUse !== undefined && placement.subnetName !== undefined) {
-      throw new Error('At most one of subnetsToUse and subnetName can be supplied');
-    }
+    placement = reifyDefaultsPlacement(placement);
 
     // Select by name
     if (placement.subnetName !== undefined) {
@@ -225,6 +237,20 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
       [SubnetType.Private]: this.privateSubnets,
       [SubnetType.Public]: this.publicSubnets,
     }[placement.subnetsToUse];
+  }
+
+  /**
+   * Returns IDs of selected subnets
+   */
+  public subnetIds(placement: VpcPlacementStrategy = {}): string[] {
+    placement = reifyDefaultsPlacement(placement);
+
+    const nets = this.subnets(placement);
+    if (nets.length === 0) {
+      throw new Error(`There are no ${describePlacement(placement)} in this VPC. Use a different VPC placement strategy.`);
+    }
+
+    return nets.map(n => n.subnetId);
   }
 
   /**
@@ -334,4 +360,35 @@ export interface VpcSubnetImportProps {
    * The subnetId for this particular subnet
    */
   subnetId: string;
+}
+
+/**
+ * If the placement strategy is completely "default", reify the defaults so
+ * consuming code doesn't have to reimplement the same analysis every time.
+ *
+ * Returns "private subnets" by default.
+ */
+function reifyDefaultsPlacement(placement: VpcPlacementStrategy): VpcPlacementStrategy {
+    if (placement.subnetsToUse !== undefined && placement.subnetName !== undefined) {
+      throw new Error('At most one of subnetsToUse and subnetName can be supplied');
+    }
+
+    if (placement.subnetsToUse === undefined && placement.subnetName === undefined) {
+      return { subnetsToUse: SubnetType.Private };
+    }
+
+    return placement;
+}
+
+/**
+ * Describe the given placement strategy
+ */
+function describePlacement(placement: VpcPlacementStrategy) {
+  if (placement.subnetsToUse !== undefined) {
+    return `'${DEFAULT_SUBNET_NAME[placement.subnetsToUse]}' subnets`;
+  }
+  if (placement.subnetName !== undefined) {
+    return `subnets named '${placement.subnetName}'`;
+  }
+  return '???';
 }

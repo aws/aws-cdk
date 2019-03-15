@@ -184,13 +184,12 @@ export abstract class BaseService extends cdk.Construct
     if (securityGroup === undefined) {
       securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
     }
-    const subnets = vpc.subnets(vpcPlacement);
     this.connections.addSecurityGroup(securityGroup);
 
     this.networkConfiguration = {
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
-        subnets: subnets.map(x => x.subnetId),
+        subnets: vpc.subnetIds(vpcPlacement),
         securityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]),
       }
     };
