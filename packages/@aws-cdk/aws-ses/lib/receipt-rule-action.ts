@@ -6,6 +6,9 @@ import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import { CfnReceiptRule } from './ses.generated';
 
+/**
+ * Properties for a receipt rule action.
+ */
 export interface ReceiptRuleActionProps {
   /**
    * Adds a header to the received email.
@@ -57,6 +60,9 @@ export interface IReceiptRuleAction {
   render(): ReceiptRuleActionProps;
 }
 
+/**
+ * Construction properties for a ReceiptRuleAddHeaderAction.
+ */
 export interface ReceiptRuleAddHeaderActionProps {
   /**
    * The name of the header to add. Must be between 1 and 50 characters,
@@ -104,6 +110,9 @@ export class ReceiptRuleAddHeaderAction implements IReceiptRuleAction {
   }
 }
 
+/**
+ * Construction properties for a ReceiptRuleBounceActionTemplate.
+ */
 export interface ReceiptRuleBounceActionTemplateProps {
   /**
    * Human-readable text to include in the bounce message.
@@ -170,6 +179,9 @@ export class ReceiptRuleBounceActionTemplate {
   }
 }
 
+/**
+ * Construction properties for a ReceiptRuleBounceAction.
+ */
 export interface ReceiptRuleBounceActionProps {
   /**
    * The template containing the message, reply code and status code.
@@ -228,6 +240,9 @@ export enum LambdaInvocationType {
   RequestResponse = 'RequestResponse',
 }
 
+/**
+ * Construction properties for a ReceiptRuleLambdaAction.
+ */
 export interface ReceiptRuleLambdaActionProps {
   /**
    * The Lambda function to invoke.
@@ -279,6 +294,9 @@ export class ReceiptRuleLambdaAction implements IReceiptRuleAction {
   }
 }
 
+/**
+ * Construction properties for a ReceiptRuleS3Action.
+ */
 export interface ReceiptRuleS3ActionProps {
   /**
    * The S3 bucket that incoming email will be saved to.
@@ -377,6 +395,9 @@ export enum EmailEncoding {
   UTF8 = 'UTF-8',
 }
 
+/**
+ * Construction properties for a ReceiptRuleSnsAction.
+ */
 export interface ReceiptRuleSnsActionProps {
   /**
    * The encoding to use for the email within the Amazon SNS notification.
@@ -408,6 +429,9 @@ export class ReceiptRuleSnsAction implements IReceiptRuleAction {
   }
 }
 
+/**
+ * Construction properties for a ReceiptRuleStopAction.
+ */
 export interface ReceiptRuleStopActionProps {
   /**
    * The SNS topic to notify when the stop action is taken.

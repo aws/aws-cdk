@@ -16,6 +16,9 @@ export enum ReceiptFilterPolicy {
   Block = 'Block'
 }
 
+/**
+ * Construction properties for a ReceiptFilter.
+ */
 export interface ReceiptFilterProps {
   /**
    * The name for the receipt filter.
@@ -59,6 +62,9 @@ export class ReceiptFilter extends cdk.Construct {
   }
 }
 
+/**
+ * Construction properties for a WhiteListReceiptFilter.
+ */
 export interface WhiteListReceiptFilterProps {
   /**
    * A list of ip addresses or ranges to white list.

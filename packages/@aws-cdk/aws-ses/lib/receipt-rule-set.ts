@@ -2,6 +2,9 @@ import cdk = require('@aws-cdk/cdk');
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
 import { CfnReceiptRuleSet } from './ses.generated';
 
+/**
+ * A receipt rule set.
+ */
 export interface IReceiptRuleSet extends cdk.IConstruct {
   /**
    * The receipt rule set name.
@@ -20,6 +23,9 @@ export interface IReceiptRuleSet extends cdk.IConstruct {
   export(): ReceiptRuleSetImportProps;
 }
 
+/**
+ * Construction properties for a ReceiptRuleSet.
+ */
 export interface ReceiptRuleSetProps {
   /**
    * The name for the receipt rule set.
@@ -120,6 +126,9 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSe
   }
 }
 
+/**
+ * Construction properties for an ImportedReceiptRuleSet.
+ */
 export interface ReceiptRuleSetImportProps {
   /**
    * The receipt rule set name.

@@ -4,6 +4,9 @@ import { IReceiptRuleAction, LambdaInvocationType, ReceiptRuleActionProps, Recei
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
 
+/**
+ * A receipt rule.
+ */
 export interface IReceiptRule extends cdk.IConstruct {
   /**
    * The name of the receipt rule.
@@ -31,6 +34,9 @@ export enum TlsPolicy {
   Require = 'Require'
 }
 
+/**
+ * Options to add a receipt rule to a receipt rule set.
+ */
 export interface ReceiptRuleOptions {
   /**
    * An ordered list of actions to perform on messages that match at least
@@ -82,6 +88,9 @@ export interface ReceiptRuleOptions {
   tlsPolicy?: TlsPolicy;
 }
 
+/**
+ * Construction properties for a ReceiptRule.
+ */
 export interface ReceiptRuleProps extends ReceiptRuleOptions {
   /**
    * The name of the rule set that the receipt rule will be added to.
@@ -126,12 +135,18 @@ export class ReceiptRule extends cdk.Construct implements IReceiptRule {
     }
   }
 
+  /**
+   * Adds an action to this receipt rule.
+   */
   public addAction(action: IReceiptRuleAction) {
     const renderedAction = action.render();
 
     this.renderedActions.push(renderedAction);
   }
 
+  /**
+   * Exports this receipt rule from the stack.
+   */
   public export(): ReceiptRuleImportProps {
     return {
       name: new cdk.CfnOutput(this, 'ReceiptRuleName', { value: this.name }).makeImportValue().toString()
