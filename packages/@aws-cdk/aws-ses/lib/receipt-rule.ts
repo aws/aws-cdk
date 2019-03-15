@@ -181,6 +181,9 @@ class ImportedReceiptRule extends cdk.Construct implements IReceiptRule {
     this.name = props.name;
   }
 
+  /**
+   * Exports this receipt rule from the stack.
+   */
   public export() {
     return this.props;
   }

@@ -18,7 +18,7 @@ export interface IReceiptRuleSet extends cdk.IConstruct {
   addRule(id: string, options?: ReceiptRuleOptions): ReceiptRule;
 
   /**
-   * Exports this receipt rule from the stack.
+   * Exports this receipt rule set from the stack.
    */
   export(): ReceiptRuleSetImportProps;
 }
@@ -117,7 +117,7 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSe
   }
 
   /**
-   * Exports this receipt rule set to another stack.
+   * Exports this receipt rule set from the stack.
    */
   public export(): ReceiptRuleSetImportProps {
     return {
@@ -148,6 +148,9 @@ class ImportedReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleS
     this.name = props.name;
   }
 
+  /**
+   * Exports this receipt rule set from the stack.
+   */
   public export() {
     return this.props;
   }
