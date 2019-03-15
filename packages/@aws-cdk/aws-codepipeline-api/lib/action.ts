@@ -252,6 +252,13 @@ export abstract class Action {
   }
 
   protected addOutputArtifact(name: string): Artifact {
+    // adding the same name multiple times doesn't do anything -
+    // addOutputArtifact is idempotent
+    const ret = this._outputArtifacts.find(output => output.artifactName === name);
+    if (ret) {
+      return ret;
+    }
+
     const artifact = new Artifact(name);
     this._actionOutputArtifacts.push(artifact);
     return artifact;

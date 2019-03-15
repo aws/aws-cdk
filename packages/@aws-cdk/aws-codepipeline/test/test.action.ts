@@ -185,6 +185,28 @@ export = {
       test.done();
     },
   },
+
+  'output Artifact names': {
+    'accept the same name multiple times safely'(test: Test) {
+      const artifact = new actions.Artifact('SomeArtifact');
+
+      const stack = new cdk.Stack();
+      const project = new codebuild.PipelineProject(stack, 'Project');
+      const action = project.toCodePipelineBuildAction({
+        actionName: 'CodeBuild',
+        inputArtifact: artifact,
+        outputArtifactName: 'Artifact1',
+        additionalOutputArtifactNames: [
+          'Artifact1',
+          'Artifact1',
+        ],
+      });
+
+      test.equal(action._outputArtifacts.length, 1);
+
+      test.done();
+    },
+  },
 };
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {
