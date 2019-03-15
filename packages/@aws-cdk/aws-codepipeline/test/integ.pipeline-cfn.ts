@@ -1,4 +1,5 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
+import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import { Role } from '@aws-cdk/aws-iam';
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import s3 = require('@aws-cdk/aws-s3');
@@ -33,6 +34,9 @@ const role = new Role(stack, 'CfnChangeSetRole', {
   assumedBy: new ServicePrincipal('cloudformation.amazonaws.com'),
 });
 
+// fake Artifact, just for testing
+const additionalArtifact = new cpapi.Artifact('AdditionalArtifact');
+
 pipeline.addStage(sourceStage);
 pipeline.addStage({
   name: 'CFN',
@@ -47,9 +51,10 @@ pipeline.addStage({
       parameterOverrides: {
         BucketName: source.outputArtifact.bucketName,
         ObjectKey: source.outputArtifact.objectKey,
-        Url: source.outputArtifact.url,
+        Url: additionalArtifact.url,
         OtherParam: source.outputArtifact.getParam('params.json', 'OtherParam'),
       },
+      additionalInputArtifacts: [additionalArtifact],
     }),
   ],
 });

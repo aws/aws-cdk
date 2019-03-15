@@ -252,12 +252,30 @@ export abstract class Action {
   }
 
   protected addOutputArtifact(name: string): Artifact {
+    // adding the same name multiple times doesn't do anything -
+    // addOutputArtifact is idempotent
+    const ret = this._outputArtifacts.find(output => output.artifactName === name);
+    if (ret) {
+      return ret;
+    }
+
     const artifact = new Artifact(name);
     this._actionOutputArtifacts.push(artifact);
     return artifact;
   }
 
   protected addInputArtifact(artifact: Artifact): Action {
+    // adding the same artifact multiple times doesn't do anything -
+    // addInputArtifact is idempotent
+    if (this._actionInputArtifacts.indexOf(artifact) !== -1) {
+      return this;
+    }
+
+    // however, a _different_ input with the same name is an error
+    if (this._actionInputArtifacts.find(input => input.artifactName === artifact.artifactName)) {
+      throw new Error(`Action ${this.actionName} already has an input with the name '${artifact.artifactName}'`);
+    }
+
     this._actionInputArtifacts.push(artifact);
     return this;
   }
