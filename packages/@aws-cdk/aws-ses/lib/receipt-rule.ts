@@ -16,6 +16,9 @@ export interface IReceiptRule extends cdk.IConstruct {
   export(): ReceiptRuleImportProps;
 }
 
+/**
+ * The type of TLS policy for a receipt rule.
+ */
 export enum TlsPolicy {
   /**
    * Do not check for TLS.
@@ -86,6 +89,9 @@ export interface ReceiptRuleProps extends ReceiptRuleOptions {
   ruleSet: IReceiptRuleSet;
 }
 
+/**
+ * A new receipt rule.
+ */
 export class ReceiptRule extends cdk.Construct implements IReceiptRule {
   /**
    * Import an exported receipt rule.
@@ -147,6 +153,10 @@ export interface ReceiptRuleImportProps {
    */
   name: string;
 }
+
+/**
+ * An imported receipt rule.
+ */
 class ImportedReceiptRule extends cdk.Construct implements IReceiptRule {
   public readonly name: string;
 

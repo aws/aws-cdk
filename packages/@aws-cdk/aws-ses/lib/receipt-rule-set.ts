@@ -78,6 +78,9 @@ export abstract class ReceiptRuleSetBase extends cdk.Construct implements IRecei
   }
 }
 
+/**
+ * A new receipt rule set.
+ */
 export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSet {
   /**
    * Import an exported receipt rule set.
@@ -124,6 +127,9 @@ export interface ReceiptRuleSetImportProps {
   name: string;
 }
 
+/**
+ * An imported receipt rule set.
+ */
 class ImportedReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSet {
   public readonly name: string;
 

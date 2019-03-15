@@ -211,6 +211,9 @@ export class ReceiptRuleBounceAction implements IReceiptRuleAction {
   }
 }
 
+/**
+ * The type of invocation to use for a Lambda Action.
+ */
 export enum LambdaInvocationType {
   /**
    * The function will be invoked asynchronously.
@@ -359,8 +362,18 @@ export class ReceiptRuleS3Action implements IReceiptRuleAction {
   }
 }
 
+/**
+ * The type of email encoding to use for a SNS action.
+ */
 export enum EmailEncoding {
+  /**
+   * Base 64
+   */
   Base64 = 'Base64',
+
+  /**
+   * UTF-8
+   */
   UTF8 = 'UTF-8',
 }
 

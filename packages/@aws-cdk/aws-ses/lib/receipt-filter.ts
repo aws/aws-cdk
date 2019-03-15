@@ -1,6 +1,9 @@
 import cdk = require('@aws-cdk/cdk');
 import { CfnReceiptFilter } from './ses.generated';
 
+/**
+ * The policy for the receipt filter.
+ */
 export enum ReceiptFilterPolicy {
   /**
    * Allow the ip address or range.

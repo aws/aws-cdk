@@ -3,38 +3,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/awslab
 
 ### Email receiving
 Create a receipt rule set with rules and actions:
-```ts
-const bucket = new s3.Bucket(this, 'Bucket');
-
-const topic = new sns.Topic(this, 'Topic');
-
-const ruleSet = new ses.ReceiptRuleSet(this, 'RuleSet', {
-  rules: [
-    {
-      actions: [
-        new ses.ReceiptRuleAddHeaderAction({
-          name: 'X-Special-Header',
-          value: 'aws'
-        })
-        new ses.ReceiptRuleS3Action({
-          bucket,
-          objectKeyPrefix: 'emails/',
-          topic
-        })
-      ],
-      recipients: ['hello@aws.com'],
-    },
-    {
-      actions: [
-        new ses.ReceiptRuleSnsAction({
-          topic
-        })
-      ]
-      recipients: ['aws.com'],
-    }
-  ]
-});
-```
+[example of setting up a receipt rule set](test/example.receiving.lit.ts)
 
 Alternatively, rules can be added to a rule set:
 ```ts
@@ -91,7 +60,7 @@ const otherRule = ses.ReceiptRule.import(this, 'OtherRule', {
   name: 'other-rule'
 });
 
-importedRuleSet.addRule('New', { // This rule as added after the imported rule
+importedRuleSet.addRule('New', { // This rule is added after the imported rule
   after: importedRule,
   recipients: ['mydomain.com']
 });
@@ -108,8 +77,6 @@ new ses.ReceiptFilter(this, 'Filter', {
   ip: '1.2.3.4/16' // Will be blocked
 })
 ```
-
-Without props, a block all (0.0.0.0/0) filter is created.
 
 A white list filter is also available:
 ```ts
