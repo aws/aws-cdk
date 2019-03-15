@@ -5,7 +5,7 @@ can be used in CloudFront and ELB.
 
 ### DNS-validated certificates
 
-The `DNSValidatedCertificateRequest` class provides a Custom Resource by which
+The `DnsValidatedCertificateRequest` class provides a Custom Resource by which
 you can request a TLS certificate from AWS Certificate Manager that is
 automatically validated using a cryptographically secure DNS record. For this to
 work, there must be a Route 53 public zone that is responsible for serving
