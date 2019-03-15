@@ -95,7 +95,7 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
 
   public export(): ServerApplicationImportProps {
     return {
-      applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
+      applicationName: new cdk.CfnOutput(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
     };
   }
 }

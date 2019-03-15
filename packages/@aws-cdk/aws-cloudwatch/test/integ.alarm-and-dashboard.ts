@@ -11,7 +11,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, `aws-cdk-cloudwatch`);
 
-const queue = new cdk.Resource(stack, 'queue', { type: 'AWS::SQS::Queue' });
+const queue = new cdk.CfnResource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 
 const metric = new cloudwatch.Metric({
   namespace: 'AWS/SQS',

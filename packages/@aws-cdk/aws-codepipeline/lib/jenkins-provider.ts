@@ -131,13 +131,13 @@ export abstract class BaseJenkinsProvider extends cdk.Construct implements IJenk
 
   public export(): JenkinsProviderImportProps {
     return {
-      providerName: new cdk.Output(this, 'JenkinsProviderName', {
+      providerName: new cdk.CfnOutput(this, 'JenkinsProviderName', {
         value: this.providerName,
       }).makeImportValue().toString(),
-      serverUrl: new cdk.Output(this, 'JenkinsServerUrl', {
+      serverUrl: new cdk.CfnOutput(this, 'JenkinsServerUrl', {
         value: this.serverUrl,
       }).makeImportValue().toString(),
-      version: new cdk.Output(this, 'JenkinsProviderVersion', {
+      version: new cdk.CfnOutput(this, 'JenkinsProviderVersion', {
         value: this.version,
       }).makeImportValue().toString(),
     };
