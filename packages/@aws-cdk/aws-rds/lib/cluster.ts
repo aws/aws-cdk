@@ -151,7 +151,8 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
       subnetIds: subnets.map(s => s.subnetId)
     });
 
-    const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+    const securityGroup = props.instanceProps.securityGroup !== undefined ?
+    props.instanceProps.securityGroup : new ec2.SecurityGroup(this, 'SecurityGroup', {
       description: 'RDS security group',
       vpc: props.instanceProps.vpc
     });
