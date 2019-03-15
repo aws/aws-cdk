@@ -115,7 +115,7 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSe
    */
   public export(): ReceiptRuleSetImportProps {
     return {
-      name: new cdk.Output(this, 'ReceiptRuleSetName', { value: this.name }).makeImportValue().toString()
+      name: new cdk.CfnOutput(this, 'ReceiptRuleSetName', { value: this.name }).makeImportValue().toString()
     };
   }
 }

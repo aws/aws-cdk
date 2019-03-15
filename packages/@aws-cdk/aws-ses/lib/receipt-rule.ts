@@ -134,7 +134,7 @@ export class ReceiptRule extends cdk.Construct implements IReceiptRule {
 
   public export(): ReceiptRuleImportProps {
     return {
-      name: new cdk.Output(this, 'ReceiptRuleName', { value: this.name }).makeImportValue().toString()
+      name: new cdk.CfnOutput(this, 'ReceiptRuleName', { value: this.name }).makeImportValue().toString()
     };
   }
 
