@@ -1,4 +1,3 @@
-// import { validateArtifactBounds, validateSourceAction } from '../lib/validation';
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
@@ -149,6 +148,64 @@ export = {
     }, /FakeAction/);
 
     test.done();
+  },
+
+  'input Artifacts': {
+    'can be added multiple times to an Action safely'(test: Test) {
+      const artifact = new actions.Artifact('SomeArtifact');
+
+      const stack = new cdk.Stack();
+      const project = new codebuild.PipelineProject(stack, 'Project');
+      const action = project.toCodePipelineBuildAction({
+        actionName: 'CodeBuild',
+        inputArtifact: artifact,
+        additionalInputArtifacts: [artifact],
+      });
+
+      test.equal(action._inputArtifacts.length, 1);
+
+      test.done();
+    },
+
+    'cannot have duplicate names'(test: Test) {
+      const artifact1 = new actions.Artifact('SomeArtifact');
+      const artifact2 = new actions.Artifact('SomeArtifact');
+
+      const stack = new cdk.Stack();
+      const project = new codebuild.PipelineProject(stack, 'Project');
+
+      test.throws(() =>
+        project.toCodePipelineBuildAction({
+          actionName: 'CodeBuild',
+          inputArtifact: artifact1,
+          additionalInputArtifacts: [artifact2],
+        })
+      , /SomeArtifact/);
+
+      test.done();
+    },
+  },
+
+  'output Artifact names': {
+    'accept the same name multiple times safely'(test: Test) {
+      const artifact = new actions.Artifact('SomeArtifact');
+
+      const stack = new cdk.Stack();
+      const project = new codebuild.PipelineProject(stack, 'Project');
+      const action = project.toCodePipelineBuildAction({
+        actionName: 'CodeBuild',
+        inputArtifact: artifact,
+        outputArtifactName: 'Artifact1',
+        additionalOutputArtifactNames: [
+          'Artifact1',
+          'Artifact1',
+        ],
+      });
+
+      test.equal(action._outputArtifacts.length, 1);
+
+      test.done();
+    },
   },
 };
 

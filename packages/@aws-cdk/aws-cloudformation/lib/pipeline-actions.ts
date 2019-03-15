@@ -200,6 +200,23 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    * @default No overrides
    */
   parameterOverrides?: { [name: string]: any };
+
+  /**
+   * The list of additional input Artifacts for this Action.
+   * This is especially useful when used in conjunction with the `parameterOverrides` property.
+   * For example, if you have:
+   *
+   *   parameterOverrides: {
+   *     'Param1': action1.outputArtifact.bucketName,
+   *     'Param2': action2.outputArtifact.objectKey,
+   *   }
+   *
+   * , if the output Artifacts of `action1` and `action2` were not used to
+   * set either the `templateConfiguration` or the `templatePath` properties,
+   * you need to make sure to include them in the `additionalInputArtifacts` -
+   * otherwise, you'll get an "unrecognized Artifact" error during your Pipeline's execution.
+   */
+  additionalInputArtifacts?: codepipeline.Artifact[];
 }
 // tslint:enable:max-line-length
 
@@ -223,6 +240,10 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
     });
 
     this.props = props;
+
+    for (const inputArtifact of props.additionalInputArtifacts || []) {
+      this.addInputArtifact(inputArtifact);
+    }
   }
 
   /**
@@ -293,8 +314,7 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
     });
 
     this.addInputArtifact(props.templatePath.artifact);
-    if (props.templateConfiguration &&
-        props.templateConfiguration.artifact.artifactName !== props.templatePath.artifact.artifactName) {
+    if (props.templateConfiguration) {
       this.addInputArtifact(props.templateConfiguration.artifact);
     }
 
@@ -357,8 +377,7 @@ export class PipelineCreateUpdateStackAction extends PipelineCloudFormationDeplo
     });
 
     this.addInputArtifact(props.templatePath.artifact);
-    if (props.templateConfiguration &&
-        props.templateConfiguration.artifact.artifactName !== props.templatePath.artifact.artifactName) {
+    if (props.templateConfiguration) {
       this.addInputArtifact(props.templateConfiguration.artifact);
     }
 
