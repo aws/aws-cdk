@@ -1,0 +1,55 @@
+import { Test } from 'nodeunit';
+import { deployStack } from '../../lib';
+import { FakeSDK } from '../util/fake-sdk';
+
+const FAKE_STACK = {
+  name: 'withouterrors',
+  template: { resource: 'noerrorresource' },
+  environment: { name: 'dev', account: '12345', region: 'here' },
+  metadata: {},
+};
+
+export = {
+  async 'do deploy executable change set with 0 changes'(test: Test) {
+    // GIVEN
+    const sdk = new FakeSDK();
+
+    let executed = false;
+
+    sdk.stubCloudFormation({
+      describeStacks() {
+        return {
+          Stacks: []
+        };
+      },
+
+      createChangeSet() {
+        return {};
+      },
+
+      describeChangeSet() {
+        return {
+          Status: 'CREATE_COMPLETE',
+          Changes: [],
+        };
+      },
+
+      executeChangeSet() {
+        executed = true;
+        return {};
+      }
+    });
+
+    // WHEN
+    const ret = await deployStack({
+      stack: FAKE_STACK,
+      sdk,
+    });
+
+    // THEN
+    test.equals(ret.noOp, false);
+    test.equals(executed, true);
+
+    test.done();
+  },
+};

@@ -86,6 +86,9 @@ async function waitFor<T>(valueProvider: () => Promise<T | null | undefined>, ti
 /**
  * Waits for a ChangeSet to be available for triggering a StackUpdate.
  *
+ * Will return a changeset that is either ready to be executed or has no changes.
+ * Will throw in other cases.
+ *
  * @param cfn       a CloudFormation client
  * @param stackName   the name of the Stack that the ChangeSet belongs to
  * @param changeSetName the name of the ChangeSet
@@ -93,25 +96,43 @@ async function waitFor<T>(valueProvider: () => Promise<T | null | undefined>, ti
  * @returns       the CloudFormation description of the ChangeSet
  */
 // tslint:disable-next-line:max-line-length
-export async function waitForChangeSet(cfn: CloudFormation, stackName: string, changeSetName: string): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+export async function waitForChangeSet(cfn: CloudFormation, stackName: string, changeSetName: string): Promise<CloudFormation.DescribeChangeSetOutput> {
   debug('Waiting for changeset %s on stack %s to finish creating...', changeSetName, stackName);
-  return waitFor(async () => {
+  const ret = await waitFor(async () => {
     const description = await describeChangeSet(cfn, stackName, changeSetName);
     // The following doesn't use a switch because tsc will not allow fall-through, UNLESS it is allows
     // EVERYWHERE that uses this library directly or indirectly, which is undesirable.
     if (description.Status === 'CREATE_PENDING' || description.Status === 'CREATE_IN_PROGRESS') {
       debug('Changeset %s on stack %s is still creating', changeSetName, stackName);
       return undefined;
-    } else if (description.Status === 'CREATE_COMPLETE') {
-      return description;
-    } else if (description.Status === 'FAILED') {
-      if (description.StatusReason && description.StatusReason.startsWith('The submitted information didn\'t contain changes.')) {
-        return description;
-      }
     }
+
+    if (description.Status === 'CREATE_COMPLETE' || changeSetHasNoChanges(description)) {
+      return description;
+    }
+
     // tslint:disable-next-line:max-line-length
     throw new Error(`Failed to create ChangeSet ${changeSetName} on ${stackName}: ${description.Status || 'NO_STATUS'}, ${description.StatusReason || 'no reason provided'}`);
   });
+
+  if (!ret) {
+    throw new Error('Change set took too long to be created; aborting');
+  }
+
+  return ret;
+}
+
+/**
+ * Return true if the given change set has no changes
+ *
+ * This must be determined from the status, not the 'Changes' array on the
+ * object; the latter can be empty because no resources were changed, but if
+ * there are changes to Outputs, the change set can still be executed.
+ */
+export function changeSetHasNoChanges(description: CloudFormation.DescribeChangeSetOutput) {
+    return description.Status === 'FAILED'
+    && description.StatusReason
+    && description.StatusReason.startsWith('The submitted information didn\'t contain changes.');
 }
 
 /**
