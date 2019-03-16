@@ -44,9 +44,6 @@ in the email. The email addresses use will be:
 * postmaster@domain.com
 * webmaster@domain.com
 
-DNS validation is possible in ACM, but is not currently available in CloudFormation.
-A Custom Resource will be developed for this, but is not currently available.
-
 Because of these blocks, it's probably better to provision your certificates either in a separate
 stack from your main service, or provision them manually. In both cases, you'll import the
 certificate into your stack afterwards.
