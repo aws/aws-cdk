@@ -5,7 +5,7 @@ can be used in CloudFront and ELB.
 
 ### DNS-validated certificates
 
-The `DNSValidatedCertificateRequest` class provides a Custom Resource by which
+The `DnsValidatedCertificateRequest` class provides a Custom Resource by which
 you can request a TLS certificate from AWS Certificate Manager that is
 automatically validated using a cryptographically secure DNS record. For this to
 work, there must be a Route 53 public zone that is responsible for serving
@@ -43,9 +43,6 @@ in the email. The email addresses use will be:
 * hostmaster@domain.com
 * postmaster@domain.com
 * webmaster@domain.com
-
-DNS validation is possible in ACM, but is not currently available in CloudFormation.
-A Custom Resource will be developed for this, but is not currently available.
 
 Because of these blocks, it's probably better to provision your certificates either in a separate
 stack from your main service, or provision them manually. In both cases, you'll import the
