@@ -5,11 +5,11 @@ import { IBucket } from './bucket';
 /**
  * Common properties for creating {@link PipelineSourceAction} -
  * either directly, through its constructor,
- * or through {@link IBucket#addToPipeline}.
+ * or through {@link IBucket#toCodePipelineSourceAction}.
  */
 export interface CommonPipelineSourceActionProps extends codepipeline.CommonActionProps {
   /**
-   * The name of the source's output artifact. Output artifacts are used by CodePipeline as
+   * The name of the source's output artifact. CfnOutput artifacts are used by CodePipeline as
    * inputs into other actions.
    *
    * @default a name will be auto-generated
@@ -38,7 +38,7 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
 /**
  * Construction properties of the {@link PipelineSourceAction S3 source Action}.
  */
-export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps, codepipeline.CommonActionConstructProps {
+export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps {
   /**
    * The Amazon S3 bucket that stores the source code
    */
@@ -49,31 +49,38 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
  * Source that is provided by a specific Amazon S3 object.
  */
 export class PipelineSourceAction extends codepipeline.SourceAction {
-  constructor(scope: cdk.Construct, id: string, props: PipelineSourceActionProps) {
-    super(scope, id, {
+  private readonly props: PipelineSourceActionProps;
+
+  constructor(props: PipelineSourceActionProps) {
+    super({
+      ...props,
       provider: 'S3',
+      outputArtifactName: props.outputArtifactName || `Artifact_${props.actionName}_${props.bucket.node.uniqueId}`,
       configuration: {
         S3Bucket: props.bucket.bucketName,
         S3ObjectKey: props.bucketKey,
         PollForSourceChanges: props.pollForSourceChanges,
       },
-      ...props,
     });
 
-    if (props.pollForSourceChanges === false) {
-      props.bucket.onPutObject(props.stage.pipeline.node.uniqueId + 'SourceEventRule',
-          props.stage.pipeline, props.bucketKey);
+    this.props = props;
+  }
+
+  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
+    if (this.props.pollForSourceChanges === false) {
+      this.props.bucket.onPutObject(stage.pipeline.node.uniqueId + 'SourceEventRule',
+          stage.pipeline, this.props.bucketKey);
     }
 
     // pipeline needs permissions to read from the S3 bucket
-    props.bucket.grantRead(props.stage.pipeline.role);
+    this.props.bucket.grantRead(stage.pipeline.role);
   }
 }
 
 /**
  * Common properties for creating {@link PipelineDeployAction} -
  * either directly, through its constructor,
- * or through {@link IBucket#addToPipelineAsDeploy}.
+ * or through {@link IBucket#toCodePipelineDeployAction}.
  */
 export interface CommonPipelineDeployActionProps extends codepipeline.CommonActionProps {
   /**
@@ -91,14 +98,13 @@ export interface CommonPipelineDeployActionProps extends codepipeline.CommonActi
   /**
    * The inputArtifact to deploy to Amazon S3.
    */
-  inputArtifact?: codepipeline.Artifact;
+  inputArtifact: codepipeline.Artifact;
 }
 
 /**
  * Construction properties of the {@link PipelineDeployAction S3 deploy Action}.
  */
-export interface PipelineDeployActionProps extends CommonPipelineDeployActionProps,
-    codepipeline.CommonActionConstructProps {
+export interface PipelineDeployActionProps extends CommonPipelineDeployActionProps {
   /**
    * The Amazon S3 bucket that is the deploy target.
    */
@@ -109,8 +115,11 @@ export interface PipelineDeployActionProps extends CommonPipelineDeployActionPro
  * Deploys the sourceArtifact to Amazon S3.
  */
 export class PipelineDeployAction extends codepipeline.DeployAction {
-  constructor(scope: cdk.Construct, id: string, props: PipelineDeployActionProps) {
-    super(scope, id, {
+  private readonly bucket: IBucket;
+
+  constructor(props: PipelineDeployActionProps) {
+    super({
+      ...props,
       provider: 'S3',
       artifactBounds: {
         minInputs: 1,
@@ -123,9 +132,13 @@ export class PipelineDeployAction extends codepipeline.DeployAction {
         Extract: (props.extract === false) ? 'false' : 'true',
         ObjectKey: props.objectKey,
       },
-      ...props,
     });
+
+    this.bucket = props.bucket;
+  }
+
+  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
     // pipeline needs permissions to write to the S3 bucket
-    props.bucket.grantWrite(props.stage.pipeline.role);
+    this.bucket.grantWrite(stage.pipeline.role);
   }
 }

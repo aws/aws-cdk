@@ -85,8 +85,8 @@ export interface PipelineDeployStackActionProps {
 }
 
 /**
- * A CodePipeline action to deploy a stack that is part of a CDK App. This
- * action takes care of preparing and executing a CloudFormation ChangeSet.
+ * A Construct to deploy a stack that is part of a CDK App, using CodePipeline.
+ * This composite Action takes care of preparing and executing a CloudFormation ChangeSet.
  *
  * It currently does *not* support stacks that make use of ``Asset``s, and
  * requires the deployed stack is in the same account and region where the
@@ -104,7 +104,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: PipelineDeployStackActionProps) {
     super(scope, id);
 
-    if (!cdk.environmentEquals(props.stack.env, cdk.Stack.find(this).env)) {
+    if (!cdk.environmentEquals(props.stack.env, this.node.stack.env)) {
       // FIXME: Add the necessary to extend to stacks in a different account
       throw new Error(`Cross-environment deployment is not supported`);
     }
@@ -120,24 +120,25 @@ export class PipelineDeployStackAction extends cdk.Construct {
     const changeSetName = props.changeSetName || 'CDK-CodePipeline-ChangeSet';
 
     const capabilities = cfnCapabilities(props.adminPermissions, props.capabilities);
-    const changeSetAction = new cfn.PipelineCreateReplaceChangeSetAction(this, 'ChangeSet', {
+    const changeSetAction = new cfn.PipelineCreateReplaceChangeSetAction({
+      actionName: 'ChangeSet',
       changeSetName,
       runOrder: createChangeSetRunOrder,
       stackName: props.stack.name,
-      stage: props.stage,
       templatePath: props.inputArtifact.atPath(`${props.stack.name}.template.yaml`),
       adminPermissions: props.adminPermissions,
       deploymentRole: props.role,
       capabilities,
     });
-    this.deploymentRole = changeSetAction.deploymentRole;
-
-    new cfn.PipelineExecuteChangeSetAction(this, 'Execute', {
+    props.stage.addAction(changeSetAction);
+    props.stage.addAction(new cfn.PipelineExecuteChangeSetAction({
+      actionName: 'Execute',
       changeSetName,
       runOrder: executeChangeSetRunOrder,
       stackName: props.stack.name,
-      stage: props.stage,
-    });
+    }));
+
+    this.deploymentRole = changeSetAction.deploymentRole;
   }
 
   /**

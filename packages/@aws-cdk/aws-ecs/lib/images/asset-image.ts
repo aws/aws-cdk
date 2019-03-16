@@ -1,7 +1,8 @@
 import { DockerImageAsset } from '@aws-cdk/assets-docker';
 import cdk = require('@aws-cdk/cdk');
 import { ContainerDefinition } from '../container-definition';
-import { IContainerImage } from '../container-image';
+import { ContainerImage } from '../container-image';
+import { CfnTaskDefinition } from '../ecs.generated';
 
 export interface AssetImageProps {
   /**
@@ -13,16 +14,23 @@ export interface AssetImageProps {
 /**
  * An image that will be built at synthesis time
  */
-export class AssetImage extends DockerImageAsset implements IContainerImage {
+export class AssetImage extends ContainerImage {
+  private readonly asset: DockerImageAsset;
+
   constructor(scope: cdk.Construct, id: string, props: AssetImageProps) {
-    super(scope, id, { directory: props.directory });
+    super();
+    this.asset = new DockerImageAsset(scope, id, { directory: props.directory });
   }
 
   public bind(containerDefinition: ContainerDefinition): void {
-    this.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
+    this.asset.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
+  }
+
+  public toRepositoryCredentialsJson(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined {
+      return undefined;
   }
 
   public get imageName() {
-    return this.imageUri;
+    return this.asset.imageUri;
   }
 }

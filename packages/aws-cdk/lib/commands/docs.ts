@@ -6,7 +6,7 @@ import { debug,  print, warning } from '../../lib/logging';
 import { CommandOptions } from '../command-api';
 
 export const command = 'docs';
-export const describe = 'Opens the documentation in a browser';
+export const describe = 'Opens the reference documentation in a browser';
 export const aliases = ['doc'];
 export const builder = {
   browser: {

@@ -12,7 +12,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codepipeline.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "codepipeline.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -107,7 +117,7 @@
                 "Name": "ECR_Source",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelineecrsourceMyEcrRepoECRSource8525F033"
+                    "Name": "Artifact_ECR_Source_awscdkcodepipelineecrsourceMyEcrRepo7074CE15"
                   }
                 ],
                 "RunOrder": 1
@@ -154,7 +164,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "events.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "events.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],

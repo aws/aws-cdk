@@ -2,12 +2,12 @@
   "Resources": {
     "MyBucketF68F3FF0": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "VersioningConfiguration": {
           "Status": "Enabled"
         }
-      }
+      },
+      "DeletionPolicy": "Retain"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -18,7 +18,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codepipeline.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "codepipeline.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -108,12 +118,6 @@
     "PipelineC660917D": {
       "Type": "AWS::CodePipeline::Pipeline",
       "Properties": {
-        "ArtifactStore": {
-          "Location": {
-            "Ref": "MyBucketF68F3FF0"
-          },
-          "Type": "S3"
-        },
         "RoleArn": {
           "Fn::GetAtt": [
             "PipelineRoleD68726F7",
@@ -140,7 +144,7 @@
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinejenkinsMyBucketS32154568D"
+                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
                   }
                 ],
                 "RunOrder": 1
@@ -162,13 +166,13 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinejenkinsMyBucketS32154568D"
+                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
                   }
                 ],
                 "Name": "JenkinsBuild",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinejenkinsJenkinsProviderJenkinsBuild6007E9FD"
+                    "Name": "Artifact_JenkinsBuild_awscdkcodepipelinejenkinsJenkinsProviderF1B32E8D"
                   }
                 ],
                 "RunOrder": 1
@@ -185,7 +189,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinejenkinsMyBucketS32154568D"
+                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
                   }
                 ],
                 "Name": "JenkinsTest",
@@ -204,7 +208,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinejenkinsMyBucketS32154568D"
+                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
                   }
                 ],
                 "Name": "JenkinsTest2",
@@ -214,7 +218,13 @@
             ],
             "Name": "Build"
           }
-        ]
+        ],
+        "ArtifactStore": {
+          "Location": {
+            "Ref": "MyBucketF68F3FF0"
+          },
+          "Type": "S3"
+        }
       },
       "DependsOn": [
         "PipelineRoleDefaultPolicyC7A05455",

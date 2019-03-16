@@ -71,9 +71,8 @@ export class StateMachine extends cdk.Construct implements IStateMachine, events
     constructor(scope: cdk.Construct, id: string, props: StateMachineProps) {
         super(scope, id);
 
-        const stack = cdk.Stack.find(this);
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new iam.ServicePrincipal(`states.${stack.region}.amazonaws.com`),
+            assumedBy: new iam.ServicePrincipal(`states.${this.node.stack.region}.amazonaws.com`),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
@@ -195,7 +194,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine, events
      */
     public export(): StateMachineImportProps {
         return {
-            stateMachineArn: new cdk.Output(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
+            stateMachineArn: new cdk.CfnOutput(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
         };
     }
 }

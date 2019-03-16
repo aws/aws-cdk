@@ -126,7 +126,7 @@ export = {
     test.done();
   },
 
-  'can set minSize, maxSize, desiredCapacity to 0'(test: Test) {
+  'can set minCapacity, maxCapacity, desiredCapacity to 0'(test: Test) {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
     const vpc = mockVpc(stack);
 
@@ -134,8 +134,8 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minSize: 0,
-      maxSize: 0,
+      minCapacity: 0,
+      maxCapacity: 0,
       desiredCapacity: 0
     });
 
@@ -159,7 +159,7 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minSize: 10
+      minCapacity: 10
     });
 
     // THEN
@@ -183,7 +183,7 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      maxSize: 10
+      maxCapacity: 10
     });
 
     // THEN
@@ -380,8 +380,8 @@ export = {
         pauseTimeSec: 345
       },
     });
-    asg.apply( new cdk.Tag('superfood', 'acai'));
-    asg.apply( new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
+    asg.node.apply(new cdk.Tag('superfood', 'acai'));
+    asg.node.apply(new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
 
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
@@ -415,8 +415,8 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minSize: 0,
-      maxSize: 0,
+      minCapacity: 0,
+      maxCapacity: 0,
       desiredCapacity: 0,
       associatePublicIpAddress: true,
     });
@@ -438,8 +438,8 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minSize: 0,
-      maxSize: 0,
+      minCapacity: 0,
+      maxCapacity: 0,
       desiredCapacity: 0,
       associatePublicIpAddress: false,
     });
@@ -461,8 +461,8 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minSize: 0,
-      maxSize: 0,
+      minCapacity: 0,
+      maxCapacity: 0,
       desiredCapacity: 0,
     });
 
@@ -478,6 +478,28 @@ export = {
     }));
     test.done();
   },
+
+  'an existing role can be specified instead of auto-created'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const importedRole = iam.Role.import(stack, 'ImportedRole', { roleArn: 'arn:aws:iam::123456789012:role/HelloDude' });
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      role: importedRole
+    });
+
+    // THEN
+    test.same(asg.role, importedRole);
+    expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+      "Roles": [ "HelloDude" ]
+    }));
+    test.done();
+  }
 };
 
 function mockVpc(stack: cdk.Stack) {

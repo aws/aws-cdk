@@ -13,7 +13,7 @@ export = {
     });
 
     // THEN
-    test.equal(ref.node.resolve(ref.value), '{{resolve:secretsmanager:SomeSecret:SecretString:::}}');
+    test.equal(ref.node.resolve(ref.stringValue), '{{resolve:secretsmanager:SomeSecret:SecretString:::}}');
 
     test.done();
   },

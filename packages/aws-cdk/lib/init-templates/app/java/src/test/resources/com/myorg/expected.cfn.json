@@ -1,5 +1,20 @@
 {
     "Resources": {
+        "MyFirstQueueMyFirstTopicSubscription774591B6": {
+            "Type": "AWS::SNS::Subscription",
+            "Properties": {
+                "Endpoint": {
+                    "Fn::GetAtt": [
+                        "MyFirstQueueFF09316A",
+                        "Arn"
+                    ]
+                },
+                "TopicArn": {
+                    "Ref": "MyFirstTopic0ED1F8A4"
+                },
+                "Protocol": "sqs"
+            }
+        },
         "MyFirstTopic0ED1F8A4": {
             "Type": "AWS::SNS::Topic",
             "Properties": {
@@ -49,21 +64,6 @@
             "Type": "AWS::SQS::Queue",
             "Properties": {
                 "VisibilityTimeout": 300
-            }
-        },
-        "MyFirstTopicMyFirstQueueSubscription04CBE05C": {
-            "Type": "AWS::SNS::Subscription",
-            "Properties": {
-                "Endpoint": {
-                    "Fn::GetAtt": [
-                        "MyFirstQueueFF09316A",
-                        "Arn"
-                    ]
-                },
-                "TopicArn": {
-                    "Ref": "MyFirstTopic0ED1F8A4"
-                },
-                "Protocol": "sqs"
             }
         },
         "BucketsBucket351AD8978": {

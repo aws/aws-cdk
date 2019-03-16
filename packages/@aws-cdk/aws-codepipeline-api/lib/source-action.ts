@@ -1,11 +1,10 @@
-import cdk = require("@aws-cdk/cdk");
-import { Action, ActionCategory, CommonActionConstructProps, CommonActionProps } from "./action";
+import { Action, ActionCategory, CommonActionProps } from "./action";
 import { Artifact } from "./artifact";
 
 /**
  * Construction properties of the low-level {@link SourceAction source Action}.
  */
-export interface SourceActionProps extends CommonActionProps, CommonActionConstructProps {
+export interface SourceActionProps extends CommonActionProps {
   /**
    * The source action owner (could be "AWS", "ThirdParty" or "Custom").
    *
@@ -22,11 +21,9 @@ export interface SourceActionProps extends CommonActionProps, CommonActionConstr
 
   /**
    * The name of the source's output artifact.
-   * Output artifacts are used by CodePipeline as inputs into other actions.
-   *
-   * @default a name will be auto-generated
+   * CfnOutput artifacts are used by CodePipeline as inputs into other actions.
    */
-  outputArtifactName?: string;
+  outputArtifactName: string;
 
   /**
    * The service provider that the action calls.
@@ -52,11 +49,11 @@ export interface SourceActionProps extends CommonActionProps, CommonActionConstr
 export abstract class SourceAction extends Action {
   public readonly outputArtifact: Artifact;
 
-  constructor(scope: cdk.Construct, id: string, props: SourceActionProps) {
-    super(scope, id, {
+  constructor(props: SourceActionProps) {
+    super({
+      ...props,
       category: ActionCategory.Source,
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
-      ...props,
     });
 
     this.outputArtifact = this.addOutputArtifact(props.outputArtifactName);

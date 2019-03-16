@@ -20,10 +20,21 @@ export interface ISecret extends cdk.IConstruct {
   readonly secretArn: string;
 
   /**
-   * Returns a SecretString corresponding to this secret, so that the secret value can be referred to from other parts
-   * of the application (such as an RDS instance's master user password property).
+   * Returns a SecretString corresponding to this secret.
+   *
+   * SecretString represents the value of the Secret.
    */
-  toSecretString(): SecretString;
+  readonly secretString: SecretString;
+
+  /**
+   * Retrieve the value of the Secret, as a string.
+   */
+  readonly stringValue: string;
+
+  /**
+   * Interpret the secret as a JSON object and return a field's value from it
+   */
+  jsonFieldValue(key: string): string;
 
   /**
    * Exports this secret.
@@ -97,7 +108,7 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
   public abstract readonly encryptionKey?: kms.IEncryptionKey;
   public abstract readonly secretArn: string;
 
-  private secretString?: SecretString;
+  private _secretString?: SecretString;
 
   public abstract export(): SecretImportProps;
 
@@ -122,14 +133,22 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
       .addAction('kms:Decrypt')
       .addAllResources()
       .addCondition('StringEquals', {
-        'kms:ViaService': `secretsmanager.${cdk.Stack.find(this).region}.amazonaws.com`
+        'kms:ViaService': `secretsmanager.${this.node.stack.region}.amazonaws.com`
       }));
     }
   }
 
-  public toSecretString() {
-    this.secretString = this.secretString || new SecretString(this, 'SecretString', { secretId: this.secretArn });
-    return this.secretString;
+  public get secretString() {
+    this._secretString = this._secretString || new SecretString(this, 'SecretString', { secretId: this.secretArn });
+    return this._secretString;
+  }
+
+  public get stringValue() {
+    return this.secretString.stringValue;
+  }
+
+  public jsonFieldValue(key: string): string {
+    return this.secretString.jsonFieldValue(key);
   }
 }
 

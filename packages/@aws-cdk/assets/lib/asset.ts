@@ -99,19 +99,19 @@ export class Asset extends cdk.Construct {
     // the toolkit or by CI/CD when the stack is deployed and will include
     // the name of the bucket and the S3 key where the code lives.
 
-    const bucketParam = new cdk.Parameter(this, 'S3Bucket', {
+    const bucketParam = new cdk.CfnParameter(this, 'S3Bucket', {
       type: 'String',
       description: `S3 bucket for asset "${this.node.path}"`,
     });
 
-    const keyParam = new cdk.Parameter(this, 'S3VersionKey', {
+    const keyParam = new cdk.CfnParameter(this, 'S3VersionKey', {
       type: 'String',
       description: `S3 key for asset version "${this.node.path}"`
     });
 
-    this.s3BucketName = bucketParam.value.toString();
-    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
-    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
+    this.s3BucketName = bucketParam.stringValue;
+    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
+    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
 
     this.bucket = s3.Bucket.import(this, 'AssetBucket', {
@@ -156,7 +156,7 @@ export class Asset extends cdk.Construct {
    * @param resourceProperty The property name where this asset is referenced
    * (e.g. "Code" for AWS::Lambda::Function)
    */
-  public addResourceMetadata(resource: cdk.Resource, resourceProperty: string) {
+  public addResourceMetadata(resource: cdk.CfnResource, resourceProperty: string) {
     if (!this.node.getContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       return; // not enabled
     }

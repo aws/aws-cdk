@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { ContainerDefinition, ContainerDefinitionProps } from '../container-definition';
+import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { isEc2Compatible, isFargateCompatible } from '../util';
 
@@ -225,14 +225,18 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * Create a new container to this task definition
    */
-  public addContainer(id: string, props: ContainerDefinitionProps) {
-    const container = new ContainerDefinition(this, id, this, props);
+  public addContainer(id: string, props: ContainerDefinitionOptions) {
+    return new ContainerDefinition(this, id, { taskDefinition: this, ...props });
+  }
+
+  /**
+   * (internal) Links a container to this task definition.
+   */
+  public _linkContainer(container: ContainerDefinition) {
     this.containers.push(container);
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
-
-    return container;
   }
 
   /**

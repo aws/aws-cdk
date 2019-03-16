@@ -13,11 +13,11 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -54,10 +54,10 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       taskDefinition.addContainer('BaseContainer', {
-        image: ecs.ContainerImage.fromDockerHub('test'),
+        image: ecs.ContainerImage.fromRegistry('test'),
         memoryReservationMiB: 10,
       });
 
@@ -79,10 +79,10 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       taskDefinition.addContainer('BaseContainer', {
-        image: ecs.ContainerImage.fromDockerHub('test'),
+        image: ecs.ContainerImage.fromRegistry('test'),
         memoryReservationMiB: 10,
       });
 
@@ -124,11 +124,11 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -152,13 +152,13 @@ export = {
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-        cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
           networkMode: NetworkMode.Bridge
         });
 
         taskDefinition.addContainer("web", {
-          image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+          image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
           memoryLimitMiB: 512
         });
 
@@ -184,13 +184,13 @@ export = {
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-        cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
           networkMode: NetworkMode.AwsVpc
         });
 
         taskDefinition.addContainer("web", {
-          image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+          image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
           memoryLimitMiB: 512
         });
 
@@ -235,13 +235,13 @@ export = {
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-        cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
           networkMode: NetworkMode.AwsVpc
         });
 
         taskDefinition.addContainer("web", {
-          image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+          image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
           memoryLimitMiB: 512
         });
 
@@ -263,11 +263,11 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -292,11 +292,11 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -323,11 +323,11 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -354,11 +354,11 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -381,11 +381,11 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -411,11 +411,11 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -438,11 +438,11 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -469,11 +469,11 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -498,10 +498,10 @@ export = {
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
       const container = taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromDockerHub('test'),
+        image: ecs.ContainerImage.fromRegistry('test'),
         memoryLimitMiB: 1024,
       });
       container.addPortMappings({ containerPort: 808 });

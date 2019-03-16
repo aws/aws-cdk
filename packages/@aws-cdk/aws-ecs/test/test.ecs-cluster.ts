@@ -15,7 +15,7 @@ export = {
         vpc,
       });
 
-      cluster.addDefaultAutoScalingGroupCapacity({
+      cluster.addCapacity('DefaultAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro')
       });
 
@@ -120,7 +120,7 @@ export = {
               Action: "sts:AssumeRole",
               Effect: "Allow",
               Principal: {
-                Service: "ec2.amazonaws.com"
+                Service: { "Fn::Join": ["", ["ec2.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
           ],
@@ -164,7 +164,7 @@ export = {
       });
 
       // WHEN
-      cluster.addDefaultAutoScalingGroupCapacity({
+      cluster.addCapacity('DefaultAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro')
       });
 
@@ -188,7 +188,7 @@ export = {
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addDefaultAutoScalingGroupCapacity({
+    cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new InstanceType("m3.large")
     });
 
@@ -206,9 +206,9 @@ export = {
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addDefaultAutoScalingGroupCapacity({
+    cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
-      instanceCount: 3
+      desiredCapacity: 3
     });
 
     // THEN

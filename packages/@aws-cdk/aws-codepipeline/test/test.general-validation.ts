@@ -3,7 +3,6 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import { Pipeline } from '../lib/pipeline';
-import { Stage } from '../lib/stage';
 
 interface NameValidationTestCase {
   name: string;
@@ -37,7 +36,7 @@ export = {
     'should fail if Stage has no Actions'(test: Test) {
       const stage = stageForTesting();
 
-      test.deepEqual(stage.node.validateTree().length, 1);
+      test.deepEqual((stage as any).validate().length, 1);
 
       test.done();
     }
@@ -56,21 +55,18 @@ export = {
     'should fail if Pipeline has a Source Action in a non-first Stage'(test: Test) {
       const stack = new cdk.Stack();
       const pipeline = new Pipeline(stack, 'Pipeline');
-      const firstStage = new Stage(stack, 'FirstStage', { pipeline });
-      const secondStage = new Stage(stack, 'SecondStage', { pipeline });
 
       const bucket = new s3.Bucket(stack, 'PipelineBucket');
-      new s3.PipelineSourceAction(stack, 'FirstAction', {
-        stage: firstStage,
-        outputArtifactName: 'FirstArtifact',
-        bucket,
-        bucketKey: 'key',
-      });
-      new s3.PipelineSourceAction(stack, 'SecondAction', {
-        stage: secondStage,
-        outputArtifactName: 'SecondAction',
-        bucket,
-        bucketKey: 'key',
+      pipeline.addStage({
+        name: 'FirstStage',
+        actions: [
+          new s3.PipelineSourceAction({
+            actionName: 'FirstAction',
+            outputArtifactName: 'FirstArtifact',
+            bucket,
+            bucketKey: 'key',
+          })
+        ],
       });
 
       test.deepEqual(pipeline.node.validateTree().length, 1);
@@ -80,8 +76,8 @@ export = {
   }
 };
 
-function stageForTesting(): Stage {
+function stageForTesting(): actions.IStage {
   const stack = new cdk.Stack();
-  const pipeline = new Pipeline(stack, 'pipeline');
-  return new Stage(stack, 'stage', { pipeline });
+  const pipeline = new Pipeline(stack, 'Pipeline');
+  return pipeline.addStage({ name: 'stage' });
 }

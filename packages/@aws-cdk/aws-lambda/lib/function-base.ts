@@ -1,5 +1,4 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
@@ -49,15 +48,12 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   addPermission(id: string, permission: Permission): void;
 
   /**
-   * Convenience method for creating a new {@link PipelineInvokeAction},
-   * and adding it to the given Stage.
+   * Convenience method for creating a new {@link PipelineInvokeAction}.
    *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
+   * @param props the construction properties of the new Action
    * @returns the newly created {@link PipelineInvokeAction}
    */
-  addToPipeline(stage: codepipeline.IStage, name: string, props?: CommonPipelineInvokeActionProps): PipelineInvokeAction;
+  toCodePipelineInvokeAction(props: CommonPipelineInvokeActionProps): PipelineInvokeAction;
 
   addToRolePolicy(statement: iam.PolicyStatement): void;
 
@@ -190,20 +186,10 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     return this.node.id;
   }
 
-  /**
-   * Convenience method for creating a new {@link PipelineInvokeAction},
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
-   * @returns the newly created {@link PipelineInvokeAction}
-   */
-  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineInvokeActionProps = {}): PipelineInvokeAction {
-    return new PipelineInvokeAction(this, name, {
-      stage,
-      lambda: this,
+  public toCodePipelineInvokeAction(props: CommonPipelineInvokeActionProps): PipelineInvokeAction {
+    return new PipelineInvokeAction({
       ...props,
+      lambda: this,
     });
   }
 
@@ -272,13 +258,12 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     const arn = sourceLogGroup.logGroupArn;
 
     if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
-      const stack = cdk.Stack.find(this);
       // NOTE: the use of {AWS::Region} limits this to the same region, which shouldn't really be an issue,
       // since the Lambda must be in the same region as the SubscriptionFilter anyway.
       //
       // (Wildcards in principals are unfortunately not supported.
       this.addPermission('InvokedByCloudWatchLogs', {
-        principal: new iam.ServicePrincipal(`logs.${stack.region}.amazonaws.com`),
+        principal: new iam.ServicePrincipal(`logs.${this.node.stack.region}.amazonaws.com`),
         sourceArn: arn
       });
       this.logSubscriptionDestinationPolicyAddedFor.push(arn);
@@ -297,10 +282,9 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
    */
   public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
     const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
-    const stack = cdk.Stack.find(this);
     if (!this.node.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
-        sourceAccount: stack.accountId,
+        sourceAccount: this.node.stack.accountId,
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
         sourceArn: bucketArn,
       });
@@ -308,7 +292,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
     // if we have a permission resource for this relationship, add it as a dependency
     // to the bucket notifications resource, so it will be created first.
-    const permission = this.node.tryFindChild(permissionId) as cdk.Resource;
+    const permission = this.node.tryFindChild(permissionId) as cdk.CfnResource;
 
     return {
       type: s3n.BucketNotificationDestinationType.Lambda,

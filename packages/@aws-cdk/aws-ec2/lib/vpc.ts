@@ -1,11 +1,12 @@
 import cdk = require('@aws-cdk/cdk');
 import { ConcreteDependable, IDependable } from '@aws-cdk/cdk';
-import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute } from './ec2.generated';
+import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
 import { IVpcNetwork, IVpcSubnet, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcPlacementStrategy, VpcSubnetImportProps } from './vpc-ref';
+import { VpnConnectionOptions, VpnConnectionType } from './vpn';
 
 /**
  * Name tag constant
@@ -115,6 +116,34 @@ export interface VpcNetworkProps {
    * private subnet per AZ
    */
   subnetConfiguration?: SubnetConfiguration[];
+
+  /**
+   * Indicates whether a VPN gateway should be created and attached to this VPC.
+   *
+   * @default true when vpnGatewayAsn or vpnConnections is specified.
+   */
+  vpnGateway?: boolean;
+
+  /**
+   * The private Autonomous System Number (ASN) for the VPN gateway.
+   *
+   * @default Amazon default ASN
+   */
+  vpnGatewayAsn?: number;
+
+  /**
+   * VPN connections to this VPC.
+   *
+   * @default no connections
+   */
+  vpnConnections?: { [id: string]: VpnConnectionOptions }
+
+  /**
+   * Where to propagate VPN routes.
+   *
+   * @default on the route tables associated with private subnets
+   */
+  vpnRoutePropagation?: SubnetType[]
 }
 
 /**
@@ -251,6 +280,11 @@ export class VpcNetwork extends VpcNetworkBase {
   public readonly availabilityZones: string[];
 
   /**
+   * Identifier for the VPN gateway
+   */
+  public readonly vpnGatewayId?: string;
+
+  /**
    * The VPC resource
    */
   private resource: CfnVPC;
@@ -299,7 +333,7 @@ export class VpcNetwork extends VpcNetworkBase {
       instanceTenancy,
     });
 
-    this.apply(new cdk.Tag(NAME_TAG, this.node.path));
+    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
     this.availabilityZones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
     this.availabilityZones.sort();
@@ -343,6 +377,51 @@ export class VpcNetwork extends VpcNetworkBase {
         privateSubnet.addDefaultNatRouteEntry(ngwId);
       });
     }
+
+    if ((props.vpnConnections || props.vpnGatewayAsn) && props.vpnGateway === false) {
+      throw new Error('Cannot specify `vpnConnections` or `vpnGatewayAsn` when `vpnGateway` is set to false.');
+    }
+
+    if (props.vpnGateway || props.vpnConnections || props.vpnGatewayAsn) {
+      const vpnGateway = new CfnVPNGateway(this, 'VpnGateway', {
+        amazonSideAsn: props.vpnGatewayAsn,
+        type: VpnConnectionType.IPsec1
+      });
+
+      const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
+        vpcId: this.vpcId,
+        vpnGatewayId: vpnGateway.vpnGatewayName
+      });
+
+      this.vpnGatewayId = vpnGateway.vpnGatewayName;
+
+      // Propagate routes on route tables associated with the right subnets
+      const vpnRoutePropagation = props.vpnRoutePropagation || [SubnetType.Private];
+      let subnets: IVpcSubnet[] = [];
+      if (vpnRoutePropagation.includes(SubnetType.Public)) {
+        subnets = [...subnets, ...this.publicSubnets];
+      }
+      if (vpnRoutePropagation.includes(SubnetType.Private)) {
+        subnets = [...subnets, ...this.privateSubnets];
+      }
+      if (vpnRoutePropagation.includes(SubnetType.Isolated)) {
+        subnets = [...subnets, ...this.isolatedSubnets];
+      }
+      const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
+        routeTableIds: (subnets as VpcSubnet[]).map(subnet => subnet.routeTableId),
+        vpnGatewayId: this.vpnGatewayId
+      });
+
+      // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
+      // until it has successfully attached to the VPC.
+      // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpn-gatewayrouteprop.html
+      routePropagation.node.addDependency(attachment);
+
+      const vpnConnections = props.vpnConnections || {};
+      for (const [connectionId, connection] of Object.entries(vpnConnections)) {
+        this.addVpnConnection(connectionId, connection);
+      }
+    }
   }
 
   /**
@@ -354,7 +433,8 @@ export class VpcNetwork extends VpcNetworkBase {
     const iso = new ExportSubnetGroup(this, 'IsolatedSubnetIDs', this.isolatedSubnets, SubnetType.Isolated, this.availabilityZones.length);
 
     return {
-      vpcId: new cdk.Output(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
+      vpcId: new cdk.CfnOutput(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
+      vpnGatewayId: new cdk.CfnOutput(this, 'VpnGatewayId', { value: this.vpnGatewayId }).makeImportValue().toString(),
       availabilityZones: this.availabilityZones,
       publicSubnetIds: pub.ids,
       publicSubnetNames: pub.names,
@@ -452,8 +532,8 @@ export class VpcNetwork extends VpcNetworkBase {
 
       // These values will be used to recover the config upon provider import
       const includeResourceTypes = [CfnSubnet.resourceTypeName];
-      subnet.apply(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
-      subnet.apply(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
+      subnet.node.apply(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
+      subnet.node.apply(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
     });
   }
 }
@@ -523,13 +603,13 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
   /**
    * The routeTableId attached to this subnet.
    */
-  private readonly routeTableId: string;
+  public readonly routeTableId: string;
 
   private readonly internetDependencies = new ConcreteDependable();
 
   constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
     super(scope, id);
-    this.apply(new cdk.Tag(NAME_TAG, this.node.path));
+    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -553,8 +633,8 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
 
   public export(): VpcSubnetImportProps {
     return {
-      availabilityZone: new cdk.Output(this, 'AvailabilityZone', { value: this.availabilityZone }).makeImportValue().toString(),
-      subnetId: new cdk.Output(this, 'VpcSubnetId', { value: this.subnetId }).makeImportValue().toString(),
+      availabilityZone: new cdk.CfnOutput(this, 'AvailabilityZone', { value: this.availabilityZone }).makeImportValue().toString(),
+      subnetId: new cdk.CfnOutput(this, 'VpcSubnetId', { value: this.subnetId }).makeImportValue().toString(),
     };
   }
 
@@ -653,12 +733,14 @@ class ImportedVpcNetwork extends VpcNetworkBase {
   public readonly privateSubnets: IVpcSubnet[];
   public readonly isolatedSubnets: IVpcSubnet[];
   public readonly availabilityZones: string[];
+  public readonly vpnGatewayId?: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: VpcNetworkImportProps) {
     super(scope, id);
 
     this.vpcId = props.vpcId;
     this.availabilityZones = props.availabilityZones;
+    this.vpnGatewayId = props.vpnGatewayId;
 
     // tslint:disable:max-line-length
     const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, SubnetType.Public, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames');

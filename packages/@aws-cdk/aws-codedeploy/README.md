@@ -170,23 +170,30 @@ Example:
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
-    pipelineName: 'MyPipeline',
+  pipelineName: 'MyPipeline',
 });
 
 // add the source and build Stages to the Pipeline...
 
-const deployStage = pipeline.addStage('Deploy');
-new codedeploy.PipelineDeployAction(this, 'CodeDeploy', {
-    stage: deployStage,
-    deploymentGroup,
+const deployAction = new codedeploy.PipelineDeployAction({
+  actionName: 'CodeDeploy',
+  inputArtifact: buildAction.outputArtifact,
+  deploymentGroup,
+});
+pipeline.addStage({
+  name: 'Deploy',
+  actions: [deployAction],
 });
 ```
 
-You can also add the Deployment Group to the Pipeline directly:
+You can also create an action from the Deployment Group directly:
 
 ```ts
 // equivalent to the code above:
-deploymentGroup.addToPipeline(deployStage, 'CodeDeploy');
+const deployAction = deploymentGroup.toCodePipelineDeployAction({
+  actionName: 'CodeDeploy',
+  inputArtifact: buildAction.outputArtifact,
+});
 ```
 
 ### Lambda Applications
@@ -224,7 +231,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 const myApplication = new codedeploy.LambdaApplication(..);
 const func = new lambda.Function(..);
 const version = func.addVersion('1');
-const version1Alias = new lambda.Alias({
+const version1Alias = new lambda.Alias(this, 'alias', {
   aliasName: 'prod',
   version
 });

@@ -1,15 +1,12 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from './base/task-definition';
-import { IContainerImage } from './container-image';
+import { ContainerImage } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver } from './log-drivers/log-driver';
 
-/**
- * Properties of a container definition
- */
-export interface ContainerDefinitionProps {
+export interface ContainerDefinitionOptions {
   /**
    * The image to use for a container.
    *
@@ -17,7 +14,7 @@ export interface ContainerDefinitionProps {
    * repositories (repository-url/image:tag).
    * TODO: Update these to specify using classes of IContainerImage
    */
-  image: IContainerImage;
+  image: ContainerImage;
 
   /**
    * The CMD value to pass to the container.
@@ -174,6 +171,16 @@ export interface ContainerDefinitionProps {
 }
 
 /**
+ * Properties of a container definition
+ */
+export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
+  /**
+   * The task this container definition belongs to.
+   */
+  taskDefinition: TaskDefinition;
+}
+
+/**
  * A definition for a single container in a Task
  */
 export class ContainerDefinition extends cdk.Construct {
@@ -222,14 +229,15 @@ export class ContainerDefinition extends cdk.Construct {
    */
   private readonly links = new Array<string>();
 
-  constructor(scope: cdk.Construct, id: string, taskDefinition: TaskDefinition, private readonly props: ContainerDefinitionProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
-    this.taskDefinition = taskDefinition;
+    this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
 
     props.image.bind(this);
     if (props.logging) { props.logging.bind(this); }
+    props.taskDefinition._linkContainer(this);
   }
 
   /**
@@ -371,7 +379,7 @@ export class ContainerDefinition extends cdk.Construct {
       portMappings: this.portMappings.map(renderPortMapping),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
-      repositoryCredentials: undefined, // FIXME
+      repositoryCredentials: this.props.image.toRepositoryCredentialsJson(),
       ulimits: this.ulimits.map(renderUlimit),
       user: this.props.user,
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),

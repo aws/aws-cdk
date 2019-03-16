@@ -80,25 +80,29 @@ This module also contains an Action that allows you to invoke a Lambda function 
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const lambdaStage = pipeline.addStage('Lambda');
-new lambda.PipelineInvokeAction(this, 'Lambda', {
-    stage: lambdaStage,
-    lambda: fn,
+const lambdaAction = new lambda.PipelineInvokeAction({
+  actionName: 'Lambda',
+  lambda: fn,
+});
+pipeline.addStage({
+  actionName: 'Lambda',
+  actions: [lambdaAction],
 });
 ```
 
-You can also add the Lambda to the Pipeline directly:
+You can also create the action from the Lambda directly:
 
 ```ts
 // equivalent to the code above:
-fn.addToPipeline(lambdaStage, 'Lambda');
+const lambdaAction = fn.toCodePipelineInvokeAction({ actionName: 'Lambda' });
 ```
 
 The Lambda Action can have up to 5 inputs,
 and up to 5 outputs:
 
 ```typescript
-const lambdaAction = fn.addToPipeline(lambdaStage, 'Lambda', {
+const lambdaAction = fn.toCodePipelineInvokeAction({
+  actionName: 'Lambda',
   inputArtifacts: [
     sourceAction.outputArtifact,
     buildAction.outputArtifact,

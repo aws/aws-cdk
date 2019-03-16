@@ -13,33 +13,42 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
   removalPolicy: cdk.RemovalPolicy.Destroy,
 });
 
-const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
-  artifactBucket: bucket,
-});
-
-const sourceStage = pipeline.addStage('Source');
-const sourceAction = bucket.addToPipeline(sourceStage, 'S3', {
+const sourceAction = bucket.toCodePipelineSourceAction({
+  actionName: 'S3',
   bucketKey: 'some/path',
 });
-
-const cfnStage = pipeline.addStage('CFN');
+const sourceStage = {
+  name: 'Source',
+  actions: [sourceAction],
+};
 
 const role = new iam.Role(stack, 'ActionRole', {
-  assumedBy: new iam.AccountPrincipal(new cdk.Aws().accountId)
+  assumedBy: new iam.AccountPrincipal(cdk.Aws.accountId)
 });
 role.addToPolicy(new iam.PolicyStatement()
   .addAction('sqs:*')
   .addAllResources()
 );
+const cfnStage = {
+  name: 'CFN',
+  actions: [
+    new cloudformation.PipelineCreateUpdateStackAction({
+      actionName: 'CFN_Deploy',
+      stackName: 'aws-cdk-codepipeline-cross-region-deploy-stack',
+      templatePath: sourceAction.outputArtifact.atPath('template.yml'),
+      adminPermissions: false,
+      role
+    }),
+  ],
+};
 
-new cloudformation.PipelineCreateUpdateStackAction(stack, 'CFN_Deploy', {
-  stage: cfnStage,
-  stackName: 'aws-cdk-codepipeline-cross-region-deploy-stack',
-  templatePath: sourceAction.outputArtifact.atPath('template.yml'),
-  adminPermissions: false,
-  role
+const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
+  artifactBucket: bucket,
+  stages: [
+    sourceStage,
+    cfnStage,
+  ],
 });
-
 pipeline.addToRolePolicy(new iam.PolicyStatement()
   .addActions("sts:AssumeRole", "iam:PassRole")
   .addAllResources()

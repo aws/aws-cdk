@@ -8,19 +8,29 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-manual-approval');
 
 const bucket = new s3.Bucket(stack, 'Bucket');
 
-const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
-});
-
-const sourceStage = pipeline.addStage('Source');
-bucket.addToPipeline(sourceStage, 'S3', {
-  bucketKey: 'file.zip',
-});
-
-const approveStage = pipeline.addStage('Approve');
-new codepipeline.ManualApprovalAction(stack, 'ManualApproval', {
-  stage: approveStage,
-  notifyEmails: ['adamruka85@gmail.com']
+  stages: [
+    {
+      name: 'Source',
+      actions: [
+        new s3.PipelineSourceAction({
+          actionName: 'S3',
+          bucket,
+          bucketKey: 'file.zip',
+        }),
+      ],
+    },
+    {
+      name: 'Approve',
+      actions: [
+        new codepipeline.ManualApprovalAction({
+          actionName: 'ManualApproval',
+          notifyEmails: ['adamruka85@gmail.com'],
+        }),
+      ],
+    },
+  ],
 });
 
 app.run();

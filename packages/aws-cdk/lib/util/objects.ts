@@ -97,7 +97,11 @@ export function deepSet(x: any, path: string[], value: any) {
     throw new Error(`Expected an object, got '${x}'`);
   }
 
-  x[path[0]] = value;
+  if (value !== undefined) {
+    x[path[0]] = value;
+  } else {
+    delete x[path[0]];
+  }
 }
 
 /**

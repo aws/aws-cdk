@@ -1,4 +1,5 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
+import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import { Role } from '@aws-cdk/aws-iam';
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import s3 = require('@aws-cdk/aws-s3');
@@ -11,40 +12,51 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
-const sourceStage = new codepipeline.Stage(pipeline, 'Source', { pipeline });
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
   removalPolicy: cdk.RemovalPolicy.Destroy,
 });
-const source = new s3.PipelineSourceAction(stack, 'Source', {
-  stage: sourceStage,
+
+const source = new s3.PipelineSourceAction({
+  actionName: 'Source',
   outputArtifactName: 'SourceArtifact',
   bucket,
   bucketKey: 'key',
 });
-
-const cfnStage = new codepipeline.Stage(stack, 'CFN', { pipeline });
+const sourceStage = {
+  name: 'Source',
+  actions: [source],
+};
 
 const changeSetName = "ChangeSetIntegTest";
 const stackName = "IntegTest-TestActionStack";
-
 const role = new Role(stack, 'CfnChangeSetRole', {
   assumedBy: new ServicePrincipal('cloudformation.amazonaws.com'),
 });
 
-new cfn.PipelineCreateReplaceChangeSetAction(stack, 'DeployCFN', {
-  stage: cfnStage,
-  changeSetName,
-  stackName,
-  deploymentRole: role,
-  templatePath: source.outputArtifact.atPath('test.yaml'),
-  adminPermissions: false,
-  parameterOverrides: {
-    BucketName: source.outputArtifact.bucketName,
-    ObjectKey: source.outputArtifact.objectKey,
-    Url: source.outputArtifact.url,
-    OtherParam: source.outputArtifact.getParam('params.json', 'OtherParam'),
-  },
+// fake Artifact, just for testing
+const additionalArtifact = new cpapi.Artifact('AdditionalArtifact');
+
+pipeline.addStage(sourceStage);
+pipeline.addStage({
+  name: 'CFN',
+  actions: [
+    new cfn.PipelineCreateReplaceChangeSetAction({
+      actionName: 'DeployCFN',
+      changeSetName,
+      stackName,
+      deploymentRole: role,
+      templatePath: source.outputArtifact.atPath('test.yaml'),
+      adminPermissions: false,
+      parameterOverrides: {
+        BucketName: source.outputArtifact.bucketName,
+        ObjectKey: source.outputArtifact.objectKey,
+        Url: additionalArtifact.url,
+        OtherParam: source.outputArtifact.getParam('params.json', 'OtherParam'),
+      },
+      additionalInputArtifacts: [additionalArtifact],
+    }),
+  ],
 });
 
 app.run();

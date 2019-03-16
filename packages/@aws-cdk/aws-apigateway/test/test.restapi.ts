@@ -60,7 +60,7 @@ export = {
                 {
                   Action: "sts:AssumeRole",
                   Effect: "Allow",
-                  Principal: { Service: "apigateway.amazonaws.com" }
+                  Principal: { Service: { "Fn::Join": ["", ["apigateway.", { Ref: "AWS::URLSuffix" }]] } }
                 }
               ],
               Version: "2012-10-17"
@@ -517,7 +517,7 @@ export = {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
-    const resource = new cdk.Resource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
+    const resource = new cdk.CfnResource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
 
     // WHEN
     resource.node.addDependency(api);
@@ -527,9 +527,9 @@ export = {
       DependsOn: [
         "myapiAccountC3A4750C",
         "myapiCloudWatchRoleEB425128",
+        "myapiGET9B7CD29E",
         "myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9",
         "myapiDeploymentStageprod329F21FF",
-        "myapiGET9B7CD29E",
         "myapi162F20B8"
       ]
     }, ResourcePart.CompleteDefinition));

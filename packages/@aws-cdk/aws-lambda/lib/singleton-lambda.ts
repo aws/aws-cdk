@@ -63,14 +63,13 @@ export class SingletonFunction extends FunctionBase {
 
   private ensureLambda(props: SingletonFunctionProps): IFunction {
     const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
-    const stack = cdk.Stack.find(this);
-    const existing = stack.node.tryFindChild(constructName);
+    const existing = this.node.stack.node.tryFindChild(constructName);
     if (existing) {
       // Just assume this is true
       return existing as FunctionBase;
     }
 
-    return new LambdaFunction(stack, constructName, props);
+    return new LambdaFunction(this.node.stack, constructName, props);
   }
 }
 

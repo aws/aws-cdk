@@ -1,4 +1,3 @@
-import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
@@ -57,26 +56,20 @@ export interface IBucket extends cdk.IConstruct {
   export(): BucketImportProps;
 
   /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
+   * Convenience method for creating a new {@link PipelineSourceAction}.
    *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
+   * @param props the construction properties of the new Action
    * @returns the newly created {@link PipelineSourceAction}
    */
-  addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction;
+  toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction;
 
   /**
-   * Convenience method for creating a new {@link PipelineDeployAction},
-   * and adding it to the given Stage.
+   * Convenience method for creating a new {@link PipelineDeployAction}.
    *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the optional properties of the new Action
+   * @param props the construction properties of the new Action
    * @returns the newly created {@link PipelineDeployAction}
    */
-  addToPipelineAsDeploy(stage: actions.IStage, name: string, props?: CommonPipelineDeployActionProps): PipelineDeployAction;
+  toCodePipelineDeployAction(props: CommonPipelineDeployActionProps): PipelineDeployAction;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -303,28 +296,17 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    */
   public abstract export(): BucketImportProps;
 
-  /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction {
-    return new PipelineSourceAction(this, name, {
-      stage,
-      bucket: this,
+  public toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction {
+    return new PipelineSourceAction({
       ...props,
+      bucket: this,
     });
   }
 
-  public addToPipelineAsDeploy(stage: actions.IStage, name: string, props: CommonPipelineDeployActionProps = {}): PipelineDeployAction {
-    return new PipelineDeployAction(this, name, {
-      stage,
-      bucket: this,
+  public toCodePipelineDeployAction(props: CommonPipelineDeployActionProps): PipelineDeployAction {
+    return new PipelineDeployAction({
       ...props,
+      bucket: this,
     });
   }
 
@@ -391,8 +373,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @returns an ObjectS3Url token
    */
   public urlForObject(key?: string): string {
-    const stack = cdk.Stack.find(this);
-    const components = [ `https://s3.${stack.region}.${stack.urlSuffix}/${this.bucketName}` ];
+    const components = [ `https://s3.${this.node.stack.region}.${this.node.stack.urlSuffix}/${this.bucketName}` ];
     if (key) {
       // trim prepending '/'
       if (typeof key === 'string' && key.startsWith('/')) {
@@ -771,10 +752,10 @@ export class Bucket extends BucketBase {
    */
   public export(): BucketImportProps {
     return {
-      bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
-      bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
-      bucketDomainName: new cdk.Output(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
-      bucketWebsiteUrl: new cdk.Output(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
+      bucketArn: new cdk.CfnOutput(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
+      bucketName: new cdk.CfnOutput(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
+      bucketDomainName: new cdk.CfnOutput(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
+      bucketWebsiteUrl: new cdk.CfnOutput(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
     };
   }
 
@@ -1152,7 +1133,7 @@ class ImportedBucket extends BucketBase {
 
   private generateBucketWebsiteUrl() {
     return this.bucketWebsiteNewUrlFormat
-      ? `${this.bucketName}.s3-website.${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`
-      : `${this.bucketName}.s3-website-${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`;
+      ? `${this.bucketName}.s3-website.${this.node.stack.region}.${this.node.stack.urlSuffix}`
+      : `${this.bucketName}.s3-website-${this.node.stack.region}.${this.node.stack.urlSuffix}`;
   }
 }

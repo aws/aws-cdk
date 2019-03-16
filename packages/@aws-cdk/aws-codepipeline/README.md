@@ -20,19 +20,37 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 
 ### Stages
 
-To append a Stage to a Pipeline:
+You can provide Stages when creating the Pipeline:
 
-```ts
-const sourceStage = pipeline.addStage('Source');
+```typescript
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+  stages: [
+    {
+      name: 'Source',
+      actions: [
+        // see below...
+      ],
+    },
+  ],
+});
 ```
 
-You can also instantiate the `Stage` Construct directly,
-which will add it to the Pipeline provided in its construction properties.
+Or append a Stage to an existing Pipeline:
+
+```ts
+const sourceStage = pipeline.addStage({
+  name: 'Source',
+  actions: [ // optional property
+    // see below...
+  ],
+});
+```
 
 You can insert the new Stage at an arbitrary point in the Pipeline:
 
 ```ts
-const sourceStage = pipeline.addStage('Source', {
+pipeline.addStage({
+  name: 'SomeStage',
   placement: {
     // note: you can only specify one of the below properties
     rightBefore: anotherStage,
@@ -48,30 +66,15 @@ const sourceStage = pipeline.addStage('Source', {
 To add an Action to a Stage:
 
 ```ts
-new codepipeline.GitHubSourceAction(this, 'GitHub_Source', {
-  stage: sourceStage,
+const sourceAction = new codepipeline.GitHubSourceAction({
+  actionName: 'GitHub_Source',
   owner: 'awslabs',
   repo: 'aws-cdk',
   branch: 'develop', // default: 'master'
   oauthToken: ...,
-})
-```
-
-The Pipeline construct will automatically generate and wire together the artifact names CodePipeline uses.
-If you need, you can also name the artifacts explicitly:
-
-```ts
-const sourceAction = new codepipeline.GitHubSourceAction(this, 'GitHub_Source', {
-  // other properties as above...
   outputArtifactName: 'SourceOutput', // this will be the name of the output artifact in the Pipeline
 });
-
-// in a build Action later...
-
-new codepipeline.JenkinsBuildAction(this, 'Jenkins_Build', {
-  // other properties...
-  inputArtifact: sourceAction.outputArtifact,
-});
+sourceStage.addAction(sourceAction);
 ```
 
 #### Manual approval Action
@@ -79,15 +82,17 @@ new codepipeline.JenkinsBuildAction(this, 'Jenkins_Build', {
 This package contains an Action that stops the Pipeline until someone manually clicks the approve button:
 
 ```typescript
-const manualApprovalAction = new codepipeline.ManualApprovalAction(this, 'Approve', {
-  stage: approveStage,
+const manualApprovalAction = new codepipeline.ManualApprovalAction({
+  actionName: 'Approve',
   notificationTopic: new sns.Topic(this, 'Topic'), // optional
   notifyEmails: [
     'some_email@example.com',
   ], // optional
   additionalInformation: 'additional info', // optional
 });
+approveStage.addAction(manualApprovalAction);
 // `manualApprovalAction.notificationTopic` can be used to access the Topic
+// after the Action has been added to a Pipeline
 ```
 
 If the `notificationTopic` has not been provided,
@@ -129,8 +134,8 @@ With a `JenkinsProvider`,
 we can create a Jenkins Action:
 
 ```ts
-const buildAction = new codepipeline.JenkinsBuildAction(this, 'JenkinsBuild', {
-  stage: buildStage,
+const buildAction = new codepipeline.JenkinsBuildAction({
+  actionName: 'JenkinsBuild',
   jenkinsProvider: jenkinsProvider,
   projectName: 'MyProject',
 });
@@ -141,11 +146,13 @@ You can also add the Action to the Pipeline directly:
 
 ```ts
 // equivalent to the code above:
-const buildAction = jenkinsProvider.addToPipeline(buildStage, 'JenkinsBuild', {
+const buildAction = jenkinsProvider.toCodePipelineBuildAction({
+  actionName: 'JenkinsBuild',
   projectName: 'MyProject',
 });
 
-const testAction = jenkinsProvider.addToPipelineAsTest(buildStage, 'JenkinsTest', {
+const testAction = jenkinsProvider.toCodePipelineTestAction({
+  actionName: 'JenkinsTest',
   projectName: 'MyProject',
 });
 ```
@@ -167,7 +174,8 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 });
 
 // later in the code...
-new cloudformation.PipelineCreateUpdateStackAction(this, 'CFN_US_West_1', {
+new cloudformation.PipelineCreateUpdateStackAction({
+  actionName: 'CFN_US_West_1',
   // ...
   region: 'us-west-1',
 });

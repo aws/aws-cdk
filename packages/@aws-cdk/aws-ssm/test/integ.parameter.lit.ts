@@ -14,7 +14,7 @@ const role = new iam.Role(stack, 'UserRole', {
 const param = new ssm.StringParameter(stack, 'StringParameter', {
   // description: 'Some user-friendly description',
   // name: 'ParameterName',
-  value: 'Initial parameter value',
+  stringValue: 'Initial parameter value',
   // allowedPattern: '.*',
 });
 
@@ -25,13 +25,13 @@ param.grantRead(role);
 const listParameter = new ssm.StringListParameter(stack, 'StringListParameter', {
   // description: 'Some user-friendly description',
   // name: 'ParameterName',
-  value: ['Initial parameter value A', 'Initial parameter value B'],
+  stringListValue: ['Initial parameter value A', 'Initial parameter value B'],
   // allowedPattern: '.*',
 });
 /// !hide
 
-new cdk.Output(stack, 'StringListOutput', {
-  value: cdk.Fn.join('+', listParameter.parameterValue),
+new cdk.CfnOutput(stack, 'StringListOutput', {
+  value: cdk.Fn.join('+', listParameter.stringListValue),
 });
 
 app.run();

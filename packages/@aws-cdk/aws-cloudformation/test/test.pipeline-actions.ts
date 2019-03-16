@@ -11,14 +11,17 @@ export = nodeunit.testCase({
     'works'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
-      const stage = new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) });
-      const artifact = new cpapi.Artifact(stack as any, 'TestArtifact');
-      const action = new cloudformation.PipelineCreateReplaceChangeSetAction(stack, 'Action', {
-        stage,
+      const artifact = new cpapi.Artifact('TestArtifact');
+      const action = new cloudformation.PipelineCreateReplaceChangeSetAction({
+        actionName: 'Action',
         changeSetName: 'MyChangeSet',
         stackName: 'MyStack',
         templatePath: artifact.atPath('path/to/file'),
         adminPermissions: false,
+      });
+      const stage = new StageDouble({
+        pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }),
+        actions: [action],
       });
 
       _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.deploymentRole.roleArn);
@@ -45,22 +48,25 @@ export = nodeunit.testCase({
     'uses a single permission statement if the same ChangeSet name is used'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
-      const stage = new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) });
-      const artifact = new cpapi.Artifact(stack as any, 'TestArtifact');
-      new cloudformation.PipelineCreateReplaceChangeSetAction(stack, 'ActionA', {
-        stage,
-        changeSetName: 'MyChangeSet',
-        stackName: 'StackA',
-        adminPermissions: false,
-        templatePath: artifact.atPath('path/to/file')
-      });
-
-      new cloudformation.PipelineCreateReplaceChangeSetAction(stack, 'ActionB', {
-        stage,
-        changeSetName: 'MyChangeSet',
-        stackName: 'StackB',
-        adminPermissions: false,
-        templatePath: artifact.atPath('path/to/other/file')
+      const artifact = new cpapi.Artifact('TestArtifact');
+      new StageDouble({
+        pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }),
+        actions: [
+          new cloudformation.PipelineCreateReplaceChangeSetAction({
+            actionName: 'ActionA',
+            changeSetName: 'MyChangeSet',
+            stackName: 'StackA',
+            adminPermissions: false,
+            templatePath: artifact.atPath('path/to/file')
+          }),
+          new cloudformation.PipelineCreateReplaceChangeSetAction({
+            actionName: 'ActionB',
+            changeSetName: 'MyChangeSet',
+            stackName: 'StackB',
+            adminPermissions: false,
+            templatePath: artifact.atPath('path/to/other/file')
+          }),
+        ],
       });
 
       test.deepEqual(
@@ -70,8 +76,8 @@ export = nodeunit.testCase({
             Action: 'iam:PassRole',
             Effect: 'Allow',
             Resource: [
-              { 'Fn::GetAtt': [ 'ActionARole72759154', 'Arn' ] },
-              { 'Fn::GetAtt': [ 'ActionBRole6A2F6804', 'Arn' ] }
+              { 'Fn::GetAtt': [ 'PipelineTestStageActionARole9283FBE3', 'Arn' ] },
+              { 'Fn::GetAtt': [ 'PipelineTestStageActionBRoleCABC8FA5', 'Arn' ] }
             ],
           },
           {
@@ -101,11 +107,15 @@ export = nodeunit.testCase({
     'works'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
-      const stage = new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) });
-      new cloudformation.PipelineExecuteChangeSetAction(stack, 'Action', {
-        stage,
-        changeSetName: 'MyChangeSet',
-        stackName: 'MyStack',
+      const stage = new StageDouble({
+        pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }),
+        actions: [
+          new cloudformation.PipelineExecuteChangeSetAction({
+            actionName: 'Action',
+            changeSetName: 'MyChangeSet',
+            stackName: 'MyStack',
+          }),
+        ],
       });
 
       const stackArn = _stackArn('MyStack', stack);
@@ -124,17 +134,20 @@ export = nodeunit.testCase({
     'uses a single permission statement if the same ChangeSet name is used'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
-      const stage = new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) });
-      new cloudformation.PipelineExecuteChangeSetAction(stack, 'ActionA', {
-        stage,
-        changeSetName: 'MyChangeSet',
-        stackName: 'StackA',
-      });
-
-      new cloudformation.PipelineExecuteChangeSetAction(stack, 'ActionB', {
-        stage,
-        changeSetName: 'MyChangeSet',
-        stackName: 'StackB',
+      new StageDouble({
+        pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }),
+        actions: [
+          new cloudformation.PipelineExecuteChangeSetAction({
+            actionName: 'ActionA',
+            changeSetName: 'MyChangeSet',
+            stackName: 'StackA',
+          }),
+          new cloudformation.PipelineExecuteChangeSetAction({
+            actionName: 'ActionB',
+            changeSetName: 'MyChangeSet',
+            stackName: 'StackB',
+          }),
+        ],
       });
 
       test.deepEqual(
@@ -161,12 +174,16 @@ export = nodeunit.testCase({
   'the CreateUpdateStack Action sets the DescribeStack*, Create/Update/DeleteStack & PassRole permissions'(test: nodeunit.Test) {
     const stack = new cdk.Stack();
     const pipelineRole = new RoleDouble(stack, 'PipelineRole');
-    const action = new cloudformation.PipelineCreateUpdateStackAction(stack, 'Action', {
-      stage: new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) }),
-      templatePath: new cpapi.Artifact(stack as any, 'TestArtifact').atPath('some/file'),
+    const action = new cloudformation.PipelineCreateUpdateStackAction({
+      actionName: 'Action',
+      templatePath: new cpapi.Artifact('TestArtifact').atPath('some/file'),
       stackName: 'MyStack',
-        adminPermissions: false,
+      adminPermissions: false,
       replaceOnFailure: true,
+    });
+    new StageDouble({
+      pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }),
+      actions: [action],
     });
     const stackArn = _stackArn('MyStack', stack);
 
@@ -183,10 +200,14 @@ export = nodeunit.testCase({
   'the DeleteStack Action sets the DescribeStack*, DeleteStack & PassRole permissions'(test: nodeunit.Test) {
     const stack = new cdk.Stack();
     const pipelineRole = new RoleDouble(stack, 'PipelineRole');
-    const action = new cloudformation.PipelineDeleteStackAction(stack, 'Action', {
-      stage: new StageDouble({ pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }) }),
-        adminPermissions: false,
+    const action = new cloudformation.PipelineDeleteStackAction({
+      actionName: 'Action',
+      adminPermissions: false,
       stackName: 'MyStack',
+    });
+    new StageDouble({
+      pipeline: new PipelineDouble(stack, 'Pipeline', { role: pipelineRole }),
+      actions: [action],
     });
     const stackArn = _stackArn('MyStack', stack);
 
@@ -272,7 +293,7 @@ function _isOrContains(entity: string | string[], value: string): boolean {
 }
 
 function _stackArn(stackName: string, scope: cdk.IConstruct): string {
-  return cdk.Stack.find(scope).formatArn({
+  return scope.node.stack.formatArn({
     service: 'cloudformation',
     resource: 'stack',
     resourceName: `${stackName}/*`,
@@ -287,54 +308,51 @@ class PipelineDouble extends cdk.Construct implements cpapi.IPipeline {
   constructor(scope: cdk.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
-    this.pipelineArn = cdk.Stack.find(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
+    this.pipelineArn = this.node.stack.formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
     this.role = role;
   }
 
-  public get uniqueId(): string {
-    throw new Error("Unsupported");
+  public asEventRuleTarget(_ruleArn: string, _ruleUniqueId: string): events.EventRuleTargetProps {
+    throw new Error('asEventRuleTarget() is unsupported in PipelineDouble');
   }
 
-  public grantBucketRead(): void {
-    throw new Error("Unsupported");
+  public grantBucketRead(_identity?: iam.IPrincipal): void {
+    throw new Error('grantBucketRead() is unsupported in PipelineDouble');
   }
 
-  public grantBucketReadWrite(): void {
-    throw new Error("Unsupported");
-  }
-
-  public asEventRuleTarget(): events.EventRuleTargetProps {
-    throw new Error("Unsupported");
+  public grantBucketReadWrite(_identity?: iam.IPrincipal): void {
+    throw new Error('grantBucketReadWrite() is unsupported in PipelineDouble');
   }
 }
 
-class StageDouble implements cpapi.IStage, cpapi.IInternalStage {
-  public readonly dependencyRoots: cdk.IConstruct[] = [this];
-  public readonly name: string;
+class StageDouble implements cpapi.IStage {
+  public readonly stageName: string;
   public readonly pipeline: cpapi.IPipeline;
-  public readonly _internal = this;
-
-  public readonly actions = new Array<cpapi.Action>();
+  public readonly actions: cpapi.Action[];
 
   public get node(): cdk.ConstructNode {
-    throw new Error('this is not a real construct');
+    throw new Error('StageDouble is not a real construct');
   }
 
-  constructor({ name, pipeline }: { name?: string, pipeline: cpapi.IPipeline }) {
-    this.name = name || 'TestStage';
+  constructor({ name, pipeline, actions }: { name?: string, pipeline: PipelineDouble, actions: cpapi.Action[] }) {
+    this.stageName = name || 'TestStage';
     this.pipeline = pipeline;
+
+    const stageParent = new cdk.Construct(pipeline, this.stageName);
+    for (const action of actions) {
+      const actionParent = new cdk.Construct(stageParent, action.actionName);
+      (action as any)._attachActionToPipeline(this, actionParent);
+    }
+    this.actions = actions;
   }
 
-  public _attachAction(action: cpapi.Action) {
-    this.actions.push(action);
+  public addAction(_action: cpapi.Action): void {
+    throw new Error('addAction() is not supported on StageDouble');
   }
 
-  public _generateOutputArtifactName(): string {
-    throw new Error('Unsupported');
-  }
-
-  public _findInputArtifact(): cpapi.Artifact {
-    throw new Error('Unsupported');
+  public onStateChange(_name: string, _target?: events.IEventRuleTarget, _options?: events.EventRuleProps):
+      events.EventRule {
+    throw new Error('onStateChange() is not supported on StageDouble');
   }
 }
 

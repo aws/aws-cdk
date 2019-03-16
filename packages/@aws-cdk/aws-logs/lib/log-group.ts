@@ -272,7 +272,7 @@ export class LogGroup extends LogGroupBase {
    */
   public export(): LogGroupImportProps {
     return {
-      logGroupArn: new cdk.Output(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue().toString()
+      logGroupArn: new cdk.CfnOutput(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue().toString()
     };
   }
 }
@@ -295,7 +295,7 @@ class ImportedLogGroup extends LogGroupBase {
     super(scope, id);
 
     this.logGroupArn = props.logGroupArn;
-    this.logGroupName = cdk.Stack.find(this).parseArn(props.logGroupArn, ':').resourceName!;
+    this.logGroupName = this.node.stack.parseArn(props.logGroupArn, ':').resourceName!;
   }
 
   /**

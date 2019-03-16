@@ -17,33 +17,27 @@ import {
  * If you want to reference an already registered provider,
  * use the {@link JenkinsProvider#import} method.
  */
-export interface IJenkinsProvider {
+export interface IJenkinsProvider extends cdk.IConstruct {
   readonly providerName: string;
   readonly serverUrl: string;
   readonly version: string;
 
   /**
-   * Convenience method for creating a new {@link JenkinsBuildAction},
-   * and adding it to the given Stage.
+   * Convenience method for creating a new {@link JenkinsBuildAction}.
    *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
    * @param props construction properties of the new Action
    * @returns the newly created {@link JenkinsBuildAction}
    */
-  addToPipeline(stage: cpapi.IStage, name: string, props: BasicJenkinsBuildActionProps):
+  toCodePipelineBuildAction(props: BasicJenkinsBuildActionProps):
       JenkinsBuildAction;
 
   /**
-   * Convenience method for creating a new {@link JenkinsTestAction},
-   * and adding it to the given Stage.
+   * Convenience method for creating a new {@link JenkinsTestAction}.
    *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
    * @param props construction properties of the new Action
    * @returns the newly created {@link JenkinsTestAction}
    */
-  addToPipelineAsTest(stage: cpapi.IStage, name: string, props: BasicJenkinsTestActionProps):
+  toCodePipelineTestAction(props: BasicJenkinsTestActionProps):
       JenkinsTestAction;
 
   /**
@@ -137,33 +131,29 @@ export abstract class BaseJenkinsProvider extends cdk.Construct implements IJenk
 
   public export(): JenkinsProviderImportProps {
     return {
-      providerName: new cdk.Output(this, 'JenkinsProviderName', {
+      providerName: new cdk.CfnOutput(this, 'JenkinsProviderName', {
         value: this.providerName,
       }).makeImportValue().toString(),
-      serverUrl: new cdk.Output(this, 'JenkinsServerUrl', {
+      serverUrl: new cdk.CfnOutput(this, 'JenkinsServerUrl', {
         value: this.serverUrl,
       }).makeImportValue().toString(),
-      version: new cdk.Output(this, 'JenkinsProviderVersion', {
+      version: new cdk.CfnOutput(this, 'JenkinsProviderVersion', {
         value: this.version,
       }).makeImportValue().toString(),
     };
   }
 
-  public addToPipeline(stage: cpapi.IStage, name: string, props: BasicJenkinsBuildActionProps):
-      JenkinsBuildAction {
-    return new JenkinsBuildAction(this, name, {
-      stage,
-      jenkinsProvider: this,
+  public toCodePipelineBuildAction(props: BasicJenkinsBuildActionProps): JenkinsBuildAction {
+    return new JenkinsBuildAction({
       ...props,
+      jenkinsProvider: this,
     });
   }
 
-  public addToPipelineAsTest(stage: cpapi.IStage, name: string, props: BasicJenkinsTestActionProps):
-      JenkinsTestAction {
-    return new JenkinsTestAction(this, name, {
-      stage,
-      jenkinsProvider: this,
+  public toCodePipelineTestAction(props: BasicJenkinsTestActionProps): JenkinsTestAction {
+    return new JenkinsTestAction({
       ...props,
+      jenkinsProvider: this,
     });
   }
 

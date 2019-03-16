@@ -5,15 +5,12 @@ import { CfnWebhook } from './codepipeline.generated';
 /**
  * Construction properties of the {@link GitHubSourceAction GitHub source action}.
  */
-export interface GitHubSourceActionProps extends actions.CommonActionProps,
-    actions.CommonActionConstructProps {
+export interface GitHubSourceActionProps extends actions.CommonActionProps {
   /**
-   * The name of the source's output artifact. Output artifacts are used by CodePipeline as
+   * The name of the source's output artifact. CfnOutput artifacts are used by CodePipeline as
    * inputs into other actions.
-   *
-   * @default a name will be auto-generated
    */
-  outputArtifactName?: string;
+  outputArtifactName: string;
 
   /**
    * The GitHub account/user that owns the repo.
@@ -56,8 +53,10 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps,
  * Source that is provided by a GitHub repository.
  */
 export class GitHubSourceAction extends actions.SourceAction {
-  constructor(scope: cdk.Construct, id: string, props: GitHubSourceActionProps) {
-    super(scope, id, {
+  private readonly props: GitHubSourceActionProps;
+
+  constructor(props: GitHubSourceActionProps) {
+    super({
       ...props,
       owner: 'ThirdParty',
       provider: 'GitHub',
@@ -71,11 +70,15 @@ export class GitHubSourceAction extends actions.SourceAction {
       outputArtifactName: props.outputArtifactName
     });
 
-    if (!props.pollForSourceChanges) {
-      new CfnWebhook(this, 'WebhookResource', {
+    this.props = props;
+  }
+
+  protected bind(stage: actions.IStage, scope: cdk.Construct): void {
+    if (!this.props.pollForSourceChanges) {
+      new CfnWebhook(scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
-          secretToken: props.oauthToken.toString(),
+          secretToken: this.props.oauthToken.toString(),
         },
         filters: [
           {
@@ -83,8 +86,8 @@ export class GitHubSourceAction extends actions.SourceAction {
             matchEquals: 'refs/heads/{Branch}',
           },
         ],
-        targetAction: this.node.id,
-        targetPipeline: props.stage.pipeline.pipelineName,
+        targetAction: this.actionName,
+        targetPipeline: stage.pipeline.pipelineName,
         targetPipelineVersion: 1,
         registerWithThirdParty: true,
       });

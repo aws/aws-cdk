@@ -1,4 +1,3 @@
-// import { validateArtifactBounds, validateSourceAction } from '../lib/validation';
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
@@ -8,8 +7,6 @@ import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
-
-class TestAction extends actions.Action {}
 
 export = {
   'artifact bounds validation': {
@@ -71,12 +68,22 @@ export = {
     const repo = new codecommit.Repository(stack, 'Repo', {
       repositoryName: 'Repo',
     });
-    const sourceStage = pipeline.addStage('Source');
-    repo.addToPipeline(sourceStage, 'CodeCommit');
+    const sourceAction = repo.toCodePipelineSourceAction({ actionName: 'CodeCommit' });
+    pipeline.addStage({
+      name: 'Source',
+      actions: [sourceAction],
+    });
 
     const project = new codebuild.PipelineProject(stack, 'Project');
-    const buildStage = pipeline.addStage('Build');
-    project.addToPipeline(buildStage, 'CodeBuild');
+    pipeline.addStage({
+      name: 'Build',
+      actions: [
+        project.toCodePipelineBuildAction({
+          actionName: 'CodeBuild',
+          inputArtifact: sourceAction.outputArtifact,
+        }),
+      ],
+    });
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "Stages": [
@@ -88,7 +95,7 @@ export = {
               "InputArtifacts": [],
               "OutputArtifacts": [
                 {
-                  "Name": "Artifact_RepoCodeCommit7910F5F9",
+                  "Name": "Artifact_CodeCommit_Repo",
                 },
               ],
             }
@@ -101,12 +108,12 @@ export = {
               "Name": "CodeBuild",
               "InputArtifacts": [
                 {
-                  "Name": "Artifact_RepoCodeCommit7910F5F9",
+                  "Name": "Artifact_CodeCommit_Repo",
                 }
               ],
               "OutputArtifacts": [
                 {
-                  "Name": "Artifact_ProjectCodeBuildE34AD2EC",
+                  "Name": "Artifact_CodeBuild_Project",
                 },
               ],
             }
@@ -117,21 +124,110 @@ export = {
 
     test.done();
   },
+
+  'the same Action cannot be added to 2 different Stages'(test: Test) {
+    const stack = new cdk.Stack();
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+    const action = new FakeAction('FakeAction');
+
+    const stage1 = {
+      name: 'Stage1',
+      actions: [
+        action,
+      ],
+    };
+    const stage2 = {
+      name: 'Stage2',
+      actions: [action],
+    };
+
+    pipeline.addStage(stage1); // fine
+
+    test.throws(() => {
+      pipeline.addStage(stage2);
+    }, /FakeAction/);
+
+    test.done();
+  },
+
+  'input Artifacts': {
+    'can be added multiple times to an Action safely'(test: Test) {
+      const artifact = new actions.Artifact('SomeArtifact');
+
+      const stack = new cdk.Stack();
+      const project = new codebuild.PipelineProject(stack, 'Project');
+      const action = project.toCodePipelineBuildAction({
+        actionName: 'CodeBuild',
+        inputArtifact: artifact,
+        additionalInputArtifacts: [artifact],
+      });
+
+      test.equal(action._inputArtifacts.length, 1);
+
+      test.done();
+    },
+
+    'cannot have duplicate names'(test: Test) {
+      const artifact1 = new actions.Artifact('SomeArtifact');
+      const artifact2 = new actions.Artifact('SomeArtifact');
+
+      const stack = new cdk.Stack();
+      const project = new codebuild.PipelineProject(stack, 'Project');
+
+      test.throws(() =>
+        project.toCodePipelineBuildAction({
+          actionName: 'CodeBuild',
+          inputArtifact: artifact1,
+          additionalInputArtifacts: [artifact2],
+        })
+      , /SomeArtifact/);
+
+      test.done();
+    },
+  },
+
+  'output Artifact names': {
+    'accept the same name multiple times safely'(test: Test) {
+      const artifact = new actions.Artifact('SomeArtifact');
+
+      const stack = new cdk.Stack();
+      const project = new codebuild.PipelineProject(stack, 'Project');
+      const action = project.toCodePipelineBuildAction({
+        actionName: 'CodeBuild',
+        inputArtifact: artifact,
+        outputArtifactName: 'Artifact1',
+        additionalOutputArtifactNames: [
+          'Artifact1',
+          'Artifact1',
+        ],
+      });
+
+      test.equal(action._outputArtifacts.length, 1);
+
+      test.done();
+    },
+  },
 };
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {
-  const stack = new cdk.Stack();
-  const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
-  const stage = new codepipeline.Stage(stack, 'stage', { pipeline });
-  const action = new TestAction(stack, 'TestAction', {
-    stage,
-    artifactBounds: actions.defaultBounds(),
-    category: actions.ActionCategory.Test,
-    provider: 'test provider'
-  });
   const artifacts: actions.Artifact[] = [];
   for (let i = 0; i < numberOfArtifacts; i++) {
-    artifacts.push(new actions.Artifact(action, `TestArtifact${i}`));
+    artifacts.push(new actions.Artifact(`TestArtifact${i}`));
   }
   return actions.validateArtifactBounds('output', artifacts, min, max, 'testCategory', 'testProvider');
+}
+
+class FakeAction extends actions.Action {
+  constructor(actionName: string) {
+    super({
+      actionName,
+      category: actions.ActionCategory.Source,
+      provider: 'SomeService',
+      artifactBounds: actions.defaultBounds(),
+    });
+  }
+
+  protected bind(_stage: actions.IStage, _scope: cdk.Construct): void {
+    // do nothing
+  }
 }

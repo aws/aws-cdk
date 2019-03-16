@@ -7,64 +7,174 @@ import util = require('./util');
 
 export type SettingsMap = {[key: string]: any};
 
-export const DEFAULTS = 'cdk.json';
-export const PER_USER_DEFAULTS = '~/.cdk.json';
+export const PROJECT_CONFIG = 'cdk.json';
+export const PROJECT_CONTEXT = 'cdk.context.json';
+export const USER_DEFAULTS = '~/.cdk.json';
+
+const CONTEXT_KEY = 'context';
 
 /**
  * All sources of settings combined
  */
 export class Configuration {
-  public readonly commandLineArguments: Settings;
-  public readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
-  public readonly userConfig = new Settings();
-  public readonly projectConfig = new Settings();
+  public settings = new Settings();
+  public context = new Context();
+
+  private readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
+  private readonly commandLineArguments: Settings;
+  private readonly commandLineContext: Settings;
+  private projectConfig: Settings;
+  private projectContext: Settings;
+  private loaded = false;
 
   constructor(commandLineArguments?: yargs.Arguments) {
     this.commandLineArguments = commandLineArguments
                               ? Settings.fromCommandLineArguments(commandLineArguments)
                               : new Settings();
+    this.commandLineContext = this.commandLineArguments.subSettings([CONTEXT_KEY]).makeReadOnly();
   }
 
   /**
    * Load all config
    */
   public async load(): Promise<this> {
-    await this.userConfig.load(PER_USER_DEFAULTS);
-    await this.projectConfig.load(DEFAULTS);
+    const userConfig = await loadAndLog(USER_DEFAULTS);
+    this.projectConfig = await loadAndLog(PROJECT_CONFIG);
+    this.projectContext = await loadAndLog(PROJECT_CONTEXT);
+
+    await this.migrateLegacyContext();
+
+    this.context = new Context(
+        this.commandLineContext,
+        this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
+        this.projectContext);
+
+    // Build settings from what's left
+    this.settings = this.defaultConfig
+      .merge(userConfig)
+      .merge(this.projectConfig)
+      .merge(this.commandLineArguments)
+      .makeReadOnly();
+
+    this.loaded = true;
+
     return this;
   }
 
   /**
-   * Save the project config
+   * Save the project context
    */
-  public async saveProjectConfig(): Promise<this> {
-    await this.projectConfig.save(DEFAULTS);
+  public async saveContext(): Promise<this> {
+    if (!this.loaded) { return this; }  // Avoid overwriting files with nothing
+
+    await this.projectContext.save(PROJECT_CONTEXT);
+
     return this;
   }
 
   /**
-   * Log the loaded defaults
+   * Migrate context from the 'context' field in the projectConfig object to the dedicated object
+   *
+   * Only migrate context whose key contains a ':', to migrate only context generated
+   * by context providers.
    */
-  public logDefaults() {
-    if (!this.userConfig.empty()) {
-      debug(PER_USER_DEFAULTS + ':', JSON.stringify(this.userConfig.settings, undefined, 2));
+  private async migrateLegacyContext() {
+    const legacyContext = this.projectConfig.get([CONTEXT_KEY]);
+    if (legacyContext === undefined) { return; }
+
+    const toMigrate = Object.keys(legacyContext).filter(k => k.indexOf(':') > -1);
+    if (toMigrate.length === 0) { return; }
+
+    for (const key of toMigrate) {
+      this.projectContext.set([key], legacyContext[key]);
+      this.projectConfig.unset([CONTEXT_KEY, key]);
     }
 
-    if (!this.projectConfig.empty()) {
-      debug(DEFAULTS + ':', JSON.stringify(this.projectConfig.settings, undefined, 2));
+    // If the source object is empty now, completely remove it
+    if (Object.keys(this.projectConfig.get([CONTEXT_KEY])).length === 0) {
+      this.projectConfig.unset([CONTEXT_KEY]);
+    }
+
+    // Save back
+    await this.projectConfig.save(PROJECT_CONFIG);
+    await this.projectContext.save(PROJECT_CONTEXT);
+  }
+}
+
+async function loadAndLog(fileName: string): Promise<Settings> {
+  const ret = new Settings();
+  await ret.load(fileName);
+  if (!ret.empty) {
+    debug(fileName + ':', JSON.stringify(ret.all, undefined, 2));
+  }
+  return ret;
+}
+
+/**
+ * Class that supports overlaying property bags
+ *
+ * Reads come from the first property bag that can has the given key,
+ * writes go to the first property bag that is not readonly. A write
+ * will remove the value from all property bags after the first
+ * writable one.
+ */
+export class Context {
+  private readonly bags: Settings[];
+
+  constructor(...bags: Settings[]) {
+    this.bags = bags.length > 0 ? bags : [new Settings()];
+  }
+
+  public get keys(): string[] {
+    return Object.keys(this.all);
+  }
+
+  public has(key: string) {
+    return this.keys.indexOf(key) > -1;
+  }
+
+  public get all(): {[key: string]: any} {
+    let ret = new Settings();
+
+    // In reverse order so keys to the left overwrite keys to the right of them
+    for (const bag of [...this.bags].reverse()) {
+      ret = ret.merge(bag);
+    }
+
+    return ret.all;
+  }
+
+  public get(key: string): any {
+    for (const bag of this.bags) {
+      const v = bag.get([key]);
+      if (v !== undefined) { return v; }
+    }
+    return undefined;
+  }
+
+  public set(key: string, value: any) {
+    for (const bag of this.bags) {
+      if (bag.readOnly) { continue; }
+
+      // All bags past the first one have the value erased
+      bag.set([key], value);
+      value = undefined;
     }
   }
 
-  /**
-   * Return the combined config from all config sources
-   */
-  public get combined(): Settings {
-    return this.defaultConfig.merge(this.userConfig).merge(this.projectConfig).merge(this.commandLineArguments);
+  public unset(key: string) {
+    this.set(key, undefined);
+  }
+
+  public clear() {
+    for (const key of this.keys) {
+      this.unset(key);
+    }
   }
 }
 
 /**
- * A single set of settings
+ * A single bag of settings
  */
 export class Settings {
   /**
@@ -76,7 +186,7 @@ export class Settings {
     const context: any = {};
 
     // Turn list of KEY=VALUE strings into an object
-    for (const assignment of (argv.context || [])) {
+    for (const assignment of ((argv as any).context || [])) {
       const parts = assignment.split('=', 2);
       if (parts.length === 2) {
         debug('CLI argument context: %s=%s', parts[0], parts[1]);
@@ -111,9 +221,12 @@ export class Settings {
     return ret;
   }
 
-  constructor(public settings: SettingsMap = {}) {}
+  constructor(private settings: SettingsMap = {}, public readonly readOnly = false) {}
 
   public async load(fileName: string): Promise<this> {
+    if (this.readOnly) {
+      throw new Error(`Can't load ${fileName}: settings object is readonly`);
+    }
     this.settings = {};
 
     const expanded = expandHomeDir(fileName);
@@ -122,29 +235,11 @@ export class Settings {
     }
 
     // See https://github.com/awslabs/aws-cdk/issues/59
-    prohibitContextKey(this, 'default-account');
-    prohibitContextKey(this, 'default-region');
-    warnAboutContextKey(this, 'aws:');
+    this.prohibitContextKey('default-account', fileName);
+    this.prohibitContextKey('default-region', fileName);
+    this.warnAboutContextKey('aws:', fileName);
 
     return this;
-
-    function prohibitContextKey(self: Settings, key: string) {
-      if (!self.settings.context) { return; }
-      if (key in self.settings.context) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
-      }
-    }
-
-    function warnAboutContextKey(self: Settings, prefix: string) {
-      if (!self.settings.context) { return; }
-      for (const contextKey of Object.keys(self.settings.context)) {
-        if (contextKey.startsWith(prefix)) {
-          // tslint:disable-next-line:max-line-length
-          warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
-        }
-      }
-    }
   }
 
   public async save(fileName: string): Promise<this> {
@@ -154,11 +249,30 @@ export class Settings {
     return this;
   }
 
+  public get all(): any {
+    return this.get([]);
+  }
+
   public merge(other: Settings): Settings {
     return new Settings(util.deepMerge(this.settings, other.settings));
   }
 
-  public empty(): boolean {
+  public subSettings(keyPrefix: string[]) {
+    return new Settings(this.get(keyPrefix) || {}, false);
+  }
+
+  public makeReadOnly(): Settings {
+    return new Settings(this.settings, true);
+  }
+
+  public clear() {
+    if (this.readOnly) {
+      throw new Error('Cannot clear(): settings are readonly');
+    }
+    this.settings = {};
+  }
+
+  public get empty(): boolean {
     return Object.keys(this.settings).length === 0;
   }
 
@@ -167,8 +281,38 @@ export class Settings {
   }
 
   public set(path: string[], value: any): Settings {
-    util.deepSet(this.settings, path, value);
+    if (this.readOnly) {
+      throw new Error(`Can't set ${path}: settings object is readonly`);
+    }
+    if (path.length === 0) {
+      // deepSet can't handle this case
+      this.settings = value;
+    } else {
+      util.deepSet(this.settings, path, value);
+    }
     return this;
+  }
+
+  public unset(path: string[]) {
+    this.set(path, undefined);
+  }
+
+  private prohibitContextKey(key: string, fileName: string) {
+    if (!this.settings.context) { return; }
+    if (key in this.settings.context) {
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
+    }
+  }
+
+  private warnAboutContextKey(prefix: string, fileName: string) {
+    if (!this.settings.context) { return; }
+    for (const contextKey of Object.keys(this.settings.context)) {
+      if (contextKey.startsWith(prefix)) {
+        // tslint:disable-next-line:max-line-length
+        warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
+      }
+    }
   }
 }
 

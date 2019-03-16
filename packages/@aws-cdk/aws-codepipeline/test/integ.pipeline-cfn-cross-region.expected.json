@@ -17,7 +17,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codepipeline.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "codepipeline.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -98,7 +108,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "CFNDeployRole68D5E8D3",
+                  "MyPipelineCFNCFNDeployRole9CC99B3F",
                   "Arn"
                 ]
               }
@@ -167,7 +177,7 @@
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinecloudformationcrossregionMyBucketS3DBF7878C"
+                    "Name": "Artifact_S3_awscdkcodepipelinecloudformationcrossregionMyBucket99D95A28"
                   }
                 ],
                 "RunOrder": 1
@@ -187,17 +197,17 @@
                 "Configuration": {
                   "StackName": "aws-cdk-codepipeline-cross-region-deploy-stack",
                   "ActionMode": "CREATE_UPDATE",
-                  "TemplatePath": "Artifact_awscdkcodepipelinecloudformationcrossregionMyBucketS3DBF7878C::template.yml",
+                  "TemplatePath": "Artifact_S3_awscdkcodepipelinecloudformationcrossregionMyBucket99D95A28::template.yml",
                   "RoleArn": {
                     "Fn::GetAtt": [
-                      "CFNDeployRole68D5E8D3",
+                      "MyPipelineCFNCFNDeployRole9CC99B3F",
                       "Arn"
                     ]
                   }
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinecloudformationcrossregionMyBucketS3DBF7878C"
+                    "Name": "Artifact_S3_awscdkcodepipelinecloudformationcrossregionMyBucket99D95A28"
                   }
                 ],
                 "Name": "CFN_Deploy",
@@ -226,7 +236,7 @@
         "MyPipelineRoleC0D47CA4"
       ]
     },
-    "CFNDeployRole68D5E8D3": {
+    "MyPipelineCFNCFNDeployRole9CC99B3F": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -235,7 +245,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "cloudformation.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "cloudformation.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],

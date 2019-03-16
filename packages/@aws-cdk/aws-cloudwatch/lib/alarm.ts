@@ -1,13 +1,13 @@
 import { Construct, Token } from '@aws-cdk/cdk';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import { Dimension, Metric, MetricAarmProps, Statistic, Unit } from './metric';
+import { Dimension, Metric, MetricAlarmProps, Statistic, Unit } from './metric';
 import { parseStatistic } from './util.statistic';
 
 /**
  * Properties for Alarms
  */
-export interface AlarmProps extends MetricAarmProps {
+export interface AlarmProps extends MetricAlarmProps {
   /**
    * The metric to add the alarm on
    *

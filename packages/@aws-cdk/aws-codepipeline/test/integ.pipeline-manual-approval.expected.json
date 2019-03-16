@@ -13,7 +13,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codepipeline.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "codepipeline.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -93,7 +103,7 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Resource": {
-                "Ref": "ManualApprovalTopicResource300641E2"
+                "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
               }
             }
           ],
@@ -136,7 +146,7 @@
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkcodepipelinemanualapprovalBucketS39750AFE7"
+                    "Name": "Artifact_S3_awscdkcodepipelinemanualapprovalBucketFF0B256C"
                   }
                 ],
                 "RunOrder": 1
@@ -155,7 +165,7 @@
                 },
                 "Configuration": {
                   "NotificationArn": {
-                    "Ref": "ManualApprovalTopicResource300641E2"
+                    "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
                   }
                 },
                 "InputArtifacts": [],
@@ -179,17 +189,17 @@
         "PipelineRoleD68726F7"
       ]
     },
-    "ManualApprovalTopicResource300641E2": {
+    "PipelineApproveManualApprovalTopicResourceF5A35B20": {
       "Type": "AWS::SNS::Topic"
     },
-    "ManualApprovalTopicResourceSubscriptionadamruka85gmailcomBACEE98E": {
+    "PipelineApproveManualApprovalTopicResourceSubscriptionadamruka85gmailcom76398FFA": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
-        "Endpoint": "adamruka85@gmail.com",
         "Protocol": "email",
         "TopicArn": {
-          "Ref": "ManualApprovalTopicResource300641E2"
-        }
+          "Ref": "PipelineApproveManualApprovalTopicResourceF5A35B20"
+        },
+        "Endpoint": "adamruka85@gmail.com"
       }
     }
   }

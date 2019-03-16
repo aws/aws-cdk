@@ -122,8 +122,6 @@ export enum LogRetention {
 export class CloudTrail extends cdk.Construct {
 
   public readonly cloudTrailArn: string;
-  private readonly cloudWatchLogsRoleArn?: string;
-  private readonly cloudWatchLogsGroupArn?: string;
   private eventSelectors: EventSelector[] = [];
 
   constructor(scope: cdk.Construct, id: string, props: CloudTrailProps = {}) {
@@ -132,33 +130,29 @@ export class CloudTrail extends cdk.Construct {
     const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
     const cloudTrailPrincipal = "cloudtrail.amazonaws.com";
 
-    const stack = cdk.Stack.find(this);
-
     s3bucket.addToResourcePolicy(new iam.PolicyStatement()
       .addResource(s3bucket.bucketArn)
       .addActions('s3:GetBucketAcl')
       .addServicePrincipal(cloudTrailPrincipal));
 
     s3bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addResource(s3bucket.arnForObjects(`AWSLogs/${stack.accountId}/*`))
+      .addResource(s3bucket.arnForObjects(`AWSLogs/${this.node.stack.accountId}/*`))
       .addActions("s3:PutObject")
       .addServicePrincipal(cloudTrailPrincipal)
       .setCondition("StringEquals", {'s3:x-amz-acl': "bucket-owner-full-control"}));
 
+    let logGroup: logs.CfnLogGroup | undefined;
+    let logsRole: iam.IRole | undefined;
     if (props.sendToCloudWatchLogs) {
-      const logGroup = new logs.CfnLogGroup(this, "LogGroup", {
+      logGroup = new logs.CfnLogGroup(this, "LogGroup", {
         retentionInDays: props.cloudWatchLogsRetentionTimeDays || LogRetention.OneYear
       });
-      this.cloudWatchLogsGroupArn = logGroup.logGroupArn;
 
-      const logsRole = new iam.Role(this, 'LogsRole', {assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
+      logsRole = new iam.Role(this, 'LogsRole', { assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
 
-      const streamArn = `${this.cloudWatchLogsRoleArn}:log-stream:*`;
       logsRole.addToPolicy(new iam.PolicyStatement()
         .addActions("logs:PutLogEvents", "logs:CreateLogStream")
-        .addResource(streamArn));
-      this.cloudWatchLogsRoleArn = logsRole.roleArn;
-
+        .addResource(logGroup.logGroupArn));
     }
     if (props.managementEvents) {
       const managementEvent =  {
@@ -178,14 +172,21 @@ export class CloudTrail extends cdk.Construct {
       kmsKeyId:  props.kmsKey && props.kmsKey.keyArn,
       s3BucketName: s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
-      cloudWatchLogsLogGroupArn: this.cloudWatchLogsGroupArn,
-      cloudWatchLogsRoleArn: this.cloudWatchLogsRoleArn,
+      cloudWatchLogsLogGroupArn: logGroup && logGroup.logGroupArn,
+      cloudWatchLogsRoleArn: logsRole && logsRole.roleArn,
       snsTopicName: props.snsTopic,
       eventSelectors: this.eventSelectors
     });
     this.cloudTrailArn = trail.trailArn;
     const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
     trail.node.addDependency(s3BucketPolicy);
+
+    // If props.sendToCloudWatchLogs is set to true then the trail needs to depend on the created logsRole
+    // so that it can create the log stream for the log group. This ensures the logsRole is created and propagated
+    // before the trail tries to create the log stream.
+    if (logsRole !== undefined) {
+      trail.node.addDependency(logsRole);
+    }
   }
 
   /**
@@ -196,10 +197,11 @@ export class CloudTrail extends cdk.Construct {
    *
    * Data events: These events provide insight into the resource operations performed on or within a resource.
    * These are also known as data plane operations.
-   * @param readWriteType the configuration type to log for this data event
-   * Eg, ReadWriteType.ReadOnly will only log "read" events for S3 objects that match a filter)
+   *
+   * @param prefixes the list of object ARN prefixes to include in logging (maximum 250 entries).
+   * @param options the options to configure logging of management and data events.
    */
-  public addS3EventSelector(prefixes: string[], readWriteType: ReadWriteType) {
+  public addS3EventSelector(prefixes: string[], options: AddS3EventSelectorOptions = {}) {
     if (prefixes.length > 250) {
       throw new Error("A maximum of 250 data elements can be in one event selector");
     }
@@ -207,14 +209,33 @@ export class CloudTrail extends cdk.Construct {
       throw new Error("A maximum of 5 event selectors are supported per trail.");
     }
     this.eventSelectors.push({
-      includeManagementEvents: false,
-      readWriteType,
+      includeManagementEvents: options.includeManagementEvents,
+      readWriteType: options.readWriteType,
       dataResources: [{
         type: "AWS::S3::Object",
         values: prefixes
       }]
     });
   }
+}
+
+/**
+ * Options for adding an S3 event selector.
+ */
+export interface AddS3EventSelectorOptions {
+  /**
+   * Specifies whether to log read-only events, write-only events, or all events.
+   *
+   * @default ReadWriteType.All
+   */
+  readWriteType?: ReadWriteType;
+
+  /**
+   * Specifies whether the event selector includes management events for the trail.
+   *
+   * @default true
+   */
+  includeManagementEvents?: boolean;
 }
 
 interface EventSelector {

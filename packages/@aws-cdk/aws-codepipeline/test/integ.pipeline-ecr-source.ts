@@ -15,12 +15,10 @@ const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
 });
 
 const repository = new ecr.Repository(stack, 'MyEcrRepo');
-const sourceStage = pipeline.addStage('Source');
-repository.addToPipeline(sourceStage, 'ECR_Source');
+const sourceStage = pipeline.addStage({ name: 'Source' });
+sourceStage.addAction(repository.toCodePipelineSourceAction({ actionName: 'ECR_Source' }));
 
-const approveStage = pipeline.addStage('Approve');
-new codepipeline.ManualApprovalAction(stack, 'ManualApproval', {
-  stage: approveStage,
-});
+const approveStage = pipeline.addStage({ name: 'Approve' });
+approveStage.addAction(new codepipeline.ManualApprovalAction({ actionName: 'ManualApproval' }));
 
 app.run();

@@ -41,21 +41,23 @@ const app = new App();
 const stack = new Stack(app, STACK_NAME);
 
 // Provisioned tables
-const table = new Table(stack, TABLE, {billingMode: BillingMode.PayPerRequest});
-table.addPartitionKey(TABLE_PARTITION_KEY);
+new Table(stack, TABLE, {
+  billingMode: BillingMode.PayPerRequest,
+  partitionKey: TABLE_PARTITION_KEY
+});
 
 const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_AND_LOCAL_SECONDARY_INDEX, {
   pitrEnabled: true,
   sseEnabled: true,
   streamSpecification: StreamViewType.KeysOnly,
   billingMode: BillingMode.PayPerRequest,
-  ttlAttributeName: 'timeToLive'
+  ttlAttributeName: 'timeToLive',
+  partitionKey: TABLE_PARTITION_KEY,
+  sortKey: TABLE_SORT_KEY
 });
 
-tableWithGlobalAndLocalSecondaryIndex.apply(new Tag('Environment', 'Production'));
+tableWithGlobalAndLocalSecondaryIndex.node.apply(new Tag('Environment', 'Production'));
 
-tableWithGlobalAndLocalSecondaryIndex.addPartitionKey(TABLE_PARTITION_KEY);
-tableWithGlobalAndLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
   partitionKey: GSI_PARTITION_KEY,
@@ -104,16 +106,21 @@ tableWithGlobalAndLocalSecondaryIndex.addLocalSecondaryIndex({
   nonKeyAttributes: LSI_NON_KEY
 });
 
-const tableWithGlobalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_SECONDARY_INDEX, {billingMode: BillingMode.PayPerRequest});
-tableWithGlobalSecondaryIndex.addPartitionKey(TABLE_PARTITION_KEY);
+const tableWithGlobalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_SECONDARY_INDEX, {
+  billingMode: BillingMode.PayPerRequest,
+  partitionKey: TABLE_PARTITION_KEY,
+});
 tableWithGlobalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
   partitionKey: GSI_PARTITION_KEY
 });
 
-const tableWithLocalSecondaryIndex = new Table(stack, TABLE_WITH_LOCAL_SECONDARY_INDEX, {billingMode: BillingMode.PayPerRequest});
-tableWithLocalSecondaryIndex.addPartitionKey(TABLE_PARTITION_KEY);
-tableWithLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
+const tableWithLocalSecondaryIndex = new Table(stack, TABLE_WITH_LOCAL_SECONDARY_INDEX, {
+  billingMode: BillingMode.PayPerRequest,
+  partitionKey: TABLE_PARTITION_KEY,
+  sortKey: TABLE_SORT_KEY,
+});
+
 tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_1,
   sortKey: LSI_SORT_KEY

@@ -128,6 +128,40 @@ export = {
       test.done();
     },
 
+    'url subscription (with raw delivery)'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const topic = new sns.Topic(stack, 'MyTopic', {
+        topicName: 'topicName',
+        displayName: 'displayName'
+      });
+
+      topic.subscribeUrl('appsubscription', 'https://foobar.com/', true);
+
+      expect(stack).toMatch({
+        "Resources": {
+          "MyTopic86869434": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+              "DisplayName": "displayName",
+              "TopicName": "topicName"
+            }
+            },
+            "MyTopicappsubscription00FA69EA": {
+            "Type": "AWS::SNS::Subscription",
+            "Properties": {
+              "Endpoint": "https://foobar.com/",
+              "Protocol": "https",
+              "TopicArn": { "Ref": "MyTopic86869434" },
+              "RawMessageDelivery": true
+            }
+          }
+        }
+      });
+
+      test.done();
+    },
+
     'queue subscription'(test: Test) {
       const stack = new cdk.Stack();
 
@@ -208,6 +242,35 @@ export = {
       test.done();
     },
 
+    'queue subscription (with raw delivery)'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const topic = new sns.Topic(stack, 'MyTopic', {
+        topicName: 'topicName',
+        displayName: 'displayName'
+      });
+
+      const queue = new sqs.Queue(stack, 'MyQueue');
+
+      topic.subscribeQueue(queue, true);
+
+      expect(stack).to(haveResource('AWS::SNS::Subscription', {
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "MyQueueE6CA6235",
+            "Arn"
+          ]
+        },
+        "Protocol": "sqs",
+        "TopicArn": {
+          "Ref": "MyTopic86869434"
+        },
+        "RawMessageDelivery": true
+      }));
+
+      test.done();
+    },
+
     'lambda subscription'(test: Test) {
       const stack = new cdk.Stack();
 
@@ -257,7 +320,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -445,7 +508,7 @@ export = {
                     "Action": "sts:AssumeRole",
                     "Effect": "Allow",
                     "Principal": {
-                      "Service": "lambda.amazonaws.com"
+                      "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
                     }
                   }
                 ],
@@ -504,6 +567,17 @@ export = {
 
       test.done();
     },
+
+    'invalid use of raw message delivery'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const topic = new sns.Topic(stack, 'Topic');
+
+      // THEN
+      test.throws(() => topic.subscribe('Nope', 'endpoint://location', sns.SubscriptionProtocol.Application, true),
+                  /Raw message delivery can only be enabled for HTTP\/S and SQS subscriptions/);
+      test.done();
+    }
   },
 
   'can add a policy to the topic'(test: Test) {
@@ -586,7 +660,7 @@ export = {
             "Action": "sns:Publish",
             "Effect": "Allow",
             "Principal": {
-            "Service": "events.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] }
             },
             "Resource": {
             "Ref": "MyTopic86869434"
@@ -750,7 +824,7 @@ export = {
             },
             "Effect": "Allow",
             "Principal": {
-            "Service": "s3.amazonaws.com"
+            "Service": { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
             },
             "Resource": {
             "Ref": "MyTopic86869434"
@@ -766,7 +840,7 @@ export = {
             },
             "Effect": "Allow",
             "Principal": {
-            "Service": "s3.amazonaws.com"
+            "Service": { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
             },
             "Resource": {
             "Ref": "MyTopic86869434"

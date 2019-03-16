@@ -18,27 +18,25 @@ import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy 
 const NAME_TAG: string = 'Name';
 
 /**
- * Properties of a Fleet
+ * Basic properties of an AutoScalingGroup, except the exact machines to run and where they should run
+ *
+ * Constructs that want to create AutoScalingGroups can inherit
+ * this interface and specialize the essential parts in various ways.
  */
-export interface AutoScalingGroupProps {
-  /**
-   * Type of instance to launch
-   */
-  instanceType: ec2.InstanceType;
-
+export interface CommonAutoScalingGroupProps {
   /**
    * Minimum number of instances in the fleet
    *
    * @default 1
    */
-  minSize?: number;
+  minCapacity?: number;
 
   /**
    * Maximum number of instances in the fleet
    *
    * @default desiredCapacity
    */
-  maxSize?: number;
+  maxCapacity?: number;
 
   /**
    * Initial amount of instances in the fleet
@@ -51,16 +49,6 @@ export interface AutoScalingGroupProps {
    * @default No SSH access will be possible
    */
   keyName?: string;
-
-  /**
-   * AMI to launch
-   */
-  machineImage: ec2.IMachineImageSource;
-
-  /**
-   * VPC to launch these instances in.
-   */
-  vpc: ec2.IVpcNetwork;
 
   /**
    * Where to place instances within the VPC
@@ -154,6 +142,41 @@ export interface AutoScalingGroupProps {
 }
 
 /**
+ * Properties of a Fleet
+ */
+export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
+  /**
+   * VPC to launch these instances in.
+   */
+  vpc: ec2.IVpcNetwork;
+
+  /**
+   * Type of instance to launch
+   */
+  instanceType: ec2.InstanceType;
+
+  /**
+   * AMI to launch
+   */
+  machineImage: ec2.IMachineImageSource;
+
+  /**
+   * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
+   *
+   * The role must be assumable by the service principal `ec2.amazonaws.com`:
+   *
+   * @example
+   *
+   *    const role = new iam.Role(this, 'MyRole', {
+   *      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+   *    });
+   *
+   * @default A role will automatically be created, it can be accessed via the `role` property
+   */
+  role?: iam.IRole;
+}
+
+/**
  * A Fleet represents a managed set of EC2 instances
  *
  * The Fleet models a number of AutoScalingGroups, a launch configuration, a
@@ -179,7 +202,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   /**
    * The IAM role assumed by instances of this fleet.
    */
-  public readonly role: iam.Role;
+  public readonly role: iam.IRole;
 
   /**
    * Name of the AutoScalingGroup
@@ -207,9 +230,9 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.apply(new cdk.Tag(NAME_TAG, this.node.path));
+    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
-    this.role = new iam.Role(this, 'InstanceRole', {
+    this.role = props.role || new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
 
@@ -236,19 +259,19 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
 
     const desiredCapacity =
         (props.desiredCapacity !== undefined ? props.desiredCapacity :
-        (props.minSize !== undefined ? props.minSize :
-        (props.maxSize !== undefined ? props.maxSize : 1)));
-    const minSize = props.minSize !== undefined ? props.minSize : 1;
-    const maxSize = props.maxSize !== undefined ? props.maxSize : desiredCapacity;
+        (props.minCapacity !== undefined ? props.minCapacity :
+        (props.maxCapacity !== undefined ? props.maxCapacity : 1)));
+    const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
+    const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity : desiredCapacity;
 
-    if (desiredCapacity < minSize || desiredCapacity > maxSize) {
-      throw new Error(`Should have minSize (${minSize}) <= desiredCapacity (${desiredCapacity}) <= maxSize (${maxSize})`);
+    if (desiredCapacity < minCapacity || desiredCapacity > maxCapacity) {
+      throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
     }
 
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
-      minSize: minSize.toString(),
-      maxSize: maxSize.toString(),
+      minSize: minCapacity.toString(),
+      maxSize: maxCapacity.toString(),
       desiredCapacity: desiredCapacity.toString(),
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined),

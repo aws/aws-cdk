@@ -1,4 +1,4 @@
-import { Construct, IConstruct, Output, Stack, Token } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IConstruct, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
@@ -193,7 +193,7 @@ function determineRuleScope(
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
-  return Stack.find(group1) !== Stack.find(group2);
+  return group1.node.stack !== group2.node.stack;
 }
 
 export interface SecurityGroupProps {
@@ -296,7 +296,7 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   public export(): SecurityGroupImportProps {
     return {
-      securityGroupId: new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
+      securityGroupId: new CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
     };
   }
 

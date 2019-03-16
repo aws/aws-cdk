@@ -63,9 +63,7 @@ item.addMethod('GET');   // GET /items/{item}
 
 // the default integration for methods is "handler", but one can
 // customize this behavior per method or even a sub path.
-item.addMethod('DELETE', {
-  integration: new apigateway.HttpIntegration('http://amazon.com')
-});
+item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 ```
 
 ### Integration Targets
@@ -212,6 +210,10 @@ to allow users revert the stage to an old deployment manually.
 
 See [awslabs/aws-cdk#723](https://github.com/awslabs/aws-cdk/issues/723) for a
 list of missing features.
+
+### Roadmap
+
+- [ ] Support defining REST API Models [#1695](https://github.com/awslabs/aws-cdk/issues/1695)
 
 ----
 

@@ -1,20 +1,18 @@
-import { Construct, Token } from "@aws-cdk/cdk";
-import { Action } from "./action";
+import { Token } from "@aws-cdk/cdk";
 
 /**
  * An output artifact of an action. Artifacts can be used as input by some actions.
  */
-export class Artifact extends Construct {
-  constructor(scope: Action, readonly name: string) {
-    super(scope, name);
+export class Artifact {
+  constructor(readonly artifactName: string) {
   }
 
   /**
    * Returns an ArtifactPath for a file within this artifact.
-   * Output is in the form "<artifact-name>::<file-name>"
+   * CfnOutput is in the form "<artifact-name>::<file-name>"
    * @param fileName The name of the file
    */
-  public atPath(fileName: string) {
+  public atPath(fileName: string): ArtifactPath {
     return new ArtifactPath(this, fileName);
   }
 
@@ -51,7 +49,7 @@ export class Artifact extends Construct {
   }
 
   public toString() {
-    return this.node.id;
+    return this.artifactName;
   }
 }
 
@@ -67,14 +65,14 @@ export class ArtifactPath {
   }
 
   get location() {
-    return `${this.artifact.name}::${this.fileName}`;
+    return `${this.artifact.artifactName}::${this.fileName}`;
   }
 }
 
 function artifactAttribute(artifact: Artifact, attributeName: string) {
-  return new Token(() => ({ 'Fn::GetArtifactAtt': [artifact.name, attributeName] })).toString();
+  return new Token(() => ({ 'Fn::GetArtifactAtt': [artifact.artifactName, attributeName] })).toString();
 }
 
 function artifactGetParam(artifact: Artifact, jsonFile: string, keyName: string) {
-  return new Token(() => ({ 'Fn::GetParam': [artifact.name, jsonFile, keyName] })).toString();
+  return new Token(() => ({ 'Fn::GetParam': [artifact.artifactName, jsonFile, keyName] })).toString();
 }

@@ -1,7 +1,6 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import codedeploylb = require('@aws-cdk/aws-codedeploy-api');
-import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
@@ -21,6 +20,14 @@ export interface IServerDeploymentGroup extends cdk.IConstruct {
   readonly deploymentConfig: IServerDeploymentConfig;
   readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
   export(): ServerDeploymentGroupImportProps;
+
+  /**
+   * Convenience method for creating a new {@link PipelineDeployAction}.
+   *
+   * @param props the construction properties of the new Action
+   * @returns the newly created {@link PipelineDeployAction}
+   */
+  toCodePipelineDeployAction(props: CommonPipelineDeployActionProps): PipelineDeployAction;
 }
 
 /**
@@ -75,21 +82,11 @@ export abstract class ServerDeploymentGroupBase extends cdk.Construct implements
 
   public abstract export(): ServerDeploymentGroupImportProps;
 
-  /**
-   * Convenience method for creating a new {@link PipelineDeployAction}
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
-   * @returns the newly created {@link PipelineDeployAction} deploy Action
-   */
-  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineDeployActionProps = {}):
+  public toCodePipelineDeployAction(props: CommonPipelineDeployActionProps):
       PipelineDeployAction {
-    return new PipelineDeployAction(this, name, {
-      deploymentGroup: this,
-      stage,
+    return new PipelineDeployAction({
       ...props,
+      deploymentGroup: this,
     });
   }
 }
@@ -285,9 +282,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent === undefined ? true : props.installAgent;
-    const stack = cdk.Stack.find(this);
     this.codeDeployBucket = s3.Bucket.import(this, 'CodeDeployBucket', {
-      bucketName: `aws-codedeploy-${stack.region}`,
+      bucketName: `aws-codedeploy-${this.node.stack.region}`,
     });
     for (const asg of this._autoScalingGroups) {
       this.addCodeDeployAgentInstallUserData(asg);
@@ -325,7 +321,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   public export(): ServerDeploymentGroupImportProps {
     return {
       application: this.application,
-      deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', {
+      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
         value: this.deploymentGroupName
       }).makeImportValue().toString(),
       deploymentConfig: this.deploymentConfig,
@@ -362,7 +358,6 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this.codeDeployBucket.grantRead(asg.role, 'latest/*');
 
-    const stack = cdk.Stack.find(this);
     switch (asg.osType) {
       case ec2.OperatingSystemType.Linux:
         asg.addUserData(
@@ -380,7 +375,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           '$PKG_CMD install -y awscli',
           'TMP_DIR=`mktemp -d`',
           'cd $TMP_DIR',
-          `aws s3 cp s3://aws-codedeploy-${stack.region}/latest/install . --region ${stack.region}`,
+          `aws s3 cp s3://aws-codedeploy-${this.node.stack.region}/latest/install . --region ${this.node.stack.region}`,
           'chmod +x ./install',
           './install auto',
           'rm -fr $TMP_DIR',
@@ -389,7 +384,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       case ec2.OperatingSystemType.Windows:
         asg.addUserData(
           'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
-          `aws s3 cp s3://aws-codedeploy-${stack.region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
+          `aws s3 cp s3://aws-codedeploy-${this.node.stack.region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
           '$TEMPDIR\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
         );
         break;

@@ -43,7 +43,7 @@ export interface IStringParameter extends IParameter {
   /**
    * The parameter value. Value must not nest another parameter. Do not use {{}} in the value.
    */
-  readonly parameterValue: string;
+  readonly stringValue: string;
 }
 
 /**
@@ -54,7 +54,7 @@ export interface IStringListParameter extends IParameter {
    * The parameter value. Value must not nest another parameter. Do not use {{}} in the value. Values in the array
    * cannot contain commas (``,``).
    */
-  readonly parameterValue: string[];
+  readonly stringListValue: string[];
 }
 
 /**
@@ -91,7 +91,7 @@ export interface StringParameterProps extends ParameterProps {
   /**
    * The value of the parameter. It may not reference another parameter and ``{{}}`` cannot be used in the value.
    */
-  value: string;
+  stringValue: string;
 }
 
 /**
@@ -101,7 +101,7 @@ export interface StringListParameterProps extends ParameterProps {
   /**
    * The values of the parameter. It may not reference another parameter and ``{{}}`` cannot be used in the value.
    */
-  value: string[];
+  stringListValue: string[];
 }
 
 /**
@@ -116,9 +116,10 @@ export abstract class ParameterBase extends cdk.Construct implements IParameter 
   }
 
   public get parameterArn(): string {
-    return cdk.Stack.find(this).formatArn({
+    return this.node.stack.formatArn({
       service: 'ssm',
       resource: 'parameter',
+      sep: '', // Sep is empty because this.parameterName starts with a / already!
       resourceName: this.parameterName,
     });
   }
@@ -144,13 +145,13 @@ export abstract class ParameterBase extends cdk.Construct implements IParameter 
 export class StringParameter extends ParameterBase implements IStringParameter {
   public readonly parameterName: string;
   public readonly parameterType: string;
-  public readonly parameterValue: string;
+  public readonly stringValue: string;
 
   constructor(scope: cdk.Construct, id: string, props: StringParameterProps) {
     super(scope, id, props);
 
     if (props.allowedPattern) {
-      _assertValidValue(props.value, props.allowedPattern);
+      _assertValidValue(props.stringValue, props.allowedPattern);
     }
 
     const resource = new ssm.CfnParameter(this, 'Resource', {
@@ -158,12 +159,12 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       description: props.description,
       name: props.name,
       type: 'String',
-      value: props.value,
+      value: props.stringValue,
     });
 
     this.parameterName = resource.parameterName;
     this.parameterType = resource.parameterType;
-    this.parameterValue = resource.parameterValue;
+    this.stringValue = resource.parameterValue;
   }
 }
 
@@ -173,17 +174,17 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 export class StringListParameter extends ParameterBase implements IStringListParameter {
   public readonly parameterName: string;
   public readonly parameterType: string;
-  public readonly parameterValue: string[];
+  public readonly stringListValue: string[];
 
   constructor(scope: cdk.Construct, id: string, props: StringListParameterProps) {
     super(scope, id, props);
 
-    if (props.value.find(str => !cdk.unresolved(str) && str.indexOf(',') !== -1)) {
+    if (props.stringListValue.find(str => !cdk.unresolved(str) && str.indexOf(',') !== -1)) {
       throw new Error('Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.');
     }
 
-    if (props.allowedPattern && !cdk.unresolved(props.value)) {
-      props.value.forEach(str => _assertValidValue(str, props.allowedPattern!));
+    if (props.allowedPattern && !cdk.unresolved(props.stringListValue)) {
+      props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
     const resource = new ssm.CfnParameter(this, 'Resource', {
@@ -191,12 +192,12 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       description: props.description,
       name: props.name,
       type: 'StringList',
-      value: props.value.join(','),
+      value: props.stringListValue.join(','),
     });
 
     this.parameterName = resource.parameterName;
     this.parameterType = resource.parameterType;
-    this.parameterValue = cdk.Fn.split(',', resource.parameterValue);
+    this.stringListValue = cdk.Fn.split(',', resource.parameterValue);
   }
 }
 

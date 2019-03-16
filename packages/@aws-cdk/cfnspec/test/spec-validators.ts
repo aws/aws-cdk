@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
 import schema = require('../lib/schema');
-import { Specification } from '../lib/schema';
+import { isPropertyBag, Specification } from '../lib/schema';
 
 export function validateSpecification(test: Test, specification: Specification) {
   validateResourceTypes(test, specification);
@@ -24,8 +24,11 @@ function validatePropertyTypes(test: Test, specification: Specification) {
   for (const typeName of Object.keys(specification.PropertyTypes)) {
     test.ok(typeName, 'Property type name is not empty');
     const type = specification.PropertyTypes[typeName];
-    test.ok(type.Documentation, `${typeName} is documented`);
-    validateProperties(typeName, test, type.Properties, specification);
+    if (isPropertyBag(type)) {
+      validateProperties(typeName, test, type.Properties, specification);
+    } else {
+      validateProperties(typeName, test, { '<this>': type }, specification);
+    }
   }
 }
 
@@ -38,11 +41,10 @@ function validateProperties(typeName: string,
 
     const property = properties[name];
     test.notEqual(property.Documentation, '', `${typeName}.Properties.${name} is documented`);
-    test.ok(schema.isUpdateType(property.UpdateType), `${typeName}.Properties.${name} has valid UpdateType`);
+    test.ok(!property.UpdateType || schema.isUpdateType(property.UpdateType), `${typeName}.Properties.${name} has valid UpdateType`);
     if (property.ScrutinyType !== undefined) {
       test.ok(schema.isPropertyScrutinyType(property.ScrutinyType), `${typeName}.Properties.${name} has valid ScrutinyType`);
     }
-    test.notEqual(property.Required, null, `${typeName}.Properties.${name} has required flag`);
 
     if (schema.isPrimitiveProperty(property)) {
       test.ok(schema.isPrimitiveType(property.PrimitiveType), `${typeName}.Properties.${name} has a valid PrimitiveType`);

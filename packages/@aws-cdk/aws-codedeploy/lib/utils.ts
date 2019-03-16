@@ -4,7 +4,7 @@ import { CfnDeploymentGroup } from './codedeploy.generated';
 import { AutoRollbackConfig } from './rollback-config';
 
 export function applicationNameToArn(applicationName: string, scope: cdk.IConstruct): string {
-  return cdk.Stack.find(scope).formatArn({
+  return scope.node.stack.formatArn({
     service: 'codedeploy',
     resource: 'application',
     resourceName: applicationName,
@@ -13,7 +13,7 @@ export function applicationNameToArn(applicationName: string, scope: cdk.IConstr
 }
 
 export function deploymentGroupNameToArn(applicationName: string, deploymentGroupName: string, scope: cdk.IConstruct): string {
-  return cdk.Stack.find(scope).formatArn({
+  return scope.node.stack.formatArn({
     service: 'codedeploy',
     resource: 'deploymentgroup',
     resourceName: `${applicationName}/${deploymentGroupName}`,
@@ -22,7 +22,7 @@ export function deploymentGroupNameToArn(applicationName: string, deploymentGrou
 }
 
 export function arnForDeploymentConfigName(name: string, scope: cdk.IConstruct): string {
-  return cdk.Stack.find(scope).formatArn({
+  return scope.node.stack.formatArn({
     service: 'codedeploy',
     resource: 'deploymentconfig',
     resourceName: name,

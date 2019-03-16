@@ -5,7 +5,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
-import { ConnectionType } from '../lib';
+import { ConnectionType, EmptyModel, ErrorModel } from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -304,6 +304,63 @@ export = {
     test.done();
   },
 
+  'methodResponse set one or more method responses via options'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    new apigateway.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        methodResponses: [{
+            statusCode: '200'
+          }, {
+            statusCode: "400",
+            responseParameters: {
+              'method.response.header.killerbees': false
+            }
+          }, {
+            statusCode: "500",
+            responseParameters: {
+              'method.response.header.errthing': true
+            },
+            responseModels: {
+              'application/json': new EmptyModel(),
+              'text/plain': new ErrorModel()
+            }
+          }
+        ]
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      MethodResponses: [{
+          StatusCode: "200"
+        }, {
+          StatusCode: "400",
+          ResponseParameters: {
+            'method.response.header.killerbees': false
+          }
+        }, {
+          StatusCode: "500",
+          ResponseParameters: {
+            'method.response.header.errthing': true
+          },
+          ResponseModels: {
+            'application/json': 'Empty',
+            'text/plain': 'Error'
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
   'multiple integration responses can be used'(test: Test) { // @see https://github.com/awslabs/aws-cdk/issues/1608
     // GIVEN
     const stack = new cdk.Stack();
@@ -347,6 +404,23 @@ export = {
         Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']]}
       }
     }));
+    test.done();
+  },
+
+  'method is always set as uppercase'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'api');
+
+    // WHEN
+    api.root.addMethod('get');
+    api.root.addMethod('PoSt');
+    api.root.addMethod('PUT');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "POST" }));
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "GET" }));
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "PUT" }));
     test.done();
   }
 };

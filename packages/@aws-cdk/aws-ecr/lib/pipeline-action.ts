@@ -6,7 +6,7 @@ import { IRepository } from './repository-ref';
 /**
  * Common properties for the {@link PipelineSourceAction CodePipeline source Action},
  * whether creating it directly,
- * or through the {@link IRepository#addToPipeline} method.
+ * or through the {@link IRepository#toCodePipelineSourceAction} method.
  */
 export interface CommonPipelineSourceActionProps extends codepipeline.CommonActionProps {
   /**
@@ -18,7 +18,7 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
 
   /**
    * The name of the source's output artifact.
-   * Output artifacts are used by CodePipeline as inputs into other actions.
+   * CfnOutput artifacts are used by CodePipeline as inputs into other actions.
    *
    * @default a name will be auto-generated
    */
@@ -28,8 +28,7 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
 /**
  * Construction properties of {@link PipelineSourceAction}.
  */
-export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps,
-    codepipeline.CommonActionConstructProps {
+export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps {
   /**
    * The repository that will be watched for changes.
    */
@@ -40,23 +39,30 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
  * The ECR Repository source CodePipeline Action.
  */
 export class PipelineSourceAction extends codepipeline.SourceAction {
-  constructor(scope: cdk.Construct, id: string, props: PipelineSourceActionProps) {
-    super(scope, id, {
+  private readonly props: PipelineSourceActionProps;
+
+  constructor(props: PipelineSourceActionProps) {
+    super({
+      ...props,
       provider: 'ECR',
       configuration: {
         RepositoryName: props.repository.repositoryName,
         ImageTag: props.imageTag,
       },
-      ...props,
+      outputArtifactName: props.outputArtifactName || `Artifact_${props.actionName}_${props.repository.node.uniqueId}`,
     });
 
-    props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
+    this.props = props;
+  }
+
+  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
+    stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
       .addActions(
         'ecr:DescribeImages',
       )
-      .addResource(props.repository.repositoryArn));
+      .addResource(this.props.repository.repositoryArn));
 
-    props.repository.onImagePushed(props.stage.pipeline.node.uniqueId + 'SourceEventRule',
-        props.stage.pipeline, props.imageTag);
+    this.props.repository.onImagePushed(stage.pipeline.node.uniqueId + 'SourceEventRule',
+        stage.pipeline, this.props.imageTag);
   }
 }

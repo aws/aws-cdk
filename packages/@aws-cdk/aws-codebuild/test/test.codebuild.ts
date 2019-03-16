@@ -28,7 +28,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "codebuild.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -142,7 +142,7 @@ export = {
 
       const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'hello-cdk' });
 
-      const source = new codebuild.CodeCommitSource({ repository: repo });
+      const source = new codebuild.CodeCommitSource({ repository: repo, cloneDepth: 2 });
 
       new codebuild.Project(stack, 'MyProject', {
         source
@@ -166,7 +166,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "codebuild.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -282,6 +282,7 @@ export = {
               "CloneUrlHttp"
             ]
             },
+            "GitCloneDepth": 2,
             "Type": "CODECOMMIT"
           }
           }
@@ -319,7 +320,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "codebuild.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],

@@ -1,0 +1,73 @@
+{
+  "name": "@aws-cdk/aws-fsx",
+  "version": "0.25.3",
+  "description": "The CDK Construct Library for AWS::FSx",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.FSx",
+        "packageId": "Amazon.CDK.AWS.FSx",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.fsx",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "fsx"
+        }
+      },
+      "sphinx": {}
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "cfn2ts": "cfn2ts"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::FSx"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::FSx",
+    "aws-fsx"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.25.3",
+    "cdk-build-tools": "^0.25.3",
+    "cfn2ts": "^0.25.3",
+    "pkglint": "^0.25.3"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": "^0.25.3"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cdk": "^0.25.3"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  }
+}

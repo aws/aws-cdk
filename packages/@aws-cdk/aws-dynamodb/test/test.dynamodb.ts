@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import { Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -65,16 +65,9 @@ function* LSI_GENERATOR() {
 
 export = {
   'default properties': {
-    'fails without a hash key'(test: Test) {
-      const stack = new Stack();
-      new Table(stack, CONSTRUCT_NAME);
-      test.throws(() => expect(stack).to(countResources('AWS::DynamoDB::Table')), /partition key/);
-      test.done();
-    },
-
     'hash key only'(test: Test) {
       const stack = new Stack();
-      new Table(stack, CONSTRUCT_NAME).addPartitionKey(TABLE_PARTITION_KEY);
+      new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
 
       expect(stack).to(haveResource('AWS::DynamoDB::Table', {
         AttributeDefinitions: [{ AttributeName: 'hashKey', AttributeType: 'S' }],
@@ -86,9 +79,11 @@ export = {
 
   'hash + range key'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    });
+
     expect(stack).to(haveResource('AWS::DynamoDB::Table', {
             AttributeDefinitions: [
               { AttributeName: 'hashKey', AttributeType: 'S' },
@@ -129,9 +124,10 @@ export = {
 
   'point-in-time recovery is not enabled'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -151,9 +147,10 @@ export = {
 
   'server-side encryption is not enabled'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -173,9 +170,10 @@ export = {
 
   'stream is not enabled'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -195,9 +193,10 @@ export = {
 
   'ttl is not enabled'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -217,14 +216,15 @@ export = {
 
   'can specify new and old images'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, {
+
+    new Table(stack, CONSTRUCT_NAME, {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.NewAndOldImages
+      streamSpecification: StreamViewType.NewAndOldImages,
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
     });
-    table.addPartitionKey(TABLE_PARTITION_KEY);
-    table.addSortKey(TABLE_SORT_KEY);
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -246,14 +246,15 @@ export = {
 
   'can specify new images only'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, {
+
+    new Table(stack, CONSTRUCT_NAME, {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.NewImage
+      streamSpecification: StreamViewType.NewImage,
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
     });
-    table.addPartitionKey(TABLE_PARTITION_KEY);
-    table.addSortKey(TABLE_SORT_KEY);
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -275,14 +276,15 @@ export = {
 
   'can specify old images only'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, {
+
+    new Table(stack, CONSTRUCT_NAME, {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.OldImage
+      streamSpecification: StreamViewType.OldImage,
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
     });
-    table.addPartitionKey(TABLE_PARTITION_KEY);
-    table.addSortKey(TABLE_SORT_KEY);
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -313,11 +315,11 @@ export = {
       sseEnabled: true,
       billingMode: BillingMode.Provisioned,
       streamSpecification: StreamViewType.KeysOnly,
-      ttlAttributeName: 'timeToLive'
+      ttlAttributeName: 'timeToLive',
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
     });
-    table.addPartitionKey(TABLE_PARTITION_KEY);
-    table.addSortKey(TABLE_SORT_KEY);
-    table.apply(new Tag('Environment', 'Production'));
+    table.node.apply(new Tag('Environment', 'Production'));
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -393,15 +395,18 @@ export = {
 
   'when adding a global secondary index with hash key only'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY)
-      .addGlobalSecondaryIndex({
-        indexName: GSI_NAME,
-        partitionKey: GSI_PARTITION_KEY,
-        readCapacity: 42,
-        writeCapacity: 1337
-      });
+
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      readCapacity: 42,
+      writeCapacity: 1337
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -432,17 +437,19 @@ export = {
 
   'when adding a global secondary index with hash + range key'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY)
-      .addGlobalSecondaryIndex({
-        indexName: GSI_NAME,
-        partitionKey: GSI_PARTITION_KEY,
-        sortKey: GSI_SORT_KEY,
-        projectionType: ProjectionType.All,
-        readCapacity: 42,
-        writeCapacity: 1337
-      });
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+      projectionType: ProjectionType.All,
+      readCapacity: 42,
+      writeCapacity: 1337
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -475,15 +482,17 @@ export = {
 
   'when adding a global secondary index with projection type KEYS_ONLY'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY)
-      .addGlobalSecondaryIndex({
-        indexName: GSI_NAME,
-        partitionKey: GSI_PARTITION_KEY,
-        sortKey: GSI_SORT_KEY,
-        projectionType: ProjectionType.KeysOnly,
-      });
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+      projectionType: ProjectionType.KeysOnly,
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -516,9 +525,7 @@ export = {
 
   'when adding a global secondary index with projection type INCLUDE'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
     const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
     table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
@@ -598,10 +605,7 @@ export = {
 
   'error when adding a global secondary index with projection type INCLUDE, but without specifying non-key attributes'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
-
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
     test.throws(() => table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
@@ -614,9 +618,7 @@ export = {
 
   'error when adding a global secondary index with projection type ALL, but with non-key attributes'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
     const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
 
     test.throws(() => table.addGlobalSecondaryIndex({
@@ -630,9 +632,7 @@ export = {
 
   'error when adding a global secondary index with projection type KEYS_ONLY, but with non-key attributes'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
     const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
 
     test.throws(() => table.addGlobalSecondaryIndex({
@@ -647,9 +647,7 @@ export = {
 
   'error when adding a global secondary index with projection type INCLUDE, but with more than 20 non-key attributes'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
     const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
     const gsiNonKeyAttributes: string[] = [];
     for (let i = 0; i < 21; i++) {
@@ -669,9 +667,7 @@ export = {
 
   'error when adding a global secondary index with projection type INCLUDE, but with key attributes'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
 
     test.throws(() => table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
@@ -717,9 +713,7 @@ export = {
 
   'when adding multiple global secondary indexes'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
     const gsiGenerator = GSI_GENERATOR();
     for (let i = 0; i < 5; i++) {
       table.addGlobalSecondaryIndex(gsiGenerator.next().value);
@@ -790,9 +784,7 @@ export = {
 
   'error when adding more than 5 global secondary indexes'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
     const gsiGenerator = GSI_GENERATOR();
     for (let i = 0; i < 5; i++) {
       table.addGlobalSecondaryIndex(gsiGenerator.next().value);
@@ -806,13 +798,12 @@ export = {
 
   'when adding a global secondary index without specifying read and write capacity'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY)
-      .addGlobalSecondaryIndex({
-        indexName: GSI_NAME,
-        partitionKey: GSI_PARTITION_KEY,
-      });
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -843,13 +834,12 @@ export = {
 
   'when adding a local secondary index with hash + range key'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY)
-      .addLocalSecondaryIndex({
-        indexName: LSI_NAME,
-        sortKey: LSI_SORT_KEY,
-      });
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
+
+    table.addLocalSecondaryIndex({
+      indexName: LSI_NAME,
+      sortKey: LSI_SORT_KEY,
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -880,14 +870,12 @@ export = {
 
   'when adding a local secondary index with projection type KEYS_ONLY'(test: Test) {
     const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY)
-      .addLocalSecondaryIndex({
-        indexName: LSI_NAME,
-        sortKey: LSI_SORT_KEY,
-        projectionType: ProjectionType.KeysOnly
-      });
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
+    table.addLocalSecondaryIndex({
+      indexName: LSI_NAME,
+      sortKey: LSI_SORT_KEY,
+      projectionType: ProjectionType.KeysOnly
+    });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -918,9 +906,7 @@ export = {
 
   'when adding a local secondary index with projection type INCLUDE'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
     const lsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(LSI_NON_KEY);
     table.addLocalSecondaryIndex({
       indexName: LSI_NAME,
@@ -958,9 +944,7 @@ export = {
 
   'error when adding more than 5 local secondary indexes'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
     const lsiGenerator = LSI_GENERATOR();
     for (let i = 0; i < 5; i++) {
       table.addLocalSecondaryIndex(lsiGenerator.next().value);
@@ -972,24 +956,9 @@ export = {
     test.done();
   },
 
-  'error when adding a local secondary index before specifying a partition key of the table'(test: Test) {
-    const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addSortKey(TABLE_SORT_KEY);
-
-    test.throws(() => table.addLocalSecondaryIndex({
-      indexName: LSI_NAME,
-      sortKey: LSI_SORT_KEY
-    }), /a partition key of the table must be specified first through addPartitionKey()/);
-
-    test.done();
-  },
-
   'error when adding a local secondary index with the name of a global secondary index'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY)
-      .addSortKey(TABLE_SORT_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
     table.addGlobalSecondaryIndex({
       indexName: 'SecondaryIndex',
       partitionKey: GSI_PARTITION_KEY
@@ -1005,8 +974,8 @@ export = {
 
   'error when validating construct if a local secondary index exists without a sort key of the table'(test: Test) {
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME)
-      .addPartitionKey(TABLE_PARTITION_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
+
     table.addLocalSecondaryIndex({
       indexName: LSI_NAME,
       sortKey: LSI_SORT_KEY
@@ -1023,8 +992,7 @@ export = {
   'can enable Read AutoScaling'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337 });
-    table.addPartitionKey(TABLE_PARTITION_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337, partitionKey: TABLE_PARTITION_KEY });
 
     // WHEN
     table.autoScaleReadCapacity({ minCapacity: 50, maxCapacity: 500 }).scaleOnUtilization({ targetUtilizationPercent: 75 });
@@ -1050,8 +1018,7 @@ export = {
   'can enable Write AutoScaling'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337 });
-    table.addPartitionKey(TABLE_PARTITION_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337, partitionKey: TABLE_PARTITION_KEY });
 
     // WHEN
     table.autoScaleWriteCapacity({ minCapacity: 50, maxCapacity: 500 }).scaleOnUtilization({ targetUtilizationPercent: 75 });
@@ -1077,8 +1044,7 @@ export = {
   'cannot enable AutoScaling twice on the same property'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337 });
-    table.addPartitionKey(TABLE_PARTITION_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337, partitionKey: TABLE_PARTITION_KEY });
     table.autoScaleReadCapacity({ minCapacity: 50, maxCapacity: 500 }).scaleOnUtilization({ targetUtilizationPercent: 75 });
 
     // WHEN
@@ -1092,8 +1058,7 @@ export = {
   'error when enabling AutoScaling on the PAY_PER_REQUEST table'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, { billingMode: BillingMode.PayPerRequest });
-    table.addPartitionKey(TABLE_PARTITION_KEY);
+    const table = new Table(stack, CONSTRUCT_NAME, { billingMode: BillingMode.PayPerRequest, partitionKey: TABLE_PARTITION_KEY });
     table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY
@@ -1117,7 +1082,7 @@ export = {
   'error when specifying Read Auto Scaling with invalid scalingTargetValue < 10'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337 });
+    const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337, partitionKey: TABLE_PARTITION_KEY });
 
     // THEN
     test.throws(() => {
@@ -1130,7 +1095,7 @@ export = {
   'error when specifying Read Auto Scaling with invalid minimumCapacity'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337 });
+    const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337, partitionKey: TABLE_PARTITION_KEY });
 
     // THEN
     test.throws(() => table.autoScaleReadCapacity({ minCapacity: 10, maxCapacity: 5 }));
@@ -1141,8 +1106,11 @@ export = {
   'can autoscale on a schedule'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, { readCapacity: 42, writeCapacity: 1337 });
-    table.addPartitionKey({ name: 'Hash', type: AttributeType.String });
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      readCapacity: 42,
+      writeCapacity: 1337,
+      partitionKey: { name: 'Hash', type: AttributeType.String }
+    });
 
     // WHEN
     const scaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 100 });
@@ -1261,8 +1229,7 @@ export = {
       // GIVEN
       const stack = new Stack();
 
-      const table = new Table(stack, 'my-table');
-      table.addPartitionKey({ name: 'ID', type: AttributeType.String });
+      const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type: AttributeType.String } });
       table.addGlobalSecondaryIndex({ indexName: 'MyIndex', partitionKey: { name: 'Age', type: AttributeType.Number }});
       const user = new iam.User(stack, 'user');
 
@@ -1301,10 +1268,7 @@ export = {
 function testGrant(test: Test, expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
   // GIVEN
   const stack = new Stack();
-
-  const table = new Table(stack, 'my-table');
-  table.addPartitionKey({ name: 'ID', type:  AttributeType.String });
-
+  const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type:  AttributeType.String } });
   const user = new iam.User(stack, 'user');
 
   // WHEN

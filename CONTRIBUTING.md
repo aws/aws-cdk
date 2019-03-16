@@ -174,30 +174,27 @@ Each module also has an npm script called `cfn2ts`:
 
 ### scripts/foreach.sh
 
-The script `scripts/foreach.sh` emits a bash script to stdout which executes COMMAND for each module in the repo, in topological order
-this can be useful if you are performing large scale refactors and wish to continue from where you left off
-yes, there are better ways to do this, but this is A WAY...
+This wonderful tool allows you to execute a command for all modules in this repo
+in topological order, but has the incredible property of being stateful. this
+means that if a command fails, you can fix the issue and resume from where you
+left off.
 
-Usage:
-
-```console
-$ scripts/foreach.sh COMMAND... > a.sh
-$ chmod +x ./a.sh
-$ ./a.sh
-```
-
-For example, to emit a script to run all tests:
+To start a session, run:
 
 ```console
-$ scripts/foreach.sh npm test > /tmp/test-all.sh
-$ chmod +x /tmp/test-all.sh
-$ /tmp/test-all.sh
-....runs tests...
-FAIL!
-$ # fix test
-$ # edit /tmp/test-all.sh and delete all lines until the offening module
-$ /tmp/test-all.sh # continue from where you left off
+$ scripts/foreach.sh COMMAND
 ```
+
+This will execute "COMMAND" for each module in the repo (cwd will be the directory of the module).
+if a task fails, it will stop, and then to resume, simply run `foreach.sh` again (with or without the same command).
+
+To reset the session (either when all tasks finished or if you wish to run a different session), run:
+
+```console
+$ rm -f ~/.foreach.*
+```
+
+This will effectively delete the state files.
 
 ## Development Workflows
 
@@ -219,7 +216,7 @@ $ ./install.sh
 $ ./build.sh
 ```
 
-If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains] and now run:
+If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains) and now run:
 
 ```
 $ ./pack.sh

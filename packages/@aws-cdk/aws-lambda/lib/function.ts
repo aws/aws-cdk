@@ -4,6 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
+import { IEventSource } from './event-source';
 import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
 import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
@@ -190,6 +191,13 @@ export interface FunctionProps {
    * @see https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html
    */
   reservedConcurrentExecutions?: number;
+
+  /**
+   * Event sources for this function.
+   *
+   * You can also add event sources using `addEventSource`.
+   */
+  events?: IEventSource[];
 }
 
 /**
@@ -347,6 +355,12 @@ export class Function extends FunctionBase {
       this.role.addToPolicy(statement);
     }
 
+    const isChina = this.node.stack.env.region && this.node.stack.env.region.startsWith('cn-');
+    if (isChina && props.environment && Object.keys(props.environment).length > 0) {
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`Environment variables are not supported in this region (${this.node.stack.env.region}); consider using tags or SSM parameters instead`);
+    }
+
     const resource = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
@@ -377,6 +391,10 @@ export class Function extends FunctionBase {
     for (const layer of props.layers || []) {
       this.addLayer(layer);
     }
+
+    for (const event of props.events || []) {
+      this.addEventSource(event);
+    }
   }
 
   /**
@@ -384,9 +402,9 @@ export class Function extends FunctionBase {
    */
   public export(): FunctionImportProps {
     return {
-      functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
+      functionArn: new cdk.CfnOutput(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
       securityGroupId: this._connections && this._connections.securityGroups[0]
-          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
+          ? new cdk.CfnOutput(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
           : undefined
     };
   }

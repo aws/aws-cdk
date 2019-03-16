@@ -79,7 +79,7 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
    */
   public export(): ClusterParameterGroupImportProps {
     return {
-      parameterGroupName: new cdk.Output(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
+      parameterGroupName: new cdk.CfnOutput(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
     };
   }
 

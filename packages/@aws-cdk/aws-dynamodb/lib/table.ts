@@ -45,6 +45,18 @@ export interface Attribute {
 
 export interface TableProps {
   /**
+   * Partition key attribute definition.
+   */
+  partitionKey: Attribute;
+
+  /**
+   * Table sort key attribute definition.
+   *
+   * @default no sort key
+   */
+  sortKey?: Attribute;
+
+  /**
    * The read capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
    *
@@ -82,8 +94,8 @@ export interface TableProps {
   pitrEnabled?: boolean;
 
   /**
-   * Whether server-side encryption is enabled.
-   * @default undefined, server-side encryption is disabled
+   * Whether server-side encryption with an AWS managed customer master key is enabled.
+   * @default undefined, server-side encryption is enabled with an AWS owned customer master key
    */
   sseEnabled?: boolean;
 
@@ -99,18 +111,6 @@ export interface TableProps {
    * @default undefined, TTL is disabled
    */
   ttlAttributeName?: string;
-
-  /**
-   * Partition key attribute definition. This is eventually required, but you
-   * can also use `addPartitionKey` to specify the partition key at a later stage.
-   */
-  partitionKey?: Attribute;
-
-  /**
-   * Table sort key attribute definition. You can also use `addSortKey` to set
-   * this up later.
-   */
-  sortKey?: Attribute;
 }
 
 export interface SecondaryIndexProps {
@@ -200,15 +200,15 @@ export class Table extends Construct {
   private readonly secondaryIndexNames: string[] = [];
   private readonly nonKeyAttributes: string[] = [];
 
-  private tablePartitionKey?: Attribute;
-  private tableSortKey?: Attribute;
+  private readonly tablePartitionKey: Attribute;
+  private readonly tableSortKey?: Attribute;
 
   private readonly billingMode: BillingMode;
   private readonly tableScaling: ScalableAttributePair = {};
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
 
-  constructor(scope: Construct, id: string, props: TableProps = {}) {
+  constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
     this.billingMode = props.billingMode || BillingMode.Provisioned;
@@ -239,37 +239,13 @@ export class Table extends Construct {
 
     this.scalingRole = this.makeScalingRole();
 
-    if (props.partitionKey) {
-      this.addPartitionKey(props.partitionKey);
-    }
+    this.addKey(props.partitionKey, HASH_KEY_TYPE);
+    this.tablePartitionKey = props.partitionKey;
 
     if (props.sortKey) {
-      this.addSortKey(props.sortKey);
+      this.addKey(props.sortKey, RANGE_KEY_TYPE);
+      this.tableSortKey = props.sortKey;
     }
-  }
-
-  /**
-   * Add a partition key of table.
-   *
-   * @param attribute the partition key attribute of table
-   * @returns a reference to this object so that method calls can be chained together
-   */
-  public addPartitionKey(attribute: Attribute): this {
-    this.addKey(attribute, HASH_KEY_TYPE);
-    this.tablePartitionKey = attribute;
-    return this;
-  }
-
-  /**
-   * Add a sort key of table.
-   *
-   * @param attribute the sort key of table
-   * @returns a reference to this object so that method calls can be chained together
-   */
-  public addSortKey(attribute: Attribute): this {
-    this.addKey(attribute, RANGE_KEY_TYPE);
-    this.tableSortKey = attribute;
-    return this;
   }
 
   /**
@@ -313,10 +289,6 @@ export class Table extends Construct {
     if (this.localSecondaryIndexes.length === 5) {
       // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
       throw new RangeError('a maximum number of local secondary index per table is 5');
-    }
-
-    if (!this.tablePartitionKey) {
-      throw new Error('a partition key of the table must be specified first through addPartitionKey()');
     }
 
     this.validateIndexName(props.indexName);
@@ -440,7 +412,7 @@ export class Table extends Construct {
       return;
     }
     principal.addToPolicy(new iam.PolicyStatement()
-      .addResources(this.tableArn, new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : new cdk.Aws().noValue).toString())
+      .addResources(this.tableArn, new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : cdk.Aws.noValue).toString())
       .addActions(...actions));
   }
 
@@ -650,7 +622,7 @@ export class Table extends Construct {
   private makeScalingRole(): iam.IRole {
     // Use a Service Linked Role.
     return iam.Role.import(this, 'ScalingRole', {
-      roleArn: cdk.Stack.find(this).formatArn({
+      roleArn: this.node.stack.formatArn({
         // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
         service: 'iam',
         resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',

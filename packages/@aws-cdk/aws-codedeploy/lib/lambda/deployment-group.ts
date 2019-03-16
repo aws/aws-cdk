@@ -43,7 +43,7 @@ export interface LambdaDeploymentGroupProps {
    *
    * @default one will be created for you
    */
-  application?: LambdaApplication;
+  application?: ILambdaApplication;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
@@ -76,7 +76,7 @@ export interface LambdaDeploymentGroupProps {
    *
    * @default a new Role will be created.
    */
-  role?: iam.Role;
+  role?: iam.IRole;
 
   /**
    * Lambda Alias to shift traffic. Updating the version
@@ -124,7 +124,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
   public readonly application: ILambdaApplication;
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
-  public readonly role: iam.Role;
+  public readonly role: iam.IRole;
 
   private readonly alarms: cloudwatch.Alarm[];
   private preHook?: lambda.IFunction;
@@ -136,24 +136,15 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
     this.application = props.application || new LambdaApplication(this, 'Application');
     this.alarms = props.alarms || [];
 
-    let serviceRole: iam.Role | undefined = props.role;
-    if (serviceRole) {
-      if (serviceRole.assumeRolePolicy) {
-        serviceRole.assumeRolePolicy.addStatement(new iam.PolicyStatement()
-          .addAction('sts:AssumeRole')
-          .addServicePrincipal('codedeploy.amazonaws.com'));
-      }
-    } else {
-      serviceRole = new iam.Role(this, 'ServiceRole', {
-        assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com')
-      });
-    }
-    serviceRole.attachManagedPolicy('arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda');
-    this.role = serviceRole;
+    this.role = props.role || new iam.Role(this, 'ServiceRole', {
+      assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com')
+    });
+
+    this.role.attachManagedPolicy('arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda');
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
-      serviceRoleArn: serviceRole.roleArn,
+      serviceRoleArn: this.role.roleArn,
       deploymentGroupName: props.deploymentGroupName,
       deploymentConfigName: (props.deploymentConfig || LambdaDeploymentConfig.AllAtOnce).deploymentConfigName,
       deploymentStyle: {
@@ -237,7 +228,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
   public export(): LambdaDeploymentGroupImportProps {
     return {
       application: this.application,
-      deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', {
+      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
         value: this.deploymentGroupName
       }).makeImportValue().toString()
     };

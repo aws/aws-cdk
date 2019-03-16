@@ -30,13 +30,18 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
 });
 
-const sourceStage = new codepipeline.Stage(stack, 'Source', { pipeline });
-bucket.addToPipeline(sourceStage, 'S3Source', {
+const sourceStage = pipeline.addStage({ name: 'Source' });
+const sourceAction = bucket.toCodePipelineSourceAction({
+  actionName: 'S3Source',
   bucketKey: 'application.zip',
   outputArtifactName: 'SourceOutput',
 });
+sourceStage.addAction(sourceAction);
 
-const deployStage = new codepipeline.Stage(stack, 'Deploy', { pipeline });
-deploymentGroup.addToPipeline(deployStage, 'CodeDeploy');
+const deployStage = pipeline.addStage({ name: 'Deploy' });
+deployStage.addAction(deploymentGroup.toCodePipelineDeployAction({
+  actionName: 'CodeDeploy',
+  inputArtifact: sourceAction.outputArtifact,
+}));
 
 app.run();

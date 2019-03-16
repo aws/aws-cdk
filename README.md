@@ -26,8 +26,9 @@ The following languages are currently supported:
 The CDK is currently in developer preview and we look forward to community feedback and collaboration!
 
 [User Guide] |
-[Getting Started] |
+[Tutorial] |
 [API Reference](https://awslabs.github.io/aws-cdk/reference.html) |
+[Examples](https://github.com/aws-samples/aws-cdk-examples) |
 [Getting Help](#getting-help)
 
 ![Example usage of CDK](docs/src/_images/screencast.gif)
@@ -47,17 +48,16 @@ how to use AWS. The AWS Construct Library aims to reduce the complexity and
 glue-logic required when integrating various AWS services to achieve your goals
 on AWS.
 
-[constructs]: https://awslabs.github.io/aws-cdk/constructs.html
-[stacks]: https://awslabs.github.io/aws-cdk/stacks.html
-[apps]: https://awslabs.github.io/aws-cdk/apps.html
-[User Guide]: https://awslabs.github.io/aws-cdk
-[Getting Started]: https://awslabs.github.io/aws-cdk/getting-started.html
-[AWS CDK Toolkit]: https://awslabs.github.io/aws-cdk/tools.html#command-line-toolkit-cdk
-[AWS Construct Library]: https://awslabs.github.io/aws-cdk/aws-construct-lib.html
+[constructs]: https://docs.aws.amazon.com/CDK/latest/userguide/constructs.html
+[stacks]: https://docs.aws.amazon.com/CDK/latest/userguide/stacks.html
+[apps]: https://docs.aws.amazon.com/CDK/latest/userguide/apps.html
+[User Guide]: https://docs.aws.amazon.com/CDK/latest/userguide
+[Tutorial]: https://docs.aws.amazon.com/CDK/latest/userguide/tutorial.html
+[AWS CDK Toolkit]: https://docs.aws.amazon.com/CDK/latest/userguide/tools.html
+[AWS Construct Library]: https://docs.aws.amazon.com/CDK/latest/userguide/aws_construct_lib.html
 
 ## Getting Started
 
-* For a detailed walkthrough, see [Getting Started] in the AWS CDK [User Guide]
 * See [Manual Installation](./MANUAL_INSTALLATION.md) for installing the CDK from a signed .zip file
 
 Install or update the [AWS CDK Toolkit] from npm (requires [Node.js ≥ 8.11.x](https://nodejs.org/en/download)):
@@ -71,10 +71,8 @@ Initialize a project:
 ```bash
 $ mkdir hello-cdk
 $ cd hello-cdk
-$ cdk init app --language=typescript
-# or
-$ cdk init app --language=java
-# more languages (coming soon)...
+$ cdk init app --language=typescript (or --language=java, ...)
+$ cdk deploy
 ```
 
 Use the `cdk` command-line toolkit to interact with your project:
@@ -88,6 +86,8 @@ Read the [docs](https://awslabs.github.io/aws-cdk/):
 ```bash
 $ cdk docs
 ```
+
+For a detailed walkthrough, see [Tutorial] in the AWS CDK [User Guide].
 
 ## Getting Help
 

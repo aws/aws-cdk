@@ -2,6 +2,170 @@
 
 ## New Resource Types
 
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Application Location.PrimitiveType (__deleted__)
+* AWS::Serverless::Application Location.PrimitiveTypes (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.Auth Authorizers.Type (__deleted__)
+* AWS::Serverless::Api.Auth Authorizers.PrimitiveType (__added__)
+
+# CloudFormation Resource Specification v2.26.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::SSM::PatchBaseline Tags (__added__)
+* AWS::StepFunctions::Activity Tags (__added__)
+* AWS::StepFunctions::StateMachine Tags (__added__)
+
+## Property Type Changes
+
+* AWS::StepFunctions::Activity.TagsEntry (__added__)
+* AWS::StepFunctions::StateMachine.TagsEntry (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+* Tag Key.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v2.25.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::ApiGateway::Authorizer Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudWatch::Alarm Metrics (__added__)
+* AWS::EC2::VPCEndpoint VPCEndpointType (__deleted__)
+* AWS::EC2::VPCEndpoint VpcEndpointType (__added__)
+* AWS::ECS::Cluster Tags (__deleted__)
+* AWS::ECS::Service Tags (__deleted__)
+* AWS::ECS::TaskDefinition Tags (__deleted__)
+* AWS::ElasticLoadBalancingV2::TargetGroup HealthCheckEnabled (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup Port.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::TargetGroup Protocol.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::TargetGroup VpcId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SNS::Subscription Protocol.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SNS::Subscription TopicArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SSM::MaintenanceWindow Tags (__added__)
+
+## Property Type Changes
+
+* AWS::CloudWatch::Alarm.Metric (__added__)
+* AWS::CloudWatch::Alarm.MetricDataQuery (__added__)
+* AWS::CloudWatch::Alarm.MetricStat (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+
+
+# CloudFormation Resource Specification v2.24.0
+
+## New Resource Types
+
+* AWS::ApiGatewayV2::Api
+* AWS::ApiGatewayV2::Authorizer
+* AWS::ApiGatewayV2::Deployment
+* AWS::ApiGatewayV2::Integration
+* AWS::ApiGatewayV2::IntegrationResponse
+* AWS::ApiGatewayV2::Model
+* AWS::ApiGatewayV2::Route
+* AWS::ApiGatewayV2::RouteResponse
+* AWS::ApiGatewayV2::Stage
+* AWS::FSx::FileSystem
+* AWS::KinesisAnalyticsV2::Application
+* AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption
+* AWS::KinesisAnalyticsV2::ApplicationOutput
+* AWS::KinesisAnalyticsV2::ApplicationReferenceDataSource
+* AWS::RAM::ResourceShare
+* AWS::RoboMaker::Fleet
+* AWS::RoboMaker::Robot
+* AWS::RoboMaker::RobotApplication
+* AWS::RoboMaker::RobotApplicationVersion
+* AWS::RoboMaker::SimulationApplication
+* AWS::RoboMaker::SimulationApplicationVersion
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::OpsWorksCM::Server AssociatePublicIpAddress (__added__)
+
+## Property Type Changes
+
+* AWS::CodeBuild::Project.FilterGroup (__added__)
+* AWS::CodeBuild::Project.WebhookFilter (__added__)
+* AWS::EC2::LaunchTemplate.CapacityReservationPreference (__added__)
+* AWS::EC2::LaunchTemplate.CapacityReservationSpecification (__added__)
+* AWS::EC2::LaunchTemplate.CapacityReservationTarget (__added__)
+* AWS::EC2::LaunchTemplate.CpuOptions (__added__)
+* AWS::EC2::LaunchTemplate.HibernationOptions (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateElasticInferenceAccelerator (__added__)
+* AWS::EC2::LaunchTemplate.LicenseSpecification (__added__)
+* AWS::CodeBuild::Project.ProjectCache Modes (__added__)
+* AWS::CodeBuild::Project.ProjectTriggers FilterGroups (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData CapacityReservationSpecification (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData CpuOptions (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData ElasticInferenceAccelerators (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData HibernationOptions (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData LicenseSpecifications (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+* Tag Key.Required (__changed__)
+  * Old: false
+  * New: true
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
 * AWS::Serverless::Application
 * AWS::Serverless::LayerVersion
 

@@ -8,7 +8,7 @@ export class AugmentationGenerator {
   private readonly code = new CodeMaker();
   private readonly outputFile: string;
 
-  constructor(moduleName: string, private readonly spec: schema.Specification) {
+  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly affix: string) {
     this.outputFile = `${moduleName}-augmentations.generated.ts`;
     this.code.openFile(this.outputFile);
 
@@ -17,16 +17,18 @@ export class AugmentationGenerator {
     this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
   }
 
-  public emitCode() {
+  public emitCode(): boolean {
+    let hadAugmentations = false;
     for (const resourceTypeName of Object.keys(this.spec.ResourceTypes).sort()) {
       const aug = cfnSpec.resourceAugmentation(resourceTypeName);
 
       if (aug.metrics) {
         this.code.line('import cloudwatch = require("@aws-cdk/aws-cloudwatch");');
-
-        this.emitMetricAugmentations(resourceTypeName, aug.metrics);
+        this.emitMetricAugmentations(resourceTypeName, aug.metrics, aug.options);
+        hadAugmentations = true;
       }
     }
+    return hadAugmentations;
   }
 
   /**
@@ -37,18 +39,19 @@ export class AugmentationGenerator {
     return await this.code.save(dir);
   }
 
-  private emitMetricAugmentations(resourceTypeName: string, metrics: schema.ResourceMetricAugmentations) {
+  private emitMetricAugmentations(resourceTypeName: string, metrics: schema.ResourceMetricAugmentations, options?: schema.AugmentationOptions) {
     const cfnName = SpecName.parse(resourceTypeName);
-    const resourceName = genspec.CodeName.forCfnResource(cfnName);
+    const resourceName = genspec.CodeName.forCfnResource(cfnName, this.affix);
     const l2ClassName = resourceName.className.replace(/^Cfn/, '');
+    const kebabL2ClassName = l2ClassName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 
-    const baseClassName = l2ClassName + 'Base';
-    const interfaceName = 'I' + l2ClassName;
-    const baseClassModule = `./${l2ClassName.toLowerCase()}-base`;
+    const classFile = `./${(options && options.classFile) || `${kebabL2ClassName}-base`}`;
+    const className = (options && options.class) || l2ClassName + 'Base';
+    const interfaceName = (options && options.interface) || 'I' + l2ClassName;
 
-    this.code.line(`import { ${baseClassName} } from "${baseClassModule}";`);
+    this.code.line(`import { ${className} } from "${classFile}";`);
 
-    this.code.openBlock(`declare module "${baseClassModule}"`);
+    this.code.openBlock(`declare module "${classFile}"`);
 
     // Add to the interface
     this.code.openBlock(`interface ${interfaceName}`);
@@ -59,7 +62,7 @@ export class AugmentationGenerator {
     this.code.closeBlock();
 
     // Add declaration to the base class (implementation added below)
-    this.code.openBlock(`interface ${baseClassName}`);
+    this.code.openBlock(`interface ${className}`);
     this.emitMetricFunctionDeclaration(cfnName);
     for (const m of metrics.metrics) {
       this.emitSpecificMetricFunctionDeclaration(m);
@@ -69,9 +72,9 @@ export class AugmentationGenerator {
     this.code.closeBlock();
 
     // Emit the monkey patches for all methods
-    this.emitMetricFunction(baseClassName, metrics);
+    this.emitMetricFunction(className, metrics);
     for (const m of metrics.metrics) {
-      this.emitSpecificMetricFunction(baseClassName, m);
+      this.emitSpecificMetricFunction(className, m);
     }
   }
 

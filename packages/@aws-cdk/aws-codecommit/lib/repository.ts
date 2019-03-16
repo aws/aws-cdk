@@ -1,4 +1,3 @@
-import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
 import { CfnRepository } from './codecommit.generated';
@@ -18,15 +17,12 @@ export interface IRepository extends cdk.IConstruct {
   readonly repositoryCloneUrlSsh: string;
 
   /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
+   * Convenience method for creating a new {@link PipelineSourceAction}.
    *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
+   * @param props the construction properties of the new Action
    * @returns the newly created {@link PipelineSourceAction}
    */
-  addToPipeline(stage: actions.IStage, name: string, props?: CommonPipelineSourceActionProps): PipelineSourceAction;
+  toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction;
 
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
@@ -123,20 +119,10 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
 
   public abstract export(): RepositoryImportProps;
 
-  /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps = {}): PipelineSourceAction {
-    return new PipelineSourceAction(this, name, {
-      stage,
-      repository: this,
+  public toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction {
+    return new PipelineSourceAction({
       ...props,
+      repository: this,
     });
   }
 
@@ -244,7 +230,7 @@ class ImportedRepository extends RepositoryBase {
   constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
     super(scope, id);
 
-    this.repositoryArn = cdk.Stack.find(this).formatArn({
+    this.repositoryArn = this.node.stack.formatArn({
       service: 'codecommit',
       resource: props.repositoryName,
     });
@@ -263,9 +249,8 @@ class ImportedRepository extends RepositoryBase {
     return this.repositoryCloneUrl('ssh');
   }
 
-  private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
-    const stack = cdk.Stack.find(this);
-    return `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${this.repositoryName}`;
+  private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
+    return `${protocol}://git-codecommit.${this.node.stack.region}.${this.node.stack.urlSuffix}/v1/repos/${this.repositoryName}`;
   }
 }
 
@@ -335,7 +320,7 @@ export class Repository extends RepositoryBase {
    */
   public export(): RepositoryImportProps {
     return {
-      repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
+      repositoryName: new cdk.CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
     };
   }
 

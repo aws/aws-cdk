@@ -323,6 +323,145 @@ export = {
       }));
       test.done();
     },
+    'with a vpn gateway'(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC', {
+        vpnGateway: true,
+        vpnGatewayAsn: 65000
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGateway', {
+        AmazonSideAsn: 65000,
+        Type: 'ipsec.1'
+      }));
+
+      expect(stack).to(haveResource('AWS::EC2::VPCGatewayAttachment', {
+        VpcId: {
+          Ref: 'VPCB9E5F0B4'
+        },
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCPrivateSubnet1RouteTableBE8A6027'
+          },
+          {
+            Ref: 'VPCPrivateSubnet2RouteTable0A19E10E'
+          },
+          {
+            Ref: 'VPCPrivateSubnet3RouteTable192186F8'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'with a vpn gateway and route propagation on isolated subnets'(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.Private, name: 'Private' },
+          { subnetType: SubnetType.Isolated, name: 'Isolated' },
+        ],
+        vpnGateway: true,
+        vpnRoutePropagation: [SubnetType.Isolated]
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCIsolatedSubnet1RouteTableEB156210'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet2RouteTable9B4F78DC'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet3RouteTableCB6A1FDA'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'with a vpn gateway and route propagation on private and isolated subnets'(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.Private, name: 'Private' },
+          { subnetType: SubnetType.Isolated, name: 'Isolated' },
+        ],
+        vpnGateway: true,
+        vpnRoutePropagation: [
+          SubnetType.Private,
+          SubnetType.Isolated
+        ]
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCPrivateSubnet1RouteTableBE8A6027'
+          },
+          {
+            Ref: 'VPCPrivateSubnet2RouteTable0A19E10E'
+          },
+          {
+            Ref: 'VPCPrivateSubnet3RouteTable192186F8'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet1RouteTableEB156210'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet2RouteTable9B4F78DC'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet3RouteTableCB6A1FDA'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'fails when specifying vpnConnections with vpnGateway set to false'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+        vpnGateway: false,
+        vpnConnections: {
+          VpnConnection: {
+            asn: 65000,
+            ip: '192.0.2.1'
+          }
+        }
+      }), /`vpnConnections`.+`vpnGateway`.+false/);
+
+      test.done();
+    },
+    'fails when specifying vpnGatewayAsn with vpnGateway set to false'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+        vpnGateway: false,
+        vpnGatewayAsn: 65000,
+      }), /`vpnGatewayAsn`.+`vpnGateway`.+false/);
+
+      test.done();
+    }
 
   },
 
@@ -349,8 +488,8 @@ export = {
 
       const vpc = new VpcNetwork(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.apply(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.resourceTypeName]}));
-      vpc.apply(new Tag('VpcType', 'Good'));
+      vpc.node.apply(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.resourceTypeName]}));
+      vpc.node.apply(new Tag('VpcType', 'Good'));
       expect(stack).to(haveResource("AWS::EC2::VPC", hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
       const propTags = toCfnTags(tags);
@@ -381,7 +520,7 @@ export = {
       const vpc = new VpcNetwork(stack, 'TheVPC');
       const tag = {Key: 'Late', Value: 'Adder'};
       expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
-      vpc.apply(new Tag(tag.Key, tag.Value));
+      vpc.node.apply(new Tag(tag.Key, tag.Value));
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
       test.done();
     },

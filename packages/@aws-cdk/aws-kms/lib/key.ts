@@ -1,5 +1,5 @@
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, IConstruct, Output } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, DeletionPolicy, IConstruct } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -37,7 +37,7 @@ export interface EncryptionKeyImportProps {
   keyArn: string;
 }
 
-export abstract class EncryptionKeyBase extends Construct {
+export abstract class EncryptionKeyBase extends Construct implements IEncryptionKey {
   /**
    * The ARN of the key.
    */
@@ -106,6 +106,14 @@ export interface EncryptionKeyProps {
    * administer the key will be created.
    */
   policy?: PolicyDocument;
+
+  /**
+   * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
+   * retain access to data that was encrypted with a key that is being retired.
+   *
+   * @default true
+   */
+  retain?: boolean;
 }
 
 /**
@@ -155,7 +163,9 @@ export class EncryptionKey extends EncryptionKeyBase {
     });
 
     this.keyArn = resource.keyArn;
-    resource.options.deletionPolicy = DeletionPolicy.Retain;
+    resource.options.deletionPolicy = props.retain === false
+                                    ? DeletionPolicy.Delete
+                                    : DeletionPolicy.Retain;
   }
 
   /**
@@ -164,7 +174,7 @@ export class EncryptionKey extends EncryptionKeyBase {
    */
   public export(): EncryptionKeyImportProps {
     return {
-      keyArn: new Output(this, 'KeyArn', { value: this.keyArn }).makeImportValue().toString()
+      keyArn: new CfnOutput(this, 'KeyArn', { value: this.keyArn }).makeImportValue().toString()
     };
   }
 

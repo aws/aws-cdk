@@ -1,4 +1,4 @@
-import { exactlyMatchTemplate, expect } from '@aws-cdk/assert';
+import { exactlyMatchTemplate, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
 import { App, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -61,6 +61,16 @@ export = {
       }
       }
     }));
+    test.done();
+  },
+
+  'default with no retention'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    new EncryptionKey(stack, 'MyKey', { retain: false });
+
+    expect(app.synthesizeStack(stack.name)).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete" }, ResourcePart.CompleteDefinition));
     test.done();
   },
 
@@ -147,9 +157,9 @@ export = {
     p.addAwsPrincipal('arn');
     key.addToResourcePolicy(p);
 
-    key.apply(new Tag('tag1', 'value1'));
-    key.apply(new Tag('tag2', 'value2'));
-    key.apply(new Tag('tag3', ''));
+    key.node.apply(new Tag('tag1', 'value1'));
+    key.node.apply(new Tag('tag2', 'value2'));
+    key.node.apply(new Tag('tag3', ''));
 
     expect(stack).to(exactlyMatchTemplate({
       Resources: {

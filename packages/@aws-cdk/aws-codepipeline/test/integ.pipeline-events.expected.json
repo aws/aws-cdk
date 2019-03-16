@@ -13,7 +13,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codepipeline.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "codepipeline.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -103,12 +113,6 @@
     "MyPipelineAED38ECF": {
       "Type": "AWS::CodePipeline::Pipeline",
       "Properties": {
-        "ArtifactStore": {
-          "Location": {
-            "Ref": "MyPipelineArtifactsBucket727923DD"
-          },
-          "Type": "S3"
-        },
         "RoleArn": {
           "Fn::GetAtt": [
             "MyPipelineRoleC0D47CA4",
@@ -169,7 +173,7 @@
                 "Name": "CodeBuildAction",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_awscdkpipelineeventtargetCodeBuildAction37D411C2"
+                    "Name": "Artifact_CodeBuildAction_awscdkpipelineeventtargetBuildProject106B7735"
                   }
                 ],
                 "RunOrder": 1
@@ -177,120 +181,20 @@
             ],
             "Name": "Build"
           }
-        ]
+        ],
+        "ArtifactStore": {
+          "Location": {
+            "Ref": "MyPipelineArtifactsBucket727923DD"
+          },
+          "Type": "S3"
+        }
       },
       "DependsOn": [
         "MyPipelineRoleDefaultPolicy34F09EFA",
         "MyPipelineRoleC0D47CA4"
       ]
     },
-    "MyPipelineOnPipelineStateChangeA017E4B1": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "EventPattern": {
-          "detail-type": [
-            "CodePipeline Pipeline Execution State Change"
-          ],
-          "source": [
-            "aws.codepipeline"
-          ],
-          "resources": [
-            {
-              "Fn::Join": [
-                "",
-                [
-                  "arn:",
-                  {
-                    "Ref": "AWS::Partition"
-                  },
-                  ":codepipeline:",
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                    "Ref": "AWS::AccountId"
-                  },
-                  ":",
-                  {
-                    "Ref": "MyPipelineAED38ECF"
-                  }
-                ]
-              ]
-            }
-          ]
-        },
-        "State": "ENABLED",
-        "Targets": [
-          {
-            "Arn": {
-              "Ref": "MyTopic86869434"
-            },
-            "Id": "MyTopic",
-            "InputTransformer": {
-              "InputPathsMap": {
-                "pipeline": "$.detail.pipeline",
-                "state": "$.detail.state"
-              },
-              "InputTemplate": "\"Pipeline <pipeline> changed state to <state>\""
-            }
-          }
-        ]
-      }
-    },
-    "SourceOnSourceStateChangeEF8EB16D": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "EventPattern": {
-          "detail-type": [
-            "CodePipeline Stage Execution State Change"
-          ],
-          "source": [
-            "aws.codepipeline"
-          ],
-          "resources": [
-            {
-              "Fn::Join": [
-                "",
-                [
-                  "arn:",
-                  {
-                    "Ref": "AWS::Partition"
-                  },
-                  ":codepipeline:",
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                    "Ref": "AWS::AccountId"
-                  },
-                  ":",
-                  {
-                    "Ref": "MyPipelineAED38ECF"
-                  }
-                ]
-              ]
-            }
-          ],
-          "detail": {
-            "stage": [
-              "Source"
-            ]
-          }
-        },
-        "State": "ENABLED",
-        "Targets": [
-          {
-            "Arn": {
-              "Ref": "MyTopic86869434"
-            },
-            "Id": "MyTopic"
-          }
-        ]
-      }
-    },
-    "MyPipelineCodeCommitSourceOnActionStateChange39DCCFC1": {
+    "MyPipelineSourceCodeCommitSourceOnActionStateChangeDCAF781A": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
@@ -348,6 +252,112 @@
         ]
       }
     },
+    "MyPipelineSourceOnSourceStateChange6DEE3A75": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "detail-type": [
+            "CodePipeline Stage Execution State Change"
+          ],
+          "source": [
+            "aws.codepipeline"
+          ],
+          "resources": [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":codepipeline:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":",
+                  {
+                    "Ref": "MyPipelineAED38ECF"
+                  }
+                ]
+              ]
+            }
+          ],
+          "detail": {
+            "stage": [
+              "Source"
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "MyTopic86869434"
+            },
+            "Id": "MyTopic"
+          }
+        ]
+      }
+    },
+    "MyPipelineOnPipelineStateChangeA017E4B1": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "detail-type": [
+            "CodePipeline Pipeline Execution State Change"
+          ],
+          "source": [
+            "aws.codepipeline"
+          ],
+          "resources": [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":codepipeline:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":",
+                  {
+                    "Ref": "MyPipelineAED38ECF"
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "MyTopic86869434"
+            },
+            "Id": "MyTopic",
+            "InputTransformer": {
+              "InputPathsMap": {
+                "pipeline": "$.detail.pipeline",
+                "state": "$.detail.state"
+              },
+              "InputTemplate": "\"Pipeline <pipeline> changed state to <state>\""
+            }
+          }
+        ]
+      }
+    },
     "CodeCommitRepoDC6A41F9": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
@@ -364,7 +374,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codebuild.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "codebuild.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -513,7 +533,17 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Principal": {
-                "Service": "events.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "events.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               },
               "Resource": {
                 "Ref": "MyTopic86869434"

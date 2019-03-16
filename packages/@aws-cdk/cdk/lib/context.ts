@@ -1,6 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Stack } from './cloudformation/stack';
-import { Construct } from './core/construct';
+import { Construct } from './construct';
 
 type ContextProviderProps = {[key: string]: any};
 /**
@@ -14,17 +13,14 @@ type ContextProviderProps = {[key: string]: any};
  */
 export class ContextProvider {
 
-  private readonly stack: Stack;
   private readonly props: ContextProviderProps;
 
-  constructor(
-    private readonly context: Construct,
-    private readonly provider: string,
-    props: ContextProviderProps = {}) {
-    this.stack = Stack.find(context);
+  constructor(private readonly context: Construct,
+              private readonly provider: string,
+              props: ContextProviderProps = {}) {
     this.props = {
-      account: this.stack.env.account,
-      region: this.stack.env.region,
+      account: context.node.stack.env.account,
+      region: context.node.stack.env.region,
       ...props,
     };
   }
@@ -51,7 +47,7 @@ export class ContextProvider {
       return value;
     }
 
-    this.stack.reportMissingContext(this.key, {
+    this.context.node.stack.reportMissingContext(this.key, {
       provider: this.provider,
       props: this.props,
     });
@@ -78,7 +74,7 @@ export class ContextProvider {
       return value;
     }
 
-    this.stack.reportMissingContext(this.key, {
+    this.context.node.stack.reportMissingContext(this.key, {
       provider: this.provider,
       props: this.props,
     });
@@ -108,7 +104,7 @@ export class ContextProvider {
         return value;
       }
 
-      this.stack.reportMissingContext(this.key, {
+      this.context.node.stack.reportMissingContext(this.key, {
         provider: this.provider,
         props: this.props,
       });

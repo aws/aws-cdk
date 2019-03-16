@@ -22,6 +22,15 @@ export interface SubscriptionProps {
    * The topic to subscribe to.
    */
   topic: ITopic;
+
+  /**
+   * true if raw message delivery is enabled for the subscription. Raw messages are free of JSON formatting and can be
+   * sent to HTTP/S and Amazon SQS endpoints. For more information, see GetSubscriptionAttributes in the Amazon Simple
+   * Notification Service API Reference.
+   *
+   * @default false
+   */
+  rawMessageDelivery?: boolean;
 }
 
 /**
@@ -34,10 +43,15 @@ export class Subscription extends Construct {
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
 
+    if (props.rawMessageDelivery && ['http', 'https', 'sqs'].indexOf(props.protocol) < 0) {
+      throw new Error('Raw message delivery can only be enabled for HTTP/S and SQS subscriptions.');
+    }
+
     new CfnSubscription(this, 'Resource', {
       endpoint: props.endpoint,
       protocol: props.protocol,
-      topicArn: props.topic.topicArn
+      topicArn: props.topic.topicArn,
+      rawMessageDelivery: props.rawMessageDelivery,
     });
 
   }

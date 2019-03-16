@@ -1,5 +1,6 @@
-import { Construct, IConstruct, IDependable, Stack } from "@aws-cdk/cdk";
+import { Construct, IConstruct, IDependable } from "@aws-cdk/cdk";
 import { subnetName } from './util';
+import { VpnConnection, VpnConnectionOptions } from './vpn';
 
 export interface IVpcSubnet extends IConstruct {
   /**
@@ -55,6 +56,11 @@ export interface IVpcNetwork extends IConstruct {
   readonly vpcRegion: string;
 
   /**
+   * Identifier for the VPN gateway
+   */
+  readonly vpnGatewayId?: string;
+
+  /**
    * Return the subnets appropriate for the placement strategy
    */
   subnets(placement?: VpcPlacementStrategy): IVpcSubnet[];
@@ -67,6 +73,11 @@ export interface IVpcNetwork extends IConstruct {
    * never return true.
    */
   isPublicSubnet(subnet: IVpcSubnet): boolean;
+
+  /**
+   * Adds a new VPN connection to this VPC
+   */
+  addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection;
 
   /**
    * Exports this VPC so it can be consumed by another stack.
@@ -174,6 +185,11 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   public abstract readonly availabilityZones: string[];
 
   /**
+   * Identifier for the VPN gateway
+   */
+  public abstract readonly vpnGatewayId?: string;
+
+  /**
    * Dependencies for internet connectivity
    */
   public readonly internetDependencies = new Array<IConstruct>();
@@ -212,6 +228,16 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   }
 
   /**
+   * Adds a new VPN connection to this VPC
+   */
+  public addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection {
+    return new VpnConnection(this, id, {
+      vpc: this,
+      ...options
+    });
+  }
+
+  /**
    * Export this VPC from the stack
    */
   public abstract export(): VpcNetworkImportProps;
@@ -231,7 +257,7 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
    * The region where this VPC is defined
    */
   public get vpcRegion(): string {
-    return Stack.find(this).region;
+    return this.node.stack.region;
   }
 
 }
@@ -291,6 +317,11 @@ export interface VpcNetworkImportProps {
    * Must be undefined or have a name for every isolated subnet group.
    */
   isolatedSubnetNames?: string[];
+
+  /**
+   * VPN gateway's identifier
+   */
+  vpnGatewayId?: string;
 }
 
 export interface VpcSubnetImportProps {

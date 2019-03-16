@@ -13,7 +13,7 @@ export = {
       allowedPattern: '.*',
       description: 'The value Foo',
       name: 'FooParameter',
-      value: 'Foo',
+      stringValue: 'Foo',
     });
 
     // THEN
@@ -32,7 +32,7 @@ export = {
     const stack = new cdk.Stack();
 
     // THEN
-    test.throws(() => new ssm.StringParameter(stack, 'Parameter', { allowedPattern: '^Bar$', value: 'FooBar' }),
+    test.throws(() => new ssm.StringParameter(stack, 'Parameter', { allowedPattern: '^Bar$', stringValue: 'FooBar' }),
                 /does not match the specified allowedPattern/);
     test.done();
   },
@@ -42,7 +42,9 @@ export = {
     const stack = new cdk.Stack();
 
     // THEN
-    test.doesNotThrow(() => new ssm.StringParameter(stack, 'Parameter', { allowedPattern: '^Bar$', value: new cdk.Token(() => 'Foo!').toString() }));
+    test.doesNotThrow(() => {
+       new ssm.StringParameter(stack, 'Parameter', { allowedPattern: '^Bar$', stringValue: new cdk.Token(() => 'Foo!').toString() });
+    });
     test.done();
   },
 
@@ -55,7 +57,7 @@ export = {
       allowedPattern: '(Foo|Bar)',
       description: 'The values Foo and Bar',
       name: 'FooParameter',
-      value: ['Foo', 'Bar'],
+      stringListValue: ['Foo', 'Bar'],
     });
 
     // THEN
@@ -74,7 +76,7 @@ export = {
     const stack = new cdk.Stack();
 
     // THEN
-    test.throws(() => new ssm.StringListParameter(stack, 'Parameter', { value: ['Foo,Bar'] }),
+    test.throws(() => new ssm.StringListParameter(stack, 'Parameter', { stringListValue: ['Foo,Bar'] }),
                 /cannot contain the ',' character/);
     test.done();
   },
@@ -84,7 +86,7 @@ export = {
     const stack = new cdk.Stack();
 
     // THEN
-    test.throws(() => new ssm.StringListParameter(stack, 'Parameter', { allowedPattern: '^(Foo|Bar)$', value: ['Foo', 'FooBar'] }),
+    test.throws(() => new ssm.StringListParameter(stack, 'Parameter', { allowedPattern: '^(Foo|Bar)$', stringListValue: ['Foo', 'FooBar'] }),
                 /does not match the specified allowedPattern/);
     test.done();
   },
@@ -96,8 +98,29 @@ export = {
     // THEN
     test.doesNotThrow(() => new ssm.StringListParameter(stack, 'Parameter', {
       allowedPattern: '^(Foo|Bar)$',
-      value: ['Foo', new cdk.Token(() => 'Baz!').toString()]
+      stringListValue: ['Foo', new cdk.Token(() => 'Baz!').toString()]
     }));
     test.done();
   },
+
+  'parameterArn is crafted correctly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const param = new ssm.StringParameter(stack, 'Parameter', { stringValue: 'Foo' });
+
+    // THEN
+    test.deepEqual(param.node.resolve(param.parameterArn), {
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameter',
+        { Ref: 'Parameter9E1B4FBA' }
+      ]]
+    });
+    test.done();
+  }
 };

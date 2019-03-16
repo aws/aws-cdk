@@ -27,7 +27,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -61,7 +61,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns:
           // tslint:disable-next-line:max-line-length
@@ -133,7 +133,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -350,7 +350,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -461,7 +461,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -571,7 +571,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -645,7 +645,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -755,7 +755,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -1120,7 +1120,7 @@ export = {
             { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
               Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -1178,6 +1178,52 @@ export = {
     test.done();
   },
 
+  'environment variables are prohibited in China'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'cn-north-1' }});
+
+    // WHEN
+    test.throws(() => {
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NodeJS,
+        environment: {
+          SOME: 'Variable'
+        }
+      });
+    }, /Environment variables are not supported/);
+
+    test.done();
+  },
+
+  'environment variables work in an unspecified region'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS,
+      environment: {
+        SOME: 'Variable'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          SOME: "Variable"
+        }
+      }
+    }));
+
+    test.done();
+
+  },
+
   'support reserved concurrent executions'(test: Test) {
     const stack = new cdk.Stack();
 
@@ -1196,7 +1242,7 @@ export = {
             { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
               Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -1212,6 +1258,43 @@ export = {
           Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
           Runtime: 'nodejs' },
           DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
+    test.done();
+  },
+
+  'its possible to specify event sources upon creation'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    let bindCount = 0;
+
+    class EventSource implements lambda.IEventSource {
+      public bind(_: lambda.FunctionBase): void {
+        bindCount++;
+      }
+    }
+
+    // WHEN
+    new lambda.Function(stack, 'fn', {
+      code: lambda.Code.inline('boom'),
+      runtime: lambda.Runtime.NodeJS810,
+      handler: 'index.bam',
+      events: [
+        new EventSource(),
+        new EventSource(),
+      ]
+    });
+
+    // THEN
+    test.deepEqual(bindCount, 2);
+    test.done();
+  },
+
+  'Provided Runtime returns the right values'(test: Test) {
+    const rt = lambda.Runtime.Provided;
+
+    test.equal(rt.name, 'provided');
+    test.equal(rt.supportsInlineCode, false);
+
     test.done();
   }
 };

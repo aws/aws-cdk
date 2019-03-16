@@ -221,10 +221,10 @@ export = {
     const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
 
     // WHEN
-    new cdk.Resource(stack, 'FakeResource', {
+    new cdk.CfnResource(stack, 'FakeResource', {
       type: 'CDK::Phony::Resource',
       properties: {
-        value: secret.toSecretString().value
+        value: secret.stringValue
       }
     });
 

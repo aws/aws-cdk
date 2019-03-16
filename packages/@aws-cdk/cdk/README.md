@@ -9,7 +9,7 @@ Aspects are a mechanism to extend the CDK without having to directly impact the
 class hierarchy. We have implemented aspects using the [Visitor
 Pattern](https://en.wikipedia.org/wiki/Visitor_pattern).
 
-An aspect in the CDK is defined by this [interface](lib/aspects/aspect.ts)
+An aspect in the CDK is defined by this [interface](lib/aspect.ts)
 
 Aspects can be applied to any construct. During the tree
 "prepare" phase the aspect will visit each construct in the tree once.
@@ -39,7 +39,7 @@ import cdk = require('@aws-cdk/cdk');
 
 const app = new cdk.App();
 const theBestStack = new cdk.Stack(app, 'MarketingSystem');
-theBestStack.apply(new cdk.Tag('StackType', 'TheBest'));
+theBestStack.node.apply(new cdk.Tag('StackType', 'TheBest'));
 
 // any resources added that support tags will get them
 ```
@@ -105,8 +105,8 @@ const vpc = new ec2.VpcNetwork(marketingStack, 'MarketingVpc', {
   });
 // override the VPC tags with Platform
 // this will tag the VPC, Subnets, Route Tables, IGW, and NatGWs
-vpc.apply(new cdk.Tag(COST_CENTER_KEY, 'Platform'));
-vpc.apply(new cdk.RemoveTag('Name'));
+vpc.node.apply(new cdk.Tag(COST_CENTER_KEY, 'Platform'));
+vpc.node.apply(new cdk.RemoveTag('Name'));
 // snip //
 ```
 
@@ -117,10 +117,18 @@ has a few features that are covered later to explain how this works.
 
 ### API
 
-In order to enable additional controls a Tags can specifically include or
+In order to enable additional controls a Tag can specifically include or
 exclude a CloudFormation Resource Type, propagate tags for an autoscaling group,
 and use priority to override the default precedence. See the `TagProps` 
 interface for more details. 
+
+Tags can be configured by using the properties for the AWS CloudFormation layer
+resources or by using the tag aspects described here. The aspects will always
+take precedence over the AWS CloudFormation layer in the event of a name
+collision. The tags will be merged otherwise. For the aspect based tags, the
+tags applied closest to the resource will take precedence, given an equal
+priority. A higher priority tag will always take precedence over a lower
+priority tag.
 
 #### applyToLaunchedInstances
 
@@ -131,7 +139,7 @@ true. If false the property is set accordingly.
 ```ts
 // ... snip
 const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
-vpc.apply(new cdk.Tag('MyKey', 'MyValue', { applyToLaunchedInstances: false }));
+vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { applyToLaunchedInstances: false }));
 // ... snip
 ```
 
@@ -145,7 +153,7 @@ interpreted as apply to any resource type.
 ```ts
 // ... snip
 const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
-vpc.apply(new cdk.Tag('MyKey', 'MyValue', { includeResourceTypes: ['AWS::EC2::Subnet']}));
+vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { includeResourceTypes: ['AWS::EC2::Subnet']}));
 // ... snip
 ```
 
@@ -160,7 +168,7 @@ over include in the event of a collision.
 ```ts
 // ... snip
 const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
-vpc.apply(new cdk.Tag('MyKey', 'MyValue', { exludeResourceTypes: ['AWS::EC2::Subnet']}));
+vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { exludeResourceTypes: ['AWS::EC2::Subnet']}));
 // ... snip
 ```
 
@@ -174,6 +182,6 @@ setting for removing tags uses a higher priority than the standard tag.
 ```ts
 // ... snip
 const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
-vpc.apply(new cdk.Tag('MyKey', 'MyValue', { priority: 2 }));
+vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { priority: 2 }));
 // ... snip
 ```

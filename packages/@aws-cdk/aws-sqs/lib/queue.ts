@@ -287,10 +287,10 @@ export class Queue extends QueueBase {
    */
   public export(): QueueImportProps {
     return {
-      queueArn: new cdk.Output(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
-      queueUrl: new cdk.Output(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
+      queueArn: new cdk.CfnOutput(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
+      queueUrl: new cdk.CfnOutput(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
       keyArn: this.encryptionMasterKey
-        ? new cdk.Output(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue().toString()
+        ? new cdk.CfnOutput(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue().toString()
         : undefined
     };
   }
@@ -350,7 +350,7 @@ class ImportedQueue extends QueueBase {
     super(scope, id);
     this.queueArn = props.queueArn;
     this.queueUrl = props.queueUrl;
-    this.queueName = cdk.Stack.find(this).parseArn(props.queueArn).resource;
+    this.queueName = this.node.stack.parseArn(props.queueArn).resource;
 
     if (props.keyArn) {
       this.encryptionMasterKey = kms.EncryptionKey.import(this, 'Key', {

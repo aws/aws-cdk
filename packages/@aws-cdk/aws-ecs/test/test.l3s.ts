@@ -12,13 +12,13 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
     // WHEN
     new ecs.LoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
-      image: ecs.ContainerImage.fromDockerHub('test'),
+      image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
       environment: {
         TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
@@ -63,7 +63,7 @@ export = {
     // WHEN
     new ecs.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromDockerHub('test'),
+      image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
       environment: {
         TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
@@ -119,7 +119,7 @@ export = {
     // WHEN
     new ecs.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromDockerHub('test'),
+      image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
       createLogs: false,
       environment: {
@@ -166,7 +166,7 @@ export = {
     // WHEN
     new ecs.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.ContainerImage.fromDockerHub('test'),
+      image: ecs.ContainerImage.fromRegistry('test'),
       domainName: 'api.example.com',
       domainZone: zone,
       certificate: Certificate.import(stack, 'Cert', { certificateArn: 'helloworld' })
@@ -212,7 +212,7 @@ export = {
     test.throws(() => {
       new ecs.LoadBalancedFargateService(stack, 'Service', {
         cluster,
-        image: ecs.ContainerImage.fromDockerHub('test'),
+        image: ecs.ContainerImage.fromRegistry('test'),
         domainName: 'api.example.com'
       });
     });
