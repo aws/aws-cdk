@@ -15,7 +15,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         MyResource: {
           Type: "MyResourceType",
@@ -56,7 +56,7 @@ export = {
     res.increment();
     res.increment(2);
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         MyResource: { Type: 'My::Counter', Properties: { Count: 13 } }
       }
@@ -78,7 +78,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         MyResource: { Type: 'My::Counter', Properties: { Count: 10 } },
         YourResource: {
@@ -105,7 +105,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         MyResource: { Type: "My::Counter", Properties: { Count: 1 } },
         MyResource2: {
@@ -131,7 +131,7 @@ export = {
     r2.node.addDependency(r3);
 
     stack.node.prepareTree();
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         Counter1: {
           Type: "My::Counter",
@@ -166,7 +166,7 @@ export = {
     dependent.addDependsOn(r1);
 
     // THEN
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         Counter1: {
           Type: "My::Counter",
@@ -191,7 +191,7 @@ export = {
     const cond = new CfnCondition(stack, 'MyCondition', { expression: Fn.conditionNot(Fn.conditionEquals('a', 'b')) });
     r1.options.condition = cond;
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: { Resource: { Type: 'Type', Condition: 'MyCondition' } },
       Conditions: { MyCondition: { 'Fn::Not': [ { 'Fn::Equals': [ 'a', 'b' ] } ] } }
     });
@@ -217,7 +217,7 @@ export = {
     r1.options.deletionPolicy = DeletionPolicy.Retain;
     r1.options.updateReplacePolicy = DeletionPolicy.Snapshot;
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         Resource: {
           Type: 'Type',
@@ -246,7 +246,7 @@ export = {
 
     r1.options.updatePolicy = { useOnlineResharding: true };
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         Resource: {
           Type: 'Type',
@@ -269,7 +269,7 @@ export = {
       MyValue: 99
     };
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         Resource: {
           Type: "Type",
@@ -301,7 +301,7 @@ export = {
     applyRemovalPolicy(forbid, RemovalPolicy.Forbid);
     applyRemovalPolicy(destroy, RemovalPolicy.Destroy);
 
-    test.deepEqual(stack.toCloudFormation(), { Resources:
+    test.deepEqual(stack._toCloudFormation(), { Resources:
       { Orphan: { Type: 'T1', DeletionPolicy: 'Retain' },
         Forbid: { Type: 'T2', DeletionPolicy: 'Retain' },
         Destroy: { Type: 'T3' } } });
@@ -352,7 +352,7 @@ export = {
     dependingResource.node.addDependency(c3);
 
     stack.node.prepareTree();
-    test.deepEqual(stack.toCloudFormation(), { Resources:
+    test.deepEqual(stack._toCloudFormation(), { Resources:
       { MyC1R1FB2A562F: { Type: 'T1' },
         MyC1R2AE2B5066: { Type: 'T2' },
         MyC2R3809EEAD6: { Type: 'T3' },
@@ -387,7 +387,7 @@ export = {
       r.addOverride('Use.Dot.Notation', 'To create subtrees');
 
       // THEN
-      test.deepEqual(stack.toCloudFormation(), { Resources:
+      test.deepEqual(stack._toCloudFormation(), { Resources:
         { MyResource:
           { Type: 'YouCanEvenOverrideTheType',
             Use: { Dot: { Notation: 'To create subtrees' } },
@@ -416,7 +416,7 @@ export = {
       r.addOverride('Properties.Hello.World.Value2', null);
 
       // THEN
-      test.deepEqual(stack.toCloudFormation(), { Resources:
+      test.deepEqual(stack._toCloudFormation(), { Resources:
         { MyResource:
           { Type: 'AWS::Resource::Type',
             Properties: { Hello: { World: { Value1: 'Hello', Value2: null } } } } } });
@@ -444,7 +444,7 @@ export = {
       r.addOverride('Properties.Hello.World.Value2', undefined);
 
       // THEN
-      test.deepEqual(stack.toCloudFormation(), { Resources:
+      test.deepEqual(stack._toCloudFormation(), { Resources:
         { MyResource:
           { Type: 'AWS::Resource::Type',
             Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
@@ -463,7 +463,7 @@ export = {
       r.addPropertyOverride('Tree.Does.Not.Exist', undefined);
 
       // THEN
-      test.deepEqual(stack.toCloudFormation(), { Resources:
+      test.deepEqual(stack._toCloudFormation(), { Resources:
         { MyResource:
           { Type: 'AWS::Resource::Type',
             Properties: { Tree: { Exists: 42 } } } } });
@@ -493,7 +493,7 @@ export = {
       r.addPropertyDeletionOverride('Hello.World.Value3');
 
       // THEN
-      test.deepEqual(stack.toCloudFormation(), { Resources:
+      test.deepEqual(stack._toCloudFormation(), { Resources:
         { MyResource:
           { Type: 'AWS::Resource::Type',
             Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
@@ -519,7 +519,7 @@ export = {
       r.addOverride('Properties.Hello.World.Foo.Bar', 42);
 
       // THEN
-      test.deepEqual(stack.toCloudFormation(), { Resources:
+      test.deepEqual(stack._toCloudFormation(), { Resources:
         { MyResource:
           { Type: 'AWS::Resource::Type',
             Properties:
@@ -542,7 +542,7 @@ export = {
       r.addPropertyOverride('Hello.World', { Hey: 'Jude' });
 
       // THEN
-      test.deepEqual(stack.toCloudFormation(), { Resources:
+      test.deepEqual(stack._toCloudFormation(), { Resources:
         { MyResource:
           { Type: 'AWS::Resource::Type',
             Properties: { Hello: { World: { Hey: 'Jude' } } } } } });
@@ -560,7 +560,7 @@ export = {
 
         r.setProperty('prop2', 'bar');
 
-        test.deepEqual(stack.toCloudFormation(), { Resources:
+        test.deepEqual(stack._toCloudFormation(), { Resources:
           { MyResource:
             { Type: 'MyResourceType',
               Properties: { PROP1: 'foo', PROP2: 'bar' } } } });
@@ -574,7 +574,7 @@ export = {
 
         r.setProperty('prop3', 'zoo');
 
-        test.deepEqual(stack.toCloudFormation(), { Resources:
+        test.deepEqual(stack._toCloudFormation(), { Resources:
           { MyResource:
             { Type: 'MyResourceType',
               Properties: { PROP3: 'zoo' } } } });
@@ -589,7 +589,7 @@ export = {
         r.setProperty('prop3', 'zoo');
         r.setProperty('prop2', 'hey');
 
-        test.deepEqual(stack.toCloudFormation(), { Resources:
+        test.deepEqual(stack._toCloudFormation(), { Resources:
           { MyResource:
             { Type: 'MyResourceType',
               Properties: { PROP2: 'hey', PROP3: 'zoo' } } } });
@@ -608,7 +608,7 @@ export = {
       type: 'MyResourceType',
     });
 
-    test.deepEqual(stack.toCloudFormation(), { Resources:
+    test.deepEqual(stack._toCloudFormation(), { Resources:
       { ParentMyResource4B1FDBCC:
          { Type: 'MyResourceType',
            Metadata: { [cxapi.PATH_METADATA_KEY]: 'Parent/MyResource' } } } });
@@ -629,7 +629,7 @@ export = {
 
     // THEN
     app.node.prepareTree();
-    test.deepEqual(stackB.toCloudFormation(), {
+    test.deepEqual(stackB._toCloudFormation(), {
       Resources: {
         Resource: {
           Type: 'R'

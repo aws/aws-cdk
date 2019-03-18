@@ -219,7 +219,7 @@ export = {
     new CfnOutput(stack2, 'SomeValue', { value: arn });
 
     // THEN
-    test.deepEqual(stack2.node.resolve(stack2.toCloudFormation()), {
+    test.deepEqual(stack2.node.resolve(stack2._toCloudFormation()), {
       Outputs: {
         SomeValue: {
           Value: {
