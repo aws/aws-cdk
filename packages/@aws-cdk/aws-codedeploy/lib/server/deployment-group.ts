@@ -300,7 +300,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       autoScalingGroups: new cdk.Token(() =>
         this._autoScalingGroups.length === 0
           ? undefined
-          : this._autoScalingGroups.map(asg => asg.autoScalingGroupName)),
+          : this._autoScalingGroups.map(asg => asg.autoScalingGroupName)).toList(),
       loadBalancerInfo: this.loadBalancerInfo(props.loadBalancer),
       deploymentStyle: props.loadBalancer === undefined
         ? undefined

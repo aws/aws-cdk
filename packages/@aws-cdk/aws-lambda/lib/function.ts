@@ -365,7 +365,7 @@ export class Function extends FunctionBase {
       functionName: props.functionName,
       description: props.description,
       code: new cdk.Token(() => props.code._toJSON(resource)),
-      layers: new cdk.Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined),
+      layers: new cdk.Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined).toList(),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,

@@ -3,11 +3,11 @@ import { Policy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;
 
-export function undefinedIfEmpty<T>(f: () => T[]): Token {
+export function undefinedIfEmpty(f: () => string[]): string[] {
   return new Token(() => {
     const array = f();
     return (array && array.length > 0) ? array : undefined;
-  });
+  }).toList();
 }
 
 /**
