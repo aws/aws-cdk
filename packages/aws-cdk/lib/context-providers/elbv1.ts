@@ -15,7 +15,7 @@ export class ElbV1ContextProviderPlugin implements ContextProviderPlugin {
     const region = args.region;
     const account = args.account;
 
-    debug(`Reading ElbV1s for ${account}:${region}`);
+    debug(`Reading ElbV1s for ${account}/${region}`);
     const elb = await this.aws.elbv1(account, region, Mode.ForReading);
     const lbDescriptions = await this.getElbs(elb);
 
