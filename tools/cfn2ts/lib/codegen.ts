@@ -651,7 +651,7 @@ export default class CodeGenerator {
 
   private validateRefKindPresence(name: string, resourceType: schema.ResourceType): any {
     if (!resourceType.RefKind) { // Both empty string and undefined
-      throw new Error(`Resource ${name} does not have a RefKind; please annotate this new resources in @aws-cdk/cfnspec`);
+      throw new Error(`Resource ${name} does not have a RefKind; please run in @aws-cdk/cfnspec: npm run set-refkind ${name} Arn|Id|None|...`);
     }
   }
 }
