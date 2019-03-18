@@ -73,6 +73,11 @@ export interface ContainerImageAssetMetadataEntry {
    * ECR Repository name and tag (separated by ":") where this asset is stored.
    */
   imageNameParameter: string;
+
+  /**
+   * ECR Repository name.
+   */
+  repositoryName?: string;
 }
 
 export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry;

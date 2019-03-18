@@ -10,6 +10,15 @@ export interface DockerImageAssetProps {
    * The directory where the Dockerfile is stored
    */
   directory: string;
+
+  /**
+   * ECR repository name, if omitted a dynamic name is used instead.
+   * Specify this property if you need to statically address the
+   * image, e.g. from a Kubernetes Pod.
+   * Note, this is only the repository name, without the registry and
+   * the tag parts.
+   */
+  repositoryName?: string;
 }
 
 /**
@@ -55,7 +64,8 @@ export class DockerImageAsset extends cdk.Construct {
       packaging: 'container-image',
       path: this.directory,
       id: this.node.uniqueId,
-      imageNameParameter: imageNameParameter.logicalId
+      imageNameParameter: imageNameParameter.logicalId,
+      repositoryName: props.repositoryName,
     };
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);
