@@ -23,14 +23,14 @@ export interface CommonTaskDefinitionProps {
    *
    * @default An execution role will be automatically created if you use ECR images in your task definition
    */
-  executionRole?: iam.Role;
+  executionRole?: iam.IRole;
 
   /**
    * The IAM role assumable by your application code running inside the container
    *
    * @default A task role is automatically created for you
    */
-  taskRole?: iam.Role;
+  taskRole?: iam.IRole;
 
   /**
    * See: https://docs.aws.amazon.com/AmazonECS/latest/developerguide//task_definition_parameters.html#volumes
@@ -112,7 +112,7 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * Task role used by this task definition
    */
-  public readonly taskRole: iam.Role;
+  public readonly taskRole: iam.IRole;
 
   /**
    * Network mode used by this task definition

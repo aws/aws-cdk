@@ -245,6 +245,16 @@ export interface IRole extends IConstruct, IPrincipal {
    * Export this role to another stack.
    */
   export(): RoleImportProps;
+
+  /**
+   * Grant the actions defined in actions to the identity Principal on this resource.
+   */
+  grant(identity?: IPrincipal, ...actions: string[]): void;
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  grantPassRole(identity?: IPrincipal): void;
 }
 
 function createAssumeRolePolicy(principal: PolicyPrincipal, externalId?: string) {
@@ -329,6 +339,20 @@ class ImportedRole extends Construct implements IRole {
   }
 
   public attachManagedPolicy(_arn: string): void {
+    // FIXME: Add warning that we're ignoring this
+  }
+
+  /**
+   * Grant the actions defined in actions to the identity Principal on this resource.
+   */
+  public grant(_identity?: IPrincipal, ..._actions: string[]): void {
+    // FIXME: Add warning that we're ignoring this
+  }
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  public grantPassRole(_identity?: IPrincipal): void {
     // FIXME: Add warning that we're ignoring this
   }
 }
