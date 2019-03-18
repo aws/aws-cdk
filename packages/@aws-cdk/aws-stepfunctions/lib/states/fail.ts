@@ -15,8 +15,10 @@ export interface FailProps {
 
     /**
      * Error code used to represent this failure
+     *
+     * @default No error code
      */
-    error: string;
+    error?: string;
 
     /**
      * A description for the cause of the failure
@@ -34,7 +36,7 @@ export interface FailProps {
 export class Fail extends State {
     public readonly endStates: INextable[] = [];
 
-    private readonly error: string;
+    private readonly error?: string;
     private readonly cause?: string;
 
     constructor(scope: cdk.Construct, id: string, props: FailProps) {
