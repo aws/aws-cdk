@@ -42,8 +42,10 @@
     "@types/uuid": "^3.4.3",
     "@types/yaml": "^1.0.0",
     "@types/yargs": "^8.0.3",
+    "@types/sinon": "^7.0.10",
     "cdk-build-tools": "^0.25.3",
     "mockery": "^2.1.0",
+    "sinon": "^7.2.7",
     "pkglint": "^0.25.3"
   },
   "dependencies": {
