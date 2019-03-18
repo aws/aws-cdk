@@ -52,6 +52,8 @@ update-spec \
     spec-source/000_sam.spec.json \
     false
 
+npm run build
+
 echo >&2 "Creating missing AWS construct libraries for new resource types..."
 node ${scriptdir}/create-missing-libraries.js
 
