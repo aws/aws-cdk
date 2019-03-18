@@ -107,9 +107,9 @@ export class Alarm extends Construct {
 
       // Actions
       actionsEnabled: props.actionsEnabled,
-      alarmActions: new Token(() => this.alarmActionArns),
-      insufficientDataActions: new Token(() => this.insufficientDataActionArns),
-      okActions: new Token(() => this.okActionArns),
+      alarmActions: new Token(() => this.alarmActionArns).toList(),
+      insufficientDataActions: new Token(() => this.insufficientDataActionArns).toList(),
+      okActions: new Token(() => this.okActionArns).toList(),
 
       // Metric
       ...metricJson(props.metric)

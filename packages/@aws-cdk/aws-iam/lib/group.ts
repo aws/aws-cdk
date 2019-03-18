@@ -50,7 +50,7 @@ export class Group extends Construct implements IPrincipal {
    */
   public readonly principal: PolicyPrincipal;
 
-  private readonly managedPolicies: any[];
+  private readonly managedPolicies: string[];
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
 
