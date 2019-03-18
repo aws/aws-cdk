@@ -8,5 +8,17 @@ export = {
         });
 
         test.done();
-    }
+    },
+    'NotConditon must render properly'(test: Test) {
+        // GIVEN
+        const condition = stepfunctions.Condition.not(stepfunctions.Condition.stringEquals('$.a', 'b'));
+
+        // WHEN
+        const render = condition.renderCondition();
+
+        // THEN
+        test.deepEqual(render, {Not: {Variable: '$.a', StringEquals: 'b'}});
+
+        test.done();
+    },
 };
