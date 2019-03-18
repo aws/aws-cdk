@@ -76,6 +76,8 @@ export interface ContainerImageAssetMetadataEntry {
 
   /**
    * ECR Repository name.
+   *
+   * @default
    */
   repositoryName?: string;
 }

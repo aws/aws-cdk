@@ -17,6 +17,8 @@ export interface DockerImageAssetProps {
    * image, e.g. from a Kubernetes Pod.
    * Note, this is only the repository name, without the registry and
    * the tag parts.
+   *
+   * @default
    */
   repositoryName?: string;
 }
