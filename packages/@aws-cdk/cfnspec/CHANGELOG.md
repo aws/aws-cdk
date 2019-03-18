@@ -1,3 +1,46 @@
+
+
+
+
+
+
+
+# CloudFormation Resource Specification v2.28.0
+
+## New Resource Types
+
+* AWS::Greengrass::ConnectorDefinition
+* AWS::Greengrass::ConnectorDefinitionVersion
+* AWS::Greengrass::CoreDefinition
+* AWS::Greengrass::CoreDefinitionVersion
+* AWS::Greengrass::DeviceDefinition
+* AWS::Greengrass::DeviceDefinitionVersion
+* AWS::Greengrass::FunctionDefinition
+* AWS::Greengrass::FunctionDefinitionVersion
+* AWS::Greengrass::Group
+* AWS::Greengrass::GroupVersion
+* AWS::Greengrass::LoggerDefinition
+* AWS::Greengrass::LoggerDefinitionVersion
+* AWS::Greengrass::ResourceDefinitionVersion
+* AWS::Greengrass::SubscriptionDefinition
+* AWS::Greengrass::SubscriptionDefinitionVersion
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AppStream::Fleet Tags (__added__)
+* AWS::AppStream::ImageBuilder Tags (__added__)
+* AWS::AppStream::Stack Tags (__added__)
+* AWS::SageMaker::NotebookInstance RootAccess (__added__)
+
+## Property Type Changes
+
+* AWS::CodeBuild::Project.GitSubmodulesConfig (__added__)
+* AWS::CodeBuild::Project.S3LogsConfig EncryptionDisabled (__added__)
+* AWS::CodeBuild::Project.Source GitSubmodulesConfig (__added__)
+
 # Serverless Application Model (SAM) Resource Specification v2016-10-31
 
 ## New Resource Types
