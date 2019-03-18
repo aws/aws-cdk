@@ -7,23 +7,19 @@ import { Timers } from '../lib/timer';
 const timers = new Timers();
 const buildTimer = timers.start('Total time');
 
-interface Arguments extends yargs.Arguments {
-  verbose: boolean;
-  jsiiPacmak: string;
-}
-
 async function main() {
-  const args: Arguments = yargs
+  const args = yargs
     .env('CDK_PACKAGE')
     .usage('Usage: cdk-package')
     .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'verbose output' })
+    .option('targets', { type: 'array', default: new Array<string>(), desc: 'Targets to pass to jsii-pacmak' })
     .option('jsii-pacmak', {
       type: 'string',
       desc: 'Specify a different jsii-pacmak executable',
       default: require.resolve('jsii-pacmak/bin/jsii-pacmak'),
       defaultDescription: 'jsii-pacmak provided by node dependencies'
     })
-    .argv as any;
+    .argv;
 
   // if this is a jsii package, use jsii-packmak
   const outdir = 'dist';
@@ -36,7 +32,11 @@ async function main() {
   }
 
   if (pkg.jsii) {
-    await shell([ args.jsiiPacmak, args.verbose ? '-vvv' : '-v', '-o', outdir ], timers);
+    const command = [args['jsii-pacmak'],
+      args.verbose ? '-vvv' : '-v',
+      ...args.targets ? flatMap(args.targets, (target: string) => ['-t', target]) : [],
+      '-o', outdir ];
+    await shell(command, timers);
   } else {
     // just "npm pack" and deploy to "outdir"
     const tarball = (await shell([ 'npm', 'pack' ], timers)).trim();
@@ -56,3 +56,11 @@ main().then(() => {
   process.stderr.write(`Package failed. ${timers.display()}\n`);
   process.exit(1);
 });
+
+function flatMap<T, U>(xs: T[], f: (x: T) => U[]): U[] {
+  const ret = new Array<U>();
+  for (const x of xs) {
+    ret.push(...f(x));
+  }
+  return ret;
+}
