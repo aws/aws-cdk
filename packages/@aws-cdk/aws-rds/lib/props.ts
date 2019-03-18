@@ -29,7 +29,7 @@ export interface InstanceProps {
   /**
    * Where to place the instances within the VPC
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Security group. If not specified a new one will be created.

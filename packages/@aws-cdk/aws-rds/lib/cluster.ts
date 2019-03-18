@@ -139,7 +139,7 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
   constructor(scope: cdk.Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
 
-    const subnetIds = props.instanceProps.vpc.subnetIds(props.instanceProps.vpcPlacement);
+    const subnetIds = props.instanceProps.vpc.subnetIds(props.instanceProps.vpcSubnets);
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
@@ -188,7 +188,7 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
     }
 
     // Get the actual subnet objects so we can depend on internet connectivity.
-    const subnets = props.instanceProps.vpc.subnets(props.instanceProps.vpcPlacement);
+    const internetConnected = props.instanceProps.vpc.subnetInternetDependencies(props.instanceProps.vpcSubnets);
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -196,7 +196,7 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
                      props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                      undefined;
 
-      const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.subnetsToUse === ec2.SubnetType.Public;
+      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.Public;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
@@ -212,7 +212,7 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
-      instance.node.addDependency(...subnets.map(s => s.internetConnectivityEstablished));
+      instance.node.addDependency(internetConnected);
 
       this.instanceIdentifiers.push(instance.ref);
       this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort));

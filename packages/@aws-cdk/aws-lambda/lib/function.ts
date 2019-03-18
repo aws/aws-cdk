@@ -130,7 +130,7 @@ export interface FunctionProps {
    *
    * @default All private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * What security group to associate with the Lambda's network interfaces.
@@ -504,11 +504,12 @@ export class Function extends FunctionBase {
 
     // Pick subnets, make sure they're not Public. Routing through an IGW
     // won't work because the ENIs don't get a Public IP.
-    // Why are we not simply forcing vpcPlacement? Because you might still be choosing
+    // Why are we not simply forcing vpcSubnets? Because you might still be choosing
     // Isolated networks or selecting among 2 sets of Private subnets by name.
-    const subnets = props.vpc.subnets(props.vpcPlacement);
-    for (const subnet of subnets) {
-      if (props.vpc.isPublicSubnet(subnet)) {
+    const subnetIds = props.vpc.subnetIds(props.vpcSubnets);
+    const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
+    for (const subnetId of subnetIds) {
+      if (publicSubnetIds.has(subnetId)) {
         throw new Error('Not possible to place Lambda Functions in a Public subnet');
       }
     }
@@ -518,7 +519,7 @@ export class Function extends FunctionBase {
     // making VpcNetwork do the selection again.
 
     return {
-      subnetIds: props.vpc.subnetIds(props.vpcPlacement),
+      subnetIds,
       securityGroupIds: [securityGroup.securityGroupId]
     };
   }

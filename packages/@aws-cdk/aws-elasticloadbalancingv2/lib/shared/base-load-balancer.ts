@@ -32,7 +32,7 @@ export interface BaseLoadBalancerProps {
    *
    * @default Public subnets if internetFacing, otherwise private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Indicates whether deletion protection is enabled.
@@ -98,10 +98,10 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
-    const vpcPlacement = ifUndefined(baseProps.vpcPlacement,
-      { subnetsToUse: internetFacing ? ec2.SubnetType.Public : ec2.SubnetType.Private });
+    const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
+      { subnetType: internetFacing ? ec2.SubnetType.Public : ec2.SubnetType.Private });
 
-    const subnets = baseProps.vpc.subnetIds(vpcPlacement);
+    const subnets = baseProps.vpc.subnetIds(vpcSubnets);
 
     this.vpc = baseProps.vpc;
 
@@ -113,8 +113,7 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
       ...additionalProps
     });
     if (internetFacing) {
-      const subnetObjs = baseProps.vpc.subnets(vpcPlacement);
-      resource.node.addDependency(...subnetObjs.map(s => s.internetConnectivityEstablished));
+      resource.node.addDependency(baseProps.vpc.subnetInternetDependencies(vpcSubnets));
     }
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
