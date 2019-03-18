@@ -291,6 +291,26 @@ To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
 
 > Note: it is currently not possible to start AWS Fargate tasks in this way.
 
+## Integration with CodePipeline
+
+CodePipeline can deploy to the ECS Cluster. The deploy action stage receives 
+one input-artifact which contains the [image definition file].
+
+```ts
+const deployStage = pipeline.addStage({ name: "Deploy" });
+    deployStage.addAction(
+      new ecs.EcsDeployAction({
+        actionName: 'DeployAction',
+        inputArtifact: sourceAction.outputArtifact,
+        fileName: 'imageDefinition.json',
+        service,
+        repository
+      })
+    );
+```
+
+[image definition file]: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
+
 ## Roadmap
 
 - [ ] Service Discovery Integration
