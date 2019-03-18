@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
 import { deployStack } from '../../lib';
-import { FakeSDK } from '../util/fake-sdk';
+import { MockSDK } from '../util/mock-sdk';
 
 const FAKE_STACK = {
   name: 'withouterrors',
@@ -12,7 +12,7 @@ const FAKE_STACK = {
 export = {
   async 'do deploy executable change set with 0 changes'(test: Test) {
     // GIVEN
-    const sdk = new FakeSDK();
+    const sdk = new MockSDK();
 
     let executed = false;
 

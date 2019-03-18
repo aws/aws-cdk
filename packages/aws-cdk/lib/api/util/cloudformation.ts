@@ -130,9 +130,9 @@ export async function waitForChangeSet(cfn: CloudFormation, stackName: string, c
  * there are changes to Outputs, the change set can still be executed.
  */
 export function changeSetHasNoChanges(description: CloudFormation.DescribeChangeSetOutput) {
-    return description.Status === 'FAILED'
-    && description.StatusReason
-    && description.StatusReason.startsWith('The submitted information didn\'t contain changes.');
+  return description.Status === 'FAILED'
+      && description.StatusReason
+      && description.StatusReason.startsWith('The submitted information didn\'t contain changes.');
 }
 
 /**

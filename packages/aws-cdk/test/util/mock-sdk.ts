@@ -8,7 +8,7 @@ import { SDK } from "../../lib/api/util/sdk";
  * Its the responsibility of the consumer to replace all calls that
  * actually will be called.
  */
-export class FakeSDK extends SDK {
+export class MockSDK extends SDK {
   private readonly sandbox: sinon.SinonSandbox;
   constructor() {
     super();
