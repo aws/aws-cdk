@@ -11,7 +11,7 @@ export interface AppProps {
    *
    * If you set this, you don't have to call `run()` anymore.
    *
-   * @default true if running via CDK toolkit, false otherwise
+   * @default true if running via CDK toolkit (CDK_OUTDIR is set), false otherwise
    */
   autoRun?: boolean;
 
