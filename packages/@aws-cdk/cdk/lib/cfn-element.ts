@@ -17,7 +17,7 @@ export abstract class CfnElement extends Construct {
    * @returns The construct as a stack element or undefined if it is not a stack element.
    */
   public static isCfnElement(construct: IConstruct): construct is CfnElement {
-    return ('logicalId' in construct && 'toCloudFormation' in construct);
+    return ('logicalId' in construct && '_toCloudFormation' in construct);
   }
 
   /**
@@ -100,8 +100,10 @@ export abstract class CfnElement extends Construct {
    *     }
    *   }
    * }
+   *
+   * @internal
    */
-  public abstract toCloudFormation(): object;
+  public abstract _toCloudFormation(): object;
 
   /**
    * Automatically detect references in this CfnElement
@@ -117,7 +119,7 @@ export abstract class CfnElement extends Construct {
       // This does make the assumption that the error will not be rectified,
       // but the error will be thrown later on anyway. If the error doesn't
       // get thrown down the line, we may miss references.
-      this.node.recordReference(...findTokens(this, () => this.toCloudFormation()));
+      this.node.recordReference(...findTokens(this, () => this._toCloudFormation()));
     } catch (e) {
       if (e.type !== 'CfnSynthesisError') { throw e; }
     }

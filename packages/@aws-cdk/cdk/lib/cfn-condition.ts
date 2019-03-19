@@ -25,7 +25,7 @@ export class CfnCondition extends CfnRefElement implements ICfnConditionExpressi
     this.expression = props && props.expression;
   }
 
-  public toCloudFormation(): object {
+  public _toCloudFormation(): object {
     if (!this.expression) {
       return { };
     }

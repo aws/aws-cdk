@@ -355,7 +355,7 @@ export = {
       });
 
       test.throws(() => {
-        stack.toCloudFormation();
+        stack._toCloudFormation();
       }, /deploymentInAlarm/);
 
       test.done();

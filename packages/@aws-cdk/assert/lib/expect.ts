@@ -20,7 +20,7 @@ export function expect(stack: api.SynthesizedStack | cdk.Stack, skipValidation =
 
     sstack = {
       name: stack.name,
-      template: stack.toCloudFormation(),
+      template: stack._toCloudFormation(),
       metadata: collectStackMetadata(stack.node),
       environment: {
         name: 'test',
@@ -36,7 +36,7 @@ export function expect(stack: api.SynthesizedStack | cdk.Stack, skipValidation =
 }
 
 function isStackClassInstance(x: api.SynthesizedStack | cdk.Stack): x is cdk.Stack {
-  return 'toCloudFormation' in x;
+  return '_toCloudFormation' in x;
 }
 
 function collectStackMetadata(root: cdk.ConstructNode): api.StackMetadata {

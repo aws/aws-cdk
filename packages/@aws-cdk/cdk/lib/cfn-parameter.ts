@@ -104,7 +104,7 @@ export class CfnParameter extends CfnRefElement {
     this.stringListValue = this.value.toList();
   }
 
-  public toCloudFormation(): object {
+  public _toCloudFormation(): object {
     return {
       Parameters: {
         [this.logicalId]: {

@@ -7,7 +7,7 @@ export = {
 
     new Include(stack, 'T1', { template: clone(template) });
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Parameters: { MyParam: { Type: 'String', Default: 'Hello' } },
       Resources: {
         MyResource1: { Type: 'ResourceType1', Properties: { P1: 1, P2: 2 } },
@@ -24,7 +24,7 @@ export = {
     new CfnOutput(stack, 'MyOutput', { description: 'Out!', disableExport: true });
     new CfnParameter(stack, 'MyParam2', { type: 'Integer' });
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Parameters: {
         MyParam: { Type: 'String', Default: 'Hello' },
         MyParam2: { Type: 'Integer' } },
@@ -46,7 +46,7 @@ export = {
     new CfnOutput(stack, 'MyOutput', { description: 'Out!' });
     new CfnParameter(stack, 'MyParam', { type: 'Integer' }); // duplicate!
 
-    test.throws(() => stack.toCloudFormation());
+    test.throws(() => stack._toCloudFormation());
     test.done();
   },
 };

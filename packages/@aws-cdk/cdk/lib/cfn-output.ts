@@ -111,7 +111,7 @@ export class CfnOutput extends CfnElement {
     return fn().importValue(this.obtainExportName());
   }
 
-  public toCloudFormation(): object {
+  public _toCloudFormation(): object {
     return {
       Outputs: {
         [this.logicalId]: {

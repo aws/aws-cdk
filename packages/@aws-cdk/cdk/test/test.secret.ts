@@ -27,7 +27,7 @@ export = {
       allowedValues: [ 'allowed', 'values' ],
     });
 
-    test.deepEqual(stack.toCloudFormation(), { Parameters:
+    test.deepEqual(stack._toCloudFormation(), { Parameters:
       { MySecretParameterBB81DE58:
          { Type: 'AWS::SSM::Parameter::Value<String>',
          Default: '/my/secret/param',

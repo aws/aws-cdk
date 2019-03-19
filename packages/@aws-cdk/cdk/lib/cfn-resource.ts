@@ -206,7 +206,7 @@ export class CfnResource extends CfnRefElement {
   /**
    * Emits CloudFormation for this resource.
    */
-  public toCloudFormation(): object {
+  public _toCloudFormation(): object {
     try {
       // merge property overrides onto properties and then render (and validate).
       const tags = CfnResource.isTaggable(this) ? this.tags.renderTags() : undefined;

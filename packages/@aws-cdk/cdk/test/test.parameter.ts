@@ -14,7 +14,7 @@ export = {
 
     new CfnResource(stack, 'Resource', { type: 'Type', properties: { ReferenceToParam: param.ref } });
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Parameters: {
         ChildMyParam3161BF5D: {
           Default: 10,

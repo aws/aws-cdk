@@ -45,7 +45,7 @@ export = {
       ],
     });
 
-    test.notDeepEqual(stack.toCloudFormation(), {});
+    test.notDeepEqual(stack._toCloudFormation(), {});
     test.deepEqual([], pipeline.node.validateTree());
     test.done();
   },

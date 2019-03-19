@@ -43,7 +43,7 @@ export class CfnMapping extends CfnRefElement {
     return Fn.findInMap(this.logicalId, key1, key2);
   }
 
-  public toCloudFormation(): object {
+  public _toCloudFormation(): object {
     return {
       Mappings: {
         [this.logicalId]: this.mapping

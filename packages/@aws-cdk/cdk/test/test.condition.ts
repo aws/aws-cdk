@@ -16,7 +16,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Parameters: { Param1: { Type: 'String' } },
       Conditions: {
         Condition1: { 'Fn::Equals': [ 'a', 'b' ] },
@@ -45,7 +45,7 @@ export = {
 
     // THEN
     test.ok(cdk.unresolved(propValue));
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         MyResource: {
           Type: 'AWS::Foo::Bar',

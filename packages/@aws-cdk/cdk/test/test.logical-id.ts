@@ -44,7 +44,7 @@ const uniqueTests = {
     new CfnResource(parent, 'ThingResource', { type: 'AWS::TAAS::Thing' });
 
     // THEN
-    const template = stack.toCloudFormation();
+    const template = stack._toCloudFormation();
     test.ok('Renamed' in template.Resources);
 
     test.done();
@@ -60,7 +60,7 @@ const uniqueTests = {
 
     // THEN
     test.throws(() => {
-      stack.toCloudFormation();
+      stack._toCloudFormation();
     });
 
     test.done();
@@ -95,7 +95,7 @@ const uniqueTests = {
     new CfnResource(child2, 'HeyThere', { type: 'AWS::TAAS::Thing' });
 
     // THEN
-    const template = stack.toCloudFormation();
+    const template = stack._toCloudFormation();
     test.deepEqual(template, {
       Resources: {
         ParentChildHeyThere35220347: {
@@ -112,7 +112,7 @@ const uniqueTests = {
     const stack1 = new Stack();
     const parent1 = new Construct(stack1, 'Parent');
     new CfnResource(parent1, 'HeyThere', { type: 'AWS::TAAS::Thing' });
-    const template1 = stack1.toCloudFormation();
+    const template1 = stack1._toCloudFormation();
 
     // AND
     const theId1 = Object.keys(template1.Resources)[0];
@@ -123,7 +123,7 @@ const uniqueTests = {
     const parent2 = new Construct(stack2, 'Parent');
     const invisibleWrapper = new Construct(parent2, 'Default');
     new CfnResource(invisibleWrapper, 'HeyThere', { type: 'AWS::TAAS::Thing' });
-    const template2 = stack1.toCloudFormation();
+    const template2 = stack1._toCloudFormation();
 
     const theId2 = Object.keys(template2.Resources)[0];
     test.equal('AWS::TAAS::Thing', template2.Resources[theId2].Type);
@@ -211,7 +211,7 @@ const allSchemesTests: {[name: string]: (scheme: IAddressingScheme, test: Test) 
 
     // THEN
     stack.node.prepareTree();
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         NewName: {
           Type: 'R1' },
