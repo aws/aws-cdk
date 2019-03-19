@@ -84,6 +84,7 @@ export class Alias extends FunctionBase {
     super(scope, id);
 
     this.underlyingLambda = props.version.lambda;
+    this.role = this.underlyingLambda.role;
 
     new CfnAlias(this, 'Resource', {
       name: props.aliasName,
