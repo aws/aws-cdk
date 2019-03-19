@@ -14,7 +14,7 @@ export = {
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
       vpc,
     });
-    const connections = new ec2.Connections({
+    const target = new ec2.Connections({
       defaultPortRange: new ec2.TcpPort(1521),
       securityGroups: [securityGroup]
     });
@@ -25,7 +25,7 @@ export = {
       secret,
       engine: secretsmanager.RdsDatabaseEngine.Oracle,
       vpc,
-      connections
+      target
     });
 
     // THEN
@@ -156,7 +156,7 @@ export = {
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
       vpc,
     });
-    const connections = new ec2.Connections({
+    const target = new ec2.Connections({
       defaultPortRange: new ec2.TcpPort(1521),
       securityGroups: [securityGroup]
     });
@@ -166,7 +166,7 @@ export = {
     test.throws(() => new secretsmanager.RdsRotationSingleUser(stack, 'Rotation', {
       secret,
       vpc,
-      connections
+      target
     }), /`serverlessApplicationLocation`.+`engine`/);
 
     test.done();
@@ -182,7 +182,7 @@ export = {
     });
 
     // WHEN
-    const connections = new ec2.Connections({
+    const target = new ec2.Connections({
       securityGroups: [securityGroup]
     });
 
@@ -191,8 +191,8 @@ export = {
       secret,
       engine: secretsmanager.RdsDatabaseEngine.Mysql,
       vpc,
-      connections
-    }), /`connections`/);
+      target
+    }), /`target`.+default port range/);
 
     test.done();
   }

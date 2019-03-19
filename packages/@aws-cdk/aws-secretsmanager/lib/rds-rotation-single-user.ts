@@ -113,9 +113,9 @@ export interface RdsRotationSingleUserProps extends RdsRotationSingleUserOptions
   vpcPlacement?: ec2.VpcPlacementStrategy;
 
   /**
-   * The connections object of the RDS database instance or cluster.
+   * The target database cluster or instance
    */
-  connections: ec2.Connections;
+  target: ec2.IConnectable;
 }
 
 /**
@@ -129,8 +129,8 @@ export class RdsRotationSingleUser extends cdk.Construct {
       throw new Error('Either `serverlessApplicationLocation` or `engine` must be specified.');
     }
 
-    if (!props.connections.defaultPortRange) {
-      throw new Error('The `connections` object must have a default port range.');
+    if (!props.target.connections.defaultPortRange) {
+      throw new Error('The `target` connections must have a default port range.');
     }
 
     const rotationFunctionName = this.node.uniqueId;
@@ -141,7 +141,7 @@ export class RdsRotationSingleUser extends cdk.Construct {
 
     const subnets = props.vpc.subnets(props.vpcPlacement);
 
-    props.connections.allowDefaultPortFrom(securityGroup);
+    props.target.connections.allowDefaultPortFrom(securityGroup);
 
     const application = new serverless.CfnApplication(this, 'Resource', {
       location: props.serverlessApplicationLocation || getApplicationLocation(props.engine),
