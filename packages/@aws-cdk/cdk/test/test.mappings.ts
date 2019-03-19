@@ -28,7 +28,7 @@ export = {
     mapping.setValue('TopLevelKey2', 'SecondLevelKey2', 'Hi');
     mapping.setValue('TopLevelKey1', 'SecondLevelKey1', [ 1, 2, 3, 4 ]);
 
-    test.deepEqual(stack.toCloudFormation(), { Mappings:
+    test.deepEqual(stack._toCloudFormation(), { Mappings:
       { MyMapping:
          { TopLevelKey1:
           { SecondLevelKey1: [ 1, 2, 3, 4 ],

@@ -249,7 +249,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       imageId: machineImage.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
-      securityGroups: securityGroupsToken,
+      securityGroups: securityGroupsToken.toList(),
       iamInstanceProfile: iamProfile.ref,
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
@@ -274,8 +274,8 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       maxSize: maxCapacity.toString(),
       desiredCapacity: desiredCapacity.toString(),
       launchConfigurationName: launchConfig.ref,
-      loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined),
-      targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined),
+      loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined).toList(),
+      targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined).toList(),
     };
 
     if (props.notificationsTopic) {

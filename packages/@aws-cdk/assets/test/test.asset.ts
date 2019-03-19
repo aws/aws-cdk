@@ -30,7 +30,7 @@ export = {
     });
 
     // verify that now the template contains parameters for this asset
-    const template = stack.toCloudFormation();
+    const template = stack._toCloudFormation();
     test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
     test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 
@@ -74,7 +74,7 @@ export = {
     });
 
     // verify that now the template contains parameters for this asset
-    const template = stack.toCloudFormation();
+    const template = stack._toCloudFormation();
     test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
     test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 

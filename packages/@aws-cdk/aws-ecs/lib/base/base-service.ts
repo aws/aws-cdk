@@ -190,7 +190,7 @@ export abstract class BaseService extends cdk.Construct
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: vpc.subnetIds(vpcSubnets),
-        securityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]),
+        securityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]).toList(),
       }
     };
   }
