@@ -22,8 +22,7 @@ your instances will be launched privately or publicly:
 const cluster = new DatabaseCluster(this, 'Database', {
     engine: DatabaseClusterEngine.Aurora,
     masterUser: {
-        username: 'admin',
-        password: '7959866cacc02c2d243ecfe177464fe6',
+        username: 'admin'
     },
     instanceProps: {
         instanceType: new InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Small),
@@ -34,6 +33,7 @@ const cluster = new DatabaseCluster(this, 'Database', {
     }
 });
 ```
+By default, the master password will be generated and stored in AWS Secret Managers.
 
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
@@ -53,3 +53,6 @@ attributes:
 ```ts
 const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
+
+### Rotating master password
+When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically: [example of setting up master password rotation](test/integ.cluster-rotation.lit.ts)
