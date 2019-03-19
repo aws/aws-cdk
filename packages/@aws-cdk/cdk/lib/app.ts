@@ -11,7 +11,7 @@ export interface AppProps {
    *
    * If you set this, you don't have to call `run()` anymore.
    *
-   * @default true
+   * @default true if running via CDK toolkit, false otherwise
    */
   autoRun?: boolean;
 
@@ -43,7 +43,9 @@ export class App extends Root {
     this.legacyManifest = this.node.getContext(cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT) ? false : true;
     this.runtimeInformation = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
 
-    if (props.autoRun !== false) {
+    const autoRun = props.autoRun !== undefined ? props.autoRun : cxapi.OUTDIR_ENV in process.env;
+
+    if (autoRun) {
       // run() guarantuees it will only execute once, so a default of 'true' doesn't bite manual calling
       // of the function.
       process.once('beforeExit', () => this.run());

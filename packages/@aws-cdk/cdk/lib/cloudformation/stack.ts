@@ -19,7 +19,7 @@ export interface StackProps {
   /**
    * Name to deploy the stack with
    *
-   * @default Derived from construct IDs
+   * @default Derived from construct path
    */
   stackName?: string;
 
@@ -553,12 +553,20 @@ export class Stack extends Construct {
    */
   private calculateStackName() {
     // In tests, it's possible for this stack to be the root object, in which case
-    // we need to not ignore it.
-    const rootPath = this.node.scope !== undefined ? this.node.rootPath() : [this];
+    // we need to use it as part of the root path.
+    const rootPath = this.node.scope !== undefined ? this.node.ancestors().slice(1) : [this];
+    const ids = rootPath.map(c => c.node.id);
 
-    return rootPath
-        .map(c => c.node.id)
-        .join('-');
+    // Special case, if rootPath is length 1 then just use ID (backwards compatibility)
+    // otherwise use a unique stack name (including hash). This logic is already
+    // in makeUniqueId, *however* makeUniqueId will also strip dashes from the name,
+    // which *are* allowed and also used, so we short-circuit it.
+    if (ids.length === 1) {
+      // Could be empty in a unit test, so just pretend it's named "Stack" then
+      return ids[0] || 'Stack';
+    }
+
+    return makeUniqueId(ids);
   }
 }
 
@@ -632,6 +640,7 @@ import { ArnComponents, arnFromComponents, parseArn } from './arn';
 import { Aws, ScopedAws } from './pseudo';
 import { Resource } from './resource';
 import { StackElement } from './stack-element';
+import { makeUniqueId } from '../util/uniqueid';
 
 /**
  * Find all resources in a set of constructs

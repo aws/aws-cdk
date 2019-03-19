@@ -110,7 +110,7 @@ export class ConstructNode {
    * Components are separated by '/'.
    */
   public get path(): string {
-    const components = this.rootPath().map(c => c.node.id);
+    const components = this.ancestors().slice(1).map(c => c.node.id);
     return components.join(PATH_SEP);
   }
 
@@ -119,7 +119,7 @@ export class ConstructNode {
    * Includes all components of the tree.
    */
   public get uniqueId(): string {
-    const components = this.rootPath().map(c => c.node.id);
+    const components = this.ancestors().slice(1).map(c => c.node.id);
     return components.length > 0 ? makeUniqueId(components) : '';
   }
 
@@ -531,15 +531,6 @@ export class ConstructNode {
     }
 
     return ret;
-  }
-
-  /**
-   * Return the path of components up to but excluding the root
-   */
-  public rootPath(): IConstruct[] {
-    const ancestors = this.ancestors();
-    ancestors.shift();
-    return ancestors;
   }
 
   /**
