@@ -391,7 +391,7 @@ export = {
     const stack = new Stack(app, 'Stack');
 
     // THEN
-    test.deepEqual(stack.name, 'Prod-Stack');
+    test.deepEqual(stack.name, 'ProdStackD5279B22');
 
     test.done();
   },
