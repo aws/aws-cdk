@@ -92,7 +92,7 @@ export class CfnRule extends CfnRefElement {
     });
   }
 
-  public toCloudFormation(): object {
+  public _toCloudFormation(): object {
     return {
       Rules: {
         [this.logicalId]: {
