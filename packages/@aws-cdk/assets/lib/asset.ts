@@ -77,6 +77,20 @@ export class Asset extends cdk.Construct {
   public readonly isZipArchive: boolean;
 
   /**
+   * The name of the CloudFormation Parameter that represents the name of the S3 Bucket
+   * this asset will actually be stored in when deploying the Stack containing this asset.
+   * Can be used to override this location in CodePipeline.
+   */
+  public readonly bucketNameParam: string;
+
+  /**
+   * The name of the CloudFormation Parameter that represents the path inside the S3 Bucket
+   * this asset will actually be stored at when deploying the Stack containing this asset.
+   * Can be used to override this location in CodePipeline.
+   */
+  public readonly objectKeyParam: string;
+
+  /**
    * The S3 prefix where all different versions of this asset are stored
    */
   private readonly s3Prefix: string;
@@ -121,6 +135,9 @@ export class Asset extends cdk.Construct {
     // form the s3 URL of the object key
     this.s3Url = this.bucket.urlForObject(this.s3ObjectKey);
 
+    this.bucketNameParam = bucketParam.logicalId;
+    this.objectKeyParam = keyParam.logicalId;
+
     // attach metadata to the lambda function which includes information
     // for tooling to be able to package and upload a directory to the
     // s3 bucket and plug in the bucket name and key in the correct
@@ -129,8 +146,8 @@ export class Asset extends cdk.Construct {
       path: this.assetPath,
       id: this.node.uniqueId,
       packaging: props.packaging,
-      s3BucketParameter: bucketParam.logicalId,
-      s3KeyParameter: keyParam.logicalId,
+      s3BucketParameter: this.bucketNameParam,
+      s3KeyParameter: this.objectKeyParam,
     };
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);

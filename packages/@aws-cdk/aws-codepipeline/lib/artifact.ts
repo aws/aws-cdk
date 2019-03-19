@@ -1,3 +1,4 @@
+import assets = require('@aws-cdk/assets');
 import { Token } from "@aws-cdk/cdk";
 
 /**
@@ -50,6 +51,13 @@ export class Artifact {
 
   public toString() {
     return this.artifactName;
+  }
+
+  public overrideAsset(asset: assets.Asset): { [name: string]: string } {
+    const ret: { [name: string]: string } = {};
+    ret[asset.bucketNameParam] = this.bucketName;
+    ret[asset.objectKeyParam] = this.objectKey;
+    return ret;
   }
 }
 

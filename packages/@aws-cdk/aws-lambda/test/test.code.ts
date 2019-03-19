@@ -92,8 +92,38 @@ export = {
         }
       }, ResourcePart.CompleteDefinition));
       test.done();
-    }
-  }
+    },
+
+    "allows access to the underlying Asset once it's been used to create a Function"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const code = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler'));
+      new lambda.Function(stack, 'Func', {
+        code,
+        runtime: lambda.Runtime.Python37,
+        handler: 'index.main',
+      });
+
+      // THEN
+      test.notEqual(code.asset, undefined);
+
+      test.done();
+    },
+
+    "does not allow accessing the Asset before being used to construct a Function"(test: Test) {
+      // WHEN
+      const code = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler'));
+
+      // THEN
+      test.throws(() => {
+        test.notEqual(code.asset, undefined);
+      }, /my-lambda-handler/);
+
+      test.done();
+    },
+  },
 };
 
 function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NodeJS810) {

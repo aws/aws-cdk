@@ -34,6 +34,9 @@ export = {
     test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
     test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 
+    test.equal(stack.node.resolve(asset.bucketNameParam), 'MyAssetS3Bucket68C9B344');
+    test.equal(stack.node.resolve(asset.objectKeyParam), 'MyAssetS3VersionKey68E1A45D');
+
     test.done();
   },
 

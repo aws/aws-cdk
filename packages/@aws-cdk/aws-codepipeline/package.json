@@ -72,6 +72,7 @@
     "pkglint": "^0.27.0"
   },
   "dependencies": {
+    "@aws-cdk/assets": "^0.27.0",
     "@aws-cdk/aws-events": "^0.27.0",
     "@aws-cdk/aws-iam": "^0.27.0",
     "@aws-cdk/aws-s3": "^0.27.0",
@@ -80,6 +81,7 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/assets": "^0.27.0",
     "@aws-cdk/aws-events": "^0.27.0",
     "@aws-cdk/aws-iam": "^0.27.0",
     "@aws-cdk/aws-s3": "^0.27.0",

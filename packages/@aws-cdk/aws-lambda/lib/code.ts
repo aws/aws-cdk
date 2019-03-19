@@ -11,7 +11,7 @@ export abstract class Code {
    * @param key The object key
    * @param objectVersion Optional S3 object version
    */
-  public static bucket(bucket: s3.IBucket, key: string, objectVersion?: string) {
+  public static bucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Code {
     return new S3Code(bucket, key, objectVersion);
   }
 
@@ -19,7 +19,7 @@ export abstract class Code {
    * @returns `LambdaInlineCode` with inline code.
    * @param code The actual handler code (limited to 4KiB)
    */
-  public static inline(code: string) {
+  public static inline(code: string): InlineCode {
     return new InlineCode(code);
   }
 
@@ -27,7 +27,7 @@ export abstract class Code {
    * Loads the function code from a local disk asset.
    * @param path Either a directory with the Lambda code bundle or a .zip file
    */
-  public static asset(path: string) {
+  public static asset(path: string): AssetCode {
     return new AssetCode(path);
   }
 
@@ -37,7 +37,7 @@ export abstract class Code {
    * @param directoryToZip The directory to zip
    * @deprecated use `lambda.Code.asset(path)` (no need to specify if it's a file or a directory)
    */
-  public static directory(directoryToZip: string) {
+  public static directory(directoryToZip: string): AssetCode {
     return new AssetCode(directoryToZip, assets.AssetPackaging.ZipDirectory);
   }
 
@@ -46,7 +46,7 @@ export abstract class Code {
    * @param filePath The file path
    * @deprecated use `lambda.Code.asset(path)` (no need to specify if it's a file or a directory)
    */
-  public static file(filePath: string) {
+  public static file(filePath: string): AssetCode {
     return new AssetCode(filePath, assets.AssetPackaging.File);
   }
 
@@ -145,7 +145,7 @@ export class AssetCode extends Code {
    */
   public readonly packaging: assets.AssetPackaging;
 
-  private asset?: assets.Asset;
+  private _asset?: assets.Asset;
 
   /**
    * @param path The path to the asset file or directory.
@@ -165,15 +165,23 @@ export class AssetCode extends Code {
 
   public bind(construct: cdk.Construct) {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
-    if (!this.asset) {
-      this.asset = new assets.Asset(construct, 'Code', {
+    if (!this._asset) {
+      this._asset = new assets.Asset(construct, 'Code', {
         path: this.path,
         packaging: this.packaging
       });
     }
 
-    if (!this.asset.isZipArchive) {
+    if (!this._asset.isZipArchive) {
       throw new Error(`Asset must be a .zip file or a directory (${this.path})`);
+    }
+  }
+
+  public get asset(): assets.Asset {
+    if (this._asset) {
+      return this._asset;
+    } else {
+      throw new Error(`In AssetCode('${this.path}'): you must provide this code to a Function constructor before accessing its 'asset' property!`);
     }
   }
 
@@ -183,12 +191,12 @@ export class AssetCode extends Code {
   public _toJSON(resource?: cdk.CfnResource): CfnFunction.CodeProperty {
     if (resource) {
       // https://github.com/awslabs/aws-cdk/issues/1432
-      this.asset!.addResourceMetadata(resource, 'Code');
+      this.asset.addResourceMetadata(resource, 'Code');
     }
 
     return  {
-      s3Bucket: this.asset!.s3BucketName,
-      s3Key: this.asset!.s3ObjectKey
+      s3Bucket: this.asset.s3BucketName,
+      s3Key: this.asset.s3ObjectKey
     };
   }
 }
