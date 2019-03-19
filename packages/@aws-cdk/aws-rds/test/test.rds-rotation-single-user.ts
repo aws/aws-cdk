@@ -8,50 +8,57 @@ import rds = require('../lib');
 // tslint:disable:object-literal-key-quotes
 
 export = {
-  'create a rds rotation single user'(test: Test) {
+  'add a rds rotation single user to a cluster'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'VPC');
-    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
-      vpc,
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.AuroraMysql,
+      masterUser: {
+        username: 'admin'
+      },
+      instanceProps: {
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        vpc
+      }
     });
-    const target = new ec2.Connections({
-      defaultPortRange: new ec2.TcpPort(1521),
-      securityGroups: [securityGroup]
-    });
-    const secret = new secretsmanager.Secret(stack, 'Secret');
 
     // WHEN
-    new rds.RotationSingleUser(stack, 'Rotation', {
-      secret,
-      engine: rds.DatabaseEngine.Oracle,
-      vpc,
-      target
-    });
+    cluster.addRotationSingleUser('Rotation');
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       "IpProtocol": "tcp",
-      "Description": "from RotationSecurityGroup29D01037:1521",
-      "FromPort": 1521,
+      "Description": "from DatabaseRotationSecurityGroup1C5A8031:{IndirectPort}",
+      "FromPort": {
+        "Fn::GetAtt": [
+          "DatabaseB269D8BB",
+          "Endpoint.Port"
+        ]
+      },
       "GroupId": {
         "Fn::GetAtt": [
-          "SecurityGroupDD263621",
+          "DatabaseSecurityGroup5C91FDCB",
           "GroupId"
         ]
       },
       "SourceSecurityGroupId": {
         "Fn::GetAtt": [
-          "RotationSecurityGroup3D2AB776",
+          "DatabaseRotationSecurityGroup17736B63",
           "GroupId"
         ]
       },
-      "ToPort": 1521
+      "ToPort": {
+        "Fn::GetAtt": [
+          "DatabaseB269D8BB",
+          "Endpoint.Port"
+        ]
+      }
     }));
 
     expect(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
       "SecretId": {
-        "Ref": "SecretA720EF05"
+        "Ref": "DatabaseSecretAttachedSecretE6CAC445"
       },
       "RotationLambdaARN": {
         "Fn::Join": [
@@ -69,7 +76,7 @@ export = {
             {
               "Ref": "AWS::AccountId"
             },
-            ":function:Rotation"
+            ":function:DatabaseRotation0D47EBD2"
           ]
         ]
       },
@@ -79,13 +86,13 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
-      "GroupDescription": "Rotation/SecurityGroup"
+      "GroupDescription": "Database/Rotation/SecurityGroup"
     }));
 
     expect(stack).to(haveResource('AWS::Serverless::Application', {
       "Location": {
-        "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
-        "SemanticVersion": "1.0.45"
+        "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser",
+        "SemanticVersion": "1.0.74"
       },
       "Parameters": {
         "endpoint": {
@@ -103,10 +110,10 @@ export = {
             ]
           ]
         },
-        "functionName": "Rotation",
+        "functionName": "DatabaseRotation0D47EBD2",
         "vpcSecurityGroupIds": {
           "Fn::GetAtt": [
-            "RotationSecurityGroup3D2AB776",
+            "DatabaseRotationSecurityGroup17736B63",
             "GroupId"
           ]
         },
@@ -133,7 +140,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       "Action": "lambda:InvokeFunction",
-      "FunctionName": "Rotation",
+      "FunctionName": "DatabaseRotation0D47EBD2",
       "Principal": {
         "Fn::Join": [
           "",
@@ -146,6 +153,30 @@ export = {
         ]
       }
     }));
+
+    test.done();
+  },
+
+  'throws when trying to add rotation to a cluster without secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+
+    // WHEN
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.AuroraMysql,
+      masterUser: {
+        username: 'admin',
+        password: 'tooshort'
+      },
+      instanceProps: {
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        vpc
+      }
+    });
+
+    // THEN
+    test.throws(() => cluster.addRotationSingleUser('Rotation'), /without secret/);
 
     test.done();
   },

@@ -3,8 +3,10 @@ import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 import { IClusterParameterGroup } from './cluster-parameter-group';
 import { DatabaseClusterImportProps, Endpoint, IDatabaseCluster } from './cluster-ref';
+import { DatabaseSecret } from './database-secret';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
+import { DatabaseEngine, RotationSingleUser, RotationSingleUserOptions } from './rotation-single-user';
 
 /**
  * Properties for a new database cluster
@@ -188,10 +190,33 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
    */
   public readonly securityGroupId: string;
 
+  /**
+   * The secret attached to this cluster
+   */
+  public readonly secret?: secretsmanager.ISecret;
+
+  /**
+   * The database engine of this cluster
+   */
+  public readonly engine: DatabaseClusterEngine;
+
+  /**
+   * The VPC where the DB subnet group is created.
+   */
+  public readonly vpc: ec2.IVpcNetwork;
+
+  /**
+   * The subnets used by the DB subnet group.
+   */
+  public readonly vpcPlacement?: ec2.VpcPlacementStrategy;
+
   constructor(scope: cdk.Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
 
-    const subnets = props.instanceProps.vpc.subnets(props.instanceProps.vpcPlacement);
+    this.vpc = props.instanceProps.vpc;
+    this.vpcPlacement = props.instanceProps.vpcPlacement;
+
+    const subnets = this.vpc.subnets(this.vpcPlacement);
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnets.length < 2) {
@@ -210,17 +235,27 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     });
     this.securityGroupId = securityGroup.securityGroupId;
 
+    let secret;
+    if (!props.masterUser.password) {
+      secret = new DatabaseSecret(this, 'Secret', {
+        username: props.masterUser.username,
+        encryptionKey: props.masterUser.kmsKey
+      });
+    }
+
+    this.engine = props.engine;
+
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
-      engine: props.engine,
+      engine: this.engine,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
       // Admin
-      masterUsername: props.masterUser.username,
-      masterUserPassword: props.masterUser.password,
+      masterUsername: secret ? secret.jsonFieldValue('username') : props.masterUser.username,
+      masterUserPassword: secret ? secret.jsonFieldValue('password') : props.masterUser.password,
       backupRetentionPeriod: props.backup && props.backup.retentionDays,
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
@@ -233,6 +268,12 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     this.clusterIdentifier = cluster.ref;
     this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, cluster.dbClusterEndpointPort);
     this.readerEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, cluster.dbClusterEndpointPort);
+
+    if (secret) {
+      this.secret = secret.addTargetAttachment('AttachedSecret', {
+        target: this
+      });
+    }
 
     const instanceCount = props.instances != null ? props.instances : 2;
     if (instanceCount < 1) {
@@ -270,6 +311,23 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
     const defaultPortRange = new ec2.TcpPortFromAttribute(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
+  }
+
+  /**
+   * Adds the single user rotation of the master password to this cluster.
+   */
+  public addRotationSingleUser(id: string, options: RotationSingleUserOptions = {}): RotationSingleUser {
+    if (!this.secret) {
+      throw new Error('Cannot add single user rotation for a cluster without secret.');
+    }
+    return new RotationSingleUser(this, id, {
+      secret: this.secret,
+      engine: toDatabaseEngine(this.engine),
+      vpc: this.vpc,
+      vpcPlacement: this.vpcPlacement,
+      target: this,
+      ...options
+    });
   }
 
   /**
@@ -358,5 +416,22 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
 
   public export() {
     return this.props;
+  }
+}
+
+/**
+ * Transforms a DatbaseClusterEngine to a DatabaseEngine.
+ *
+ * @param engine the engine to transform
+ */
+function toDatabaseEngine(engine: DatabaseClusterEngine): DatabaseEngine {
+  switch (engine) {
+    case DatabaseClusterEngine.Aurora:
+    case DatabaseClusterEngine.AuroraMysql:
+      return DatabaseEngine.Mysql;
+    case DatabaseClusterEngine.AuroraPostgresql:
+      return DatabaseEngine.Postgres;
+    default:
+      throw new Error('Unkown engine');
   }
 }
