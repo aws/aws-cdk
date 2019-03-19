@@ -23,7 +23,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 // Add capacity to it
 cluster.addDefaultAutoScalingGroupCapacity('Capacity', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
-  instanceCount: 3,
+  desiredCapacity: 3,
 });
 
 // Instantiate Amazon ECS Service with an automatic load balancer
@@ -91,7 +91,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 // Either add default capacity
 cluster.addDefaultAutoScalingGroupCapacity({
   instanceType: new ec2.InstanceType("t2.xlarge"),
-  instanceCount: 3,
+  desiredCapacity: 3,
 });
 
 // Or add customized capacity. Be sure to start the Amazon ECS-optimized AMI.
@@ -266,7 +266,7 @@ const autoScalingGroup = cluster.addDefaultAutoScalingGroupCapacity({
   instanceType: new ec2.InstanceType("t2.xlarge"),
   minCapacity: 3,
   maxCapacity: 30
-  instanceCount: 3,
+  desiredCapacity: 3,
 
   // Give instances 5 minutes to drain running tasks when an instance is
   // terminated. This is the default, turn this off by specifying 0 or
@@ -294,4 +294,3 @@ To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
 ## Roadmap
 
 - [ ] Service Discovery Integration
-- [ ] Private registry authentication
