@@ -12,7 +12,7 @@ export async function bootstrapEnvironment(environment: Environment, aws: SDK, t
     environment,
     metadata: {},
     template: {
-      Description: "The CDK Toolkit Stack. It cas created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.",
+      Description: "The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.",
       Resources: {
         StagingBucket: {
           Type: "AWS::S3::Bucket",
