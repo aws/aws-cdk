@@ -12,13 +12,13 @@ export interface DockerImageAssetProps {
   directory: string;
 
   /**
-   * ECR repository name, if omitted a dynamic name is used instead.
-   * Specify this property if you need to statically address the
-   * image, e.g. from a Kubernetes Pod.
+   * ECR repository name, if omitted a default name based on the asset's
+   * ID is used instead. Specify this property if you need to statically
+   * address the image, e.g. from a Kubernetes Pod.
    * Note, this is only the repository name, without the registry and
    * the tag parts.
    *
-   * @default
+   * @default automatically derived from the asset's ID.
    */
   repositoryName?: string;
 }

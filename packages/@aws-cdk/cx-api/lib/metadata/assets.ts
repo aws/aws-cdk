@@ -75,9 +75,13 @@ export interface ContainerImageAssetMetadataEntry {
   imageNameParameter: string;
 
   /**
-   * ECR Repository name.
+   * ECR repository name, if omitted a default name based on the asset's
+   * ID is used instead. Specify this property if you need to statically
+   * address the image, e.g. from a Kubernetes Pod.
+   * Note, this is only the repository name, without the registry and
+   * the tag parts.
    *
-   * @default
+   * * @default automatically derived from the asset's ID.
    */
   repositoryName?: string;
 }
