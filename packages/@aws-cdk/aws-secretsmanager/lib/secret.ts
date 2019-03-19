@@ -1,7 +1,9 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
+import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import { SecretString } from './secret-string';
+import { SecretTargetAttachment, SecretTargetAttachmentOptions } from './secret-target-attachment';
 import secretsmanager = require('./secretsmanager.generated');
 
 /**
@@ -51,6 +53,16 @@ export interface ISecret extends cdk.IConstruct {
    *                      stages is applied.
    */
   grantRead(grantee: iam.IPrincipal, versionStages?: string[]): void;
+
+  /**
+   * Adds a target attachment to the secret.
+   */
+  addTargetAttachment(id: string, options: SecretTargetAttachmentOptions): SecretTargetAttachment;
+
+  /**
+   * Adds a rotation schedule to the secret.
+   */
+  addRotationSchedule(id: string, options: RotationScheduleOptions): RotationSchedule;
 }
 
 /**
@@ -149,6 +161,20 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
 
   public jsonFieldValue(key: string): string {
     return this.secretString.jsonFieldValue(key);
+  }
+
+  public addTargetAttachment(id: string, options: SecretTargetAttachmentOptions): SecretTargetAttachment {
+    return new SecretTargetAttachment(this, id, {
+      secret: this,
+      ...options
+    });
+  }
+
+  public addRotationSchedule(id: string, options: RotationScheduleOptions): RotationSchedule {
+    return new RotationSchedule(this, id, {
+      secret: this,
+      ...options
+    });
   }
 }
 
