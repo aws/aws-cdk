@@ -1,8 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import lambda = require('@aws-cdk/aws-lambda');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import serverless = require('@aws-cdk/aws-serverless');
 import cdk = require('@aws-cdk/cdk');
-import { ISecret } from './secret';
 
 /**
  * A serverless application location.
@@ -26,7 +26,7 @@ export class ServerlessApplicationLocation {
 /**
  * The RDS database engine
  */
-export enum RdsDatabaseEngine {
+export enum DatabaseEngine {
   /**
    * MariaDB
    */
@@ -54,9 +54,9 @@ export enum RdsDatabaseEngine {
 }
 
 /**
- * Options to add single user rotation to a RDS instance or cluster.
+ * Options to add single user rotation to a database instance or cluster.
  */
-export interface RdsRotationSingleUserOptions {
+export interface RotationSingleUserOptions {
   /**
    * Specifies the number of days after the previous rotation before
    * Secrets Manager triggers the next automatic rotation.
@@ -74,9 +74,9 @@ export interface RdsRotationSingleUserOptions {
 }
 
 /**
- * Construction properties for a RdsRotationSingleUser.
+ * Construction properties for a RotationSingleUser.
  */
-export interface RdsRotationSingleUserProps extends RdsRotationSingleUserOptions {
+export interface RotationSingleUserProps extends RotationSingleUserOptions {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
    * {
@@ -91,14 +91,14 @@ export interface RdsRotationSingleUserProps extends RdsRotationSingleUserOptions
    * This is typically the case for a secret referenced from an AWS::SecretsManager::SecretTargetAttachment
    * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html
    */
-  secret: ISecret;
+  secret: secretsmanager.ISecret;
 
   /**
    * The database engine. Either `serverlessApplicationLocation` or `engine` must be specified.
    *
    * @default no engine specified
    */
-  engine?: RdsDatabaseEngine;
+  engine?: DatabaseEngine;
 
   /**
    * The VPC where the Lambda rotation function will run.
@@ -119,10 +119,10 @@ export interface RdsRotationSingleUserProps extends RdsRotationSingleUserOptions
 }
 
 /**
- * Single user secret rotation for a RDS database instance or cluster.
+ * Single user secret rotation for a database instance or cluster.
  */
-export class RdsRotationSingleUser extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: RdsRotationSingleUserProps) {
+export class RotationSingleUser extends cdk.Construct {
+  constructor(scope: cdk.Construct, id: string, props: RotationSingleUserProps) {
     super(scope, id);
 
     if (!props.serverlessApplicationLocation && !props.engine) {
@@ -188,15 +188,15 @@ export class RdsRotationSingleUser extends cdk.Construct {
  */
 function getApplicationLocation(engine: string = ''): ServerlessApplicationLocation {
   switch (engine) {
-    case RdsDatabaseEngine.MariaDb:
+    case DatabaseEngine.MariaDb:
       return ServerlessApplicationLocation.MariaDbRotationSingleUser;
-    case RdsDatabaseEngine.Mysql:
+    case DatabaseEngine.Mysql:
       return ServerlessApplicationLocation.MysqlRotationSingleUser;
-    case RdsDatabaseEngine.Oracle:
+    case DatabaseEngine.Oracle:
       return ServerlessApplicationLocation.OracleRotationSingleUser;
-    case RdsDatabaseEngine.Postgres:
+    case DatabaseEngine.Postgres:
       return ServerlessApplicationLocation.PostgresRotationSingleUser;
-    case RdsDatabaseEngine.SqlServer:
+    case DatabaseEngine.SqlServer:
       return ServerlessApplicationLocation.SqlServerRotationSingleUser;
     default:
       throw new Error(`Engine ${engine} not supported for single user rotation.`);

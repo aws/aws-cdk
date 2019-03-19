@@ -1,8 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import secretsmanager = require('../lib');
+import rds = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
 
@@ -21,9 +22,9 @@ export = {
     const secret = new secretsmanager.Secret(stack, 'Secret');
 
     // WHEN
-    new secretsmanager.RdsRotationSingleUser(stack, 'Rotation', {
+    new rds.RotationSingleUser(stack, 'Rotation', {
       secret,
-      engine: secretsmanager.RdsDatabaseEngine.Oracle,
+      engine: rds.DatabaseEngine.Oracle,
       vpc,
       target
     });
@@ -163,7 +164,7 @@ export = {
     const secret = new secretsmanager.Secret(stack, 'Secret');
 
     // THEN
-    test.throws(() => new secretsmanager.RdsRotationSingleUser(stack, 'Rotation', {
+    test.throws(() => new rds.RotationSingleUser(stack, 'Rotation', {
       secret,
       vpc,
       target
@@ -187,9 +188,9 @@ export = {
     });
 
     // THEN
-    test.throws(() => new secretsmanager.RdsRotationSingleUser(stack, 'Rotation', {
+    test.throws(() => new rds.RotationSingleUser(stack, 'Rotation', {
       secret,
-      engine: secretsmanager.RdsDatabaseEngine.Mysql,
+      engine: rds.DatabaseEngine.Mysql,
       vpc,
       target
     }), /`target`.+default port range/);
