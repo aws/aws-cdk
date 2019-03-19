@@ -103,7 +103,7 @@ export = {
             "Ref": "RuleSetRule0B1D6BCA"
           },
           "Export": {
-            "Name": "RuleSetRuleReceiptRuleName5620D98F"
+            "Name": "Stack:RuleSetRuleReceiptRuleName5620D98F"
           }
         }
       }
