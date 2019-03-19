@@ -48,7 +48,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512 // add validation?
       });
 
@@ -104,7 +104,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -154,7 +154,7 @@ export = {
       });
 
       const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -200,7 +200,7 @@ export = {
 
       taskDefinition.addContainer("web", {
         memoryLimitMiB: 1024,
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample")
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
       });
 
       // THEN
@@ -226,7 +226,7 @@ export = {
       });
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -254,7 +254,7 @@ export = {
       });
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 

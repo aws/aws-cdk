@@ -85,7 +85,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codepipeline.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "codepipeline.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -161,12 +171,6 @@
     "PipelineC660917D": {
       "Type": "AWS::CodePipeline::Pipeline",
       "Properties": {
-        "ArtifactStore": {
-          "Location": {
-            "Ref": "PipelineArtifactsBucket22248F97"
-          },
-          "Type": "S3"
-        },
         "RoleArn": {
           "Fn::GetAtt": [
             "PipelineRoleD68726F7",
@@ -222,7 +226,13 @@
             ],
             "Name": "build"
           }
-        ]
+        ],
+        "ArtifactStore": {
+          "Location": {
+            "Ref": "PipelineArtifactsBucket22248F97"
+          },
+          "Type": "S3"
+        }
       },
       "DependsOn": [
         "PipelineRoleDefaultPolicyC7A05455",
@@ -238,7 +248,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "events.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "events.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],

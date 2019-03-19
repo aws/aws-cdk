@@ -19,7 +19,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
 });
 
 const container = taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 256,
 });
 
@@ -40,6 +40,6 @@ listener.addTargets('ECS', {
   targets: [service]
 });
 
-new cdk.Output(stack, 'LoadBalancerDNS', { value: lb.dnsName, });
+new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.dnsName, });
 
 app.run();

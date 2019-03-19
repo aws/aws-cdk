@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-stepfunctions",
-  "version": "0.25.0",
+  "version": "0.25.3",
   "description": "The CDK Construct Library for AWS::StepFunctions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -54,24 +54,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.25.0",
-    "cdk-build-tools": "^0.25.0",
-    "cdk-integ-tools": "^0.25.0",
-    "cfn2ts": "^0.25.0",
-    "pkglint": "^0.25.0"
+    "@aws-cdk/assert": "^0.25.3",
+    "cdk-build-tools": "^0.25.3",
+    "cdk-integ-tools": "^0.25.3",
+    "cfn2ts": "^0.25.3",
+    "pkglint": "^0.25.3"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^0.25.0",
-    "@aws-cdk/aws-events": "^0.25.0",
-    "@aws-cdk/aws-iam": "^0.25.0",
-    "@aws-cdk/cdk": "^0.25.0"
+    "@aws-cdk/aws-cloudwatch": "^0.25.3",
+    "@aws-cdk/aws-events": "^0.25.3",
+    "@aws-cdk/aws-iam": "^0.25.3",
+    "@aws-cdk/cdk": "^0.25.3"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "^0.25.0",
-    "@aws-cdk/aws-events": "^0.25.0",
-    "@aws-cdk/aws-iam": "^0.25.0",
-    "@aws-cdk/cdk": "^0.25.0"
+    "@aws-cdk/aws-cloudwatch": "^0.25.3",
+    "@aws-cdk/aws-events": "^0.25.3",
+    "@aws-cdk/aws-iam": "^0.25.3",
+    "@aws-cdk/cdk": "^0.25.3"
   },
   "engines": {
     "node": ">= 8.10.0"
