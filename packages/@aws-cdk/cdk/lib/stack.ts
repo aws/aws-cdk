@@ -84,6 +84,9 @@ export class Stack extends Construct {
 
   /**
    * The CloudFormation stack name.
+   *
+   * This is the stack name either configuration via the `stackName` property
+   * or automatically derived from the construct path.
    */
   public readonly name: string;
 
@@ -334,7 +337,7 @@ export class Stack extends Construct {
   /**
    * The name of the stack currently being deployed
    *
-   * Only available at deployment time.
+   * Only available at deployment time; this will always return an unresolved value.
    */
   public get stackName(): string {
     return new ScopedAws(this).stackName;
@@ -461,7 +464,7 @@ export class Stack extends Construct {
   }
 
   protected synthesize(session: ISynthesisSession): void {
-    const template = `${this.node.id}.template.json`;
+    const template = `${this.name}.template.json`;
 
     // write the CloudFormation template as a JSON file
     session.store.writeJson(template, this._toCloudFormation());
@@ -479,7 +482,7 @@ export class Stack extends Construct {
       artifact.properties.parameters = this.node.resolve(this.parameterValues);
     }
 
-    const deps = this.dependencies().map(s => s.node.id);
+    const deps = this.dependencies().map(s => s.name);
     if (deps.length > 0) {
       artifact.dependencies = deps;
     }
@@ -494,7 +497,7 @@ export class Stack extends Construct {
     }
 
     // add an artifact that represents this stack
-    session.addArtifact(this.node.id, artifact);
+    session.addArtifact(this.name, artifact);
   }
 
   /**
@@ -620,7 +623,7 @@ export interface TemplateOptions {
 }
 
 /**
- * Collect all CfnElements from a construct
+ * Collect all CfnElements from a Stack
  *
  * @param node Root node to collect all CfnElements from
  * @param into Array to append CfnElements to
@@ -632,6 +635,9 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
   }
 
   for (const child of node.node.children) {
+    // Don't recurse into a substack
+    if (Stack.isStack(child)) { continue; }
+
     cfnElements(child, into);
   }
 
