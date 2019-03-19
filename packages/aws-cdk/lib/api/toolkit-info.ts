@@ -99,11 +99,17 @@ export class ToolkitInfo {
   /**
    * Prepare an ECR repository for uploading to using Docker
    */
-  public async prepareEcrRepository(assetId: string): Promise<EcrRepositoryInfo> {
+  public async prepareEcrRepository(asset: cxapi.ContainerImageAssetMetadataEntry): Promise<EcrRepositoryInfo> {
     const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForWriting);
-
-    // Repository name based on asset id
-    const repositoryName = 'cdk/' + assetId.replace(/[:/]/g, '-').toLowerCase();
+    let repositoryName;
+    if ( asset.repositoryName ) {
+      // Repository name provided by user
+      repositoryName = asset.repositoryName;
+    } else {
+      // Repository name based on asset id
+      const assetId = asset.id;
+      repositoryName = 'cdk/' + assetId.replace(/[:/]/g, '-').toLowerCase();
+    }
 
     let repository;
     try {

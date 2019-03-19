@@ -21,6 +21,13 @@ export class MockSDK extends SDK {
   public stubCloudFormation(stubs: SyncHandlerSubsetOf<AWS.CloudFormation>) {
     this.sandbox.stub(this, 'cloudFormation').returns(Promise.resolve(partialAwsService<AWS.CloudFormation>(stubs)));
   }
+
+  /**
+   * Replace the ECR client with the given object
+   */
+  public stubEcr(stubs: SyncHandlerSubsetOf<AWS.ECR>) {
+    this.sandbox.stub(this, 'ecr').returns(Promise.resolve(partialAwsService<AWS.ECR>(stubs)));
+  }
 }
 
 /**
