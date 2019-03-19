@@ -143,9 +143,11 @@ export class Stack extends Construct {
 
   /**
    * Returns the CloudFormation template for this stack by traversing
-   * the tree and invoking toCloudFormation() on all Entity objects.
+   * the tree and invoking _toCloudFormation() on all Entity objects.
+   *
+   * @internal
    */
-  public toCloudFormation() {
+  public _toCloudFormation() {
     // before we begin synthesis, we shall lock this stack, so children cannot be added
     this.node.lock();
 
@@ -158,7 +160,7 @@ export class Stack extends Construct {
       };
 
       const elements = cfnElements(this);
-      const fragments = elements.map(e => this.node.resolve(e.toCloudFormation()));
+      const fragments = elements.map(e => this.node.resolve(e._toCloudFormation()));
 
       // merge in all CloudFormation fragments collected from the tree
       for (const fragment of fragments) {
@@ -446,7 +448,7 @@ export class Stack extends Construct {
     const template = `${this.node.id}.template.json`;
 
     // write the CloudFormation template as a JSON file
-    session.store.writeJson(template, this.toCloudFormation());
+    session.store.writeJson(template, this._toCloudFormation());
 
     const artifact: cxapi.Artifact = {
       type: cxapi.ArtifactType.AwsCloudFormationStack,

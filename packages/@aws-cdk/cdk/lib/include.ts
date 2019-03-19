@@ -31,7 +31,7 @@ export class Include extends CfnElement {
     this.template = props.template;
   }
 
-  public toCloudFormation() {
+  public _toCloudFormation() {
     return this.template;
   }
 }
