@@ -87,10 +87,10 @@ export = {
       assumedBy: new ServicePrincipal('sns.amazonaws.com')
     });
 
-    test.ok(!('MyRoleDefaultPolicyA36BE1DD' in stack.toCloudFormation().Resources), 'initially created without a policy');
+    test.ok(!('MyRoleDefaultPolicyA36BE1DD' in stack._toCloudFormation().Resources), 'initially created without a policy');
 
     role.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
-    test.ok(stack.toCloudFormation().Resources.MyRoleDefaultPolicyA36BE1DD, 'policy resource created');
+    test.ok(stack._toCloudFormation().Resources.MyRoleDefaultPolicyA36BE1DD, 'policy resource created');
 
     expect(stack).toMatch({ Resources:
       { MyRoleF48FFE04:

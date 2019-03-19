@@ -444,7 +444,7 @@ export = {
       test.deepEqual(bucket.bucketArn, bucketArn);
       test.deepEqual(bucket.node.resolve(bucket.bucketName), 'my-bucket');
 
-      test.deepEqual(stack.toCloudFormation(), {}, 'the ref is not a real resource');
+      test.deepEqual(stack._toCloudFormation(), {}, 'the ref is not a real resource');
       test.done();
     },
 
@@ -925,7 +925,7 @@ export = {
     bucket.grantWrite(writer);
     bucket.grantDelete(deleter);
 
-    const resources = stack.toCloudFormation().Resources;
+    const resources = stack._toCloudFormation().Resources;
     const actions = (id: string) => resources[id].Properties.PolicyDocument.Statement[0].Action;
 
     test.deepEqual(actions('WriterDefaultPolicyDC585BCE'), [ 's3:DeleteObject*', 's3:PutObject*', 's3:Abort*' ]);

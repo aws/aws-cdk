@@ -307,7 +307,7 @@ export = {
     bucket.onObjectCreated(dest);
 
     stack.node.prepareTree();
-    test.deepEqual(stack.toCloudFormation().Resources.BucketNotifications8F2E257D, {
+    test.deepEqual(stack._toCloudFormation().Resources.BucketNotifications8F2E257D, {
       Type: 'Custom::S3BucketNotifications',
       Properties: {
         ServiceToken: { 'Fn::GetAtt': [ 'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn' ] },

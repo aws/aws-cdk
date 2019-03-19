@@ -12,7 +12,7 @@ export = {
       value: ref,
       description: 'CfnOutput properties'
     });
-    test.deepEqual(stack.toCloudFormation(), { Resources: { MyResource: { Type: 'R' } },
+    test.deepEqual(stack._toCloudFormation(), { Resources: { MyResource: { Type: 'R' } },
     Outputs:
      { MyOutput:
       { Description: 'CfnOutput properties',
@@ -55,7 +55,7 @@ export = {
     const output = new CfnOutput(stack, 'MyOutput');
     test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyStack:MyOutput' });
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Outputs: {
         MyOutput: {
           Export: { Name: 'MyStack:MyOutput' }
@@ -73,7 +73,7 @@ export = {
     new CfnOutput(stack, 'SomeOutput', { value: 'x' });
 
     // THEN
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Outputs: {
         SomeOutput: {
           Value: 'x'

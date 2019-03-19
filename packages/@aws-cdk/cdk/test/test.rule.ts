@@ -9,7 +9,7 @@ export = {
     rule.addAssertion(Fn.conditionEquals('lhs', 'rhs'), 'lhs equals rhs');
     rule.addAssertion(Fn.conditionNot(Fn.conditionAnd(Fn.conditionContains([ 'hello', 'world' ], "world"))), 'some assertion');
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Rules: {
         MyRule: {
           Assertions: [
