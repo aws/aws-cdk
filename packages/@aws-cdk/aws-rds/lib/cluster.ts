@@ -1,4 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 import { IClusterParameterGroup } from './cluster-parameter-group';
 import { DatabaseClusterImportProps, Endpoint, IDatabaseCluster } from './cluster-ref';
@@ -91,9 +92,9 @@ export interface DatabaseClusterProps {
 }
 
 /**
- * Create a clustered database with a given number of instances.
+ * A new or imported clustered database.
  */
-export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
+export abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseCluster {
   /**
    * Import an existing DatabaseCluster from properties
    */
@@ -101,6 +102,57 @@ export class DatabaseCluster extends cdk.Construct implements IDatabaseCluster {
     return new ImportedDatabaseCluster(scope, id, props);
   }
 
+  /**
+   * Identifier of the cluster
+   */
+  public abstract readonly clusterIdentifier: string;
+  /**
+   * Identifiers of the replicas
+   */
+  public abstract readonly instanceIdentifiers: string[];
+
+  /**
+   * The endpoint to use for read/write operations
+   */
+  public abstract readonly clusterEndpoint: Endpoint;
+
+  /**
+   * Endpoint to use for load-balanced read-only operations.
+   */
+  public abstract readonly readerEndpoint: Endpoint;
+
+  /**
+   * Endpoints which address each individual replica.
+   */
+  public abstract readonly instanceEndpoints: Endpoint[];
+
+  /**
+   * Access to the network connections
+   */
+  public abstract readonly connections: ec2.Connections;
+
+  /**
+   * Security group identifier of this database
+   */
+  public abstract readonly securityGroupId: string;
+
+  public abstract export(): DatabaseClusterImportProps;
+
+  /**
+   * Renders the secret attachment target specifications.
+   */
+  public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
+    return {
+      targetId: this.clusterIdentifier,
+      targetType: secretsmanager.AttachmentTargetType.Cluster
+    };
+  }
+}
+
+/**
+ * Create a clustered database with a given number of instances.
+ */
+export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
   /**
    * Identifier of the cluster
    */
@@ -248,7 +300,7 @@ function databaseInstanceType(instanceType: ec2.InstanceType) {
 /**
  * An imported Database Cluster
  */
-class ImportedDatabaseCluster extends cdk.Construct implements IDatabaseCluster {
+class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
   /**
    * Default port to connect to this database
    */
