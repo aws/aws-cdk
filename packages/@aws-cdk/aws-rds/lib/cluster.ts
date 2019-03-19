@@ -432,6 +432,6 @@ function toDatabaseEngine(engine: DatabaseClusterEngine): DatabaseEngine {
     case DatabaseClusterEngine.AuroraPostgresql:
       return DatabaseEngine.Postgres;
     default:
-      throw new Error('Unkown engine');
+      throw new Error('Unknown engine');
   }
 }
