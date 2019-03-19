@@ -8,10 +8,8 @@ import cdk = require('@aws-cdk/cdk');
 export interface DatabaseSecretProps {
   /**
    * The username.
-   *
-   * @default admin
    */
-  username?: string;
+  username: string;
 
   /**
    * The KMS key to use to encrypt the secret.
@@ -25,12 +23,12 @@ export interface DatabaseSecretProps {
  * A database secret.
  */
 export class DatabaseSecret extends secretsmanager.Secret {
-  constructor(scope: cdk.Construct, id: string, props: DatabaseSecretProps = {}) {
+  constructor(scope: cdk.Construct, id: string, props: DatabaseSecretProps) {
     super(scope, id, {
       encryptionKey: props.encryptionKey,
       generateSecretString: ({
         passwordLength: 30, // Oracle password cannot have more than 30 characters
-        secretStringTemplate: JSON.stringify({ username: props.username || 'admin' }),
+        secretStringTemplate: JSON.stringify({ username: props.username }),
         generateStringKey: 'password',
         excludeCharacters: '"@/\\'
       }) as secretsmanager.TemplatedSecretStringGenerator
