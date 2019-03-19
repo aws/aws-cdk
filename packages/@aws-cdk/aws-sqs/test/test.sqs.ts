@@ -107,7 +107,7 @@ export = {
     test.deepEqual(stack.node.resolve(imports.queueUrl), { 'Fn::ImportValue': 'QueueQueueUrlC30FF916' });
 
     // the exporting stack has Outputs for QueueARN and QueueURL
-    const outputs = stack.toCloudFormation().Outputs;
+    const outputs = stack._toCloudFormation().Outputs;
     test.deepEqual(outputs.QueueQueueArn8CF496D5, { Value: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] }, Export: { Name: 'QueueQueueArn8CF496D5' } });
     test.deepEqual(outputs.QueueQueueUrlC30FF916, { Value: { Ref: 'Queue4A7E3555' }, Export: { Name: 'QueueQueueUrlC30FF916' } });
 
@@ -252,7 +252,7 @@ export = {
           keyArn: { 'Fn::ImportValue': 'QueueWithCustomKeyKeyArn537F6E42' }
         });
 
-        test.deepEqual(stack.toCloudFormation().Outputs, {
+        test.deepEqual(stack._toCloudFormation().Outputs, {
           "QueueWithCustomKeyQueueArnD326BB9B": {
           "Value": {
             "Fn::GetAtt": [
@@ -300,7 +300,7 @@ export = {
           keyArn: { 'Fn::ImportValue': 'QueueWithManagedKeyKeyArn9C42A85D' }
         });
 
-        test.deepEqual(stack.toCloudFormation().Outputs, {
+        test.deepEqual(stack._toCloudFormation().Outputs, {
           "QueueWithManagedKeyQueueArn8798A14E": {
           "Value": {
             "Fn::GetAtt": [
@@ -406,7 +406,7 @@ export = {
 
       // make sure the queue policy is added as a dependency to the bucket
       // notifications resource so it will be created first.
-      test.deepEqual(stack.toCloudFormation().Resources.BucketNotifications8F2E257D.DependsOn, [ 'QueuePolicy25439813' ]);
+      test.deepEqual(stack._toCloudFormation().Resources.BucketNotifications8F2E257D.DependsOn, [ 'QueuePolicy25439813' ]);
 
       test.done();
     },
