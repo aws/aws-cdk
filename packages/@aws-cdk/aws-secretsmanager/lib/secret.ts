@@ -3,7 +3,6 @@ import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import { SecretString } from './secret-string';
-import { SecretTargetAttachment, SecretTargetAttachmentOptions } from './secret-target-attachment';
 import secretsmanager = require('./secretsmanager.generated');
 
 /**
@@ -53,11 +52,6 @@ export interface ISecret extends cdk.IConstruct {
    *                      stages is applied.
    */
   grantRead(grantee: iam.IPrincipal, versionStages?: string[]): void;
-
-  /**
-   * Adds a target attachment to the secret.
-   */
-  addTargetAttachment(id: string, options: SecretTargetAttachmentOptions): SecretTargetAttachment;
 
   /**
    * Adds a rotation schedule to the secret.
@@ -163,13 +157,6 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
     return this.secretString.jsonFieldValue(key);
   }
 
-  public addTargetAttachment(id: string, options: SecretTargetAttachmentOptions): SecretTargetAttachment {
-    return new SecretTargetAttachment(this, id, {
-      secret: this,
-      ...options
-    });
-  }
-
   public addRotationSchedule(id: string, options: RotationScheduleOptions): RotationSchedule {
     return new RotationSchedule(this, id, {
       secret: this,
@@ -208,6 +195,108 @@ export class Secret extends SecretBase {
 
     this.encryptionKey = props.encryptionKey;
     this.secretArn = resource.secretArn;
+  }
+
+  /**
+   * Adds a target attachment to the secret.
+   *
+   * @returns an AttachedSecret
+   */
+  public addTargetAttachment(id: string, options: AttachedSecretOptions): AttachedSecret {
+    return new AttachedSecret(this, id, {
+      secret: this,
+      ...options
+    });
+  }
+
+  public export(): SecretImportProps {
+    return {
+      encryptionKey: this.encryptionKey,
+      secretArn: this.secretArn,
+    };
+  }
+}
+
+/**
+ * A secret attachment target.
+ */
+export interface ISecretAttachmentTarget {
+  /**
+   * Renders the target specifications.
+   */
+  asSecretAttachmentTarget(): SecretAttachmentTargetProps;
+}
+
+/**
+ * The type of service or database that's being associated with the secret.
+ */
+export enum AttachmentTargetType {
+  /**
+   * A database instance
+   */
+  Instance = 'AWS::RDS::DBInstance',
+
+  /**
+   * A database cluster
+   */
+  Cluster = 'AWS::RDS::DBCluster'
+}
+
+/**
+ * Attachment target specifications.
+ */
+export interface SecretAttachmentTargetProps {
+  /**
+   * The id of the target to attach the secret to.
+   */
+  targetId: string;
+
+  /**
+   * The type of the target to attach the secret to.
+   */
+  targetType: AttachmentTargetType;
+}
+
+/**
+ * Options to add a secret attachment to a secret.
+ */
+export interface AttachedSecretOptions {
+  /**
+   * The target to attach the secret to.
+   */
+  target: ISecretAttachmentTarget;
+}
+
+/**
+ * Construction properties for an AttachedSecret.
+ */
+export interface AttachedSecretProps extends AttachedSecretOptions {
+  /**
+   * The secret to attach to the target.
+   */
+  secret: ISecret;
+}
+
+/**
+ * An attached secret.
+ */
+export class AttachedSecret extends SecretBase implements ISecret {
+  public readonly encryptionKey?: kms.IEncryptionKey;
+  public readonly secretArn: string;
+
+  constructor(scope: cdk.Construct, id: string, props: AttachedSecretProps) {
+    super(scope, id);
+
+    const attachment = new secretsmanager.CfnSecretTargetAttachment(this, 'Resource', {
+      secretId: props.secret.secretArn,
+      targetId: props.target.asSecretAttachmentTarget().targetId,
+      targetType: props.target.asSecretAttachmentTarget().targetType
+    });
+
+    this.encryptionKey = props.secret.encryptionKey;
+
+    // This allows to reference the secret after attachment (dependency).
+    this.secretArn = attachment.secretTargetAttachmentSecretArn;
   }
 
   public export(): SecretImportProps {
