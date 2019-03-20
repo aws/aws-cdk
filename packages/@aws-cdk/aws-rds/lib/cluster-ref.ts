@@ -1,10 +1,11 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 
 /**
  * Create a clustered database with a given number of instances.
  */
-export interface IDatabaseCluster extends cdk.IConstruct, ec2.IConnectable {
+export interface IDatabaseCluster extends cdk.IConstruct, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * Identifier of the cluster
    */

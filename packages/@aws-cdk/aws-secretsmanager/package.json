@@ -63,12 +63,16 @@
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "^0.26.0",
+    "@aws-cdk/aws-ec2": "^0.26.0",
     "@aws-cdk/aws-kms": "^0.26.0",
+    "@aws-cdk/aws-lambda": "^0.26.0",
     "@aws-cdk/cdk": "^0.26.0"
   },
   "peerDependencies": {
     "@aws-cdk/aws-iam": "^0.26.0",
+    "@aws-cdk/aws-ec2": "^0.26.0",
     "@aws-cdk/aws-kms": "^0.26.0",
+    "@aws-cdk/aws-lambda": "^0.26.0",
     "@aws-cdk/cdk": "^0.26.0"
   },
   "engines": {
