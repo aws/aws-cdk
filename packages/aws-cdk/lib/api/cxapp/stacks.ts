@@ -87,8 +87,10 @@ export class AppStacks {
     }
 
     if (selectors.length === 0) {
-      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(stacks));
-      return this.applyRenames(stacks);
+      // remove non-auto deployed Stacks
+      const autoDeployedStacks = stacks.filter(s => s.autoDeploy !== false);
+      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(autoDeployedStacks));
+      return this.applyRenames(autoDeployedStacks);
     }
 
     const allStacks = new Map<string, cxapi.SynthesizedStack>();

@@ -81,6 +81,7 @@ export interface SynthesizedStack {
   missing?: { [key: string]: MissingContext };
   metadata: StackMetadata;
   template: any;
+  autoDeploy?: boolean;
 
   /**
    * Other stacks this stack depends on

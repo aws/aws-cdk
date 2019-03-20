@@ -354,6 +354,7 @@ function renderLegacyStacks(artifacts: { [id: string]: cxapi.Artifact }, store: 
         environment: { name: artifact.environment.substr('aws://'.length), account: match[1], region: match[2] },
         template,
         metadata: artifact.metadata || {},
+        autoDeploy: artifact.autoDeploy,
       };
 
       if (artifact.dependencies && artifact.dependencies.length > 0) {
