@@ -46,7 +46,7 @@ export = {
   'if stack name is undefined, we will only use the logical ID for the export name'(test: Test) {
     const stack = new Stack();
     const output = new CfnOutput(stack, 'MyOutput');
-    test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyOutput' });
+    test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'Stack:MyOutput' });
     test.done();
   },
 
