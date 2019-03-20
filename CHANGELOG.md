@@ -1,3 +1,59 @@
+# [0.26.0](https://github.com/awslabs/aws-cdk/compare/v0.25.3...v0.26.0) (2019-03-20)
+
+
+### Bug Fixes
+
+* **aws-cdk:** fix VpcNetwork.importFromContext() ([#2008](https://github.com/awslabs/aws-cdk/issues/2008)) ([e1a1a7b](https://github.com/awslabs/aws-cdk/commit/e1a1a7b)), closes [#1998](https://github.com/awslabs/aws-cdk/issues/1998)
+* **aws-cdk:** update F# template to latest CDK version ([#2006](https://github.com/awslabs/aws-cdk/issues/2006)) ([bda12f2](https://github.com/awslabs/aws-cdk/commit/bda12f2))
+* **cdk:** merge cloudFormation tags with aspect tags ([#1762](https://github.com/awslabs/aws-cdk/issues/1762)) ([bfb14b6](https://github.com/awslabs/aws-cdk/commit/bfb14b6)), closes [#1725](https://github.com/awslabs/aws-cdk/issues/1725)
+* **cfn2ts:** properly de-Tokenize L1 string-arrays ([#2033](https://github.com/awslabs/aws-cdk/issues/2033)) ([1e50383](https://github.com/awslabs/aws-cdk/commit/1e50383)), closes [#2030](https://github.com/awslabs/aws-cdk/issues/2030)
+* **core:** allow embedding condition expression as strings ([#2007](https://github.com/awslabs/aws-cdk/issues/2007)) ([6afa87f](https://github.com/awslabs/aws-cdk/commit/6afa87f)), closes [#1984](https://github.com/awslabs/aws-cdk/issues/1984)
+* **ecs:** make TaskDefinition accept IRoles ([#2034](https://github.com/awslabs/aws-cdk/issues/2034)) ([f32431a](https://github.com/awslabs/aws-cdk/commit/f32431a)), closes [#1925](https://github.com/awslabs/aws-cdk/issues/1925)
+* **lambda:** expose underlying function's role on the alias ([#2024](https://github.com/awslabs/aws-cdk/issues/2024)) ([de296de](https://github.com/awslabs/aws-cdk/commit/de296de))
+* **stepfunctions:** Actually perform rendering of NotCondition ([06b59d9](https://github.com/awslabs/aws-cdk/commit/06b59d9))
+* **toolkit:** 'cdk deploy' support updates to Outputs ([#2029](https://github.com/awslabs/aws-cdk/issues/2029)) ([23509ae](https://github.com/awslabs/aws-cdk/commit/23509ae)), closes [#778](https://github.com/awslabs/aws-cdk/issues/778)
+* **toolkit:** increase number of retries ([#2053](https://github.com/awslabs/aws-cdk/issues/2053)) ([133dc98](https://github.com/awslabs/aws-cdk/commit/133dc98)), closes [#1647](https://github.com/awslabs/aws-cdk/issues/1647)
+* rename core classes adding a Cfn prefix ([#1960](https://github.com/awslabs/aws-cdk/issues/1960)) ([5886bf6](https://github.com/awslabs/aws-cdk/commit/5886bf6)), closes [#1462](https://github.com/awslabs/aws-cdk/issues/1462) [#288](https://github.com/awslabs/aws-cdk/issues/288)
+
+
+### Code Refactoring
+
+* name "toCloudFormation" internal (renamed to "_toCloudFormation") ([#2047](https://github.com/awslabs/aws-cdk/issues/2047)) ([515868b](https://github.com/awslabs/aws-cdk/commit/515868b)), closes [#2044](https://github.com/awslabs/aws-cdk/issues/2044) [#2016](https://github.com/awslabs/aws-cdk/issues/2016)
+
+
+### Features
+
+* **aws-cdk:** support fixed repository name for DockerImageAsset ([#2032](https://github.com/awslabs/aws-cdk/issues/2032)) ([942f938](https://github.com/awslabs/aws-cdk/commit/942f938))
+* **aws-rds:** ability to add an existing security group to RDS cluster ([#2021](https://github.com/awslabs/aws-cdk/issues/2021)) ([1f24336](https://github.com/awslabs/aws-cdk/commit/1f24336))
+* **cfn2ts:** make cfn2ts output TSDoc-compatible docblocks ([#2000](https://github.com/awslabs/aws-cdk/issues/2000)) ([c6c66e9](https://github.com/awslabs/aws-cdk/commit/c6c66e9))
+* **cfnspec:** update to version 2.28.0 ([#2035](https://github.com/awslabs/aws-cdk/issues/2035)) ([6a671f2](https://github.com/awslabs/aws-cdk/commit/6a671f2))
+* **cloudformation:** allow specifying additional inputs for deploy Actions ([#2020](https://github.com/awslabs/aws-cdk/issues/2020)) ([2d463be](https://github.com/awslabs/aws-cdk/commit/2d463be)), closes [#1247](https://github.com/awslabs/aws-cdk/issues/1247)
+* **core:** can use Constructs to model applications  ([#1940](https://github.com/awslabs/aws-cdk/issues/1940)) ([32c2377](https://github.com/awslabs/aws-cdk/commit/32c2377)), closes [#1479](https://github.com/awslabs/aws-cdk/issues/1479)
+* **ecs:** support private registry authentication ([#1737](https://github.com/awslabs/aws-cdk/issues/1737)) ([11ed691](https://github.com/awslabs/aws-cdk/commit/11ed691)), closes [#1698](https://github.com/awslabs/aws-cdk/issues/1698)
+* **glue:** add L2 resources for `Database` and `Table` ([#1988](https://github.com/awslabs/aws-cdk/issues/1988)) ([3117cd3](https://github.com/awslabs/aws-cdk/commit/3117cd3))
+* **region-info:** Model region-specific information ([#1839](https://github.com/awslabs/aws-cdk/issues/1839)) ([946b444](https://github.com/awslabs/aws-cdk/commit/946b444)), closes [#1282](https://github.com/awslabs/aws-cdk/issues/1282)
+* **servicediscovery:** AWS Cloud Map construct library ([#1804](https://github.com/awslabs/aws-cdk/issues/1804)) ([1187366](https://github.com/awslabs/aws-cdk/commit/1187366))
+* **ses:** add constructs for email receiving ([#1971](https://github.com/awslabs/aws-cdk/issues/1971)) ([3790858](https://github.com/awslabs/aws-cdk/commit/3790858))
+* add more directories excluded and treated as source in the JetBrains script. ([#1961](https://github.com/awslabs/aws-cdk/issues/1961)) ([a1df717](https://github.com/awslabs/aws-cdk/commit/a1df717))
+
+
+### BREAKING CHANGES
+
+* “toCloudFormation” is now internal and should not be called directly. Instead use “app.synthesizeStack”
+* **ecs:** `ContainerImage.fromDockerHub` has been renamed to `ContainerImage.fromRegistry`.
+* rename Condition to CfnCondition.
+* rename StackElement to CfnElement.
+* rename Parameter to CfnParameter.
+* rename Resource to CfnResource.
+* rename Output to CfnOutput.
+* rename Mapping to CfnMapping.
+* rename Referenceable to CfnRefElement.
+* rename IConditionExpression to ICfnConditionExpression.
+* rename CfnReference to Reference.
+* rename Rule to CfnRule.
+
+
+
 # Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
