@@ -1,5 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
+import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine } from '../lib';
@@ -29,7 +30,8 @@ export = {
       DBSubnetGroupName: { Ref: "DatabaseSubnets56F17B9A" },
       MasterUsername: "admin",
       MasterUserPassword: "tooshort",
-      VpcSecurityGroupIds: [ {"Fn::GetAtt": ["DatabaseSecurityGroup5C91FDCB", "GroupId"]}]
+      VpcSecurityGroupIds: [ {"Fn::GetAtt": ["DatabaseSecurityGroup5C91FDCB", "GroupId"]}],
+      StorageEncrypted: true
     }));
 
     test.done();
@@ -230,6 +232,38 @@ export = {
         PasswordLength: 30,
         SecretStringTemplate: '{"username":"admin"}'
       }
+    }));
+
+    test.done();
+  },
+
+  'create an encrypted cluster with custom KMS key'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AuroraMysql,
+      masterUser: {
+        username: 'admin'
+      },
+      instanceProps: {
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        vpc
+      },
+      kmsKey: new kms.EncryptionKey(stack, 'Key')
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      KmsKeyId: {
+        'Fn::GetAtt': [
+          'Key961B73FD',
+          'Arn'
+        ]
+      },
+      StorageEncrypted: true
     }));
 
     test.done();

@@ -1,4 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 import { IClusterParameterGroup } from './cluster-parameter-group';
@@ -72,9 +73,18 @@ export interface DatabaseClusterProps {
   defaultDatabaseName?: string;
 
   /**
-   * ARN of KMS key if you want to enable storage encryption
+   * Whether to enable storage encryption
+   *
+   * @default true
    */
-  kmsKeyArn?: string;
+  storageEncrypted?: boolean
+
+  /**
+   * The KMS key for storage encryption
+   *
+   * @default default master key
+   */
+  kmsKey?: kms.IEncryptionKey;
 
   /**
    * A daily time range in 24-hours UTC format in which backups preferably execute.
@@ -261,8 +271,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
       // Encryption
-      kmsKeyId: props.kmsKeyArn,
-      storageEncrypted: props.kmsKeyArn ? true : false,
+      kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
+      storageEncrypted: props.kmsKey ? true : props.storageEncrypted !== false,
     });
 
     this.clusterIdentifier = cluster.ref;

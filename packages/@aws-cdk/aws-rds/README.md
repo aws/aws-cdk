@@ -33,7 +33,7 @@ const cluster = new DatabaseCluster(this, 'Database', {
     }
 });
 ```
-By default, the master password will be generated and stored in AWS Secrets Manager.
+By default, the master password will be generated and stored in AWS Secrets Manager and the storage will be encrypted with the default master key.
 
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
@@ -61,7 +61,7 @@ When the master password is generated and stored in AWS Secrets Manager, it can 
 
 Rotation of the master password is also supported for an existing cluster:
 ```ts
-new rds.RotationSingleUser(stack, 'Rotation', {
+new RotationSingleUser(stack, 'Rotation', {
     secret: importedSecret,
     engine: DatabaseEngine.Oracle,
     target: importedCluster,
