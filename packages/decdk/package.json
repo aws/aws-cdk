@@ -77,6 +77,7 @@
     "@aws-cdk/aws-fsx": "^0.25.3",
     "@aws-cdk/aws-gamelift": "^0.25.3",
     "@aws-cdk/aws-glue": "^0.25.3",
+    "@aws-cdk/aws-greengrass": "^0.25.3",
     "@aws-cdk/aws-guardduty": "^0.25.3",
     "@aws-cdk/aws-iam": "^0.25.3",
     "@aws-cdk/aws-inspector": "^0.25.3",

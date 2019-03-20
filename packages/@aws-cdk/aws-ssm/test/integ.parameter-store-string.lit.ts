@@ -32,7 +32,7 @@ class UsingStack extends cdk.Stack {
     }).stringValue;
     /// !hide
 
-    new cdk.Output(this, 'TheValue', { value: stringValue });
+    new cdk.CfnOutput(this, 'TheValue', { value: stringValue });
 
     // Cannot be provisioned so cannot be actually used
     Array.isArray(secretValue);

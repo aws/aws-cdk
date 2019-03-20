@@ -365,7 +365,7 @@ export class Function extends FunctionBase {
       functionName: props.functionName,
       description: props.description,
       code: new cdk.Token(() => props.code._toJSON(resource)),
-      layers: new cdk.Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined),
+      layers: new cdk.Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined).toList(),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,
@@ -402,9 +402,9 @@ export class Function extends FunctionBase {
    */
   public export(): FunctionImportProps {
     return {
-      functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
+      functionArn: new cdk.CfnOutput(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
       securityGroupId: this._connections && this._connections.securityGroups[0]
-          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
+          ? new cdk.CfnOutput(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
           : undefined
     };
   }

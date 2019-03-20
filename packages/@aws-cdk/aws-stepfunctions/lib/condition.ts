@@ -221,7 +221,7 @@ class NotCondition extends Condition {
 
     public renderCondition(): any {
         return {
-            Not: this.comparisonOperation
+            Not: this.comparisonOperation.renderCondition()
         };
     }
 }

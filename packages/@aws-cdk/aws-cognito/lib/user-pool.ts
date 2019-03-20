@@ -477,10 +477,10 @@ export class UserPool extends cdk.Construct implements IUserPool {
 
   public export(): UserPoolImportProps {
     return {
-      userPoolId: new cdk.Output(this, 'UserPoolId', { value: this.userPoolId }).makeImportValue().toString(),
-      userPoolArn: new cdk.Output(this, 'UserPoolArn', { value: this.userPoolArn }).makeImportValue().toString(),
-      userPoolProviderName: new cdk.Output(this, 'UserPoolProviderName', { value: this.userPoolProviderName }).makeImportValue().toString(),
-      userPoolProviderUrl: new cdk.Output(this, 'UserPoolProviderUrl', { value: this.userPoolProviderUrl }).makeImportValue().toString()
+      userPoolId: new cdk.CfnOutput(this, 'UserPoolId', { value: this.userPoolId }).makeImportValue().toString(),
+      userPoolArn: new cdk.CfnOutput(this, 'UserPoolArn', { value: this.userPoolArn }).makeImportValue().toString(),
+      userPoolProviderName: new cdk.CfnOutput(this, 'UserPoolProviderName', { value: this.userPoolProviderName }).makeImportValue().toString(),
+      userPoolProviderUrl: new cdk.CfnOutput(this, 'UserPoolProviderUrl', { value: this.userPoolProviderUrl }).makeImportValue().toString()
     };
   }
 

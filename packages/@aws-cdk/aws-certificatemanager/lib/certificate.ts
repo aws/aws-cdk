@@ -1,4 +1,4 @@
-import { Construct, IConstruct, Output } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IConstruct } from '@aws-cdk/cdk';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
@@ -114,7 +114,7 @@ export class Certificate extends Construct implements ICertificate {
    */
   public export(): CertificateImportProps {
     return {
-      certificateArn: new Output(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
+      certificateArn: new CfnOutput(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
     };
   }
 }

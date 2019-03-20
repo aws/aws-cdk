@@ -596,7 +596,7 @@ export namespace aws.apigateway {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-resource.html
      */
-    export class ResourceProps {
+    export class CfnResourceProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-resource.html#cfn-apigateway-resource-parentid
          */
@@ -621,7 +621,7 @@ export namespace aws.apigateway {
         /**
          * Resource properties
          */
-        public Properties = new ResourceProps();
+        public Properties = new CfnResourceProps();
 
         static readonly RESOURCE_TYPE = 'AWS::ApiGateway::Resource'
         static readonly REQUIRED_TRANSFORM = ''
@@ -7719,7 +7719,7 @@ export namespace aws.events {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html
      */
-    export class RuleProps {
+    export class CfnRuleProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html#cfn-events-rule-description
          */
@@ -7764,7 +7764,7 @@ export namespace aws.events {
         /**
          * Resource properties
          */
-        public Properties = new RuleProps();
+        public Properties = new CfnRuleProps();
 
         /**
          * @cloudformation_attribute Arn
@@ -8752,7 +8752,7 @@ export namespace aws.kinesisanalytics {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalytics-applicationoutput.html#cfn-kinesisanalytics-applicationoutput-output
          */
-        Output: aws.kinesisanalytics.ApplicationOutput.OutputProperty;
+        CfnOutput: aws.kinesisanalytics.ApplicationOutput.OutputProperty;
 
     }
 
@@ -11725,7 +11725,7 @@ export namespace aws.ssm {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html
      */
-    export class ParameterProps {
+    export class CfnParameterProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html#cfn-ssm-parameter-type
          */
@@ -11760,7 +11760,7 @@ export namespace aws.ssm {
         /**
          * Resource properties
          */
-        public Properties = new ParameterProps();
+        public Properties = new CfnParameterProps();
 
         /**
          * @cloudformation_attribute Type
@@ -11929,7 +11929,7 @@ export namespace aws.waf {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html
      */
-    export class RuleProps {
+    export class CfnRuleProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html#cfn-waf-rule-metricname
          */
@@ -11954,7 +11954,7 @@ export namespace aws.waf {
         /**
          * Resource properties
          */
-        public Properties = new RuleProps();
+        public Properties = new CfnRuleProps();
 
         static readonly RESOURCE_TYPE = 'AWS::WAF::Rule'
         static readonly REQUIRED_TRANSFORM = ''
@@ -12182,7 +12182,7 @@ export namespace aws.wafregional {
     /**
      * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html
      */
-    export class RuleProps {
+    export class CfnRuleProps {
         /**
          * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wafregional-rule.html#cfn-wafregional-rule-metricname
          */
@@ -12207,7 +12207,7 @@ export namespace aws.wafregional {
         /**
          * Resource properties
          */
-        public Properties = new RuleProps();
+        public Properties = new CfnRuleProps();
 
         static readonly RESOURCE_TYPE = 'AWS::WAFRegional::Rule'
         static readonly REQUIRED_TRANSFORM = ''

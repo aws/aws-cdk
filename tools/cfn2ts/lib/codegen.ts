@@ -6,7 +6,7 @@ import genspec = require('./genspec');
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 
 const CORE = genspec.CORE_NAMESPACE;
-const RESOURCE_BASE_CLASS = `${CORE}.Resource`; // base class for all resources
+const RESOURCE_BASE_CLASS = `${CORE}.CfnResource`; // base class for all resources
 const CONSTRUCT_CLASS = `${CORE}.Construct`;
 const TAG_TYPE = `${CORE}.TagType`;
 const TAG_MANAGER = `${CORE}.TagManager`;
@@ -579,8 +579,11 @@ export default class CodeGenerator {
       // render the union of all item types
       const itemTypes = genspec.specTypesToCodeTypes(resourceContext, itemTypeNames(propSpec));
 
-      if (propName !== 'Tags') {
-        // Always accept a token in place of any list element
+      // 'tokenizableType' operates at the level of rendered type names in TypeScript, so stringify
+      // the objects.
+      const renderedTypes = itemTypes.map(t => this.renderCodeName(resourceContext, t));
+      if (!tokenizableType(renderedTypes) && propName !== 'Tags') {
+        // Always accept a token in place of any list element (unless the list elements are tokenizable)
         itemTypes.push(genspec.TOKEN_NAME);
       }
 
@@ -619,17 +622,20 @@ export default class CodeGenerator {
     return alternatives.join(' | ');
   }
 
+  /**
+   * Render a CodeName to a string representation of it in TypeScript
+   */
+  private renderCodeName(context: genspec.CodeName, type: genspec.CodeName): string {
+    const rel = type.relativeTo(context);
+    const specType = rel.specName && this.spec.PropertyTypes[rel.specName.fqn];
+    if (!specType || schema.isPropertyBag(specType)) {
+      return rel.fqn;
+    }
+    return this.findNativeType(context, specType);
+  }
+
   private renderTypeUnion(context: genspec.CodeName, types: genspec.CodeName[]) {
-    return types
-      .map(type => type.relativeTo(context))
-      .map(type => {
-        const specType = type.specName && this.spec.PropertyTypes[type.specName.fqn];
-        if (!specType || schema.isPropertyBag(specType)) {
-          return type.fqn;
-        }
-        return this.findNativeType(context, specType);
-      })
-      .join(' | ');
+    return types.map(t => this.renderCodeName(context, t)).join(' | ');
   }
 
   private docLink(link: string | undefined, ...before: string[]) {
@@ -645,7 +651,7 @@ export default class CodeGenerator {
 
   private validateRefKindPresence(name: string, resourceType: schema.ResourceType): any {
     if (!resourceType.RefKind) { // Both empty string and undefined
-      throw new Error(`Resource ${name} does not have a RefKind; please annotate this new resources in @aws-cdk/cfnspec`);
+      throw new Error(`Resource ${name} does not have a RefKind; please run in @aws-cdk/cfnspec: npm run set-refkind ${name} Arn|Id|None|...`);
     }
   }
 }

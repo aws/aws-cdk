@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { Construct, Resource, Stack, StackProps } from '../lib';
+import { CfnResource, Construct, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
 
 function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void): cxapi.SynthesizeResponse {
-  const app = new App(context);
+  const app = new App({ context });
 
   block(app);
 
@@ -17,11 +17,11 @@ function withApp(context: { [key: string]: any } | undefined, block: (app: App) 
 function synth(context?: { [key: string]: any }): cxapi.SynthesizeResponse {
   return withApp(context, app => {
     const stack1 = new Stack(app, 'stack1', { env: { account: '12345', region: 'us-east-1' } });
-    new Resource(stack1, 's1c1', { type: 'DummyResource', properties: { Prop1: 'Prop1' } });
-    const r2 = new Resource(stack1, 's1c2', { type: 'DummyResource', properties: { Foo: 123 } });
+    new CfnResource(stack1, 's1c1', { type: 'DummyResource', properties: { Prop1: 'Prop1' } });
+    const r2 = new CfnResource(stack1, 's1c2', { type: 'DummyResource', properties: { Foo: 123 } });
 
     const stack2 = new Stack(app, 'stack2');
-    new Resource(stack2, 's2c1', { type: 'DummyResource', properties: { Prog2: 'Prog2' } });
+    new CfnResource(stack2, 's2c1', { type: 'DummyResource', properties: { Prog2: 'Prog2' } });
     const c1 = new MyConstruct(stack2, 's1c2');
 
     // add some metadata
@@ -84,7 +84,7 @@ export = {
   'synth(name) can be used programmatically'(test: Test) {
     const prog = new App();
     const stack = new Stack(prog, 'MyStack');
-    new Resource(stack, 'MyResource', { type: 'MyResourceType' });
+    new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
 
     test.throws(() => prog.synthesizeStacks(['foo']), /foo/);
 
@@ -254,7 +254,7 @@ export = {
 
     const response = withApp(context, app => {
       const stack = new Stack(app, 'stack1');
-      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
     test.equals(response.runtime, undefined);
@@ -264,7 +264,7 @@ export = {
   'runtime library versions'(test: Test) {
     const response = withApp({}, app => {
       const stack = new Stack(app, 'stack1');
-      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
     const libs = (response.runtime && response.runtime.libraries) || { };
@@ -281,7 +281,7 @@ export = {
 
     const response = withApp({}, app => {
       const stack = new Stack(app, 'stack1');
-      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
     const libs = (response.runtime && response.runtime.libraries) || { };
@@ -294,7 +294,7 @@ export = {
   'version reporting includes only @aws-cdk, aws-cdk and jsii libraries'(test: Test) {
     const response = withApp({}, app => {
       const stack = new Stack(app, 'stack1');
-      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
     const libs = (response.runtime && response.runtime.libraries) || { };
@@ -308,14 +308,39 @@ export = {
 
     test.done();
   },
+
+  'deep stack is shown and synthesized properly'(test: Test) {
+    // WHEN
+    const response = withApp(undefined, (app) => {
+      const topStack = new Stack(app, 'Stack');
+      const topResource = new CfnResource(topStack, 'Res', { type: 'CDK::TopStack::Resource' });
+
+      const bottomStack = new Stack(topResource, 'Stack');
+      new CfnResource(bottomStack, 'Res', { type: 'CDK::BottomStack::Resource' });
+    });
+
+    // THEN
+    test.deepEqual(response.stacks.map(s => ({ name: s.name, template: s.template })), [
+      {
+        name: 'StackResStack7E4AFA86',
+        template: { Resources: { Res: { Type: 'CDK::BottomStack::Resource' } } },
+      },
+      {
+        name: 'Stack',
+        template: { Resources: { Res: { Type: 'CDK::TopStack::Resource' } } },
+      }
+    ]);
+
+    test.done();
+  },
 };
 
 class MyConstruct extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    new Resource(this, 'r1', { type: 'ResourceType1' });
-    new Resource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.getContext('ctx1') } });
+    new CfnResource(this, 'r1', { type: 'ResourceType1' });
+    new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.getContext('ctx1') } });
   }
 }
 

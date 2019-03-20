@@ -1,4 +1,4 @@
-import { Construct, Output, Token } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { TargetInputTemplate } from './input-options';
@@ -104,7 +104,7 @@ export class EventRule extends Construct implements IEventRule {
    */
   public export(): EventRuleImportProps {
     return {
-      eventRuleArn: new Output(this, 'RuleArn', { value: this.ruleArn }).makeImportValue().toString()
+      eventRuleArn: new CfnOutput(this, 'RuleArn', { value: this.ruleArn }).makeImportValue().toString()
     };
   }
 

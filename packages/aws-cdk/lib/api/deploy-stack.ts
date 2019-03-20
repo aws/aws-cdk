@@ -7,7 +7,7 @@ import { debug, error, print } from '../logging';
 import { toYAML } from '../serialize';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
-import { describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack } from './util/cloudformation';
+import { changeSetHasNoChanges, describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 import { StackStatus } from './util/cloudformation/stack-status';
 import { SDK } from './util/sdk';
@@ -77,8 +77,9 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);
-  if (!changeSetDescription || !changeSetDescription.Changes || changeSetDescription.Changes.length === 0) {
-    debug('No changes are to be performed on %s, assuming success.', deployName);
+
+  if (changeSetHasNoChanges(changeSetDescription)) {
+    debug('No changes are to be performed on %s.', deployName);
     await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
     return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
   }
@@ -86,7 +87,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
   await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
   // tslint:disable-next-line:max-line-length
-  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, changeSetDescription.Changes.length).start();
+  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, (changeSetDescription.Changes || []).length).start();
   debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
   await waitForStack(cfn, deployName);
   if (monitor) { await monitor.stop(); }
