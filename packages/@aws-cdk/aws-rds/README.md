@@ -56,3 +56,25 @@ const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 
 ### Rotating master password
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically: [example of setting up master password rotation](test/integ.cluster-rotation.lit.ts)
+
+Rotation of the master password is also supported for an existing cluster:
+```ts
+new rds.RotationSingleUser(stack, 'Rotation', {
+    secret: importedSecret,
+    engine: DatabaseEngine.Oracle,
+    target: importedCluster,
+    vpc: importedVpc,
+})
+```
+
+The `importedSecret` must be a JSON string with the following format:
+```json
+{
+  "engine": "<required: database engine>",
+  "host": "<required: instance host name>",
+  "username": "<required: username>",
+  "password": "<required: password>",
+  "dbname": "<optional: database name>",
+  "port": "<optional: if not specified, default port will be used>"
+}
+```
