@@ -1,13 +1,13 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { CfnCondition } from './cfn-condition';
 import { Construct, IConstruct } from './construct';
-import { Reference } from './reference';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
 import { CfnRefElement } from './cfn-element';
+import { CfnReference } from './cfn-reference';
 
 export interface CfnResourceProps {
   /**
@@ -133,7 +133,7 @@ export class CfnResource extends CfnRefElement {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new Reference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, attributeName, this);
+    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, attributeName, this);
   }
 
   /**
