@@ -1,5 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
+import { IInstanceParameterGroup } from './instance-parameter-group';
 
 /**
  * The engine for the database cluster
@@ -36,6 +37,13 @@ export interface InstanceProps {
    * Security group. If not specified a new one will be created.
    */
   securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Additional parameters to pass to the database instance
+   *
+   * @default No parameter group
+   */
+  parameterGroup?: IInstanceParameterGroup;
 }
 
 /**

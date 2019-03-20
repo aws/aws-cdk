@@ -291,6 +291,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
       const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.Public;
 
+      const instanceParameterGroupName = props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName;
+
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
         engine: props.engine,
@@ -301,6 +303,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
         publiclyAccessible,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
+        dbParameterGroupName: instanceParameterGroupName,
       });
 
       // We must have a dependency on the NAT gateway provider here to create
