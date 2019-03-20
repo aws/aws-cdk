@@ -15,6 +15,8 @@ namespace HelloCdk
             // app by typing `cdk list`.
             new HelloStack(app, "hello-cdk-1", new StackProps());
             new HelloStack(app, "hello-cdk-2", new StackProps());
+
+            app.Run();
         }
     }
 }
