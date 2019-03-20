@@ -29,7 +29,7 @@ export = {
         User00B015A1: {
           Type: "AWS::IAM::User",
           Properties: {
-            Groups: [ { "Fn::ImportValue": "ExportsOutputRefGroupC77FDACD8CF7DD5B" } ]
+            Groups: [ { "Fn::ImportValue": "Stack:ExportsOutputRefGroupC77FDACD8CF7DD5B" } ]
           }
         }
       }
@@ -38,7 +38,7 @@ export = {
       Outputs: {
         ExportsOutputRefGroupC77FDACD8CF7DD5B: {
           Value: { Ref: "GroupC77FDACD" },
-          Export: { Name: "ExportsOutputRefGroupC77FDACD8CF7DD5B" }
+          Export: { Name: "Stack:ExportsOutputRefGroupC77FDACD8CF7DD5B" }
         }
       },
       Resources: {

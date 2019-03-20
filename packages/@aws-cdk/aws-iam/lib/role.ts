@@ -1,4 +1,4 @@
-import { Construct, Output } from '@aws-cdk/cdk';
+import { CfnOutput, Construct } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -170,8 +170,8 @@ export class Role extends Construct implements IRole {
 
   public export(): RoleImportProps {
     return {
-      roleArn: new Output(this, 'RoleArn', { value: this.roleArn }).makeImportValue(),
-      roleId: new Output(this, 'RoleId', { value: this.roleId }).makeImportValue()
+      roleArn: new CfnOutput(this, 'RoleArn', { value: this.roleArn }).makeImportValue(),
+      roleId: new CfnOutput(this, 'RoleId', { value: this.roleId }).makeImportValue()
     };
   }
 
@@ -250,6 +250,16 @@ export interface IRole extends IIdentity {
    * Export this role to another stack.
    */
   export(): RoleImportProps;
+
+  /**
+   * Grant the actions defined in actions to the identity Principal on this resource.
+   */
+  grant(identity?: IPrincipal, ...actions: string[]): void;
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  grantPassRole(identity?: IPrincipal): void;
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalId?: string) {
@@ -336,6 +346,20 @@ class ImportedRole extends Construct implements IRole {
   }
 
   public attachManagedPolicy(_arn: string): void {
+    // FIXME: Add warning that we're ignoring this
+  }
+
+  /**
+   * Grant the actions defined in actions to the identity Principal on this resource.
+   */
+  public grant(_identity?: IPrincipal, ..._actions: string[]): void {
+    // FIXME: Add warning that we're ignoring this
+  }
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  public grantPassRole(_identity?: IPrincipal): void {
     // FIXME: Add warning that we're ignoring this
   }
 }

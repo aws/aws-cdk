@@ -444,7 +444,7 @@ export = {
       test.deepEqual(bucket.bucketArn, bucketArn);
       test.deepEqual(bucket.node.resolve(bucket.bucketName), 'my-bucket');
 
-      test.deepEqual(stack.toCloudFormation(), {}, 'the ref is not a real resource');
+      test.deepEqual(stack._toCloudFormation(), {}, 'the ref is not a real resource');
       test.done();
     },
 
@@ -984,7 +984,7 @@ export = {
     bucket.grantWrite(writer);
     bucket.grantDelete(deleter);
 
-    const resources = stack.toCloudFormation().Resources;
+    const resources = stack._toCloudFormation().Resources;
     const actions = (id: string) => resources[id].Properties.PolicyDocument.Statement[0].Action;
 
     test.deepEqual(actions('WriterDefaultPolicyDC585BCE'), [ 's3:DeleteObject*', 's3:PutObject*', 's3:Abort*' ]);
@@ -1019,7 +1019,7 @@ export = {
         ]
         },
         "Export": {
-        "Name": "MyBucketBucketArnE260558C"
+        "Name": "Stack:MyBucketBucketArnE260558C"
         }
       },
       "MyBucketBucketName8A027014": {
@@ -1027,7 +1027,7 @@ export = {
         "Ref": "MyBucketF68F3FF0"
         },
         "Export": {
-        "Name": "MyBucketBucketName8A027014"
+        "Name": "Stack:MyBucketBucketName8A027014"
         }
       },
       "MyBucketDomainNameF76B9A7A": {
@@ -1038,7 +1038,7 @@ export = {
           ]
         },
         "Export": {
-          "Name": "MyBucketDomainNameF76B9A7A"
+          "Name": "Stack:MyBucketDomainNameF76B9A7A"
         }
       },
       "MyBucketWebsiteURL9C222788": {
@@ -1048,7 +1048,7 @@ export = {
             "WebsiteURL"
           ]
         },
-        "Export": {"Name": "MyBucketWebsiteURL9C222788"}
+        "Export": {"Name": "Stack:MyBucketWebsiteURL9C222788"}
       }
       }
     });
@@ -1072,14 +1072,14 @@ export = {
             "Effect": "Allow",
             "Resource": [
             {
-              "Fn::ImportValue": "MyBucketBucketArnE260558C"
+              "Fn::ImportValue": "Stack:MyBucketBucketArnE260558C"
             },
             {
               "Fn::Join": [
               "",
               [
                 {
-                "Fn::ImportValue": "MyBucketBucketArnE260558C"
+                "Fn::ImportValue": "Stack:MyBucketBucketArnE260558C"
                 },
                 "/*"
               ]
@@ -1108,9 +1108,9 @@ export = {
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
-    new cdk.Output(stack, 'BucketURL', { value: bucket.bucketUrl });
-    new cdk.Output(stack, 'MyFileURL', { value: bucket.urlForObject('my/file.txt') });
-    new cdk.Output(stack, 'YourFileURL', { value: bucket.urlForObject('/your/file.txt') }); // "/" is optional
+    new cdk.CfnOutput(stack, 'BucketURL', { value: bucket.bucketUrl });
+    new cdk.CfnOutput(stack, 'MyFileURL', { value: bucket.urlForObject('my/file.txt') });
+    new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.urlForObject('/your/file.txt') }); // "/" is optional
 
     expect(stack).toMatch({
       "Resources": {

@@ -84,6 +84,7 @@ export class Alias extends FunctionBase {
     super(scope, id);
 
     this.underlyingLambda = props.version.lambda;
+    this.role = this.underlyingLambda.role;
 
     new CfnAlias(this, 'Resource', {
       name: props.aliasName,
@@ -101,7 +102,7 @@ export class Alias extends FunctionBase {
 
   public export(): FunctionImportProps {
     return {
-      functionArn: new cdk.Output(this, 'AliasArn', { value: this.functionArn }).makeImportValue().toString()
+      functionArn: new cdk.CfnOutput(this, 'AliasArn', { value: this.functionArn }).makeImportValue().toString()
     };
   }
 

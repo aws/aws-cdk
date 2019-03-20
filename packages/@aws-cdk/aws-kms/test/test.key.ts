@@ -404,7 +404,7 @@ export = {
             ]
           },
           Export: {
-            Name: "MyKeyKeyArn317F1332"
+            Name: "Stack:MyKeyKeyArn317F1332"
           }
         }
       }
@@ -423,7 +423,7 @@ export = {
           Properties: {
             AliasName: "alias/hello",
             TargetKeyId: {
-              "Fn::ImportValue": "MyKeyKeyArn317F1332"
+              "Fn::ImportValue": "Stack:MyKeyKeyArn317F1332"
             }
           }
         }

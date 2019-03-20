@@ -22,7 +22,7 @@ export async function shell(command: string[], timers?: Timers): Promise<string>
   return new Promise<string>((resolve, reject) => {
     const stdout = new Array<any>();
 
-    child.stdout.on('data', chunk => {
+    child.stdout!.on('data', chunk => {
       process.stdout.write(chunk);
       stdout.push(chunk);
     });

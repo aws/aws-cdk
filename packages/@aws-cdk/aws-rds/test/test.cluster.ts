@@ -89,6 +89,43 @@ export = {
     test.done();
   },
 
+  'can create a cluster with imported vpc and security group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.VpcNetwork.importFromContext(stack, 'VPC', {
+      vpcId: "VPC12345"
+    });
+    const sg = ec2.SecurityGroup.import(stack, 'SG', {
+      securityGroupId: "SecurityGroupId12345"
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.Aurora,
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+        password: 'tooshort',
+      },
+      instanceProps: {
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        vpc,
+        securityGroup: sg
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      Engine: "aurora",
+      DBSubnetGroupName: { Ref: "DatabaseSubnets56F17B9A" },
+      MasterUsername: "admin",
+      MasterUserPassword: "tooshort",
+      VpcSecurityGroupIds: [ "SecurityGroupId12345" ]
+    }));
+
+    test.done();
+  },
+
   'cluster with parameter group'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -136,8 +173,8 @@ export = {
     const imported = ClusterParameterGroup.import(stack, 'ImportParams', exported);
 
     // THEN
-    test.deepEqual(stack.node.resolve(exported), { parameterGroupName: { 'Fn::ImportValue': 'ParamsParameterGroupNameA6B808D7' } });
-    test.deepEqual(stack.node.resolve(imported.parameterGroupName), { 'Fn::ImportValue': 'ParamsParameterGroupNameA6B808D7' });
+    test.deepEqual(stack.node.resolve(exported), { parameterGroupName: { 'Fn::ImportValue': 'Stack:ParamsParameterGroupNameA6B808D7' } });
+    test.deepEqual(stack.node.resolve(imported.parameterGroupName), { 'Fn::ImportValue': 'Stack:ParamsParameterGroupNameA6B808D7' });
     test.done();
   }
 };

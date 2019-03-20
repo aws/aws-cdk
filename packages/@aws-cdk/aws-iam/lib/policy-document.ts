@@ -1,6 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { IPrincipal } from './principals';
 import { mergePrincipal } from './util';
+import { Default, RegionInfo } from '@aws-cdk/region-info';
 
 export class PolicyDocument extends cdk.Token {
   private statements = new Array<PolicyStatement>();
@@ -116,12 +117,16 @@ export class AccountPrincipal extends ArnPrincipal {
  * An IAM principal that represents an AWS service (i.e. sqs.amazonaws.com).
  */
 export class ServicePrincipal extends PrincipalBase {
-  constructor(public readonly service: string) {
+  constructor(public readonly service: string, private readonly opts: ServicePrincipalOpts = {}) {
     super();
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ Service: [ this.service ] });
+    return new PrincipalPolicyFragment({
+      Service: [
+        new ServicePrincipalToken(this.service, this.opts).toString()
+      ]
+    });
   }
 
   public toString() {
@@ -343,8 +348,14 @@ export class PolicyStatement extends cdk.Token {
     return this.addAwsPrincipal(arn);
   }
 
-  public addServicePrincipal(service: string): this {
-    return this.addPrincipal(new ServicePrincipal(service));
+  /**
+   * Adds a service principal to this policy statement.
+   *
+   * @param service the service name for which a service principal is requested (e.g: `s3.amazonaws.com`).
+   * @param region  the region in which the service principal lives (defaults to the current stack's region).
+   */
+  public addServicePrincipal(service: string, opts?: ServicePrincipalOpts): this {
+    return this.addPrincipal(new ServicePrincipal(service, opts));
   }
 
   public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}): this {
@@ -518,4 +529,42 @@ export class PolicyStatement extends cdk.Token {
 export enum PolicyStatementEffect {
   Allow = 'Allow',
   Deny = 'Deny',
+}
+
+/**
+ * A lazy token that requires an instance of Stack to evaluate
+ */
+class StackDependentToken extends cdk.Token {
+  constructor(private readonly fn: (stack: cdk.Stack) => any) {
+    super();
+  }
+
+  public resolve(context: cdk.ResolveContext) {
+    return this.fn(context.scope.node.stack);
+  }
+}
+
+class ServicePrincipalToken extends cdk.Token {
+  constructor(private readonly service: string,
+              private readonly opts: ServicePrincipalOpts) {
+    super();
+  }
+
+  public resolve(ctx: cdk.ResolveContext) {
+    const region = this.opts.region || ctx.scope.node.stack.region;
+    const fact = RegionInfo.get(region).servicePrincipal(this.service);
+    return fact || Default.servicePrincipal(this.service, region, ctx.scope.node.stack.urlSuffix);
+  }
+}
+
+/**
+ * Options for a service principal.
+ */
+export interface ServicePrincipalOpts {
+  /**
+   * The region in which the service is operating.
+   *
+   * @default the current Stack's region.
+   */
+  region?: string;
 }

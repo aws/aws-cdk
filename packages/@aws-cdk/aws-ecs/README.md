@@ -23,14 +23,14 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 // Add capacity to it
 cluster.addDefaultAutoScalingGroupCapacity('Capacity', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
-  instanceCount: 3,
+  desiredCapacity: 3,
 });
 
 // Instantiate Amazon ECS Service with an automatic load balancer
 const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
-  image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 ```
 
@@ -91,7 +91,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 // Either add default capacity
 cluster.addDefaultAutoScalingGroupCapacity({
   instanceType: new ec2.InstanceType("t2.xlarge"),
-  instanceCount: 3,
+  desiredCapacity: 3,
 });
 
 // Or add customized capacity. Be sure to start the Amazon ECS-optimized AMI.
@@ -134,7 +134,7 @@ To add containers to a task definition, call `addContainer()`:
 ```ts
 const container = fargateTaskDefinition.addContainer("WebContainer", {
   // Use an image from DockerHub
-  image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   // ... other options here ...
 });
 ```
@@ -148,7 +148,7 @@ const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
 
 const container = ec2TaskDefinition.addContainer("WebContainer", {
   // Use an image from DockerHub
-  image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 1024
   // ... other options here ...
 });
@@ -183,8 +183,8 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
 Images supply the software that runs inside the container. Images can be
 obtained from either DockerHub or from ECR repositories, or built directly from a local Dockerfile.
 
-* `ecs.ContainerImage.fromDockerHub(imageName)`: use a publicly available image from
-  DockerHub.
+* `ecs.ContainerImage.fromRegistry(imageName)`: use a public image.
+* `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
 * `ecs.ContainerImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
   to start. If no tag is provided, "latest" is assumed.
 * `ecs.ContainerImage.fromAsset(this, 'Image', { directory: './image' })`: build and upload an
@@ -266,7 +266,7 @@ const autoScalingGroup = cluster.addDefaultAutoScalingGroupCapacity({
   instanceType: new ec2.InstanceType("t2.xlarge"),
   minCapacity: 3,
   maxCapacity: 30
-  instanceCount: 3,
+  desiredCapacity: 3,
 
   // Give instances 5 minutes to drain running tasks when an instance is
   // terminated. This is the default, turn this off by specifying 0 or
@@ -294,4 +294,3 @@ To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
 ## Roadmap
 
 - [ ] Service Discovery Integration
-- [ ] Private registry authentication

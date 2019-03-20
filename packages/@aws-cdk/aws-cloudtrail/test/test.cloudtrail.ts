@@ -10,7 +10,9 @@ const ExpectedBucketPolicyProperties = {
         Action: "s3:GetBucketAcl",
         Effect: "Allow",
         Principal: {
-          Service: "cloudtrail.amazonaws.com"
+          Service: {
+            "Fn::Join": ["", ["cloudtrail.", { Ref: "AWS::URLSuffix" }]]
+          }
         },
         Resource: {
           "Fn::GetAtt": [
@@ -28,7 +30,9 @@ const ExpectedBucketPolicyProperties = {
         },
         Effect: "Allow",
         Principal: {
-          Service: "cloudtrail.amazonaws.com"
+          Service: {
+            "Fn::Join": ["", ["cloudtrail.", { Ref: "AWS::URLSuffix" }]]
+          }
         },
         Resource: {
           "Fn::Join": [
@@ -50,6 +54,9 @@ const ExpectedBucketPolicyProperties = {
   }
 };
 
+const logsRolePolicyName = 'MyAmazingCloudTrailLogsRoleDefaultPolicy61DC49E7';
+const logsRoleName = 'MyAmazingCloudTrailLogsRoleF2CCF977';
+
 export = {
   'constructs the expected resources': {
     'with no properties'(test: Test) {
@@ -59,7 +66,7 @@ export = {
       expect(stack).to(haveResource("AWS::S3::Bucket"));
       expect(stack).to(haveResource("AWS::S3::BucketPolicy", ExpectedBucketPolicyProperties));
       expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
-      const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+      const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
       test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
       test.done();
     },
@@ -83,15 +90,15 @@ export = {
               Effect: 'Allow',
               Action: ['logs:PutLogEvents', 'logs:CreateLogStream'],
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyAmazingCloudTrailLogsRoleF2CCF977', 'Arn'] }, ':log-stream:*']],
+                'Fn::GetAtt': ['MyAmazingCloudTrailLogGroupAAD65144', 'Arn'],
               }
             }]
           },
-          PolicyName: 'MyAmazingCloudTrailLogsRoleDefaultPolicy61DC49E7',
+          PolicyName: logsRolePolicyName,
           Roles: [{ Ref: 'MyAmazingCloudTrailLogsRoleF2CCF977' }],
         }));
-        const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
-        test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
+        const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+        test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
         test.done();
       },
       'enabled and custom retention'(test: Test) {
@@ -109,8 +116,8 @@ export = {
         expect(stack).to(haveResource("AWS::Logs::LogGroup", {
           RetentionInDays: 7
         }));
-        const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
-        test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
+        const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+        test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
         test.done();
       },
     },
@@ -127,7 +134,7 @@ export = {
         expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
         expect(stack).to(not(haveResource("AWS::IAM::Role")));
 
-        const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
         test.equals(trail.Properties.EventSelectors.length, 1);
         const selector = trail.Properties.EventSelectors[0];
         test.equals(selector.ReadWriteType, null, "Expected selector read write type to be undefined");
@@ -153,7 +160,7 @@ export = {
         expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
         expect(stack).to(not(haveResource("AWS::IAM::Role")));
 
-        const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
         test.equals(trail.Properties.EventSelectors.length, 1);
         const selector = trail.Properties.EventSelectors[0];
         test.equals(selector.ReadWriteType, "ReadOnly", "Expected selector read write type to be Read");
@@ -172,7 +179,7 @@ export = {
 
         new CloudTrail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WriteOnly });
 
-        const trail: any = stack.toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
         test.equals(trail.Properties.EventSelectors.length, 1);
         const selector = trail.Properties.EventSelectors[0];
         test.equals(selector.ReadWriteType, "WriteOnly", "Expected selector read write type to be All");

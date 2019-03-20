@@ -1,4 +1,4 @@
-import { Construct, IConstruct, Output } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IConstruct } from '@aws-cdk/cdk';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
@@ -53,7 +53,7 @@ export interface CertificateProps {
 }
 
 /**
- * A certificate managed by Amazon Certificate Manager
+ * A certificate managed by AWS Certificate Manager
  *
  * IMPORTANT: if you are creating a certificate as part of your stack, the stack
  * will not complete creating until you read and follow the instructions in the
@@ -114,7 +114,7 @@ export class Certificate extends Construct implements ICertificate {
    */
   public export(): CertificateImportProps {
     return {
-      certificateArn: new Output(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
+      certificateArn: new CfnOutput(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
     };
   }
 }

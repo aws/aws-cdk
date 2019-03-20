@@ -228,7 +228,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
   public export(): LambdaDeploymentGroupImportProps {
     return {
       application: this.application,
-      deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', {
+      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
         value: this.deploymentGroupName
       }).makeImportValue().toString()
     };

@@ -2,6 +2,103 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.26.0](https://github.com/awslabs/aws-cdk/compare/v0.25.3...v0.26.0) (2019-03-20)
+
+### Bug Fixes
+
+* **aws-cdk:** fix VpcNetwork.importFromContext() ([#2008](https://github.com/awslabs/aws-cdk/issues/2008)) ([e1a1a7b](https://github.com/awslabs/aws-cdk/commit/e1a1a7b)), closes [#1998](https://github.com/awslabs/aws-cdk/issues/1998)
+* **aws-cdk:** update F# template to latest CDK version ([#2006](https://github.com/awslabs/aws-cdk/issues/2006)) ([bda12f2](https://github.com/awslabs/aws-cdk/commit/bda12f2))
+* **cdk:** merge cloudFormation tags with aspect tags ([#1762](https://github.com/awslabs/aws-cdk/issues/1762)) ([bfb14b6](https://github.com/awslabs/aws-cdk/commit/bfb14b6)), closes [#1725](https://github.com/awslabs/aws-cdk/issues/1725)
+* **cfn2ts:** properly de-Tokenize L1 string-arrays ([#2033](https://github.com/awslabs/aws-cdk/issues/2033)) ([1e50383](https://github.com/awslabs/aws-cdk/commit/1e50383)), closes [#2030](https://github.com/awslabs/aws-cdk/issues/2030)
+* **core:** allow embedding condition expression as strings ([#2007](https://github.com/awslabs/aws-cdk/issues/2007)) ([6afa87f](https://github.com/awslabs/aws-cdk/commit/6afa87f)), closes [#1984](https://github.com/awslabs/aws-cdk/issues/1984)
+* **ecs:** make TaskDefinition accept IRoles ([#2034](https://github.com/awslabs/aws-cdk/issues/2034)) ([f32431a](https://github.com/awslabs/aws-cdk/commit/f32431a)), closes [#1925](https://github.com/awslabs/aws-cdk/issues/1925)
+* **lambda:** expose underlying function's role on the alias ([#2024](https://github.com/awslabs/aws-cdk/issues/2024)) ([de296de](https://github.com/awslabs/aws-cdk/commit/de296de))
+* **stepfunctions:** Actually perform rendering of NotCondition ([06b59d9](https://github.com/awslabs/aws-cdk/commit/06b59d9))
+* **toolkit:** 'cdk deploy' support updates to Outputs ([#2029](https://github.com/awslabs/aws-cdk/issues/2029)) ([23509ae](https://github.com/awslabs/aws-cdk/commit/23509ae)), closes [#778](https://github.com/awslabs/aws-cdk/issues/778)
+* **toolkit:** increase number of retries ([#2053](https://github.com/awslabs/aws-cdk/issues/2053)) ([133dc98](https://github.com/awslabs/aws-cdk/commit/133dc98)), closes [#1647](https://github.com/awslabs/aws-cdk/issues/1647)
+* rename core classes adding a Cfn prefix ([#1960](https://github.com/awslabs/aws-cdk/issues/1960)) ([5886bf6](https://github.com/awslabs/aws-cdk/commit/5886bf6)), closes [#1462](https://github.com/awslabs/aws-cdk/issues/1462) [#288](https://github.com/awslabs/aws-cdk/issues/288)
+
+
+### Code Refactoring
+
+* name "toCloudFormation" internal (renamed to `_toCloudFormation`) ([#2047](https://github.com/awslabs/aws-cdk/issues/2047)) ([515868b](https://github.com/awslabs/aws-cdk/commit/515868b)), closes [#2044](https://github.com/awslabs/aws-cdk/issues/2044) [#2016](https://github.com/awslabs/aws-cdk/issues/2016)
+
+
+### Features
+
+* **aws-cdk:** support fixed repository name for DockerImageAsset ([#2032](https://github.com/awslabs/aws-cdk/issues/2032)) ([942f938](https://github.com/awslabs/aws-cdk/commit/942f938))
+* **aws-rds:** ability to add an existing security group to RDS cluster ([#2021](https://github.com/awslabs/aws-cdk/issues/2021)) ([1f24336](https://github.com/awslabs/aws-cdk/commit/1f24336))
+* **cfn2ts:** make cfn2ts output TSDoc-compatible docblocks ([#2000](https://github.com/awslabs/aws-cdk/issues/2000)) ([c6c66e9](https://github.com/awslabs/aws-cdk/commit/c6c66e9))
+* **cfnspec:** update to version 2.28.0 ([#2035](https://github.com/awslabs/aws-cdk/issues/2035)) ([6a671f2](https://github.com/awslabs/aws-cdk/commit/6a671f2))
+* **cloudformation:** allow specifying additional inputs for deploy Actions ([#2020](https://github.com/awslabs/aws-cdk/issues/2020)) ([2d463be](https://github.com/awslabs/aws-cdk/commit/2d463be)), closes [#1247](https://github.com/awslabs/aws-cdk/issues/1247)
+* **core:** can use Constructs to model applications  ([#1940](https://github.com/awslabs/aws-cdk/issues/1940)) ([32c2377](https://github.com/awslabs/aws-cdk/commit/32c2377)), closes [#1479](https://github.com/awslabs/aws-cdk/issues/1479)
+* **ecs:** support private registry authentication ([#1737](https://github.com/awslabs/aws-cdk/issues/1737)) ([11ed691](https://github.com/awslabs/aws-cdk/commit/11ed691)), closes [#1698](https://github.com/awslabs/aws-cdk/issues/1698)
+* **glue:** add L2 resources for `Database` and `Table` ([#1988](https://github.com/awslabs/aws-cdk/issues/1988)) ([3117cd3](https://github.com/awslabs/aws-cdk/commit/3117cd3))
+* **region-info:** Model region-specific information ([#1839](https://github.com/awslabs/aws-cdk/issues/1839)) ([946b444](https://github.com/awslabs/aws-cdk/commit/946b444)), closes [#1282](https://github.com/awslabs/aws-cdk/issues/1282)
+* **servicediscovery:** AWS Cloud Map construct library ([#1804](https://github.com/awslabs/aws-cdk/issues/1804)) ([1187366](https://github.com/awslabs/aws-cdk/commit/1187366))
+* **ses:** add constructs for email receiving ([#1971](https://github.com/awslabs/aws-cdk/issues/1971)) ([3790858](https://github.com/awslabs/aws-cdk/commit/3790858))
+* add more directories excluded and treated as source in the JetBrains script. ([#1961](https://github.com/awslabs/aws-cdk/issues/1961)) ([a1df717](https://github.com/awslabs/aws-cdk/commit/a1df717))
+
+
+### BREAKING CHANGES
+
+* “toCloudFormation” is now internal and should not be called directly. Instead use “app.synthesizeStack”
+* **ecs:** `ContainerImage.fromDockerHub` has been renamed to `ContainerImage.fromRegistry`.
+* rename Condition to CfnCondition.
+* rename StackElement to CfnElement.
+* rename Parameter to CfnParameter.
+* rename Resource to CfnResource.
+* rename Output to CfnOutput.
+* rename Mapping to CfnMapping.
+* rename Referenceable to CfnRefElement.
+* rename IConditionExpression to ICfnConditionExpression.
+* rename CfnReference to Reference.
+* rename Rule to CfnRule.
+
+
+## [0.25.3](https://github.com/awslabs/aws-cdk/compare/v0.25.2...v0.25.3) (2019-03-12)
+
+
+### Bug Fixes
+
+* **aws-cloudtrail:** correct created log policy when sendToCloudWatchLogs is true ([#1966](https://github.com/awslabs/aws-cdk/issues/1966)) ([f06ff8e](https://github.com/awslabs/aws-cdk/commit/f06ff8e))
+* **aws-ec2:** All SSM WindowsVersion entries ([#1977](https://github.com/awslabs/aws-cdk/issues/1977)) ([85a1840](https://github.com/awslabs/aws-cdk/commit/85a1840))
+* **decdk:** relax validation when not using constructs ([#1999](https://github.com/awslabs/aws-cdk/issues/1999)) ([afbd591](https://github.com/awslabs/aws-cdk/commit/afbd591))
+
+
+### Features
+
+* **core:** add fsharp init-template ([#1912](https://github.com/awslabs/aws-cdk/issues/1912)) ([dfefb58](https://github.com/awslabs/aws-cdk/commit/dfefb58))
+* **ec2:** vpn metrics ([#1979](https://github.com/awslabs/aws-cdk/issues/1979)) ([9319e13](https://github.com/awslabs/aws-cdk/commit/9319e13))
+
+## [0.25.2](https://github.com/awslabs/aws-cdk/compare/v0.25.1...v0.25.2) (2019-03-07)
+
+
+### Bug Fixes
+
+* **awslint:** Don't fail if the `@aws-cdk/cdk` module is not present ([#1953](https://github.com/awslabs/aws-cdk/issues/1953)) ([929e854](https://github.com/awslabs/aws-cdk/commit/929e854))
+* **cdk-integ:** Update cdk-integ to use new context file ([#1962](https://github.com/awslabs/aws-cdk/issues/1962)) ([dbd2401](https://github.com/awslabs/aws-cdk/commit/dbd2401))
+* **cloudfront:** allow IBucket as CloudFront source ([855f1f5](https://github.com/awslabs/aws-cdk/commit/855f1f5)), closes [#1946](https://github.com/awslabs/aws-cdk/issues/1946)
+* **cloudfront:** pass `viewerProtocolPolicy` to the distribution's behaviors ([#1932](https://github.com/awslabs/aws-cdk/issues/1932)) ([615ecd4](https://github.com/awslabs/aws-cdk/commit/615ecd4))
+* **eks:** remove 'const' from NodeType enum ([#1970](https://github.com/awslabs/aws-cdk/issues/1970)) ([ac52989](https://github.com/awslabs/aws-cdk/commit/ac52989)), closes [#1969](https://github.com/awslabs/aws-cdk/issues/1969)
+* **init:** update the C# init sample with the new `App` API ([#1919](https://github.com/awslabs/aws-cdk/issues/1919)) ([02f991d](https://github.com/awslabs/aws-cdk/commit/02f991d))
+
+
+### Features
+
+* **aws-certificatemanager:** add DNSValidatedCertificate ([#1797](https://github.com/awslabs/aws-cdk/issues/1797)) ([ae8870d](https://github.com/awslabs/aws-cdk/commit/ae8870d)), closes [#605](https://github.com/awslabs/aws-cdk/issues/605)
+* **aws-ecs:** add Fargate version 1.3.0 ([#1968](https://github.com/awslabs/aws-cdk/issues/1968)) ([b529ad7](https://github.com/awslabs/aws-cdk/commit/b529ad7))
+* **core:** democratize synthesis and introduce artifacts ([#1889](https://github.com/awslabs/aws-cdk/issues/1889)) ([4ab1cd3](https://github.com/awslabs/aws-cdk/commit/4ab1cd3)), closes [#1716](https://github.com/awslabs/aws-cdk/issues/1716) [#1893](https://github.com/awslabs/aws-cdk/issues/1893)
+* **ec2:** add support for vpn connections ([#1899](https://github.com/awslabs/aws-cdk/issues/1899)) ([e150648](https://github.com/awslabs/aws-cdk/commit/e150648)), closes [awslabs/jsii#231](https://github.com/awslabs/jsii/issues/231)
+* **toolkit:** add '--reuse-asset' option ([#1918](https://github.com/awslabs/aws-cdk/issues/1918)) ([1767b61](https://github.com/awslabs/aws-cdk/commit/1767b61)), closes [#1916](https://github.com/awslabs/aws-cdk/issues/1916)
+
+
+## [0.25.1](https://github.com/awslabs/aws-cdk/compare/v0.25.0...v0.25.1) (2019-03-04)
+
+
+### Bug Fixes
+
+* **toolkit:** fix context passed in from command-line ([#1939](https://github.com/awslabs/aws-cdk/issues/1939)) ([bec4a02](https://github.com/awslabs/aws-cdk/commit/bec4a02)), closes [#1911](https://github.com/awslabs/aws-cdk/issues/1911)
 
 ## [0.25.0](https://github.com/awslabs/aws-cdk/compare/v0.24.1...v0.25.0) (2019-02-28)
 

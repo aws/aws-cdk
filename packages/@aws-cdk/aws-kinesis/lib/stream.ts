@@ -328,7 +328,7 @@ export class Stream extends StreamBase {
    */
   public export(): StreamImportProps {
     return {
-      streamArn: new cdk.Output(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
+      streamArn: new cdk.CfnOutput(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
       encryptionKey: this.encryptionKey ? this.encryptionKey.export() : undefined,
     };
   }

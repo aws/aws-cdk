@@ -270,8 +270,8 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
    */
   public export(): TargetGroupImportProps {
     return {
-      targetGroupArn: new cdk.Output(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue().toString(),
-      defaultPort: new cdk.Output(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
+      targetGroupArn: new cdk.CfnOutput(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue().toString(),
+      defaultPort: new cdk.CfnOutput(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
     };
   }
 

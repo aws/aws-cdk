@@ -884,7 +884,7 @@ export = {
               ]
             },
             "Export": {
-              "Name": "MyStreamStreamArn495BAFC1"
+              "Name": "Stack:MyStreamStreamArn495BAFC1"
             }
           }
         }
@@ -908,7 +908,7 @@ export = {
                   ],
                   "Effect": "Allow",
                   "Resource": {
-                    "Fn::ImportValue": "MyStreamStreamArn495BAFC1"
+                    "Fn::ImportValue": "Stack:MyStreamStreamArn495BAFC1"
                   }
                 }
               ],
@@ -1015,7 +1015,7 @@ export = {
               ]
             },
             "Export": {
-              "Name": "MyStreamKeyKeyArn967BCB03"
+              "Name": "Stack:MyStreamKeyKeyArn967BCB03"
             }
           },
           "MyStreamStreamArn495BAFC1": {
@@ -1026,7 +1026,7 @@ export = {
               ]
             },
             "Export": {
-              "Name": "MyStreamStreamArn495BAFC1"
+              "Name": "Stack:MyStreamStreamArn495BAFC1"
             }
           }
         }
@@ -1050,14 +1050,14 @@ export = {
                     ],
                     "Effect": "Allow",
                     "Resource": {
-                      "Fn::ImportValue": "MyStreamStreamArn495BAFC1"
+                      "Fn::ImportValue": "Stack:MyStreamStreamArn495BAFC1"
                     }
                   },
                   {
                     "Action": ["kms:Decrypt", "kms:DescribeKey"],
                     "Effect": "Allow",
                     "Resource": {
-                      "Fn::ImportValue": "MyStreamKeyKeyArn967BCB03"
+                      "Fn::ImportValue": "Stack:MyStreamKeyKeyArn967BCB03"
                     }
                   }
                 ],

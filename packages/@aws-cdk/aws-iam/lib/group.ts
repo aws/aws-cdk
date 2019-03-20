@@ -49,7 +49,7 @@ export class Group extends Construct implements IIdentity {
 
   public readonly policyFragment: PrincipalPolicyFragment;
 
-  private readonly managedPolicies: any[];
+  private readonly managedPolicies: string[];
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
 

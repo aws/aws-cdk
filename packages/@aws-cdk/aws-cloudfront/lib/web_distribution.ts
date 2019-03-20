@@ -237,7 +237,7 @@ export interface S3OriginConfig {
   /**
    * The source bucket to serve content from
    */
-  readonly s3BucketSource: s3.Bucket,
+  readonly s3BucketSource: s3.IBucket,
 
   /**
    * The optional origin identity cloudfront will use when calling your s3 bucket.
@@ -608,13 +608,13 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
     if (defaultBehaviors.length !== 1) {
       throw new Error("There can only be one default behavior across all sources. [ One default behavior per distribution ].");
     }
-    distributionConfig.defaultCacheBehavior = this.toBehavior(defaultBehaviors[0]);
+    distributionConfig.defaultCacheBehavior = this.toBehavior(defaultBehaviors[0], props.viewerProtocolPolicy);
     const otherBehaviors: CfnDistribution.CacheBehaviorProperty[] = [];
     for (const behavior of behaviors.filter(b => !b.isDefaultBehavior)) {
       if (!behavior.pathPattern) {
         throw new Error("pathPattern is required for all non-default behaviors");
       }
-      otherBehaviors.push(this.toBehavior(behavior) as CfnDistribution.CacheBehaviorProperty);
+      otherBehaviors.push(this.toBehavior(behavior, props.viewerProtocolPolicy) as CfnDistribution.CacheBehaviorProperty);
     }
     distributionConfig.cacheBehaviors = otherBehaviors;
 

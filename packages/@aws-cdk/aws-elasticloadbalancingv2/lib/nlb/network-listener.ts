@@ -105,7 +105,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   public export(): NetworkListenerImportProps {
     return {
-      listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
+      listenerArn: new cdk.CfnOutput(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
     };
   }
 

@@ -1,5 +1,5 @@
 import { beASupersetOfTemplate, expect, haveResource } from '@aws-cdk/assert';
-import { AccountPrincipal } from '@aws-cdk/aws-iam';
+import { AccountPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import lambda = require('../lib');
@@ -125,6 +125,63 @@ export = {
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       FunctionName: stack.node.resolve(fn.functionName),
       Principal: "123456"
+    }));
+
+    test.done();
+  },
+
+  'alias exposes real Lambdas role'(test: Test) {
+    const stack = new Stack();
+
+    // GIVEN
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NodeJS610,
+    });
+
+    const version = fn.addVersion('1');
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
+
+    // THEN
+    test.equals(alias.role, fn.role);
+
+    test.done();
+  },
+
+  'addToRolePolicy on alias forwards to real Lambda'(test: Test) {
+    const stack = new Stack();
+
+    // GIVEN
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NodeJS610,
+    });
+
+    const version = fn.addVersion('1');
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
+
+    // WHEN
+    alias.addToRolePolicy(new PolicyStatement()
+      .addAction('s3:GetObject')
+      .addAllResources());
+    test.equals(alias.role, fn.role);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: "s3:GetObject",
+          Effect: "Allow",
+          Resource: "*"
+        }],
+        Version: "2012-10-17"
+      },
+      PolicyName: "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+      Roles: [{
+        Ref: "MyLambdaServiceRole4539ECB6"
+      }]
     }));
 
     test.done();

@@ -303,3 +303,53 @@ selectable by instantiating one of these classes:
 > section of your `cdk.json`.
 >
 > We will add command-line options to make this step easier in the future.
+
+### VPN connections to a VPC
+
+Create your VPC with VPN connections by specifying the `vpnConnections` props (keys are construct `id`s):
+
+```ts
+const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
+  vpnConnections: {
+    dynamic: { // Dynamic routing (BGP)
+      ip: '1.2.3.4'
+    },
+    static: { // Static routing
+      ip: '4.5.6.7',
+      staticRoutes: [
+        '192.168.10.0/24',
+        '192.168.20.0/24'
+      ]
+    }
+  }
+});
+```
+
+To create a VPC that can accept VPN connections, set `vpnGateway` to `true`:
+
+```ts
+const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
+  vpnGateway: true
+});
+```
+
+VPN connections can then be added:
+```ts
+vpc.addVpnConnection('Dynamic', {
+  ip: '1.2.3.4'
+});
+```
+
+Routes will be propagated on the route tables associated with the private subnets.
+
+VPN connections expose [metrics (cloudwatch.Metric)](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md) across all tunnels in the account/region and per connection:
+```ts
+// Across all tunnels in the account/region
+const allDataOut = VpnConnection.metricAllTunnelDataOut();
+
+// For a specific vpn connection
+const vpnConnection = vpc.addVpnConnection('Dynamic', {
+  ip: '1.2.3.4'
+});
+const state = vpnConnection.metricTunnelState();
+```

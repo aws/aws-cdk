@@ -16,7 +16,7 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
 });
 
 const container = taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 
 container.addPortMappings({
@@ -40,6 +40,6 @@ listener.addTargets('Fargate', {
   targets: [service]
 });
 
-new cdk.Output(stack, 'LoadBalancerDNS', { value: lb.dnsName, });
+new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.dnsName, });
 
 app.run();

@@ -379,7 +379,7 @@ export class ContainerDefinition extends cdk.Construct {
       portMappings: this.portMappings.map(renderPortMapping),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
-      repositoryCredentials: undefined, // FIXME
+      repositoryCredentials: this.props.image.toRepositoryCredentialsJson(),
       ulimits: this.ulimits.map(renderUlimit),
       user: this.props.user,
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),
