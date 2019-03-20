@@ -280,7 +280,7 @@ export class ReceiptRuleLambdaAction implements IReceiptRuleAction {
       this.props.function.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('ses.amazonaws.com'),
-        sourceAccount: new cdk.ScopedAws().accountId
+        sourceAccount: cdk.Aws.accountId
       });
     }
 
