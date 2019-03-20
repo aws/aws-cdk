@@ -51,7 +51,10 @@ export class StackPathInspector extends Inspector {
   }
 
   public get value(): { [key: string]: any } | undefined {
-    const md = this.stack.metadata[`/${this.stack.name}${this.path}`];
+    // The names of paths in metadata in tests are very ill-defined. Try with the full path first,
+    // then try with the stack name preprended for backwards compat with most tests that happen to give
+    // their stack an ID that's the same as the stack name.
+    const md = this.stack.metadata[this.path] || this.stack.metadata[`/${this.stack.name}${this.path}`];
     if (md === undefined) { return undefined; }
     const resourceMd = md.find(entry => entry.type === 'aws:cdk:logicalId');
     if (resourceMd === undefined) { return undefined; }

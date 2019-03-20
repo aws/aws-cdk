@@ -14,12 +14,12 @@ passingExample('expect <synthStack> at <some path> to have <some type>', () => {
   });
   expect(synthStack).at('/TestResource').to(haveType(resourceType));
 });
-passingExample('expect <synthStack> at <some path> to have <some type>', () => {
+passingExample('expect non-synthesized stack at <some path> to have <some type>', () => {
   const resourceType = 'Test::Resource';
   const stack = new cdk.Stack();
   new TestResource(stack, 'TestResource', { type: resourceType });
-
-  expect(stack).at('/TestResource').to(haveType(resourceType));
+  // '//' because the stack has no name, which leads to an empty path entry here.
+  expect(stack).at('//TestResource').to(haveType(resourceType));
 });
 passingExample('expect <synthStack> at <some path> *not* to have <some type>', () => {
   const resourceType = 'Test::Resource';

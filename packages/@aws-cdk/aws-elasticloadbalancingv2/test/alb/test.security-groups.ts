@@ -188,8 +188,8 @@ export = {
       CidrIp: "0.0.0.0/0",
       Description: "Open to the world",
       IpProtocol: "tcp",
-      FromPort: { "Fn::ImportValue": "LBListenerPort7A9266A6" },
-      ToPort:  { "Fn::ImportValue": "LBListenerPort7A9266A6" },
+      FromPort: { "Fn::ImportValue": "Stack:LBListenerPort7A9266A6" },
+      ToPort:  { "Fn::ImportValue": "Stack:LBListenerPort7A9266A6" },
       GroupId: IMPORTED_LB_SECURITY_GROUP
     }));
 
@@ -198,7 +198,7 @@ export = {
 };
 
 const LB_SECURITY_GROUP = { "Fn::GetAtt": [ "LBSecurityGroup8A41EA2B", "GroupId" ] };
-const IMPORTED_LB_SECURITY_GROUP = { "Fn::ImportValue": "LBSecurityGroupSecurityGroupId0270B565" };
+const IMPORTED_LB_SECURITY_GROUP = { "Fn::ImportValue": "Stack:LBSecurityGroupSecurityGroupId0270B565" };
 
 function expectSameStackSGRules(stack: cdk.Stack) {
   expectSGRules(stack, LB_SECURITY_GROUP);

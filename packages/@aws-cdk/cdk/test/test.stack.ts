@@ -5,7 +5,7 @@ import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, Inc
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
     const stack = new Stack();
-    test.deepEqual(stack.toCloudFormation(), { });
+    test.deepEqual(stack._toCloudFormation(), { });
     test.done();
   },
 
@@ -14,7 +14,7 @@ export = {
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
     stack.templateOptions.transform = 'SAMy';
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Description: 'This is my description',
       AWSTemplateFormatVersion: 'MyTemplateVersion',
       Transform: 'SAMy'
@@ -34,7 +34,7 @@ export = {
     const stack = new Stack(undefined, 'MyStack');
     new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
 
-    test.deepEqual(stack.toCloudFormation(), { Resources: { MyResource: { Type: 'MyResourceType' } } });
+    test.deepEqual(stack._toCloudFormation(), { Resources: { MyResource: { Type: 'MyResourceType' } } });
     test.done();
   },
 
@@ -48,7 +48,7 @@ export = {
       MetadataKey: 'MetadataValue'
     };
 
-    test.deepEqual(stack.toCloudFormation(), {
+    test.deepEqual(stack._toCloudFormation(), {
       Description: 'StackDescription',
       Transform: 'Transform',
       AWSTemplateFormatVersion: 'TemplateVersion',
@@ -62,7 +62,7 @@ export = {
   // workaround for people running into issues caused by SDK-3003.
   // We should come up with a proper solution that involved jsii callbacks (when they exist)
   // so this can be implemented by jsii languages as well.
-  'Overriding `Stack.toCloudFormation` allows arbitrary post-processing of the generated template during synthesis'(test: Test) {
+  'Overriding `Stack._toCloudFormation` allows arbitrary post-processing of the generated template during synthesis'(test: Test) {
 
     const stack = new StackWithPostProcessor();
 
@@ -77,7 +77,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack.toCloudFormation(), { Resources:
+    test.deepEqual(stack._toCloudFormation(), { Resources:
       { myResource:
          { Type: 'AWS::MyResource',
          Properties:
@@ -146,7 +146,7 @@ export = {
 
     new Include(stack, 'Include', { template });
 
-    const output = stack.toCloudFormation();
+    const output = stack._toCloudFormation();
 
     test.equal(typeof output.Description, 'string');
     test.done();
@@ -167,7 +167,7 @@ export = {
     // this happens as part of app.run().
     app.node.prepareTree();
 
-    test.deepEqual(stack1.toCloudFormation(), {
+    test.deepEqual(stack1._toCloudFormation(), {
       Outputs: {
         ExportsOutputRefAWSAccountIdAD568057: {
           Value: { Ref: 'AWS::AccountId' },
@@ -176,7 +176,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack2.toCloudFormation(), {
+    test.deepEqual(stack2._toCloudFormation(), {
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -201,7 +201,7 @@ export = {
     app.node.prepareTree();
 
     // THEN
-    test.deepEqual(stack1.toCloudFormation(), {
+    test.deepEqual(stack1._toCloudFormation(), {
       Outputs: {
         ExportsOutputRefAWSAccountIdAD568057: {
           Value: { Ref: 'AWS::AccountId' },
@@ -210,7 +210,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack2.toCloudFormation(), {
+    test.deepEqual(stack2._toCloudFormation(), {
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -236,7 +236,7 @@ export = {
     // this happens as part of app.run().
     app.node.prepareTree();
 
-    test.deepEqual(stack2.toCloudFormation(), {
+    test.deepEqual(stack2._toCloudFormation(), {
       Outputs: {
         DemOutput: {
           Value: { Ref: 'AWS::Region' },
@@ -260,7 +260,7 @@ export = {
     app.node.prepareTree();
 
     // THEN
-    test.deepEqual(stack2.toCloudFormation(), {
+    test.deepEqual(stack2._toCloudFormation(), {
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -364,7 +364,7 @@ export = {
     bonjour.overrideLogicalId('BOOM');
 
     // THEN
-    test.deepEqual(stack.toCloudFormation(), { Resources:
+    test.deepEqual(stack._toCloudFormation(), { Resources:
       { BOOM: { Type: 'Resource::Type' },
         RefToBonjour:
          { Type: 'Other::Resource',
@@ -372,15 +372,37 @@ export = {
             { RefToBonjour: { Ref: 'BOOM' },
               GetAttBonjour: { 'Fn::GetAtt': [ 'BOOM', 'TheAtt' ] } } } } });
     test.done();
-  }
+  },
+
+  'Stack name can be overridden via properties'(test: Test) {
+    // WHEN
+    const stack = new Stack(undefined, 'Stack', { stackName: 'otherName' });
+
+    // THEN
+    test.deepEqual(stack.name, 'otherName');
+
+    test.done();
+  },
+
+  'Stack name is inherited from App name if available'(test: Test) {
+    // WHEN
+    const root = new App();
+    const app = new Construct(root, 'Prod');
+    const stack = new Stack(app, 'Stack');
+
+    // THEN
+    test.deepEqual(stack.name, 'ProdStackD5279B22');
+
+    test.done();
+  },
 };
 
 class StackWithPostProcessor extends Stack {
 
   // ...
 
-  public toCloudFormation() {
-    const template = super.toCloudFormation();
+  public _toCloudFormation() {
+    const template = super._toCloudFormation();
 
     // manipulate template (e.g. rename "Key" to "key")
     template.Resources.myResource.Properties.Environment.key =
