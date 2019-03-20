@@ -120,7 +120,6 @@ export abstract class EncryptionKeyBase extends Construct implements IEncryption
   public grantDecrypt(principal: iam.IPrincipal | undefined): iam.Grant {
     return this.grant(principal,
       'kms:Decrypt',
-      'kms:DescribeKey'
     );
   }
 
@@ -141,7 +140,6 @@ export abstract class EncryptionKeyBase extends Construct implements IEncryption
   public grantEncryptDecrypt(principal: iam.IPrincipal | undefined): iam.Grant {
     return this.grant(principal,
       'kms:Decrypt',
-      'kms:DescribeKey',
       'kms:Encrypt',
       'kms:ReEncrypt*',
       'kms:GenerateDataKey*'

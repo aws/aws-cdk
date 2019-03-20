@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
+import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { IPrincipal } from './principals';
 import { mergePrincipal } from './util';
-import { Default, RegionInfo } from '@aws-cdk/region-info';
 
 export class PolicyDocument extends cdk.Token {
   private statements = new Array<PolicyStatement>();
@@ -272,19 +272,6 @@ export class CompositePrincipal extends PrincipalBase {
 
   public toString() {
     return `CompositePrincipal(${this.principals})`;
-  }
-}
-
-/**
- * A lazy token that requires an instance of Stack to evaluate
- */
-class StackDependentToken extends cdk.Token {
-  constructor(private readonly fn: (stack: cdk.Stack) => any) {
-    super();
-  }
-
-  public resolve(context: cdk.ResolveContext) {
-    return this.fn(context.scope.node.stack);
   }
 }
 

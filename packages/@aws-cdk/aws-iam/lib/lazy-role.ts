@@ -1,6 +1,8 @@
 import cdk = require('@aws-cdk/cdk');
-import { IPrincipal, Policy } from './policy';
+import { Grant } from './grant';
+import { Policy } from './policy';
 import { PolicyStatement, PrincipalPolicyFragment } from './policy-document';
+import { IPrincipal } from './principals';
 import { IRole, Role, RoleImportProps, RoleProps } from './role';
 
 /**
@@ -87,14 +89,14 @@ export class LazyRole extends cdk.Construct implements IRole {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  public grant(identity?: IPrincipal, ...actions: string[]): void {
+  public grant(identity?: IPrincipal, ...actions: string[]): Grant {
     return this.instantiate().grant(identity, ...actions);
   }
 
   /**
    * Grant permissions to the given principal to pass this role.
    */
-  public grantPassRole(identity?: IPrincipal): void {
+  public grantPassRole(identity?: IPrincipal): Grant {
     return this.instantiate().grantPassRole(identity);
   }
 
