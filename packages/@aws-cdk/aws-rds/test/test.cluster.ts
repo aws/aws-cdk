@@ -173,8 +173,8 @@ export = {
     const imported = ClusterParameterGroup.import(stack, 'ImportParams', exported);
 
     // THEN
-    test.deepEqual(stack.node.resolve(exported), { parameterGroupName: { 'Fn::ImportValue': 'ParamsParameterGroupNameA6B808D7' } });
-    test.deepEqual(stack.node.resolve(imported.parameterGroupName), { 'Fn::ImportValue': 'ParamsParameterGroupNameA6B808D7' });
+    test.deepEqual(stack.node.resolve(exported), { parameterGroupName: { 'Fn::ImportValue': 'Stack:ParamsParameterGroupNameA6B808D7' } });
+    test.deepEqual(stack.node.resolve(imported.parameterGroupName), { 'Fn::ImportValue': 'Stack:ParamsParameterGroupNameA6B808D7' });
     test.done();
   }
 };

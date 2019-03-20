@@ -48,7 +48,7 @@ if [ ! -f "${statefile}" ] && [ ! -f "${commandfile}" ]; then
   if [ ! -z "${command_arg}" ]; then
     command="${command_arg}"
     success "starting new session"
-    lerna ls --all --toposort -p > ${statefile}
+    node_modules/.bin/lerna ls --all --toposort -p > ${statefile}
     echo "${command}" > ${commandfile}
   else
     error "no active session, use \"$(basename $0) COMMAND\" to start a new session"

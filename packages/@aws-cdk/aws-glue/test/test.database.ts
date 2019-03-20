@@ -137,7 +137,7 @@ export = {
             ]
           },
           Export: {
-            Name: "DatabaseCatalogArnE5C8063F"
+            Name: "Stack:DatabaseCatalogArnE5C8063F"
           }
         },
         DatabaseCatalogId509C6547: {
@@ -145,7 +145,7 @@ export = {
             Ref: "AWS::AccountId"
           },
           Export: {
-            Name: "DatabaseCatalogId509C6547"
+            Name: "Stack:DatabaseCatalogId509C6547"
           }
         },
         DatabaseDatabaseArn157B38E0: {
@@ -173,7 +173,7 @@ export = {
             ]
           },
           Export: {
-            Name: "DatabaseDatabaseArn157B38E0"
+            Name: "Stack:DatabaseDatabaseArn157B38E0"
           }
         },
         DatabaseDatabaseName925B74A8: {
@@ -181,7 +181,7 @@ export = {
             Ref: "DatabaseB269D8BB"
           },
           Export: {
-            Name: "DatabaseDatabaseName925B74A8"
+            Name: "Stack:DatabaseDatabaseName925B74A8"
           }
         },
         DatabaseLocationURIF74653AF: {
@@ -198,7 +198,7 @@ export = {
             ]
           },
           Export: {
-            Name: "DatabaseLocationURIF74653AF"
+            Name: "Stack:DatabaseLocationURIF74653AF"
           }
         }
       }

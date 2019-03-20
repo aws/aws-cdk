@@ -372,7 +372,29 @@ export = {
             { RefToBonjour: { Ref: 'BOOM' },
               GetAttBonjour: { 'Fn::GetAtt': [ 'BOOM', 'TheAtt' ] } } } } });
     test.done();
-  }
+  },
+
+  'Stack name can be overridden via properties'(test: Test) {
+    // WHEN
+    const stack = new Stack(undefined, 'Stack', { stackName: 'otherName' });
+
+    // THEN
+    test.deepEqual(stack.name, 'otherName');
+
+    test.done();
+  },
+
+  'Stack name is inherited from App name if available'(test: Test) {
+    // WHEN
+    const root = new App();
+    const app = new Construct(root, 'Prod');
+    const stack = new Stack(app, 'Stack');
+
+    // THEN
+    test.deepEqual(stack.name, 'ProdStackD5279B22');
+
+    test.done();
+  },
 };
 
 class StackWithPostProcessor extends Stack {

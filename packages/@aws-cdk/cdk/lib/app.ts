@@ -3,6 +3,27 @@ import { ConstructOrder, Root } from './construct';
 import { FileSystemStore, InMemoryStore, ISynthesisSession, SynthesisSession } from './synthesis';
 
 /**
+ * Custom construction properties for a CDK program
+ */
+export interface AppProps {
+  /**
+   * Automatically call run before the application exits
+   *
+   * If you set this, you don't have to call `run()` anymore.
+   *
+   * @default true if running via CDK toolkit (CDK_OUTDIR is set), false otherwise
+   */
+  autoRun?: boolean;
+
+  /**
+   * Additional context values for the application
+   *
+   * @default No additional context
+   */
+  context?: { [key: string]: string };
+}
+
+/**
  * Represents a CDK program.
  */
 export class App extends Root {
@@ -14,13 +35,21 @@ export class App extends Root {
    * Initializes a CDK application.
    * @param request Optional toolkit request (e.g. for tests)
    */
-  constructor(context?: { [key: string]: string }) {
+  constructor(props: AppProps = {}) {
     super();
-    this.loadContext(context);
+    this.loadContext(props.context);
 
     // both are reverse logic
     this.legacyManifest = this.node.getContext(cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT) ? false : true;
     this.runtimeInformation = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
+
+    const autoRun = props.autoRun !== undefined ? props.autoRun : cxapi.OUTDIR_ENV in process.env;
+
+    if (autoRun) {
+      // run() guarantuees it will only execute once, so a default of 'true' doesn't bite manual calling
+      // of the function.
+      process.once('beforeExit', () => this.run());
+    }
   }
 
   /**

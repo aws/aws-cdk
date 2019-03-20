@@ -4,7 +4,7 @@ import { CfnResource, Construct, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
 
 function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void): cxapi.SynthesizeResponse {
-  const app = new App(context);
+  const app = new App({ context });
 
   block(app);
 
@@ -305,6 +305,31 @@ export = {
       '@aws-cdk/cx-api': version,
       'jsii-runtime': `node.js/${process.version}`
     });
+
+    test.done();
+  },
+
+  'deep stack is shown and synthesized properly'(test: Test) {
+    // WHEN
+    const response = withApp(undefined, (app) => {
+      const topStack = new Stack(app, 'Stack');
+      const topResource = new CfnResource(topStack, 'Res', { type: 'CDK::TopStack::Resource' });
+
+      const bottomStack = new Stack(topResource, 'Stack');
+      new CfnResource(bottomStack, 'Res', { type: 'CDK::BottomStack::Resource' });
+    });
+
+    // THEN
+    test.deepEqual(response.stacks.map(s => ({ name: s.name, template: s.template })), [
+      {
+        name: 'StackResStack7E4AFA86',
+        template: { Resources: { Res: { Type: 'CDK::BottomStack::Resource' } } },
+      },
+      {
+        name: 'Stack',
+        template: { Resources: { Res: { Type: 'CDK::TopStack::Resource' } } },
+      }
+    ]);
 
     test.done();
   },

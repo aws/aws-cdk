@@ -181,11 +181,11 @@ export = {
 
     // THEN
     test.deepEqual(repo2.node.resolve(repo2.repositoryArn), {
-      'Fn::ImportValue': 'RepoRepositoryArn7F2901C9'
+      'Fn::ImportValue': 'Stack:RepoRepositoryArn7F2901C9'
     });
 
     test.deepEqual(repo2.node.resolve(repo2.repositoryName), {
-      'Fn::ImportValue': 'RepoRepositoryName58A7E467'
+      'Fn::ImportValue': 'Stack:RepoRepositoryName58A7E467'
     });
 
     test.done();

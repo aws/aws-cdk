@@ -755,7 +755,7 @@ export = {
 
     // THEN
     expect(stack2).to(haveResource('AWS::SNS::Subscription', {
-    "TopicArn": { "Fn::ImportValue": "TopicTopicArnB66B79C2" },
+    "TopicArn": { "Fn::ImportValue": "Stack:TopicTopicArnB66B79C2" },
     }));
     expect(stack2).to(haveResource('AWS::SQS::QueuePolicy', {
       PolicyDocument: {

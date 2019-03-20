@@ -97,13 +97,13 @@ export = {
       Outputs: {
         ZoneHostedZoneId413B8768: {
           Value: { Ref: "ZoneA5DE4B68" },
-          Export: { Name: "ZoneHostedZoneId413B8768" }
+          Export: { Name: "Stack:ZoneHostedZoneId413B8768" }
         }
       }
     }));
 
     expect(stack2).to(haveResource("AWS::Route53::RecordSet", {
-      HostedZoneId: { "Fn::ImportValue": "ZoneHostedZoneId413B8768" },
+      HostedZoneId: { "Fn::ImportValue": "Stack:ZoneHostedZoneId413B8768" },
       Name: "lookHere.cdk.local.",
       ResourceRecords: [ "\"SeeThere\"" ],
       Type: "TXT"

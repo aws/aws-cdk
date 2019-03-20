@@ -7,7 +7,7 @@ namespace HelloCdk
 {
     public class HelloStack : Stack
     {
-        public HelloStack(App parent, string name, IStackProps props) : base(parent, name, props)
+        public HelloStack(Construct parent, string id, IStackProps props) : base(parent, id, props)
         {
             // The CDK includes built-in constructs for most resource types, such as Queues and Topics.
             var queue = new Queue(this, "MyFirstQueue", new QueueProps

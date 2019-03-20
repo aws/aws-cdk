@@ -221,8 +221,8 @@ export interface MethodSignatureExpectations {
 export enum DiagnosticLevel {
   Skipped,
   Success,
-  Error,
   Warning,
+  Error,
 }
 
 export interface Diagnostic<T> {

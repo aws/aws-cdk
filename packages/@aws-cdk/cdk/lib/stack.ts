@@ -6,6 +6,7 @@ import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Reference } from './reference';
 import { ISynthesisSession } from './synthesis';
+import { makeUniqueId } from './uniqueid';
 
 export interface StackProps {
   /**
@@ -15,6 +16,13 @@ export interface StackProps {
    * used. If they are undefined, it will not be possible to deploy the stack.
    */
   env?: Environment;
+
+  /**
+   * Name to deploy the stack with
+   *
+   * @default Derived from construct path
+   */
+  stackName?: string;
 
   /**
    * Strategy for logical ID generation
@@ -76,6 +84,9 @@ export class Stack extends Construct {
 
   /**
    * The CloudFormation stack name.
+   *
+   * This is the stack name either configuration via the `stackName` property
+   * or automatically derived from the construct path.
    */
   public readonly name: string;
 
@@ -95,13 +106,20 @@ export class Stack extends Construct {
   private readonly parameterValues: { [logicalId: string]: string } = { };
 
   /**
+   * Environment as configured via props
+   *
+   * (Both on Stack and inherited from App)
+   */
+  private readonly configuredEnv: Environment;
+
+  /**
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually a Program instance.
    * @param name The name of the CloudFormation stack. Defaults to "Stack".
    * @param props Stack properties.
    */
-  public constructor(scope?: App, name?: string, private readonly props?: StackProps) {
+  public constructor(scope?: Construct, name?: string, props: StackProps = {}) {
     // For unit test convenience parents are optional, so bypass the type check when calling the parent.
     super(scope!, name!);
 
@@ -109,10 +127,11 @@ export class Stack extends Construct {
       throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
 
-    this.env = this.parseEnvironment(props);
+    this.configuredEnv = props.env || {};
+    this.env = this.parseEnvironment(props.env);
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
-    this.name = this.node.id;
+    this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
   }
 
   /**
@@ -263,8 +282,8 @@ export class Stack extends Construct {
    * to the correct account at deployment time.
    */
   public get accountId(): string {
-    if (this.props && this.props.env && this.props.env.account) {
-      return this.props.env.account;
+    if (this.configuredEnv.account) {
+      return this.configuredEnv.account;
     }
     // Does not need to be scoped, the only situation in which
     // Export/Fn::ImportValue would work if { Ref: "AWS::AccountId" } is the
@@ -280,8 +299,8 @@ export class Stack extends Construct {
    * to the correct region at deployment time.
    */
   public get region(): string {
-    if (this.props && this.props.env && this.props.env.region) {
-      return this.props.env.region;
+    if (this.configuredEnv.region) {
+      return this.configuredEnv.region;
     }
     // Does not need to be scoped, the only situation in which
     // Export/Fn::ImportValue would work if { Ref: "AWS::AccountId" } is the
@@ -318,7 +337,7 @@ export class Stack extends Construct {
   /**
    * The name of the stack currently being deployed
    *
-   * Only available at deployment time.
+   * Only available at deployment time; this will always return an unresolved value.
    */
   public get stackName(): string {
     return new ScopedAws(this).stackName;
@@ -445,7 +464,7 @@ export class Stack extends Construct {
   }
 
   protected synthesize(session: ISynthesisSession): void {
-    const template = `${this.node.id}.template.json`;
+    const template = `${this.name}.template.json`;
 
     // write the CloudFormation template as a JSON file
     session.store.writeJson(template, this._toCloudFormation());
@@ -463,7 +482,7 @@ export class Stack extends Construct {
       artifact.properties.parameters = this.node.resolve(this.parameterValues);
     }
 
-    const deps = this.dependencies().map(s => s.node.id);
+    const deps = this.dependencies().map(s => s.name);
     if (deps.length > 0) {
       artifact.dependencies = deps;
     }
@@ -478,27 +497,26 @@ export class Stack extends Construct {
     }
 
     // add an artifact that represents this stack
-    session.addArtifact(this.node.id, artifact);
+    session.addArtifact(this.name, artifact);
   }
 
   /**
    * Applied defaults to environment attributes.
    */
-  private parseEnvironment(props?: StackProps) {
-    // start with `env`.
-    const env: Environment = (props && props.env) || { };
+  private parseEnvironment(env: Environment = {}) {
+    const ret: Environment = {...env};
 
     // if account is not specified, attempt to read from context.
-    if (!env.account) {
-      env.account = this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY);
+    if (!ret.account) {
+      ret.account = this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY);
     }
 
     // if region is not specified, attempt to read from context.
-    if (!env.region) {
-      env.region = this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY);
+    if (!ret.region) {
+      ret.region = this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY);
     }
 
-    return env;
+    return ret;
   }
 
   /**
@@ -534,6 +552,27 @@ export class Stack extends Construct {
         visit(child);
       }
     }
+  }
+
+  /**
+   * Calculcate the stack name based on the construct path
+   */
+  private calculateStackName() {
+    // In tests, it's possible for this stack to be the root object, in which case
+    // we need to use it as part of the root path.
+    const rootPath = this.node.scope !== undefined ? this.node.ancestors().slice(1) : [this];
+    const ids = rootPath.map(c => c.node.id);
+
+    // Special case, if rootPath is length 1 then just use ID (backwards compatibility)
+    // otherwise use a unique stack name (including hash). This logic is already
+    // in makeUniqueId, *however* makeUniqueId will also strip dashes from the name,
+    // which *are* allowed and also used, so we short-circuit it.
+    if (ids.length === 1) {
+      // Could be empty in a unit test, so just pretend it's named "Stack" then
+      return ids[0] || 'Stack';
+    }
+
+    return makeUniqueId(ids);
   }
 }
 
@@ -584,7 +623,7 @@ export interface TemplateOptions {
 }
 
 /**
- * Collect all CfnElements from a construct
+ * Collect all CfnElements from a Stack
  *
  * @param node Root node to collect all CfnElements from
  * @param into Array to append CfnElements to
@@ -596,6 +635,9 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
   }
 
   for (const child of node.node.children) {
+    // Don't recurse into a substack
+    if (Stack.isStack(child)) { continue; }
+
     cfnElements(child, into);
   }
 

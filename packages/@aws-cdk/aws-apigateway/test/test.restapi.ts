@@ -346,10 +346,10 @@ export = {
     stack.node.prepareTree();
     test.deepEqual(stack._toCloudFormation().Outputs.MyRestApiRestApiIdB93C5C2D, {
       Value: { Ref: 'MyRestApi2D1F47A9' },
-      Export: { Name: 'MyRestApiRestApiIdB93C5C2D' }
+      Export: { Name: 'Stack:MyRestApiRestApiIdB93C5C2D' }
     });
     test.deepEqual(imported.node.resolve(imported.restApiId), 'api-rxt4498f');
-    test.deepEqual(imported.node.resolve(exported), { restApiId: { 'Fn::ImportValue': 'MyRestApiRestApiIdB93C5C2D' } });
+    test.deepEqual(imported.node.resolve(exported), { restApiId: { 'Fn::ImportValue': 'Stack:MyRestApiRestApiIdB93C5C2D' } });
     test.done();
   },
 

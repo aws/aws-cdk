@@ -347,7 +347,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(exportedRule), { eventRuleArn: { 'Fn::ImportValue': 'MyRuleRuleArnDB13ADB1' } });
+    test.deepEqual(stack.node.resolve(exportedRule), { eventRuleArn: { 'Fn::ImportValue': 'Stack:MyRuleRuleArnDB13ADB1' } });
     test.deepEqual(importedRule.ruleArn, 'arn:of:rule');
 
     test.done();

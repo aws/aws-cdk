@@ -960,7 +960,7 @@ export = {
         ]
         },
         "Export": {
-        "Name": "MyBucketBucketArnE260558C"
+        "Name": "Stack:MyBucketBucketArnE260558C"
         }
       },
       "MyBucketBucketName8A027014": {
@@ -968,7 +968,7 @@ export = {
         "Ref": "MyBucketF68F3FF0"
         },
         "Export": {
-        "Name": "MyBucketBucketName8A027014"
+        "Name": "Stack:MyBucketBucketName8A027014"
         }
       },
       "MyBucketDomainNameF76B9A7A": {
@@ -979,7 +979,7 @@ export = {
           ]
         },
         "Export": {
-          "Name": "MyBucketDomainNameF76B9A7A"
+          "Name": "Stack:MyBucketDomainNameF76B9A7A"
         }
       },
       "MyBucketWebsiteURL9C222788": {
@@ -989,7 +989,7 @@ export = {
             "WebsiteURL"
           ]
         },
-        "Export": {"Name": "MyBucketWebsiteURL9C222788"}
+        "Export": {"Name": "Stack:MyBucketWebsiteURL9C222788"}
       }
       }
     });
@@ -1013,14 +1013,14 @@ export = {
             "Effect": "Allow",
             "Resource": [
             {
-              "Fn::ImportValue": "MyBucketBucketArnE260558C"
+              "Fn::ImportValue": "Stack:MyBucketBucketArnE260558C"
             },
             {
               "Fn::Join": [
               "",
               [
                 {
-                "Fn::ImportValue": "MyBucketBucketArnE260558C"
+                "Fn::ImportValue": "Stack:MyBucketBucketArnE260558C"
                 },
                 "/*"
               ]
