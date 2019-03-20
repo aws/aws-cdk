@@ -29,3 +29,18 @@ const secret = Secret.import(scope, 'ImportedSecret', {
 
 SecretsManager secret values can only be used in select set of properties. For the
 list of properties, see [the CloudFormation Dynamic References documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.htm).
+
+### Rotating a Secret
+A rotation schedule can be added to a Secret:
+```ts
+const fn = new lambda.Function(...);
+const secret = new secretsManager.Secret(this, 'Secret');
+
+secret.addRotationSchedule('RotationSchedule', {
+  rotationLambda: fn,
+  automaticallyAfterDays: 15
+});
+```
+See [Overview of the Lambda Rotation Function](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html) on how to implement a Lambda Rotation Function.
+
+For RDS credentials rotation, see [aws-rds](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-rds/README.md).

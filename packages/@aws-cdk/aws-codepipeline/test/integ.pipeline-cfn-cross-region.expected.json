@@ -132,7 +132,11 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":cloudformation:us-west-2:12345678:stack/aws-cdk-codepipeline-cross-region-deploy-stack/*"
+                    ":cloudformation:us-west-2:",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":stack/aws-cdk-codepipeline-cross-region-deploy-stack/*"
                   ]
                 ]
               }
