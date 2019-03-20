@@ -10,8 +10,10 @@ const storeTestMatrix: any = {};
 
 function createModernApp() {
   return new cdk.App({
-    [cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT]: 'true',
-    [cxapi.DISABLE_VERSION_REPORTING]: 'true', // for test reproducibility
+    context: {
+      [cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT]: 'true',
+      [cxapi.DISABLE_VERSION_REPORTING]: 'true', // for test reproducibility
+    }
   });
 }
 

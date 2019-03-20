@@ -103,13 +103,14 @@ export = {
     // THEN
 
     // "import" returns an IQueue bound to `Fn::ImportValue`s.
-    test.deepEqual(stack.node.resolve(imports.queueArn), { 'Fn::ImportValue': 'QueueQueueArn8CF496D5' });
-    test.deepEqual(stack.node.resolve(imports.queueUrl), { 'Fn::ImportValue': 'QueueQueueUrlC30FF916' });
+    test.deepEqual(stack.node.resolve(imports.queueArn), { 'Fn::ImportValue': 'Stack:QueueQueueArn8CF496D5' });
+    test.deepEqual(stack.node.resolve(imports.queueUrl), { 'Fn::ImportValue': 'Stack:QueueQueueUrlC30FF916' });
 
     // the exporting stack has Outputs for QueueARN and QueueURL
     const outputs = stack._toCloudFormation().Outputs;
-    test.deepEqual(outputs.QueueQueueArn8CF496D5, { Value: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] }, Export: { Name: 'QueueQueueArn8CF496D5' } });
-    test.deepEqual(outputs.QueueQueueUrlC30FF916, { Value: { Ref: 'Queue4A7E3555' }, Export: { Name: 'QueueQueueUrlC30FF916' } });
+    // tslint:disable-next-line:max-line-length
+    test.deepEqual(outputs.QueueQueueArn8CF496D5, { Value: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] }, Export: { Name: 'Stack:QueueQueueArn8CF496D5' } });
+    test.deepEqual(outputs.QueueQueueUrlC30FF916, { Value: { Ref: 'Queue4A7E3555' }, Export: { Name: 'Stack:QueueQueueUrlC30FF916' } });
 
     test.done();
   },
@@ -247,9 +248,9 @@ export = {
         const exportCustom = customKey.export();
 
         test.deepEqual(stack.node.resolve(exportCustom), {
-          queueArn: { 'Fn::ImportValue': 'QueueWithCustomKeyQueueArnD326BB9B' },
-          queueUrl: { 'Fn::ImportValue': 'QueueWithCustomKeyQueueUrlF07DDC70' },
-          keyArn: { 'Fn::ImportValue': 'QueueWithCustomKeyKeyArn537F6E42' }
+          queueArn: { 'Fn::ImportValue': 'Stack:QueueWithCustomKeyQueueArnD326BB9B' },
+          queueUrl: { 'Fn::ImportValue': 'Stack:QueueWithCustomKeyQueueUrlF07DDC70' },
+          keyArn: { 'Fn::ImportValue': 'Stack:QueueWithCustomKeyKeyArn537F6E42' }
         });
 
         test.deepEqual(stack._toCloudFormation().Outputs, {
@@ -261,7 +262,7 @@ export = {
             ]
           },
           "Export": {
-            "Name": "QueueWithCustomKeyQueueArnD326BB9B"
+            "Name": "Stack:QueueWithCustomKeyQueueArnD326BB9B"
           }
           },
           "QueueWithCustomKeyQueueUrlF07DDC70": {
@@ -269,7 +270,7 @@ export = {
             "Ref": "QueueWithCustomKeyB3E22087"
           },
           "Export": {
-            "Name": "QueueWithCustomKeyQueueUrlF07DDC70"
+            "Name": "Stack:QueueWithCustomKeyQueueUrlF07DDC70"
           }
           },
           "QueueWithCustomKeyKeyArn537F6E42": {
@@ -280,7 +281,7 @@ export = {
             ]
           },
           "Export": {
-            "Name": "QueueWithCustomKeyKeyArn537F6E42"
+            "Name": "Stack:QueueWithCustomKeyKeyArn537F6E42"
           }
           }
         });
@@ -295,9 +296,9 @@ export = {
         const exportManaged = managedKey.export();
 
         test.deepEqual(stack.node.resolve(exportManaged), {
-          queueArn: { 'Fn::ImportValue': 'QueueWithManagedKeyQueueArn8798A14E' },
-          queueUrl: { 'Fn::ImportValue': 'QueueWithManagedKeyQueueUrlD735C981' },
-          keyArn: { 'Fn::ImportValue': 'QueueWithManagedKeyKeyArn9C42A85D' }
+          queueArn: { 'Fn::ImportValue': 'Stack:QueueWithManagedKeyQueueArn8798A14E' },
+          queueUrl: { 'Fn::ImportValue': 'Stack:QueueWithManagedKeyQueueUrlD735C981' },
+          keyArn: { 'Fn::ImportValue': 'Stack:QueueWithManagedKeyKeyArn9C42A85D' }
         });
 
         test.deepEqual(stack._toCloudFormation().Outputs, {
@@ -309,7 +310,7 @@ export = {
             ]
           },
           "Export": {
-            "Name": "QueueWithManagedKeyQueueArn8798A14E"
+            "Name": "Stack:QueueWithManagedKeyQueueArn8798A14E"
           }
           },
           "QueueWithManagedKeyQueueUrlD735C981": {
@@ -317,13 +318,13 @@ export = {
             "Ref": "QueueWithManagedKeyE1B747A1"
           },
           "Export": {
-            "Name": "QueueWithManagedKeyQueueUrlD735C981"
+            "Name": "Stack:QueueWithManagedKeyQueueUrlD735C981"
           }
           },
           "QueueWithManagedKeyKeyArn9C42A85D": {
           "Value": "alias/aws/sqs",
           "Export": {
-            "Name": "QueueWithManagedKeyKeyArn9C42A85D"
+            "Name": "Stack:QueueWithManagedKeyKeyArn9C42A85D"
           }
           }
         });
