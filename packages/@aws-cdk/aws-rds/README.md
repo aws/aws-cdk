@@ -55,7 +55,9 @@ const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
 ### Rotating master password
-When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically: [example of setting up master password rotation](test/integ.cluster-rotation.lit.ts)
+When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
+
+[example of setting up master password rotation](test/integ.cluster-rotation.lit.ts)
 
 Rotation of the master password is also supported for an existing cluster:
 ```ts
