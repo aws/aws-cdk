@@ -30,6 +30,17 @@ export interface StackProps {
    * Optional. If not supplied, the HashedNamingScheme will be used.
    */
   namingScheme?: IAddressingScheme;
+
+  /**
+   * Should the Stack be deployed when running `cdk deploy` without arguments
+   * (and listed when running `cdk synth` without arguments).
+   * Setting this to `false` is useful when you have a Stack in your CDK app
+   * that you don't want to deploy using the CDK toolkit -
+   * for example, because you're planning on deploying it through CodePipeline.
+   *
+   * @default true
+   */
+  autoDeploy?: boolean;
 }
 
 /**
@@ -90,6 +101,17 @@ export class Stack extends Construct {
    */
   public readonly name: string;
 
+  /**
+   * Should the Stack be deployed when running `cdk deploy` without arguments
+   * (and listed when running `cdk synth` without arguments).
+   * Setting this to `false` is useful when you have a Stack in your CDK app
+   * that you don't want to deploy using the CDK toolkit -
+   * for example, because you're planning on deploying it through CodePipeline.
+   *
+   * By default, this is `true`.
+   */
+  public readonly autoDeploy: boolean;
+
   /*
    * Used to determine if this construct is a stack.
    */
@@ -132,6 +154,7 @@ export class Stack extends Construct {
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
+    this.autoDeploy = props && props.autoDeploy === false ? false : true;
   }
 
   /**
@@ -474,7 +497,8 @@ export class Stack extends Construct {
       environment: this.environment,
       properties: {
         templateFile: template,
-      }
+      },
+      autoDeploy: this.autoDeploy ? undefined : false,
     };
 
     if (Object.keys(this.parameterValues).length > 0) {
