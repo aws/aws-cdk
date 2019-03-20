@@ -650,7 +650,6 @@
             ]
           ]
         },
-        "StorageEncrypted": true,
         "VpcSecurityGroupIds": [
           {
             "Fn::GetAtt": [

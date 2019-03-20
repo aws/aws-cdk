@@ -75,12 +75,13 @@ export interface DatabaseClusterProps {
   /**
    * Whether to enable storage encryption
    *
-   * @default true
+   * @default false
    */
   storageEncrypted?: boolean
 
   /**
-   * The KMS key for storage encryption
+   * The KMS key for storage encryption. If specified `storageEncrypted`
+   * will be set to `true`.
    *
    * @default default master key
    */
@@ -272,7 +273,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       databaseName: props.defaultDatabaseName,
       // Encryption
       kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
-      storageEncrypted: props.kmsKey ? true : props.storageEncrypted !== false,
+      storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
     this.clusterIdentifier = cluster.ref;

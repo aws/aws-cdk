@@ -30,8 +30,7 @@ export = {
       DBSubnetGroupName: { Ref: "DatabaseSubnets56F17B9A" },
       MasterUsername: "admin",
       MasterUserPassword: "tooshort",
-      VpcSecurityGroupIds: [ {"Fn::GetAtt": ["DatabaseSecurityGroup5C91FDCB", "GroupId"]}],
-      StorageEncrypted: true
+      VpcSecurityGroupIds: [ {"Fn::GetAtt": ["DatabaseSecurityGroup5C91FDCB", "GroupId"]}]
     }));
 
     test.done();
@@ -262,8 +261,7 @@ export = {
           'Key961B73FD',
           'Arn'
         ]
-      },
-      StorageEncrypted: true
+      }
     }));
 
     test.done();
