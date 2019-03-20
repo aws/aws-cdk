@@ -50,7 +50,7 @@ export abstract class PolicyPrincipal {
   /**
    * When this Principal is used in an AssumeRole policy, the action to use.
    */
-  public assumeRoleAction: string = 'sts:AssumeRole';
+  public assumeRoleAction: string | Array<string> = 'sts:AssumeRole';
 
   /**
    * Return the policy fragment that identifies this principal in a Policy.
@@ -131,7 +131,7 @@ export class FederatedPrincipal extends PolicyPrincipal {
   constructor(
     public readonly federated: string,
     public readonly conditions: {[key: string]: any},
-    public assumeRoleAction: string = 'sts:AssumeRole') {
+    public assumeRoleAction: string | Array<string> = 'sts:AssumeRole') {
     super();
   }
 
