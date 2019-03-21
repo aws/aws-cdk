@@ -21,6 +21,29 @@ export interface DockerImageAssetProps {
    * @default automatically derived from the asset's ID.
    */
   repositoryName?: string;
+
+  /**
+   * Image tag within ECR repository.
+   *
+   * @default tag image with tag calculated by CDK.
+   */
+  imageTag?: string;
+
+  /**
+   * Whether to allow image layer caching while building the image.
+   * If set to `false` layer chaching is deactivated, neither local (`--no-cache`)
+   * nor remote (`--cache-from`) cache is used. If set to `true` remote cache will
+   * be used if `imageTag` is defined and local cache will be enabled.
+   *
+   * If in doubt do not set this property and use the default behavior, with defaults
+   * to Docker's default behavior and usually is a good trade of between correctness
+   * and speed. Use `false` if you want to ensure correnctness and reproducable builds
+   * and use `true` only if build speed is more important than reproducability.
+   *
+   * @default If not set, the default local layer caching of the docker daemon
+   *          is enabled, but `--cache-from` is not used.
+   */
+  allowLayerCaching?: boolean;
 }
 
 /**
@@ -68,6 +91,8 @@ export class DockerImageAsset extends cdk.Construct {
       id: this.node.uniqueId,
       imageNameParameter: imageNameParameter.logicalId,
       repositoryName: props.repositoryName,
+      imageTag: props.imageTag,
+      allowLayerCaching: props.allowLayerCaching,
     };
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);
