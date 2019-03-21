@@ -123,7 +123,7 @@ export = {
           "Repo": "bar",
           "Branch": "branch",
           "OAuthToken": {
-            "Ref": "GitHubTokenParameterBB166B9D"
+            "Ref": "GitHubToken"
           },
           "PollForSourceChanges": false
           },
