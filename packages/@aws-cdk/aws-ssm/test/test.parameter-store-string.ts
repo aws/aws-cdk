@@ -59,4 +59,18 @@ export = {
 
     test.done();
   },
+
+  'empty parameterName will throw'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    test.throws(() => {
+      new ssm.ParameterStoreString(stack, 'Ref', {
+        parameterName: '',
+      });
+    }, /parameterName cannot be empty/);
+
+    test.done();
+  },
 };

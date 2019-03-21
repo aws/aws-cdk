@@ -32,4 +32,18 @@ export = {
 
     test.done();
   },
+
+  'empty secretId will throw'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    test.throws(() => {
+      new secretsmanager.SecretString(stack, 'Ref', {
+        secretId: '',
+      });
+    }, /secretId cannot be empty/);
+
+    test.done();
+  },
 };

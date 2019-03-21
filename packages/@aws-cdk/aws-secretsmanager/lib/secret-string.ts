@@ -39,6 +39,12 @@ export class SecretString extends cdk.DynamicReference {
       service: cdk.DynamicReferenceService.SecretsManager,
       referenceKey: '',
     });
+
+    // If we don't validate this here it will lead to a very unclear
+    // error message in CloudFormation, so better do it.
+    if (!props.secretId) {
+      throw new Error('SecretString: secretId cannot be empty');
+    }
   }
 
   /**

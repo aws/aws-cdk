@@ -28,6 +28,12 @@ export class ParameterStoreString extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: ParameterStoreStringProps) {
     super(scope, id);
 
+    // If we don't validate this here it will lead to a very unclear
+    // error message in CloudFormation, so better do it.
+    if (!props.parameterName) {
+      throw new Error('ParameterStoreString: parameterName cannot be empty');
+    }
+
     // We use a different inner construct depend on whether we want the latest
     // or a specific version.
     //
@@ -80,5 +86,11 @@ export class ParameterStoreSecureString extends cdk.DynamicReference {
       service: cdk.DynamicReferenceService.SsmSecure,
       referenceKey: `${props.parameterName}:${props.version}`,
     });
+
+    // If we don't validate this here it will lead to a very unclear
+    // error message in CloudFormation, so better do it.
+    if (!props.parameterName) {
+      throw new Error('ParameterStoreSecureString: parameterName cannot be empty');
+    }
   }
 }
