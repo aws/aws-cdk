@@ -1,6 +1,7 @@
 import { countResources, expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
+import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -1296,6 +1297,58 @@ export = {
     test.equal(rt.supportsInlineCode, false);
 
     test.done();
+  },
+
+  'specify log retention'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS,
+      logRetentionDays: logs.RetentionDays.OneMonth
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": [
+              "logs:PutRetentionPolicy",
+              "logs:DeleteRetentionPolicy"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+          }
+        ],
+        "Version": "2012-10-17"
+      },
+      "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+      "Roles": [
+        {
+          "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+      "ServiceToken": {
+        "Fn::GetAtt": [
+          "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+          "Arn"
+        ]
+      },
+      "FunctionName": {
+        "Ref": "MyLambdaCCE802FB"
+      },
+      "RetentionInDays": 30
+    }));
+
+    test.done();
+
   }
 };
 

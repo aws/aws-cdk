@@ -1,8 +1,10 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
+import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
+import path = require('path');
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
@@ -10,6 +12,7 @@ import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
 import { Runtime } from './runtime';
+import { SingletonFunction } from './singleton-lambda';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -198,6 +201,15 @@ export interface FunctionProps {
    * You can also add event sources using `addEventSource`.
    */
   events?: IEventSource[];
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `Infinity`.
+   *
+   * @default logs never expire
+   */
+  logRetentionDays?: logs.RetentionDays;
 }
 
 /**
@@ -297,6 +309,8 @@ export class Function extends FunctionBase {
     return this.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
   }
 
+  private static logRetentionRolePolicy: boolean = false;
+
   /**
    * Name of this function
    */
@@ -394,6 +408,41 @@ export class Function extends FunctionBase {
 
     for (const event of props.events || []) {
       this.addEventSource(event);
+    }
+
+    // Log retention
+    if (props.logRetentionDays) {
+      // Custom resource provider
+      const provider = new SingletonFunction(this, 'LogRetentionProvider', {
+        code: Code.asset(path.join(__dirname, 'log-retention')),
+        runtime: Runtime.NodeJS810,
+        handler: 'index.handler',
+        uuid: 'aae0aa3c-5b4d-4f87-b02d-85b201efdd8a',
+        lambdaPurpose: 'LogRetention',
+      });
+
+      if (!Function.logRetentionRolePolicy) { // Avoid duplicate statements
+        provider.addToRolePolicy(
+          new iam.PolicyStatement()
+            .addActions('logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy')
+            // We need '*' here because we will also put a retention policy on
+            // the log group of the provider function. Referencing it's name
+            // creates a CF circular dependency.
+            .addAllResources()
+        );
+        Function.logRetentionRolePolicy = true;
+      }
+
+      // Need to use a CfnResource here to prevent lerna dependency cycles
+      // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
+      new cdk.CfnResource(this, 'LogRetentionCustomResource', {
+        type: 'AWS::CloudFormation::CustomResource',
+        properties: {
+          ServiceToken: provider.functionArn,
+          FunctionName: this.functionName,
+          RetentionInDays: props.logRetentionDays === Infinity ? undefined : props.logRetentionDays
+        }
+      });
     }
   }
 

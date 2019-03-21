@@ -58,9 +58,9 @@ export interface CloudTrailProps {
 
   /**
    * How long to retain logs in CloudWatchLogs. Ignored if sendToCloudWatchLogs is false
-   *  @default LogRetention.OneYear
+   *  @default logs.RetentionDays.OneYear
    */
-  cloudWatchLogsRetentionTimeDays?: LogRetention;
+  cloudWatchLogsRetentionTimeDays?: logs.RetentionDays;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    * @default none
@@ -90,26 +90,6 @@ export enum ReadWriteType {
   All = "All"
 }
 
-// TODO: This belongs in a CWL L2
-export enum LogRetention {
-  OneDay = 1,
-  ThreeDays = 3,
-  FiveDays = 5,
-  OneWeek = 7,
-  TwoWeeks =  14,
-  OneMonth = 30,
-  TwoMonths = 60,
-  ThreeMonths = 90,
-  FourMonths = 120,
-  FiveMonths = 150,
-  HalfYear = 180,
-  OneYear = 365,
-  FourHundredDays = 400,
-  EighteenMonths = 545,
-  TwoYears = 731,
-  FiveYears = 1827,
-  TenYears = 3653
-}
 /**
  * Cloud trail allows you to log events that happen in your AWS account
  * For example:
@@ -145,7 +125,7 @@ export class CloudTrail extends cdk.Construct {
     let logsRole: iam.IRole | undefined;
     if (props.sendToCloudWatchLogs) {
       logGroup = new logs.CfnLogGroup(this, "LogGroup", {
-        retentionInDays: props.cloudWatchLogsRetentionTimeDays || LogRetention.OneYear
+        retentionInDays: props.cloudWatchLogsRetentionTimeDays || logs.RetentionDays.OneYear
       });
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });

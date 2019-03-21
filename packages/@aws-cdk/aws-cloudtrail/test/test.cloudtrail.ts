@@ -1,7 +1,8 @@
 import { expect, haveResource, not } from '@aws-cdk/assert';
+import { RetentionDays } from '@aws-cdk/aws-logs';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { CloudTrail, LogRetention, ReadWriteType } from '../lib';
+import { CloudTrail, ReadWriteType } from '../lib';
 
 const ExpectedBucketPolicyProperties = {
   PolicyDocument: {
@@ -105,7 +106,7 @@ export = {
         const stack = getTestStack();
         new CloudTrail(stack, 'MyAmazingCloudTrail', {
           sendToCloudWatchLogs: true,
-          cloudWatchLogsRetentionTimeDays: LogRetention.OneWeek
+          cloudWatchLogsRetentionTimeDays: RetentionDays.OneWeek
         });
 
         expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
