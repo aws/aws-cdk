@@ -40,7 +40,15 @@
     "awslint": "cdk-awslint"
   },
   "jest": {
-    "moduleFileExtensions": [ "js" ]
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "statements": 80
+      }
+    }
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "^0.28.0",
@@ -55,16 +63,9 @@
     "jsonschema": "^1.2.4"
   },
   "bundledDependencies": [
-    "yaml", "jsonschema"
+    "yaml",
+    "jsonschema"
   ],
-  "jest": {
-    "coverageThreshold": {
-      "global": {
-        "branches": 0,
-        "statements": 0
-      }
-    }
-  },
   "devDependencies": {
     "@aws-cdk/assert": "^0.28.0",
     "@aws-cdk/aws-s3": "^0.28.0",

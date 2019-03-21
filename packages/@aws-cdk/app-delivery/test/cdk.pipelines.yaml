@@ -1,0 +1,7 @@
+cdk-workshop:
+  source: https://github.com/aws-samples/aws-cdk-intro-workshop
+  workdir: code/typescript
+  oauthSecret: arn:aws:secretsmanager:us-east-1:260708760616:secret:github-token-7nnF5O
+  branch: pipeline
+  stacks:
+    - WorkshopPipeline

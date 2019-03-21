@@ -3,7 +3,7 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
 import { Stack } from '@aws-cdk/cdk';
-import { ApplicationPipeline } from './application-pipeline';
+import { DeploymentPipeline } from './application-pipeline';
 
 export interface DeployStackActionProps {
   /**
@@ -44,6 +44,10 @@ export class DeployStackAction extends codepipeline.Action {
 
     this.stackName = props.stack.name;
     this.admin = props.admin;
+
+    Object.defineProperty(this, 'configuration', {
+      get: () => this.buildAction.configuration
+    });
   }
 
   // public get configuration(): any | undefined {
@@ -54,13 +58,13 @@ export class DeployStackAction extends codepipeline.Action {
   //   return;
   // }
 
-  // private get buildAction() {
-  //   if (!this._buildAction) {
-  //     throw new Error(`Action not bound to pipeline`);
-  //   }
-  //
-  //   return this._buildAction;
-  // }
+  private get buildAction() {
+    if (!this._buildAction) {
+      throw new Error(`Action not bound to pipeline`);
+    }
+
+    return this._buildAction;
+  }
 
   public get project() {
     if (!this._project) {
@@ -71,7 +75,7 @@ export class DeployStackAction extends codepipeline.Action {
   }
 
   public bind(info: codepipeline.ActionBind) {
-    if (!ApplicationPipeline.isApplicationPipeline(info.pipeline)) {
+    if (!DeploymentPipeline.isApplicationPipeline(info.pipeline)) {
       throw new Error(`DeployStackAction must be added to an ApplicationPipeline`);
     }
 

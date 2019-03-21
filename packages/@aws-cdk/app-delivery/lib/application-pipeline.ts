@@ -1,21 +1,29 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import { Construct, Environment, Stack } from '@aws-cdk/cdk';
-import { BootstrapPipelineSource } from './source';
+import { Construct } from '@aws-cdk/cdk';
+import { BootstrapPipelineSource } from './pipeline-source';
 
 const TYPE_MARKER = '4501D193-76B7-45D6-836E-3E657F21AD69';
 
-export interface ApplicationPipelineProps extends codepipeline.PipelineProps {
+export interface DeploymentPipelineProps extends codepipeline.PipelineProps {
+  /**
+   * The name of the bootstrap pipeline to monitor as defined in
+   * `cdk.pipelines.yaml`.
+   */
   readonly bootstrap: string;
 }
 
-export class ApplicationPipeline extends codepipeline.Pipeline {
-  public static isApplicationPipeline(obj: any): obj is ApplicationPipeline {
+/**
+ * A CodePipeline with a built-in source stage which is wired to a bootstrap
+ * pipeline.
+ */
+export class DeploymentPipeline extends codepipeline.Pipeline {
+  public static isApplicationPipeline(obj: any): obj is DeploymentPipeline {
     return (obj as any)._marker === TYPE_MARKER;
   }
 
   public readonly source: BootstrapPipelineSource;
 
-  constructor(scope: Construct, id: string, props: ApplicationPipelineProps) {
+  constructor(scope: Construct, id: string, props: DeploymentPipelineProps) {
     super(scope, id);
 
     Object.defineProperty(this, '_marker', { value: TYPE_MARKER });
@@ -24,54 +32,17 @@ export class ApplicationPipeline extends codepipeline.Pipeline {
     delete (props as any).stages;
 
     const source = new BootstrapPipelineSource(this, 'Source', {
-      pipeline: props.bootstrap
+      bootstrap: props.bootstrap
     });
 
     this.source = source;
 
-    this.addStage({
-      name: 'Source',
-      actions: [ source ]
-    });
+    // first add the mandatory source stage to monitor the bootstrap pipeline for changes.
+    this.addStage({ name: 'Source', actions: [ source ] });
 
+    // add all other stages.
     for (const stage of stages) {
       this.addStage(stage);
     }
-  }
-}
-
-export interface ApplicationPipelineStackProps extends ApplicationPipelineProps {
-  /**
-   * The name of the application pipeline stack.
-   * @default - generated from the unique ID of the stack construct.
-   */
-  readonly stackName?: string;
-
-  /**
-   * Whether this stack should be deployed automatically when running `cdk deploy`.
-   * @default true
-   */
-  readonly autoDeploy?: boolean;
-
-  /**
-   * Account/region in which this stack should be deployed.
-   */
-  readonly env?: Environment;
-}
-
-/**
- * A stack that includes a single application pipeline.
- */
-export class ApplicationPipelineStack extends Stack {
-  public readonly pipeline: ApplicationPipeline;
-
-  constructor(scope: Construct, id: string, props: ApplicationPipelineStackProps) {
-    super(scope, id, {
-      autoDeploy: props.autoDeploy,
-      env: props.env,
-      stackName: props.stackName
-    });
-
-    this.pipeline = new ApplicationPipeline(this, 'ApplicationPipeline', props);
   }
 }
