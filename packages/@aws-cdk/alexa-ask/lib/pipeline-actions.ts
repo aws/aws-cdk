@@ -8,17 +8,17 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
   /**
    * The client id of the developer console token
    */
-  clientId: cdk.Secret;
+  clientId: string;
 
   /**
    * The client secret of the developer console token
    */
-  clientSecret: cdk.Secret;
+  clientSecret: string;
 
   /**
    * The refresh token of the developer console token
    */
-  refreshToken: cdk.Secret;
+  refreshToken: string;
 
   /**
    * The Alexa skill id

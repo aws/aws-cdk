@@ -69,7 +69,7 @@ export = {
   'github action uses ThirdParty owner'(test: Test) {
     const stack = new cdk.Stack();
 
-    const secret = new cdk.SecretParameter(stack, 'GitHubToken', { ssmParameter: 'my-token' });
+    const secret = new cdk.CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
 
     const p = new codepipeline.Pipeline(stack, 'P');
 
@@ -81,7 +81,7 @@ export = {
           runOrder: 8,
           outputArtifactName: 'A',
           branch: 'branch',
-          oauthToken: secret.value,
+          oauthToken: secret.stringValue,
           owner: 'foo',
           repo: 'bar'
         }),

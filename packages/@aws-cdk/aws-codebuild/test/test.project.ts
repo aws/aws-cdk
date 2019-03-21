@@ -58,7 +58,7 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           cloneDepth: 3,
-          oauthToken: new cdk.Secret("test_oauth_token")
+          oauthToken: "test_oauth_token",
         })
       });
 
@@ -88,7 +88,7 @@ export = {
         source: new codebuild.GitHubSource({
           owner: 'testowner',
           repo: 'testrepo',
-          oauthToken: new cdk.Secret('test_oauth_token'),
+          oauthToken: 'test_oauth_token',
           reportBuildStatus: false,
         })
       });
@@ -112,7 +112,7 @@ export = {
         source: new codebuild.GitHubSource({
           owner: 'testowner',
           repo: 'testrepo',
-          oauthToken: new cdk.Secret('test_oauth_token'),
+          oauthToken: 'test_oauth_token',
           webhook: true,
         })
       });
@@ -138,7 +138,7 @@ export = {
         httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
         ignoreSslErrors: true,
         cloneDepth: 4,
-        oauthToken: new cdk.Secret("test_oauth_token")
+        oauthToken: "test_oauth_token"
       })
     });
 

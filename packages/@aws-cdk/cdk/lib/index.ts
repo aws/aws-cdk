@@ -26,7 +26,6 @@ export * from './dynamic-reference';
 export * from './tag';
 export * from './removal-policy';
 export * from './arn';
-export * from './secret';
 
 export * from './app';
 export * from './context';

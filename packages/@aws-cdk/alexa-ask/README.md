@@ -10,9 +10,10 @@ You can deploy to Alexa using CodePipeline with the following DeployAction.
 
 ```ts
 // Read the secrets from ParameterStore
-const clientId = new cdk.SecretParameter(this, 'AlexaClientId', { ssmParameter: '/Alexa/ClientId' });
-const clientSecret = new cdk.SecretParameter(this, 'AlexaClientSecret', { ssmParameter: '/Alexa/ClientSecret' });
-const refreshToken = new cdk.SecretParameter(this, 'AlexaRefreshToken', { ssmParameter: '/Alexa/RefreshToken' });
+const secret = new secretsmanager.SecretString(this, 'AlexaToken', { secretId: 'MyAlexaToken' })
+const clientId = secret.jsonFieldValue('ClientId');
+const clientSecret = secret.jsonFieldValue('ClientSecret');
+const refreshToken = secret.jsonFieldValue('RefreshToken');
 
 // Add deploy action
 new alexaAsk.AlexaSkillDeployAction({
