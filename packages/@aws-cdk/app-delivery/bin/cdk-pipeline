@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+scriptdir=$(cd $(dirname $0) && pwd)
+exec cdk -a ${scriptdir}/../bootstrap-app/app.js deploy
