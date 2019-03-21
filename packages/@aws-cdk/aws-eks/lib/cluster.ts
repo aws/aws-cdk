@@ -21,17 +21,19 @@ export interface ClusterProps {
    *
    * If you want to create public load balancers, this must include public subnets.
    *
+   * @example
+   *
    * For example, to only select private subnets, supply the following:
    *
-   * ```
-   * vpcPlacements: [
-   *   { subnetsToUse: ec2.SubnetType.Private }
+   * ```ts
+   * vpcSubnets: [
+   *   { subnetType: ec2.SubnetType.Private }
    * ]
    * ```
    *
    * @default All public and private subnets
    */
-  vpcPlacements?: ec2.VpcPlacementStrategy[];
+  vpcSubnets?: ec2.SubnetSelection[];
 
   /**
    * Role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf.
@@ -160,8 +162,8 @@ export class Cluster extends ClusterBase {
     });
 
     // Get subnetIds for all selected subnets
-    const placements = props.vpcPlacements || [{ subnetsToUse: ec2.SubnetType.Public }, { subnetsToUse: ec2.SubnetType.Private }];
-    const subnetIds = flatMap(placements, p => this.vpc.subnets(p)).map(s => s.subnetId);
+    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.Public }, { subnetType: ec2.SubnetType.Private }];
+    const subnetIds = flatMap(placements, p => this.vpc.subnetIds(p));
 
     const resource = new CfnCluster(this, 'Resource', {
       name: props.clusterName,
@@ -264,9 +266,7 @@ export class Cluster extends ClusterBase {
    * @see https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
    */
   private tagSubnets() {
-    const privates = this.vpc.subnets({ subnetsToUse: ec2.SubnetType.Private });
-
-    for (const subnet of privates) {
+    for (const subnet of this.vpc.privateSubnets) {
       if (!isRealSubnetConstruct(subnet)) {
         // Just give up, all of them will be the same.
         this.node.addWarning('Could not auto-tag private subnets with "kubernetes.io/role/internal-elb=1", please remember to do this manually');
