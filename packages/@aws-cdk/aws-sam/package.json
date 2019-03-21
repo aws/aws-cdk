@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/aws-serverless",
+  "name": "@aws-cdk/aws-sam",
   "version": "0.26.0",
   "description": "The CDK Construct Library for AWS::Serverless",
   "main": "lib/index.js",
@@ -8,16 +8,16 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Serverless",
-        "packageId": "Amazon.CDK.AWS.Serverless",
+        "namespace": "Amazon.CDK.AWS.Sam",
+        "packageId": "Amazon.CDK.AWS.Sam",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.serverless",
+        "package": "software.amazon.awscdk.services.sam",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "serverless"
+          "artifactId": "sam"
         }
       },
       "sphinx": {}
@@ -46,7 +46,7 @@
     "aws",
     "cdk",
     "constructs",
-    "aws-serverless"
+    "aws-sam"
   ],
   "author": {
     "name": "Amazon Web Services",
