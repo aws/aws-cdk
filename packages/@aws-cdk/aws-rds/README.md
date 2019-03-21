@@ -15,7 +15,7 @@ Not supported:
 ### Starting a Clustered Database
 
 To set up a clustered database (like Aurora), create an instance of `DatabaseCluster`. You must
-always launch a database in a VPC. Use the `vpcPlacement` attribute to control whether
+always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
 ```ts
@@ -26,8 +26,8 @@ const cluster = new DatabaseCluster(this, 'Database', {
     },
     instanceProps: {
         instanceType: new InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Small),
-        vpcPlacement: {
-            subnetsToUse: ec2.SubnetType.Public,
+        vpcSubnets: {
+            subnetType: ec2.SubnetType.Public,
         },
         vpc
     }

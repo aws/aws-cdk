@@ -5,7 +5,7 @@ import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVP
 import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
-import { IVpcNetwork, IVpcSubnet, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcPlacementStrategy, VpcSubnetImportProps } from './vpc-ref';
+import { IVpcNetwork, IVpcSubnet, SubnetSelection, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcSubnetImportProps } from './vpc-ref';
 import { VpnConnectionOptions, VpnConnectionType } from './vpn';
 
 /**
@@ -80,7 +80,7 @@ export interface VpcNetworkProps {
    *
    * @default All public subnets
    */
-  natGatewayPlacement?: VpcPlacementStrategy;
+  natGatewaySubnets?: SubnetSelection;
 
   /**
    * Configure the subnets to build for each AZ
@@ -365,7 +365,7 @@ export class VpcNetwork extends VpcNetworkBase {
       });
 
       // if gateways are needed create them
-      this.createNatGateways(props.natGateways, props.natGatewayPlacement);
+      this.createNatGateways(props.natGateways, props.natGatewaySubnets);
 
       (this.privateSubnets as VpcPrivateSubnet[]).forEach((privateSubnet, i) => {
         let ngwId = this.natGatewayByAZ[privateSubnet.availabilityZone];
@@ -445,7 +445,7 @@ export class VpcNetwork extends VpcNetworkBase {
     };
   }
 
-  private createNatGateways(gateways?: number, placement?: VpcPlacementStrategy): void {
+  private createNatGateways(gateways?: number, placement?: SubnetSelection): void {
     const useNatGateway = this.subnetConfiguration.filter(
       subnet => (subnet.subnetType === SubnetType.Private)).length > 0;
 

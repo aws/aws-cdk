@@ -53,7 +53,7 @@ export interface CommonAutoScalingGroupProps {
   /**
    * Where to place instances within the VPC
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * SNS topic to send notifications about fleet changes
@@ -291,8 +291,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       });
     }
 
-    const subnets = props.vpc.subnets(props.vpcPlacement);
-    asgProps.vpcZoneIdentifier = subnets.map(n => n.subnetId);
+    asgProps.vpcZoneIdentifier = props.vpc.subnetIds(props.vpcSubnets);
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;
