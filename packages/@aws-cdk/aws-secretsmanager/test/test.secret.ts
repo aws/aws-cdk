@@ -1,6 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
+import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import secretsmanager = require('../lib');
@@ -278,6 +279,64 @@ export = {
     // THEN
     test.equals(secret.secretArn, secretArn);
     test.same(secret.encryptionKey, encryptionKey);
+    test.done();
+  },
+
+  'attached secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const target: secretsmanager.ISecretAttachmentTarget = {
+      asSecretAttachmentTarget: () => ({
+        targetId: 'instance',
+        targetType: secretsmanager.AttachmentTargetType.Instance
+      })
+    };
+
+    // WHEN
+    secret.addTargetAttachment('AttachedSecret', { target });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SecretsManager::SecretTargetAttachment', {
+      SecretId: {
+        Ref: 'SecretA720EF05'
+      },
+      TargetId: 'instance',
+      TargetType: 'AWS::RDS::DBInstance'
+    }));
+
+    test.done();
+  },
+
+  'add a rotation schedule to an attached secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const target: secretsmanager.ISecretAttachmentTarget = {
+      asSecretAttachmentTarget: () => ({
+        targetId: 'cluster',
+        targetType: secretsmanager.AttachmentTargetType.Cluster
+      })
+    };
+    const attachedSecret = secret.addTargetAttachment('AttachedSecret', { target });
+    const rotationLambda = new lambda.Function(stack, 'Lambda', {
+      runtime: lambda.Runtime.NodeJS810,
+      code: lambda.Code.inline('export.handler = event => event;'),
+      handler: 'index.handler'
+    });
+
+    // WHEN
+    attachedSecret.addRotationSchedule('RotationSchedule', {
+      rotationLambda
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'SecretAttachedSecret94145316' // The secret returned by the attachment, not the secret itself.
+      }
+    }));
+
     test.done();
   }
 };
