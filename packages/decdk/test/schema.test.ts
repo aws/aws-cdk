@@ -21,7 +21,7 @@ beforeAll(async () => {
   await typesys.load(path.dirname(require.resolve('@aws-cdk/cdk/.jsii')));
 });
 
-test('schemaForInterface: interface with primitives', () => {
+test('schemaForInterface: interface with primitives', async () => {
   // GIVEN
   const defs = { };
   const ctx = SchemaContext.root(defs);
