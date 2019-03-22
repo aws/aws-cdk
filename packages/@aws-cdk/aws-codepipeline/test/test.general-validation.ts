@@ -1,8 +1,9 @@
-import actions = require('@aws-cdk/aws-codepipeline-api');
-import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
+import { ActionBind, IStage } from "../lib/action";
 import { Pipeline } from '../lib/pipeline';
+import { SourceAction, SourceActionProps } from "../lib/source-action";
+import { validateName } from "../lib/validation";
 
 interface NameValidationTestCase {
   name: string;
@@ -21,7 +22,7 @@ export = {
 
     cases.forEach(testCase => {
       const name = testCase.name;
-      const validationBlock = () => { actions.validateName('test thing', name); };
+      const validationBlock = () => { validateName('test thing', name); };
       if (testCase.shouldPassValidation) {
         test.doesNotThrow(validationBlock, Error, `${name} failed validation but ${testCase.explanation}`);
       } else {
@@ -56,16 +57,14 @@ export = {
       const stack = new cdk.Stack();
       const pipeline = new Pipeline(stack, 'Pipeline');
 
-      const bucket = new s3.Bucket(stack, 'PipelineBucket');
       pipeline.addStage({
         name: 'FirstStage',
         actions: [
-          new s3.PipelineSourceAction({
-            actionName: 'FirstAction',
-            outputArtifactName: 'FirstArtifact',
-            bucket,
-            bucketKey: 'key',
-          })
+          new FakeSourceAction({
+            actionName: 'FakeSource',
+            provider: 'Fake',
+            outputArtifactName: 'SourceOutput',
+          }),
         ],
       });
 
@@ -76,7 +75,17 @@ export = {
   }
 };
 
-function stageForTesting(): actions.IStage {
+class FakeSourceAction extends SourceAction {
+  constructor(props: SourceActionProps) {
+    super(props);
+  }
+
+  protected bind(_info: ActionBind): void {
+    // do nothing
+  }
+}
+
+function stageForTesting(): IStage {
   const stack = new cdk.Stack();
   const pipeline = new Pipeline(stack, 'Pipeline');
   return pipeline.addStage({ name: 'stage' });

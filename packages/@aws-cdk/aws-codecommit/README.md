@@ -23,33 +23,6 @@ To add an Amazon SNS trigger to your repository:
 repo.notify('arn:aws:sns:*:123456789012:my_topic');
 ```
 
-## AWS CodePipeline
-
-To use a CodeCommit Repository in a CodePipeline:
-
-```ts
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
-  pipelineName: 'MyPipeline',
-});
-const sourceAction = new codecommit.PipelineSourceAction({
-  actionName: 'CodeCommit',
-  repository: repo,
-});
-pipeline.addStage({
-  name: 'Source',
-  actions: [sourceAction],
-});
-```
-
-You can also create the action from the Repository directly:
-
-```ts
-// equivalent to the code above:
-const sourceAction = repo.toCodePipelineSourceAction({ actionName: 'CodeCommit' });
-```
-
 ## Events
 
 CodeCommit repositories emit Amazon CloudWatch events for certain activities.

@@ -1,7 +1,7 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
 import codebuild = require('@aws-cdk/aws-codebuild');
-import code = require('@aws-cdk/aws-codepipeline');
-import api = require('@aws-cdk/aws-codepipeline-api');
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
@@ -13,8 +13,8 @@ import { countResources, expect, haveResource, isSuperObject } from '@aws-cdk/as
 import { PipelineDeployStackAction } from '../lib/pipeline-deploy-stack-action';
 
 interface SelfUpdatingPipeline {
-  synthesizedApp: api.Artifact;
-  pipeline: code.Pipeline;
+  synthesizedApp: codepipeline.Artifact;
+  pipeline: codepipeline.Pipeline;
 }
 const accountId = fc.array(fc.integer(0, 9), 12, 12).map(arr => arr.join());
 
@@ -28,7 +28,7 @@ export = nodeunit.testCase({
           test.throws(() => {
             const app = new cdk.App();
             const stack = new cdk.Stack(app, 'Test', { env: { account: pipelineAccount } });
-            const pipeline = new code.Pipeline(stack, 'Pipeline');
+            const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
             const fakeAction = new FakeAction('Fake');
             pipeline.addStage({
               name: 'FakeStage',
@@ -57,7 +57,7 @@ export = nodeunit.testCase({
           test.throws(() => {
             const app = new cdk.App();
             const stack = new cdk.Stack(app, 'Test');
-            const pipeline = new code.Pipeline(stack, 'Pipeline');
+            const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
             const fakeAction = new FakeAction('Fake');
             pipeline.addStage({
               name: 'FakeStage',
@@ -272,7 +272,7 @@ export = nodeunit.testCase({
         (assetCount) => {
           const app = new cdk.App();
           const stack = new cdk.Stack(app, 'Test');
-          const pipeline = new code.Pipeline(stack, 'Pipeline');
+          const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
           const fakeAction = new FakeAction('Fake');
           pipeline.addStage({
             name: 'FakeStage',
@@ -299,21 +299,21 @@ export = nodeunit.testCase({
   }
 });
 
-class FakeAction extends api.Action {
-  public readonly outputArtifact: api.Artifact;
+class FakeAction extends codepipeline.Action {
+  public readonly outputArtifact: codepipeline.Artifact;
 
   constructor(actionName: string) {
     super({
       actionName,
-      artifactBounds: api.defaultBounds(),
-      category: api.ActionCategory.Test,
+      artifactBounds: codepipeline.defaultBounds(),
+      category: codepipeline.ActionCategory.Test,
       provider: 'Test',
     });
 
-    this.outputArtifact = new api.Artifact('OutputArtifact');
+    this.outputArtifact = new codepipeline.Artifact('OutputArtifact');
   }
 
-  protected bind(_info: api.ActionBind): void {
+  protected bind(_info: codepipeline.ActionBind): void {
     // do nothing
   }
 }
@@ -323,13 +323,13 @@ function getTestStack(): cdk.Stack {
 }
 
 function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline {
-  const pipeline = new code.Pipeline(pipelineStack, 'CodePipeline', {
+  const pipeline = new codepipeline.Pipeline(pipelineStack, 'CodePipeline', {
     restartExecutionOnUpdate: true,
   });
 
   // simple source
   const bucket = s3.Bucket.import( pipeline, 'PatternBucket', { bucketArn: 'arn:aws:s3:::totally-fake-bucket' });
-  const sourceAction = new s3.PipelineSourceAction({
+  const sourceAction = new cpactions.S3SourceAction({
     actionName: 'S3Source',
     bucket,
     bucketKey: 'the-great-key',
@@ -340,8 +340,9 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
   });
 
   const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild');
-  const buildAction = project.toCodePipelineBuildAction({
+  const buildAction = new cpactions.CodeBuildBuildAction({
     actionName: 'CodeBuild',
+    project,
     inputArtifact: sourceAction.outputArtifact,
   });
   pipeline.addStage({
