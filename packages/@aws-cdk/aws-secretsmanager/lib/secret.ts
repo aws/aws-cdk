@@ -81,7 +81,7 @@ export interface SecretProps {
    * @default 32 characters with upper-case letters, lower-case letters, punctuation and numbers (at least one from each
    *          category), per the default values of ``SecretStringGenerator``.
    */
-  generateSecretString?: SecretStringGenerator | TemplatedSecretStringGenerator;
+  generateSecretString?: SecretStringGenerator
 
   /**
    * A name for the secret. Note that deleting secrets from SecretsManager does not happen immediately, but after a 7 to
@@ -185,6 +185,12 @@ export class Secret extends SecretBase {
 
   constructor(scope: cdk.Construct, id: string, props: SecretProps = {}) {
     super(scope, id);
+
+    if (props.generateSecretString &&
+        (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&
+        !(props.generateSecretString.secretStringTemplate && props.generateSecretString.generateStringKey)) {
+      throw new Error('Both `secretStringTemplate` and `generateStringKey` must be specified.');
+    }
 
     const resource = new secretsmanager.CfnSecret(this, 'Resource', {
       description: props.description,
@@ -367,24 +373,21 @@ export interface SecretStringGenerator {
    * @default false
    */
   excludeNumbers?: boolean;
-}
-
-/**
- * Configuration to generate secrets such as passwords automatically, and include them in a JSON object template.
- */
-export interface TemplatedSecretStringGenerator extends SecretStringGenerator {
-  /**
-   * The JSON key name that's used to add the generated password to the JSON structure specified by the
-   * ``secretStringTemplate`` parameter.
-   */
-  generateStringKey: string;
 
   /**
    * A properly structured JSON string that the generated password can be added to. The ``generateStringKey`` is
    * combined with the generated random string and inserted into the JSON structure that's specified by this parameter.
-   * The merged JSON string is returned as the completed SecretString of the secret.
+   * The merged JSON string is returned as the completed SecretString of the secret. If you specify ``secretStringTemplate``
+   * then ``generateStringKey`` must be also be specified.
    */
-  secretStringTemplate: string;
+  secretStringTemplate?: string;
+
+  /**
+   * The JSON key name that's used to add the generated password to the JSON structure specified by the
+   * ``secretStringTemplate`` parameter. If you specify ``generateStringKey`` then ``secretStringTemplate``
+   * must be also be specified.
+   */
+  generateStringKey?: string;
 }
 
 class ImportedSecret extends SecretBase {
