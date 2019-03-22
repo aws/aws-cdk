@@ -64,9 +64,10 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
       shell(['docker', 'push', qualifiedImageName]),
       shell(['docker', 'push', stableImageName]),
     ]);
-    debug(` 👑  Docker image for ${asset.path} pushed.`);
+    const stableRef = await getStableRef(ecr.repositoryUri, imageId);
+    debug(` 👑  Docker image for ${asset.path} pushed, will use ${stableRef} to refer to it.`);
     return [
-      { ParameterKey: asset.imageNameParameter, ParameterValue: `${ecr.repositoryName}:${tag}` },
+      { ParameterKey: asset.imageNameParameter, ParameterValue: `${ecr.repositoryName}:${tag},${stableRef}` },
     ];
   } catch (e) {
     if (e.code === 'ENOENT') {
@@ -77,6 +78,20 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
   } finally {
     buildHold.stop();
   }
+}
+
+async function getStableRef(repository: string, imageId: string): Promise<string> {
+  try {
+    const repoDigests: string[] = JSON.parse((await shell(['docker', 'image', 'inspect', imageId, '-f', '{{.RepoDigests}}'])).trim());
+    for (const digest of repoDigests) {
+      if ( digest.startsWith(`${repository}@`) ) {
+        return digest;
+      }
+    }
+  } catch (e) {
+    debug(e);
+  }
+  return `${repository}:${imageId}`;
 }
 
 /**

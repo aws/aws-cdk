@@ -59,6 +59,12 @@ export class DockerImageAsset extends cdk.Construct {
   public imageUri: string;
 
   /**
+   * The canonical URI of the image including the images unique repository digest.
+   * Use this reference to pull the asset.
+   */
+  public imageDigestUri: string;
+
+  /**
    * Repository where the image is stored
    */
   public repository: ecr.IRepository;
@@ -81,7 +87,7 @@ export class DockerImageAsset extends cdk.Construct {
     }
 
     const imageNameParameter = new cdk.CfnParameter(this, 'ImageName', {
-      type: 'String',
+      type: 'CommaDelimitedList',
       description: `ECR repository name and tag asset "${this.node.path}"`,
     });
 
@@ -97,8 +103,8 @@ export class DockerImageAsset extends cdk.Construct {
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);
 
-    // parse repository name and tag from the parameter (<REPO_NAME>:<TAG>)
-    const components = cdk.Fn.split(':', imageNameParameter.stringValue);
+    // parse repository name and tag from the parameter ([<REPO_NAME>:<TAG>, <REPO_URL>@<REPO_DIGEST>])
+    const components = cdk.Fn.split(':', imageNameParameter.stringListValue[0]);
     const repositoryName = cdk.Fn.select(0, components).toString();
     const imageTag = cdk.Fn.select(1, components).toString();
 
@@ -110,5 +116,6 @@ export class DockerImageAsset extends cdk.Construct {
     // haven't already started using the image.
     this.repository = new AdoptedRepository(this, 'AdoptRepository', { repositoryName });
     this.imageUri = this.repository.repositoryUriForTag(imageTag);
+    this.imageDigestUri = imageNameParameter.stringListValue[1];
   }
 }
