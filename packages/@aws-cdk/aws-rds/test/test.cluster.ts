@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine } from '../lib';
+import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, InstanceParameterGroup } from '../lib';
 
 export = {
   'check that instantiation works'(test: Test) {
@@ -160,6 +160,43 @@ export = {
     test.done();
   },
 
+  'cluster with instance parameter group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+
+    // WHEN
+    const instanceParameterGroup = new InstanceParameterGroup(stack, 'Params', {
+      family: 'mysql',
+      description: 'bye',
+    });
+    instanceParameterGroup.setParameter('param1', 'value1');
+    instanceParameterGroup.setParameter('param2', 'value2');
+    instanceParameterGroup.removeParameter('param2');
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.Aurora,
+      masterUser: {
+        username: 'admin',
+        password: 'tooshort',
+      },
+      instances: 1,
+      instanceProps: {
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        parameterGroup: instanceParameterGroup,
+        vpc
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'ParamsA8366201',
+      },
+    }));
+
+    test.done();
+  },
+
   'import/export cluster parameter group'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -171,6 +208,24 @@ export = {
     // WHEN
     const exported = group.export();
     const imported = ClusterParameterGroup.import(stack, 'ImportParams', exported);
+
+    // THEN
+    test.deepEqual(stack.node.resolve(exported), { parameterGroupName: { 'Fn::ImportValue': 'Stack:ParamsParameterGroupNameA6B808D7' } });
+    test.deepEqual(stack.node.resolve(imported.parameterGroupName), { 'Fn::ImportValue': 'Stack:ParamsParameterGroupNameA6B808D7' });
+    test.done();
+  },
+
+  'import/export instance parameter group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const group = new InstanceParameterGroup(stack, 'Params', {
+      family: 'hello',
+      description: 'desc'
+    });
+
+    // WHEN
+    const exported = group.export();
+    const imported = InstanceParameterGroup.import(stack, 'ImportParams', exported);
 
     // THEN
     test.deepEqual(stack.node.resolve(exported), { parameterGroupName: { 'Fn::ImportValue': 'Stack:ParamsParameterGroupNameA6B808D7' } });
