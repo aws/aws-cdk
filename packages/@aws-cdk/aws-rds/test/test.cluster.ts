@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
@@ -26,12 +26,21 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBCluster', {
-      Engine: "aurora",
-      DBSubnetGroupName: { Ref: "DatabaseSubnets56F17B9A" },
-      MasterUsername: "admin",
-      MasterUserPassword: "tooshort",
-      VpcSecurityGroupIds: [ {"Fn::GetAtt": ["DatabaseSecurityGroup5C91FDCB", "GroupId"]}]
-    }));
+      Properties: {
+        Engine: "aurora",
+        DBSubnetGroupName: { Ref: "DatabaseSubnets56F17B9A" },
+        MasterUsername: "admin",
+        MasterUserPassword: "tooshort",
+        VpcSecurityGroupIds: [ {"Fn::GetAtt": ["DatabaseSecurityGroup5C91FDCB", "GroupId"]}]
+      },
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain'
+    }, ResourcePart.CompleteDefinition));
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain'
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },

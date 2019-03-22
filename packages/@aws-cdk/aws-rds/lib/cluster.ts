@@ -102,6 +102,14 @@ export interface DatabaseClusterProps {
    * @default No parameter group
    */
   parameterGroup?: IClusterParameterGroup;
+
+  /**
+   * The CloudFormation policy to apply when the cluster and its instances
+   * are removed from the stack or replaced during an update.
+   *
+   * @default Retain
+   */
+  deleteReplacePolicy?: cdk.DeletionPolicy
 }
 
 /**
@@ -276,6 +284,10 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
+    const deleteReplacePolicy = props.deleteReplacePolicy || cdk.DeletionPolicy.Retain;
+    cluster.options.deletionPolicy = deleteReplacePolicy;
+    cluster.options.updateReplacePolicy = deleteReplacePolicy;
+
     this.clusterIdentifier = cluster.ref;
     this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, cluster.dbClusterEndpointPort);
     this.readerEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, cluster.dbClusterEndpointPort);
@@ -313,6 +325,9 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
       });
+
+      instance.options.deletionPolicy = deleteReplacePolicy;
+      instance.options.updateReplacePolicy = deleteReplacePolicy;
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
