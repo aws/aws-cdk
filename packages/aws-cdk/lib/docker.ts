@@ -1,5 +1,6 @@
 import { ContainerImageAssetMetadataEntry } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import crypto = require('crypto');
 import { ToolkitInfo } from './api/toolkit-info';
 import { debug, print } from './logging';
 import { shell } from './os';
@@ -20,7 +21,7 @@ import { PleaseHold } from './util/please-hold';
 export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEntry,
                                             toolkitInfo: ToolkitInfo,
                                             reuse: boolean,
-                                            _ci?: boolean): Promise<CloudFormation.Parameter[]> {
+                                            ci?: boolean): Promise<CloudFormation.Parameter[]> {
   if (reuse) {
     return [
       { ParameterKey: asset.imageNameParameter, UsePreviousValue: true },
@@ -29,38 +30,40 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
   debug(' 👑  Preparing Docker image asset:', asset.path);
   const buildHold = new PleaseHold(` ⌛ Building Asset Docker image ${asset.id} from ${asset.path}; this may take a while.`);
   try {
-    const ecr = await toolkitInfo.prepareEcrRepository(asset);
-    let loggedIn = false;
+    const [ecr, ] = await Promise.all([
+      toolkitInfo.prepareEcrRepository(asset),
+      dockerLogin(toolkitInfo),
+    ]);
     let command = ['docker', 'build', '--quiet'];
+    const stableTag = crypto.createHash('sha256').update(asset.id).digest('hex');
+    const stableImageName = `${ecr.repositoryUri}:${stableTag}`;
     if ( asset.allowLayerCaching === false ) {
       // if explictely disabled, then disable all caching, this can be useful
       // in case of suspicous local caches (e.g. in shared CI environments).
       command.push('--no-cache');
-    } else if ( asset.imageTag && asset.allowLayerCaching ) {
-      await dockerLogin(toolkitInfo);
-      loggedIn = true;
+    } else if ( asset.allowLayerCaching && ci ) {
       try {
-        await shell(['docker', 'pull', asset.imageTag]);
-        command = [...command, '--cache-from', asset.imageTag];
+        await shell(['docker', 'pull', stableImageName]);
+        command = [...command, '--cache-from', stableImageName];
       } catch (e) {
-        debug('Failed to pull latest image from ECR repository');
+        debug(`Failed to pull latest image "${stableImageName}" from ECR repository, will not use --cache-from.`);
       }
     }
     buildHold.start();
     const imageId = (await shell([...command, asset.path], { quiet: true })).trim();
     buildHold.stop();
     const tag = asset.imageTag || imageId.replace(/^[^:]*:/, '');
-    debug(` ⌛  Image has tag ${tag}, checking ECR repository`);
-    // Login and push
-    if (!loggedIn) { // We could be already logged in if in CI
-      await dockerLogin(toolkitInfo);
-      loggedIn = true;
-    }
     const qualifiedImageName = `${ecr.repositoryUri}:${tag}`;
-    await shell(['docker', 'tag', imageId, qualifiedImageName]);
+    await Promise.all([
+      shell(['docker', 'tag', imageId, qualifiedImageName]),
+      shell(['docker', 'tag', imageId, stableImageName]),
+    ]);
     // There's no way to make this quiet, so we can't use a PleaseHold. Print a header message.
-    print(` ⌛ Pushing Docker image for ${asset.path}; this may take a while.`);
-    await shell(['docker', 'push', qualifiedImageName]);
+    print(` ⌛ Pushing Docker image for ${asset.path} to ${qualifiedImageName} and to ${stableImageName}; this may take a while.`);
+    await Promise.all([
+      shell(['docker', 'push', qualifiedImageName]),
+      shell(['docker', 'push', stableImageName]),
+    ]);
     debug(` 👑  Docker image for ${asset.path} pushed.`);
     return [
       { ParameterKey: asset.imageNameParameter, ParameterValue: `${ecr.repositoryName}:${tag}` },
