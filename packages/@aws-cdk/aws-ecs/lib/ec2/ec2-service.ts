@@ -29,7 +29,7 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default Private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Existing security group to use for the task's ENIs
@@ -102,7 +102,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
     this.daemon = props.daemon || false;
 
     if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcPlacement, props.securityGroup);
+      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcSubnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
       validateNoNetworkingProps(props);
@@ -244,8 +244,8 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
  * Validate combinations of networking arguments
  */
 function validateNoNetworkingProps(props: Ec2ServiceProps) {
-  if (props.vpcPlacement !== undefined || props.securityGroup !== undefined) {
-    throw new Error('vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
+  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined) {
+    throw new Error('vpcSubnets and securityGroup can only be used in AwsVpc networking mode');
   }
 }
 

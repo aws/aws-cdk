@@ -147,7 +147,7 @@ export = {
     },
 
     "with a TaskDefinition with Bridge network mode": {
-      "it errors if vpcPlacement is specified"(test: Test) {
+      "it errors if vpcSubnets is specified"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
@@ -167,8 +167,8 @@ export = {
           new ecs.Ec2Service(stack, "Ec2Service", {
             cluster,
             taskDefinition,
-            vpcPlacement: {
-              subnetsToUse: ec2.SubnetType.Public
+            vpcSubnets: {
+              subnetType: ec2.SubnetType.Public
             }
           });
         });
@@ -230,7 +230,7 @@ export = {
         test.done();
       },
 
-      "it allows vpcPlacement"(test: Test) {
+      "it allows vpcSubnets"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
@@ -248,8 +248,8 @@ export = {
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
           taskDefinition,
-          vpcPlacement: {
-            subnetsToUse: ec2.SubnetType.Public
+          vpcSubnets: {
+            subnetType: ec2.SubnetType.Public
           }
         });
 

@@ -214,29 +214,29 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
   /**
    * The VPC where the DB subnet group is created.
    */
-  public readonly vpc: ec2.IVpcNetwork;
+  private readonly vpc: ec2.IVpcNetwork;
 
   /**
    * The subnets used by the DB subnet group.
    */
-  public readonly vpcPlacement?: ec2.VpcPlacementStrategy;
+  private readonly vpcSubnets?: ec2.SubnetSelection;
 
   constructor(scope: cdk.Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
 
     this.vpc = props.instanceProps.vpc;
-    this.vpcPlacement = props.instanceProps.vpcPlacement;
+    this.vpcSubnets = props.instanceProps.vpcSubnets;
 
-    const subnets = this.vpc.subnets(this.vpcPlacement);
+    const subnetIds = props.instanceProps.vpc.subnetIds(props.instanceProps.vpcSubnets);
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
-    if (subnets.length < 2) {
-      throw new Error(`Cluster requires at least 2 subnets, got ${subnets.length}`);
+    if (subnetIds.length < 2) {
+      throw new Error(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
       dbSubnetGroupDescription: `Subnets for ${id} database`,
-      subnetIds: subnets.map(s => s.subnetId)
+      subnetIds,
     });
 
     const securityGroup = props.instanceProps.securityGroup !== undefined ?
@@ -291,6 +291,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       throw new Error('At least one instance is required');
     }
 
+    // Get the actual subnet objects so we can depend on internet connectivity.
+    const internetConnected = props.instanceProps.vpc.subnetInternetDependencies(props.instanceProps.vpcSubnets);
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -298,7 +300,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
                      props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                      undefined;
 
-      const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.subnetsToUse === ec2.SubnetType.Public;
+      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.Public;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
@@ -314,7 +316,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
-      instance.node.addDependency(...subnets.map(s => s.internetConnectivityEstablished));
+      instance.node.addDependency(internetConnected);
 
       this.instanceIdentifiers.push(instance.ref);
       this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort));
@@ -335,7 +337,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       secret: this.secret,
       engine: toDatabaseEngine(this.engine),
       vpc: this.vpc,
-      vpcPlacement: this.vpcPlacement,
+      vpcSubnets: this.vpcSubnets,
       target: this,
       ...options
     });
