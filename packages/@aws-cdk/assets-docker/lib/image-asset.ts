@@ -36,7 +36,7 @@ export interface DockerImageAssetProps {
    * be used if `imageTag` is defined and local cache will be enabled.
    *
    * If in doubt do not set this property and use the default behavior, with defaults
-   * to Docker's default behavior and usually is a good trade of between correctness
+   * to Docker's default behavior and usually is a good trade-off between correctness
    * and speed. Use `false` if you want to ensure correnctness and reproducable builds
    * and use `true` only if build speed is more important than reproducability.
    *
