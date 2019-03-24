@@ -169,6 +169,7 @@ export = {
     const instanceParameterGroup = new InstanceParameterGroup(stack, 'Params', {
       family: 'mysql',
       description: 'bye',
+      parameters: {},
     });
     instanceParameterGroup.setParameter('param1', 'value1');
     instanceParameterGroup.setParameter('param2', 'value2');
@@ -220,7 +221,8 @@ export = {
     const stack = testStack();
     const group = new InstanceParameterGroup(stack, 'Params', {
       family: 'hello',
-      description: 'desc'
+      description: 'desc',
+      parameters: {},
     });
 
     // WHEN

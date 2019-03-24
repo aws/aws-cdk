@@ -41,7 +41,7 @@ export interface InstanceParameterGroupProps {
   /**
    * The parameters in this parameter group
    */
-  parameters?: Parameters;
+  parameters: Parameters;
 }
 
 /**
