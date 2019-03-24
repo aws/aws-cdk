@@ -30,6 +30,10 @@ export interface InstanceParameterGroupImportProps {
 export interface InstanceParameterGroupProps {
   /**
    * Database family of this parameter group
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html#API_CreateDBParameterGroup_RequestParameters
+   * @example
+   * { family: 'MySQL5.5' }
    */
   family: string;
 
