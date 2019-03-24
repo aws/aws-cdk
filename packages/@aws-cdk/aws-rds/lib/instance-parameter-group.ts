@@ -73,7 +73,7 @@ export class InstanceParameterGroup extends Construct implements IInstanceParame
       this.setParameter(key, value);
     }
 
-    this.parameterGroupName = resource.ref;
+    this.parameterGroupName = resource.dbParameterGroupName;
   }
 
   /**
