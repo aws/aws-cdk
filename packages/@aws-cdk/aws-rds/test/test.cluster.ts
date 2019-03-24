@@ -290,7 +290,21 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'empty instance parameter group is not valid'(test: Test) {
+    const stack = testStack();
+    new InstanceParameterGroup(stack, 'Params', {
+      family: 'hello',
+      description: 'desc',
+      parameters: {},
+    });
+
+    const errorMessages = stack.node.validateTree().map(e => e.message);
+    test.deepEqual(errorMessages, ['At least one parameter required, call setParameter().']);
+
+    test.done();
+  },
 };
 
 function testStack() {
