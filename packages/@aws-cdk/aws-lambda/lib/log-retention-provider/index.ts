@@ -40,7 +40,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     console.log(JSON.stringify(event));
 
     // The target log group
-    const logGroupName = `/aws/lambda/${event.ResourceProperties.FunctionName}`;
+    const logGroupName = event.ResourceProperties.LogGroupName;
 
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
       // Act on the target log group
@@ -62,7 +62,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   } catch (e) {
     console.log(e);
 
-    await respond('FAILED', e.message, context.logStreamName);
+    await respond('FAILED', e.message, event.ResourceProperties.LogGroupName);
   }
 
   function respond(responseStatus: string, reason: string, physicalResourceId: string) {

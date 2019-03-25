@@ -1312,44 +1312,23 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
-          {
-            "Action": [
-              "logs:PutRetentionPolicy",
-              "logs:DeleteRetentionPolicy"
-            ],
-            "Effect": "Allow",
-            "Resource": "*"
-          }
-        ],
-        "Version": "2012-10-17"
-      },
-      "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
-      "Roles": [
-        {
-          "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
-        }
-      ]
-    }));
-
-    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
-      "ServiceToken": {
-        "Fn::GetAtt": [
-          "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
-          "Arn"
+    expect(stack).to(haveResource('Custom::LogRetention', {
+      'LogGroupName': {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB'
+            }
+          ]
         ]
       },
-      "FunctionName": {
-        "Ref": "MyLambdaCCE802FB"
-      },
-      "RetentionInDays": 30
+      'RetentionInDays': 30
     }));
 
     test.done();
-
-  }
+   }
 };
 
 function newTestLambda(scope: cdk.Construct) {

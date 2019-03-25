@@ -60,8 +60,8 @@
         "OneWeekServiceRole05A6F9F8"
       ]
     },
-    "OneWeekLogRetentionCustomResourceFDF55BE4": {
-      "Type": "AWS::CloudFormation::CustomResource",
+    "OneWeekLogRetention8E8911C1": {
+      "Type": "Custom::LogRetention",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -69,8 +69,16 @@
             "Arn"
           ]
         },
-        "FunctionName": {
-          "Ref": "OneWeekFE56F6A4"
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "OneWeekFE56F6A4"
+              }
+            ]
+          ]
         },
         "RetentionInDays": 7
       }
@@ -255,8 +263,8 @@
         "OneMonthServiceRoleFBD1064F"
       ]
     },
-    "OneMonthLogRetentionCustomResource6DB54B5C": {
-      "Type": "AWS::CloudFormation::CustomResource",
+    "OneMonthLogRetention814A40D9": {
+      "Type": "Custom::LogRetention",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -264,8 +272,16 @@
             "Arn"
           ]
         },
-        "FunctionName": {
-          "Ref": "OneMonth64E966BF"
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "OneMonth64E966BF"
+              }
+            ]
+          ]
         },
         "RetentionInDays": 30
       }
@@ -330,8 +346,8 @@
         "OneYearServiceRole24D47762"
       ]
     },
-    "OneYearLogRetentionCustomResource23BBD73D": {
-      "Type": "AWS::CloudFormation::CustomResource",
+    "OneYearLogRetentionBD83A067": {
+      "Type": "Custom::LogRetention",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -339,8 +355,16 @@
             "Arn"
           ]
         },
-        "FunctionName": {
-          "Ref": "OneYearA82EBDA9"
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "OneYearA82EBDA9"
+              }
+            ]
+          ]
         },
         "RetentionInDays": 365
       }
