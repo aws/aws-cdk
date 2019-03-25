@@ -1,4 +1,3 @@
-
 import { expect, haveResource } from '@aws-cdk/assert';
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');

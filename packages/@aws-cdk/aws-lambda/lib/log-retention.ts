@@ -6,18 +6,26 @@ import { Code } from './code';
 import { Runtime } from './runtime';
 import { SingletonFunction } from './singleton-lambda';
 
+/**
+ * Construction properties for a LogRetention.
+ */
 export interface LogRetentionProps {
-  /**
-   * The number of days log events are kept in CloudWatch Logs.
-   */
-  retentionDays: logs.RetentionDays;
-
   /**
    * The log group name.
    */
   logGroupName: string;
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs.
+   */
+  retentionDays: logs.RetentionDays;
 }
 
+/**
+ * Creates a custom resource to control the retention policy of a CloudWatch Logs
+ * log group. The log group is created if it doesn't already exist. The policy
+ * is removed when `retentionDays` is `undefined` or equal to `Infinity`.
+ */
 export class LogRetention extends cdk.Construct {
   // private static logRetentionRolePolicy: boolean = false;
 

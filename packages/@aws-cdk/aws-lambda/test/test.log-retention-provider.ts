@@ -20,8 +20,8 @@ const context = {
 
 function createRequest(type: string) {
   return nock('https://localhost')
-  .put('/', (body: AWSLambda.CloudFormationCustomResourceResponse) => body.Status === type && body.PhysicalResourceId === 'group')
-  .reply(200);
+    .put('/', (body: AWSLambda.CloudFormationCustomResourceResponse) => body.Status === type && body.PhysicalResourceId === 'group')
+    .reply(200);
 }
 
 export = {
