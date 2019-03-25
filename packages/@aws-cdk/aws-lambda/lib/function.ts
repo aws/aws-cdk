@@ -9,8 +9,8 @@ import { IEventSource } from './event-source';
 import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
 import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
-import { LogRetention } from './log-retention';
 import { ILayerVersion } from './layers';
+import { LogRetention } from './log-retention';
 import { Runtime } from './runtime';
 
 /**
