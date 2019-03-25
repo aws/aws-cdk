@@ -6,7 +6,7 @@ import AWS = require('aws-sdk');
  *
  * @param logGroupName the name of the log group to create
  */
-export async function createLogGroupSafe(logGroupName: string) {
+async function createLogGroupSafe(logGroupName: string) {
   try { // Try to create the log group
     const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
     await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
@@ -23,7 +23,7 @@ export async function createLogGroupSafe(logGroupName: string) {
  * @param logGroupName the name of the log group to create
  * @param retentionInDays the number of days to retain the log events in the specified log group.
  */
-export async function setRetentionPolicy(logGroupName: string, retentionInDays?: number) {
+async function setRetentionPolicy(logGroupName: string, retentionInDays?: number) {
   const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
   if (!retentionInDays) {
     await cloudwatchlogs.deleteRetentionPolicy({ logGroupName }).promise();
