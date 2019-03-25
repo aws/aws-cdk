@@ -110,7 +110,7 @@ export interface RotationSingleUserProps extends RotationSingleUserOptions {
    *
    * @default private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * The target database cluster or instance
@@ -139,7 +139,7 @@ export class RotationSingleUser extends cdk.Construct {
       vpc: props.vpc
     });
 
-    const subnets = props.vpc.subnets(props.vpcPlacement);
+    const vpcSubnetIds = props.vpc.subnetIds(props.vpcSubnets);
 
     props.target.connections.allowDefaultPortFrom(securityGroup);
 
@@ -149,7 +149,7 @@ export class RotationSingleUser extends cdk.Construct {
         endpoint: `https://secretsmanager.${this.node.stack.region}.${this.node.stack.urlSuffix}`,
         functionName: rotationFunctionName,
         vpcSecurityGroupIds: securityGroup.securityGroupId,
-        vpcSubnetIds: subnets.map(s => s.subnetId).join(',')
+        vpcSubnetIds: vpcSubnetIds.join(',')
       }
     });
 

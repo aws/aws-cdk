@@ -21,7 +21,7 @@ instances for your project.
 
 Our default `VpcNetwork` class creates a private and public subnet for every
 availability zone. Classes that use the VPC will generally launch instances
-into all private subnets, and provide a parameter called `vpcPlacement` to
+into all private subnets, and provide a parameter called `vpcSubnets` to
 allow you to override the placement. [Read more about
 subnets](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html).
 
