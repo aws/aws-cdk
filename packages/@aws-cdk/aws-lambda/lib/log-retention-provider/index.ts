@@ -1,16 +1,14 @@
 // tslint:disable:no-console
 import AWS = require('aws-sdk');
 
-const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
-
 /**
  * Creates a log group and doesn't throw if it exists.
  *
  * @param logGroupName the name of the log group to create
  */
-/* istanbul ignore next */
-async function createLogGroupSafe(logGroupName: string) {
+export async function createLogGroupSafe(logGroupName: string) {
   try { // Try to create the log group
+    const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
     await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
   } catch (e) {
     if (e.code !== 'ResourceAlreadyExistsException') {
@@ -25,8 +23,8 @@ async function createLogGroupSafe(logGroupName: string) {
  * @param logGroupName the name of the log group to create
  * @param retentionInDays the number of days to retain the log events in the specified log group.
  */
-/* istanbul ignore next */
-async function setRetentionPolicy(logGroupName: string, retentionInDays?: number) {
+export async function setRetentionPolicy(logGroupName: string, retentionInDays?: number) {
+  const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28' });
   if (!retentionInDays) {
     await cloudwatchlogs.deleteRetentionPolicy({ logGroupName }).promise();
   } else {
@@ -34,7 +32,6 @@ async function setRetentionPolicy(logGroupName: string, retentionInDays?: number
   }
 }
 
-/* istanbul ignore next */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
     console.log(JSON.stringify(event));
@@ -45,7 +42,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
       // Act on the target log group
       await createLogGroupSafe(logGroupName);
-      await setRetentionPolicy(logGroupName, event.ResourceProperties.RetentionInDays);
+      await setRetentionPolicy(logGroupName, parseInt(event.ResourceProperties.RetentionInDays, 10));
 
       if (event.RequestType === 'Create') {
         // Set a retention policy of 1 day on the logs of this function. The log
