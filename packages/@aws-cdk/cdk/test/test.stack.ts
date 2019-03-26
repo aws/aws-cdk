@@ -286,7 +286,8 @@ export = {
 
     test.throws(() => {
       app.node.prepareTree();
-    }, /Adding this dependency would create a cyclic reference/);
+      // tslint:disable-next-line:max-line-length
+    }, "'Stack2' depends on 'Stack1' (Stack2/SomeParameter -> Stack1.AWS::AccountId). Adding this dependency (Stack1/SomeParameter -> Stack2.AWS::AccountId) would create a cyclic reference.");
 
     test.done();
   },

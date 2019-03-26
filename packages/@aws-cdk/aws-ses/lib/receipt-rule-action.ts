@@ -280,7 +280,7 @@ export class ReceiptRuleLambdaAction implements IReceiptRuleAction {
       this.props.function.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('ses.amazonaws.com'),
-        sourceAccount: new cdk.ScopedAws().accountId
+        sourceAccount: cdk.Aws.accountId
       });
     }
 
@@ -344,7 +344,7 @@ export class ReceiptRuleS3Action implements IReceiptRuleAction {
       .addServicePrincipal('ses.amazonaws.com')
       .addResource(this.props.bucket.arnForObjects(`${keyPattern}*`))
       .addCondition('StringEquals', {
-        'aws:Referer': new cdk.ScopedAws().accountId
+        'aws:Referer': cdk.Aws.accountId
       });
 
     this.props.bucket.addToResourcePolicy(s3Statement);
@@ -362,7 +362,7 @@ export class ReceiptRuleS3Action implements IReceiptRuleAction {
             'kms:EncryptionContext:aws:ses:message-id': 'false'
           },
           StringEquals: {
-            'kms:EncryptionContext:aws:ses:source-account': new cdk.ScopedAws().accountId
+            'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.accountId
           }
         });
 
