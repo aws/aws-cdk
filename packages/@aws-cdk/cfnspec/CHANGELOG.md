@@ -1,5 +1,30 @@
 
 
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api TracingEnabled (__added__)
+* AWS::Serverless::Function PermissionsBoundary (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.DynamoDBEvent Enabled (__added__)
+* AWS::Serverless::Function.DynamoDBEvent BatchSize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Serverless::Function.KinesisEvent Enabled (__added__)
+* AWS::Serverless::Function.SQSEvent Enabled (__added__)
+
+
+
+
 
 
 
