@@ -456,7 +456,7 @@ export class VpcNetwork extends VpcNetworkBase {
     if (placement) {
       const subnets = this.subnets(placement);
       for (const sub of subnets) {
-        if (!this.isPublicSubnet(sub)) {
+        if (this.publicSubnets.indexOf(sub) === -1) {
           throw new Error(`natGatewayPlacement ${placement} contains non public subnet ${sub}`);
         }
       }
