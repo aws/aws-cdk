@@ -126,17 +126,6 @@ export abstract class CfnElement extends Construct {
   }
 }
 
-import { Reference } from "./reference";
-
-/**
- * A generic, untyped reference to a Stack Element
- */
-export class Ref extends Reference {
-  constructor(element: CfnElement) {
-    super({ Ref: element.logicalId }, 'Ref', element);
-  }
-}
-
 /**
  * Base class for referenceable CloudFormation constructs which are not Resources
  *
@@ -152,8 +141,16 @@ export abstract class CfnRefElement extends CfnElement {
    * Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID.
    */
   public get ref(): string {
-    return new Ref(this).toString();
+    return this.referenceToken.toString();
+  }
+
+  /**
+   * Return a token that will CloudFormation { Ref } this stack element
+   */
+  protected get referenceToken(): Token {
+    return new CfnReference({ Ref: this.logicalId }, 'Ref', this);
   }
 }
 
+import { CfnReference } from "./cfn-reference";
 import { findTokens } from "./resolve";

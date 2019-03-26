@@ -4,7 +4,6 @@ import { CfnParameter } from './cfn-parameter';
 import { Construct, IConstruct, PATH_SEP } from './construct';
 import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
-import { Reference } from './reference';
 import { ISynthesisSession } from './synthesis';
 import { makeUniqueId } from './uniqueid';
 
@@ -120,7 +119,7 @@ export class Stack extends Construct {
   /**
    * Other stacks this stack depends on
    */
-  private readonly stackDependencies = new Set<Stack>();
+  private readonly stackDependencies = new Set<StackDependency>();
 
   /**
    * Values set for parameters in cloud assembly.
@@ -282,19 +281,23 @@ export class Stack extends Construct {
   /**
    * Add a dependency between this stack and another stack
    */
-  public addDependency(stack: Stack) {
-    if (stack.dependsOnStack(this)) {
+  public addDependency(stack: Stack, reason?: string) {
+    if (stack === this) { return; }  // Can ignore a dependency on self
+
+    reason = reason || 'dependency added using stack.addDependency()';
+    const dep = stack.stackDependencyReasons(this);
+    if (dep !== undefined) {
         // tslint:disable-next-line:max-line-length
-        throw new Error(`Stack '${this.name}' already depends on stack '${stack.name}'. Adding this dependency would create a cyclic reference.`);
+        throw new Error(`'${stack.node.path}' depends on '${this.node.path}' (${dep.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
-    this.stackDependencies.add(stack);
+    this.stackDependencies.add({ stack, reason });
   }
 
   /**
    * Return the stacks this stack depends on
    */
   public dependencies(): Stack[] {
-    return Array.from(this.stackDependencies.values());
+    return Array.from(this.stackDependencies.values()).map(d => d.stack);
   }
 
   /**
@@ -466,8 +469,8 @@ export class Stack extends Construct {
   protected prepare() {
     // References
     for (const ref of this.node.findReferences()) {
-      if (Reference.isReferenceToken(ref)) {
-        ref.consumeFromStack(this);
+      if (CfnReference.isCfnReference(ref.reference)) {
+        ref.reference.consumeFromStack(this, ref.source);
       }
     }
 
@@ -545,13 +548,19 @@ export class Stack extends Construct {
 
   /**
    * Check whether this stack has a (transitive) dependency on another stack
+   *
+   * Returns the list of reasons on the dependency path, or undefined
+   * if there is no dependency.
    */
-  private dependsOnStack(other: Stack) {
-    if (this === other) { return true; }
+  private stackDependencyReasons(other: Stack): string[] | undefined {
+    if (this === other) { return []; }
     for (const dep of this.stackDependencies) {
-      if (dep.dependsOnStack(other)) { return true; }
+      const ret = dep.stack.stackDependencyReasons(other);
+      if (ret !== undefined) {
+        return [dep.reason].concat(ret);
+      }
     }
-    return false;
+    return undefined;
   }
 
   private collectMetadata() {
@@ -671,6 +680,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 // These imports have to be at the end to prevent circular imports
 import { ArnComponents, arnFromComponents, parseArn } from './arn';
 import { CfnElement } from './cfn-element';
+import { CfnReference } from './cfn-reference';
 import { CfnResource } from './cfn-resource';
 import { Aws, ScopedAws } from './pseudo';
 
@@ -683,4 +693,9 @@ function findResources(roots: Iterable<IConstruct>): CfnResource[] {
     ret.push(...root.node.findAll().filter(CfnResource.isCfnResource));
   }
   return ret;
+}
+
+interface StackDependency {
+  stack: Stack;
+  reason: string;
 }

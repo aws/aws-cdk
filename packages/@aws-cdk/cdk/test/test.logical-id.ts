@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CfnResource, Construct, HashedAddressingScheme, IAddressingScheme, Ref, Stack } from '../lib';
+import { CfnResource, Construct, HashedAddressingScheme, IAddressingScheme, Stack } from '../lib';
 
 /**
  * These tests are executed once (for specific ID schemes)
@@ -204,7 +204,7 @@ const allSchemesTests: {[name: string]: (scheme: IAddressingScheme, test: Test) 
 
     // WHEN
     const c1 = new CfnResource(stack, 'OriginalName', { type: 'R1' });
-    const ref = new Ref(c1);
+    const ref = c1.ref;
 
     const c2 = new CfnResource(stack, 'Construct2', { type: 'R2', properties: { ReferenceToR1: ref } });
     c2.node.addDependency(c1);
