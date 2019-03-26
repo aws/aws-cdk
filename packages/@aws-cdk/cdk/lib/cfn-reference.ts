@@ -1,5 +1,7 @@
 import { Reference } from "./reference";
 
+const CFN_REFERENCE_SYMBOL = Symbol('@aws-cdk/cdk.CfnReference');
+
 /**
  * A Token that represents a CloudFormation reference to another resource
  *
@@ -18,8 +20,8 @@ export class CfnReference extends Reference {
   /**
    * Check whether this is actually a Reference
    */
-  public static isCfnReferenceToken(x: Token): x is CfnReference {
-    return (x as any).consumeFromStack !== undefined;
+  public static isCfnReference(x: Token): x is CfnReference {
+    return (x as any)[CFN_REFERENCE_SYMBOL] === true;
   }
 
   /**
@@ -44,6 +46,7 @@ export class CfnReference extends Reference {
     this.replacementTokens = new Map<Stack, Token>();
 
     this.producingStack = target.node.stack;
+    Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
   }
 
   public resolve(context: ResolveContext): any {

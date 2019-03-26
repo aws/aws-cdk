@@ -446,7 +446,7 @@ export class Stack extends Construct {
   protected prepare() {
     // References
     for (const ref of this.node.findReferences()) {
-      if (CfnReference.isCfnReferenceToken(ref.reference)) {
+      if (CfnReference.isCfnReference(ref.reference)) {
         ref.reference.consumeFromStack(this, ref.source);
       }
     }
