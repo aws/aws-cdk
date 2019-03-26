@@ -175,7 +175,13 @@
                 "BatchSize": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
                     "PrimitiveType": "Integer",
-                    "Required": true,
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Enabled": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#dynamodb",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
                     "UpdateType": "Immutable"
                 },
                 "StartingPosition": {
@@ -266,6 +272,12 @@
                 "BatchSize": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis",
                     "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Enabled": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis",
+                    "PrimitiveType": "Boolean",
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
@@ -361,6 +373,12 @@
                 "BatchSize": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs",
                     "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Enabled": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs",
+                    "PrimitiveType": "Boolean",
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
@@ -532,6 +550,12 @@
                     "Required": true,
                     "UpdateType": "Immutable"
                 },
+                "TracingEnabled": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
+                    "PrimitiveType": "Boolean",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
                 "Variables": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
                     "PrimitiveItemType": "String",
@@ -663,6 +687,12 @@
                 "MemorySize": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
                     "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "PermissionsBoundary": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "PrimitiveType": "String",
                     "Required": false,
                     "UpdateType": "Immutable"
                 },
