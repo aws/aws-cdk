@@ -144,7 +144,7 @@ export class Cluster extends cdk.Construct implements ICluster {
    */
   public export(): ClusterImportProps {
     return {
-      clusterName: new cdk.Output(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
+      clusterName: new cdk.CfnOutput(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
       clusterArn: this.clusterArn,
       vpc: this.vpc.export(),
       securityGroups: this.connections.securityGroups.map(sg => sg.export()),

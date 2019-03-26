@@ -292,7 +292,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
     // if we have a permission resource for this relationship, add it as a dependency
     // to the bucket notifications resource, so it will be created first.
-    const permission = this.node.tryFindChild(permissionId) as cdk.Resource;
+    const permission = this.node.tryFindChild(permissionId) as cdk.CfnResource;
 
     return {
       type: s3n.BucketNotificationDestinationType.Lambda,

@@ -13,6 +13,7 @@ export interface Artifact {
   dependencies?: string[];
   missing?: { [key: string]: any };
   properties?: { [name: string]: any };
+  autoDeploy?: boolean;
 }
 
 export function validateArtifact(artifcat: Artifact) {

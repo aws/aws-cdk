@@ -9,6 +9,11 @@ export = {
     configuration.context.set('foo', 'bar');
     configuration.context.set('baz', 'quux');
 
+    test.deepEqual(configuration.context.all, {
+      foo: 'bar',
+      baz: 'quux'
+    });
+
     // WHEN
     await realHandler({
       configuration,
@@ -16,7 +21,7 @@ export = {
     } as any);
 
     // THEN
-    test.deepEqual(configuration.context.everything(), {
+    test.deepEqual(configuration.context.all, {
       baz: 'quux'
     });
 

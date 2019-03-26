@@ -49,7 +49,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    */
   public export(): NetworkLoadBalancerImportProps {
     return {
-      loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString()
+      loadBalancerArn: new cdk.CfnOutput(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString()
     };
   }
 

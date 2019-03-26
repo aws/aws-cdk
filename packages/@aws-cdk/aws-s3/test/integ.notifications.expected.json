@@ -74,7 +74,9 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": "s3.amazonaws.com"
+                "Service": {
+                  "Fn::Join": ["", ["s3.", { "Ref": "AWS::URLSuffix" }]]
+                }
               },
               "Resource": {
                 "Ref": "TopicBFC7AF6E"
@@ -113,7 +115,9 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": "s3.amazonaws.com"
+                "Service": {
+                  "Fn::Join": ["", ["s3.", { "Ref": "AWS::URLSuffix" }]]
+                }
               },
               "Resource": {
                 "Ref": "Topic3DEAE47A7"
@@ -134,7 +138,9 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": "s3.amazonaws.com"
+                "Service": {
+                  "Fn::Join": ["", ["s3.", { "Ref": "AWS::URLSuffix" }]]
+                }
               },
               "Resource": {
                 "Ref": "Topic3DEAE47A7"
@@ -155,7 +161,9 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": ["", ["lambda.", { "Ref": "AWS::URLSuffix" }]]
+                }
               }
             }
           ],

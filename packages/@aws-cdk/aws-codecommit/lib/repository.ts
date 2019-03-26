@@ -320,7 +320,7 @@ export class Repository extends RepositoryBase {
    */
   public export(): RepositoryImportProps {
     return {
-      repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
+      repositoryName: new cdk.CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
     };
   }
 

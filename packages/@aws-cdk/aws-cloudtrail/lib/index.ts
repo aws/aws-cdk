@@ -150,10 +150,9 @@ export class CloudTrail extends cdk.Construct {
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
 
-      const streamArn = `${logsRole.roleArn}:log-stream:*`;
       logsRole.addToPolicy(new iam.PolicyStatement()
         .addActions("logs:PutLogEvents", "logs:CreateLogStream")
-        .addResource(streamArn));
+        .addResource(logGroup.logGroupArn));
     }
     if (props.managementEvents) {
       const managementEvent =  {
@@ -181,6 +180,13 @@ export class CloudTrail extends cdk.Construct {
     this.cloudTrailArn = trail.trailArn;
     const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
     trail.node.addDependency(s3BucketPolicy);
+
+    // If props.sendToCloudWatchLogs is set to true then the trail needs to depend on the created logsRole
+    // so that it can create the log stream for the log group. This ensures the logsRole is created and propagated
+    // before the trail tries to create the log stream.
+    if (logsRole !== undefined) {
+      trail.node.addDependency(logsRole);
+    }
   }
 
   /**

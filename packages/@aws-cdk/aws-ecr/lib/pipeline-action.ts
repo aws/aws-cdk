@@ -18,7 +18,7 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
 
   /**
    * The name of the source's output artifact.
-   * Output artifacts are used by CodePipeline as inputs into other actions.
+   * CfnOutput artifacts are used by CodePipeline as inputs into other actions.
    *
    * @default a name will be auto-generated
    */

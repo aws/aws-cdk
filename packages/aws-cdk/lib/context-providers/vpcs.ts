@@ -41,8 +41,8 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
   private async readVpcProps(ec2: AWS.EC2, vpcId: string): Promise<cxapi.VpcContextResponse> {
     debug(`Describing VPC ${vpcId}`);
 
-    const response = await ec2.describeSubnets({ Filters: [{ Name: 'vpc-id', Values: [vpcId] }] }).promise();
-    const listedSubnets = response.Subnets || [];
+    const subnetsResponse = await ec2.describeSubnets({ Filters: [{ Name: 'vpc-id', Values: [vpcId] }] }).promise();
+    const listedSubnets = subnetsResponse.Subnets || [];
 
     // Now comes our job to separate these subnets out into AZs and subnet groups (Public, Private, Isolated)
     // We have the following attributes to go on:
@@ -68,6 +68,27 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
     const grouped = groupSubnets(subnets);
 
+    // Find attached+available VPN gateway for this VPC
+    const vpnGatewayResponse = await ec2.describeVpnGateways({
+      Filters: [
+        {
+          Name: 'attachment.vpc-id',
+          Values: [vpcId]
+        },
+        {
+          Name: 'attachment.state',
+          Values: ['attached']
+        },
+        {
+          Name: 'state',
+          Values: ['available']
+        }
+      ]
+    }).promise();
+    const vpnGatewayId = vpnGatewayResponse.VpnGateways && vpnGatewayResponse.VpnGateways.length === 1
+      ? vpnGatewayResponse.VpnGateways[0].VpnGatewayId
+      : undefined;
+
     return {
       vpcId,
       availabilityZones: grouped.azs,
@@ -77,6 +98,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       privateSubnetNames: collapse(flatMap(findGroups(SubnetType.Private, grouped), group => group.name ? [group.name] : [])),
       publicSubnetIds: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.subnets.map(s => s.subnetId))),
       publicSubnetNames: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.name ? [group.name] : [])),
+      vpnGatewayId,
     };
   }
 }

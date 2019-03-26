@@ -31,7 +31,7 @@ export interface FargateServiceProps extends BaseServiceProps {
    *
    * @default Private subnet if assignPublicIp, public subnets otherwise
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Existing security group to use for the tasks
@@ -70,7 +70,7 @@ export class FargateService extends BaseService {
       platformVersion: props.platformVersion,
     }, props.cluster.clusterName, props.taskDefinition);
 
-    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcPlacement, props.securityGroup);
+    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
 
     if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
@@ -90,7 +90,14 @@ export enum FargatePlatformVersion {
   Latest = 'LATEST',
 
   /**
-   * Version 1.2
+   * Version 1.3.0
+   *
+   * Supports secrets, task recycling.
+   */
+  Version1_3 = '1.3.0',
+
+  /**
+   * Version 1.2.0
    *
    * Supports private registries.
    */

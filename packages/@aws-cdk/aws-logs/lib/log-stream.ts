@@ -89,7 +89,7 @@ export class LogStream extends cdk.Construct implements ILogStream {
    */
   public export(): LogStreamImportProps {
     return {
-      logStreamName: new cdk.Output(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue().toString()
+      logStreamName: new cdk.CfnOutput(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue().toString()
     };
   }
 }

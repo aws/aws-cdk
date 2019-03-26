@@ -289,7 +289,7 @@ export = {
             subnetType: SubnetType.Private,
           },
         ],
-        natGatewayPlacement: {
+        natGatewaySubnets: {
           subnetName: 'egress'
         },
       });
@@ -317,12 +317,151 @@ export = {
             subnetType: SubnetType.Private,
           },
         ],
-        natGatewayPlacement: {
+        natGatewaySubnets: {
           subnetName: 'notthere',
         },
       }));
       test.done();
     },
+    'with a vpn gateway'(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC', {
+        vpnGateway: true,
+        vpnGatewayAsn: 65000
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGateway', {
+        AmazonSideAsn: 65000,
+        Type: 'ipsec.1'
+      }));
+
+      expect(stack).to(haveResource('AWS::EC2::VPCGatewayAttachment', {
+        VpcId: {
+          Ref: 'VPCB9E5F0B4'
+        },
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCPrivateSubnet1RouteTableBE8A6027'
+          },
+          {
+            Ref: 'VPCPrivateSubnet2RouteTable0A19E10E'
+          },
+          {
+            Ref: 'VPCPrivateSubnet3RouteTable192186F8'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'with a vpn gateway and route propagation on isolated subnets'(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.Private, name: 'Private' },
+          { subnetType: SubnetType.Isolated, name: 'Isolated' },
+        ],
+        vpnGateway: true,
+        vpnRoutePropagation: [SubnetType.Isolated]
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCIsolatedSubnet1RouteTableEB156210'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet2RouteTable9B4F78DC'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet3RouteTableCB6A1FDA'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'with a vpn gateway and route propagation on private and isolated subnets'(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.Private, name: 'Private' },
+          { subnetType: SubnetType.Isolated, name: 'Isolated' },
+        ],
+        vpnGateway: true,
+        vpnRoutePropagation: [
+          SubnetType.Private,
+          SubnetType.Isolated
+        ]
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCPrivateSubnet1RouteTableBE8A6027'
+          },
+          {
+            Ref: 'VPCPrivateSubnet2RouteTable0A19E10E'
+          },
+          {
+            Ref: 'VPCPrivateSubnet3RouteTable192186F8'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet1RouteTableEB156210'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet2RouteTable9B4F78DC'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet3RouteTableCB6A1FDA'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'fails when specifying vpnConnections with vpnGateway set to false'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+        vpnGateway: false,
+        vpnConnections: {
+          VpnConnection: {
+            asn: 65000,
+            ip: '192.0.2.1'
+          }
+        }
+      }), /`vpnConnections`.+`vpnGateway`.+false/);
+
+      test.done();
+    },
+    'fails when specifying vpnGatewayAsn with vpnGateway set to false'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+        vpnGateway: false,
+        vpnGatewayAsn: 65000,
+      }), /`vpnGatewayAsn`.+`vpnGateway`.+false/);
+
+      test.done();
+    }
 
   },
 
@@ -387,55 +526,86 @@ export = {
     },
   },
 
-  'can select public subnets'(test: Test) {
-    // GIVEN
-    const stack = getTestStack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+  'subnet selection': {
+    'selecting default subnets returns the private ones'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new VpcNetwork(stack, 'VPC');
 
-    // WHEN
-    const nets = vpc.subnets({ subnetsToUse: SubnetType.Public });
+      // WHEN
+      const nets = vpc.subnetIds();
 
-    // THEN
-    test.deepEqual(nets, vpc.publicSubnets);
+      // THEN
+      test.deepEqual(nets, vpc.privateSubnets.map(s => s.subnetId));
+      test.done();
+    },
 
-    test.done();
-  },
+    'can select public subnets'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new VpcNetwork(stack, 'VPC');
 
-  'can select isolated subnets'(test: Test) {
-    // GIVEN
-    const stack = getTestStack();
-    const vpc = new VpcNetwork(stack, 'VPC', {
-      subnetConfiguration: [
-        { subnetType: SubnetType.Private, name: 'Private' },
-        { subnetType: SubnetType.Isolated, name: 'Isolated' },
-      ]
-    });
+      // WHEN
+      const nets = vpc.subnetIds({ subnetType: SubnetType.Public });
 
-    // WHEN
-    const nets = vpc.subnets({ subnetsToUse: SubnetType.Isolated });
+      // THEN
+      test.deepEqual(nets, vpc.publicSubnets.map(s => s.subnetId));
 
-    // THEN
-    test.deepEqual(nets, vpc.isolatedSubnets);
+      test.done();
+    },
 
-    test.done();
-  },
+    'can select isolated subnets'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.Private, name: 'Private' },
+          { subnetType: SubnetType.Isolated, name: 'Isolated' },
+        ]
+      });
 
-  'can select subnets by name'(test: Test) {
-    // GIVEN
-    const stack = getTestStack();
-    const vpc = new VpcNetwork(stack, 'VPC', {
-      subnetConfiguration: [
-        { subnetType: SubnetType.Private, name: 'DontTalkToMe' },
-        { subnetType: SubnetType.Isolated, name: 'DontTalkAtAll' },
-      ]
-    });
+      // WHEN
+      const nets = vpc.subnetIds({ subnetType: SubnetType.Isolated });
 
-    // WHEN
-    const nets = vpc.subnets({ subnetName: 'DontTalkToMe' });
+      // THEN
+      test.deepEqual(nets, vpc.isolatedSubnets.map(s => s.subnetId));
 
-    // THEN
-    test.deepEqual(nets, vpc.privateSubnets);
-    test.done();
+      test.done();
+    },
+
+    'can select subnets by name'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.Private, name: 'DontTalkToMe' },
+          { subnetType: SubnetType.Isolated, name: 'DontTalkAtAll' },
+        ]
+      });
+
+      // WHEN
+      const nets = vpc.subnetIds({ subnetName: 'DontTalkToMe' });
+
+      // THEN
+      test.deepEqual(nets, vpc.privateSubnets.map(s => s.subnetId));
+      test.done();
+    },
+
+    'selecting default subnets in a VPC with only public subnets throws an error'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = VpcNetwork.import(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
+      });
+
+      test.throws(() => {
+        vpc.subnetIds();
+      }, /There are no 'Private' subnets in this VPC/);
+
+      test.done();
+    }
   },
 
   'export/import': {
@@ -495,11 +665,11 @@ export = {
       });
 
       // WHEN
-      const nets = importedVpc.subnets({ subnetsToUse: SubnetType.Isolated });
+      const nets = importedVpc.subnetIds({ subnetType: SubnetType.Isolated });
 
       // THEN
       test.equal(3, importedVpc.isolatedSubnets.length);
-      test.deepEqual(nets, importedVpc.isolatedSubnets);
+      test.deepEqual(nets, importedVpc.isolatedSubnets.map(s => s.subnetId));
 
       test.done();
     },
@@ -518,16 +688,17 @@ export = {
         });
 
         // WHEN
-        const nets = importedVpc.subnets({ subnetName: isolatedName });
+        const nets = importedVpc.subnetIds({ subnetName: isolatedName });
 
         // THEN
         test.equal(3, importedVpc.isolatedSubnets.length);
-        test.deepEqual(nets, importedVpc.isolatedSubnets);
+        test.deepEqual(nets, importedVpc.isolatedSubnets.map(s => s.subnetId));
       }
 
       test.done();
     },
   },
+
 };
 
 function getTestStack(): Stack {

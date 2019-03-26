@@ -27,7 +27,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -61,7 +61,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns:
           // tslint:disable-next-line:max-line-length
@@ -133,7 +133,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -350,7 +350,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -461,7 +461,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -571,7 +571,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -645,7 +645,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -755,7 +755,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -1120,7 +1120,7 @@ export = {
             { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
               Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -1242,7 +1242,7 @@ export = {
             { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
               Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole

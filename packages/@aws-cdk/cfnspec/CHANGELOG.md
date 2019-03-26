@@ -1,4 +1,171 @@
 
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api TracingEnabled (__added__)
+* AWS::Serverless::Function PermissionsBoundary (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.DynamoDBEvent Enabled (__added__)
+* AWS::Serverless::Function.DynamoDBEvent BatchSize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Serverless::Function.KinesisEvent Enabled (__added__)
+* AWS::Serverless::Function.SQSEvent Enabled (__added__)
+
+
+
+
+
+
+
+
+
+# CloudFormation Resource Specification v2.28.0
+
+## New Resource Types
+
+* AWS::Greengrass::ConnectorDefinition
+* AWS::Greengrass::ConnectorDefinitionVersion
+* AWS::Greengrass::CoreDefinition
+* AWS::Greengrass::CoreDefinitionVersion
+* AWS::Greengrass::DeviceDefinition
+* AWS::Greengrass::DeviceDefinitionVersion
+* AWS::Greengrass::FunctionDefinition
+* AWS::Greengrass::FunctionDefinitionVersion
+* AWS::Greengrass::Group
+* AWS::Greengrass::GroupVersion
+* AWS::Greengrass::LoggerDefinition
+* AWS::Greengrass::LoggerDefinitionVersion
+* AWS::Greengrass::ResourceDefinitionVersion
+* AWS::Greengrass::SubscriptionDefinition
+* AWS::Greengrass::SubscriptionDefinitionVersion
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AppStream::Fleet Tags (__added__)
+* AWS::AppStream::ImageBuilder Tags (__added__)
+* AWS::AppStream::Stack Tags (__added__)
+* AWS::SageMaker::NotebookInstance RootAccess (__added__)
+
+## Property Type Changes
+
+* AWS::CodeBuild::Project.GitSubmodulesConfig (__added__)
+* AWS::CodeBuild::Project.S3LogsConfig EncryptionDisabled (__added__)
+* AWS::CodeBuild::Project.Source GitSubmodulesConfig (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Application Location.PrimitiveType (__deleted__)
+* AWS::Serverless::Application Location.PrimitiveTypes (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.Auth Authorizers.Type (__deleted__)
+* AWS::Serverless::Api.Auth Authorizers.PrimitiveType (__added__)
+
+# CloudFormation Resource Specification v2.26.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::SSM::PatchBaseline Tags (__added__)
+* AWS::StepFunctions::Activity Tags (__added__)
+* AWS::StepFunctions::StateMachine Tags (__added__)
+
+## Property Type Changes
+
+* AWS::StepFunctions::Activity.TagsEntry (__added__)
+* AWS::StepFunctions::StateMachine.TagsEntry (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+* Tag Key.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v2.25.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::ApiGateway::Authorizer Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudWatch::Alarm Metrics (__added__)
+* AWS::EC2::VPCEndpoint VPCEndpointType (__deleted__)
+* AWS::EC2::VPCEndpoint VpcEndpointType (__added__)
+* AWS::ECS::Cluster Tags (__deleted__)
+* AWS::ECS::Service Tags (__deleted__)
+* AWS::ECS::TaskDefinition Tags (__deleted__)
+* AWS::ElasticLoadBalancingV2::TargetGroup HealthCheckEnabled (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup Port.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::TargetGroup Protocol.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::TargetGroup VpcId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SNS::Subscription Protocol.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SNS::Subscription TopicArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SSM::MaintenanceWindow Tags (__added__)
+
+## Property Type Changes
+
+* AWS::CloudWatch::Alarm.Metric (__added__)
+* AWS::CloudWatch::Alarm.MetricDataQuery (__added__)
+* AWS::CloudWatch::Alarm.MetricStat (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+
+
 # CloudFormation Resource Specification v2.24.0
 
 ## New Resource Types

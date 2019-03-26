@@ -30,7 +30,7 @@ export = {
     });
 
     // verify that now the template contains parameters for this asset
-    const template = stack.toCloudFormation();
+    const template = stack._toCloudFormation();
     test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
     test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 
@@ -74,7 +74,7 @@ export = {
     });
 
     // verify that now the template contains parameters for this asset
-    const template = stack.toCloudFormation();
+    const template = stack._toCloudFormation();
     test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
     test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 
@@ -174,7 +174,7 @@ export = {
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
     const location = path.join(__dirname, 'sample-asset-directory');
-    const resource = new cdk.Resource(stack, 'MyResource', { type: 'My::Resource::Type' });
+    const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });
     const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: location });
 
     // WHEN
@@ -195,7 +195,7 @@ export = {
     const stack = new cdk.Stack();
 
     const location = path.join(__dirname, 'sample-asset-directory');
-    const resource = new cdk.Resource(stack, 'MyResource', { type: 'My::Resource::Type' });
+    const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });
     const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: location });
 
     // WHEN

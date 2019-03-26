@@ -18,10 +18,11 @@ const CONTEXT_KEY = 'context';
  */
 export class Configuration {
   public settings = new Settings();
-  public context = new Context(new Settings(), [], new Settings());
+  public context = new Context();
 
   private readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
   private readonly commandLineArguments: Settings;
+  private readonly commandLineContext: Settings;
   private projectConfig: Settings;
   private projectContext: Settings;
   private loaded = false;
@@ -30,6 +31,7 @@ export class Configuration {
     this.commandLineArguments = commandLineArguments
                               ? Settings.fromCommandLineArguments(commandLineArguments)
                               : new Settings();
+    this.commandLineContext = this.commandLineArguments.subSettings([CONTEXT_KEY]).makeReadOnly();
   }
 
   /**
@@ -40,7 +42,12 @@ export class Configuration {
     this.projectConfig = await loadAndLog(PROJECT_CONFIG);
     this.projectContext = await loadAndLog(PROJECT_CONTEXT);
 
-    this.context = new Context(this.projectConfig, [CONTEXT_KEY], this.projectContext);
+    await this.migrateLegacyContext();
+
+    this.context = new Context(
+        this.commandLineContext,
+        this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
+        this.projectContext);
 
     // Build settings from what's left
     this.settings = this.defaultConfig
@@ -55,17 +62,42 @@ export class Configuration {
   }
 
   /**
-   * Save the project config
+   * Save the project context
    */
   public async saveContext(): Promise<this> {
-    if (!this.loaded) { return this; }
+    if (!this.loaded) { return this; }  // Avoid overwriting files with nothing
 
-    if (this.context.modifiedBottom) {
-      await this.projectConfig.save(PROJECT_CONFIG);
-    }
     await this.projectContext.save(PROJECT_CONTEXT);
 
     return this;
+  }
+
+  /**
+   * Migrate context from the 'context' field in the projectConfig object to the dedicated object
+   *
+   * Only migrate context whose key contains a ':', to migrate only context generated
+   * by context providers.
+   */
+  private async migrateLegacyContext() {
+    const legacyContext = this.projectConfig.get([CONTEXT_KEY]);
+    if (legacyContext === undefined) { return; }
+
+    const toMigrate = Object.keys(legacyContext).filter(k => k.indexOf(':') > -1);
+    if (toMigrate.length === 0) { return; }
+
+    for (const key of toMigrate) {
+      this.projectContext.set([key], legacyContext[key]);
+      this.projectConfig.unset([CONTEXT_KEY, key]);
+    }
+
+    // If the source object is empty now, completely remove it
+    if (Object.keys(this.projectConfig.get([CONTEXT_KEY])).length === 0) {
+      this.projectConfig.unset([CONTEXT_KEY]);
+    }
+
+    // Save back
+    await this.projectConfig.save(PROJECT_CONFIG);
+    await this.projectContext.save(PROJECT_CONTEXT);
   }
 }
 
@@ -73,48 +105,60 @@ async function loadAndLog(fileName: string): Promise<Settings> {
   const ret = new Settings();
   await ret.load(fileName);
   if (!ret.empty) {
-    debug(fileName + ':', JSON.stringify(ret.get([]), undefined, 2));
+    debug(fileName + ':', JSON.stringify(ret.all, undefined, 2));
   }
   return ret;
 }
 
 /**
- * Class that supports overlaying 2 property bags
+ * Class that supports overlaying property bags
  *
- * Writes go to the topmost property bag, but if any writes collide between
- * them the value will be deleted from the underlying property bag.
+ * Reads come from the first property bag that can has the given key,
+ * writes go to the first property bag that is not readonly. A write
+ * will remove the value from all property bags after the first
+ * writable one.
  */
 export class Context {
-  public modifiedBottom = false;
+  private readonly bags: Settings[];
 
-  constructor(private readonly bottom: Settings, private readonly bottomPrefixPath: string[], private readonly top: Settings) {
+  constructor(...bags: Settings[]) {
+    this.bags = bags.length > 0 ? bags : [new Settings()];
   }
 
   public get keys(): string[] {
-    return Object.keys(this.everything());
+    return Object.keys(this.all);
   }
 
   public has(key: string) {
     return this.keys.indexOf(key) > -1;
   }
 
-  public everything(): {[key: string]: any} {
-    const b = this.bottom.get(this.bottomPrefixPath) || {};
-    const t = this.top.get([]) || {};
-    return Object.assign(b, t);
+  public get all(): {[key: string]: any} {
+    let ret = new Settings();
+
+    // In reverse order so keys to the left overwrite keys to the right of them
+    for (const bag of [...this.bags].reverse()) {
+      ret = ret.merge(bag);
+    }
+
+    return ret.all;
   }
 
   public get(key: string): any {
-    let x = this.top.get([key]);
-    if (x === undefined) { x = this.bottom.get(this.bottomPrefixPath.concat([key])); }
-    return x;
+    for (const bag of this.bags) {
+      const v = bag.get([key]);
+      if (v !== undefined) { return v; }
+    }
+    return undefined;
   }
 
   public set(key: string, value: any) {
-    this.top.set([key], value);
-    if (this.bottom.get(this.bottomPrefixPath.concat([key])) !== undefined) {
-      this.bottom.unset(this.bottomPrefixPath.concat([key]));
-      this.modifiedBottom = true;
+    for (const bag of this.bags) {
+      if (bag.readOnly) { continue; }
+
+      // All bags past the first one have the value erased
+      bag.set([key], value);
+      value = undefined;
     }
   }
 
@@ -142,7 +186,7 @@ export class Settings {
     const context: any = {};
 
     // Turn list of KEY=VALUE strings into an object
-    for (const assignment of (argv.context || [])) {
+    for (const assignment of ((argv as any).context || [])) {
       const parts = assignment.split('=', 2);
       if (parts.length === 2) {
         debug('CLI argument context: %s=%s', parts[0], parts[1]);
@@ -177,7 +221,7 @@ export class Settings {
     return ret;
   }
 
-  constructor(private settings: SettingsMap = {}, private readOnly = false) {}
+  constructor(private settings: SettingsMap = {}, public readonly readOnly = false) {}
 
   public async load(fileName: string): Promise<this> {
     if (this.readOnly) {
@@ -205,14 +249,20 @@ export class Settings {
     return this;
   }
 
+  public get all(): any {
+    return this.get([]);
+  }
+
   public merge(other: Settings): Settings {
     return new Settings(util.deepMerge(this.settings, other.settings));
   }
 
+  public subSettings(keyPrefix: string[]) {
+    return new Settings(this.get(keyPrefix) || {}, false);
+  }
+
   public makeReadOnly(): Settings {
-    const ret = this.clone();
-    ret.readOnly = true;
-    return ret;
+    return new Settings(this.settings, true);
   }
 
   public clear() {
@@ -245,10 +295,6 @@ export class Settings {
 
   public unset(path: string[]) {
     this.set(path, undefined);
-  }
-
-  public clone() {
-    return new Settings({ ...this.settings });
   }
 
   private prohibitContextKey(key: string, fileName: string) {
