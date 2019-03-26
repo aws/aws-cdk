@@ -1,5 +1,6 @@
 import { Construct, IConstruct, IDependable } from "@aws-cdk/cdk";
 import { DEFAULT_SUBNET_NAME, subnetName } from './util';
+import { VpcInterfaceEndpoint, VpcInterfaceEndpointOptions } from './vpc-endpoint';
 import { VpnConnection, VpnConnectionOptions } from './vpn';
 
 export interface IVpcSubnet extends IConstruct {
@@ -72,6 +73,11 @@ export interface IVpcNetwork extends IConstruct {
   subnetIds(selection?: SubnetSelection): string[];
 
   /**
+   * Return the subnets appropriate for the placement strategy
+   */
+  subnets(selection?: SubnetSelection): IVpcSubnet[];
+
+  /**
    * Return a dependable object representing internet connectivity for the given subnets
    */
   subnetInternetDependencies(selection?: SubnetSelection): IDependable;
@@ -85,6 +91,11 @@ export interface IVpcNetwork extends IConstruct {
    * Adds a new VPN connection to this VPC
    */
   addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection;
+
+  /**
+   * Adds a new interface endpoint to this VPC
+   */
+  addInterfaceEndpoint(id: string, options: VpcInterfaceEndpointOptions): VpcInterfaceEndpoint
 
   /**
    * Exports this VPC so it can be consumed by another stack.
@@ -244,6 +255,16 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   }
 
   /**
+   * Adds a new interface endpoint to this VPC
+   */
+  public addInterfaceEndpoint(id: string, options: VpcInterfaceEndpointOptions): VpcInterfaceEndpoint {
+    return new VpcInterfaceEndpoint(this, id, {
+      vpc: this,
+      ...options
+    });
+  }
+
+  /**
    * Export this VPC from the stack
    */
   public abstract export(): VpcNetworkImportProps;
@@ -266,7 +287,7 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   /**
    * Return the subnets appropriate for the placement strategy
    */
-  protected subnets(selection: SubnetSelection = {}): IVpcSubnet[] {
+  public subnets(selection: SubnetSelection = {}): IVpcSubnet[] {
     selection = reifySelectionDefaults(selection);
 
     // Select by name

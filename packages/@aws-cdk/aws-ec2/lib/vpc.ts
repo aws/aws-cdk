@@ -4,6 +4,7 @@ import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, Cfn
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
+import { VpcEndpointAwsService, VpcGatewayEndpoint, VpcGatewayEndpointOptions } from './vpc-endpoint';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
 import { IVpcNetwork, IVpcSubnet, SubnetSelection, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcSubnetImportProps } from './vpc-ref';
 import { VpnConnectionOptions, VpnConnectionType } from './vpn';
@@ -144,6 +145,11 @@ export interface VpcNetworkProps {
    * @default on the route tables associated with private subnets
    */
   vpnRoutePropagation?: SubnetType[]
+
+  /**
+   * Gateway endpoints to add to this VPC.
+   */
+  gatewayEndpoints?: { [id: string]: VpcGatewayEndpointOptions }
 }
 
 /**
@@ -422,6 +428,48 @@ export class VpcNetwork extends VpcNetworkBase {
         this.addVpnConnection(connectionId, connection);
       }
     }
+
+    // Allow creation of gateway endpoints on VPC instantiation as those can be
+    // immediately functional without further configuration. This is not the case
+    // for interface endpoints where the security group must be configured.
+    if (props.gatewayEndpoints) {
+      const gatewayEndpoints = props.gatewayEndpoints || {};
+      for (const [endpointId, endpoint] of Object.entries(gatewayEndpoints)) {
+        this.addGatewayEndpoint(endpointId, endpoint);
+      }
+    }
+  }
+
+  /**
+   * Adds a new gateway endpoint to this VPC
+   */
+  public addGatewayEndpoint(id: string, options: VpcGatewayEndpointOptions): VpcGatewayEndpoint {
+    return new VpcGatewayEndpoint(this, id, {
+      vpc: this,
+      ...options
+    });
+  }
+
+  /**
+   * Adds a new S3 gateway endpoint to this VPC
+   */
+  public addS3Endpoint(id: string, subnets?: SubnetSelection[]): VpcGatewayEndpoint {
+    return new VpcGatewayEndpoint(this, id, {
+      service: VpcEndpointAwsService.S3,
+      vpc: this,
+      subnets
+    });
+  }
+
+  /**
+   * Adds a new DynamoDB gateway endpoint to this VPC
+   */
+  public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection[]): VpcGatewayEndpoint {
+    return new VpcGatewayEndpoint(this, id, {
+      service: VpcEndpointAwsService.DynamoDb,
+      vpc: this,
+      subnets
+    });
   }
 
   /**

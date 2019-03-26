@@ -353,3 +353,8 @@ const vpnConnection = vpc.addVpnConnection('Dynamic', {
 });
 const state = vpnConnection.metricTunnelState();
 ```
+
+### VPC endpoints
+VPC gateway and interface endpoints can be added to a VPC:
+
+[example of setting up VPC endpoints](test/integ.vpc-endpoint.lit.ts)
