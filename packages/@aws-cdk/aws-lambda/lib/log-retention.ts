@@ -27,8 +27,6 @@ export interface LogRetentionProps {
  * is removed when `retentionDays` is `undefined` or equal to `Infinity`.
  */
 export class LogRetention extends cdk.Construct {
-  // private static logRetentionRolePolicy: boolean = false;
-
   constructor(scope: cdk.Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
 
