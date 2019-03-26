@@ -26,12 +26,12 @@ export class DatabaseSecret extends secretsmanager.Secret {
   constructor(scope: cdk.Construct, id: string, props: DatabaseSecretProps) {
     super(scope, id, {
       encryptionKey: props.encryptionKey,
-      generateSecretString: ({
+      generateSecretString: {
         passwordLength: 30, // Oracle password cannot have more than 30 characters
         secretStringTemplate: JSON.stringify({ username: props.username }),
         generateStringKey: 'password',
         excludeCharacters: '"@/\\'
-      }) as secretsmanager.TemplatedSecretStringGenerator
+      }
     });
   }
 }
