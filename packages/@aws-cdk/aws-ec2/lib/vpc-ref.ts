@@ -77,13 +77,9 @@ export interface IVpcNetwork extends IConstruct {
   subnetInternetDependencies(selection?: SubnetSelection): IDependable;
 
   /**
-   * Return whether the given subnet is one of this VPC's public subnets.
-   *
-   * The subnet must literally be one of the subnet object obtained from
-   * this VPC. A subnet that merely represents the same subnet will
-   * never return true.
+   * Return whether all of the given subnets are from the VPC's public subnets.
    */
-  isPublicSubnet(subnet: IVpcSubnet): boolean;
+  isPublicSubnets(subnetIds: string[]): boolean;
 
   /**
    * Adds a new VPN connection to this VPC
@@ -253,14 +249,11 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   public abstract export(): VpcNetworkImportProps;
 
   /**
-   * Return whether the given subnet is one of this VPC's public subnets.
-   *
-   * The subnet must literally be one of the subnet object obtained from
-   * this VPC. A subnet that merely represents the same subnet will
-   * never return true.
+   * Return whether all of the given subnets are from the VPC's public subnets.
    */
-  public isPublicSubnet(subnet: IVpcSubnet) {
-    return this.publicSubnets.indexOf(subnet) > -1;
+  public isPublicSubnets(subnetIds: string[]): boolean {
+    const pubIds = new Set(this.publicSubnets.map(n => n.subnetId));
+    return subnetIds.every(pubIds.has.bind(pubIds));
   }
 
   /**
