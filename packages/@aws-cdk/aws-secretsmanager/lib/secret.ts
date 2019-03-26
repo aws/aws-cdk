@@ -189,7 +189,7 @@ export class Secret extends SecretBase {
     if (props.generateSecretString &&
         (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&
         !(props.generateSecretString.secretStringTemplate && props.generateSecretString.generateStringKey)) {
-      throw new Error('Both `secretStringTemplate` and `generateStringKey` must be specified.');
+      throw new Error('`secretStringTemplate` and `generateStringKey` must be specified together.');
     }
 
     const resource = new secretsmanager.CfnSecret(this, 'Resource', {
