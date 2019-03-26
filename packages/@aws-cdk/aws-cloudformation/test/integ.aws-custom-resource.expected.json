@@ -4,7 +4,7 @@
       "Type": "AWS::SNS::Topic"
     },
     "Publish2E9BDF73": {
-      "Type": "AWS::CloudFormation::CustomResource",
+      "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -46,7 +46,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -160,7 +170,7 @@
       ]
     },
     "ListTopicsCE1E0341": {
-      "Type": "AWS::CloudFormation::CustomResource",
+      "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [

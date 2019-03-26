@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
-import { AwsSdkJsCustomResource } from '../lib';
+import { AwsCustomResource } from '../lib';
 
 const app = new cdk.App();
 
@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-sdk-js');
 
 const topic = new sns.Topic(stack, 'Topic');
 
-const snsPublish = new AwsSdkJsCustomResource(stack, 'Publish', {
+const snsPublish = new AwsCustomResource(stack, 'Publish', {
   physicalResourceId: topic.topicArn,
   onUpdate: {
     service: 'SNS',
@@ -21,7 +21,7 @@ const snsPublish = new AwsSdkJsCustomResource(stack, 'Publish', {
   }
 });
 
-const listTopics = new AwsSdkJsCustomResource(stack, 'ListTopics', {
+const listTopics = new AwsCustomResource(stack, 'ListTopics', {
   physicalResourceId: topic.topicArn,
   onUpdate: {
     service: 'SNS',
@@ -29,7 +29,7 @@ const listTopics = new AwsSdkJsCustomResource(stack, 'ListTopics', {
   }
 });
 
-new cdk.Output(stack, 'MessageId', { value: snsPublish.getData('MessageId') });
-new cdk.Output(stack, 'TopicArn', { value: listTopics.getData('Topics.0.TopicArn') });
+new cdk.CfnOutput(stack, 'MessageId', { value: snsPublish.getData('MessageId') });
+new cdk.CfnOutput(stack, 'TopicArn', { value: listTopics.getData('Topics.0.TopicArn') });
 
 app.run();

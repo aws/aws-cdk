@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { AwsSdkJsCustomResource } from '../lib';
+import { AwsCustomResource } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -12,7 +12,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new AwsSdkJsCustomResource(stack, 'AwsSdk', {
+    new AwsCustomResource(stack, 'AwsSdk', {
       physicalResourceId: 'id1234',
       onCreate: {
         service: 'CloudWatchLogs',
@@ -32,7 +32,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+    expect(stack).to(haveResource('Custom::AWS', {
       "PhysicalResourceId": "id1234",
       "Create": {
         "service": "CloudWatchLogs",
@@ -77,7 +77,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new AwsSdkJsCustomResource(stack, 'AwsSdk', {
+    new AwsCustomResource(stack, 'AwsSdk', {
       physicalResourceId: 'id1234',
       onUpdate: {
         service: 's3',
@@ -91,7 +91,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+    expect(stack).to(haveResource('Custom::AWS', {
       "PhysicalResourceId": "id1234",
       "Create": {
         "service": "s3",
@@ -121,7 +121,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new AwsSdkJsCustomResource(stack, 'AwsSdk', {
+    new AwsCustomResource(stack, 'AwsSdk', {
       physicalResourceId: 'id1234',
       onUpdate: {
         service: 'S3',
@@ -160,7 +160,7 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => {
-      new AwsSdkJsCustomResource(stack, 'AwsSdk', { physicalResourceId: 'id1234' });
+      new AwsCustomResource(stack, 'AwsSdk', { physicalResourceId: 'id1234' });
     }, /`onCreate`.+`onUpdate`.+`onDelete`/);
 
     test.done();

@@ -32,7 +32,7 @@ export interface AwsSdkCall {
   parameters?: any;
 }
 
-export interface AwsSdkJsCustomResourceProps {
+export interface AwsCustomResourceProps {
   /**
    * The physical resource id of the custom resource.
    */
@@ -69,7 +69,7 @@ export interface AwsSdkJsCustomResourceProps {
   policyStatements?: iam.PolicyStatement[];
 }
 
-export class AwsSdkJsCustomResource extends cdk.Construct {
+export class AwsCustomResource extends cdk.Construct {
   /**
    * The physical resource id of the custom resource.
    */
@@ -100,7 +100,7 @@ export class AwsSdkJsCustomResource extends cdk.Construct {
    */
   private readonly customResource: CustomResource;
 
-  constructor(scope: cdk.Construct, id: string, props: AwsSdkJsCustomResourceProps) {
+  constructor(scope: cdk.Construct, id: string, props: AwsCustomResourceProps) {
     super(scope, id);
 
     if (!props.onCreate && !props.onUpdate && !props.onDelete) {
@@ -113,7 +113,7 @@ export class AwsSdkJsCustomResource extends cdk.Construct {
     this.physicalResourceId = props.physicalResourceId;
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
-      code: lambda.Code.asset(path.join(__dirname, 'aws-sdk-js-caller')),
+      code: lambda.Code.asset(path.join(__dirname, 'aws-custom-resource-provider')),
       runtime: lambda.Runtime.NodeJS810,
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287'
@@ -139,6 +139,7 @@ export class AwsSdkJsCustomResource extends cdk.Construct {
     }
 
     this.customResource = new CustomResource(this, 'Resource', {
+      resourceType: 'Custom::AWS',
       lambdaProvider: fn,
       properties: {
         physicalResourceId: this.physicalResourceId,
