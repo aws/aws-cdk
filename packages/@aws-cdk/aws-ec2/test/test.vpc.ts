@@ -10,7 +10,7 @@ export = {
       "vpc.vpcId returns a token to the VPC ID"(test: Test) {
         const stack = getTestStack();
         const vpc = new VpcNetwork(stack, 'TheVPC');
-        test.deepEqual(stack.node.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' });
+        test.deepEqual(stack.node.resolve(vpc.vpcId), {Ref: 'TheVPC92636AB0' } );
         test.done();
       },
 
@@ -30,11 +30,11 @@ export = {
         new VpcNetwork(stack, 'TheVPC');
         expect(stack).to(
           haveResource('AWS::EC2::VPC',
-            hasTags([{ Key: 'Name', Value: 'TheVPC' }]))
+            hasTags( [ {Key: 'Name', Value: 'TheVPC'} ]))
         );
         expect(stack).to(
           haveResource('AWS::EC2::InternetGateway',
-            hasTags([{ Key: 'Name', Value: 'TheVPC' }]))
+            hasTags( [ {Key: 'Name', Value: 'TheVPC'} ]))
         );
         test.done();
       },
@@ -109,146 +109,13 @@ export = {
     "with no subnets defined, the VPC should have an IGW, and a NAT Gateway per AZ"(test: Test) {
       const stack = getTestStack();
       const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
-      new VpcNetwork(stack, 'TheVPC', {});
+      new VpcNetwork(stack, 'TheVPC', { });
       expect(stack).to(countResources("AWS::EC2::InternetGateway", 1));
       expect(stack).to(countResources("AWS::EC2::NatGateway", zones));
       test.done();
     },
 
-    "with subnetGroups containing more subnets than maximum should throw an Error"(test: Test) {
-      const stack = getTestStack();
-      test.throws(() => new VpcNetwork(stack, 'TheVPC', {
-        cidr: '10.0.0.0/16',
-        subnetConfiguration: [
-          {
-            subnetGroupName: 'applicationsGroup',
-            cidrMask: 24,
-            maxSubnets: 3,
-            subnetConfiguration: [
-              { name: 'application1', subnetType: SubnetType.Private },
-              { name: 'application2', subnetType: SubnetType.Private },
-              { name: 'application3', subnetType: SubnetType.Private },
-              { name: 'application4', subnetType: SubnetType.Private },
-            ],
-          }],
-      }));
-      test.done();
-    },
-
-    "with custom subnets and subnetGroups, the VPC should contain correct number of subnets, an IGW, and a NAT Gateway per AZ "(test: Test) {
-      const stack = getTestStack();
-      const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
-      new VpcNetwork(stack, 'TheVPC', {
-        cidr: '10.0.0.0/16',
-        subnetConfiguration: [
-          {
-            subnetGroupName: 'applicationsGroup',
-            cidrMask: 24,
-            maxSubnets: 4,
-            subnetConfiguration: [
-              { name: 'application1', subnetType: SubnetType.Private },
-              { name: 'application2', subnetType: SubnetType.Private },
-            ],
-          },
-          {
-            cidrMask: 24,
-            name: 'ingress',
-            subnetType: SubnetType.Public,
-          },
-          {
-            cidrMask: 28,
-            name: 'rds',
-            subnetType: SubnetType.Isolated,
-          }
-        ],
-        maxAZs: 3
-      });
-      expect(stack).to(countResources("AWS::EC2::InternetGateway", 1));
-      expect(stack).to(countResources("AWS::EC2::NatGateway", zones));
-      expect(stack).to(countResources("AWS::EC2::Subnet", 12));
-
-      test.done();
-    },
-
-    "with custom subnets and subnetGroups, the VPC subnets should have correct CidrBlocks"(test: Test) {
-      const stack = getTestStack();
-      new VpcNetwork(stack, 'TheVPC', {
-        cidr: '10.0.0.0/16',
-        subnetConfiguration: [
-          {
-            subnetGroupName: 'applicationsGroup',
-            cidrMask: 24,
-            maxSubnets: 10,
-            subnetConfiguration: [
-              { name: 'application1', subnetType: SubnetType.Private },
-              { name: 'application2', subnetType: SubnetType.Private },
-            ],
-          },
-          {
-            cidrMask: 24,
-            name: 'ingress',
-            subnetType: SubnetType.Public,
-          },
-        ],
-        maxAZs: 3
-      });
-
-      // Subnets for application1 and applicaton2
-      for (let i = 0; i < 6; i++) {
-        expect(stack).to(haveResource("AWS::EC2::Subnet", {
-          CidrBlock: `10.0.${i}.0/24`
-        }));
-      }
-
-      // IP's within blocks 10.0.0.0/24 to 10.0.29.0/24 should be allocated by Subnet Group
-
-      // Subnets for ingress
-      for (let i = 30; i < 33; i++) {
-        expect(stack).to(haveResource("AWS::EC2::Subnet", {
-          CidrBlock: `10.0.${i}.0/24`
-        }));
-      }
-
-      test.done();
-    },
-
-    "with subnetGroups without subnetConfiguration, no subnet should have cidrMask within reserved block"(test: Test) {
-      const stack = getTestStack();
-      new VpcNetwork(stack, 'TheVPC', {
-        cidr: '10.0.0.0/16',
-        subnetConfiguration: [
-          {
-            subnetGroupName: 'applicationsGroup',
-            cidrMask: 24,
-            maxSubnets: 10,
-          },
-          {
-            cidrMask: 24,
-            name: 'ingress',
-            subnetType: SubnetType.Public,
-          },
-        ],
-        maxAZs: 3
-      });
-
-      // No Subnets for application group
-      for (let i = 0; i < 9; i++) {
-        expect(stack).notTo(haveResource("AWS::EC2::Subnet", {
-          CidrBlock: `10.0.${i}.0/24`
-        }));
-      }
-
-      // Subnets for ingress
-      for (let i = 30; i < 33; i++) {
-        expect(stack).to(haveResource("AWS::EC2::Subnet", {
-          CidrBlock: `10.0.${i}.0/24`
-        }));
-      }
-
-      test.done();
-    },
-
-    "with custom subnets, the VPC should have the right number of subnets, an IGW, and a NAT Gateway per AZ"(test: Test) {
+    "with custom subents, the VPC should have the right number of subnets, an IGW, and a NAT Gateway per AZ"(test: Test) {
       const stack = getTestStack();
       const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
       new VpcNetwork(stack, 'TheVPC', {
@@ -366,7 +233,7 @@ export = {
       }
       expect(stack).to(haveResourceLike("AWS::EC2::Route", {
         DestinationCidrBlock: '0.0.0.0/0',
-        NatGatewayId: {},
+        NatGatewayId: { },
       }));
 
       test.done();
@@ -384,7 +251,7 @@ export = {
       }
       expect(stack).to(haveResourceLike("AWS::EC2::Route", {
         DestinationCidrBlock: '0.0.0.0/0',
-        NatGatewayId: {},
+        NatGatewayId: { },
       }));
       test.done();
     },
@@ -398,7 +265,7 @@ export = {
       expect(stack).to(countResources("AWS::EC2::NatGateway", 1));
       expect(stack).to(haveResourceLike("AWS::EC2::Route", {
         DestinationCidrBlock: '0.0.0.0/0',
-        NatGatewayId: {},
+        NatGatewayId: { },
       }));
       test.done();
     },
@@ -611,17 +478,17 @@ export = {
   'When tagging': {
     'VPC propagated tags will be on subnet, IGW, routetables, NATGW'(test: Test) {
       const stack = getTestStack();
-      const tags = {
+      const tags =  {
         VpcType: 'Good',
       };
       const noPropTags = {
         BusinessUnit: 'Marketing',
       };
-      const allTags = { ...tags, ...noPropTags };
+      const allTags  = {...tags, ...noPropTags};
 
       const vpc = new VpcNetwork(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.node.apply(new Tag('BusinessUnit', 'Marketing', { includeResourceTypes: [CfnVPC.resourceTypeName] }));
+      vpc.node.apply(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.resourceTypeName]}));
       vpc.node.apply(new Tag('VpcType', 'Good'));
       expect(stack).to(haveResource("AWS::EC2::VPC", hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
@@ -637,12 +504,12 @@ export = {
       const stack = getTestStack();
       const vpc = new VpcNetwork(stack, 'TheVPC');
       for (const subnet of vpc.publicSubnets) {
-        const tag = { Key: 'Name', Value: subnet.node.path };
+        const tag = {Key: 'Name', Value: subnet.node.path};
         expect(stack).to(haveResource('AWS::EC2::NatGateway', hasTags([tag])));
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       for (const subnet of vpc.privateSubnets) {
-        const tag = { Key: 'Name', Value: subnet.node.path };
+        const tag = {Key: 'Name', Value: subnet.node.path};
         expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
       }
       test.done();
@@ -651,7 +518,7 @@ export = {
       const stack = getTestStack();
 
       const vpc = new VpcNetwork(stack, 'TheVPC');
-      const tag = { Key: 'Late', Value: 'Adder' };
+      const tag = {Key: 'Late', Value: 'Adder'};
       expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
       vpc.node.apply(new Tag(tag.Key, tag.Value));
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
@@ -852,17 +719,17 @@ function doImportExportTest(constructFn: (scope: Construct) => VpcNetwork): IVpc
   return VpcNetwork.import(stack2, 'VPC2', vpc1.export());
 }
 
-function toCfnTags(tags: any): Array<{ Key: string, Value: string }> {
-  return Object.keys(tags).map(key => {
-    return { Key: key, Value: tags[key] };
+function toCfnTags(tags: any): Array<{Key: string, Value: string}> {
+  return Object.keys(tags).map( key => {
+    return {Key: key, Value: tags[key]};
   });
 }
 
-function hasTags(expectedTags: Array<{ Key: string, Value: string }>): (props: any) => boolean {
+function hasTags(expectedTags: Array<{Key: string, Value: string}>): (props: any) => boolean {
   return (props: any) => {
     try {
       const tags = props.Tags;
-      const actualTags = tags.filter((tag: { Key: string, Value: string }) => {
+      const actualTags = tags.filter( (tag: {Key: string, Value: string}) => {
         for (const expectedTag of expectedTags) {
           if (isSuperObject(expectedTag, tag)) {
             return true;
