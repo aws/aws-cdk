@@ -1,4 +1,4 @@
-import { CfnRefElement, Ref } from './cfn-element';
+import { CfnRefElement } from './cfn-element';
 import { Construct } from './construct';
 import { Token } from './token';
 
@@ -99,7 +99,7 @@ export class CfnParameter extends CfnRefElement {
   constructor(scope: Construct, id: string, props: CfnParameterProps) {
     super(scope, id);
     this.properties = props;
-    this.value = new Ref(this);
+    this.value = this.referenceToken;
     this.stringValue = this.value.toString();
     this.stringListValue = this.value.toList();
   }
