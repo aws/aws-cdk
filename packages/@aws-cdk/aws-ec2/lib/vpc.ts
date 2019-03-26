@@ -3,7 +3,7 @@ import { ConcreteDependable, IDependable } from '@aws-cdk/cdk';
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
+import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId } from './util';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
 import { IVpcNetwork, IVpcSubnet, SubnetSelection, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcSubnetImportProps } from './vpc-ref';
 import { VpnConnectionOptions, VpnConnectionType } from './vpn';
@@ -115,7 +115,7 @@ export interface VpcNetworkProps {
    * @default the VPC CIDR will be evenly divided between 1 public and 1
    * private subnet per AZ
    */
-  subnetConfiguration?: SubnetConfiguration[];
+  subnetConfiguration?: Array<SubnetConfiguration | SubnetGroupConfiguration>;
 
   /**
    * Indicates whether a VPN gateway should be created and attached to this VPC.
@@ -166,6 +166,13 @@ export enum DefaultInstanceTenancy {
  */
 export interface SubnetConfiguration {
   /**
+   * The name of the subnetGroup to which this subnet belongs to
+   *
+   * The corresponding subnet will be tagged with this name
+   */
+  subnetGroup?: string;
+
+  /**
    * The CIDR Mask or the number of leading 1 bits in the routing mask
    *
    * Valid values are 16 - 28
@@ -183,10 +190,61 @@ export interface SubnetConfiguration {
   /**
    * The common Logical Name for the `VpcSubnet`
    *
-   * Thi name will be suffixed with an integer correlating to a specific
+   * This name will be suffixed with an integer correlating to a specific
    * availability zone.
    */
   name: string;
+}
+
+/**
+ * Specify configuration parameters for a VPC to be built
+ */
+export interface SubnetGroupConfiguration {
+  /**
+   * The name of the subnetGroup
+   *
+   * All subnets withing this group will be tagged with this name
+   */
+  subnetGroupName: string;
+
+  /**
+   * The CIDR Mask or the number of leading 1 bits in the routing mask
+   *
+   * Valid values are 16 - 28
+   */
+  cidrMask: number;
+
+  /**
+   * Configure the subnets to build for each AZ
+   *
+   * The subnets are constructed in the context of the VPC and SubnetGroup so you only need
+   * specify the configuration. The VPC details (VPC ID, specific CIDR,
+   * specific AZ will be calculated during creation)
+   *
+   * For example if you want 3 private subnets in the SubnetGroup
+   * in each AZ provide the following:
+   * subnetConfiguration: [
+   *    {
+   *      name: 'applicationA',
+   *      subnetType: SubnetType.Public,
+   *    },
+   *    {
+   *      name: 'applicationB',
+   *      subnetType: SubnetType.Private,
+   *    },
+   *    {
+   *      name: 'applicationC',
+   *      subnetType: SubnetType.Private,
+   *    }
+   * ]
+   *
+   */
+  subnetConfiguration?: SubnetConfiguration[];
+
+  /**
+   * The maximum number of subnets that can be in this subnet group
+   */
+  maxSubnets: number;
 }
 
 /**
@@ -343,7 +401,14 @@ export class VpcNetwork extends VpcNetworkBase {
 
     this.vpcId = this.resource.vpcId;
 
-    this.subnetConfiguration = ifUndefined(props.subnetConfiguration, VpcNetwork.DEFAULT_SUBNETS);
+    // Expand any subnetGroup to subnets
+    if (props.subnetConfiguration) {
+      props.subnetConfiguration = new Array<SubnetConfiguration>().concat(
+        ...props.subnetConfiguration.map(this.subnetGroupToSubnets)
+      );
+    }
+
+    this.subnetConfiguration = ifUndefined(props.subnetConfiguration as SubnetConfiguration[], VpcNetwork.DEFAULT_SUBNETS);
     // subnetConfiguration and natGateways must be set before calling createSubnets
     this.createSubnets();
 
@@ -462,7 +527,7 @@ export class VpcNetwork extends VpcNetworkBase {
       }
       natSubnets = subnets as VpcPublicSubnet[];
     } else {
-      natSubnets =  this.publicSubnets as VpcPublicSubnet[];
+      natSubnets = this.publicSubnets as VpcPublicSubnet[];
     }
 
     natSubnets = natSubnets.slice(0, natCount);
@@ -471,6 +536,44 @@ export class VpcNetwork extends VpcNetworkBase {
       this.natGatewayByAZ[sub.availabilityZone] = gateway.natGatewayId;
       this.natDependencies.push(gateway);
     }
+  }
+
+  /**
+   * subnetGroupToSubnets expands a SubnetGroupConfiguration into an array of
+   * SubnetConfiguration. It appends any stub subnets at the end to ensure that the
+   * subnet ip space is pre allocated. If argument is a SubnetConfiguration, this
+   * is returned inside a single value array but is untouched
+   */
+  private subnetGroupToSubnets(subnetOrSubnetGroup: SubnetConfiguration | SubnetGroupConfiguration): SubnetConfiguration[] {
+    if (!(subnetOrSubnetGroup as SubnetGroupConfiguration).subnetGroupName) {
+      // Argument is not a subnetGroup, return as is inside an array
+      return [subnetOrSubnetGroup as SubnetConfiguration];
+    }
+
+    const subnetGroup: SubnetGroupConfiguration = subnetOrSubnetGroup as SubnetGroupConfiguration;
+    subnetGroup.subnetConfiguration = subnetGroup.subnetConfiguration !== undefined ? subnetGroup.subnetConfiguration : [];
+
+    // convert subnets in subnetGroup to an array of subnets
+    let result = subnetGroup.subnetConfiguration.map(subnet => {
+      return {
+        ...subnet,
+        ...objectIfDefined(subnetGroup.cidrMask, { cidrMask: subnetGroup.cidrMask }),
+        subnetGroup: subnetGroup.subnetGroupName,
+      };
+    });
+
+    if (subnetGroup.maxSubnets) {
+      const remainingGroupSubnets = subnetGroup.maxSubnets - result.length;
+      if (remainingGroupSubnets < 0) {
+        throw Error(`Number of segments in group ${subnetGroup.subnetGroupName} is greater than defined maximum`);
+      } else {
+        const filler = {
+          ...objectIfDefined(subnetGroup.cidrMask, { cidrMask: subnetGroup.cidrMask }),
+        };
+        result = result.concat(Array(remainingGroupSubnets).fill(filler));
+      }
+    }
+    return result;
   }
 
   /**
@@ -501,6 +604,11 @@ export class VpcNetwork extends VpcNetworkBase {
 
   private createSubnetResources(subnetConfig: SubnetConfiguration, cidrMask: number) {
     this.availabilityZones.forEach((zone, index) => {
+      if (!subnetConfig.name) {
+        // This is a filler subnet of a SubnetGroup - just reserve ip space and return
+        this.networkBuilder.addSubnet(cidrMask);
+        return;
+      }
       const name = subnetId(subnetConfig.name, index);
       const subnetProps: VpcSubnetProps = {
         availabilityZone: zone,
@@ -532,14 +640,18 @@ export class VpcNetwork extends VpcNetworkBase {
 
       // These values will be used to recover the config upon provider import
       const includeResourceTypes = [CfnSubnet.resourceTypeName];
-      subnet.node.apply(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
-      subnet.node.apply(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
+      subnet.node.apply(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, { includeResourceTypes }));
+      subnet.node.apply(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { includeResourceTypes }));
+      if (subnetConfig.subnetGroup) {
+        subnet.node.apply(new cdk.Tag(SUBNETGROUP_TAG, subnetConfig.subnetGroup, { includeResourceTypes }));
+      }
     });
   }
 }
 
 const SUBNETTYPE_TAG = 'aws-cdk:subnet-type';
 const SUBNETNAME_TAG = 'aws-cdk:subnet-name';
+const SUBNETGROUP_TAG = 'aws-cdk:subnet-group';
 
 function subnetTypeTagValue(type: SubnetType) {
   switch (type) {
@@ -725,6 +837,10 @@ export class VpcPrivateSubnet extends VpcSubnet {
 
 function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
   return value !== undefined ? value : defaultValue;
+}
+
+function objectIfDefined<T>(element: T | undefined, defaultValue: object): object {
+  return element !== undefined ? defaultValue : {};
 }
 
 class ImportedVpcNetwork extends VpcNetworkBase {
