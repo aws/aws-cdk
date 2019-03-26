@@ -473,7 +473,7 @@ export class ConstructNode {
    */
   public recordReference(...refs: Token[]) {
     for (const ref of refs) {
-      if (Reference.isReferenceToken(ref)) {
+      if (Reference.isReference(ref)) {
         this.references.add(ref);
       }
     }

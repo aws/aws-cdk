@@ -1,5 +1,7 @@
 import { Token } from "./token";
 
+const REFERENCE_SYMBOL = Symbol('@aws-cdk/cdk.Reference');
+
 /**
  * A Token that represents a reference between two constructs
  *
@@ -9,17 +11,16 @@ export class Reference extends Token {
   /**
    * Check whether this is actually a Reference
    */
-  public static isReferenceToken(x: Token): x is Reference {
-    return (x as any).isReference === true;
+  public static isReference(x: Token): x is Reference {
+    return (x as any)[REFERENCE_SYMBOL] === true;
   }
-
-  public readonly isReference: boolean = true;
 
   public readonly target: Construct;
 
   constructor(value: any, displayName: string, target: Construct) {
     super(value, displayName);
     this.target = target;
+    Object.defineProperty(this, REFERENCE_SYMBOL, { value: true });
   }
 }
 
