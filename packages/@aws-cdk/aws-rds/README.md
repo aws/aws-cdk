@@ -2,13 +2,12 @@
 
 The `aws-cdk-rds` package contains Constructs for setting up RDS instances.
 
-> Note: this package is currently quite limited, as the CDK team is focusing
-> on other use cases first. If your use case is not in the list below, there is
-> no use coming in to the channel to ask "how do I..." because it won't be
-> possible using high-level constructs. You will have to drop down to the
-> CloudFormation resources layer to achieve your use case.
+> Note: the functionality this package is currently limited, as the CDK team is
+> focusing on other use cases first. If your use case is not listed below, you
+> will have to use achieve it using CloudFormation resources.
 >
-> If you would like to help improve the state of this library, Pull Requests are welcome.
+> If you would like to help improve the state of this library, Pull Requests are
+> welcome.
 
 Supported:
 
