@@ -25,7 +25,17 @@ moduleLinter.add(  {
   eval: e => {
     if (!e.ctx.namespace) { return; }
     if (!e.ctx.assembly) { return; }
-    const namespace = e.ctx.namespace.toLocaleLowerCase().replace('::', '-');
+    const namespace = overrideNamespace(e.ctx.namespace.toLocaleLowerCase().replace('::', '-'));
     e.assertEquals(e.ctx.assembly.name, `@aws-cdk/${namespace}`, e.ctx.assembly.name);
   }
 });
+
+/**
+ * Overrides special-case namespaces like aws-serverless=>aws-sam
+ */
+function overrideNamespace(namespace: string) {
+  if (namespace === 'aws-serverless') {
+    return 'aws-sam';
+  }
+  return namespace;
+}

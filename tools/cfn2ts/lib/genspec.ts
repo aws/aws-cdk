@@ -119,7 +119,17 @@ export function packageName(module: SpecName | string): string {
     throw new Error(`Module component name must be "AWS::Xxx" or "Alexa::Xxx" (module: ${module})`);
   }
 
-  return parts[parts.length - 1].toLowerCase();
+  return overridePackageName(parts[parts.length - 1].toLowerCase());
+}
+
+/**
+ * Overrides special-case namespaces like serverless=>sam
+ */
+function overridePackageName(name: string) {
+  if (name === 'serverless') {
+    return 'sam';
+  }
+  return name;
 }
 
 /**

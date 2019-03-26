@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import lambda = require('@aws-cdk/aws-lambda');
+import serverless = require('@aws-cdk/aws-sam');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import serverless = require('@aws-cdk/aws-serverless');
 import cdk = require('@aws-cdk/cdk');
 
 /**
