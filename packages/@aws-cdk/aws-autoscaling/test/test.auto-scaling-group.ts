@@ -418,6 +418,8 @@ export = {
       minCapacity: 0,
       maxCapacity: 0,
       desiredCapacity: 0,
+
+      vpcSubnets: { subnetType: ec2.SubnetType.Public },
       associatePublicIpAddress: true,
     });
 
@@ -426,6 +428,25 @@ export = {
         AssociatePublicIpAddress: true,
       }
     ));
+    test.done();
+  },
+  'association of public IP address requires public subnet'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    test.throws(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc,
+        minCapacity: 0,
+        maxCapacity: 0,
+        desiredCapacity: 0,
+        associatePublicIpAddress: true,
+      });
+    });
     test.done();
   },
   'allows disassociation of public IP address'(test: Test) {

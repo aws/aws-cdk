@@ -292,6 +292,9 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     }
 
     asgProps.vpcZoneIdentifier = props.vpc.subnetIds(props.vpcSubnets);
+    if (!props.vpc.isPublicSubnets(asgProps.vpcZoneIdentifier) && props.associatePublicIpAddress) {
+      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.Public })");
+    }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;
