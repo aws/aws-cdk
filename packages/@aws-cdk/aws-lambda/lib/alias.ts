@@ -1,4 +1,3 @@
-import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
 import { Version } from './lambda-version';
@@ -68,11 +67,6 @@ export class Alias extends FunctionBase {
    */
   public readonly functionArn: string;
 
-  /**
-   * Role associated with this alias
-   */
-  public readonly role?: iam.IRole | undefined;
-
   protected readonly canCreatePermissions: boolean = true; // Not used anyway
 
   /**
@@ -85,7 +79,7 @@ export class Alias extends FunctionBase {
 
     this.underlyingLambda = props.version.lambda;
 
-    new CfnAlias(this, 'Resource', {
+    const alias = new CfnAlias(this, 'Resource', {
       name: props.aliasName,
       description: props.description,
       functionName: this.underlyingLambda.functionName,
@@ -95,8 +89,14 @@ export class Alias extends FunctionBase {
 
     // Not actually the name, but an ARN can be used in all places
     // where the name is expected, and an ARN can refer to an Alias.
-    this.functionName = `${props.version.lambda.functionArn}:${props.aliasName}`;
-    this.functionArn = `${props.version.lambda.functionArn}:${props.aliasName}`;
+    this.functionName = this.functionArn = alias.aliasArn;
+  }
+
+  /**
+   * Role associated with this alias
+   */
+  public get role() {
+    return this.underlyingLambda.role;
   }
 
   public export(): FunctionImportProps {
