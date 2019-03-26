@@ -1,8 +1,8 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
 import { Version } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
-import { Permission } from './permission';
 
 /**
  * Properties for a new Lambda alias
@@ -89,7 +89,8 @@ export class Alias extends FunctionBase {
 
     // Not actually the name, but an ARN can be used in all places
     // where the name is expected, and an ARN can refer to an Alias.
-    this.functionName = this.functionArn = alias.aliasArn;
+    this.functionName = `${this.underlyingLambda.functionName}:${props.aliasName}`;
+    this.functionArn = alias.aliasArn;
   }
 
   /**
@@ -99,15 +100,20 @@ export class Alias extends FunctionBase {
     return this.underlyingLambda.role;
   }
 
+  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return super.metric(metricName, {
+      dimensions: {
+        FunctionName: this.underlyingLambda.functionName,
+        Resource: this.functionArn
+      },
+      ...(props || {})
+    });
+  }
+
   public export(): FunctionImportProps {
     return {
       functionArn: new cdk.Output(this, 'AliasArn', { value: this.functionArn }).makeImportValue().toString()
     };
-  }
-
-  public addPermission(name: string, permission: Permission) {
-    // Forward addPermission() to the underlying Lambda object
-    this.underlyingLambda.addPermission(name, permission);
   }
 
   /**

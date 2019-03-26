@@ -1,3 +1,5 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+
 import { beASupersetOfTemplate, expect, haveResource } from '@aws-cdk/assert';
 import { AccountPrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/cdk';
@@ -123,8 +125,48 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      FunctionName: stack.node.resolve(fn.functionName),
+      FunctionName: {
+        Ref: "Alias325C5727"
+      },
       Principal: "123456"
+    }));
+
+    test.done();
+  },
+
+  'metric adds Resource: aliasArn to dimensions'(test: Test) {
+    const stack = new Stack();
+
+    // GIVEN
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NodeJS610,
+    });
+
+    const version = fn.addVersion('1');
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
+
+    // WHEN
+    new cloudwatch.Alarm(stack, 'Alarm', {
+      metric: alias.metric('Test'),
+      alarmName: 'Test',
+      threshold: 1,
+      evaluationPeriods: 1
+    });
+
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      Dimensions: [{
+        Name: "FunctionName",
+        Value: {
+          Ref: "MyLambdaCCE802FB"
+        }
+      }, {
+        Name: "Resource",
+        Value: {
+          Ref: "Alias325C5727"
+        }
+      }]
     }));
 
     test.done();
