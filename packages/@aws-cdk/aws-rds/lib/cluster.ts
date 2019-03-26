@@ -1,4 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 import { IClusterParameterGroup } from './cluster-parameter-group';
@@ -72,9 +73,19 @@ export interface DatabaseClusterProps {
   defaultDatabaseName?: string;
 
   /**
-   * ARN of KMS key if you want to enable storage encryption
+   * Whether to enable storage encryption
+   *
+   * @default false
    */
-  kmsKeyArn?: string;
+  storageEncrypted?: boolean
+
+  /**
+   * The KMS key for storage encryption. If specified `storageEncrypted`
+   * will be set to `true`.
+   *
+   * @default default master key
+   */
+  kmsKey?: kms.IEncryptionKey;
 
   /**
    * A daily time range in 24-hours UTC format in which backups preferably execute.
@@ -91,6 +102,14 @@ export interface DatabaseClusterProps {
    * @default No parameter group
    */
   parameterGroup?: IClusterParameterGroup;
+
+  /**
+   * The CloudFormation policy to apply when the cluster and its instances
+   * are removed from the stack or replaced during an update.
+   *
+   * @default Retain
+   */
+  deleteReplacePolicy?: cdk.DeletionPolicy
 }
 
 /**
@@ -261,9 +280,13 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
       // Encryption
-      kmsKeyId: props.kmsKeyArn,
-      storageEncrypted: props.kmsKeyArn ? true : false,
+      kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
+      storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
+
+    const deleteReplacePolicy = props.deleteReplacePolicy || cdk.DeletionPolicy.Retain;
+    cluster.options.deletionPolicy = deleteReplacePolicy;
+    cluster.options.updateReplacePolicy = deleteReplacePolicy;
 
     this.clusterIdentifier = cluster.ref;
     this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, cluster.dbClusterEndpointPort);
@@ -302,6 +325,9 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
       });
+
+      instance.options.deletionPolicy = deleteReplacePolicy;
+      instance.options.updateReplacePolicy = deleteReplacePolicy;
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.

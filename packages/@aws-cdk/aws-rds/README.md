@@ -68,7 +68,7 @@ When the master password is generated and stored in AWS Secrets Manager, it can 
 
 Rotation of the master password is also supported for an existing cluster:
 ```ts
-new rds.RotationSingleUser(stack, 'Rotation', {
+new RotationSingleUser(stack, 'Rotation', {
     secret: importedSecret,
     engine: DatabaseEngine.Oracle,
     target: importedCluster,

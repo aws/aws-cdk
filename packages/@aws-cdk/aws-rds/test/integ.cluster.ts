@@ -28,7 +28,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
     vpc
   },
   parameterGroup: params,
-  kmsKeyArn: kmsKey.keyArn,
+  kmsKey,
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
