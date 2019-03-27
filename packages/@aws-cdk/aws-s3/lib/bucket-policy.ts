@@ -7,7 +7,7 @@ export interface BucketPolicyProps {
   /**
    * The Amazon S3 bucket that the policy applies to.
    */
-  bucket: IBucket;
+  readonly bucket: IBucket;
 }
 
 /**
