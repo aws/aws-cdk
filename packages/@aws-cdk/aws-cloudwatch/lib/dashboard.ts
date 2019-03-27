@@ -9,7 +9,7 @@ export interface DashboardProps {
    *
    * @default Automatically generated name
    */
-  dashboardName?: string;
+  readonly dashboardName?: string;
 }
 
 /**
