@@ -150,49 +150,49 @@ export interface UserPoolTriggers {
    * Creates an authentication challenge.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
    */
-  createAuthChallenge?: lambda.IFunction;
+  readonly createAuthChallenge?: lambda.IFunction;
 
   /**
    * A custom Message AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
    */
-  customMessage?: lambda.IFunction;
+  readonly customMessage?: lambda.IFunction;
 
   /**
    * Defines the authentication challenge.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
    */
-  defineAuthChallenge?: lambda.IFunction;
+  readonly defineAuthChallenge?: lambda.IFunction;
 
   /**
    * A post-authentication AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
    */
-  postAuthentication?: lambda.IFunction;
+  readonly postAuthentication?: lambda.IFunction;
 
   /**
    * A post-confirmation AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
    */
-  postConfirmation?: lambda.IFunction;
+  readonly postConfirmation?: lambda.IFunction;
 
   /**
    * A pre-authentication AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
    */
-  preAuthentication?: lambda.IFunction;
+  readonly preAuthentication?: lambda.IFunction;
 
   /**
    * A pre-registration AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
    */
-  preSignUp?: lambda.IFunction;
+  readonly preSignUp?: lambda.IFunction;
 
   /**
    * Verifies the authentication challenge response.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    */
-  verifyAuthChallengeResponse?: lambda.IFunction;
+  readonly verifyAuthChallengeResponse?: lambda.IFunction;
 
   /**
    * Index signature
@@ -205,55 +205,55 @@ export interface UserPoolProps {
    * Name of the user pool
    * @default unique ID
    */
-  poolName?: string;
+  readonly poolName?: string;
 
   /**
    * Method used for user registration & sign in.
    * Allows either username with aliases OR sign in with email, phone, or both.
    * @default SignInType.USERNAME
    */
-  signInType?: SignInType;
+  readonly signInType?: SignInType;
 
   /**
    * Attributes to allow as username alias.
    * Only valid if signInType is USERNAME
    * @default no alias
    */
-  usernameAliasAttributes?: UserPoolAttribute[];
+  readonly usernameAliasAttributes?: UserPoolAttribute[];
 
   /**
    * Attributes which Cognito will automatically send a verification message to.
    * Must be either EMAIL, PHONE, or both.
    * @default no auto verification
    */
-  autoVerifiedAttributes?: UserPoolAttribute[];
+  readonly autoVerifiedAttributes?: UserPoolAttribute[];
 
   /**
    * Lambda functions to use for supported Cognito triggers.
    */
-  lambdaTriggers?: UserPoolTriggers;
+  readonly lambdaTriggers?: UserPoolTriggers;
 }
 
 export interface UserPoolImportProps {
   /**
    * The ID of an existing user pool
    */
-  userPoolId: string;
+  readonly userPoolId: string;
 
   /**
    * The ARN of the imported user pool
    */
-  userPoolArn: string;
+  readonly userPoolArn: string;
 
   /**
    * The provider name of the imported user pool
    */
-  userPoolProviderName: string;
+  readonly userPoolProviderName: string;
 
   /**
    * The URL of the imported user pool
    */
-  userPoolProviderUrl: string;
+  readonly userPoolProviderUrl: string;
 }
 
 export interface IUserPool extends cdk.IConstruct {
@@ -395,7 +395,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
    */
   public onCreateAuthChallenge(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'CreateAuthChallenge');
-    this.triggers.createAuthChallenge = fn.functionArn;
+    this.triggers = { ...this.triggers, createAuthChallenge: fn.functionArn };
   }
 
   /**
@@ -406,7 +406,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
    */
   public onCustomMessage(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'CustomMessage');
-    this.triggers.customMessage = fn.functionArn;
+    this.triggers = { ...this.triggers, customMessage: fn.functionArn };
   }
 
   /**
@@ -417,7 +417,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
    */
   public onDefineAuthChallenge(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'DefineAuthChallenge');
-    this.triggers.defineAuthChallenge = fn.functionArn;
+    this.triggers = { ...this.triggers, defineAuthChallenge: fn.functionArn };
   }
 
   /**
@@ -428,7 +428,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
    */
   public onPostAuthentication(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PostAuthentication');
-    this.triggers.postAuthentication = fn.functionArn;
+    this.triggers = { ...this.triggers, postAuthentication: fn.functionArn };
   }
 
   /**
@@ -439,7 +439,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
    */
   public onPostConfirmation(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PostConfirmation');
-    this.triggers.postConfirmation = fn.functionArn;
+    this.triggers = { ...this.triggers, postConfirmation: fn.functionArn };
   }
 
   /**
@@ -450,7 +450,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
    */
   public onPreAuthentication(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PreAuthentication');
-    this.triggers.preAuthentication = fn.functionArn;
+    this.triggers = { ...this.triggers, preAuthentication: fn.functionArn };
   }
 
   /**
@@ -461,7 +461,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
    */
   public onPreSignUp(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PreSignUp');
-    this.triggers.preSignUp = fn.functionArn;
+    this.triggers = { ...this.triggers, preSignUp: fn.functionArn };
   }
 
   /**
@@ -472,7 +472,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
    */
   public onVerifyAuthChallengeResponse(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'VerifyAuthChallengeResponse');
-    this.triggers.verifyAuthChallengeResponse = fn.functionArn;
+    this.triggers = { ...this.triggers, verifyAuthChallengeResponse: fn.functionArn };
   }
 
   public export(): UserPoolImportProps {
