@@ -42,6 +42,8 @@ export interface StackProps {
   readonly autoDeploy?: boolean;
 }
 
+const STACK_SYMBOL = Symbol('@aws-cdk/cdk.CfnReference');
+
 /**
  * A root construct which represents a single CloudFormation stack.
  */
@@ -64,8 +66,8 @@ export class Stack extends Construct {
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
-  public static isStack(construct: IConstruct): construct is Stack {
-    return (construct as any)._isStack;
+  public static isStack(x: any): x is Stack {
+    return x[STACK_SYMBOL] === true;
   }
 
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
@@ -112,12 +114,6 @@ export class Stack extends Construct {
   public readonly autoDeploy: boolean;
 
   /**
-   * Used to determine if this construct is a stack.
-   * @internal
-   */
-  protected readonly _isStack = true;
-
-  /**
    * Other stacks this stack depends on
    */
   private readonly stackDependencies = new Set<StackDependency>();
@@ -144,6 +140,8 @@ export class Stack extends Construct {
   public constructor(scope?: Construct, name?: string, props: StackProps = {}) {
     // For unit test convenience parents are optional, so bypass the type check when calling the parent.
     super(scope!, name!);
+
+    Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
     if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
       throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
