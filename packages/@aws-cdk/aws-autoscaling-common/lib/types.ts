@@ -9,7 +9,7 @@ export interface ScalingInterval {
    *
    * @default Threshold automatically derived from neighbouring intervals
    */
-  lower?: number;
+  readonly lower?: number;
 
   /**
    * The upper bound of the interval.
@@ -18,7 +18,7 @@ export interface ScalingInterval {
    *
    * @default Threshold automatically derived from neighbouring intervals
    */
-  upper?: number;
+  readonly upper?: number;
 
   /**
    * The capacity adjustment to apply in this interval
@@ -32,5 +32,5 @@ export interface ScalingInterval {
    * - ExactCapacity: set the capacity to this number. The number must
    *   be positive.
    */
-  change: number;
+  readonly change: number;
 }
