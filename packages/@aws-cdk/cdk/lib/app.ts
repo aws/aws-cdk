@@ -13,14 +13,14 @@ export interface AppProps {
    *
    * @default true if running via CDK toolkit (CDK_OUTDIR is set), false otherwise
    */
-  autoRun?: boolean;
+  readonly autoRun?: boolean;
 
   /**
    * Additional context values for the application
    *
    * @default No additional context
    */
-  context?: { [key: string]: string };
+  readonly context?: { [key: string]: string };
 }
 
 /**

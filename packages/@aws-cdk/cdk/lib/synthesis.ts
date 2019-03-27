@@ -3,6 +3,7 @@ import fs = require('fs');
 import os = require('os');
 import path = require('path');
 import { collectRuntimeInformation } from './runtime-info';
+import { filterUndefined } from './util';
 
 export interface ISynthesizable {
   synthesize(session: ISynthesisSession): void;
@@ -20,19 +21,19 @@ export interface SynthesisSessionOptions {
   /**
    * The file store used for this session.
    */
-  store: ISessionStore;
+  readonly store: ISessionStore;
 
   /**
    * Emit the legacy manifest (`cdk.out`) when the session is closed (alongside `manifest.json`).
    * @default false
    */
-  legacyManifest?: boolean;
+  readonly legacyManifest?: boolean;
 
   /**
    * Include runtime information (module versions) in manifest.
    * @default true
    */
-  runtimeInformation?: boolean;
+  readonly runtimeInformation?: boolean;
 }
 
 export class SynthesisSession implements ISynthesisSession {
@@ -67,7 +68,7 @@ export class SynthesisSession implements ISynthesisSession {
 
   public addArtifact(id: string, artifact: cxapi.Artifact): void {
     cxapi.validateArtifact(artifact);
-    this.artifacts[id] = artifact;
+    this.artifacts[id] = filterUndefined(artifact);
   }
 
   public tryGetArtifact(id: string): cxapi.Artifact | undefined {
@@ -78,18 +79,15 @@ export class SynthesisSession implements ISynthesisSession {
     if (id in this.buildSteps) {
       throw new Error(`Build step ${id} already exists`);
     }
-    this.buildSteps[id] = step;
+    this.buildSteps[id] = filterUndefined(step);
   }
 
   public close(): cxapi.AssemblyManifest {
-    const manifest: cxapi.AssemblyManifest = this._manifest = {
+    const manifest: cxapi.AssemblyManifest = this._manifest = filterUndefined({
       version: cxapi.PROTO_RESPONSE_VERSION,
       artifacts: this.artifacts,
-    };
-
-    if (this.runtimeInfo) {
-      manifest.runtime = collectRuntimeInformation();
-    }
+      runtime: this.runtimeInfo ? collectRuntimeInformation() : undefined
+    });
 
     this.store.writeFile(cxapi.MANIFEST_FILE, JSON.stringify(manifest, undefined, 2));
 
@@ -178,14 +176,14 @@ export interface SynthesisSessionOptions {
   /**
    * Where to store the
    */
-  store: ISessionStore;
+  readonly store: ISessionStore;
 }
 
 export interface FileSystemStoreOptions {
   /**
    * The output directory for synthesis artifacts
    */
-  outdir: string;
+  readonly outdir: string;
 }
 
 /**
@@ -349,23 +347,15 @@ function renderLegacyStacks(artifacts: { [id: string]: cxapi.Artifact }, store: 
         throw new Error(`"environment" must match regex: ${cxapi.AWS_ENV_REGEX}`);
       }
 
-      const synthStack: cxapi.SynthesizedStack = {
+      stacks.push(filterUndefined({
         name: id,
         environment: { name: artifact.environment.substr('aws://'.length), account: match[1], region: match[2] },
         template,
         metadata: artifact.metadata || {},
         autoDeploy: artifact.autoDeploy,
-      };
-
-      if (artifact.dependencies && artifact.dependencies.length > 0) {
-        synthStack.dependsOn = artifact.dependencies;
-      }
-
-      if (artifact.missing) {
-        synthStack.missing = artifact.missing;
-      }
-
-      stacks.push(synthStack);
+        dependsOn: artifact.dependencies && artifact.dependencies.length > 0 ? artifact.dependencies : undefined,
+        missing: artifact.missing
+      }));
     }
   }
 
