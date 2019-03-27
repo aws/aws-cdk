@@ -83,14 +83,14 @@ export interface RetryProps {
      *
      * @default All errors
      */
-    errors?: string[];
+    readonly errors?: string[];
 
     /**
      * How many seconds to wait initially before retrying
      *
      * @default 1
      */
-    intervalSeconds?: number;
+    readonly intervalSeconds?: number;
 
     /**
      * How many times to retry this particular error.
@@ -100,14 +100,14 @@ export interface RetryProps {
      *
      * @default 3
      */
-    maxAttempts?: number;
+    readonly maxAttempts?: number;
 
     /**
      * Multiplication for how much longer the wait interval gets on every retry
      *
      * @default 2
      */
-    backoffRate?: number;
+    readonly backoffRate?: number;
 }
 
 /**
@@ -122,7 +122,7 @@ export interface CatchProps {
      *
      * @default All errors
      */
-    errors?: string[];
+    readonly errors?: string[];
 
     /**
      * JSONPath expression to indicate where to inject the error data
@@ -132,7 +132,7 @@ export interface CatchProps {
      *
      * @default $
      */
-    resultPath?: string;
+    readonly resultPath?: string;
 }
 
 /**
