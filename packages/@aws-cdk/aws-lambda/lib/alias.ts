@@ -87,9 +87,10 @@ export class Alias extends FunctionBase {
       routingConfig: this.determineRoutingConfig(props)
     });
 
-    // Not actually the name, but an ARN can be used in all places
-    // where the name is expected, and an ARN can refer to an Alias.
-    this.functionName = `${this.underlyingLambda.functionName}:${props.aliasName}`;
+    // use a Fn::Select on the aliasArn so that CFN dependencies
+    // when referencing the functionName are obeyed.
+    const aliasName = cdk.Fn.select(7, cdk.Fn.split(':', alias.aliasArn));
+    this.functionName = `${this.underlyingLambda.functionName}:${aliasName}`;
     this.functionArn = alias.aliasArn;
   }
 

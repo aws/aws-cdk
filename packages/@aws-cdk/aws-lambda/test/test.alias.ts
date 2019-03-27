@@ -170,5 +170,47 @@ export = {
     }));
 
     test.done();
+  },
+
+  'functionName is derived from the aliasArn so that dependencies are sound'(test: Test) {
+    const stack = new Stack();
+
+    // GIVEN
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NodeJS610,
+    });
+
+    const version = fn.addVersion('1');
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
+
+    // WHEN
+    test.deepEqual(stack.node.resolve(alias.functionName), {
+      "Fn::Join": [
+        "",
+        [
+          {
+            Ref: "MyLambdaCCE802FB"
+          },
+          ":",
+          {
+            "Fn::Select": [
+              7,
+              {
+                "Fn::Split": [
+                  ":",
+                  {
+                    Ref: "Alias325C5727"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      ]
+    });
+
+    test.done();
   }
 };
