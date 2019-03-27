@@ -38,7 +38,7 @@ export interface LambdaDeploymentConfigImportProps {
    * The physical, human-readable name of the custom CodeDeploy Lambda Deployment Configuration
    * that we are referencing.
    */
-  deploymentConfigName: string;
+  readonly deploymentConfigName: string;
 }
 
 class ImportedLambdaDeploymentConfig extends cdk.Construct implements ILambdaDeploymentConfig {
