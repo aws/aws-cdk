@@ -11,7 +11,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
      * Route 53 Hosted Zone used to perform DNS validation of the request.  The zone
      * must be authoritative for the domain name specified in the Certificate Request.
      */
-    hostedZone: route53.IHostedZone;
+    readonly hostedZone: route53.IHostedZone;
 }
 
 /**
