@@ -47,17 +47,17 @@ export interface StageProps {
   /**
    * The physical, human-readable name to assign to this Pipeline Stage.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * The list of Actions to create this Stage with.
    * You can always add more Actions later by calling {@link IStage#addAction}.
    */
-  actions?: cpapi.Action[];
+  readonly actions?: cpapi.Action[];
 }
 
 export interface StageAddToPipelineProps extends StageProps {
-  placement?: StagePlacement;
+  readonly placement?: StagePlacement;
 }
 
 export interface PipelineProps {
@@ -65,18 +65,18 @@ export interface PipelineProps {
    * The S3 bucket used by this Pipeline to store artifacts.
    * If not specified, a new S3 bucket will be created.
    */
-  artifactBucket?: s3.IBucket;
+  readonly artifactBucket?: s3.IBucket;
 
   /**
    * Indicates whether to rerun the AWS CodePipeline pipeline after you update it.
    */
-  restartExecutionOnUpdate?: boolean;
+  readonly restartExecutionOnUpdate?: boolean;
 
   /**
    * Name of the pipeline. If you don't specify a name,  AWS CloudFormation generates an ID
    * and uses that for the pipeline name.
    */
-  pipelineName?: string;
+  readonly pipelineName?: string;
 
   /**
    * A map of region to S3 bucket name used for cross-region CodePipeline.
@@ -86,14 +86,14 @@ export interface PipelineProps {
    * Note that you will have to `cdk deploy` that Stack before you can deploy your Pipeline-containing Stack.
    * You can query the generated Stacks using the {@link Pipeline#crossRegionScaffoldStacks} property.
    */
-  crossRegionReplicationBuckets?: { [region: string]: string };
+  readonly crossRegionReplicationBuckets?: { [region: string]: string };
 
   /**
    * The list of Stages, in order,
    * to create this Pipeline with.
    * You can always add more Stages later by calling {@link Pipeline#addStage}.
    */
-  stages?: StageProps[];
+  readonly stages?: StageProps[];
 }
 
 /**
