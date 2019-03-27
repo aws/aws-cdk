@@ -22,7 +22,7 @@ export interface TargetInputTemplate {
    *      }
    *    }
    */
-  textTemplate?: string;
+  readonly textTemplate?: string;
 
   /**
    * Input template where you can use the values of the keys from
@@ -41,12 +41,12 @@ export interface TargetInputTemplate {
    *   }
    *
    */
-  jsonTemplate?: any;
+  readonly jsonTemplate?: any;
 
   /**
    * Map of JSON paths to be extracted from the event. These are key-value
    * pairs, where each value is a JSON path. You must use JSON dot notation,
    * not bracket notation.
    */
-  pathsMap?: { [key: string]: string };
+  readonly pathsMap?: { [key: string]: string };
 }
