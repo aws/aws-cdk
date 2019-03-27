@@ -565,22 +565,26 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
 
       const originProperty: CfnDistribution.OriginProperty = {
         id: originId,
-        domainName: originConfig.s3OriginSource ?
-          originConfig.s3OriginSource.s3BucketSource.domainName :
-          originConfig.customOriginSource!.domainName,
+        domainName: originConfig.s3OriginSource
+          ? originConfig.s3OriginSource.s3BucketSource.domainName
+          : originConfig.customOriginSource!.domainName,
         originPath: originConfig.originPath,
         originCustomHeaders: originHeaders.length > 0 ? originHeaders : undefined,
         s3OriginConfig: originConfig.s3OriginSource && originConfig.s3OriginSource.originAccessIdentity
           ? { originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.ref}` }
-          : { },
-        customOriginConfig: originConfig.customOriginSource ? {
-          httpPort: originConfig.customOriginSource.httpPort || 80,
-          httpsPort: originConfig.customOriginSource.httpsPort || 443,
-          originKeepaliveTimeout: originConfig.customOriginSource.originKeepaliveTimeoutSeconds || 5,
-          originReadTimeout: originConfig.customOriginSource.originReadTimeoutSeconds || 30,
-          originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HttpsOnly,
-          originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLSv1_2]
-        } : undefined
+          : originConfig.s3OriginSource
+          ? { }
+          : undefined,
+        customOriginConfig: originConfig.customOriginSource
+          ? {
+            httpPort: originConfig.customOriginSource.httpPort || 80,
+            httpsPort: originConfig.customOriginSource.httpsPort || 443,
+            originKeepaliveTimeout: originConfig.customOriginSource.originKeepaliveTimeoutSeconds || 5,
+            originReadTimeout: originConfig.customOriginSource.originReadTimeoutSeconds || 30,
+            originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HttpsOnly,
+            originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLSv1_2]
+          }
+          : undefined
       };
 
       for (const behavior of originConfig.behaviors) {
