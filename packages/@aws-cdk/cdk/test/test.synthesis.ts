@@ -10,8 +10,10 @@ const storeTestMatrix: any = {};
 
 function createModernApp() {
   return new cdk.App({
-    [cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT]: 'true',
-    [cxapi.DISABLE_VERSION_REPORTING]: 'true', // for test reproducibility
+    context: {
+      [cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT]: 'true',
+      [cxapi.DISABLE_VERSION_REPORTING]: 'true', // for test reproducibility
+    }
   });
 }
 
@@ -87,7 +89,8 @@ export = {
         'one-stack': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://unknown-account/unknown-region',
-          properties: { templateFile: 'one-stack.template.json' }
+          properties: { templateFile: 'one-stack.template.json' },
+          autoDeploy: undefined,
         }
       },
     });
@@ -98,10 +101,10 @@ export = {
     // GIVEN
     const app = new cdk.App();
     const stack1 = new cdk.Stack(app, 'stack1');
-    new cdk.Resource(stack1, 'Resource1', { type: 'AWS::CDK::Resource' });
-    new cdk.Resource(stack1, 'Resource2', { type: 'AWS::CDK::Resource' });
+    new cdk.CfnResource(stack1, 'Resource1', { type: 'AWS::CDK::Resource' });
+    new cdk.CfnResource(stack1, 'Resource2', { type: 'AWS::CDK::Resource' });
     const stack2 = new cdk.Stack(app, 'stack2');
-    new cdk.Resource(stack2, 'ResourceA', { type: 'AWS::CDK::Resource' });
+    new cdk.CfnResource(stack2, 'ResourceA', { type: 'AWS::CDK::Resource' });
 
     // WHEN
     const session = app.run();
@@ -284,7 +287,7 @@ const storeTests = {
     // GIVEN
     const app = createModernApp();
     const stack = new cdk.Stack(app, 'my-stack');
-    const param = new cdk.Parameter(stack, 'MyParam', { type: 'string' });
+    const param = new cdk.CfnParameter(stack, 'MyParam', { type: 'string' });
 
     // WHEN
     stack.setParameterValue(param, 'Foo');

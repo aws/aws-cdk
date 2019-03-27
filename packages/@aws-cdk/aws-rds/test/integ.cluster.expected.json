@@ -484,7 +484,9 @@
             ]
           }
         ]
-      }
+      },
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "DatabaseInstance1844F58FD": {
       "Type": "AWS::RDS::DBInstance",
@@ -502,7 +504,9 @@
       "DependsOn": [
         "VPCPublicSubnet1DefaultRoute91CEF279",
         "VPCPublicSubnet2DefaultRouteB7481BBA"
-      ]
+      ],
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "DatabaseInstance2AA380DEE": {
       "Type": "AWS::RDS::DBInstance",
@@ -520,7 +524,9 @@
       "DependsOn": [
         "VPCPublicSubnet1DefaultRoute91CEF279",
         "VPCPublicSubnet2DefaultRouteB7481BBA"
-      ]
+      ],
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     }
   }
 }

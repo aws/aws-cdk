@@ -113,7 +113,7 @@ export class Alias extends FunctionBase {
 
   public export(): FunctionImportProps {
     return {
-      functionArn: new cdk.Output(this, 'AliasArn', { value: this.functionArn }).makeImportValue().toString()
+      functionArn: new cdk.CfnOutput(this, 'AliasArn', { value: this.functionArn }).makeImportValue().toString()
     };
   }
 

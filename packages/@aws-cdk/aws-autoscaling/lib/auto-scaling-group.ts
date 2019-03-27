@@ -53,7 +53,7 @@ export interface CommonAutoScalingGroupProps {
   /**
    * Where to place instances within the VPC
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * SNS topic to send notifications about fleet changes
@@ -249,7 +249,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       imageId: machineImage.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
-      securityGroups: securityGroupsToken,
+      securityGroups: securityGroupsToken.toList(),
       iamInstanceProfile: iamProfile.ref,
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
@@ -274,8 +274,8 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       maxSize: maxCapacity.toString(),
       desiredCapacity: desiredCapacity.toString(),
       launchConfigurationName: launchConfig.ref,
-      loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined),
-      targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined),
+      loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined).toList(),
+      targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined).toList(),
     };
 
     if (props.notificationsTopic) {
@@ -291,8 +291,10 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       });
     }
 
-    const subnets = props.vpc.subnets(props.vpcPlacement);
-    asgProps.vpcZoneIdentifier = subnets.map(n => n.subnetId);
+    asgProps.vpcZoneIdentifier = props.vpc.subnetIds(props.vpcSubnets);
+    if (!props.vpc.isPublicSubnets(asgProps.vpcZoneIdentifier) && props.associatePublicIpAddress) {
+      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.Public })");
+    }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;

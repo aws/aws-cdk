@@ -1,7 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 
 import { beASupersetOfTemplate, expect, haveResource } from '@aws-cdk/assert';
-import { AccountPrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import lambda = require('../lib');
@@ -105,35 +104,6 @@ export = {
     test.done();
   },
 
-  'addPermission() on alias forward to real Lambda'(test: Test) {
-    const stack = new Stack();
-
-    // GIVEN
-    const fn = new lambda.Function(stack, 'MyLambda', {
-      code: new lambda.InlineCode('hello()'),
-      handler: 'index.hello',
-      runtime: lambda.Runtime.NodeJS610,
-    });
-
-    const version = fn.addVersion('1');
-    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
-
-    // WHEN
-    alias.addPermission('Perm', {
-      principal: new AccountPrincipal('123456')
-    });
-
-    // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      FunctionName: {
-        Ref: "Alias325C5727"
-      },
-      Principal: "123456"
-    }));
-
-    test.done();
-  },
-
   'metric adds Resource: aliasArn to dimensions'(test: Test) {
     const stack = new Stack();
 
@@ -155,6 +125,7 @@ export = {
       evaluationPeriods: 1
     });
 
+    // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
       Dimensions: [{
         Name: "FunctionName",
@@ -168,6 +139,25 @@ export = {
         }
       }]
     }));
+
+    test.done();
+  },
+
+  'alias exposes real Lambdas role'(test: Test) {
+    const stack = new Stack();
+
+    // GIVEN
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NodeJS610,
+    });
+
+    const version = fn.addVersion('1');
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
+
+    // THEN
+    test.equals(alias.role, fn.role);
 
     test.done();
   },

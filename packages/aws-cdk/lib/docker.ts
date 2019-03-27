@@ -43,7 +43,7 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
 
   const buildHold = new PleaseHold(` ⌛ Building Asset Docker image ${asset.id} from ${asset.path}; this may take a while.`);
   try {
-    const ecr = await toolkitInfo.prepareEcrRepository(asset.id);
+    const ecr = await toolkitInfo.prepareEcrRepository(asset);
     const latest = `${ecr.repositoryUri}:latest`;
 
     let loggedIn = false;

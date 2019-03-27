@@ -9,7 +9,7 @@ export class Artifact {
 
   /**
    * Returns an ArtifactPath for a file within this artifact.
-   * Output is in the form "<artifact-name>::<file-name>"
+   * CfnOutput is in the form "<artifact-name>::<file-name>"
    * @param fileName The name of the file
    */
   public atPath(fileName: string): ArtifactPath {

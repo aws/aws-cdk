@@ -177,21 +177,20 @@ export abstract class BaseService extends cdk.Construct
    * Set up AWSVPC networking for this construct
    */
   // tslint:disable-next-line:max-line-length
-  protected configureAwsVpcNetworking(vpc: ec2.IVpcNetwork, assignPublicIp?: boolean, vpcPlacement?: ec2.VpcPlacementStrategy, securityGroup?: ec2.ISecurityGroup) {
-    if (vpcPlacement === undefined) {
-      vpcPlacement = { subnetsToUse: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
+  protected configureAwsVpcNetworking(vpc: ec2.IVpcNetwork, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
+    if (vpcSubnets === undefined) {
+      vpcSubnets = { subnetType: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
     }
     if (securityGroup === undefined) {
       securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
     }
-    const subnets = vpc.subnets(vpcPlacement);
     this.connections.addSecurityGroup(securityGroup);
 
     this.networkConfiguration = {
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
-        subnets: subnets.map(x => x.subnetId),
-        securityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]),
+        subnets: vpc.subnetIds(vpcSubnets),
+        securityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]).toList(),
       }
     };
   }

@@ -1,4 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import kms = require('@aws-cdk/aws-kms');
 
 /**
  * The engine for the database cluster
@@ -29,7 +30,12 @@ export interface InstanceProps {
   /**
    * Where to place the instances within the VPC
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * Security group. If not specified a new one will be created.
+   */
+  securityGroup?: ec2.ISecurityGroup;
 }
 
 /**
@@ -64,10 +70,18 @@ export interface Login {
   /**
    * Password
    *
-   * Do not put passwords in your CDK code directly. Import it from a Stack
-   * Parameter or the SSM Parameter Store instead.
+   * Do not put passwords in your CDK code directly.
+   *
+   * @default a Secrets Manager generated password
    */
-  password: string;
+  password?: string;
+
+  /**
+   * KMS encryption key to encrypt the generated secret.
+   *
+   * @default default master key
+   */
+  kmsKey?: kms.IEncryptionKey;
 }
 
 /**

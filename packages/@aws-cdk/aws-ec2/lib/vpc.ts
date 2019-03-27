@@ -5,7 +5,7 @@ import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVP
 import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
-import { IVpcNetwork, IVpcSubnet, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcPlacementStrategy, VpcSubnetImportProps } from './vpc-ref';
+import { IVpcNetwork, IVpcSubnet, SubnetSelection, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcSubnetImportProps } from './vpc-ref';
 import { VpnConnectionOptions, VpnConnectionType } from './vpn';
 
 /**
@@ -80,7 +80,7 @@ export interface VpcNetworkProps {
    *
    * @default All public subnets
    */
-  natGatewayPlacement?: VpcPlacementStrategy;
+  natGatewaySubnets?: SubnetSelection;
 
   /**
    * Configure the subnets to build for each AZ
@@ -365,7 +365,7 @@ export class VpcNetwork extends VpcNetworkBase {
       });
 
       // if gateways are needed create them
-      this.createNatGateways(props.natGateways, props.natGatewayPlacement);
+      this.createNatGateways(props.natGateways, props.natGatewaySubnets);
 
       (this.privateSubnets as VpcPrivateSubnet[]).forEach((privateSubnet, i) => {
         let ngwId = this.natGatewayByAZ[privateSubnet.availabilityZone];
@@ -433,8 +433,8 @@ export class VpcNetwork extends VpcNetworkBase {
     const iso = new ExportSubnetGroup(this, 'IsolatedSubnetIDs', this.isolatedSubnets, SubnetType.Isolated, this.availabilityZones.length);
 
     return {
-      vpcId: new cdk.Output(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
-      vpnGatewayId: new cdk.Output(this, 'VpnGatewayId', { value: this.vpnGatewayId }).makeImportValue().toString(),
+      vpcId: new cdk.CfnOutput(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
+      vpnGatewayId: new cdk.CfnOutput(this, 'VpnGatewayId', { value: this.vpnGatewayId }).makeImportValue().toString(),
       availabilityZones: this.availabilityZones,
       publicSubnetIds: pub.ids,
       publicSubnetNames: pub.names,
@@ -445,7 +445,7 @@ export class VpcNetwork extends VpcNetworkBase {
     };
   }
 
-  private createNatGateways(gateways?: number, placement?: VpcPlacementStrategy): void {
+  private createNatGateways(gateways?: number, placement?: SubnetSelection): void {
     const useNatGateway = this.subnetConfiguration.filter(
       subnet => (subnet.subnetType === SubnetType.Private)).length > 0;
 
@@ -456,7 +456,7 @@ export class VpcNetwork extends VpcNetworkBase {
     if (placement) {
       const subnets = this.subnets(placement);
       for (const sub of subnets) {
-        if (!this.isPublicSubnet(sub)) {
+        if (this.publicSubnets.indexOf(sub) === -1) {
           throw new Error(`natGatewayPlacement ${placement} contains non public subnet ${sub}`);
         }
       }
@@ -633,8 +633,8 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
 
   public export(): VpcSubnetImportProps {
     return {
-      availabilityZone: new cdk.Output(this, 'AvailabilityZone', { value: this.availabilityZone }).makeImportValue().toString(),
-      subnetId: new cdk.Output(this, 'VpcSubnetId', { value: this.subnetId }).makeImportValue().toString(),
+      availabilityZone: new cdk.CfnOutput(this, 'AvailabilityZone', { value: this.availabilityZone }).makeImportValue().toString(),
+      subnetId: new cdk.CfnOutput(this, 'VpcSubnetId', { value: this.subnetId }).makeImportValue().toString(),
     };
   }
 

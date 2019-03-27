@@ -76,7 +76,7 @@ export class DnsValidatedCertificate extends cdk.Construct implements ICertifica
      */
     public export(): CertificateImportProps {
         return {
-            certificateArn: new cdk.Output(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
+            certificateArn: new cdk.CfnOutput(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
         };
     }
 
