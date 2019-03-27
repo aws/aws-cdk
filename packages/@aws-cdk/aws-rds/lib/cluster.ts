@@ -16,7 +16,7 @@ export interface DatabaseClusterProps {
   /**
    * What kind of database to start
    */
-  engine: DatabaseClusterEngine;
+  readonly engine: DatabaseClusterEngine;
 
   /**
    * How many replicas/instances to create
@@ -25,36 +25,36 @@ export interface DatabaseClusterProps {
    *
    * @default 2
    */
-  instances?: number;
+  readonly instances?: number;
 
   /**
    * Settings for the individual instances that are launched
    */
-  instanceProps: InstanceProps;
+  readonly instanceProps: InstanceProps;
 
   /**
    * Username and password for the administrative user
    */
-  masterUser: Login;
+  readonly masterUser: Login;
 
   /**
    * Backup settings
    */
-  backup?: BackupProps;
+  readonly backup?: BackupProps;
 
   /**
    * What port to listen on
    *
    * If not supplied, the default for the engine is used.
    */
-  port?: number;
+  readonly port?: number;
 
   /**
    * An optional identifier for the cluster
    *
    * If not supplied, a name is automatically generated.
    */
-  clusterIdentifier?: string;
+  readonly clusterIdentifier?: string;
 
   /**
    * Base identifier for instances
@@ -65,19 +65,19 @@ export interface DatabaseClusterProps {
    *
    * If clusterIdentifier is also not given, the identifier is automatically generated.
    */
-  instanceIdentifierBase?: string;
+  readonly instanceIdentifierBase?: string;
 
   /**
    * Name of a database which is automatically created inside the cluster
    */
-  defaultDatabaseName?: string;
+  readonly defaultDatabaseName?: string;
 
   /**
    * Whether to enable storage encryption
    *
    * @default false
    */
-  storageEncrypted?: boolean
+  readonly storageEncrypted?: boolean
 
   /**
    * The KMS key for storage encryption. If specified `storageEncrypted`
@@ -85,7 +85,7 @@ export interface DatabaseClusterProps {
    *
    * @default default master key
    */
-  kmsKey?: kms.IEncryptionKey;
+  readonly kmsKey?: kms.IEncryptionKey;
 
   /**
    * A daily time range in 24-hours UTC format in which backups preferably execute.
@@ -94,14 +94,14 @@ export interface DatabaseClusterProps {
    *
    * Example: '01:00-02:00'
    */
-  preferredMaintenanceWindow?: string;
+  readonly preferredMaintenanceWindow?: string;
 
   /**
    * Additional parameters to pass to the database engine
    *
    * @default No parameter group
    */
-  parameterGroup?: IClusterParameterGroup;
+  readonly parameterGroup?: IClusterParameterGroup;
 
   /**
    * The CloudFormation policy to apply when the cluster and its instances
@@ -109,7 +109,7 @@ export interface DatabaseClusterProps {
    *
    * @default Retain
    */
-  deleteReplacePolicy?: cdk.DeletionPolicy
+  readonly deleteReplacePolicy?: cdk.DeletionPolicy
 }
 
 /**
