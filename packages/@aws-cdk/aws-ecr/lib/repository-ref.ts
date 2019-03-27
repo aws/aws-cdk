@@ -88,7 +88,7 @@ export interface RepositoryImportProps {
    * account/region as the current stack, you can set `repositoryName` instead
    * and the ARN will be formatted with the current region and account.
    */
-  repositoryArn?: string;
+  readonly repositoryArn?: string;
 
   /**
    * The full name of the repository to import.
@@ -100,7 +100,7 @@ export interface RepositoryImportProps {
    * If the repository is in the same region/account as the stack, it is sufficient
    * to only specify the repository name.
    */
-  repositoryName?: string;
+  readonly repositoryName?: string;
 }
 
 /**
