@@ -1,18 +1,18 @@
 import cdk = require('@aws-cdk/cdk');
 import fs = require('fs');
 import yaml = require('yaml');
-import { BootstrapPipeline, BootstrapPipelineProps } from './constructs';
+import { Pipeline, PipelineProps } from '../lib/pipeline';
 
 const config = readConfig();
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'cdk-pipelines');
 
 for (const [ id, props ] of Object.entries(config)) {
-  new BootstrapPipeline(stack, id, props);
+  new Pipeline(stack, id, props);
 }
 
 interface Config {
-  [name: string]: BootstrapPipelineProps
+  [name: string]: PipelineProps
 }
 
 function readConfig(): Config {

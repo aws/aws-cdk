@@ -4,8 +4,12 @@ import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import { CfnOutput, Construct, Secret } from '@aws-cdk/cdk';
+import { BuildAction } from '../lib/build';
+import { DeployAction } from '../lib/deploy';
 
-export interface BootstrapPipelineProps {
+export interface PipelineProps {
   /**
    * Github oauth secrets manager ARN.
    */
@@ -28,6 +32,12 @@ export interface BootstrapPipelineProps {
   readonly workdir?: string;
 
   /**
+   * Names of all the stacks to deploy.
+   * @default - deploys all stacks in the assembly that are not marked "autoDeploy: false"
+   */
+  readonly stacks?: string[];
+
+  /**
    * CodeBuild environment to use.
    */
   readonly environment?: codebuild.BuildEnvironment;
@@ -43,20 +53,28 @@ export interface BootstrapPipelineProps {
   readonly build?: string;
 
   /**
-   * Version of the CDK Toolkit to use.
-   * @default - uses latest version
+   * Indicates if only these stacks should be deployed or also any dependencies.
+   * @default false deploys all stacks and their dependencies in topological order.
    */
-  readonly version?: string;
+  readonly exclusively?: boolean;
 
   /**
-   * Stack names to deploy
-   * @default - deploy all stacks don't have `autoDeploy: false`
+   * Grant administrator privilages on your account to the build & deploy
+   * CodeBuild project.
+   *
+   * @default true
    */
-  readonly stacks?: string[];
+  readonly admin?: boolean;
+
+  /**
+   * CDK toolchain version.
+   * @default - latest
+   */
+  readonly version?: string;
 }
 
-export class BootstrapPipeline extends cdk.Construct {
-  constructor(scope: cdk.Stack, id: string, props: BootstrapPipelineProps) {
+export class Pipeline extends Construct {
+  constructor(scope: Construct, id: string, props: PipelineProps) {
     super(scope, id);
 
     const sourcePrefix = 'https://github.com/';
@@ -70,11 +88,7 @@ export class BootstrapPipeline extends cdk.Construct {
     //   secretId: props.oauthSecret
     // });
 
-    const workdir = props.workdir || '.';
-    const install = props.install || 'npx npm@latest ci';
-    const build   = props.build   || 'npm run build';
     const version = props.version || 'latest';
-    const stacks  = props.stacks  || [];
     const branch  = props.branch;
 
     const sourceAction = new cpactions.GitHubSourceAction({
@@ -86,6 +100,14 @@ export class BootstrapPipeline extends cdk.Construct {
       branch
     });
 
+    const buildAction = new BuildAction(this, 'BuildDeploy', {
+      sourceArtifact: sourceAction.outputArtifact,
+      workdir: props.workdir,
+      build: props.build,
+      environment: props.environment,
+      install: props.install,
+      version: props.version
+    }).action;
     const environment = props.environment || {
       buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
     };
@@ -141,30 +163,39 @@ export class BootstrapPipeline extends cdk.Construct {
       extract: false
     });
 
+    const deployAction = new DeployAction({
+      admin: true,
+      assembly: buildAction.outputArtifact,
+      stacks: props.stacks,
+      version: props.version,
+      exclusively: props.exclusively
+    });
+
     new codepipeline.Pipeline(this, 'Bootstrap', {
       restartExecutionOnUpdate: true,
       stages: [
         { name: 'Source',  actions: [ sourceAction  ] },
         { name: 'Build',   actions: [ buildAction   ] },
+        { name: 'Deploy',  actions: [ deployAction  ] },
         { name: 'Publish', actions: [ publishAction ] }
       ]
     });
 
     const exportPrefix = `cdk-pipeline:${id}`;
 
-    new cdk.CfnOutput(this, 'PublishBucketName', {
+    new CfnOutput(this, 'PublishBucketName', {
       value: publishBucket.bucketName,
       export: `${exportPrefix}-bucket`
     });
 
-    new cdk.CfnOutput(this, 'PublishObjectKey', {
+    new CfnOutput(this, 'PublishObjectKey', {
       value: objectKey,
       export: `${exportPrefix}-object-key`
     });
 
-    new cdk.CfnOutput(this, 'ToolkitVersion', {
+    new CfnOutput(this, 'ToolchainVersion', {
       value: version,
-      export: `${exportPrefix}-toolkit-version`
+      export: `${exportPrefix}-toolchain-version`
     });
   }
 }
