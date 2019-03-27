@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { Protocol } from '../shared/enums';
+import { Protocol, SslPolicy } from '../shared/enums';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 
@@ -20,6 +20,31 @@ export interface BaseNetworkListenerProps {
    * @default None
    */
   readonly defaultTargetGroups?: INetworkTargetGroup[];
+
+  /**
+   * Protocol for listener, expects TCP or TLS
+   */
+  protocol?: Protocol;
+
+  /**
+   * Certificate list of ACM cert ARNs
+   */
+  certificates?: INetworkListenerCertificateProps[];
+
+  /**
+   * SSL Policy to use for the listener
+   */
+  sslPolicy?: SslPolicy;
+}
+
+/**
+ * Properties for adding a certificate to a listener
+ */
+export interface INetworkListenerCertificateProps {
+  /**
+   * Certificate ARN from ACM
+   */
+  certificateArn: string
 }
 
 /**
@@ -48,12 +73,28 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   private readonly loadBalancer: INetworkLoadBalancer;
 
+  /**
+   * Protocol assigned to listener
+   */
+  private readonly protocol: Protocol;
+
+  /**
+   * Certificates array
+   */
+  private readonly certificates?: INetworkListenerCertificateProps[];
+
   constructor(scope: cdk.Construct, id: string, props: NetworkListenerProps) {
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      protocol: Protocol.Tcp,
+      protocol: props.protocol || Protocol.Tcp,
       port: props.port,
+      sslPolicy: props.sslPolicy,
+      certificates: props.certificates
     });
+
+    this.protocol = props.protocol || Protocol.Tcp;
+    // this.sslPolicy = props.sslPolicy;
+    this.certificates = props.certificates;
 
     this.loadBalancer = props.loadBalancer;
 
@@ -109,6 +150,23 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     };
   }
 
+  protected validate(): string[] {
+    const errors: string[] = [];
+
+    if ([Protocol.Tcp, Protocol.Tls].indexOf(this.protocol) === -1) {
+      errors.push(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${this.protocol}`);
+    }
+
+    const certs = this.certificates || [];
+
+    if (this.protocol === Protocol.Tls && (certs.length === 0 || certs.filter(v => {
+      return v.certificateArn == null;
+    }).length > 0)) {
+      errors.push(`When the protocol is set to TLS, you must specify certificates`);
+    }
+
+    return errors;
+  }
 }
 
 /**
