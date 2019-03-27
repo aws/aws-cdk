@@ -5,19 +5,19 @@ export interface Column {
   /**
    * Name of the column.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * Type of the column.
    */
-  type: Type;
+  readonly type: Type;
 
   /**
    * Coment describing the column.
    *
    * @default none
    */
-  comment?: string;
+  readonly comment?: string;
 }
 
 /**
@@ -27,12 +27,12 @@ export interface Type {
   /**
    * Indicates whether this type is a primitive data type.
    */
-  isPrimitive: boolean;
+  readonly isPrimitive: boolean;
 
   /**
    * Glue InputString for this type.
    */
-  inputString: string;
+  readonly inputString: string;
 }
 
 /**
