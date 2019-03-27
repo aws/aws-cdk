@@ -272,7 +272,7 @@ export interface Behavior {
    *
    * @default true
    */
-  compress?: boolean;
+  readonly compress?: boolean;
 
   /**
    * If this behavior is the default behavior for the distribution.
@@ -280,7 +280,7 @@ export interface Behavior {
    * You must specify exactly one default distribution per CloudFront distribution.
    * The default behavior is allowed to omit the "path" property.
    */
-  isDefaultBehavior?: boolean;
+  readonly isDefaultBehavior?: boolean;
 
   /**
    * Trusted signers is how CloudFront allows you to serve private content.
@@ -288,7 +288,7 @@ export interface Behavior {
    *
    * If you pass a non empty value, all requests for this behavior must be signed (no public access will be allowed)
    */
-  trustedSigners?: string[];
+  readonly trustedSigners?: string[];
 
   /**
    *
@@ -299,28 +299,28 @@ export interface Behavior {
    * @default 86400 (1 day)
    *
    */
-  defaultTtlSeconds?: number;
+  readonly defaultTtlSeconds?: number;
 
   /**
    * The method this CloudFront distribution responds do.
    *
    * @default GET_HEAD
    */
-  allowedMethods?: CloudFrontAllowedMethods;
+  readonly allowedMethods?: CloudFrontAllowedMethods;
 
   /**
    * The path this behavior responds to.
    * Required for all non-default behaviors. (The default behavior implicitly has "*" as the path pattern. )
    *
    */
-  pathPattern?: string;
+  readonly pathPattern?: string;
 
   /**
    * Which methods are cached by CloudFront by default.
    *
    * @default GET_HEAD
    */
-  cachedMethods?: CloudFrontAllowedCachedMethods;
+  readonly cachedMethods?: CloudFrontAllowedCachedMethods;
 
   /**
    * The values CloudFront will forward to the origin when making a request.
@@ -328,13 +328,13 @@ export interface Behavior {
    * @default none (no cookies - no headers)
    *
    */
-  forwardedValues?: CfnDistribution.ForwardedValuesProperty;
+  readonly forwardedValues?: CfnDistribution.ForwardedValuesProperty;
 
   /**
    * The minimum amount of time that you want objects to stay in the cache
    * before CloudFront queries your origin.
    */
-  minTtlSeconds?: number;
+  readonly minTtlSeconds?: number;
 
   /**
    * The max amount of time you want objects to stay in the cache
@@ -342,7 +342,7 @@ export interface Behavior {
    *
    * @default 31536000 (one year)
    */
-  maxTtlSeconds?: number;
+  readonly maxTtlSeconds?: number;
 
 }
 
@@ -350,19 +350,19 @@ export interface ErrorConfiguration {
   /**
    * The error code matched from the origin
    */
-  originErrorCode: number,
+  readonly originErrorCode: number;
   /**
    * The error code that is sent to the caller.
    */
-  respondWithErrorCode: number,
+  readonly respondWithErrorCode: number;
   /**
    * The path to service instead
    */
-  respondWithPage: string,
+  readonly respondWithPage: string;
   /**
    * How long before this error is retried.
    */
-  cacheTtl?: number
+  readonly cacheTtl?: number;
 }
 
 export interface CloudFrontWebDistributionProps {
@@ -372,52 +372,52 @@ export interface CloudFrontWebDistributionProps {
    *
    * @default none
    */
-  aliasConfiguration?: AliasConfiguration;
+  readonly aliasConfiguration?: AliasConfiguration;
 
   /**
    * A comment for this distribution in the cloud front console.
    */
-  comment?: string;
+  readonly comment?: string;
 
   /**
    * The default object to serve.
    *
    * @default "index.html"
    */
-  defaultRootObject?: string;
+  readonly defaultRootObject?: string;
 
   /**
    * If your distribution should have IPv6 enabled.
    *
    * @default true
    */
-  enableIpV6?: boolean;
+  readonly enableIpV6?: boolean;
 
   /**
    * The max supported HTTP Versions.
    *
    * @default HttpVersion.HTTP2
    */
-  httpVersion?: HttpVersion;
+  readonly httpVersion?: HttpVersion;
 
   /**
    * The price class for the distribution (this impacts how many locations CloudFront uses for your distribution, and billing)
    *
    * @default PriceClass_100: the cheapest option for CloudFront is picked by default.
    */
-  priceClass?: PriceClass;
+  readonly priceClass?: PriceClass;
 
   /**
    * The default viewer policy for incoming clients.
    *
    * @default RedirectToHTTPs
    */
-  viewerProtocolPolicy?: ViewerProtocolPolicy;
+  readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
 
   /**
    * The origin configurations for this distribution. Behaviors are a part of the origin.
    */
-  originConfigs: SourceConfiguration[];
+  readonly originConfigs: SourceConfiguration[];
 
   /**
    * Optional - if we should enable logging.
@@ -426,17 +426,17 @@ export interface CloudFrontWebDistributionProps {
    *
    * @default: no logging is enabled by default.
    */
-  loggingConfig?: LoggingConfiguration;
+  readonly loggingConfig?: LoggingConfiguration;
 
   /**
    * How CloudFront should handle requests that are no successful (eg PageNotFound)
    */
-  errorConfigurations?: CfnDistribution.CustomErrorResponseProperty[];
+  readonly errorConfigurations?: CfnDistribution.CustomErrorResponseProperty[];
 
   /**
    * Optional AWS WAF WebACL to associate with this CloudFront distribution
    */
-  webACLId?: string;
+  readonly webACLId?: string;
 
 }
 
@@ -444,7 +444,7 @@ export interface CloudFrontWebDistributionProps {
  * Internal only - just adds the originId string to the Behavior
  */
 interface BehaviorWithOrigin extends Behavior {
-  targetOriginId: string;
+  readonly targetOriginId: string;
 }
 
 /**
@@ -526,7 +526,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
   constructor(scope: cdk.Construct, id: string, props: CloudFrontWebDistributionProps) {
     super(scope, id);
 
-    const distributionConfig: CfnDistribution.DistributionConfigProperty = {
+    let distributionConfig: CfnDistribution.DistributionConfigProperty = {
       comment: props.comment,
       enabled: true,
       defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : "index.html",
@@ -570,29 +570,23 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
           originConfig.customOriginSource!.domainName,
         originPath: originConfig.originPath,
         originCustomHeaders: originHeaders.length > 0 ? originHeaders : undefined,
-      };
-
-      if (originConfig.s3OriginSource && originConfig.s3OriginSource.originAccessIdentity) {
-        originProperty.s3OriginConfig = {
-          originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.ref}`
-        };
-      } else if (originConfig.s3OriginSource) {
-        originProperty.s3OriginConfig = {};
-      }
-
-      if (originConfig.customOriginSource) {
-        originProperty.customOriginConfig = {
+        s3OriginConfig: originConfig.s3OriginSource && originConfig.s3OriginSource.originAccessIdentity
+          ? { originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.ref}` }
+          : { },
+        customOriginConfig: originConfig.customOriginSource ? {
           httpPort: originConfig.customOriginSource.httpPort || 80,
           httpsPort: originConfig.customOriginSource.httpsPort || 443,
           originKeepaliveTimeout: originConfig.customOriginSource.originKeepaliveTimeoutSeconds || 5,
           originReadTimeout: originConfig.customOriginSource.originReadTimeoutSeconds || 30,
           originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HttpsOnly,
           originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLSv1_2]
-        };
-      }
+        } : undefined
+      };
+
       for (const behavior of originConfig.behaviors) {
         behaviors.push({ ...behavior, targetOriginId: originId });
       }
+
       origins.push(originProperty);
       originIndex++;
     }
@@ -602,13 +596,18 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
         throw new Error(`Origin ${origin.domainName} is missing either S3OriginConfig or CustomOriginConfig. At least 1 must be specified.`);
       }
     });
-    distributionConfig.origins = origins;
+    distributionConfig = {
+      ...distributionConfig,
+      origins
+    };
 
     const defaultBehaviors = behaviors.filter(behavior => behavior.isDefaultBehavior);
     if (defaultBehaviors.length !== 1) {
       throw new Error("There can only be one default behavior across all sources. [ One default behavior per distribution ].");
     }
-    distributionConfig.defaultCacheBehavior = this.toBehavior(defaultBehaviors[0], props.viewerProtocolPolicy);
+
+    distributionConfig = { ...distributionConfig, defaultCacheBehavior: this.toBehavior(defaultBehaviors[0], props.viewerProtocolPolicy) };
+
     const otherBehaviors: CfnDistribution.CacheBehaviorProperty[] = [];
     for (const behavior of behaviors.filter(b => !b.isDefaultBehavior)) {
       if (!behavior.pathPattern) {
@@ -616,40 +615,51 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       }
       otherBehaviors.push(this.toBehavior(behavior, props.viewerProtocolPolicy) as CfnDistribution.CacheBehaviorProperty);
     }
-    distributionConfig.cacheBehaviors = otherBehaviors;
+
+    distributionConfig = { ...distributionConfig, cacheBehaviors: otherBehaviors };
 
     if (props.aliasConfiguration) {
-      distributionConfig.aliases = props.aliasConfiguration.names;
-      distributionConfig.viewerCertificate = {
-        acmCertificateArn: props.aliasConfiguration.acmCertRef,
-        sslSupportMethod: props.aliasConfiguration.sslMethod || SSLMethod.SNI,
-        minimumProtocolVersion: props.aliasConfiguration.securityPolicy
+      const minimumProtocolVersion = props.aliasConfiguration.securityPolicy;
+      const sslSupportMethod = props.aliasConfiguration.sslMethod || SSLMethod.SNI;
+      const acmCertificateArn = props.aliasConfiguration.acmCertRef;
+
+      distributionConfig = {
+        ...distributionConfig,
+        aliases: props.aliasConfiguration.names,
+        viewerCertificate: {
+          acmCertificateArn,
+          sslSupportMethod,
+          minimumProtocolVersion
+        }
       };
 
-      if (distributionConfig.viewerCertificate.minimumProtocolVersion !== undefined) {
-        const validProtocols = this.VALID_SSL_PROTOCOLS[distributionConfig.viewerCertificate.sslSupportMethod!.toString()];
+      if (minimumProtocolVersion !== undefined) {
+        const validProtocols = this.VALID_SSL_PROTOCOLS[sslSupportMethod.toString()];
 
         if (validProtocols === undefined) {
-          throw new Error(`Invalid sslMethod. ${distributionConfig.viewerCertificate.sslSupportMethod!.toString()} is not fully implemented yet.`);
+          throw new Error(`Invalid sslMethod. ${sslSupportMethod.toString()} is not fully implemented yet.`);
         }
 
-        if (validProtocols.indexOf(distributionConfig.viewerCertificate.minimumProtocolVersion.toString()) === -1) {
+        if (validProtocols.indexOf(minimumProtocolVersion.toString()) === -1) {
           // tslint:disable-next-line:max-line-length
-          throw new Error(`${distributionConfig.viewerCertificate.minimumProtocolVersion} is not compabtible with sslMethod ${distributionConfig.viewerCertificate.sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(", ")}`);
+          throw new Error(`${minimumProtocolVersion} is not compabtible with sslMethod ${sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(", ")}`);
         }
       }
     } else {
-      distributionConfig.viewerCertificate = {
-        cloudFrontDefaultCertificate: true
+      distributionConfig = { ...distributionConfig,
+        viewerCertificate: { cloudFrontDefaultCertificate: true }
       };
     }
 
     if (props.loggingConfig) {
       this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, `LoggingBucket`);
-      distributionConfig.logging = {
-        bucket: this.loggingBucket.domainName,
-        includeCookies: props.loggingConfig.includeCookies || false,
-        prefix: props.loggingConfig.prefix
+      distributionConfig = {
+        ...distributionConfig,
+        logging: {
+          bucket: this.loggingBucket.domainName,
+          includeCookies: props.loggingConfig.includeCookies || false,
+          prefix: props.loggingConfig.prefix
+        }
       };
     }
 
