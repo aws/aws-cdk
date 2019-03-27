@@ -72,7 +72,7 @@ heading "${next}: ${command} (${remaining} remaining)"
   cd ${next}
   ${command} || {
     error "error: last command failed. fix problem and resume by executing: $0"
-    error "failed in directory:"
+    error "directory:"
     error "    ${next}"
     exit 1
   }
