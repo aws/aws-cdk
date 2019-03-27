@@ -11,22 +11,22 @@ export interface BaseScalableAttributeProps extends EnableScalingProps {
   /**
    * Service namespace of the scalable attribute
    */
-  serviceNamespace: ServiceNamespace;
+  readonly serviceNamespace: ServiceNamespace;
 
   /**
    * Resource ID of the attribute
    */
-  resourceId: string;
+  readonly resourceId: string;
 
   /**
    * Scalable dimension of the attribute
    */
-  dimension: string;
+  readonly dimension: string;
 
   /**
    * Role to use for scaling
    */
-  role: iam.IRole;
+  readonly role: iam.IRole;
 }
 
 /**
@@ -90,10 +90,10 @@ export interface EnableScalingProps {
    *
    * @default 1
    */
-  minCapacity?: number;
+  readonly minCapacity?: number;
 
   /**
    * Maximum capacity to scale to
    */
-  maxCapacity: number;
+  readonly maxCapacity: number;
 }
