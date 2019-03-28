@@ -355,7 +355,10 @@ export = {
           "Properties": {
           "Action": "lambda:InvokeFunction",
           "FunctionName": {
-            "Ref": "MyFunc8A243A2C"
+            "Fn::GetAtt": [
+              "MyFunc8A243A2C",
+              "Arn"
+            ]
           },
           "Principal": "sns.amazonaws.com",
           "SourceArn": {
@@ -554,7 +557,10 @@ export = {
             "Properties": {
               "Action": "lambda:InvokeFunction",
               "FunctionName": {
-                "Ref": "MyFunc8A243A2C"
+                "Fn::GetAtt": [
+                  "MyFunc8A243A2C",
+                  "Arn"
+                ]
               },
               "Principal": "sns.amazonaws.com",
               "SourceArn": {

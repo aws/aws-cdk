@@ -65,7 +65,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "BooksHandler3EB83358"
+          "Fn::GetAtt": [
+            "BooksHandler3EB83358",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -103,7 +106,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "BooksHandler3EB83358"
+          "Fn::GetAtt": [
+            "BooksHandler3EB83358",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -137,7 +143,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "BooksHandler3EB83358"
+          "Fn::GetAtt": [
+            "BooksHandler3EB83358",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -175,7 +184,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "BooksHandler3EB83358"
+          "Fn::GetAtt": [
+            "BooksHandler3EB83358",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -269,7 +281,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "BookHandlerF9638A7A"
+          "Fn::GetAtt": [
+            "BookHandlerF9638A7A",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -307,7 +322,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "BookHandlerF9638A7A"
+          "Fn::GetAtt": [
+            "BookHandlerF9638A7A",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -341,7 +359,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "BookHandlerF9638A7A"
+          "Fn::GetAtt": [
+            "BookHandlerF9638A7A",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -379,7 +400,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "BookHandlerF9638A7A"
+          "Fn::GetAtt": [
+            "BookHandlerF9638A7A",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -473,7 +497,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "Hello4A628BD4"
+          "Fn::GetAtt": [
+            "Hello4A628BD4",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -511,7 +538,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "Hello4A628BD4"
+          "Fn::GetAtt": [
+            "Hello4A628BD4",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {

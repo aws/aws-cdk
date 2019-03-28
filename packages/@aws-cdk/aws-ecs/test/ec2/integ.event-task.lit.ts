@@ -3,6 +3,8 @@ import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
 import ecs = require('../../lib');
 
+import path = require('path');
+
 const app = new cdk.App();
 
 class EventStack extends cdk.Stack {
@@ -20,7 +22,9 @@ class EventStack extends cdk.Stack {
     // Create a Task Definition for the container to start
     const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
     taskDefinition.addContainer('TheContainer', {
-      image: ecs.ContainerImage.fromAsset(this, 'EventImage', { directory: 'eventhandler-image' }),
+      image: ecs.ContainerImage.fromAsset(this, 'EventImage', {
+        directory: path.resolve(__dirname, '..', 'eventhandler-image')
+      }),
       memoryLimitMiB: 256,
       logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
     });

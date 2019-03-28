@@ -30,7 +30,12 @@ export = {
     // THEN: Lambda has permissions to be invoked by CWL
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       Action: "lambda:InvokeFunction",
-      FunctionName: { Ref: "MyLambdaCCE802FB" },
+      FunctionName: {
+        "Fn::GetAtt": [
+          "MyLambdaCCE802FB",
+          "Arn"
+        ]
+      },
       Principal: { "Fn::Join": ["", ["logs.", {Ref: "AWS::Region"}, ".amazonaws.com"]] }
     }));
 

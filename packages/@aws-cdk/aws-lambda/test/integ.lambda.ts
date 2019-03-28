@@ -16,9 +16,12 @@ fn.addToRolePolicy(new iam.PolicyStatement().addAllResources().addAction('*'));
 
 const version = fn.addVersion('1');
 
-new lambda.Alias(stack, 'Alias', {
+const alias = new lambda.Alias(stack, 'Alias', {
   aliasName: 'prod',
   version,
+});
+alias.addPermission('AliasPermission', {
+  principal: new iam.ServicePrincipal('cloudformation.amazonaws.com')
 });
 
 app.run();

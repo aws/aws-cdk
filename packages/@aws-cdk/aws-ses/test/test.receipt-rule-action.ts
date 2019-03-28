@@ -179,7 +179,10 @@ export = {
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: {
-        Ref: 'Function76856677'
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn'
+        ]
       },
       Principal: 'ses.amazonaws.com',
       SourceAccount: {

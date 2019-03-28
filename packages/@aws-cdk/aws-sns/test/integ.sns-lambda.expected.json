@@ -83,7 +83,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "Echo11F3FB29"
+          "Fn::GetAtt": [
+            "Echo11F3FB29",
+            "Arn"
+          ]
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {

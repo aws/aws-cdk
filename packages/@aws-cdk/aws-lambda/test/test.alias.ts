@@ -1,5 +1,6 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+
 import { beASupersetOfTemplate, expect, haveResource } from '@aws-cdk/assert';
-import { AccountPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import lambda = require('../lib');
@@ -103,7 +104,7 @@ export = {
     test.done();
   },
 
-  'addPermission() on alias forward to real Lambda'(test: Test) {
+  'metric adds Resource: aliasArn to dimensions'(test: Test) {
     const stack = new Stack();
 
     // GIVEN
@@ -117,14 +118,26 @@ export = {
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
-    alias.addPermission('Perm', {
-      principal: new AccountPrincipal('123456')
+    new cloudwatch.Alarm(stack, 'Alarm', {
+      metric: alias.metric('Test'),
+      alarmName: 'Test',
+      threshold: 1,
+      evaluationPeriods: 1
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      FunctionName: stack.node.resolve(fn.functionName),
-      Principal: "123456"
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      Dimensions: [{
+        Name: "FunctionName",
+        Value: {
+          Ref: "MyLambdaCCE802FB"
+        }
+      }, {
+        Name: "Resource",
+        Value: {
+          Ref: "Alias325C5727"
+        }
+      }]
     }));
 
     test.done();
@@ -149,7 +162,7 @@ export = {
     test.done();
   },
 
-  'addToRolePolicy on alias forwards to real Lambda'(test: Test) {
+  'functionName is derived from the aliasArn so that dependencies are sound'(test: Test) {
     const stack = new Stack();
 
     // GIVEN
@@ -163,26 +176,27 @@ export = {
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
-    alias.addToRolePolicy(new PolicyStatement()
-      .addAction('s3:GetObject')
-      .addAllResources());
-    test.equals(alias.role, fn.role);
-
-    // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [{
-          Action: "s3:GetObject",
-          Effect: "Allow",
-          Resource: "*"
-        }],
-        Version: "2012-10-17"
-      },
-      PolicyName: "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-      Roles: [{
-        Ref: "MyLambdaServiceRole4539ECB6"
-      }]
-    }));
+    test.deepEqual(stack.node.resolve(alias.functionName), {
+      "Fn::Join": [
+        "",
+        [
+          {
+            "Fn::Select": [
+              6,
+              {
+                "Fn::Split": [
+                  ":",
+                  {
+                    Ref: "Alias325C5727"
+                  }
+                ]
+              }
+            ]
+          },
+          ":prod"
+        ]
+      ]
+    });
 
     test.done();
   }

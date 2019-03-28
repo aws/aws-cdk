@@ -21,7 +21,10 @@ export = {
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       "Action": "lambda:InvokeFunction",
       "FunctionName": {
-        "Ref": "Fn9270CBC0"
+        "Fn::GetAtt": [
+          "Fn9270CBC0",
+          "Arn"
+        ]
       },
       "Principal": "sns.amazonaws.com",
       "SourceArn": {
