@@ -105,7 +105,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Lambda::Permission', {
-      FunctionName: fn.node.resolve(fn.functionName),
+      FunctionName: fn.node.resolve(fn.functionArn),
       Principal: 'cognito-idp.amazonaws.com'
     }));
 
