@@ -153,8 +153,8 @@ export = {
           "Handler": "bar",
           "Role": {
             "Fn::GetAtt": [
-            "MyLambdaServiceRole4539ECB6",
-            "Arn"
+              "MyLambdaServiceRole4539ECB6",
+              "Arn"
             ]
           },
           "Runtime": "python2.7"
@@ -168,7 +168,10 @@ export = {
           "Properties": {
           "Action": "lambda:*",
           "FunctionName": {
-            "Ref": "MyLambdaCCE802FB"
+            "Fn::GetAtt": [
+              "MyLambdaCCE802FB",
+              "Arn"
+            ]
           },
           "Principal": "s3.amazonaws.com",
           "SourceAccount": {
@@ -269,14 +272,24 @@ export = {
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       "Action": "lambda:InvokeFunction",
-      "FunctionName": { "Ref": lambdaId },
+      "FunctionName": {
+        "Fn::GetAtt": [
+          lambdaId,
+          "Arn"
+        ]
+      },
       "Principal": "events.amazonaws.com",
       "SourceArn": { "Fn::GetAtt": [ "Rule4C995B7F", "Arn" ] }
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       "Action": "lambda:InvokeFunction",
-      "FunctionName": { "Ref": "MyLambdaCCE802FB" },
+      "FunctionName": {
+        "Fn::GetAtt": [
+          lambdaId,
+          "Arn"
+        ]
+      },
       "Principal": "events.amazonaws.com",
       "SourceArn": { "Fn::GetAtt": [ "Rule270732244", "Arn" ] }
     }));
