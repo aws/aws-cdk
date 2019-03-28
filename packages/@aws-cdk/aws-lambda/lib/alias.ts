@@ -67,7 +67,7 @@ export class Alias extends FunctionBase {
    */
   public readonly functionArn: string;
 
-  protected readonly canCreatePermissions: boolean = true; // Not used anyway
+  protected readonly canCreatePermissions: boolean = true;
 
   /**
    * The actual Lambda function object that this Alias is pointing to
