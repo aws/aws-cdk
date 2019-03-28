@@ -1,6 +1,7 @@
 import { countResources, expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
+import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -1309,7 +1310,38 @@ export = {
     test.equal(rt.supportsInlineCode, false);
 
     test.done();
-  }
+  },
+
+  'specify log retention'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS,
+      logRetentionDays: logs.RetentionDays.OneMonth
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::LogRetention', {
+      'LogGroupName': {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB'
+            }
+          ]
+        ]
+      },
+      'RetentionInDays': 30
+    }));
+
+    test.done();
+   }
 };
 
 function newTestLambda(scope: cdk.Construct) {
