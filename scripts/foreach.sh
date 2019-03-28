@@ -71,8 +71,8 @@ heading "${next}: ${command} (${remaining} remaining)"
 (
   cd ${next}
   ${command} || {
-    error "error: last command failed. fix problem and resume by executing:"
-    error "    $0"
+    error "error: last command failed. fix problem and resume by executing: $0"
+    error "directory:    ${next}"
     exit 1
   }
 )

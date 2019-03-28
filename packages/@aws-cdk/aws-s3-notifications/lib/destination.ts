@@ -22,18 +22,18 @@ export interface BucketNotificationDestinationProps {
   /**
    * The notification type.
    */
-  type: BucketNotificationDestinationType;
+  readonly type: BucketNotificationDestinationType;
 
   /**
    * The ARN of the destination (i.e. Lambda, SNS, SQS).
    */
-  arn: string;
+  readonly arn: string;
 
   /**
    * Any additional dependencies that should be resolved before the bucket notification
    * can be configured (for example, the SNS Topic Policy resource).
    */
-  dependencies?: cdk.IDependable[]
+  readonly dependencies?: cdk.IDependable[]
 }
 
 /**

@@ -7,14 +7,14 @@ export interface ParameterStoreStringProps {
   /**
    * The name of the parameter store value
    */
-  parameterName: string;
+  readonly parameterName: string;
 
   /**
    * The version number of the value you wish to retrieve.
    *
    * @default The latest version will be retrieved.
    */
-  version?: number;
+  readonly version?: number;
 }
 
 /**
@@ -64,12 +64,12 @@ export interface ParameterStoreSecureStringProps {
   /**
    * The name of the parameter store secure string value
    */
-  parameterName: string;
+  readonly parameterName: string;
 
   /**
    * The version number of the value you wish to retrieve.
    */
-  version: number;
+  readonly version: number;
 }
 
 /**

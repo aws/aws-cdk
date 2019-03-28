@@ -7,24 +7,24 @@ export interface CnameRecordProps {
   /**
    * The hosted zone in which to define the new TXT record.
    */
-  zone: IHostedZone;
+  readonly zone: IHostedZone;
 
   /**
    * The domain name for this record set.
    */
-  recordName: string;
+  readonly recordName: string;
 
   /**
    * The value for this record set.
    */
-  recordValue: string;
+  readonly recordValue: string;
 
   /**
    * The resource record cache time to live (TTL) in seconds.
    *
    * @default 1800 seconds
    */
-  ttl?: number;
+  readonly ttl?: number;
 }
 
 /**

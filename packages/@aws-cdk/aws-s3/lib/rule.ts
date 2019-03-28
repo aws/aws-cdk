@@ -5,14 +5,14 @@ export interface LifecycleRule {
   /**
    * A unique identifier for this rule. The value cannot be more than 255 characters.
    */
-  id?: string;
+  readonly id?: string;
 
   /**
    * Whether this rule is enabled.
    *
    * @default true
    */
-  enabled?: boolean;
+  readonly enabled?: boolean;
 
   /**
    * Specifies a lifecycle rule that aborts incomplete multipart uploads to an Amazon S3 bucket.
@@ -24,7 +24,7 @@ export interface LifecycleRule {
    *
    * @default Incomplete uploads are never aborted
    */
-  abortIncompleteMultipartUploadAfterDays?: number;
+  readonly abortIncompleteMultipartUploadAfterDays?: number;
 
   /**
    * Indicates when objects are deleted from Amazon S3 and Amazon Glacier.
@@ -37,7 +37,7 @@ export interface LifecycleRule {
    *
    * @default No expiration date
    */
-  expirationDate?: Date;
+  readonly expirationDate?: Date;
 
   /**
    * Indicates the number of days after creation when objects are deleted from Amazon S3 and Amazon Glacier.
@@ -48,7 +48,7 @@ export interface LifecycleRule {
    *
    * @default No expiration timeout
    */
-  expirationInDays?: number;
+  readonly expirationInDays?: number;
 
   /**
    * Time between when a new version of the object is uploaded to the bucket and when old versions of the object expire.
@@ -62,7 +62,7 @@ export interface LifecycleRule {
    *
    * @default No noncurrent version expiration
    */
-  noncurrentVersionExpirationInDays?: number;
+  readonly noncurrentVersionExpirationInDays?: number;
 
   /**
    * One or more transition rules that specify when non-current objects transition to a specified storage class.
@@ -72,7 +72,7 @@ export interface LifecycleRule {
    * If you specify a transition and expiration time, the expiration time
    * must be later than the transition time.
    */
-  noncurrentVersionTransitions?: NoncurrentVersionTransition[];
+  readonly noncurrentVersionTransitions?: NoncurrentVersionTransition[];
 
   /**
    * One or more transition rules that specify when an object transitions to a specified storage class.
@@ -83,21 +83,21 @@ export interface LifecycleRule {
    *
    * @default No transition rules
    */
-  transitions?: Transition[];
+  readonly transitions?: Transition[];
 
   /**
    * Object key prefix that identifies one or more objects to which this rule applies.
    *
    * @default Rule applies to all objects
    */
-  prefix?: string;
+  readonly prefix?: string;
 
   /**
    * The TagFilter property type specifies tags to use to identify a subset of objects for an Amazon S3 bucket.
    *
    * @default Rule applies to all objects
    */
-  tagFilters?: {[tag: string]: any};
+  readonly tagFilters?: {[tag: string]: any};
 }
 
 /**
@@ -107,7 +107,7 @@ export interface Transition {
   /**
    * The storage class to which you want the object to transition.
    */
-  storageClass: StorageClass;
+  readonly storageClass: StorageClass;
 
   /**
    * Indicates when objects are transitioned to the specified storage class.
@@ -116,14 +116,14 @@ export interface Transition {
    *
    * @default No transition date.
    */
-  transitionDate?: Date;
+  readonly transitionDate?: Date;
 
   /**
    * Indicates the number of days after creation when objects are transitioned to the specified storage class.
    *
    * @default No transition count.
    */
-  transitionInDays?: number;
+  readonly transitionInDays?: number;
 }
 
 /**
@@ -133,14 +133,14 @@ export interface NoncurrentVersionTransition {
   /**
    * The storage class to which you want the object to transition.
    */
-  storageClass: StorageClass;
+  readonly storageClass: StorageClass;
 
   /**
    * Indicates the number of days after creation when objects are transitioned to the specified storage class.
    *
    * @default No transition count.
    */
-  transitionInDays: number;
+  readonly transitionInDays: number;
 }
 
 /**

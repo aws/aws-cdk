@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
@@ -107,7 +107,7 @@ export = {
     test.deepEqual(stack.node.resolve(imports.queueUrl), { 'Fn::ImportValue': 'Stack:QueueQueueUrlC30FF916' });
 
     // the exporting stack has Outputs for QueueARN and QueueURL
-    const outputs = stack._toCloudFormation().Outputs;
+    const outputs = SynthUtils.toCloudFormation(stack).Outputs;
     // tslint:disable-next-line:max-line-length
     test.deepEqual(outputs.QueueQueueArn8CF496D5, { Value: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] }, Export: { Name: 'Stack:QueueQueueArn8CF496D5' } });
     test.deepEqual(outputs.QueueQueueUrlC30FF916, { Value: { Ref: 'Queue4A7E3555' }, Export: { Name: 'Stack:QueueQueueUrlC30FF916' } });
@@ -253,7 +253,7 @@ export = {
           keyArn: { 'Fn::ImportValue': 'Stack:QueueWithCustomKeyKeyArn537F6E42' }
         });
 
-        test.deepEqual(stack._toCloudFormation().Outputs, {
+        test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs, {
           "QueueWithCustomKeyQueueArnD326BB9B": {
           "Value": {
             "Fn::GetAtt": [
@@ -301,7 +301,7 @@ export = {
           keyArn: { 'Fn::ImportValue': 'Stack:QueueWithManagedKeyKeyArn9C42A85D' }
         });
 
-        test.deepEqual(stack._toCloudFormation().Outputs, {
+        test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs, {
           "QueueWithManagedKeyQueueArn8798A14E": {
           "Value": {
             "Fn::GetAtt": [
@@ -407,7 +407,7 @@ export = {
 
       // make sure the queue policy is added as a dependency to the bucket
       // notifications resource so it will be created first.
-      test.deepEqual(stack._toCloudFormation().Resources.BucketNotifications8F2E257D.DependsOn, [ 'QueuePolicy25439813' ]);
+      test.deepEqual(SynthUtils.toCloudFormation(stack).Resources.BucketNotifications8F2E257D.DependsOn, [ 'QueuePolicy25439813' ]);
 
       test.done();
     },

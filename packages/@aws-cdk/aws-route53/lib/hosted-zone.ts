@@ -10,21 +10,21 @@ export interface CommonHostedZoneProps {
    * The name of the domain. For resource record types that include a domain
    * name, specify a fully qualified domain name.
    */
-  zoneName: string;
+  readonly zoneName: string;
 
   /**
    * Any comments that you want to include about the hosted zone.
    *
    * @default none
    */
-  comment?: string;
+  readonly comment?: string;
 
   /**
    * The Amazon Resource Name (ARN) for the log group that you want Amazon Route 53 to send query logs to.
    *
    * @default disabled
    */
-  queryLogsLogGroupArn?: string;
+  readonly queryLogsLogGroupArn?: string;
 }
 
 /**
@@ -39,7 +39,7 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
    *
    * @default public (no VPCs associated)
    */
-  vpcs?: ec2.IVpcNetwork[];
+  readonly vpcs?: ec2.IVpcNetwork[];
 }
 
 export class HostedZone extends cdk.Construct implements IHostedZone {
@@ -140,14 +140,14 @@ export interface ZoneDelegationOptions {
    *
    * @default none
    */
-  comment?: string;
+  readonly comment?: string;
 
   /**
    * The TTL (Time To Live) of the DNS delegation record in DNS caches.
    *
    * @default 172800
    */
-  ttl?: number;
+  readonly ttl?: number;
 }
 
 export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
@@ -157,7 +157,7 @@ export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
    * Private hosted zones must be associated with at least one VPC. You can
    * associated additional VPCs using `addVpc(vpc)`.
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 }
 
 /**

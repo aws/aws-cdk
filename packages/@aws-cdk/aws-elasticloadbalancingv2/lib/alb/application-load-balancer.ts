@@ -16,7 +16,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default A security group is created
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * The type of IP addresses to use
@@ -25,21 +25,21 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default IpAddressType.Ipv4
    */
-  ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType;
 
   /**
    * Indicates whether HTTP/2 is enabled.
    *
    * @default true
    */
-  http2Enabled?: boolean;
+  readonly http2Enabled?: boolean;
 
   /**
    * The load balancer idle timeout, in seconds
    *
    * @default 60
    */
-  idleTimeoutSecs?: number;
+  readonly idleTimeoutSecs?: number;
 }
 
 /**
@@ -503,12 +503,12 @@ export interface ApplicationLoadBalancerImportProps {
   /**
    * ARN of the load balancer
    */
-  loadBalancerArn: string;
+  readonly loadBalancerArn: string;
 
   /**
    * ID of the load balancer's security group
    */
-  securityGroupId: string;
+  readonly securityGroupId: string;
 }
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions

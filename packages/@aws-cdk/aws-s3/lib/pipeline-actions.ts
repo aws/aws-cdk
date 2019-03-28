@@ -14,14 +14,14 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
    *
    * @default a name will be auto-generated
    */
-  outputArtifactName?: string;
+  readonly outputArtifactName?: string;
 
   /**
    * The key within the S3 bucket that stores the source code.
    *
    * @example 'path/to/file.zip'
    */
-  bucketKey: string;
+  readonly bucketKey: string;
 
   /**
    * Whether AWS CodePipeline should poll for source changes.
@@ -32,7 +32,7 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
    * @default true
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/log-s3-data-events.html
    */
-  pollForSourceChanges?: boolean;
+  readonly pollForSourceChanges?: boolean;
 }
 
 /**
@@ -42,7 +42,7 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
   /**
    * The Amazon S3 bucket that stores the source code
    */
-  bucket: IBucket;
+  readonly bucket: IBucket;
 }
 
 /**
@@ -88,17 +88,17 @@ export interface CommonPipelineDeployActionProps extends codepipeline.CommonActi
    *
    * @default true
    */
-  extract?: boolean;
+  readonly extract?: boolean;
 
   /**
    * The key of the target object. This is required if extract is false.
    */
-  objectKey?: string;
+  readonly objectKey?: string;
 
   /**
    * The inputArtifact to deploy to Amazon S3.
    */
-  inputArtifact: codepipeline.Artifact;
+  readonly inputArtifact: codepipeline.Artifact;
 }
 
 /**
@@ -108,7 +108,7 @@ export interface PipelineDeployActionProps extends CommonPipelineDeployActionPro
   /**
    * The Amazon S3 bucket that is the deploy target.
    */
-  bucket: IBucket;
+  readonly bucket: IBucket;
 }
 
 /**

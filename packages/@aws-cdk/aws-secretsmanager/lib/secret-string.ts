@@ -7,7 +7,7 @@ export interface SecretStringProps {
   /**
    * Unique identifier or ARN of the secret
    */
-  secretId: string;
+  readonly secretId: string;
 
   /**
    * Specifies the secret version that you want to retrieve by the staging label attached to the version.
@@ -16,7 +16,7 @@ export interface SecretStringProps {
    *
    * @default AWSCURRENT
    */
-  versionStage?: string;
+  readonly versionStage?: string;
 
   /**
    * Specifies the unique identifier of the version of the secret that you want to use in stack operations.
@@ -25,7 +25,7 @@ export interface SecretStringProps {
    *
    * @default AWSCURRENT
    */
-  versionId?: string;
+  readonly versionId?: string;
 }
 
 /**

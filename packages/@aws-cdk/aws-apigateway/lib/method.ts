@@ -12,13 +12,13 @@ export interface MethodOptions {
    * A friendly operation name for the method. For example, you can assign the
    * OperationName of ListPets for the GET /pets method.
    */
-  operationName?: string;
+  readonly operationName?: string;
 
   /**
    * Method authorization.
    * @default None open access
    */
-  authorizationType?: AuthorizationType;
+  readonly authorizationType?: AuthorizationType;
 
   /**
    * If `authorizationType` is `Custom`, this specifies the ID of the method
@@ -27,13 +27,13 @@ export interface MethodOptions {
    * NOTE: in the future this will be replaced with an `IAuthorizer`
    * construct.
    */
-  authorizerId?: string;
+  readonly authorizerId?: string;
 
   /**
    * Indicates whether the method requires clients to submit a valid API key.
    * @default false
    */
-  apiKeyRequired?: boolean;
+  readonly apiKeyRequired?: boolean;
 
   /**
    * The responses that can be sent to the client who calls the method.
@@ -44,7 +44,7 @@ export interface MethodOptions {
    * for the integration response to be correctly mapped to a response to the client.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-settings-method-response.html
    */
-  methodResponses?: MethodResponse[]
+  readonly methodResponses?: MethodResponse[]
 
   /**
    * The request parameters that API Gateway accepts. Specify request parameters
@@ -54,7 +54,7 @@ export interface MethodOptions {
    * is querystring, path, or header, and name is a valid, unique parameter name.
    * @default None
    */
-  requestParameters?: { [param: string]: boolean };
+  readonly requestParameters?: { [param: string]: boolean };
 
   // TODO:
   // - RequestValidatorId
@@ -66,22 +66,22 @@ export interface MethodProps {
    * The resource this method is associated with. For root resource methods,
    * specify the `RestApi` object.
    */
-  resource: IRestApiResource;
+  readonly resource: IRestApiResource;
 
   /**
    * The HTTP method ("GET", "POST", "PUT", ...) that clients use to call this method.
    */
-  httpMethod: string;
+  readonly httpMethod: string;
 
   /**
    * The backend system that the method calls when it receives a request.
    */
-  integration?: Integration;
+  readonly integration?: Integration;
 
   /**
    * Method options.
    */
-  options?: MethodOptions;
+  readonly options?: MethodOptions;
 }
 
 export class Method extends cdk.Construct {

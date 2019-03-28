@@ -11,7 +11,7 @@ export interface RestApiImportProps {
   /**
    * The REST API ID of an existing REST API resource.
    */
-  restApiId: string;
+  readonly restApiId: string;
 }
 
 export interface IRestApi extends cdk.IConstruct {
@@ -49,7 +49,7 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default true
    */
-  deploy?: boolean;
+  readonly deploy?: boolean;
 
   /**
    * Options for the API Gateway stage that will always point to the latest
@@ -58,7 +58,7 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default defaults based on defaults of `StageOptions`
    */
-  deployOptions?: StageOptions;
+  readonly deployOptions?: StageOptions;
 
   /**
    * Retains old deployment resources when the API changes. This allows
@@ -67,38 +67,38 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default false
    */
-  retainDeployments?: boolean;
+  readonly retainDeployments?: boolean;
 
   /**
    * A name for the API Gateway RestApi resource.
    *
    * @default construct-id defaults to the id of the RestApi construct
    */
-  restApiName?: string;
+  readonly restApiName?: string;
 
   /**
    * Custom header parameters for the request.
    * @see https://docs.aws.amazon.com/cli/latest/reference/apigateway/import-rest-api.html
    */
-  parameters?: { [key: string]: string };
+  readonly parameters?: { [key: string]: string };
 
   /**
    * A policy document that contains the permissions for this RestApi
    */
-  policy?: iam.PolicyDocument;
+  readonly policy?: iam.PolicyDocument;
 
   /**
    * A description of the purpose of this API Gateway RestApi resource.
    * @default No description
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * The source of the API key for metering requests according to a usage
    * plan.
    * @default undefined metering is disabled
    */
-  apiKeySourceType?: ApiKeySourceType;
+  readonly apiKeySourceType?: ApiKeySourceType;
 
   /**
    * The list of binary media mine-types that are supported by the RestApi
@@ -106,13 +106,13 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default By default, RestApi supports only UTF-8-encoded text payloads
    */
-  binaryMediaTypes?: string[];
+  readonly binaryMediaTypes?: string[];
 
   /**
    * A list of the endpoint types of the API. Use this property when creating
    * an API.
    */
-  endpointTypes?: EndpointType[];
+  readonly endpointTypes?: EndpointType[];
 
   /**
    * Indicates whether to roll back the resource if a warning occurs while API
@@ -120,7 +120,7 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default false
    */
-  failOnWarnings?: boolean;
+  readonly failOnWarnings?: boolean;
 
   /**
    * A nullable integer that is used to enable compression (with non-negative
@@ -132,18 +132,18 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default undefined compression is disabled
    */
-  minimumCompressionSize?: number;
+  readonly minimumCompressionSize?: number;
 
   /**
    * The ID of the API Gateway RestApi resource that you want to clone.
    */
-  cloneFrom?: IRestApi;
+  readonly cloneFrom?: IRestApi;
 
   /**
    * Automatically configure an AWS CloudWatch role for API Gateway.
    * @default true
    */
-  cloudWatchRole?: boolean;
+  readonly cloudWatchRole?: boolean;
 }
 
 /**
@@ -282,6 +282,8 @@ export class RestApi extends cdk.Construct implements IRestApi {
   /**
    * Internal API used by `Method` to keep an inventory of methods at the API
    * level for validation purposes.
+   *
+   * @internal
    */
   public _attachMethod(method: Method) {
     this.methods.push(method);

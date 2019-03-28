@@ -3,7 +3,7 @@ import { Construct } from './construct';
 import { ResolveContext } from './token';
 
 export interface CfnConditionProps {
-  expression?: ICfnConditionExpression;
+  readonly expression?: ICfnConditionExpression;
 }
 
 /**
@@ -25,6 +25,9 @@ export class CfnCondition extends CfnRefElement implements ICfnConditionExpressi
     this.expression = props && props.expression;
   }
 
+  /**
+   * @internal
+   */
   public _toCloudFormation(): object {
     if (!this.expression) {
       return { };

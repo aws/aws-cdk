@@ -35,26 +35,26 @@ export interface Attribute {
   /**
    * The name of an attribute.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * The data type of an attribute.
    */
-  type: AttributeType;
+  readonly type: AttributeType;
 }
 
 export interface TableProps {
   /**
    * Partition key attribute definition.
    */
-  partitionKey: Attribute;
+  readonly partitionKey: Attribute;
 
   /**
    * Table sort key attribute definition.
    *
    * @default no sort key
    */
-  sortKey?: Attribute;
+  readonly sortKey?: Attribute;
 
   /**
    * The read capacity for the table. Careful if you add Global Secondary Indexes, as
@@ -64,7 +64,7 @@ export interface TableProps {
    *
    * @default 5
    */
-  readCapacity?: number;
+  readonly readCapacity?: number;
   /**
    * The write capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
@@ -73,76 +73,76 @@ export interface TableProps {
    *
    * @default 5
    */
-  writeCapacity?: number;
+  readonly writeCapacity?: number;
 
   /**
    * Specify how you are charged for read and write throughput and how you manage capacity.
    * @default Provisioned
    */
-  billingMode?: BillingMode;
+  readonly billingMode?: BillingMode;
 
   /**
    * Enforces a particular physical table name.
    * @default <generated>
    */
-  tableName?: string;
+  readonly tableName?: string;
 
   /**
    * Whether point-in-time recovery is enabled.
    * @default undefined, point-in-time recovery is disabled
    */
-  pitrEnabled?: boolean;
+  readonly pitrEnabled?: boolean;
 
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
    * @default undefined, server-side encryption is enabled with an AWS owned customer master key
    */
-  sseEnabled?: boolean;
+  readonly sseEnabled?: boolean;
 
   /**
    * When an item in the table is modified, StreamViewType determines what information
    * is written to the stream for this table. Valid values for StreamViewType are:
    * @default undefined, streams are disabled
    */
-  streamSpecification?: StreamViewType;
+  readonly streamSpecification?: StreamViewType;
 
   /**
    * The name of TTL attribute.
    * @default undefined, TTL is disabled
    */
-  ttlAttributeName?: string;
+  readonly ttlAttributeName?: string;
 }
 
 export interface SecondaryIndexProps {
   /**
    * The name of the secondary index.
    */
-  indexName: string;
+  readonly indexName: string;
 
   /**
    * The set of attributes that are projected into the secondary index.
    * @default ALL
    */
-  projectionType?: ProjectionType;
+  readonly projectionType?: ProjectionType;
 
   /**
    * The non-key attributes that are projected into the secondary index.
    * @default undefined
    */
-  nonKeyAttributes?: string[];
+  readonly nonKeyAttributes?: string[];
 }
 
 export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
   /**
    * The attribute of a partition key for the global secondary index.
    */
-  partitionKey: Attribute;
+  readonly partitionKey: Attribute;
 
   /**
    * The attribute of a sort key for the global secondary index.
    * @default undefined
    */
-  sortKey?: Attribute;
+  readonly sortKey?: Attribute;
 
   /**
    * The read capacity for the global secondary index.
@@ -151,7 +151,7 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
    *
    * @default 5
    */
-  readCapacity?: number;
+  readonly readCapacity?: number;
 
   /**
    * The write capacity for the global secondary index.
@@ -160,14 +160,14 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
    *
    * @default 5
    */
-  writeCapacity?: number;
+  readonly writeCapacity?: number;
 }
 
 export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
   /**
    * The attribute of a sort key for the local secondary index.
    */
-  sortKey: Attribute;
+  readonly sortKey: Attribute;
 }
 
 /**

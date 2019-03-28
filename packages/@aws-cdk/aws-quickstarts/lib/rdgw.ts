@@ -3,18 +3,18 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 
 export interface RemoteDesktopGatewayProps {
-  rdgwCIDR: string;
-  vpc: ec2.IVpcNetwork;
-  keyPairName: string;
+  readonly rdgwCIDR: string;
+  readonly vpc: ec2.IVpcNetwork;
+  readonly keyPairName: string;
 
-  adminPassword: string;
-  adminUser?: string;
+  readonly adminPassword: string;
+  readonly adminUser?: string;
 
-  domainDNSName?: string;
-  numberOfRDGWHosts?: number;
-  qss3BucketName?: string;
-  qss3KeyPrefix?: string;
-  rdgwInstanceType?: string;
+  readonly domainDNSName?: string;
+  readonly numberOfRDGWHosts?: number;
+  readonly qss3BucketName?: string;
+  readonly qss3KeyPrefix?: string;
+  readonly rdgwInstanceType?: string;
 }
 
 /**

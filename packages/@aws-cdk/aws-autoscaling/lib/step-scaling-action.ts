@@ -10,28 +10,28 @@ export interface StepScalingActionProps {
   /**
    * The auto scaling group
    */
-  autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroup;
 
   /**
    * Period after a scaling completes before another scaling activity can start.
    *
    * @default The default cooldown configured on the AutoScalingGroup
    */
-  cooldownSeconds?: number;
+  readonly cooldownSeconds?: number;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default Same as the cooldown
    */
-  estimatedInstanceWarmupSeconds?: number;
+  readonly estimatedInstanceWarmupSeconds?: number;
 
   /**
    * How the adjustment numbers are interpreted
    *
    * @default ChangeInCapacity
    */
-  adjustmentType?: AdjustmentType;
+  readonly adjustmentType?: AdjustmentType;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -41,14 +41,14 @@ export interface StepScalingActionProps {
    *
    * @default No minimum scaling effect
    */
-  minAdjustmentMagnitude?: number;
+  readonly minAdjustmentMagnitude?: number;
 
   /**
    * The aggregation type for the CloudWatch metrics.
    *
    * @default Average
    */
-  metricAggregationType?: MetricAggregationType;
+  readonly metricAggregationType?: MetricAggregationType;
 }
 
 /**
@@ -164,7 +164,7 @@ export interface AdjustmentTier {
    *
    * Can be positive or negative.
    */
-  adjustment: number;
+  readonly adjustment: number;
 
   /**
    * Lower bound where this scaling tier applies.
@@ -174,7 +174,7 @@ export interface AdjustmentTier {
    *
    * @default -Infinity if this is the first tier, otherwise the upperBound of the previous tier
    */
-  lowerBound?: number;
+  readonly lowerBound?: number;
 
   /**
    * Upper bound where this scaling tier applies
@@ -184,5 +184,5 @@ export interface AdjustmentTier {
    *
    * @default +Infinity
    */
-  upperBound?: number;
+  readonly upperBound?: number;
 }

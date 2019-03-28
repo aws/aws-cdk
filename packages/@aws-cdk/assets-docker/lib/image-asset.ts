@@ -9,7 +9,7 @@ export interface DockerImageAssetProps {
   /**
    * The directory where the Dockerfile is stored
    */
-  directory: string;
+  readonly directory: string;
 
   /**
    * ECR repository name
@@ -20,7 +20,7 @@ export interface DockerImageAssetProps {
    *
    * @default automatically derived from the asset's ID.
    */
-  repositoryName?: string;
+  readonly repositoryName?: string;
 }
 
 /**

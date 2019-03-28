@@ -27,5 +27,5 @@ export interface LifecycleHookTargetProps {
   /**
    * The ARN to use as the notification target
    */
-  notificationTargetArn: string;
+  readonly notificationTargetArn: string;
 }

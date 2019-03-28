@@ -13,19 +13,19 @@ export interface VersionProps {
    *
    * @default No validation is performed
    */
-  codeSha256?: string;
+  readonly codeSha256?: string;
 
   /**
    * Description of the version
    *
    * @default Description of the Lambda
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Function to get the value of
    */
-  lambda: IFunction;
+  readonly lambda: IFunction;
 }
 
 /**

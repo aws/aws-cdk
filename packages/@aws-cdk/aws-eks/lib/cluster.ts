@@ -14,7 +14,7 @@ export interface ClusterProps {
   /**
    * The VPC in which to create the Cluster
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 
   /**
    * Where to place EKS Control Plane ENIs
@@ -33,35 +33,35 @@ export interface ClusterProps {
    *
    * @default All public and private subnets
    */
-  vpcSubnets?: ec2.SubnetSelection[];
+  readonly vpcSubnets?: ec2.SubnetSelection[];
 
   /**
    * Role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf.
    *
    * @default A role is automatically created for you
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Name for the cluster.
    *
    * @default Automatically generated name
    */
-  clusterName?: string;
+  readonly clusterName?: string;
 
   /**
    * Security Group to use for Control Plane ENIs
    *
    * @default A security group is automatically created
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * The Kubernetes version to run in the cluster
    *
    * @default If not supplied, will use Amazon default version
    */
-  version?: string;
+  readonly version?: string;
 }
 
 /**
@@ -289,7 +289,7 @@ export interface AddWorkerNodesOptions extends autoscaling.CommonAutoScalingGrou
   /**
    * Instance type of the instances to start
    */
-  instanceType: ec2.InstanceType;
+  readonly instanceType: ec2.InstanceType;
 }
 
 /**
@@ -302,7 +302,7 @@ export interface AddAutoScalingGroupOptions {
    * Should be at most equal to the maximum number of IP addresses available to
    * the instance type less one.
    */
-  maxPods: number;
+  readonly maxPods: number;
 }
 
 /**

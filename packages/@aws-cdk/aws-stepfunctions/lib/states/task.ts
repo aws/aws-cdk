@@ -15,14 +15,14 @@ export interface TaskProps {
      *
      * Can be either a Lambda Function or an Activity.
      */
-    resource: IStepFunctionsTaskResource;
+    readonly resource: IStepFunctionsTaskResource;
 
     /**
      * An optional description for this state
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * JSONPath expression to select part of the state to be the input to this state.
@@ -32,7 +32,7 @@ export interface TaskProps {
      *
      * @default $
      */
-    inputPath?: string;
+    readonly inputPath?: string;
 
     /**
      * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
@@ -42,7 +42,7 @@ export interface TaskProps {
      *
      * @default No parameters
      */
-    parameters?: { [name: string]: any };
+    readonly parameters?: { [name: string]: any };
 
     /**
      * JSONPath expression to select part of the state to be the output to this state.
@@ -52,7 +52,7 @@ export interface TaskProps {
      *
      * @default $
      */
-    outputPath?: string;
+    readonly outputPath?: string;
 
     /**
      * JSONPath expression to indicate where to inject the state's output
@@ -62,7 +62,7 @@ export interface TaskProps {
      *
      * @default $
      */
-    resultPath?: string;
+    readonly resultPath?: string;
 
     /**
      * Maximum run time of this state
@@ -71,7 +71,7 @@ export interface TaskProps {
      *
      * @default 60
      */
-    timeoutSeconds?: number;
+    readonly timeoutSeconds?: number;
 
     /**
      * Maximum time between heart beats
@@ -82,7 +82,7 @@ export interface TaskProps {
      *
      * @default No heart beat timeout
      */
-    heartbeatSeconds?: number;
+    readonly heartbeatSeconds?: number;
 }
 
 /**
@@ -281,33 +281,33 @@ export interface StepFunctionsTaskResourceProps {
     /**
      * The ARN of the resource
      */
-    resourceArn: string;
+    readonly resourceArn: string;
 
     /**
      * Additional policy statements to add to the execution role
      *
      * @default No policy roles
      */
-    policyStatements?: iam.PolicyStatement[];
+    readonly policyStatements?: iam.PolicyStatement[];
 
     /**
      * Prefix for singular metric names of activity actions
      *
      * @default No such metrics
      */
-    metricPrefixSingular?: string;
+    readonly metricPrefixSingular?: string;
 
     /**
      * Prefix for plural metric names of activity actions
      *
      * @default No such metrics
      */
-    metricPrefixPlural?: string;
+    readonly metricPrefixPlural?: string;
 
     /**
      * The dimensions to attach to metrics
      *
      * @default No metrics
      */
-    metricDimensions?: cloudwatch.DimensionHash;
+    readonly metricDimensions?: cloudwatch.DimensionHash;
 }

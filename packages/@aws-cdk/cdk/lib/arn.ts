@@ -1,6 +1,7 @@
 import { Fn } from './fn';
 import { Stack } from './stack';
 import { unresolved } from './unresolved';
+import { filterUndefined } from './util';
 
 /**
  * Creates an ARN from components.
@@ -130,28 +131,16 @@ export function parseArn(arn: string, sepIfToken: string = '/', hasName: boolean
     resourceName += rest.join(':');
   }
 
-  const result: ArnComponents = { service, resource };
-  if (partition) {
-    result.partition = partition;
-  }
-
-  if (region) {
-    result.region = region;
-  }
-
-  if (account) {
-    result.account = account;
-  }
-
-  if (resourceName) {
-    result.resourceName = resourceName;
-  }
-
-  if (sep) {
-    result.sep = sep;
-  }
-
-  return result;
+  // "|| undefined" will cause empty strings to be treated as "undefined"
+  return filterUndefined({
+    service: service || undefined,
+    resource: resource || undefined ,
+    partition: partition || undefined,
+    region: region || undefined,
+    account: account || undefined,
+    resourceName,
+    sep
+  });
 }
 
 /**
@@ -223,13 +212,13 @@ export interface ArnComponents {
    *
    * @default The AWS partition the stack is deployed to.
    */
-  partition?: string;
+  readonly partition?: string;
 
   /**
    * The service namespace that identifies the AWS product (for example,
    * 's3', 'iam', 'codepipline').
    */
-  service: string;
+  readonly service: string;
 
   /**
    * The region the resource resides in. Note that the ARNs for some resources
@@ -237,7 +226,7 @@ export interface ArnComponents {
    *
    * @default The region the stack is deployed to.
    */
-  region?: string;
+  readonly region?: string;
 
   /**
    * The ID of the AWS account that owns the resource, without the hyphens.
@@ -246,13 +235,13 @@ export interface ArnComponents {
    *
    * @default The account the stack is deployed to.
    */
-  account?: string;
+  readonly account?: string;
 
   /**
    * Resource type (e.g. "table", "autoScalingGroup", "certificate").
    * For some resource types, e.g. S3 buckets, this field defines the bucket name.
    */
-  resource: string;
+  readonly resource: string;
 
   /**
    * Separator between resource type and the resource.
@@ -260,11 +249,11 @@ export interface ArnComponents {
    * Can be either '/', ':' or an empty string. Will only be used if resourceName is defined.
    * @default '/'
    */
-  sep?: string;
+  readonly sep?: string;
 
   /**
    * Resource name or path within the resource (i.e. S3 bucket object key) or
    * a wildcard such as ``"*"``. This is service-dependent.
    */
-  resourceName?: string;
+  readonly resourceName?: string;
 }

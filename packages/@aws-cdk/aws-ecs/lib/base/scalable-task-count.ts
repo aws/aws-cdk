@@ -88,7 +88,7 @@ export interface CpuUtilizationScalingProps extends appscaling.BaseTargetTrackin
   /**
    * Target average CPU utilization across the task
    */
-  targetUtilizationPercent: number;
+  readonly targetUtilizationPercent: number;
 }
 
 /**
@@ -98,7 +98,7 @@ export interface MemoryUtilizationScalingProps extends appscaling.BaseTargetTrac
   /**
    * Target average memory utilization across the task
    */
-  targetUtilizationPercent: number;
+  readonly targetUtilizationPercent: number;
 }
 
 /**
@@ -108,12 +108,12 @@ export interface RequestCountScalingProps extends appscaling.BaseTargetTrackingP
   /**
    * ALB requests per target
    */
-  requestsPerTarget: number;
+  readonly requestsPerTarget: number;
 
   /**
    * ALB Target Group
    */
-  targetGroup: elbv2.ApplicationTargetGroup;
+  readonly targetGroup: elbv2.ApplicationTargetGroup;
 }
 
 /**
@@ -128,10 +128,10 @@ export interface TrackCustomMetricProps extends appscaling.BaseTargetTrackingPro
    * - metric > targetValue => scale out
    * - metric < targetValue => scale in
    */
-  metric: cloudwatch.Metric;
+  readonly metric: cloudwatch.Metric;
 
   /**
    * The target value to achieve for the metric
    */
-  targetValue: number;
+  readonly targetValue: number;
 }

@@ -15,12 +15,12 @@ export interface ClusterProps {
    *
    * @default CloudFormation-generated name
    */
-  clusterName?: string;
+  readonly clusterName?: string;
 
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 }
 
 /**
@@ -189,7 +189,7 @@ export interface EcsOptimizedAmiProps {
    *
    * @default AmazonLinux
    */
-  generation?: ec2.AmazonLinuxGeneration;
+  readonly generation?: ec2.AmazonLinuxGeneration;
 }
 
 /**
@@ -265,31 +265,31 @@ export interface ClusterImportProps {
   /**
    * Name of the cluster
    */
-  clusterName: string;
+  readonly clusterName: string;
 
   /**
    * ARN of the cluster
    *
    * @default Derived from clusterName
    */
-  clusterArn?: string;
+  readonly clusterArn?: string;
 
   /**
    * VPC that the cluster instances are running in
    */
-  vpc: ec2.VpcNetworkImportProps;
+  readonly vpc: ec2.VpcNetworkImportProps;
 
   /**
    * Security group of the cluster instances
    */
-  securityGroups: ec2.SecurityGroupImportProps[];
+  readonly securityGroups: ec2.SecurityGroupImportProps[];
 
   /**
    * Whether the given cluster has EC2 capacity
    *
    * @default true
    */
-  hasEc2Capacity?: boolean;
+  readonly hasEc2Capacity?: boolean;
 }
 
 /**
@@ -354,7 +354,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * @default false
    */
-  containersAccessInstanceRole?: boolean;
+  readonly containersAccessInstanceRole?: boolean;
 
   /**
    * Give tasks this many seconds to complete when instances are being scaled in.
@@ -367,7 +367,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * @default 300
    */
-  taskDrainTimeSeconds?: number;
+  readonly taskDrainTimeSeconds?: number;
 }
 
 /**
@@ -377,5 +377,5 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
   /**
    * The type of EC2 instance to launch into your Autoscaling Group
    */
-  instanceType: ec2.InstanceType;
+  readonly instanceType: ec2.InstanceType;
 }

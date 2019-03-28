@@ -13,7 +13,7 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default false
    */
-  crossZoneEnabled?: boolean;
+  readonly crossZoneEnabled?: boolean;
 }
 
 /**
@@ -218,7 +218,7 @@ export interface NetworkLoadBalancerImportProps {
   /**
    * ARN of the load balancer
    */
-  loadBalancerArn: string;
+  readonly loadBalancerArn: string;
 }
 
 /**

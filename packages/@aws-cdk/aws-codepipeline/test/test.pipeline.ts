@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import cloudformation = require('@aws-cdk/aws-cloudformation');
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
@@ -45,7 +45,7 @@ export = {
       ],
     });
 
-    test.notDeepEqual(stack._toCloudFormation(), {});
+    test.notDeepEqual(SynthUtils.toCloudFormation(stack), {});
     test.deepEqual([], pipeline.node.validateTree());
     test.done();
   },

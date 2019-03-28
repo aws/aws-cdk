@@ -41,7 +41,7 @@ function synthStack(name: string, includeMetadata: boolean = false, context?: an
   }
 
   if (!includeMetadata) {
-    delete stack.metadata;
+    delete (stack as any).metadata;
   }
 
   return stack;
@@ -52,9 +52,9 @@ export = {
     const response = synth();
 
     // clean up metadata so assertion will be sane
-    response.stacks.forEach(s => delete s.metadata);
-    delete response.runtime;
-    delete response.artifacts;
+    response.stacks.forEach(s => delete (s as any).metadata);
+    delete (response as any).runtime;
+    delete (response as any).artifacts;
 
     test.deepEqual(response, {
       version: '0.19.0',

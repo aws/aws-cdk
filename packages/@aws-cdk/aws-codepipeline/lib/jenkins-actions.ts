@@ -12,12 +12,12 @@ export interface BasicJenkinsActionProps extends cpapi.CommonActionProps {
    *
    * @example 'MyJob'
    */
-  projectName: string;
+  readonly projectName: string;
 
   /**
    * The source to use as input for this build.
    */
-  inputArtifact: cpapi.Artifact;
+  readonly inputArtifact: cpapi.Artifact;
 }
 
 /**
@@ -31,7 +31,7 @@ export interface BasicJenkinsBuildActionProps extends BasicJenkinsActionProps {
    *
    * @default an auto-generated name will be used
    */
-  outputArtifactName?: string;
+  readonly outputArtifactName?: string;
 }
 
 /**
@@ -41,7 +41,7 @@ export interface JenkinsBuildActionProps extends BasicJenkinsBuildActionProps {
   /**
    * The Jenkins Provider for this Action.
    */
-  jenkinsProvider: IJenkinsProvider;
+  readonly jenkinsProvider: IJenkinsProvider;
 }
 
 /**
@@ -87,7 +87,7 @@ export interface BasicJenkinsTestActionProps extends BasicJenkinsActionProps {
    *
    * @default the Action will not have an output artifact
    */
-  outputArtifactName?: string;
+  readonly outputArtifactName?: string;
 }
 
 /**
@@ -97,7 +97,7 @@ export interface JenkinsTestActionProps extends BasicJenkinsTestActionProps {
   /**
    * The Jenkins Provider for this Action.
    */
-  jenkinsProvider: IJenkinsProvider;
+  readonly jenkinsProvider: IJenkinsProvider;
 }
 
 /**

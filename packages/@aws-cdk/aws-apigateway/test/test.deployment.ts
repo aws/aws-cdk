@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
@@ -153,7 +153,7 @@ export = {
 
     function synthesize() {
       stack.node.prepareTree();
-      return stack._toCloudFormation();
+      return SynthUtils.toCloudFormation(stack);
     }
   },
 

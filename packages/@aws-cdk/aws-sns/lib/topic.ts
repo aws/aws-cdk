@@ -11,7 +11,7 @@ export interface TopicProps {
    *
    * @default None
    */
-  displayName?: string;
+  readonly displayName?: string;
 
   /**
    * A name for the topic.
@@ -22,7 +22,7 @@ export interface TopicProps {
    *
    * @default Generated name
    */
-  topicName?: string;
+  readonly topicName?: string;
 }
 
 /**

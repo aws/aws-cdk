@@ -13,45 +13,45 @@ export interface BasicLifecycleHookProps {
    *
    * @default Automatically generated name
    */
-  lifecycleHookName?: string;
+  readonly lifecycleHookName?: string;
 
   /**
    * The action the Auto Scaling group takes when the lifecycle hook timeout elapses or if an unexpected failure occurs.
    *
    * @default Continue
    */
-  defaultResult?: DefaultResult;
+  readonly defaultResult?: DefaultResult;
 
   /**
    * Maximum time between calls to RecordLifecycleActionHeartbeat for the hook
    *
    * If the lifecycle hook times out, perform the action in DefaultResult.
    */
-  heartbeatTimeoutSec?: number;
+  readonly heartbeatTimeoutSec?: number;
 
   /**
    * The state of the Amazon EC2 instance to which you want to attach the lifecycle hook.
    */
-  lifecycleTransition: LifecycleTransition;
+  readonly lifecycleTransition: LifecycleTransition;
 
   /**
    * Additional data to pass to the lifecycle hook target
    *
    * @default No metadata
    */
-  notificationMetadata?: string;
+  readonly notificationMetadata?: string;
 
   /**
    * The target of the lifecycle hook
    */
-  notificationTarget: api.ILifecycleHookTarget;
+  readonly notificationTarget: api.ILifecycleHookTarget;
 
   /**
    * The role that allows publishing to the notification target
    *
    * @default A role is automatically created
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -61,7 +61,7 @@ export interface LifecycleHookProps extends BasicLifecycleHookProps {
   /**
    * The AutoScalingGroup to add the lifecycle hook to
    */
-  autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroup;
 }
 
 export class LifecycleHook extends cdk.Construct implements api.ILifecycleHook {

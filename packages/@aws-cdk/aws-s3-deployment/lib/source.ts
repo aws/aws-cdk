@@ -7,12 +7,12 @@ export interface SourceProps {
   /**
    * The source bucket to deploy from.
    */
-  bucket: s3.IBucket;
+  readonly bucket: s3.IBucket;
 
   /**
    * An S3 object key in the source bucket that points to a zip file.
    */
-  zipObjectKey: string;
+  readonly zipObjectKey: string;
 }
 
 /**

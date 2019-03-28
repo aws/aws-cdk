@@ -22,21 +22,21 @@ export interface BaseTargetTrackingProps {
    *
    * @default false
    */
-  disableScaleIn?: boolean;
+  readonly disableScaleIn?: boolean;
 
   /**
    * Period after a scaling completes before another scaling activity can start.
    *
    * @default The default cooldown configured on the AutoScalingGroup
    */
-  cooldownSeconds?: number;
+  readonly cooldownSeconds?: number;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default Same as the cooldown
    */
-  estimatedInstanceWarmupSeconds?: number;
+  readonly estimatedInstanceWarmupSeconds?: number;
 }
 
 /**
@@ -46,7 +46,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
   /**
    * The target value for the metric.
    */
-  targetValue: number;
+  readonly targetValue: number;
 
   /**
    * A predefined metric for application autoscaling
@@ -56,7 +56,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
    */
-  predefinedMetric?: PredefinedMetric;
+  readonly predefinedMetric?: PredefinedMetric;
 
   /**
    * A custom metric for application autoscaling
@@ -66,7 +66,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
    */
-  customMetric?: cloudwatch.Metric;
+  readonly customMetric?: cloudwatch.Metric;
 
   /**
    * The resource label associated with the predefined metric
@@ -78,7 +78,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * @default No resource label
    */
-  resourceLabel?: string;
+  readonly resourceLabel?: string;
 }
 
 /**
@@ -90,7 +90,7 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   /*
    * The auto scaling group
    */
-  autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroup;
 }
 
 export class TargetTrackingScalingPolicy extends cdk.Construct {

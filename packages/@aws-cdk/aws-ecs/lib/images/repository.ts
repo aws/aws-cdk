@@ -7,7 +7,7 @@ export interface RepositoryImageProps {
     /**
      * Optional secret that houses credentials for the image registry
      */
-    credentials?: secretsmanager.ISecret;
+    readonly credentials?: secretsmanager.ISecret;
 }
 
 /**

@@ -26,14 +26,14 @@ export interface BaseNamespaceProps {
   /**
    * A name for the Namespace.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * A description of the Namespace.
    *
    * @default none
    */
-  description?: string;
+  readonly description?: string;
 }
 
 export interface NamespaceImportProps {

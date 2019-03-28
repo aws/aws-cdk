@@ -8,7 +8,7 @@ export interface TestActionProps extends CommonActionProps {
   /**
    * The source to use as input for this test.
    */
-  inputArtifact: Artifact;
+  readonly inputArtifact: Artifact;
 
   /**
    * The optional name of the output artifact.
@@ -18,33 +18,33 @@ export interface TestActionProps extends CommonActionProps {
    *
    * @default the Action will not have an output artifact
    */
-  outputArtifactName?: string;
+  readonly outputArtifactName?: string;
 
   /**
    * The service provider that the action calls.
    *
    * @example 'CodeBuild'
    */
-  provider: string;
+  readonly provider: string;
 
   /**
    * The upper and lower bounds on the number of input and output artifacts for this Action.
    */
-  artifactBounds: ActionArtifactBounds;
+  readonly artifactBounds: ActionArtifactBounds;
 
   /**
    * The test Action owner (could be 'AWS', 'ThirdParty' or 'Custom').
    *
    * @default 'AWS'
    */
-  owner?: string;
+  readonly owner?: string;
 
   /**
    * The test Action version.
    *
    * @default '1'
    */
-  version?: string;
+  readonly version?: string;
 
   /**
    * The action's configuration. These are key-value pairs that specify input values for an action.
@@ -52,7 +52,7 @@ export interface TestActionProps extends CommonActionProps {
    *
    * http://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements
    */
-  configuration?: any;
+  readonly configuration?: any;
 }
 
 /**

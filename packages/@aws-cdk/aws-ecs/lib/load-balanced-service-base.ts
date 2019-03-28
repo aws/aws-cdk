@@ -14,52 +14,52 @@ export interface LoadBalancedServiceBaseProps {
   /**
    * The cluster where your service will be deployed
    */
-  cluster: ICluster;
+  readonly cluster: ICluster;
 
   /**
    * The image to start.
    */
-  image: ContainerImage;
+  readonly image: ContainerImage;
 
   /**
    * The container port of the application load balancer attached to your Fargate service. Corresponds to container port mapping.
    *
    * @default 80
    */
-  containerPort?: number;
+  readonly containerPort?: number;
 
   /**
    * Determines whether the Application Load Balancer will be internet-facing
    *
    * @default true
    */
-  publicLoadBalancer?: boolean;
+  readonly publicLoadBalancer?: boolean;
 
   /**
    * Number of desired copies of running tasks
    *
    * @default 1
    */
-  desiredCount?: number;
+  readonly desiredCount?: number;
 
   /**
    * Whether to create an application load balancer or a network load balancer
    * @default application
    */
-  loadBalancerType?: LoadBalancerType
+  readonly loadBalancerType?: LoadBalancerType
 
   /**
    * Certificate Manager certificate to associate with the load balancer.
    * Setting this option will set the load balancer port to 443.
    */
-  certificate?: ICertificate;
+  readonly certificate?: ICertificate;
 
   /**
    * Environment variables to pass to the container
    *
    * @default No environment variables
    */
-  environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string };
 }
 
 /**

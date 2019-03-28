@@ -8,35 +8,35 @@ export interface BasicStepScalingPolicyProps {
   /**
    * Metric to scale on.
    */
-  metric: cloudwatch.Metric;
+  readonly metric: cloudwatch.Metric;
 
   /**
    * The intervals for scaling.
    *
    * Maps a range of metric values to a particular scaling behavior.
    */
-  scalingSteps: ScalingInterval[];
+  readonly scalingSteps: ScalingInterval[];
 
   /**
    * How the adjustment numbers inside 'intervals' are interpreted.
    *
    * @default ChangeInCapacity
    */
-  adjustmentType?: AdjustmentType;
+  readonly adjustmentType?: AdjustmentType;
 
   /**
    * Grace period after scaling activity.
    *
    * @default Default cooldown period on your AutoScalingGroup
    */
-  cooldownSeconds?: number;
+  readonly cooldownSeconds?: number;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default Same as the cooldown
    */
-  estimatedInstanceWarmupSeconds?: number;
+  readonly estimatedInstanceWarmupSeconds?: number;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -46,14 +46,14 @@ export interface BasicStepScalingPolicyProps {
    *
    * @default No minimum scaling effect
    */
-  minAdjustmentMagnitude?: number;
+  readonly minAdjustmentMagnitude?: number;
 }
 
 export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
   /**
    * The auto scaling group
    */
-  autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroup;
 }
 
 /**
@@ -168,7 +168,7 @@ export interface ScalingInterval {
    *
    * @default Threshold automatically derived from neighbouring intervals
    */
-  lower?: number;
+  readonly lower?: number;
 
   /**
    * The upper bound of the interval.
@@ -177,7 +177,7 @@ export interface ScalingInterval {
    *
    * @default Threshold automatically derived from neighbouring intervals
    */
-  upper?: number;
+  readonly upper?: number;
 
   /**
    * The capacity adjustment to apply in this interval
@@ -191,5 +191,5 @@ export interface ScalingInterval {
    * - ExactCapacity: set the capacity to this number. The number must
    *   be positive.
    */
-  change: number;
+  readonly change: number;
 }

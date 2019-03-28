@@ -9,14 +9,14 @@ export interface DatabaseSecretProps {
   /**
    * The username.
    */
-  username: string;
+  readonly username: string;
 
   /**
    * The KMS key to use to encrypt the secret.
    *
    * @default default master key
    */
-  encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IEncryptionKey;
 }
 
 /**

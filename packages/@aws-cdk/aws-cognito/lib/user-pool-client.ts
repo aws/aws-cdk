@@ -27,24 +27,24 @@ export interface UserPoolClientProps {
    * Name of the application client
    * @default cloudformation generated name
    */
-  clientName?: string;
+  readonly clientName?: string;
 
   /**
    * The UserPool resource this client will have access to
    */
-  userPool: IUserPool;
+  readonly userPool: IUserPool;
 
   /**
    * Whether to generate a client secret
    * @default false
    */
-  generateSecret?: boolean;
+  readonly generateSecret?: boolean;
 
   /**
    * List of enabled authentication flows
    * @default no enabled flows
    */
-  enabledAuthFlows?: AuthFlow[]
+  readonly enabledAuthFlows?: AuthFlow[]
 }
 
 /**

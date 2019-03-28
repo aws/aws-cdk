@@ -15,13 +15,13 @@ export interface CloudTrailProps {
    * events are delivered to any trail that includes global services, and are logged as occurring in US East (N. Virginia) Region.
    * @default true
    */
-  includeGlobalServiceEvents?: boolean;
+  readonly includeGlobalServiceEvents?: boolean;
 
   /**
    * Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account.
    * @default true
    */
-  isMultiRegionTrail?: boolean;
+  readonly isMultiRegionTrail?: boolean;
 
   /**
    * When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.
@@ -37,7 +37,7 @@ export interface CloudTrailProps {
    * If managementEvents is undefined, we'll not log management events by default.
    * @param managementEvents the management configuration type to log
    */
-  managementEvents?: ReadWriteType;
+  readonly managementEvents?: ReadWriteType;
 
   /**
    * To determine whether a log file was modified, deleted, or unchanged after CloudTrail delivered it,
@@ -47,41 +47,41 @@ export interface CloudTrailProps {
    * You can use the AWS CLI to validate the files in the location where CloudTrail delivered them.
    * @default true
    */
-  enableFileValidation?: boolean;
+  readonly enableFileValidation?: boolean;
 
   /**
    * If CloudTrail pushes logs to CloudWatch Logs in addition to S3.
    * Disabled for cost out of the box.
    * @default false
    */
-  sendToCloudWatchLogs?: boolean;
+  readonly sendToCloudWatchLogs?: boolean;
 
   /**
    * How long to retain logs in CloudWatchLogs. Ignored if sendToCloudWatchLogs is false
    *  @default LogRetention.OneYear
    */
-  cloudWatchLogsRetentionTimeDays?: LogRetention;
+  readonly cloudWatchLogsRetentionTimeDays?: LogRetention;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    * @default none
    */
-  kmsKey?: kms.IEncryptionKey;
+  readonly kmsKey?: kms.IEncryptionKey;
 
   /** The name of an Amazon SNS topic that is notified when new log files are published.
    * @default none
    */
-  snsTopic?: string; // TODO: fix to use L2 SNS
+  readonly snsTopic?: string; // TODO: fix to use L2 SNS
 
   /**
    * The name of the trail. We recoomend customers do not set an explicit name.
    * @default the CloudFormation generated neme
    */
-  trailName?: string;
+  readonly trailName?: string;
 
   /** An Amazon S3 object key prefix that precedes the name of all log files.
    * @default none
    */
-  s3KeyPrefix?: string;
+  readonly s3KeyPrefix?: string;
 }
 
 export enum ReadWriteType {
@@ -228,14 +228,14 @@ export interface AddS3EventSelectorOptions {
    *
    * @default ReadWriteType.All
    */
-  readWriteType?: ReadWriteType;
+  readonly readWriteType?: ReadWriteType;
 
   /**
    * Specifies whether the event selector includes management events for the trail.
    *
    * @default true
    */
-  includeManagementEvents?: boolean;
+  readonly includeManagementEvents?: boolean;
 }
 
 interface EventSelector {

@@ -371,21 +371,21 @@ export interface ColumnRestriction {
   /**
    * Comparison operator to use
    */
-  comparison: string;
+  readonly comparison: string;
 
   /**
    * String value to compare to
    *
    * Exactly one of 'stringValue' and 'numberValue' must be set.
    */
-  stringValue?: string;
+  readonly stringValue?: string;
 
   /**
    * Number value to compare to
    *
    * Exactly one of 'stringValue' and 'numberValue' must be set.
    */
-  numberValue?: number;
+  readonly numberValue?: number;
 }
 
 /**

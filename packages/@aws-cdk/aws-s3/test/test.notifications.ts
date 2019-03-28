@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
@@ -307,7 +307,7 @@ export = {
     bucket.onObjectCreated(dest);
 
     stack.node.prepareTree();
-    test.deepEqual(stack._toCloudFormation().Resources.BucketNotifications8F2E257D, {
+    test.deepEqual(SynthUtils.toCloudFormation(stack).Resources.BucketNotifications8F2E257D, {
       Type: 'Custom::S3BucketNotifications',
       Properties: {
         ServiceToken: { 'Fn::GetAtt': [ 'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn' ] },

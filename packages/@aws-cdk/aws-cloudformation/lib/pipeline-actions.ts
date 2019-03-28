@@ -9,7 +9,7 @@ export interface PipelineCloudFormationActionProps extends codepipeline.CommonAc
   /**
    * The name of the stack to apply this action to
    */
-  stackName: string;
+  readonly stackName: string;
 
   /**
    * A name for the filename in the output artifact to store the AWS CloudFormation call's result.
@@ -22,7 +22,7 @@ export interface PipelineCloudFormationActionProps extends codepipeline.CommonAc
    *
    * @default No output artifact generated
    */
-  outputFileName?: string;
+  readonly outputFileName?: string;
 
   /**
    * The name of the output artifact to generate
@@ -31,7 +31,7 @@ export interface PipelineCloudFormationActionProps extends codepipeline.CommonAc
    *
    * @default Automatically generated artifact name.
    */
-  outputArtifactName?: string;
+  readonly outputArtifactName?: string;
 
   /**
    * The AWS region the given Action resides in.
@@ -42,7 +42,7 @@ export interface PipelineCloudFormationActionProps extends codepipeline.CommonAc
    *
    * @default the Action resides in the same region as the Pipeline
    */
-  region?: string;
+  readonly region?: string;
 
   /**
    * The service role that is assumed during execution of action.
@@ -51,7 +51,7 @@ export interface PipelineCloudFormationActionProps extends codepipeline.CommonAc
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions.html
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -98,7 +98,7 @@ export interface PipelineExecuteChangeSetActionProps extends PipelineCloudFormat
   /**
    * Name of the change set to execute.
    */
-  changeSetName: string;
+  readonly changeSetName: string;
 }
 
 /**
@@ -136,7 +136,7 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    *
    * @default A fresh role with full or no permissions (depending on the value of `adminPermissions`).
    */
-  deploymentRole?: iam.IRole;
+  readonly deploymentRole?: iam.IRole;
 
   /**
    * Acknowledge certain changes made as part of deployment
@@ -149,7 +149,7 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    * @default None, unless `adminPermissions` is true
    */
-  capabilities?: CloudFormationCapabilities;
+  readonly capabilities?: CloudFormationCapabilities;
 
   /**
    * Whether to grant full permissions to CloudFormation while deploying this template.
@@ -166,7 +166,7 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    * use `addToRolePolicy` and `capabilities` to control what the CloudFormation
    * deployment is allowed to do.
    */
-  adminPermissions: boolean;
+  readonly adminPermissions: boolean;
 
   /**
    * Input artifact to use for template parameters values and stack policy.
@@ -180,7 +180,7 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    *
    * @default No template configuration based on input artifacts
    */
-  templateConfiguration?: codepipeline.ArtifactPath;
+  readonly templateConfiguration?: codepipeline.ArtifactPath;
 
   /**
    * Additional template parameters.
@@ -199,7 +199,7 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    *
    * @default No overrides
    */
-  parameterOverrides?: { [name: string]: any };
+  readonly parameterOverrides?: { [name: string]: any };
 
   /**
    * The list of additional input Artifacts for this Action.
@@ -216,7 +216,7 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    * you need to make sure to include them in the `additionalInputArtifacts` -
    * otherwise, you'll get an "unrecognized Artifact" error during your Pipeline's execution.
    */
-  additionalInputArtifacts?: codepipeline.Artifact[];
+  readonly additionalInputArtifacts?: codepipeline.Artifact[];
 }
 // tslint:enable:max-line-length
 
@@ -289,12 +289,12 @@ export interface PipelineCreateReplaceChangeSetActionProps extends PipelineCloud
   /**
    * Name of the change set to create or update.
    */
-  changeSetName: string;
+  readonly changeSetName: string;
 
   /**
    * Input artifact with the ChangeSet's CloudFormation template
    */
-  templatePath: codepipeline.ArtifactPath;
+  readonly templatePath: codepipeline.ArtifactPath;
 }
 
 /**
@@ -335,7 +335,7 @@ export interface PipelineCreateUpdateStackActionProps extends PipelineCloudForma
   /**
    * Input artifact with the CloudFormation template to deploy
    */
-  templatePath: codepipeline.ArtifactPath;
+  readonly templatePath: codepipeline.ArtifactPath;
 
   /**
    * Replace the stack if it's in a failed state.
@@ -350,7 +350,7 @@ export interface PipelineCreateUpdateStackActionProps extends PipelineCloudForma
    *
    * @default false
    */
-  replaceOnFailure?: boolean;
+  readonly replaceOnFailure?: boolean;
 }
 
 /**

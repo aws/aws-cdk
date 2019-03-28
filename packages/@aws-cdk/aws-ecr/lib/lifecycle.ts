@@ -16,14 +16,14 @@ export interface LifecycleRule {
    *
    * @default Automatically assigned
    */
-  rulePriority?: number;
+  readonly rulePriority?: number;
 
   /**
    * Describes the purpose of the rule
    *
    * @default No description
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Select images based on tags
@@ -33,28 +33,28 @@ export interface LifecycleRule {
    *
    * @default TagStatus.Tagged if tagPrefixList is given, TagStatus.Any otherwise
    */
-  tagStatus?: TagStatus;
+  readonly tagStatus?: TagStatus;
 
   /**
    * Select images that have ALL the given prefixes in their tag.
    *
    * Only if tagStatus == TagStatus.Tagged
    */
-  tagPrefixList?: string[];
+  readonly tagPrefixList?: string[];
 
   /**
    * The maximum number of images to retain
    *
    * Specify exactly one of maxImageCount and maxImageAgeDays.
    */
-  maxImageCount?: number;
+  readonly maxImageCount?: number;
 
   /**
    * The maximum age of images to retain
    *
    * Specify exactly one of maxImageCount and maxImageAgeDays.
    */
-  maxImageAgeDays?: number;
+  readonly maxImageAgeDays?: number;
 }
 
 /**

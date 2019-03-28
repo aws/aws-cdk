@@ -15,26 +15,26 @@ export interface StateMachineProps {
      *
      * @default A name is automatically generated
      */
-    stateMachineName?: string;
+    readonly stateMachineName?: string;
 
     /**
      * Definition for this state machine
      */
-    definition: IChainable;
+    readonly definition: IChainable;
 
     /**
      * The execution role for the state machine service
      *
      * @default A role is automatically created
      */
-    role?: iam.Role;
+    readonly role?: iam.Role;
 
     /**
      * Maximum run time for this state machine
      *
      * @default No timeout
      */
-    timeoutSec?: number;
+    readonly timeoutSec?: number;
 }
 
 /**
@@ -221,7 +221,7 @@ export interface StateMachineImportProps {
     /**
      * The ARN of the state machine
      */
-    stateMachineArn: string;
+    readonly stateMachineArn: string;
 }
 
 class ImportedStateMachine extends cdk.Construct implements IStateMachine {

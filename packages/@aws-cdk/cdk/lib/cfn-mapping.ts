@@ -3,7 +3,7 @@ import { Construct } from './construct';
 import { Fn } from './fn';
 
 export interface CfnMappingProps {
-  mapping?: { [k1: string]: { [k2: string]: any } };
+  readonly mapping?: { [k1: string]: { [k2: string]: any } };
 }
 
 /**
@@ -43,6 +43,9 @@ export class CfnMapping extends CfnRefElement {
     return Fn.findInMap(this.logicalId, key1, key2);
   }
 
+  /**
+   * @internal
+   */
   public _toCloudFormation(): object {
     return {
       Mappings: {

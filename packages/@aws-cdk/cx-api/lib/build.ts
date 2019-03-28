@@ -1,13 +1,13 @@
 export interface BuildStep {
-  type: string;
-  depends?: string[];
-  parameters: {
+  readonly type: string;
+  readonly depends?: string[];
+  readonly parameters: {
     [key: string]: any
   };
 }
 
 export interface BuildManifest {
-  steps: { [id: string]: BuildStep };
+  readonly steps: { [id: string]: BuildStep };
 }
 
 export enum BuildStepType {

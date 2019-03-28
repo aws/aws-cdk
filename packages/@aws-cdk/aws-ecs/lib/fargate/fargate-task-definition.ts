@@ -16,7 +16,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default 256
    */
-  cpu?: string;
+  readonly cpu?: string;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -36,7 +36,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default 512
    */
-  memoryMiB?: string;
+  readonly memoryMiB?: string;
 }
 
 /**

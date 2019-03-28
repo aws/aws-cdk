@@ -10,19 +10,19 @@ export interface VpcLinkProps {
    * The name used to label and identify the VPC link.
    * @default automatically generated name
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * The description of the VPC link.
    * @default no description
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * The network load balancers of the VPC targeted by the VPC link.
    * The network load balancers must be owned by the same AWS account of the API owner.
    */
-  targets: elbv2.INetworkLoadBalancer[];
+  readonly targets: elbv2.INetworkLoadBalancer[];
 }
 
 /**

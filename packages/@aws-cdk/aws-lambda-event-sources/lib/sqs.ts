@@ -11,7 +11,7 @@ export interface SqsEventSourceProps {
    *
    * @default 10
    */
-  batchSize?: number;
+  readonly batchSize?: number;
 }
 
 /**

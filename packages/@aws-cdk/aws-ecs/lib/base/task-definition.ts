@@ -13,7 +13,7 @@ export interface CommonTaskDefinitionProps {
    *
    * @default Automatically generated name
    */
-  family?: string;
+  readonly family?: string;
 
   /**
    * The IAM role assumed by the ECS agent.
@@ -23,19 +23,19 @@ export interface CommonTaskDefinitionProps {
    *
    * @default An execution role will be automatically created if you use ECR images in your task definition
    */
-  executionRole?: iam.IRole;
+  readonly executionRole?: iam.IRole;
 
   /**
    * The IAM role assumable by your application code running inside the container
    *
    * @default A task role is automatically created for you
    */
-  taskRole?: iam.IRole;
+  readonly taskRole?: iam.IRole;
 
   /**
    * See: https://docs.aws.amazon.com/AmazonECS/latest/developerguide//task_definition_parameters.html#volumes
    */
-  volumes?: Volume[];
+  readonly volumes?: Volume[];
 }
 
 /**
@@ -49,7 +49,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
    */
-  networkMode?: NetworkMode;
+  readonly networkMode?: NetworkMode;
 
   /**
    * An array of placement constraint objects to use for the task. You can
@@ -58,12 +58,12 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * Not supported in Fargate.
    */
-  placementConstraints?: PlacementConstraint[];
+  readonly placementConstraints?: PlacementConstraint[];
 
   /**
    * What launch types this task definition should be compatible with.
    */
-  compatibility: Compatibility;
+  readonly compatibility: Compatibility;
 
   /**
    * The number of cpu units used by the task.
@@ -74,7 +74,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * 2048 (2 vCPU) - Available memory values: Between 4GB and 16GB in 1GB increments
    * 4096 (4 vCPU) - Available memory values: Between 8GB and 30GB in 1GB increments
    */
-  cpu?: string;
+  readonly cpu?: string;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -92,7 +92,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * Between 8GB and 30GB in 1GB increments - Available cpu values: 4096 (4 vCPU)
    */
-  memoryMiB?: string;
+  readonly memoryMiB?: string;
 }
 
 /**
@@ -230,7 +230,8 @@ export class TaskDefinition extends cdk.Construct {
   }
 
   /**
-   * (internal) Links a container to this task definition.
+   * Links a container to this task definition.
+   * @internal
    */
   public _linkContainer(container: ContainerDefinition) {
     this.containers.push(container);
@@ -344,17 +345,17 @@ export interface Volume {
   /**
    * Path on the host
    */
-  host?: Host;
+  readonly host?: Host;
 
   /**
    * A name for the volume
    */
-  name: string;
+  readonly name: string;
 
   /**
    * Specifies this configuration when using Docker volumes
    */
-  dockerVolumeConfiguration?: DockerVolumeConfiguration;
+  readonly dockerVolumeConfiguration?: DockerVolumeConfiguration;
 }
 
 /**
@@ -364,7 +365,7 @@ export interface Host {
   /**
    * Source path on the host
    */
-  sourcePath?: string;
+  readonly sourcePath?: string;
 }
 
 /**
@@ -376,27 +377,27 @@ export interface DockerVolumeConfiguration {
    *
    * @default false
    */
-  autoprovision?: boolean;
+  readonly autoprovision?: boolean;
   /**
    * The Docker volume driver to use
    */
-  driver: string;
+  readonly driver: string;
   /**
    * A map of Docker driver specific options passed through
    *
    * @default No options
    */
-  driverOpts?: string[];
+  readonly driverOpts?: string[];
   /**
    * Custom metadata to add to your Docker volume
    *
    * @default No labels
    */
-  labels?: string[];
+  readonly labels?: string[];
   /**
    * The scope for the Docker volume which determines it's lifecycle
    */
-  scope: Scope;
+  readonly scope: Scope;
 }
 
 export enum Scope {
@@ -418,12 +419,12 @@ export interface PlacementConstraint {
   /**
    * The type of constraint
    */
-  type: PlacementConstraintType;
+  readonly type: PlacementConstraintType;
 
   /**
    * Additional information for the constraint
    */
-  expression?: string;
+  readonly expression?: string;
 }
 
 /**

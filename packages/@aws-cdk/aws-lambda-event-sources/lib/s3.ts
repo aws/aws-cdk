@@ -5,7 +5,7 @@ export interface S3EventSourceProps {
   /**
    * The s3 event types that will trigger the notification.
    */
-  events: s3.EventType[];
+  readonly events: s3.EventType[];
 
   /**
    * S3 object key filter rules to determine which objects trigger this event.
@@ -13,7 +13,7 @@ export interface S3EventSourceProps {
    * against the s3 object key. Refer to the S3 Developer Guide for details
    * about allowed filter rules.
    */
-  filters?: s3.NotificationKeyFilter[];
+  readonly filters?: s3.NotificationKeyFilter[];
 }
 
 /**

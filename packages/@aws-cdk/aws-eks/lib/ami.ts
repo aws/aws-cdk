@@ -9,14 +9,14 @@ export interface EksOptimizedAmiProps {
    *
    * @default Normal
    */
-  nodeType?: NodeType;
+  readonly nodeType?: NodeType;
 
   /**
    * The Kubernetes version to use
    *
    * @default The latest version
    */
-  kubernetesVersion?: string;
+  readonly kubernetesVersion?: string;
 }
 
 /**

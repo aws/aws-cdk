@@ -10,19 +10,19 @@ export interface CrossAccountDestinationProps {
    *
    * @default Automatically generated
    */
-  destinationName?: string;
+  readonly destinationName?: string;
 
   /**
    * The role to assume that grants permissions to write to 'target'.
    *
    * The role must be assumable by 'logs.{REGION}.amazonaws.com'.
    */
-  role: iam.Role;
+  readonly role: iam.Role;
 
   /**
    * The log destination target's ARN
    */
-  targetArn: string;
+  readonly targetArn: string;
 }
 
 /**

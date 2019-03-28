@@ -8,12 +8,12 @@ export interface DynamicReferenceProps {
   /**
    * The service to retrieve the dynamic reference from
    */
-  service: DynamicReferenceService;
+  readonly service: DynamicReferenceService;
 
   /**
    * The reference key of the dynamic reference
    */
-  referenceKey: string;
+  readonly referenceKey: string;
 }
 
 /**

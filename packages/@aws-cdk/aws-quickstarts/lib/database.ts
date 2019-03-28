@@ -3,14 +3,14 @@ import rds = require('@aws-cdk/aws-rds');
 import cdk = require('@aws-cdk/cdk');
 
 export interface SqlServerProps {
-  instanceClass?: string;
-  engine?: string;
-  engineVersion?: string;
-  licenseModel?: string;
-  masterUsername: string;
-  masterPassword: string;
-  allocatedStorage?: number;
-  vpc: ec2.IVpcNetwork;
+  readonly instanceClass?: string;
+  readonly engine?: string;
+  readonly engineVersion?: string;
+  readonly licenseModel?: string;
+  readonly masterUsername: string;
+  readonly masterPassword: string;
+  readonly allocatedStorage?: number;
+  readonly vpc: ec2.IVpcNetwork;
 }
 
 /**

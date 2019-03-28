@@ -11,12 +11,12 @@ export interface DynamoEventSourceProps {
    *
    * @default 100
    */
-  batchSize?: number;
+  readonly batchSize?: number;
 
   /**
    * Where to begin consuming the DynamoDB stream.
    */
-  startingPosition: lambda.StartingPosition;
+  readonly startingPosition: lambda.StartingPosition;
 }
 
 /**

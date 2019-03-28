@@ -10,14 +10,14 @@ export interface CommonCodeBuildActionProps {
   /**
    * The list of additional input Artifacts for this Action.
    */
-  additionalInputArtifacts?: codepipeline.Artifact[];
+  readonly additionalInputArtifacts?: codepipeline.Artifact[];
 
   /**
    * The list of names for additional output Artifacts for this Action.
    * The resulting output artifacts can be accessed with the `additionalOutputArtifacts`
    * method of the Action.
    */
-  additionalOutputArtifactNames?: string[];
+  readonly additionalOutputArtifactNames?: string[];
 }
 
 /**
@@ -30,14 +30,14 @@ export interface CommonPipelineBuildActionProps extends CommonCodeBuildActionPro
   /**
    * The source to use as input for this build.
    */
-  inputArtifact: codepipeline.Artifact;
+  readonly inputArtifact: codepipeline.Artifact;
 
   /**
    * The name of the build's output artifact.
    *
    * @default an auto-generated name will be used
    */
-  outputArtifactName?: string;
+  readonly outputArtifactName?: string;
 }
 
 /**
@@ -47,7 +47,7 @@ export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps
   /**
    * The build project
    */
-  project: IProject;
+  readonly project: IProject;
 }
 
 /**
@@ -84,7 +84,8 @@ export class PipelineBuildAction extends codepipeline.BuildAction {
    * @see #additionalOutputArtifact
    */
   public additionalOutputArtifacts(): codepipeline.Artifact[] {
-    return this._outputArtifacts.slice(1);
+    // TODO: remove "as any" when we centralize all actions
+    return (this as any)._outputArtifacts.slice(1);
   }
 
   /**
@@ -117,7 +118,7 @@ export interface CommonPipelineTestActionProps extends CommonCodeBuildActionProp
   /**
    * The source to use as input for this test.
    */
-  inputArtifact: codepipeline.Artifact;
+  readonly inputArtifact: codepipeline.Artifact;
 
   /**
    * The optional name of the primary output artifact.
@@ -127,7 +128,7 @@ export interface CommonPipelineTestActionProps extends CommonCodeBuildActionProp
    *
    * @default the Action will not have an output artifact
    */
-  outputArtifactName?: string;
+  readonly outputArtifactName?: string;
 }
 
 /**
@@ -137,7 +138,7 @@ export interface PipelineTestActionProps extends CommonPipelineTestActionProps {
   /**
    * The build Project.
    */
-  project: IProject;
+  readonly project: IProject;
 }
 
 export class PipelineTestAction extends codepipeline.TestAction {
@@ -170,9 +171,10 @@ export class PipelineTestAction extends codepipeline.TestAction {
    * @see #additionalOutputArtifact
    */
   public additionalOutputArtifacts(): codepipeline.Artifact[] {
+    // TODO: revert "as any" when we centralize pipeline actions.
     return this.outputArtifact === undefined
-      ? this._outputArtifacts
-      : this._outputArtifacts.slice(1);
+      ? (this as any)._outputArtifacts
+      : (this as any)._outputArtifacts.slice(1);
   }
 
   /**
@@ -191,7 +193,8 @@ export class PipelineTestAction extends codepipeline.TestAction {
   }
 
   protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
-    setCodeBuildNeededPermissions(stage, this.props.project, this._outputArtifacts.length > 0);
+    // TODO: revert "as any" when we centralize pipeline actions
+    setCodeBuildNeededPermissions(stage, this.props.project, (this as any)._outputArtifacts.length > 0);
   }
 }
 
@@ -219,7 +222,8 @@ function handleAdditionalInputOutputArtifacts(props: CommonCodeBuildActionProps,
                                               addOutputArtifact: (_: string) => void) {
   if ((props.additionalInputArtifacts || []).length > 0) {
     // we have to set the primary source in the configuration
-    action.configuration.PrimarySource = action._inputArtifacts[0].artifactName;
+    // TODO: revert "as any" when we centralize pipeline actions
+    action.configuration.PrimarySource = (action as any)._inputArtifacts[0].artifactName;
     // add the additional artifacts
     for (const additionalInputArtifact of props.additionalInputArtifacts || []) {
       addInputArtifact(additionalInputArtifact);

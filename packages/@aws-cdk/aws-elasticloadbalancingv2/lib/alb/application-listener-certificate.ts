@@ -9,14 +9,14 @@ export interface ApplicationListenerCertificateProps {
   /**
    * The listener to attach the rule to
    */
-  listener: IApplicationListener;
+  readonly listener: IApplicationListener;
 
   /**
    * ARNs of certificates to attach
    *
    * Duplicates are not allowed.
    */
-  certificateArns: string[];
+  readonly certificateArns: string[];
 }
 
 /**

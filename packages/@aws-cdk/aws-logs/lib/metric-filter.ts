@@ -10,22 +10,22 @@ export interface MetricFilterProps {
   /**
    * The log group to create the filter on.
    */
-  logGroup: ILogGroup;
+  readonly logGroup: ILogGroup;
 
   /**
    * Pattern to search for log events.
    */
-  filterPattern: IFilterPattern;
+  readonly filterPattern: IFilterPattern;
 
   /**
    * The namespace of the metric to emit.
    */
-  metricNamespace: string;
+  readonly metricNamespace: string;
 
   /**
    * The name of the metric to emit.
    */
-  metricName: string;
+  readonly metricName: string;
 
   /**
    * The value to emit for the metric.
@@ -42,14 +42,14 @@ export interface MetricFilterProps {
    *
    * @default "1"
    */
-  metricValue?: string;
+  readonly metricValue?: string;
 
   /**
    * The value to emit if the pattern does not match a particular event.
    *
    * @default No metric emitted.
    */
-  defaultValue?: number;
+  readonly defaultValue?: number;
 }
 
 /**

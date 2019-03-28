@@ -43,21 +43,21 @@ export interface LambdaDeploymentGroupProps {
    *
    * @default one will be created for you
    */
-  application?: ILambdaApplication;
+  readonly application?: ILambdaApplication;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
    * @default an auto-generated name will be used
    */
-  deploymentGroupName?: string;
+  readonly deploymentGroupName?: string;
 
   /**
    * The Deployment Configuration this Deployment Group uses.
    *
    * @default LambdaDeploymentConfig#AllAtOnce
    */
-  deploymentConfig?: ILambdaDeploymentConfig;
+  readonly deploymentConfig?: ILambdaDeploymentConfig;
 
   /**
    * The CloudWatch alarms associated with this Deployment Group.
@@ -69,42 +69,42 @@ export interface LambdaDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  alarms?: cloudwatch.Alarm[];
+  readonly alarms?: cloudwatch.Alarm[];
 
   /**
    * The service Role of this Deployment Group.
    *
    * @default a new Role will be created.
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Lambda Alias to shift traffic. Updating the version
    * of the alias will trigger a CodeDeploy deployment.
    */
-  alias: lambda.Alias;
+  readonly alias: lambda.Alias;
 
   /**
    * The Lambda function to run before traffic routing starts.
    */
-  preHook?: lambda.IFunction;
+  readonly preHook?: lambda.IFunction;
 
   /**
    * The Lambda function to run after traffic routing starts.
    */
-  postHook?: lambda.IFunction;
+  readonly postHook?: lambda.IFunction;
 
   /**
    * Whether to continue a deployment even if fetching the alarm status from CloudWatch failed.
    *
    * @default false
    */
-  ignorePollAlarmsFailure?: boolean;
+  readonly ignorePollAlarmsFailure?: boolean;
 
   /**
    * The auto-rollback configuration for this Deployment Group.
    */
-  autoRollback?: AutoRollbackConfig;
+  readonly autoRollback?: AutoRollbackConfig;
 }
 
 export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeploymentGroup {
@@ -246,13 +246,13 @@ export interface LambdaDeploymentGroupImportProps {
    * The reference to the CodeDeploy Lambda Application
    * that this Deployment Group belongs to.
    */
-  application: ILambdaApplication;
+  readonly application: ILambdaApplication;
 
   /**
    * The physical, human-readable name of the CodeDeploy Lambda Deployment Group
    * that we are referencing.
    */
-  deploymentGroupName: string;
+  readonly deploymentGroupName: string;
 }
 
 class ImportedLambdaDeploymentGroup extends cdk.Construct implements ILambdaDeploymentGroup {

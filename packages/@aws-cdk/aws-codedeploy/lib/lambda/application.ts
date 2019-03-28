@@ -28,7 +28,7 @@ export interface LambdaApplicationProps {
    *
    * @default an auto-generated name will be used
    */
-  applicationName?: string;
+  readonly applicationName?: string;
 }
 
 /**
@@ -81,7 +81,7 @@ export interface LambdaApplicationImportProps {
    * The physical, human-readable name of the Lambda Application we're referencing.
    * The Application must be in the same account and region as the root Stack.
    */
-  applicationName: string;
+  readonly applicationName: string;
 }
 
 class ImportedLambdaApplication extends cdk.Construct implements ILambdaApplication {

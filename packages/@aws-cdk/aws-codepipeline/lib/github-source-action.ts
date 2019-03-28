@@ -10,24 +10,24 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps {
    * The name of the source's output artifact. CfnOutput artifacts are used by CodePipeline as
    * inputs into other actions.
    */
-  outputArtifactName: string;
+  readonly outputArtifactName: string;
 
   /**
    * The GitHub account/user that owns the repo.
    */
-  owner: string;
+  readonly owner: string;
 
   /**
    * The name of the repo, without the username.
    */
-  repo: string;
+  readonly repo: string;
 
   /**
    * The branch to use.
    *
    * @default "master"
    */
-  branch?: string;
+  readonly branch?: string;
 
   /**
    * A GitHub OAuth token to use for authentication.
@@ -38,7 +38,7 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps {
    *   const oauth = new cdk.SecretParameter(this, 'GitHubOAuthToken', { ssmParameter: 'my-github-token' });
    *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth.value, ... });
    */
-  oauthToken: cdk.Secret;
+  readonly oauthToken: cdk.Secret;
 
   /**
    * Whether AWS CodePipeline should poll for source changes.
@@ -46,7 +46,7 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps {
    *
    * @default false
    */
-  pollForSourceChanges?: boolean;
+  readonly pollForSourceChanges?: boolean;
 }
 
 /**

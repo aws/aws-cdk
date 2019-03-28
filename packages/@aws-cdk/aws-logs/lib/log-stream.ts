@@ -18,7 +18,7 @@ export interface ILogStream extends cdk.IConstruct {
  * Properties for importing a LogStream
  */
 export interface LogStreamImportProps {
-  logStreamName: string;
+  readonly logStreamName: string;
 }
 
 /**
@@ -28,7 +28,7 @@ export interface LogStreamProps {
   /**
    * The log group to create a log stream for.
    */
-  logGroup: ILogGroup;
+  readonly logGroup: ILogGroup;
 
   /**
    * The name of the log stream to create.
@@ -37,7 +37,7 @@ export interface LogStreamProps {
    *
    * @default Automatically generated
    */
-  logStreamName?: string;
+  readonly logStreamName?: string;
 
   /**
    * Retain the log stream if the stack or containing construct ceases to exist
@@ -50,7 +50,7 @@ export interface LogStreamProps {
    *
    * @default true
    */
-  retainLogStream?: boolean;
+  readonly retainLogStream?: boolean;
 }
 
 /**

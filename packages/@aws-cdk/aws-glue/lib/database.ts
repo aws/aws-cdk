@@ -32,25 +32,25 @@ export interface IDatabase extends cdk.IConstruct {
 }
 
 export interface DatabaseImportProps {
-  catalogArn: string;
-  catalogId: string;
-  databaseArn: string;
-  databaseName: string;
-  locationUri: string;
+  readonly catalogArn: string;
+  readonly catalogId: string;
+  readonly databaseArn: string;
+  readonly databaseName: string;
+  readonly locationUri: string;
 }
 
 export interface DatabaseProps {
   /**
    * The name of the database.
    */
-  databaseName: string;
+  readonly databaseName: string;
 
   /**
    * The location of the database (for example, an HDFS path).
    *
    * @default a bucket is created and the database is stored under s3://<bucket-name>/<database-name>
    */
-  locationUri?: string;
+  readonly locationUri?: string;
 }
 
 /**

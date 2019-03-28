@@ -7,12 +7,12 @@ export interface RuntimeValueProps {
    * A namespace for the runtime value.
    * It is recommended to use the name of the library/package that advertises this value.
    */
-  package: string;
+  readonly package: string;
 
   /**
    * The value to advertise. Can be either a primitive value or a token.
    */
-  value: any;
+  readonly value: any;
 }
 
 /**

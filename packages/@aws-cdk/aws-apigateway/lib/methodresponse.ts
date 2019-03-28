@@ -6,7 +6,7 @@ export interface MethodResponse {
      * The method response's status code, which you map to an IntegrationResponse.
      * Required.
      */
-    statusCode: string;
+    readonly statusCode: string;
 
     /**
      * Response parameters that API Gateway sends to the client that called a method.
@@ -16,7 +16,7 @@ export interface MethodResponse {
      * valid, unique header name. The Boolean specifies whether a parameter is required.
      * @default None
      */
-    responseParameters?: { [destination: string]: boolean };
+    readonly responseParameters?: { [destination: string]: boolean };
 
     /**
      * The resources used for the response's content type. Specify response models as
@@ -24,5 +24,5 @@ export interface MethodResponse {
      * resource name as the value.
      * @default None
      */
-    responseModels?: { [contentType: string]: IModel };
+    readonly responseModels?: { [contentType: string]: IModel };
 }

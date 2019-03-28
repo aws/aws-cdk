@@ -15,12 +15,12 @@ export interface Ec2ServiceProps extends BaseServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: ICluster;
+  readonly cluster: ICluster;
 
   /**
    * Task Definition used for running tasks in the service
    */
-  taskDefinition: TaskDefinition;
+  readonly taskDefinition: TaskDefinition;
 
   /**
    * In what subnets to place the task's ENIs
@@ -29,7 +29,7 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default Private subnets
    */
-  vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Existing security group to use for the task's ENIs
@@ -38,14 +38,14 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default A new security group is created
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Whether to start services on distinct instances
    *
    * @default true
    */
-  placeOnDistinctInstances?: boolean;
+  readonly placeOnDistinctInstances?: boolean;
 
   /**
    * Deploy exactly one task on each instance in your cluster.
@@ -55,7 +55,7 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default false
    */
-  daemon?: boolean;
+  readonly daemon?: boolean;
 }
 
 /**

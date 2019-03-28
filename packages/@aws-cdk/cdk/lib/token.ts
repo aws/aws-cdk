@@ -120,8 +120,8 @@ export class Token {
  * Current resolution context for tokens
  */
 export interface ResolveContext {
-  scope: IConstruct;
-  prefix: string[];
+  readonly scope: IConstruct;
+  readonly prefix: string[];
 }
 
 /**

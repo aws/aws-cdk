@@ -651,17 +651,17 @@ export interface MetadataEntry {
   /**
    * The type of the metadata entry.
    */
-  type: string;
+  readonly type: string;
 
   /**
    * The data.
    */
-  data?: any;
+  readonly data?: any;
 
   /**
    * A stack trace for when the entry was created.
    */
-  trace: string[];
+  readonly trace: string[];
 }
 
 export class ValidationError {
@@ -708,12 +708,12 @@ export interface Dependency {
   /**
    * Source the dependency
    */
-  source: IConstruct;
+  readonly source: IConstruct;
 
   /**
    * Target of the dependency
    */
-  target: IConstruct;
+  readonly target: IConstruct;
 }
 
 /**
@@ -723,17 +723,17 @@ export interface Dependency {
   /**
    * Source the dependency
    */
-  source: IConstruct;
+  readonly source: IConstruct;
 
   /**
    * Target of the dependency
    */
-  target: IConstruct;
+  readonly target: IConstruct;
 }
 
 export interface OutgoingReference {
-  source: IConstruct;
-  reference: Reference;
+  readonly source: IConstruct;
+  readonly reference: Reference;
 }
 
 // Import this _after_ everything else to help node work the classes out in the correct order...

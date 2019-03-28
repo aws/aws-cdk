@@ -12,7 +12,7 @@ export interface StateProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * JSONPath expression to select part of the state to be the input to this state.
@@ -22,7 +22,7 @@ export interface StateProps {
      *
      * @default $
      */
-    inputPath?: string;
+    readonly inputPath?: string;
 
     /**
      * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
@@ -32,7 +32,7 @@ export interface StateProps {
      *
      * @default No parameters
      */
-    parameters?: { [name: string]: any };
+    readonly parameters?: { [name: string]: any };
 
     /**
      * JSONPath expression to select part of the state to be the output to this state.
@@ -42,7 +42,7 @@ export interface StateProps {
      *
      * @default $
      */
-    outputPath?: string;
+    readonly outputPath?: string;
 
     /**
      * JSONPath expression to indicate where to inject the state's output
@@ -52,7 +52,7 @@ export interface StateProps {
      *
      * @default $
      */
-    resultPath?: string;
+    readonly resultPath?: string;
 }
 
 /**
@@ -127,6 +127,10 @@ export abstract class State extends cdk.Construct implements IChainable {
     protected readonly resultPath?: string;
     protected readonly branches: StateGraph[] = [];
     protected defaultChoice?: State;
+
+    /**
+     * @internal
+     */
     protected _next?: State;
 
     private readonly retries: RetryProps[] = [];
@@ -215,6 +219,7 @@ export abstract class State extends cdk.Construct implements IChainable {
 
     /**
      * Add a retrier to the retry list of this state
+     * @internal
      */
     protected _addRetry(props: RetryProps = {}) {
         this.retries.push({
@@ -225,6 +230,7 @@ export abstract class State extends cdk.Construct implements IChainable {
 
     /**
      * Add an error handler to the catch list of this state
+     * @internal
      */
     protected _addCatch(handler: State, props: CatchProps = {}) {
         this.catches.push({
@@ -382,7 +388,7 @@ export interface FindStateOptions {
      *
      * @default false
      */
-    includeErrorHandlers?: boolean;
+    readonly includeErrorHandlers?: boolean;
 }
 
 /**

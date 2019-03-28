@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
 import cdk = require('../lib');
-import { FileSystemStore, InMemoryStore, SynthesisSession } from '../lib';
+import { Construct, FileSystemStore, InMemoryStore, ISynthesisSession, SynthesisSession, Synthesizer } from '../lib';
 
 const storeTestMatrix: any = {};
 
@@ -90,7 +90,6 @@ export = {
           type: 'aws:cloudformation:stack',
           environment: 'aws://unknown-account/unknown-region',
           properties: { templateFile: 'one-stack.template.json' },
-          autoDeploy: undefined,
         }
       },
     });
@@ -128,6 +127,49 @@ export = {
     test.done();
   },
 
+  'it should be possible to synthesize without an app'(test: Test) {
+    const calls = new Array<string>();
+
+    class SynthesizeMe extends Construct {
+      constructor() {
+        super(undefined as any, 'id');
+      }
+
+      protected validate(): string[] {
+        calls.push('validate');
+        return [];
+      }
+
+      protected prepare(): void {
+        calls.push('prepare');
+      }
+
+      protected synthesize(session: ISynthesisSession) {
+        calls.push('synthesize');
+
+        session.addArtifact('art', {
+          type: cxapi.ArtifactType.AwsEcrDockerImage,
+          environment: 'aws://unknown-account/us-east-1'
+        });
+
+        session.store.writeJson('hey.json', { hello: 123 });
+      }
+    }
+
+    const root = new SynthesizeMe();
+
+    const synth = new Synthesizer();
+    const result = synth.synthesize(root);
+
+    test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
+    test.deepEqual(result.store.readJson('hey.json'), { hello: 123 });
+    test.deepEqual(result.manifest.artifacts!.art, {
+      type: 'aws:ecr:image',
+      environment: 'aws://unknown-account/us-east-1'
+    });
+    test.done();
+  },
+
   'store': storeTestMatrix
 };
 
@@ -146,7 +188,7 @@ const storeTests = {
     test.throws(() => store.writeFile('bla.txt', 'override is forbidden'));
 
     // WHEN
-    store.finalize();
+    store.lock();
 
     // THEN
     test.throws(() => store.writeFile('another.txt', 'locked!'));
@@ -174,7 +216,7 @@ const storeTests = {
     test.throws(() => store.mkdir('dir1'));
 
     // WHEN
-    store.finalize();
+    store.lock();
     test.throws(() => store.mkdir('dir3'));
     test.done();
   },

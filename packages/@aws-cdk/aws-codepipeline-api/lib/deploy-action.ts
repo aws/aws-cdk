@@ -2,15 +2,15 @@ import { Action, ActionArtifactBounds, ActionCategory, CommonActionProps } from 
 import { Artifact } from './artifact';
 
 export interface DeployActionProps extends CommonActionProps {
-  provider: string;
+  readonly provider: string;
 
-  owner?: string;
+  readonly owner?: string;
 
-  artifactBounds: ActionArtifactBounds;
+  readonly artifactBounds: ActionArtifactBounds;
 
-  inputArtifact: Artifact;
+  readonly inputArtifact: Artifact;
 
-  configuration?: any;
+  readonly configuration?: any;
 }
 
 export abstract class DeployAction extends Action {

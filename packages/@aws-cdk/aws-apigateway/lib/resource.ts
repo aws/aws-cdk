@@ -105,12 +105,12 @@ export interface ResourceProps extends ResourceOptions {
    * The parent resource of this resource. You can either pass another
    * `Resource` object or a `RestApi` object here.
    */
-  parent: IRestApiResource;
+  readonly parent: IRestApiResource;
 
   /**
    * A path name for the resource.
    */
-  pathPart: string;
+  readonly pathPart: string;
 }
 
 export abstract class ResourceBase extends cdk.Construct implements IRestApiResource {
@@ -231,7 +231,7 @@ export interface ProxyResourceProps extends ResourceOptions {
    * The parent resource of this resource. You can either pass another
    * `Resource` object or a `RestApi` object here.
    */
-  parent: IRestApiResource;
+  readonly parent: IRestApiResource;
 
   /**
    * Adds an "ANY" method to this resource. If set to `false`, you will have to explicitly
@@ -239,7 +239,7 @@ export interface ProxyResourceProps extends ResourceOptions {
    *
    * @default true
    */
-  anyMethod?: boolean;
+  readonly anyMethod?: boolean;
 }
 
 /**

@@ -32,6 +32,7 @@ export abstract class BaseListener extends cdk.Construct {
 
   /**
    * Add a TargetGroup to the list of default actions of this listener
+   * @internal
    */
   protected _addDefaultTargetGroup(targetGroup: ITargetGroup) {
     this.defaultActions.push({

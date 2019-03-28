@@ -6,12 +6,12 @@ export interface EventRuleTargetProps {
    * include alphanumeric characters, periods (.), hyphens (-), and
    * underscores (_).
    */
-  id: string;
+  readonly id: string;
 
   /**
    * The Amazon Resource Name (ARN) of the target.
    */
-  arn: string;
+  readonly arn: string;
 
   /**
    * The Amazon Resource Name (ARN) of the AWS Identity and Access Management
@@ -19,26 +19,26 @@ export interface EventRuleTargetProps {
    * triggers multiple targets, you can use a different IAM role for each
    * target.
    */
-  roleArn?: string;
+  readonly roleArn?: string;
 
   /**
    * The Amazon ECS task definition and task count to use, if the event target
    * is an Amazon ECS task.
    */
-  ecsParameters?: CfnRule.EcsParametersProperty;
+  readonly ecsParameters?: CfnRule.EcsParametersProperty;
 
   /**
    * Settings that control shard assignment, when the target is a Kinesis
    * stream. If you don't include this parameter, eventId is used as the
    * partition key.
    */
-  kinesisParameters?: CfnRule.KinesisParametersProperty;
+  readonly kinesisParameters?: CfnRule.KinesisParametersProperty;
 
   /**
    * Parameters used when the rule invokes Amazon EC2 Systems Manager Run
    * Command.
    */
-  runCommandParameters?: CfnRule.RunCommandParametersProperty;
+  readonly runCommandParameters?: CfnRule.RunCommandParametersProperty;
 }
 
 /**

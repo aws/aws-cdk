@@ -21,28 +21,28 @@ export interface AliasRecordTargetProps {
   /**
    * Hosted zone ID of the target
    */
-  hostedZoneId: string;
+  readonly hostedZoneId: string;
 
   /**
    * DNS name of the target
    */
-  dnsName: string;
+  readonly dnsName: string;
 }
 
 export interface AliasRecordProps {
   /**
    * The zone in which this alias should be defined.
    */
-  zone: IHostedZone;
+  readonly zone: IHostedZone;
   /**
    * Name for the record. This can be the FQDN for the record (foo.example.com) or
    * a subdomain of the parent hosted zone (foo, with example.com as the hosted zone).
    */
-  recordName: string;
+  readonly recordName: string;
   /**
    * Target for the alias record
    */
-  target: IAliasRecordTarget;
+  readonly target: IAliasRecordTarget;
 }
 
 /**

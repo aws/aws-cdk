@@ -162,8 +162,8 @@ export = {
         additionalInputArtifacts: [artifact],
       });
 
-      test.equal(action._inputArtifacts.length, 1);
-
+      // TODO: remove "as any"
+      test.equal((action as any)._inputArtifacts.length, 1);
       test.done();
     },
 
@@ -202,8 +202,8 @@ export = {
         ],
       });
 
-      test.equal(action._outputArtifacts.length, 1);
-
+      // TODO: remove "as any"
+      test.equal((action as any)._outputArtifacts.length, 1);
       test.done();
     },
   },

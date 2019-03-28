@@ -18,14 +18,14 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default Determined from port if known
    */
-  protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol;
 
   /**
    * The port on which the listener listens for requests.
    *
    * @default Determined from protocol if known
    */
-  port?: number;
+  readonly port?: number;
 
   /**
    * The time period during which the load balancer sends a newly registered
@@ -35,7 +35,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default 0
    */
-  slowStartSec?: number;
+  readonly slowStartSec?: number;
 
   /**
    * The stickiness cookie expiration period.
@@ -47,7 +47,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default 86400 (1 day)
    */
-  stickinessCookieDurationSec?: number;
+  readonly stickinessCookieDurationSec?: number;
 
   /**
    * The targets to add to this target group.
@@ -56,7 +56,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
    */
-  targets?: IApplicationLoadBalancerTarget[];
+  readonly targets?: IApplicationLoadBalancerTarget[];
 }
 
 /**

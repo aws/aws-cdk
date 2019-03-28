@@ -11,21 +11,21 @@ export interface FailProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * Error code used to represent this failure
      *
      * @default No error code
      */
-    error?: string;
+    readonly error?: string;
 
     /**
      * A description for the cause of the failure
      *
      * @default No description
      */
-    cause?: string;
+    readonly cause?: string;
 }
 
 /**

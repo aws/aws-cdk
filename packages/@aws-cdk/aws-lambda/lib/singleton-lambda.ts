@@ -14,7 +14,7 @@ export interface SingletonFunctionProps extends FunctionProps {
    * The identifier should be unique across all custom resource providers.
    * We recommend generating a UUID per provider.
    */
-  uuid: string;
+  readonly uuid: string;
 
   /**
    * A descriptive name for the purpose of this Lambda.
@@ -25,7 +25,7 @@ export interface SingletonFunctionProps extends FunctionProps {
    *
    * @default SingletonLambda
    */
-  lambdaPurpose?: string;
+  readonly lambdaPurpose?: string;
 }
 
 /**

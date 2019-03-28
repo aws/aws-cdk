@@ -12,7 +12,7 @@ export interface CommonPipelineDeployActionProps extends codepipeline.CommonActi
   /**
    * The source to use as input for deployment.
    */
-  inputArtifact: codepipeline.Artifact;
+  readonly inputArtifact: codepipeline.Artifact;
 }
 
 /**
@@ -22,7 +22,7 @@ export interface PipelineDeployActionProps extends CommonPipelineDeployActionPro
   /**
    * The CodeDeploy Deployment Group to deploy to.
    */
-  deploymentGroup: IServerDeploymentGroup;
+  readonly deploymentGroup: IServerDeploymentGroup;
 }
 
 export class PipelineDeployAction extends codepipeline.DeployAction {

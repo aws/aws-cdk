@@ -1,9 +1,9 @@
 import { ScalingInterval } from "./types";
 
 export interface CompleteScalingInterval {
-  lower: number;
-  upper: number;
-  change?: number;
+  readonly lower: number;
+  readonly upper: number;
+  readonly change?: number;
 }
 
 /**
@@ -48,9 +48,11 @@ function orderAndCompleteIntervals(intervals: ScalingInterval[]): CompleteScalin
   // Propagate boundaries until no more change
   while (propagateBounds(intervals)) { /* Repeat */ }
 
+  const lastIndex = intervals.length - 1;
+
   // Validate that no intervals have undefined bounds now, which must mean they're complete.
-  if (intervals[0].lower === undefined) { intervals[0].lower = 0; }
-  if (last(intervals).upper === undefined) { last(intervals).upper = Infinity; }
+  if (intervals[0].lower === undefined) { intervals[0] = { ...intervals[0], lower: 0 }; }
+  if (intervals[lastIndex].upper === undefined) { intervals[lastIndex] = { ...intervals[lastIndex], upper: Infinity }; }
   for (const interval of intervals) {
     if (interval.lower === undefined || interval.upper === undefined) {
       throw new Error(`Could not determine the lower and upper bounds for ${JSON.stringify(interval)}`);
@@ -120,9 +122,10 @@ function makeGapsUndefined(intervals: CompleteScalingInterval[]) {
  * Turn zero changes into undefined, in-place
  */
 function makeZerosUndefined(intervals: CompleteScalingInterval[]) {
-  for (const interval of intervals) {
+  for (let i = 0; i < intervals.length; ++i) {
+    const interval = intervals[i];
     if (interval.change === 0) {
-      interval.change = undefined;
+      intervals[i] = { ...interval, change: undefined };
     }
   }
 }
@@ -134,7 +137,7 @@ function combineUndefineds(intervals: CompleteScalingInterval[]) {
   let i = 0;
   while (i < intervals.length - 1) {
     if (intervals[i].change === undefined && intervals[i + 1].change === undefined) {
-      intervals[i].upper = intervals[i + 1].upper;
+      intervals[i] = { ...intervals[i], upper: intervals[i + 1].upper };
       intervals.splice(i + 1, 1);
     } else {
       i++;
@@ -166,7 +169,7 @@ function propagateBounds(intervals: ScalingInterval[]) {
   // Propagate upper bounds upwards
   for (let i = 0; i < intervals.length - 1; i++) {
     if (intervals[i].upper !== undefined && intervals[i + 1].lower === undefined) {
-      intervals[i + 1].lower = intervals[i].upper;
+      intervals[i + 1] = { ...intervals[i + 1], lower: intervals[i].upper };
       ret = true;
     }
   }
@@ -174,7 +177,7 @@ function propagateBounds(intervals: ScalingInterval[]) {
   // Propagate lower bounds downwards
   for (let i = intervals.length - 1; i >= 1; i--) {
     if (intervals[i].lower !== undefined && intervals[i - 1].upper === undefined) {
-      intervals[i - 1].upper = intervals[i].lower;
+      intervals[i - 1] = { ...intervals[i - 1], upper: intervals[i].lower };
       ret = true;
     }
   }
@@ -194,8 +197,8 @@ function last<T>(xs: T[]) {
 }
 
 export interface Alarms {
-  lowerAlarmIntervalIndex?: number;
-  upperAlarmIntervalIndex?: number;
+  readonly lowerAlarmIntervalIndex?: number;
+  readonly upperAlarmIntervalIndex?: number;
 }
 
 /**

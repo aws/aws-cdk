@@ -3,11 +3,11 @@
  */
 export interface Environment {
   /** The arbitrary name of this environment (user-set, or at least user-meaningful) */
-  name: string;
+  readonly name: string;
 
   /** The 12-digit AWS account ID for the account this environment deploys into */
-  account: string;
+  readonly account: string;
 
   /** The AWS region name where this environment deploys into */
-  region: string;
+  readonly region: string;
 }

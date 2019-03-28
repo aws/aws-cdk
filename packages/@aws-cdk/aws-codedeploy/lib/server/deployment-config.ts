@@ -26,7 +26,7 @@ export interface ServerDeploymentConfigImportProps {
    * The physical, human-readable name of the custom CodeDeploy EC2/on-premise Deployment Configuration
    * that we are referencing.
    */
-  deploymentConfigName: string;
+  readonly deploymentConfigName: string;
 }
 
 class ImportedServerDeploymentConfig extends cdk.Construct implements IServerDeploymentConfig {
@@ -74,7 +74,7 @@ export interface ServerDeploymentConfigProps {
    *
    * @default a name will be auto-generated
    */
-  deploymentConfigName?: string;
+  readonly deploymentConfigName?: string;
 
   /**
    * The minimum healhty hosts threshold expressed as an absolute number.
@@ -82,7 +82,7 @@ export interface ServerDeploymentConfigProps {
    * you can't specify {@link #minHealthyHostPercentage},
    * however one of this or {@link #minHealthyHostPercentage} is required.
    */
-  minHealthyHostCount?: number;
+  readonly minHealthyHostCount?: number;
 
   /**
    * The minmum healhty hosts threshold expressed as a percentage of the fleet.
@@ -90,7 +90,7 @@ export interface ServerDeploymentConfigProps {
    * you can't specify {@link #minHealthyHostCount},
    * however one of this or {@link #minHealthyHostCount} is required.
    */
-  minHealthyHostPercentage?: number;
+  readonly minHealthyHostPercentage?: number;
 }
 
 /**

@@ -54,17 +54,17 @@ export interface DataFormat {
   /**
    * `InputFormat` for this data format.
    */
-  inputFormat: InputFormat;
+  readonly inputFormat: InputFormat;
 
   /**
    * `OutputFormat` for this data format.
    */
-  outputFormat: OutputFormat;
+  readonly outputFormat: OutputFormat;
 
   /**
    * Serialization library for this data format.
    */
-  serializationLibrary: SerializationLibrary;
+  readonly serializationLibrary: SerializationLibrary;
 }
 
 export namespace DataFormat {

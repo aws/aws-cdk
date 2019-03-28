@@ -106,14 +106,14 @@ export interface SpacerProps {
    *
    * @default 1
    */
-  width?: number;
+  readonly width?: number;
 
   /**
    * Height of the spacer
    *
    * @default: 1
    */
-  height?: number;
+  readonly height?: number;
 }
 
 /**

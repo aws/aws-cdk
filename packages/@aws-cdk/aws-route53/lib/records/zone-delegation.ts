@@ -8,16 +8,16 @@ export interface ZoneDelegationRecordProps extends ZoneDelegationOptions {
   /**
    * The zone in which this delegate is defined.
    */
-  zone: IHostedZone;
+  readonly zone: IHostedZone;
   /**
    * The name of the zone that delegation is made to.
    */
-  delegatedZoneName: string;
+  readonly delegatedZoneName: string;
 
   /**
    * The name servers to report in the delegation records.
    */
-  nameServers: string[];
+  readonly nameServers: string[];
 }
 
 /**

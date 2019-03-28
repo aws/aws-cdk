@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { ConstructOrder, Root } from './construct';
-import { FileSystemStore, InMemoryStore, ISynthesisSession, SynthesisSession } from './synthesis';
+import { Root } from './construct';
+import { FileSystemStore, InMemoryStore, ISynthesisSession, Synthesizer } from './synthesis';
 
 /**
  * Custom construction properties for a CDK program
@@ -13,14 +13,14 @@ export interface AppProps {
    *
    * @default true if running via CDK toolkit (CDK_OUTDIR is set), false otherwise
    */
-  autoRun?: boolean;
+  readonly autoRun?: boolean;
 
   /**
    * Additional context values for the application
    *
    * @default No additional context
    */
-  context?: { [key: string]: string };
+  readonly context?: { [key: string]: string };
 }
 
 /**
@@ -69,35 +69,15 @@ export class App extends Root {
       store = new InMemoryStore();
     }
 
-    const session = this._session = new SynthesisSession({
+    const synth = new Synthesizer();
+
+    this._session = synth.synthesize(this, {
       store,
       legacyManifest: this.legacyManifest,
       runtimeInformation: this.runtimeInformation
     });
 
-    // the three holy phases of synthesis: prepare, validate and synthesize
-
-    // prepare
-    this.node.prepareTree();
-
-    // validate
-    const errors = this.node.validateTree();
-    if (errors.length > 0) {
-      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-      throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
-    }
-
-    // synthesize (leaves first)
-    for (const c of this.node.findAll(ConstructOrder.PostOrder)) {
-      if (SynthesisSession.isSynthesizable(c)) {
-        c.synthesize(session);
-      }
-    }
-
-    // write session manifest and lock store
-    session.close();
-
-    return session;
+    return this._session;
   }
 
   /**

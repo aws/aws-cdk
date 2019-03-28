@@ -9,7 +9,7 @@ export interface ActivityProps {
      *
      * @default If not supplied, a name is generated
      */
-    activityName?: string;
+    readonly activityName?: string;
 }
 
 /**

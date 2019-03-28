@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
@@ -30,7 +30,7 @@ export = {
     });
 
     // verify that now the template contains parameters for this asset
-    const template = stack._toCloudFormation();
+    const template = SynthUtils.toCloudFormation(stack);
     test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
     test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 
@@ -74,7 +74,7 @@ export = {
     });
 
     // verify that now the template contains parameters for this asset
-    const template = stack._toCloudFormation();
+    const template = SynthUtils.toCloudFormation(stack);
     test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
     test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 

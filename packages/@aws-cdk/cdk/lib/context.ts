@@ -146,7 +146,7 @@ export interface SSMParameterProviderProps {
   /**
    * The name of the parameter to lookup
    */
-  parameterName: string;
+  readonly parameterName: string;
 }
 /**
  * Context provider that will read values from the SSM parameter store in the indicated account and region

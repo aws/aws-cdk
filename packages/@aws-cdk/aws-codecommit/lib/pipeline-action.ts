@@ -15,12 +15,12 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
    *
    * @default a name will be auto-generated
    */
-  outputArtifactName?: string;
+  readonly outputArtifactName?: string;
 
   /**
    * @default 'master'
    */
-  branch?: string;
+  readonly branch?: string;
 
   /**
    * Whether AWS CodePipeline should poll for source changes.
@@ -28,7 +28,7 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
    *
    * @default false
    */
-  pollForSourceChanges?: boolean;
+  readonly pollForSourceChanges?: boolean;
 }
 
 /**
@@ -38,7 +38,7 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
   /**
    * The CodeCommit repository.
    */
-  repository: IRepository;
+  readonly repository: IRepository;
 }
 
 /**

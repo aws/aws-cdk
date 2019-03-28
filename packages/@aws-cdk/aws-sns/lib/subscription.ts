@@ -9,19 +9,19 @@ export interface SubscriptionProps {
   /**
    * What type of subscription to add.
    */
-  protocol: SubscriptionProtocol;
+  readonly protocol: SubscriptionProtocol;
 
   /**
    * The subscription endpoint.
    *
    * The meaning of this value depends on the value for 'protocol'.
    */
-  endpoint: any;
+  readonly endpoint: any;
 
   /**
    * The topic to subscribe to.
    */
-  topic: ITopic;
+  readonly topic: ITopic;
 
   /**
    * true if raw message delivery is enabled for the subscription. Raw messages are free of JSON formatting and can be
@@ -30,7 +30,7 @@ export interface SubscriptionProps {
    *
    * @default false
    */
-  rawMessageDelivery?: boolean;
+  readonly rawMessageDelivery?: boolean;
 }
 
 /**

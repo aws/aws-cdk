@@ -14,21 +14,21 @@ export interface StackProps {
    * If not supplied, the `default-account` and `default-region` context parameters will be
    * used. If they are undefined, it will not be possible to deploy the stack.
    */
-  env?: Environment;
+  readonly env?: Environment;
 
   /**
    * Name to deploy the stack with
    *
    * @default Derived from construct path
    */
-  stackName?: string;
+  readonly stackName?: string;
 
   /**
    * Strategy for logical ID generation
    *
    * Optional. If not supplied, the HashedNamingScheme will be used.
    */
-  namingScheme?: IAddressingScheme;
+  readonly namingScheme?: IAddressingScheme;
 
   /**
    * Should the Stack be deployed when running `cdk deploy` without arguments
@@ -39,8 +39,10 @@ export interface StackProps {
    *
    * @default true
    */
-  autoDeploy?: boolean;
+  readonly autoDeploy?: boolean;
 }
+
+const STACK_SYMBOL = Symbol('@aws-cdk/cdk.CfnReference');
 
 /**
  * A root construct which represents a single CloudFormation stack.
@@ -64,8 +66,8 @@ export class Stack extends Construct {
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
-  public static isStack(construct: IConstruct): construct is Stack {
-    return (construct as any)._isStack;
+  public static isStack(x: any): x is Stack {
+    return x[STACK_SYMBOL] === true;
   }
 
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
@@ -90,7 +92,7 @@ export class Stack extends Construct {
   /**
    * Options for CloudFormation template (like version, transform, description).
    */
-  public readonly templateOptions: TemplateOptions = {};
+  public readonly templateOptions: ITemplateOptions = {};
 
   /**
    * The CloudFormation stack name.
@@ -110,11 +112,6 @@ export class Stack extends Construct {
    * By default, this is `true`.
    */
   public readonly autoDeploy: boolean;
-
-  /*
-   * Used to determine if this construct is a stack.
-   */
-  protected readonly _isStack = true;
 
   /**
    * Other stacks this stack depends on
@@ -143,6 +140,8 @@ export class Stack extends Construct {
   public constructor(scope?: Construct, name?: string, props: StackProps = {}) {
     // For unit test convenience parents are optional, so bypass the type check when calling the parent.
     super(scope!, name!);
+
+    Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
     if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
       throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
@@ -452,6 +451,8 @@ export class Stack extends Construct {
    *
    * CloudFormation stack names can include dashes in addition to the regular identifier
    * character classes, and we don't allow one of the magic markers.
+   *
+   * @internal
    */
   protected _validateId(name: string) {
     if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
@@ -495,55 +496,32 @@ export class Stack extends Construct {
     // write the CloudFormation template as a JSON file
     session.store.writeJson(template, this._toCloudFormation());
 
-    const artifact: cxapi.Artifact = {
+    const deps = this.dependencies().map(s => s.name);
+    const meta = this.collectMetadata();
+
+    // add an artifact that represents this stack
+    session.addArtifact(this.name, {
       type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: this.environment,
       properties: {
         templateFile: template,
+        parameters: Object.keys(this.parameterValues).length > 0 ? this.node.resolve(this.parameterValues) : undefined
       },
       autoDeploy: this.autoDeploy ? undefined : false,
-    };
-
-    if (Object.keys(this.parameterValues).length > 0) {
-      artifact.properties = artifact.properties || { };
-      artifact.properties.parameters = this.node.resolve(this.parameterValues);
-    }
-
-    const deps = this.dependencies().map(s => s.name);
-    if (deps.length > 0) {
-      artifact.dependencies = deps;
-    }
-
-    const meta = this.collectMetadata();
-    if (Object.keys(meta).length > 0) {
-      artifact.metadata = meta;
-    }
-
-    if (this.missingContext && Object.keys(this.missingContext).length > 0) {
-      artifact.missing = this.missingContext;
-    }
-
-    // add an artifact that represents this stack
-    session.addArtifact(this.name, artifact);
+      dependencies: deps.length > 0 ? deps : undefined,
+      metadata: Object.keys(meta).length > 0 ? meta : undefined,
+      missing: this.missingContext && Object.keys(this.missingContext).length > 0 ? this.missingContext : undefined
+    });
   }
 
   /**
    * Applied defaults to environment attributes.
    */
   private parseEnvironment(env: Environment = {}) {
-    const ret: Environment = {...env};
-
-    // if account is not specified, attempt to read from context.
-    if (!ret.account) {
-      ret.account = this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY);
-    }
-
-    // if region is not specified, attempt to read from context.
-    if (!ret.region) {
-      ret.region = this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY);
-    }
-
-    return ret;
+    return {
+      account: env.account ? env.account : this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY),
+      region: env.region ? env.region : this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY)
+    };
   }
 
   /**
@@ -632,7 +610,7 @@ function merge(template: any, part: any) {
 /**
  * CloudFormation template options for a stack.
  */
-export interface TemplateOptions {
+export interface ITemplateOptions {
   /**
    * Gets or sets the description of this stack.
    * If provided, it will be included in the CloudFormation template's "Description" attribute.

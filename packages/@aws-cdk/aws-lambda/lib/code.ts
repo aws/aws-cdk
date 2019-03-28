@@ -60,6 +60,8 @@ export abstract class Code {
    * Lambda function.
    *
    * @param resource the resource to which the code will be attached (a CfnFunction, or a CfnLayerVersion).
+   *
+   * @internal
    */
   public abstract _toJSON(resource?: cdk.CfnResource): CfnFunction.CodeProperty;
 
@@ -89,6 +91,9 @@ export class S3Code extends Code {
     this.bucketName = bucket.bucketName;
   }
 
+  /**
+   * @internal
+   */
   public _toJSON(_?: cdk.CfnResource): CfnFunction.CodeProperty {
     return {
       s3Bucket: this.bucketName,
@@ -119,6 +124,9 @@ export class InlineCode extends Code {
     }
   }
 
+  /**
+   * @internal
+   */
   public _toJSON(_?: cdk.CfnResource): CfnFunction.CodeProperty {
     return {
       zipFile: this.code
@@ -169,6 +177,9 @@ export class AssetCode extends Code {
     }
   }
 
+  /**
+   * @internal
+   */
   public _toJSON(resource?: cdk.CfnResource): CfnFunction.CodeProperty {
     if (resource) {
       // https://github.com/awslabs/aws-cdk/issues/1432

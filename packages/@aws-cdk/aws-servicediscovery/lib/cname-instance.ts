@@ -13,7 +13,7 @@ export interface CnameInstanceBaseProps extends BaseInstanceProps {
    * return in response to DNS queries, for example, example.com. This value is required if the
    * service specified by ServiceId includes settings for an CNAME record.
    */
-  instanceCname: string;
+  readonly instanceCname: string;
 }
 
 /*
@@ -23,7 +23,7 @@ export interface CnameInstanceProps extends CnameInstanceBaseProps {
   /**
    * The Cloudmap service this resource is registered to.
    */
-  service: IService;
+  readonly service: IService;
 }
 
 /*

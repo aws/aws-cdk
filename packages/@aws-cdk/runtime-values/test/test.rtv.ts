@@ -13,7 +13,6 @@ export = {
 
     new RuntimeValueTest(stack, 'RuntimeValue');
 
-    console.log(JSON.stringify(stack._toCloudFormation(), undefined, 2));
     test.done();
   }
 };

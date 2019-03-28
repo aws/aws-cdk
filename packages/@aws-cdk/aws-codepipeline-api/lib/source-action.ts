@@ -10,26 +10,26 @@ export interface SourceActionProps extends CommonActionProps {
    *
    * @default "AWS"
    */
-  owner?: string;
+  readonly owner?: string;
 
   /**
    * The source Action version.
    *
    * @default "1"
    */
-  version?: string;
+  readonly version?: string;
 
   /**
    * The name of the source's output artifact.
    * CfnOutput artifacts are used by CodePipeline as inputs into other actions.
    */
-  outputArtifactName: string;
+  readonly outputArtifactName: string;
 
   /**
    * The service provider that the action calls.
    * For example, a valid provider for Source actions is "S3".
    */
-  provider: string;
+  readonly provider: string;
 
   /**
    * The action's configuration. These are key-value pairs that specify input values for an action.
@@ -37,7 +37,7 @@ export interface SourceActionProps extends CommonActionProps {
    *
    * http://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements
    */
-  configuration?: any;
+  readonly configuration?: any;
 }
 
 /**

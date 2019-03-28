@@ -7,13 +7,13 @@ export enum ArtifactType {
 }
 
 export interface Artifact {
-  type: ArtifactType;
-  environment: string; // format: aws://account/region
-  metadata?: { [path: string]: any };
-  dependencies?: string[];
-  missing?: { [key: string]: any };
-  properties?: { [name: string]: any };
-  autoDeploy?: boolean;
+  readonly type: ArtifactType;
+  readonly environment: string; // format: aws://account/region
+  readonly metadata?: { [path: string]: any };
+  readonly dependencies?: string[];
+  readonly missing?: { [key: string]: any };
+  readonly properties?: { [name: string]: any };
+  readonly autoDeploy?: boolean;
 }
 
 export function validateArtifact(artifcat: Artifact) {

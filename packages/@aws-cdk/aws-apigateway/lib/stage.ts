@@ -11,24 +11,24 @@ export interface StageOptions extends MethodDeploymentOptions {
    *
    * @default "prod"
    */
-  stageName?: string;
+  readonly stageName?: string;
 
   /**
    * Specifies whether Amazon X-Ray tracing is enabled for this method.
    * @default false
    */
-  tracingEnabled?: boolean;
+  readonly tracingEnabled?: boolean;
 
   /**
    * Indicates whether cache clustering is enabled for the stage.
    */
-  cacheClusterEnabled?: boolean;
+  readonly cacheClusterEnabled?: boolean;
 
   /**
    * The stage's cache cluster size.
    * @default 0.5
    */
-  cacheClusterSize?: string;
+  readonly cacheClusterSize?: string;
 
   /**
    * The identifier of the client certificate that API Gateway uses to call
@@ -36,24 +36,24 @@ export interface StageOptions extends MethodDeploymentOptions {
    *
    * @default None
    */
-  clientCertificateId?: string;
+  readonly clientCertificateId?: string;
 
   /**
    * A description of the purpose of the stage.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * The version identifier of the API documentation snapshot.
    */
-  documentationVersion?: string;
+  readonly documentationVersion?: string;
 
   /**
    * A map that defines the stage variables. Variable names must consist of
    * alphanumeric characters, and the values must match the following regular
    * expression: [A-Za-z0-9-._~:/?#&amp;=,]+.
    */
-  variables?: { [key: string]: string };
+  readonly variables?: { [key: string]: string };
 
   /**
    * Method deployment options for specific resources/methods. These will
@@ -64,14 +64,14 @@ export interface StageOptions extends MethodDeploymentOptions {
    * to define options for all methods/resources.
    */
 
-  methodOptions?: { [path: string]: MethodDeploymentOptions };
+  readonly methodOptions?: { [path: string]: MethodDeploymentOptions };
 }
 
 export interface StageProps extends StageOptions {
   /**
    * The deployment that this stage points to.
    */
-  deployment: Deployment;
+  readonly deployment: Deployment;
 }
 
 export enum MethodLoggingLevel {
@@ -85,76 +85,79 @@ export interface MethodDeploymentOptions {
    * Specifies whether Amazon CloudWatch metrics are enabled for this method.
    * @default false
    */
-  metricsEnabled?: boolean;
+  readonly metricsEnabled?: boolean;
 
   /**
    * Specifies the logging level for this method, which effects the log
    * entries pushed to Amazon CloudWatch Logs.
    * @default Off
    */
-  loggingLevel?: MethodLoggingLevel;
+  readonly loggingLevel?: MethodLoggingLevel;
 
   /**
    * Specifies whether data trace logging is enabled for this method, which
    * effects the log entries pushed to Amazon CloudWatch Logs.
    * @default false
    */
-  dataTraceEnabled?: boolean;
+  readonly dataTraceEnabled?: boolean;
 
   /**
    * Specifies the throttling burst limit.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html
    */
-  throttlingBurstLimit?: number;
+  readonly throttlingBurstLimit?: number;
 
   /**
    * Specifies the throttling rate limit.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html
    */
-  throttlingRateLimit?: number;
+  readonly throttlingRateLimit?: number;
 
   /**
    * Specifies whether responses should be cached and returned for requests. A
    * cache cluster must be enabled on the stage for responses to be cached.
    */
-  cachingEnabled?: boolean;
+  readonly cachingEnabled?: boolean;
 
   /**
    * Specifies the time to live (TTL), in seconds, for cached responses. The
    * higher the TTL, the longer the response will be cached.
    */
-  cacheTtlSeconds?: number;
+  readonly cacheTtlSeconds?: number;
 
   /**
    * Indicates whether the cached responses are encrypted.
    * @default false
    */
-  cacheDataEncrypted?: boolean;
+  readonly cacheDataEncrypted?: boolean;
 }
 
 export class Stage extends cdk.Construct {
   public readonly stageName: string;
 
   private readonly restApi: IRestApi;
+  private enableCacheCluster?: boolean;
 
   constructor(scope: cdk.Construct, id: string, props: StageProps) {
     super(scope, id);
 
-    const methodSettings = this.renderMethodSettings(props);
+    this.enableCacheCluster = props.cacheClusterEnabled;
+
+    const methodSettings = this.renderMethodSettings(props); // this can mutate `this.cacheClusterEnabled`
 
     // enable cache cluster if cacheClusterSize is set
     if (props.cacheClusterSize !== undefined) {
-      if (props.cacheClusterEnabled === undefined) {
-        props.cacheClusterEnabled = true;
-      } else if (props.cacheClusterEnabled === false) {
+      if (this.enableCacheCluster === undefined) {
+        this.enableCacheCluster = true;
+      } else if (this.enableCacheCluster === false) {
         throw new Error(`Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`);
       }
     }
 
-    const cacheClusterSize = props.cacheClusterEnabled ? (props.cacheClusterSize || '0.5') : undefined;
+    const cacheClusterSize = this.enableCacheCluster ? (props.cacheClusterSize || '0.5') : undefined;
     const resource = new CfnStage(this, 'Resource', {
       stageName: props.stageName || 'prod',
-      cacheClusterEnabled: props.cacheClusterEnabled,
+      cacheClusterEnabled: this.enableCacheCluster,
       cacheClusterSize,
       clientCertificateId: props.clientCertificateId,
       deploymentId: props.deployment.deploymentId,
@@ -183,6 +186,7 @@ export class Stage extends cdk.Construct {
 
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {
     const settings = new Array<CfnStage.MethodSettingProperty>();
+    const self = this;
 
     // extract common method options from the stage props
     const commonMethodOptions: MethodDeploymentOptions = {
@@ -212,9 +216,9 @@ export class Stage extends cdk.Construct {
 
     function renderEntry(path: string, options: MethodDeploymentOptions): CfnStage.MethodSettingProperty {
       if (options.cachingEnabled) {
-        if (props.cacheClusterEnabled === undefined) {
-          props.cacheClusterEnabled = true;
-        } else if (props.cacheClusterEnabled === false) {
+        if (self.enableCacheCluster === undefined) {
+          self.enableCacheCluster = true;
+        } else if (self.enableCacheCluster === false) {
           throw new Error(`Cannot enable caching for method ${path} since cache cluster is disabled on stage`);
         }
       }

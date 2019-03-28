@@ -33,21 +33,21 @@ export interface ConnectionsProps {
    *
    * @default Derived from securityGroup if set.
    */
-  securityGroupRule?: ISecurityGroupRule;
+  readonly securityGroupRule?: ISecurityGroupRule;
 
   /**
    * What securityGroup(s) this object is managing connections for
    *
    * @default No security groups
    */
-  securityGroups?: ISecurityGroup[];
+  readonly securityGroups?: ISecurityGroup[];
 
   /**
    * Default port range for initiating connections to and from this object
    *
    * @default No default port range
    */
-  defaultPortRange?: IPortRange;
+  readonly defaultPortRange?: IPortRange;
 }
 
 /**

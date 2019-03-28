@@ -23,14 +23,14 @@ export interface BaseInstanceProps {
    *
    * @default Automatically generated name
    */
-  instanceId?: string;
+  readonly instanceId?: string;
 
   /**
    * Custom attributes of the instance.
    *
    * @default none
    */
-  customAttributes?: { [key: string]: string };
+  readonly customAttributes?: { [key: string]: string };
 }
 
 export abstract class InstanceBase extends cdk.Construct implements IInstance {

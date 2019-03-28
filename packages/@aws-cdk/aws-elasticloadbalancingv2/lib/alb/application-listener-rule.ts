@@ -14,12 +14,12 @@ export interface BaseApplicationListenerRuleProps {
    *
    * Priorities must be unique.
    */
-  priority: number;
+  readonly priority: number;
 
   /**
    * Target groups to forward requests to
    */
-  targetGroups?: IApplicationTargetGroup[];
+  readonly targetGroups?: IApplicationTargetGroup[];
 
   /**
    * Rule applies if the requested host matches the indicated host
@@ -30,7 +30,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @default No host condition
    */
-  hostHeader?: string;
+  readonly hostHeader?: string;
 
   /**
    * Rule applies if the requested path matches the given path pattern
@@ -41,7 +41,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @default No path condition
    */
-  pathPattern?: string;
+  readonly pathPattern?: string;
 }
 
 /**
@@ -51,7 +51,7 @@ export interface ApplicationListenerRuleProps extends BaseApplicationListenerRul
   /**
    * The listener to attach the rule to
    */
-  listener: IApplicationListener;
+  readonly listener: IApplicationListener;
 }
 
 /**

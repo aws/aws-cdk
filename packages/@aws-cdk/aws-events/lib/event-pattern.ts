@@ -31,13 +31,13 @@ export interface EventPattern {
   /**
    * By default, this is set to 0 (zero) in all events.
    */
-  version?: string[];
+  readonly version?: string[];
 
   /**
    * A unique value is generated for every event. This can be helpful in
    * tracing events as they move through rules to targets, and are processed.
    */
-  id?: string[];
+  readonly id?: string[];
 
   /**
    * Identifies, in combination with the source field, the fields and values
@@ -45,7 +45,7 @@ export interface EventPattern {
    *
    * Represents the "detail-type" event field.
    */
-  detailType?: string[];
+  readonly detailType?: string[];
 
   /**
    * Identifies the service that sourced the event. All events sourced from
@@ -59,12 +59,12 @@ export interface EventPattern {
    *
    * @see http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#genref-aws-service-namespaces
    */
-  source?: string[];
+  readonly source?: string[];
 
   /**
    * The 12-digit number identifying an AWS account.
    */
-  account?: string[];
+  readonly account?: string[];
 
   /**
    * The event timestamp, which can be specified by the service originating
@@ -72,12 +72,12 @@ export interface EventPattern {
    * to report the start time, so this value can be noticeably before the time
    * the event is actually received.
    */
-  time?: string[];
+  readonly time?: string[];
 
   /**
    * Identifies the AWS region where the event originated.
    */
-  region?: string[];
+  readonly region?: string[];
 
   /**
    * This JSON array contains ARNs that identify resources that are involved
@@ -89,11 +89,11 @@ export interface EventPattern {
    * Auto Scaling groups, but API calls with AWS CloudTrail do not include
    * resource ARNs.
    */
-  resources?: string[];
+  readonly resources?: string[];
 
   /**
    * A JSON object, whose content is at the discretion of the service
    * originating the event.
    */
-  detail?: any;
+  readonly detail?: any;
 }

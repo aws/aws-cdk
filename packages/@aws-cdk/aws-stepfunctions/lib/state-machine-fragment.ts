@@ -70,12 +70,12 @@ export interface SingleStateOptions extends ParallelProps {
      *
      * @default Construct ID of the StateMachineFragment
      */
-    stateId?: string;
+    readonly stateId?: string;
 
     /**
      * String to prefix all stateIds in the state machine with
      *
      * @default stateId
      */
-    prefixStates?: string;
+    readonly prefixStates?: string;
 }

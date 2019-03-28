@@ -11,12 +11,12 @@ export interface KinesisEventSourceProps {
    *
    * @default 100
    */
-  batchSize?: number;
+  readonly batchSize?: number;
 
   /**
    * Where to begin consuming the Kinesis stream.
    */
-  startingPosition: lambda.StartingPosition;
+  readonly startingPosition: lambda.StartingPosition;
 }
 
 /**

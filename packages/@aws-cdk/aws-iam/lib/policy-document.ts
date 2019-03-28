@@ -496,5 +496,5 @@ export interface ServicePrincipalOpts {
    *
    * @default the current Stack's region.
    */
-  region?: string;
+  readonly region?: string;
 }
