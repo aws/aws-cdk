@@ -45,7 +45,7 @@ export interface AwsSdkCall {
    * `physicalResourceId` or `physicalResourceIdPath` must be specified for
    * onCreate or onUpdate calls.
    *
-   * @default no phyiscal resource id
+   * @default no physical resource id
    */
   readonly physicalResourceId?: string;
 }
@@ -77,7 +77,7 @@ export interface AwsCustomResourceProps {
    * The IAM policy statements to allow the different calls. Use only if
    * resource restriction is needed.
    *
-   * @default extract the permissions for the calls
+   * @default extract the permissions from the calls
    */
   readonly policyStatements?: iam.PolicyStatement[];
 }
