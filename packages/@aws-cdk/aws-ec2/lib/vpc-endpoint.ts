@@ -52,7 +52,7 @@ export class VpcEndpointService {
  * A VPC endpoint AWS service.
  */
 export class VpcEndpointAwsService extends VpcEndpointService {
-  public static readonly SageMakeNotebook = new VpcEndpointAwsService('sagemaker', VpcEndpointType.Interface, 'aws.sagemaker');
+  public static readonly SageMakerNotebook = new VpcEndpointAwsService('sagemaker', VpcEndpointType.Interface, 'aws.sagemaker');
   public static readonly CloudFormation = new VpcEndpointAwsService('cloudformation');
   public static readonly CloudTrail = new VpcEndpointAwsService('cloudtrail');
   public static readonly CodeBuild = new VpcEndpointAwsService('codebuild');
