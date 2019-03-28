@@ -104,7 +104,7 @@ export interface VpcEndpointOptions {
   /**
    * The name of the service.
    */
-  service: VpcEndpointService;
+  readonly service: VpcEndpointService;
 }
 
 /**
@@ -116,7 +116,7 @@ export interface VpcGatewayEndpointOptions extends VpcEndpointOptions {
    *
    * @default private subnets
    */
-  subnets?: SubnetSelection[]
+  readonly subnets?: SubnetSelection[]
 }
 
 /**
@@ -126,7 +126,7 @@ export interface VpcGatewayEndpointProps extends VpcGatewayEndpointOptions {
   /**
    * The VPC network in which the gateway endpoint will be used.
    */
-  vpc: IVpcNetwork
+  readonly vpc: IVpcNetwork
 }
 
 /**
@@ -216,7 +216,7 @@ export interface VpcGatewayEndpointImportProps {
   /**
    * The VPC gateway endpoint identifier.
    */
-  vpcEndpointId: string;
+  readonly vpcEndpointId: string;
 }
 
 /**
@@ -252,13 +252,13 @@ export interface VpcInterfaceEndpointOptions extends VpcEndpointOptions {
    *
    * @default true
    */
-  privateDnsEnabled?: boolean;
+  readonly privateDnsEnabled?: boolean;
 
   /**
    * The subnets in which to create an endpoint network interface. One per
    * availability zone.
    */
-  subnets?: SubnetSelection;
+  readonly subnets?: SubnetSelection;
 }
 
 /**
@@ -268,7 +268,7 @@ export interface VpcInterfaceEndpointProps extends VpcInterfaceEndpointOptions {
   /**
    * The VPC network in which the endpoint will be used.
    */
-  vpc: IVpcNetwork
+  readonly vpc: IVpcNetwork
 }
 
 /**
@@ -377,12 +377,12 @@ export interface VpcInterfaceEndpointImportProps {
   /**
    * The VPC interface endpoint identifier.
    */
-  vpcEndpointId: string;
+  readonly vpcEndpointId: string;
 
   /**
    * The identifier of the security group associated with the VPC interface endpoint.
    */
-  securityGroupId: string;
+  readonly securityGroupId: string;
 }
 
 /**
