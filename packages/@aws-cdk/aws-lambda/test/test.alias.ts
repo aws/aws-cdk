@@ -181,12 +181,8 @@ export = {
         "",
         [
           {
-            Ref: "MyLambdaCCE802FB"
-          },
-          ":",
-          {
             "Fn::Select": [
-              7,
+              6,
               {
                 "Fn::Split": [
                   ":",
@@ -196,7 +192,8 @@ export = {
                 ]
               }
             ]
-          }
+          },
+          ":prod"
         ]
       ]
     });
