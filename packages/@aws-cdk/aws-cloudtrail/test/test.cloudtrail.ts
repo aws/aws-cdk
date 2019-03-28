@@ -1,4 +1,4 @@
-import { expect, haveResource, not } from '@aws-cdk/assert';
+import { expect, haveResource, not, SynthUtils } from '@aws-cdk/assert';
 import { RetentionDays } from '@aws-cdk/aws-logs';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -67,7 +67,7 @@ export = {
       expect(stack).to(haveResource("AWS::S3::Bucket"));
       expect(stack).to(haveResource("AWS::S3::BucketPolicy", ExpectedBucketPolicyProperties));
       expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
-      const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+      const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
       test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
       test.done();
     },
@@ -98,7 +98,7 @@ export = {
           PolicyName: logsRolePolicyName,
           Roles: [{ Ref: 'MyAmazingCloudTrailLogsRoleF2CCF977' }],
         }));
-        const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
         test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
         test.done();
       },
@@ -117,7 +117,7 @@ export = {
         expect(stack).to(haveResource("AWS::Logs::LogGroup", {
           RetentionInDays: 7
         }));
-        const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
         test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
         test.done();
       },
@@ -135,7 +135,7 @@ export = {
         expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
         expect(stack).to(not(haveResource("AWS::IAM::Role")));
 
-        const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
         test.equals(trail.Properties.EventSelectors.length, 1);
         const selector = trail.Properties.EventSelectors[0];
         test.equals(selector.ReadWriteType, null, "Expected selector read write type to be undefined");
@@ -161,7 +161,7 @@ export = {
         expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
         expect(stack).to(not(haveResource("AWS::IAM::Role")));
 
-        const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
         test.equals(trail.Properties.EventSelectors.length, 1);
         const selector = trail.Properties.EventSelectors[0];
         test.equals(selector.ReadWriteType, "ReadOnly", "Expected selector read write type to be Read");
@@ -180,7 +180,7 @@ export = {
 
         new CloudTrail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WriteOnly });
 
-        const trail: any = stack._toCloudFormation().Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
         test.equals(trail.Properties.EventSelectors.length, 1);
         const selector = trail.Properties.EventSelectors[0];
         test.equals(selector.ReadWriteType, "WriteOnly", "Expected selector read write type to be All");

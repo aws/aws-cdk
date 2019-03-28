@@ -13,12 +13,12 @@ export interface LogRetentionProps {
   /**
    * The log group name.
    */
-  logGroupName: string;
+  readonly logGroupName: string;
 
   /**
    * The number of days log events are kept in CloudWatch Logs.
    */
-  retentionDays: logs.RetentionDays;
+  readonly retentionDays: logs.RetentionDays;
 }
 
 /**

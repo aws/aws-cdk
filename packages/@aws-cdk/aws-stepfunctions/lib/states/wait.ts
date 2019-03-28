@@ -12,14 +12,14 @@ export interface WaitProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * Wait a fixed number of seconds
      *
      * Exactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.
      */
-    seconds?: number;
+    readonly seconds?: number;
 
     /**
      * Wait until the given ISO8601 timestamp
@@ -28,7 +28,7 @@ export interface WaitProps {
      *
      * @example 2016-03-14T01:59:00Z
      */
-    timestamp?: string;
+    readonly timestamp?: string;
 
     /**
      * Wait for a number of seconds stored in the state object.
@@ -37,7 +37,7 @@ export interface WaitProps {
      *
      * @example $.waitSeconds
      */
-    secondsPath?: string;
+    readonly secondsPath?: string;
 
     /**
      * Wait until a timestamp found in the state object.
@@ -46,7 +46,7 @@ export interface WaitProps {
      *
      * @example $.waitTimestamp
      */
-    timestampPath?: string;
+    readonly timestampPath?: string;
 }
 
 /**

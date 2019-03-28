@@ -22,14 +22,14 @@ export interface VpcNetworkProps {
    * The CIDR range to use for the VPC (e.g. '10.0.0.0/16'). Should be a minimum of /28 and maximum size of /16.
    * The range will be split evenly into two subnets per Availability Zone (one public, one private).
    */
-  cidr?: string;
+  readonly cidr?: string;
 
   /**
    * Indicates whether the instances launched in the VPC get public DNS hostnames.
    * If this attribute is true, instances in the VPC get public DNS hostnames,
    * but only if the enableDnsSupport attribute is also set to true.
    */
-  enableDnsHostnames?: boolean;
+  readonly enableDnsHostnames?: boolean;
 
   /**
    * Indicates whether the DNS resolution is supported for the VPC. If this attribute
@@ -38,7 +38,7 @@ export interface VpcNetworkProps {
    * provided DNS server at the 169.254.169.253 IP address, or the reserved IP address
    * at the base of the VPC IPv4 network range plus two will succeed.
    */
-  enableDnsSupport?: boolean;
+  readonly enableDnsSupport?: boolean;
 
   /**
    * The default tenancy of instances launched into the VPC.
@@ -47,7 +47,7 @@ export interface VpcNetworkProps {
    * to a single AWS customer, unless specifically specified at instance launch time.
    * Please note, not all instance types are usable with Dedicated tenancy.
    */
-  defaultInstanceTenancy?: DefaultInstanceTenancy;
+  readonly defaultInstanceTenancy?: DefaultInstanceTenancy;
 
   /**
    * Define the maximum number of AZs to use in this region
@@ -61,7 +61,7 @@ export interface VpcNetworkProps {
    *
    * @default 3
    */
-  maxAZs?: number;
+  readonly maxAZs?: number;
 
   /**
    * The number of NAT Gateways to create.
@@ -70,7 +70,7 @@ export interface VpcNetworkProps {
    * one of the Public subnets will have a gateway and all Private subnets will route to this NAT Gateway.
    * @default maxAZs
    */
-  natGateways?: number;
+  readonly natGateways?: number;
 
   /**
    * Configures the subnets which will have NAT Gateways
@@ -80,7 +80,7 @@ export interface VpcNetworkProps {
    *
    * @default All public subnets
    */
-  natGatewaySubnets?: SubnetSelection;
+  readonly natGatewaySubnets?: SubnetSelection;
 
   /**
    * Configure the subnets to build for each AZ
@@ -115,35 +115,35 @@ export interface VpcNetworkProps {
    * @default the VPC CIDR will be evenly divided between 1 public and 1
    * private subnet per AZ
    */
-  subnetConfiguration?: SubnetConfiguration[];
+  readonly subnetConfiguration?: SubnetConfiguration[];
 
   /**
    * Indicates whether a VPN gateway should be created and attached to this VPC.
    *
    * @default true when vpnGatewayAsn or vpnConnections is specified.
    */
-  vpnGateway?: boolean;
+  readonly vpnGateway?: boolean;
 
   /**
    * The private Autonomous System Number (ASN) for the VPN gateway.
    *
    * @default Amazon default ASN
    */
-  vpnGatewayAsn?: number;
+  readonly vpnGatewayAsn?: number;
 
   /**
    * VPN connections to this VPC.
    *
    * @default no connections
    */
-  vpnConnections?: { [id: string]: VpnConnectionOptions }
+  readonly vpnConnections?: { [id: string]: VpnConnectionOptions }
 
   /**
    * Where to propagate VPN routes.
    *
    * @default on the route tables associated with private subnets
    */
-  vpnRoutePropagation?: SubnetType[]
+  readonly vpnRoutePropagation?: SubnetType[]
 }
 
 /**
@@ -170,7 +170,7 @@ export interface SubnetConfiguration {
    *
    * Valid values are 16 - 28
    */
-  cidrMask?: number;
+  readonly cidrMask?: number;
 
   /**
    * The type of Subnet to configure.
@@ -178,7 +178,7 @@ export interface SubnetConfiguration {
    * The Subnet type will control the ability to route and connect to the
    * Internet.
    */
-  subnetType: SubnetType;
+  readonly subnetType: SubnetType;
 
   /**
    * The common Logical Name for the `VpcSubnet`
@@ -186,7 +186,7 @@ export interface SubnetConfiguration {
    * Thi name will be suffixed with an integer correlating to a specific
    * availability zone.
    */
-  name: string;
+  readonly name: string;
 }
 
 /**
@@ -456,7 +456,7 @@ export class VpcNetwork extends VpcNetworkBase {
     if (placement) {
       const subnets = this.subnets(placement);
       for (const sub of subnets) {
-        if (!this.isPublicSubnet(sub)) {
+        if (this.publicSubnets.indexOf(sub) === -1) {
           throw new Error(`natGatewayPlacement ${placement} contains non public subnet ${sub}`);
         }
       }
@@ -557,24 +557,24 @@ export interface VpcSubnetProps {
   /**
    * The availability zone for the subnet
    */
-  availabilityZone: string;
+  readonly availabilityZone: string;
 
   /**
    * The VPC which this subnet is part of
    */
-  vpcId: string;
+  readonly vpcId: string;
 
   /**
    * The CIDR notation for this subnet
    */
-  cidrBlock: string;
+  readonly cidrBlock: string;
 
   /**
    * Controls if a public IP is associated to an instance at launch
    *
    * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
    */
-  mapPublicIpOnLaunch?: boolean;
+  readonly mapPublicIpOnLaunch?: boolean;
 }
 
 /**

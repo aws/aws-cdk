@@ -18,33 +18,33 @@ export interface BaseApplicationListenerProps {
    *
    * @default Determined from port if known
    */
-  protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol;
 
   /**
    * The port on which the listener listens for requests.
    *
    * @default Determined from protocol if known
    */
-  port?: number;
+  readonly port?: number;
 
   /**
    * The certificates to use on this listener
    */
-  certificateArns?: string[];
+  readonly certificateArns?: string[];
 
   /**
    * The security policy that defines which ciphers and protocols are supported.
    *
    * @default the current predefined security policy.
    */
-  sslPolicy?: SslPolicy;
+  readonly sslPolicy?: SslPolicy;
 
   /**
    * Default target groups to load balance to
    *
    * @default None
    */
-  defaultTargetGroups?: IApplicationTargetGroup[];
+  readonly defaultTargetGroups?: IApplicationTargetGroup[];
 
   /**
    * Allow anyone to connect to this listener
@@ -59,7 +59,7 @@ export interface BaseApplicationListenerProps {
    *
    * @default true
    */
-  open?: boolean;
+  readonly open?: boolean;
 }
 
 /**
@@ -69,7 +69,7 @@ export interface ApplicationListenerProps extends BaseApplicationListenerProps {
   /**
    * The load balancer to attach this listener to
    */
-  loadBalancer: IApplicationLoadBalancer;
+  readonly loadBalancer: IApplicationLoadBalancer;
 }
 
 /**
@@ -310,17 +310,17 @@ export interface ApplicationListenerImportProps {
   /**
    * ARN of the listener
    */
-  listenerArn: string;
+  readonly listenerArn: string;
 
   /**
    * Security group ID of the load balancer this listener is associated with
    */
-  securityGroupId: string;
+  readonly securityGroupId: string;
 
   /**
    * The default port on which this listener is listening
    */
-  defaultPort?: string;
+  readonly defaultPort?: string;
 }
 
 class ImportedApplicationListener extends cdk.Construct implements IApplicationListener {
@@ -424,7 +424,7 @@ export interface AddRuleProps {
    *
    * @default Target groups are used as defaults
    */
-  priority?: number;
+  readonly priority?: number;
 
   /**
    * Rule applies if the requested host matches the indicated host
@@ -437,7 +437,7 @@ export interface AddRuleProps {
    *
    * @default No host condition
    */
-  hostHeader?: string;
+  readonly hostHeader?: string;
 
   /**
    * Rule applies if the requested path matches the given path pattern
@@ -450,7 +450,7 @@ export interface AddRuleProps {
    *
    * @default No path condition
    */
-  pathPattern?: string;
+  readonly pathPattern?: string;
 }
 
 /**
@@ -460,7 +460,7 @@ export interface AddApplicationTargetGroupsProps extends AddRuleProps {
   /**
    * Target groups to forward requests to
    */
-  targetGroups: IApplicationTargetGroup[];
+  readonly targetGroups: IApplicationTargetGroup[];
 }
 
 /**
@@ -472,14 +472,14 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    *
    * @default Determined from port if known
    */
-  protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol;
 
   /**
    * The port on which the listener listens for requests.
    *
    * @default Determined from protocol if known
    */
-  port?: number;
+  readonly port?: number;
 
   /**
    * The time period during which the load balancer sends a newly registered
@@ -489,7 +489,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    *
    * @default 0
    */
-  slowStartSec?: number;
+  readonly slowStartSec?: number;
 
   /**
    * The stickiness cookie expiration period.
@@ -501,7 +501,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    *
    * @default 86400 (1 day)
    */
-  stickinessCookieDurationSec?: number;
+  readonly stickinessCookieDurationSec?: number;
 
   /**
    * The targets to add to this target group.
@@ -510,7 +510,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
    */
-  targets?: IApplicationLoadBalancerTarget[];
+  readonly targets?: IApplicationLoadBalancerTarget[];
 
   /**
    * The name of the target group.
@@ -521,7 +521,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    *
    * @default Automatically generated
    */
-  targetGroupName?: string;
+  readonly targetGroupName?: string;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
@@ -530,12 +530,12 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    *
    * @default 300
    */
-  deregistrationDelaySec?: number;
+  readonly deregistrationDelaySec?: number;
 
   /**
    * Health check configuration
    *
    * @default No health check
    */
-  healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck;
 }

@@ -201,7 +201,7 @@ export interface BucketImportProps {
    * The ARN of the bucket. At least one of bucketArn or bucketName must be
    * defined in order to initialize a bucket ref.
    */
-  bucketArn?: string;
+  readonly bucketArn?: string;
 
   /**
    * The name of the bucket. If the underlying value of ARN is a string, the
@@ -209,21 +209,21 @@ export interface BucketImportProps {
    * some features that require the bucket name such as auto-creating a bucket
    * policy, won't work.
    */
-  bucketName?: string;
+  readonly bucketName?: string;
 
   /**
    * The domain name of the bucket.
    *
    * @default Inferred from bucket name
    */
-  bucketDomainName?: string;
+  readonly bucketDomainName?: string;
 
   /**
    * The website URL of the bucket (if static web hosting is enabled).
    *
    * @default Inferred from bucket name
    */
-  bucketWebsiteUrl?: string;
+  readonly bucketWebsiteUrl?: string;
 
   /**
    * The format of the website URL of the bucket. This should be true for
@@ -231,7 +231,7 @@ export interface BucketImportProps {
    *
    * @default false
    */
-  bucketWebsiteNewUrlFormat?: boolean;
+  readonly bucketWebsiteNewUrlFormat?: boolean;
 }
 
 /**
@@ -551,28 +551,28 @@ export interface BlockPublicAccessOptions {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
    */
-  blockPublicAcls?: boolean;
+  readonly blockPublicAcls?: boolean;
 
   /**
    * Whether to block public policy
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
    */
-  blockPublicPolicy?: boolean;
+  readonly blockPublicPolicy?: boolean;
 
   /**
    * Whether to ignore public ACLs
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
    */
-  ignorePublicAcls?: boolean;
+  readonly ignorePublicAcls?: boolean;
 
   /**
    * Whether to restrict public access
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
    */
-  restrictPublicBuckets?: boolean;
+  readonly restrictPublicBuckets?: boolean;
 }
 
 export class BlockPublicAccess {
@@ -610,7 +610,7 @@ export interface BucketProps {
    *
    * @default Unencrypted
    */
-  encryption?: BucketEncryption;
+  readonly encryption?: BucketEncryption;
 
   /**
    * External KMS key to use for bucket encryption.
@@ -622,60 +622,60 @@ export interface BucketProps {
    * @default If encryption is set to "Kms" and this property is undefined, a
    * new KMS key will be created and associated with this bucket.
    */
-  encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IEncryptionKey;
 
   /**
    * Physical name of this bucket.
    *
    * @default Assigned by CloudFormation (recommended)
    */
-  bucketName?: string;
+  readonly bucketName?: string;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
    *
    * @default The bucket will be orphaned
    */
-  removalPolicy?: cdk.RemovalPolicy;
+  readonly removalPolicy?: cdk.RemovalPolicy;
 
   /**
    * Whether this bucket should have versioning turned on or not.
    *
    * @default false
    */
-  versioned?: boolean;
+  readonly versioned?: boolean;
 
   /**
    * Rules that define how Amazon S3 manages objects during their lifetime.
    *
    * @default No lifecycle rules
    */
-  lifecycleRules?: LifecycleRule[];
+  readonly lifecycleRules?: LifecycleRule[];
 
   /**
    * The name of the index document (e.g. "index.html") for the website. Enables static website
    * hosting for this bucket.
    */
-  websiteIndexDocument?: string;
+  readonly websiteIndexDocument?: string;
 
   /**
    * The name of the error document (e.g. "404.html") for the website.
    * `websiteIndexDocument` must also be set if this is set.
    */
-  websiteErrorDocument?: string;
+  readonly websiteErrorDocument?: string;
 
   /**
    * Grants public read access to all objects in the bucket.
    * Similar to calling `bucket.grantPublicAccess()`
    */
-  publicReadAccess?: boolean;
+  readonly publicReadAccess?: boolean;
 
   /**
    * The block public access configuration of this bucket.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
    */
-  blockPublicAccess?: BlockPublicAccess;
+  readonly blockPublicAccess?: BlockPublicAccess;
 }
 
 /**
@@ -1079,12 +1079,12 @@ export interface NotificationKeyFilter {
   /**
    * S3 keys must have the specified prefix.
    */
-  prefix?: string;
+  readonly prefix?: string;
 
   /**
    * S3 keys must have the specified suffix.
    */
-  suffix?: string;
+  readonly suffix?: string;
 }
 
 class ImportedBucket extends BucketBase {

@@ -29,44 +29,44 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default 1
    */
-  minCapacity?: number;
+  readonly minCapacity?: number;
 
   /**
    * Maximum number of instances in the fleet
    *
    * @default desiredCapacity
    */
-  maxCapacity?: number;
+  readonly maxCapacity?: number;
 
   /**
    * Initial amount of instances in the fleet
    * @default 1
    */
-  desiredCapacity?: number;
+  readonly desiredCapacity?: number;
 
   /**
    * Name of SSH keypair to grant access to instances
    * @default No SSH access will be possible
    */
-  keyName?: string;
+  readonly keyName?: string;
 
   /**
    * Where to place instances within the VPC
    */
-  vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * SNS topic to send notifications about fleet changes
    * @default No fleet change notifications will be sent.
    */
-  notificationsTopic?: sns.ITopic;
+  readonly notificationsTopic?: sns.ITopic;
 
   /**
    * Whether the instances can initiate connections to anywhere by default
    *
    * @default true
    */
-  allowAllOutbound?: boolean;
+  readonly allowAllOutbound?: boolean;
 
   /**
    * What to do when an AutoScalingGroup's instance configuration is changed
@@ -79,14 +79,14 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default UpdateType.None
    */
-  updateType?: UpdateType;
+  readonly updateType?: UpdateType;
 
   /**
    * Configuration for rolling updates
    *
    * Only used if updateType == UpdateType.RollingUpdate.
    */
-  rollingUpdateConfiguration?: RollingUpdateConfiguration;
+  readonly rollingUpdateConfiguration?: RollingUpdateConfiguration;
 
   /**
    * Configuration for replacing updates.
@@ -94,7 +94,7 @@ export interface CommonAutoScalingGroupProps {
    * Only used if updateType == UpdateType.ReplacingUpdate. Specifies how
    * many instances must signal success for the update to succeed.
    */
-  replacingUpdateMinSuccessfulInstancesPercent?: number;
+  readonly replacingUpdateMinSuccessfulInstancesPercent?: number;
 
   /**
    * If the ASG has scheduled actions, don't reset unchanged group sizes
@@ -107,14 +107,14 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default true
    */
-  ignoreUnmodifiedSizeProperties?: boolean;
+  readonly ignoreUnmodifiedSizeProperties?: boolean;
 
   /**
    * How many ResourceSignal calls CloudFormation expects before the resource is considered created
    *
    * @default 1
    */
-  resourceSignalCount?: number;
+  readonly resourceSignalCount?: number;
 
   /**
    * The length of time to wait for the resourceSignalCount
@@ -123,14 +123,14 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default 300 (5 minutes)
    */
-  resourceSignalTimeoutSec?: number;
+  readonly resourceSignalTimeoutSec?: number;
 
   /**
    * Default scaling cooldown for this AutoScalingGroup
    *
    * @default 300 (5 minutes)
    */
-  cooldownSeconds?: number;
+  readonly cooldownSeconds?: number;
 
   /**
    * Whether instances in the Auto Scaling Group should have public
@@ -138,7 +138,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default Use subnet setting
    */
-  associatePublicIpAddress?: boolean;
+  readonly associatePublicIpAddress?: boolean;
 }
 
 /**
@@ -148,17 +148,17 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * VPC to launch these instances in.
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 
   /**
    * Type of instance to launch
    */
-  instanceType: ec2.InstanceType;
+  readonly instanceType: ec2.InstanceType;
 
   /**
    * AMI to launch
    */
-  machineImage: ec2.IMachineImageSource;
+  readonly machineImage: ec2.IMachineImageSource;
 
   /**
    * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
@@ -173,7 +173,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default A role will automatically be created, it can be accessed via the `role` property
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -268,6 +268,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
     }
 
+    const subnetIds = props.vpc.subnetIds(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
       minSize: minCapacity.toString(),
@@ -276,22 +277,23 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       launchConfigurationName: launchConfig.ref,
       loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined).toList(),
       targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined).toList(),
+      notificationConfigurations: !props.notificationsTopic ? undefined : [
+        {
+          topicArn: props.notificationsTopic.topicArn,
+          notificationTypes: [
+            "autoscaling:EC2_INSTANCE_LAUNCH",
+            "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+            "autoscaling:EC2_INSTANCE_TERMINATE",
+            "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+          ],
+        }
+      ],
+      vpcZoneIdentifier: subnetIds
     };
 
-    if (props.notificationsTopic) {
-      asgProps.notificationConfigurations = [];
-      asgProps.notificationConfigurations.push({
-        topicArn: props.notificationsTopic.topicArn,
-        notificationTypes: [
-          "autoscaling:EC2_INSTANCE_LAUNCH",
-          "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
-          "autoscaling:EC2_INSTANCE_TERMINATE",
-          "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
-        ],
-      });
+    if (!props.vpc.isPublicSubnets(subnetIds) && props.associatePublicIpAddress) {
+      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.Public })");
     }
-
-    asgProps.vpcZoneIdentifier = props.vpc.subnetIds(props.vpcSubnets);
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;
@@ -454,7 +456,12 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
    */
   private applyUpdatePolicies(props: AutoScalingGroupProps) {
     if (props.updateType === UpdateType.ReplacingUpdate) {
-      this.asgUpdatePolicy.autoScalingReplacingUpdate = { willReplace: true };
+      this.autoScalingGroup.options.updatePolicy = {
+        ...this.autoScalingGroup.options.updatePolicy,
+        autoScalingReplacingUpdate: {
+          willReplace: true
+        }
+      };
 
       if (props.replacingUpdateMinSuccessfulInstancesPercent !== undefined) {
         // Yes, this goes on CreationPolicy, not as a process parameter to ReplacingUpdate.
@@ -462,45 +469,37 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
         // during the update?
         //
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
-        this.asgCreationPolicy.autoScalingCreationPolicy = {
-          minSuccessfulInstancesPercent: validatePercentage(props.replacingUpdateMinSuccessfulInstancesPercent)
+        this.autoScalingGroup.options.creationPolicy = {
+          ...this.autoScalingGroup.options.creationPolicy,
+          autoScalingCreationPolicy: {
+            minSuccessfulInstancesPercent: validatePercentage(props.replacingUpdateMinSuccessfulInstancesPercent)
+          }
         };
       }
     } else if (props.updateType === UpdateType.RollingUpdate) {
-      this.asgUpdatePolicy.autoScalingRollingUpdate = renderRollingUpdateConfig(props.rollingUpdateConfiguration);
+      this.autoScalingGroup.options.updatePolicy = {
+        ...this.autoScalingGroup.options.updatePolicy,
+        autoScalingRollingUpdate: renderRollingUpdateConfig(props.rollingUpdateConfiguration)
+      };
     }
 
     // undefined is treated as 'true'
     if (props.ignoreUnmodifiedSizeProperties !== false) {
-      this.asgUpdatePolicy.autoScalingScheduledAction = { ignoreUnmodifiedGroupSizeProperties: true };
+      this.autoScalingGroup.options.updatePolicy = {
+        ...this.autoScalingGroup.options.updatePolicy,
+        autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true }
+      };
     }
 
     if (props.resourceSignalCount !== undefined || props.resourceSignalTimeoutSec !== undefined) {
-      this.asgCreationPolicy.resourceSignal = {
-        count: props.resourceSignalCount,
-        timeout: props.resourceSignalTimeoutSec !== undefined ? renderIsoDuration(props.resourceSignalTimeoutSec) : undefined,
+      this.autoScalingGroup.options.creationPolicy = {
+        ...this.autoScalingGroup.options.creationPolicy,
+        resourceSignal: {
+          count: props.resourceSignalCount,
+          timeout: props.resourceSignalTimeoutSec !== undefined ? renderIsoDuration(props.resourceSignalTimeoutSec) : undefined,
+        }
       };
     }
-  }
-
-  /**
-   * Create and return the ASG update policy
-   */
-  private get asgUpdatePolicy() {
-    if (this.autoScalingGroup.options.updatePolicy === undefined) {
-      this.autoScalingGroup.options.updatePolicy = {};
-    }
-    return this.autoScalingGroup.options.updatePolicy;
-  }
-
-  /**
-   * Create and return the ASG creation policy
-   */
-  private get asgCreationPolicy() {
-    if (this.autoScalingGroup.options.creationPolicy === undefined) {
-      this.autoScalingGroup.options.creationPolicy = {};
-    }
-    return this.autoScalingGroup.options.creationPolicy;
   }
 }
 
@@ -535,7 +534,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default 1
    */
-  maxBatchSize?: number;
+  readonly maxBatchSize?: number;
 
   /**
    * The minimum number of instances that must be in service before more instances are replaced.
@@ -544,7 +543,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default 0
    */
-  minInstancesInService?: number;
+  readonly minInstancesInService?: number;
 
   /**
    * The percentage of instances that must signal success for an update to succeed.
@@ -560,7 +559,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default 100
    */
-  minSuccessfulInstancesPercent?: number;
+  readonly minSuccessfulInstancesPercent?: number;
 
   /**
    * The pause time after making a change to a batch of instances.
@@ -573,7 +572,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default 300 if the waitOnResourceSignals property is true, otherwise 0
    */
-  pauseTimeSec?: number;
+  readonly pauseTimeSec?: number;
 
   /**
    * Specifies whether the Auto Scaling group waits on signals from new instances during an update.
@@ -588,7 +587,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default true if you specified the minSuccessfulInstancesPercent property, false otherwise
    */
-  waitOnResourceSignals?: boolean;
+  readonly waitOnResourceSignals?: boolean;
 
   /**
    * Specifies the Auto Scaling processes to suspend during a stack update.
@@ -598,7 +597,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default HealthCheck, ReplaceUnhealthy, AZRebalance, AlarmNotification, ScheduledActions.
    */
-  suspendProcesses?: ScalingProcess[];
+  readonly suspendProcesses?: ScalingProcess[];
 }
 
 export enum ScalingProcess {
@@ -715,7 +714,7 @@ export interface CpuUtilizationScalingProps extends BaseTargetTrackingProps {
   /**
    * Target average CPU utilization across the task
    */
-  targetUtilizationPercent: number;
+  readonly targetUtilizationPercent: number;
 }
 
 /**
@@ -725,7 +724,7 @@ export interface NetworkUtilizationScalingProps extends BaseTargetTrackingProps 
   /**
    * Target average bytes/seconds on each instance
    */
-  targetBytesPerSecond: number;
+  readonly targetBytesPerSecond: number;
 }
 
 /**
@@ -735,7 +734,7 @@ export interface RequestCountScalingProps extends BaseTargetTrackingProps {
   /**
    * Target average requests/seconds on each instance
    */
-  targetRequestsPerSecond: number;
+  readonly targetRequestsPerSecond: number;
 }
 
 /**
@@ -749,10 +748,10 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
    * target value, your ASG should scale out, and if it's lower it should
    * scale in.
    */
-  metric: cloudwatch.Metric;
+  readonly metric: cloudwatch.Metric;
 
   /**
    * Value to keep the metric around
    */
-  targetValue: number;
+  readonly targetValue: number;
 }

@@ -22,6 +22,52 @@ export = {
     test.done();
   },
 
+  'secret with generate secret string options'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        excludeUppercase: true,
+        passwordLength: 20
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        ExcludeUppercase: true,
+        PasswordLength: 20
+      }
+    }));
+
+    test.done();
+  },
+
+  'templated secret string'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({ username: 'username' }),
+        generateStringKey: 'password'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        SecretStringTemplate: '{"username":"username"}',
+        GenerateStringKey: 'password'
+      }
+    }));
+
+    test.done();
+  },
+
   'grantRead'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -313,6 +359,34 @@ export = {
         Ref: 'SecretAttachedSecret94145316' // The secret returned by the attachment, not the secret itself.
       }
     }));
+
+    test.done();
+  },
+
+  'throws when specifying secretStringTemplate but not generateStringKey'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({ username: 'username' })
+      }
+    }), /`secretStringTemplate`.+`generateStringKey`/);
+
+    test.done();
+  },
+
+  'throws when specifying generateStringKey but not secretStringTemplate'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        generateStringKey: 'password'
+      }
+    }), /`secretStringTemplate`.+`generateStringKey`/);
 
     test.done();
   }

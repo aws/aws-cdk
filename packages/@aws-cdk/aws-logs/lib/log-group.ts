@@ -81,7 +81,7 @@ export interface ILogGroup extends cdk.IConstruct {
  * Properties for importing a LogGroup
  */
 export interface LogGroupImportProps {
-  logGroupArn: string;
+  readonly logGroupArn: string;
 }
 
 /**
@@ -288,7 +288,7 @@ export interface LogGroupProps {
    *
    * @default Automatically generated
    */
-  logGroupName?: string;
+  readonly logGroupName?: string;
 
   /**
    * How long, in days, the log contents will be retained.
@@ -297,7 +297,7 @@ export interface LogGroupProps {
    *
    * @default 731 days (2 years)
    */
-  retentionDays?: RetentionDays;
+  readonly retentionDays?: RetentionDays;
 
   /**
    * Retain the log group if the stack or containing construct ceases to exist
@@ -309,7 +309,7 @@ export interface LogGroupProps {
    *
    * @default true
    */
-  retainLogGroup?: boolean;
+  readonly retainLogGroup?: boolean;
 }
 
 /**
@@ -407,7 +407,7 @@ export interface NewLogStreamProps {
    *
    * @default Automatically generated
    */
-  logStreamName?: string;
+  readonly logStreamName?: string;
 }
 
 /**
@@ -419,12 +419,12 @@ export interface NewSubscriptionFilterProps {
    *
    * For example, a Kinesis stream or a Lambda function.
    */
-  destination: ILogSubscriptionDestination;
+  readonly destination: ILogSubscriptionDestination;
 
   /**
    * Log events matching this pattern will be sent to the destination.
    */
-  filterPattern: IFilterPattern;
+  readonly filterPattern: IFilterPattern;
 }
 
 /**
@@ -434,17 +434,17 @@ export interface NewMetricFilterProps {
   /**
    * Pattern to search for log events.
    */
-  filterPattern: IFilterPattern;
+  readonly filterPattern: IFilterPattern;
 
   /**
    * The namespace of the metric to emit.
    */
-  metricNamespace: string;
+  readonly metricNamespace: string;
 
   /**
    * The name of the metric to emit.
    */
-  metricName: string;
+  readonly metricName: string;
 
   /**
    * The value to emit for the metric.
@@ -461,12 +461,12 @@ export interface NewMetricFilterProps {
    *
    * @default "1"
    */
-  metricValue?: string;
+  readonly metricValue?: string;
 
   /**
    * The value to emit if the pattern does not match a particular event.
    *
    * @default No metric emitted.
    */
-  defaultValue?: number;
+  readonly defaultValue?: number;
 }

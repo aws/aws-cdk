@@ -8,32 +8,32 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
   /**
    * The client id of the developer console token
    */
-  clientId: cdk.Secret;
+  readonly clientId: cdk.Secret;
 
   /**
    * The client secret of the developer console token
    */
-  clientSecret: cdk.Secret;
+  readonly clientSecret: cdk.Secret;
 
   /**
    * The refresh token of the developer console token
    */
-  refreshToken: cdk.Secret;
+  readonly refreshToken: cdk.Secret;
 
   /**
    * The Alexa skill id
    */
-  skillId: string;
+  readonly skillId: string;
 
   /**
    * The source artifact containing the voice model and skill manifest
    */
-  inputArtifact: codepipeline.Artifact;
+  readonly inputArtifact: codepipeline.Artifact;
 
   /**
    * An optional artifact containing overrides for the skill manifest
    */
-  parameterOverridesArtifact?: codepipeline.Artifact;
+  readonly parameterOverridesArtifact?: codepipeline.Artifact;
 }
 
 /**

@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import lambda = require('@aws-cdk/aws-lambda');
+import serverless = require('@aws-cdk/aws-sam');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import serverless = require('@aws-cdk/aws-serverless');
 import cdk = require('@aws-cdk/cdk');
 
 /**
@@ -63,14 +63,14 @@ export interface RotationSingleUserOptions {
    *
    * @default 30 days
    */
-  automaticallyAfterDays?: number;
+  readonly automaticallyAfterDays?: number;
 
   /**
    * The location of the serverless application for the rotation.
    *
    * @default derived from the target's engine
    */
-  serverlessApplicationLocation?: ServerlessApplicationLocation
+  readonly serverlessApplicationLocation?: ServerlessApplicationLocation
 }
 
 /**
@@ -91,31 +91,31 @@ export interface RotationSingleUserProps extends RotationSingleUserOptions {
    * This is typically the case for a secret referenced from an AWS::SecretsManager::SecretTargetAttachment
    * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html
    */
-  secret: secretsmanager.ISecret;
+  readonly secret: secretsmanager.ISecret;
 
   /**
    * The database engine. Either `serverlessApplicationLocation` or `engine` must be specified.
    *
    * @default no engine specified
    */
-  engine?: DatabaseEngine;
+  readonly engine?: DatabaseEngine;
 
   /**
    * The VPC where the Lambda rotation function will run.
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 
   /**
    * The type of subnets in the VPC where the Lambda rotation function will run.
    *
    * @default private subnets
    */
-  vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * The target database cluster or instance
    */
-  target: ec2.IConnectable;
+  readonly target: ec2.IConnectable;
 }
 
 /**

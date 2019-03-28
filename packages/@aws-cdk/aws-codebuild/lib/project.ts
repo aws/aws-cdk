@@ -161,7 +161,7 @@ export interface ProjectImportProps {
    * The human-readable name of the CodeBuild Project we're referencing.
    * The Project must be in the same account and region as the root Stack.
    */
-  projectName: string;
+  readonly projectName: string;
 }
 
 /**
@@ -428,13 +428,13 @@ export interface CommonProjectProps {
    * A description of the project. Use the description to identify the purpose
    * of the project.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Filename or contents of buildspec in JSON format.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-example
    */
-  buildSpec?: any;
+  readonly buildSpec?: any;
 
   /**
    * Run a script from an asset as build script
@@ -447,66 +447,66 @@ export interface CommonProjectProps {
    *
    * @default No asset build script
    */
-  buildScriptAsset?: assets.Asset;
+  readonly buildScriptAsset?: assets.Asset;
 
   /**
    * The script in the asset to run.
    *
    * @default build.sh
    */
-  buildScriptAssetEntrypoint?: string;
+  readonly buildScriptAssetEntrypoint?: string;
 
   /**
    * Service Role to assume while running the build.
    * If not specified, a role will be created.
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Encryption key to use to read and write artifacts
    * If not specified, a role will be created.
    */
-  encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IEncryptionKey;
 
   /**
    * Bucket to store cached source artifacts
    * If not specified, source artifacts will not be cached.
    */
-  cacheBucket?: s3.IBucket;
+  readonly cacheBucket?: s3.IBucket;
 
   /**
    * Subdirectory to store cached artifacts
    */
-  cacheDir?: string;
+  readonly cacheDir?: string;
 
   /**
    * Build environment to use for the build.
    */
-  environment?: BuildEnvironment;
+  readonly environment?: BuildEnvironment;
 
   /**
    * Indicates whether AWS CodeBuild generates a publicly accessible URL for
    * your project's build badge. For more information, see Build Badges Sample
    * in the AWS CodeBuild User Guide.
    */
-  badge?: boolean;
+  readonly badge?: boolean;
 
   /**
    * The number of minutes after which AWS CodeBuild stops the build if it's
    * not complete. For valid values, see the timeoutInMinutes field in the AWS
    * CodeBuild User Guide.
    */
-  timeout?: number;
+  readonly timeout?: number;
 
   /**
    * Additional environment variables to add to the build environment.
    */
-  environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+  readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 
   /**
    * The physical, human-readable name of the CodeBuild Project.
    */
-  projectName?: string;
+  readonly projectName?: string;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -517,7 +517,7 @@ export interface ProjectProps extends CommonProjectProps {
    *
    * @default NoSource
    */
-  source?: BuildSource;
+  readonly source?: BuildSource;
 
   /**
    * Defines where build artifacts will be stored.
@@ -525,7 +525,7 @@ export interface ProjectProps extends CommonProjectProps {
    *
    * @default NoBuildArtifacts
    */
-  artifacts?: BuildArtifacts;
+  readonly artifacts?: BuildArtifacts;
 
   /**
    * The secondary sources for the Project.
@@ -534,7 +534,7 @@ export interface ProjectProps extends CommonProjectProps {
    * @default []
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  secondarySources?: BuildSource[];
+  readonly secondarySources?: BuildSource[];
 
   /**
    * The secondary artifacts for the Project.
@@ -543,7 +543,7 @@ export interface ProjectProps extends CommonProjectProps {
    * @default []
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  secondaryArtifacts?: BuildArtifacts[];
+  readonly secondaryArtifacts?: BuildArtifacts[];
 }
 
 /**
@@ -602,7 +602,7 @@ export class Project extends ProjectBase {
 
     let cache: CfnProject.ProjectCacheProperty | undefined;
     if (props.cacheBucket) {
-      const cacheDir = props.cacheDir != null ? props.cacheDir : new cdk.AwsNoValue().toString();
+      const cacheDir = props.cacheDir != null ? props.cacheDir : cdk.Aws.noValue;
       cache = {
         type: 'S3',
         location: cdk.Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),
@@ -633,16 +633,27 @@ export class Project extends ProjectBase {
     }
 
     // Render the source and add in the buildspec
-    const sourceJson = this.source.toSourceJSON();
-    if (typeof buildSpec === 'string') {
-      sourceJson.buildSpec = buildSpec; // Filename to buildspec file
-    } else if (Object.keys(buildSpec).length > 0) {
-      // We have to pretty-print the buildspec, otherwise
-      // CodeBuild will not recognize it as an inline buildspec.
-      sourceJson.buildSpec = JSON.stringify(buildSpec, undefined, 2); // Literal buildspec
-    } else if (this.source.type === SourceType.None) {
-      throw new Error("If the Project's source is NoSource, you need to provide a buildSpec");
-    }
+
+    const renderSource = () => {
+      const sourceJson = this.source.toSourceJSON();
+      if (typeof buildSpec === 'string') {
+        return {
+          ...sourceJson,
+          buildSpec // Filename to buildspec file
+        };
+      } else if (Object.keys(buildSpec).length > 0) {
+        // We have to pretty-print the buildspec, otherwise
+        // CodeBuild will not recognize it as an inline buildspec.
+        return {
+          ...sourceJson,
+          buildSpec: JSON.stringify(buildSpec, undefined, 2)
+        };
+      } else if (this.source.type === SourceType.None) {
+        throw new Error("If the Project's source is NoSource, you need to provide a buildSpec");
+      } else {
+        return sourceJson;
+      }
+    };
 
     this._secondarySources = [];
     for (const secondarySource of props.secondarySources || []) {
@@ -658,7 +669,7 @@ export class Project extends ProjectBase {
 
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
-      source: sourceJson,
+      source: renderSource(),
       artifacts: artifacts.toArtifactsJSON(),
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
@@ -849,7 +860,7 @@ export interface BuildEnvironment {
    *
    * @default LinuxBuildImage.UBUNTU_14_04_BASE
    */
-  buildImage?: IBuildImage;
+  readonly buildImage?: IBuildImage;
 
   /**
    * The type of compute to use for this build.
@@ -857,7 +868,7 @@ export interface BuildEnvironment {
    *
    * @default taken from {@link #buildImage#defaultComputeType}
    */
-  computeType?: ComputeType;
+  readonly computeType?: ComputeType;
 
   /**
    * Indicates how the project builds Docker images. Specify true to enable
@@ -869,12 +880,12 @@ export interface BuildEnvironment {
    *
    * @default false
    */
-  privileged?: boolean;
+  readonly privileged?: boolean;
 
   /**
    * The environment variables that your builds can use.
    */
-  environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+  readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 }
 
 /**
@@ -1128,13 +1139,13 @@ export interface BuildEnvironmentVariable {
    * The type of environment variable.
    * @default PlainText
    */
-  type?: BuildEnvironmentVariableType;
+  readonly type?: BuildEnvironmentVariableType;
 
   /**
    * The value of the environment variable (or the name of the parameter in
    * the SSM parameter store.)
    */
-  value: any;
+  readonly value: any;
 }
 
 export enum BuildEnvironmentVariableType {

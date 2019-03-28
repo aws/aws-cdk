@@ -9,19 +9,19 @@ export interface ManualApprovalActionProps extends actions.CommonActionProps {
   /**
    * Optional SNS topic to send notifications to when an approval is pending.
    */
-  notificationTopic?: sns.ITopic;
+  readonly notificationTopic?: sns.ITopic;
 
   /**
    * A list of email addresses to subscribe to notifications when this Action is pending approval.
    * If this has been provided, but not `notificationTopic`,
    * a new Topic will be created.
    */
-  notifyEmails?: string[];
+  readonly notifyEmails?: string[];
 
   /**
    * Any additional information that you want to include in the notification email message.
    */
-  additionalInformation?: string;
+  readonly additionalInformation?: string;
 }
 
 /**
