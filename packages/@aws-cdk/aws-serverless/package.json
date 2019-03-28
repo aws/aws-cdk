@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-serverless",
-  "version": "0.26.0",
+  "version": "0.27.0",
   "deprecated": true,
   "description": "This module was renamed to @aws-cdk/aws-sam, use this instead!",
   "main": "lib/index.js",
@@ -50,12 +50,12 @@
     "jsii-pacmak": "^0.8.2"
   },
   "dependencies": {
-    "@aws-cdk/aws-sam": "^0.26.0",
-    "@aws-cdk/cdk": "^0.26.0"
+    "@aws-cdk/aws-sam": "^0.27.0",
+    "@aws-cdk/cdk": "^0.27.0"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-sam": "^0.26.0",
-    "@aws-cdk/cdk": "^0.26.0"
+    "@aws-cdk/aws-sam": "^0.27.0",
+    "@aws-cdk/cdk": "^0.27.0"
   },
   "engines": {
     "node": ">= 8.10.0"
