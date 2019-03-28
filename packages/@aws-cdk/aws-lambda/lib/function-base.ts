@@ -105,14 +105,14 @@ export interface FunctionImportProps {
    *
    * Format: arn:<partition>:lambda:<region>:<account-id>:function:<function-name>
    */
-  functionArn: string;
+  readonly functionArn: string;
 
   /**
    * The IAM execution role associated with this function.
    *
    * If the role is not specified, any role-related operations will no-op.
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Id of the securityGroup for this Lambda, if in a VPC.
@@ -120,7 +120,7 @@ export interface FunctionImportProps {
    * This needs to be given in order to support allowing connections
    * to this Lambda.
    */
-  securityGroupId?: string;
+  readonly securityGroupId?: string;
 }
 
 export abstract class FunctionBase extends cdk.Construct implements IFunction  {
@@ -151,6 +151,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
    * Actual connections object for this Lambda
    *
    * May be unset, in which case this Lambda is not configured use in a VPC.
+   * @internal
    */
   protected _connections?: ec2.Connections;
 

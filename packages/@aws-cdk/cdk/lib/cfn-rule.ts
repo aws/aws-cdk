@@ -29,12 +29,12 @@ export interface CfnRuleProps {
    * If the rule condition evaluates to false, the rule doesn't take effect.
    * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
    */
-  ruleCondition?: ICfnConditionExpression;
+  readonly ruleCondition?: ICfnConditionExpression;
 
   /**
    * Assertions which define the rule.
    */
-  assertions?: RuleAssertion[];
+  readonly assertions?: RuleAssertion[];
 }
 
 /**
@@ -92,6 +92,9 @@ export class CfnRule extends CfnRefElement {
     });
   }
 
+  /**
+   * @internal
+   */
   public _toCloudFormation(): object {
     return {
       Rules: {
@@ -111,10 +114,10 @@ export interface RuleAssertion {
   /**
    * The assertion.
    */
-  assert: ICfnConditionExpression;
+  readonly assert: ICfnConditionExpression;
 
   /**
    * The assertion description.
    */
-  assertDescription: string;
+  readonly assertDescription: string;
 }

@@ -18,7 +18,7 @@ export interface BaseTargetTrackingProps {
    *
    * @default Automatically generated name
    */
-  policyName?: string;
+  readonly policyName?: string;
 
   /**
    * Indicates whether scale in by the target tracking policy is disabled.
@@ -30,21 +30,21 @@ export interface BaseTargetTrackingProps {
    *
    * @default false
    */
-  disableScaleIn?: boolean;
+  readonly disableScaleIn?: boolean;
 
   /**
    * Period after a scale in activity completes before another scale in activity can start.
    *
    * @default No scale in cooldown
    */
-  scaleInCooldownSec?: number;
+  readonly scaleInCooldownSec?: number;
 
   /**
    * Period after a scale out activity completes before another scale out activity can start.
    *
    * @default No scale out cooldown
    */
-  scaleOutCooldownSec?: number;
+  readonly scaleOutCooldownSec?: number;
 }
 
 /**
@@ -54,7 +54,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
   /**
    * The target value for the metric.
    */
-  targetValue: number;
+  readonly targetValue: number;
 
   /**
    * A predefined metric for application autoscaling
@@ -64,7 +64,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
    */
-  predefinedMetric?: PredefinedMetric;
+  readonly predefinedMetric?: PredefinedMetric;
 
   /**
    * Identify the resource associated with the metric type.
@@ -73,7 +73,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * @example app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>
    */
-  resourceLabel?: string;
+  readonly resourceLabel?: string;
 
   /**
    * A custom metric for application autoscaling
@@ -83,7 +83,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
    */
-  customMetric?: cloudwatch.Metric;
+  readonly customMetric?: cloudwatch.Metric;
 }
 
 /**
@@ -95,7 +95,7 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   /*
    * The scalable target
    */
-  scalingTarget: ScalableTarget;
+  readonly scalingTarget: ScalableTarget;
 }
 
 export class TargetTrackingScalingPolicy extends cdk.Construct {

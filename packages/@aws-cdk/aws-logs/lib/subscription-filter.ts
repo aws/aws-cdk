@@ -45,19 +45,19 @@ export interface SubscriptionFilterProps {
   /**
    * The log group to create the subscription on.
    */
-  logGroup: ILogGroup;
+  readonly logGroup: ILogGroup;
 
   /**
    * The destination to send the filtered events to.
    *
    * For example, a Kinesis stream or a Lambda function.
    */
-  destination: ILogSubscriptionDestination;
+  readonly destination: ILogSubscriptionDestination;
 
   /**
    * Log events matching this pattern will be sent to the destination.
    */
-  filterPattern: IFilterPattern;
+  readonly filterPattern: IFilterPattern;
 }
 
 /**
