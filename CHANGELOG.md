@@ -6,12 +6,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [0.27.0](https://github.com/awslabs/aws-cdk/compare/v0.26.0...v0.27.0) (2019-03-28)
 
+### Highlights
+
+* Python support (experimental)
+* You can now run the CLI through `npx cdk`
+* Make sure to go through the BREAKING CHANGES section below
 
 ### Bug Fixes
 
 * **autoscaling:** verify public subnets for associatePublicIpAddress ([#2077](https://github.com/awslabs/aws-cdk/issues/2077)) ([1e3d41e](https://github.com/awslabs/aws-cdk/commit/1e3d41e))
 * **ec2:** descriptive error message when selecting 0 subnets ([#2025](https://github.com/awslabs/aws-cdk/issues/2025)) ([0de2206](https://github.com/awslabs/aws-cdk/commit/0de2206)), closes [#2011](https://github.com/awslabs/aws-cdk/issues/2011)
-* **lambda:** Use Alias ARN directly ([#2091](https://github.com/awslabs/aws-cdk/issues/2091)) ([bc40494](https://github.com/awslabs/aws-cdk/commit/bc40494))
+* **lambda:** use Alias ARN directly ([#2091](https://github.com/awslabs/aws-cdk/issues/2091)) ([bc40494](https://github.com/awslabs/aws-cdk/commit/bc40494))
 * **rds:** remove Instance class ([#2081](https://github.com/awslabs/aws-cdk/issues/2081)) ([6699fed](https://github.com/awslabs/aws-cdk/commit/6699fed))
 * **secretsmanager:** allow templated string creation ([#2010](https://github.com/awslabs/aws-cdk/issues/2010)) ([4e105a3](https://github.com/awslabs/aws-cdk/commit/4e105a3))
 * **secretsmanager/ssm:** verify presence of parameter name ([#2066](https://github.com/awslabs/aws-cdk/issues/2066)) ([b93350f](https://github.com/awslabs/aws-cdk/commit/b93350f))
@@ -26,7 +31,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* Add new 'cdk' package ([#2113](https://github.com/awslabs/aws-cdk/issues/2113)) ([32bca05](https://github.com/awslabs/aws-cdk/commit/32bca05))
+* **toolkit:**: new 'cdk' package to allow executing the cli through `npx cdk` ([#2113](https://github.com/awslabs/aws-cdk/issues/2113)) ([32bca05](https://github.com/awslabs/aws-cdk/commit/32bca05))
 * Python Support ([#2009](https://github.com/awslabs/aws-cdk/issues/2009)) ([e6083fa](https://github.com/awslabs/aws-cdk/commit/e6083fa))
 * **core:** present reason for cyclic references ([#2061](https://github.com/awslabs/aws-cdk/issues/2061)) ([e82e208](https://github.com/awslabs/aws-cdk/commit/e82e208))
 * **lambda:** add support for log retention ([#2067](https://github.com/awslabs/aws-cdk/issues/2067)) ([63132ec](https://github.com/awslabs/aws-cdk/commit/63132ec)), closes [#667](https://github.com/awslabs/aws-cdk/issues/667) [#667](https://github.com/awslabs/aws-cdk/issues/667)
@@ -39,16 +44,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **lambda:** `cloudWatchLogsRetentionTimeDays` in `@aws-cdk/aws-cloudtrail`
 now uses a `logs.RetentionDays` instead of a `LogRetention`.
-* stack._toCloudFormation method is now unavailable and is replaced by @aws-cdk/assert.SynthUtils.toCloudFormation(stack).
-* **rds:** Replaced `kmsKeyArn: string` by `kmsKey: kms.IEncryptionKey` in `DatabaseClusterProps`
+* **core:** `stack._toCloudFormation` method is now unavailable and is replaced by `@aws-cdk/assert.SynthUtils.toCloudFormation(stack)`.
+* **rds:** replaced `kmsKeyArn: string` by `kmsKey: kms.IEncryptionKey` in `DatabaseClusterProps`
 * **autoscaling:** `VpcNetwork.isPublicSubnet()` has been renamed to
 `VpcNetwork.isPublicSubnetIds()`.
 * **serverless:** renamed `aws-serverless` to `aws-sam`
 * **ec2:** `vpcPlacement` has been renamed to `vpcSubnets`
 on all objects, `subnetsToUse` has been renamed to `subnetType`.
 `natGatewayPlacement` has been renamed to `natGatewaySubnets`.
-
-
+* All properties of all structs (interfaces that do not begin with an "I") are now readonly since it is passed by-value and not by-ref (Python is the first language to require that). This may impact code in all languages that assumed it is possible to mutate these structs. Let us know if this blocks you in any way.
 
 
 ## [0.26.0](https://github.com/awslabs/aws-cdk/compare/v0.25.3...v0.26.0) (2019-03-20)
