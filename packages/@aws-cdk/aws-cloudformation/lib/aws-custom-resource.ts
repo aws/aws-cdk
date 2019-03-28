@@ -19,24 +19,24 @@ export interface AwsSdkCall {
   /**
    * The service to call
    */
-  service: string;
+  readonly service: string;
 
   /**
    * The service action to call
    */
-  action: string;
+  readonly action: string;
 
   /**
    * The parameters for the service action
    */
-  parameters?: any;
+  readonly parameters?: any;
 }
 
 export interface AwsCustomResourceProps {
   /**
    * The physical resource id of the custom resource.
    */
-  physicalResourceId: string;
+  readonly physicalResourceId: string;
 
   /**
    * The AWS SDK call to make when the resource is created.
@@ -44,21 +44,21 @@ export interface AwsCustomResourceProps {
    *
    * @default the call when the resource is updated
    */
-  onCreate?: AwsSdkCall;
+  readonly onCreate?: AwsSdkCall;
 
   /**
    * The AWS SDK call to make when the resource is updated
    *
    * @default no call
    */
-  onUpdate?: AwsSdkCall;
+  readonly onUpdate?: AwsSdkCall;
 
   /**
    * THe AWS SDK call to make when the resource is deleted
    *
    * @default no call
    */
-  onDelete?: AwsSdkCall;
+  readonly onDelete?: AwsSdkCall;
 
   /**
    * The IAM policy statements to allow the different calls. Use only if
@@ -66,7 +66,7 @@ export interface AwsCustomResourceProps {
    *
    * @default Allow onCreate, onUpdate and onDelete calls on all resources ('*')
    */
-  policyStatements?: iam.PolicyStatement[];
+  readonly policyStatements?: iam.PolicyStatement[];
 }
 
 export class AwsCustomResource extends cdk.Construct {
