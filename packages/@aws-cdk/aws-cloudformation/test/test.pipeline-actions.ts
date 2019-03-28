@@ -33,7 +33,8 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:CreateChangeSet', stackArn, changeSetCondition);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
 
-      test.deepEqual(action._inputArtifacts, [artifact],
+      // TODO: revert "as any" once we move all actions into a single package.
+      test.deepEqual((action as any)._inputArtifacts, [artifact],
                      'The inputArtifact was correctly registered');
 
       _assertActionMatches(test, stage.actions, 'AWS', 'CloudFormation', 'Deploy', {

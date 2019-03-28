@@ -25,21 +25,21 @@ export interface ReceiptFilterProps {
    *
    * @default a CloudFormation generated name
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * The ip address or range to filter.
    *
    * @default 0.0.0.0/0
    */
-  ip?: string;
+  readonly ip?: string;
 
   /**
    * The policy for the filter.
    *
    * @default Block
    */
-  policy?: ReceiptFilterPolicy;
+  readonly policy?: ReceiptFilterPolicy;
 }
 
 /**
@@ -69,7 +69,7 @@ export interface WhiteListReceiptFilterProps {
   /**
    * A list of ip addresses or ranges to white list.
    */
-  ips: string[];
+  readonly ips: string[];
 }
 
 /**

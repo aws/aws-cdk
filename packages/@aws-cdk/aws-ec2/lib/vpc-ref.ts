@@ -158,7 +158,7 @@ export interface SubnetSelection {
    *
    * @default SubnetType.Private
    */
-  subnetType?: SubnetType;
+  readonly subnetType?: SubnetType;
 
   /**
    * Place the instances in the subnets with the given name
@@ -169,7 +169,7 @@ export interface SubnetSelection {
    *
    * @default name
    */
-  subnetName?: string;
+  readonly subnetName?: string;
 }
 
 /**
@@ -318,71 +318,71 @@ export interface VpcNetworkImportProps {
   /**
    * VPC's identifier
    */
-  vpcId: string;
+  readonly vpcId: string;
 
   /**
    * List of availability zones for the subnets in this VPC.
    */
-  availabilityZones: string[];
+  readonly availabilityZones: string[];
 
   /**
    * List of public subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
    */
-  publicSubnetIds?: string[];
+  readonly publicSubnetIds?: string[];
 
   /**
    * List of names for the public subnets
    *
    * Must be undefined or have a name for every public subnet group.
    */
-  publicSubnetNames?: string[];
+  readonly publicSubnetNames?: string[];
 
   /**
    * List of private subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
    */
-  privateSubnetIds?: string[];
+  readonly privateSubnetIds?: string[];
 
   /**
    * List of names for the private subnets
    *
    * Must be undefined or have a name for every private subnet group.
    */
-  privateSubnetNames?: string[];
+  readonly privateSubnetNames?: string[];
 
   /**
    * List of isolated subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
    */
-  isolatedSubnetIds?: string[];
+  readonly isolatedSubnetIds?: string[];
 
   /**
    * List of names for the isolated subnets
    *
    * Must be undefined or have a name for every isolated subnet group.
    */
-  isolatedSubnetNames?: string[];
+  readonly isolatedSubnetNames?: string[];
 
   /**
    * VPN gateway's identifier
    */
-  vpnGatewayId?: string;
+  readonly vpnGatewayId?: string;
 }
 
 export interface VpcSubnetImportProps {
   /**
    * The Availability Zone the subnet is located in
    */
-  availabilityZone: string;
+  readonly availabilityZone: string;
 
   /**
    * The subnetId for this particular subnet
    */
-  subnetId: string;
+  readonly subnetId: string;
 }
 
 /**

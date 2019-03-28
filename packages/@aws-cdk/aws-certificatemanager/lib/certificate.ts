@@ -21,7 +21,7 @@ export interface CertificateImportProps {
   /**
    * The certificate's ARN
    */
-  certificateArn: string;
+  readonly certificateArn: string;
 }
 
 /**
@@ -33,14 +33,14 @@ export interface CertificateProps {
    *
    * May contain wildcards, such as ``*.domain.com``.
    */
-  domainName: string;
+  readonly domainName: string;
 
   /**
    * Alternative domain names on your certificate.
    *
    * Use this to register alternative domain names that represent the same site.
    */
-  subjectAlternativeNames?: string[];
+  readonly subjectAlternativeNames?: string[];
 
   /**
    * What validation domain to use for every requested domain.
@@ -49,7 +49,7 @@ export interface CertificateProps {
    *
    * @default Apex domain is used for every domain that's not overridden.
    */
-  validationDomains?: {[domainName: string]: string};
+  readonly validationDomains?: {[domainName: string]: string};
 }
 
 /**

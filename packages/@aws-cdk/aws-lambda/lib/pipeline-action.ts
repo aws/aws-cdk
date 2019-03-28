@@ -21,7 +21,7 @@ export interface CommonPipelineInvokeActionProps extends codepipeline.CommonActi
    * @default the Action will not have any inputs
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
    */
-  inputArtifacts?: codepipeline.Artifact[];
+  readonly inputArtifacts?: codepipeline.Artifact[];
 
   // tslint:enable:max-line-length
 
@@ -34,7 +34,7 @@ export interface CommonPipelineInvokeActionProps extends codepipeline.CommonActi
    *
    * @default the Action will not have any outputs
    */
-  outputArtifactNames?: string[];
+  readonly outputArtifactNames?: string[];
 
   /**
    * String to be used in the event data parameter passed to the Lambda
@@ -44,7 +44,7 @@ export interface CommonPipelineInvokeActionProps extends codepipeline.CommonActi
    *
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
    */
-  userParameters?: any;
+  readonly userParameters?: any;
 
   /**
    * Adds the "codepipeline:PutJobSuccessResult" and
@@ -61,7 +61,7 @@ export interface CommonPipelineInvokeActionProps extends codepipeline.CommonActi
    *
    * @default true
    */
-  addPutJobResultPolicy?: boolean;
+  readonly addPutJobResultPolicy?: boolean;
 }
 
 /**
@@ -71,7 +71,7 @@ export interface PipelineInvokeActionProps extends CommonPipelineInvokeActionPro
   /**
    * The lambda function to invoke.
    */
-  lambda: IFunction;
+  readonly lambda: IFunction;
 }
 
 /**
@@ -108,11 +108,13 @@ export class PipelineInvokeAction extends codepipeline.Action {
   }
 
   public outputArtifacts(): codepipeline.Artifact[] {
-    return this._outputArtifacts;
+    // TODO: revert "as any" once we merge all actions into a single package
+    return (this as any)._outputArtifacts;
   }
 
   public outputArtifact(artifactName: string): codepipeline.Artifact {
-    const result = this._outputArtifacts.find(a => (a.artifactName === artifactName));
+    // TODO: revert "as any" once we merge all actions into a single package
+    const result = (this as any)._outputArtifacts.find((a: any) => (a.artifactName === artifactName));
     if (result === undefined) {
       throw new Error(`Could not find the output Artifact with name '${artifactName}'`);
     } else {

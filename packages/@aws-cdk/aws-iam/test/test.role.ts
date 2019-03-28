@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
@@ -87,10 +87,10 @@ export = {
       assumedBy: new ServicePrincipal('sns.amazonaws.com')
     });
 
-    test.ok(!('MyRoleDefaultPolicyA36BE1DD' in stack._toCloudFormation().Resources), 'initially created without a policy');
+    test.ok(!('MyRoleDefaultPolicyA36BE1DD' in SynthUtils.toCloudFormation(stack).Resources), 'initially created without a policy');
 
     role.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
-    test.ok(stack._toCloudFormation().Resources.MyRoleDefaultPolicyA36BE1DD, 'policy resource created');
+    test.ok(SynthUtils.toCloudFormation(stack).Resources.MyRoleDefaultPolicyA36BE1DD, 'policy resource created');
 
     expect(stack).toMatch({ Resources:
       { MyRoleF48FFE04:

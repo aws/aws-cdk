@@ -35,10 +35,10 @@ export interface HostedZoneImportProps {
   /**
    * Identifier of the hosted zone
    */
-  hostedZoneId: string;
+  readonly hostedZoneId: string;
 
   /**
    * Name of the hosted zone
    */
-  zoneName: string;
+  readonly zoneName: string;
 }
