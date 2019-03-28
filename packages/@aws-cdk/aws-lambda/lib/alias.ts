@@ -14,19 +14,19 @@ export interface AliasProps {
    *
    * @default No description
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Function version this alias refers to
    *
    * Use lambda.addVersion() to obtain a new lambda version to refer to.
    */
-  version: Version;
+  readonly version: Version;
 
   /**
    * Name of this alias
    */
-  aliasName: string;
+  readonly aliasName: string;
 
   /**
    * Additional versions with individual weights this alias points to
@@ -45,7 +45,7 @@ export interface AliasProps {
    *
    * @default No additional versions
    */
-  additionalVersions?: VersionWeight[];
+  readonly additionalVersions?: VersionWeight[];
 }
 
 /**

@@ -43,49 +43,49 @@ export interface ReceiptRuleOptions {
    * one of the recipient email addresses or domains specified in the
    * receipt rule.
    */
-  actions?: IReceiptRuleAction[];
+  readonly actions?: IReceiptRuleAction[];
 
   /**
    * An existing rule after which the new rule will be placed.
    *
    * @default the new rule is inserted at the beginning of the rule list
    */
-  after?: IReceiptRule;
+  readonly after?: IReceiptRule;
 
   /**
    * Whether the rule is active.
    *
    * @default true
    */
-  enabled?: boolean;
+  readonly enabled?: boolean;
 
   /**
    * The name for the rule
    *
    * @default a CloudFormation generated name
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * The recipient domains and email addresses that the receipt rule applies to.
    *
    * @default match all recipients under all verified domains.
    */
-  recipients?: string[];
+  readonly recipients?: string[];
 
   /**
    * Wheter to scan for spam and viruses.
    *
    * @default false
    */
-  scanEnabled?: boolean;
+  readonly scanEnabled?: boolean;
 
   /**
    * The TLS policy
    *
    * @default Optional
    */
-  tlsPolicy?: TlsPolicy;
+  readonly tlsPolicy?: TlsPolicy;
 }
 
 /**
@@ -95,7 +95,7 @@ export interface ReceiptRuleProps extends ReceiptRuleOptions {
   /**
    * The name of the rule set that the receipt rule will be added to.
    */
-  ruleSet: IReceiptRuleSet;
+  readonly ruleSet: IReceiptRuleSet;
 }
 
 /**
@@ -166,7 +166,7 @@ export interface ReceiptRuleImportProps {
   /**
    * The name of the receipt rule.
    */
-  name: string;
+  readonly name: string;
 }
 
 /**

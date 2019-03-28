@@ -14,7 +14,7 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
    *
    * @default 'latest'
    */
-  imageTag?: string;
+  readonly imageTag?: string;
 
   /**
    * The name of the source's output artifact.
@@ -22,7 +22,7 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
    *
    * @default a name will be auto-generated
    */
-  outputArtifactName?: string;
+  readonly outputArtifactName?: string;
 }
 
 /**
@@ -32,7 +32,7 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
   /**
    * The repository that will be watched for changes.
    */
-  repository: IRepository;
+  readonly repository: IRepository;
 }
 
 /**

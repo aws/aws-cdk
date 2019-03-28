@@ -92,7 +92,7 @@ export interface RepositoryImportProps {
    * The name of an existing CodeCommit Repository that we are referencing.
    * Must be in the same account and region as the root Stack.
    */
-  repositoryName: string;
+  readonly repositoryName: string;
 }
 
 /**
@@ -258,13 +258,13 @@ export interface RepositoryProps {
   /**
    * Name of the repository. This property is required for all repositories.
    */
-  repositoryName: string;
+  readonly repositoryName: string;
 
   /**
    * A description of the repository. Use the description to identify the
    * purpose of the repository.
    */
-  description?: string;
+  readonly description?: string;
 }
 
 /**
@@ -366,27 +366,27 @@ export interface RepositoryTriggerOptions {
    /**
     * A name for the trigger.Triggers on a repository must have unique names
     */
-  name?: string;
+  readonly name?: string;
 
   /**
    * The repository events for which AWS CodeCommit sends information to the
    * target, which you specified in the DestinationArn property.If you don't
    * specify events, the trigger runs for all repository events.
    */
-  events?: RepositoryEventTrigger[];
+  readonly events?: RepositoryEventTrigger[];
 
   /**
    * The names of the branches in the AWS CodeCommit repository that contain
    * events that you want to include in the trigger. If you don't specify at
    * least one branch, the trigger applies to all branches.
    */
-  branches?: string[];
+  readonly branches?: string[];
 
   /**
    * When an event is triggered, additional information that AWS CodeCommit
    * includes when it sends information to the target.
    */
-  customData?: string;
+  readonly customData?: string;
 }
 
 /**

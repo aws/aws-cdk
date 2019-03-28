@@ -17,14 +17,14 @@ export interface BaseServiceProps {
    *
    * @default 1
    */
-  desiredCount?: number;
+  readonly desiredCount?: number;
 
   /**
    * A name for the service.
    *
    * @default CloudFormation-generated name
    */
-  serviceName?: string;
+  readonly serviceName?: string;
 
   /**
    * The maximum number of tasks, specified as a percentage of the Amazon ECS
@@ -33,7 +33,7 @@ export interface BaseServiceProps {
    *
    * @default 200
    */
-  maximumPercent?: number;
+  readonly maximumPercent?: number;
 
   /**
    * The minimum number of tasks, specified as a percentage of
@@ -42,14 +42,14 @@ export interface BaseServiceProps {
    *
    * @default 50
    */
-  minimumHealthyPercent?: number;
+  readonly minimumHealthyPercent?: number;
 
   /**
    * Time after startup to ignore unhealthy load balancer checks.
    *
    * @default ??? FIXME
    */
-  healthCheckGracePeriodSeconds?: number;
+  readonly healthCheckGracePeriodSeconds?: number;
 }
 
 /**

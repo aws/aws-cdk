@@ -13,41 +13,41 @@ export interface ReceiptRuleActionProps {
   /**
    * Adds a header to the received email.
    */
-  addHeaderAction?: CfnReceiptRule.AddHeaderActionProperty
+  readonly addHeaderAction?: CfnReceiptRule.AddHeaderActionProperty
 
   /**
    * Rejects the received email by returning a bounce response to the sender and,
    * optionally, publishes a notification to Amazon SNS.
    */
-  bounceAction?: CfnReceiptRule.BounceActionProperty;
+  readonly bounceAction?: CfnReceiptRule.BounceActionProperty;
 
   /**
    * Calls an AWS Lambda function, and optionally, publishes a notification to
    * Amazon SNS.
    */
-  lambdaAction?: CfnReceiptRule.LambdaActionProperty;
+  readonly lambdaAction?: CfnReceiptRule.LambdaActionProperty;
 
   /**
    * Saves the received message to an Amazon S3 bucket and, optionally, publishes
    * a notification to Amazon SNS.
    */
-  s3Action?: CfnReceiptRule.S3ActionProperty;
+  readonly s3Action?: CfnReceiptRule.S3ActionProperty;
 
   /**
    * Publishes the email content within a notification to Amazon SNS.
    */
-  snsAction?: CfnReceiptRule.SNSActionProperty;
+  readonly snsAction?: CfnReceiptRule.SNSActionProperty;
 
   /**
    * Terminates the evaluation of the receipt rule set and optionally publishes a
    * notification to Amazon SNS.
    */
-  stopAction?: CfnReceiptRule.StopActionProperty;
+  readonly stopAction?: CfnReceiptRule.StopActionProperty;
 
   /**
    * Calls Amazon WorkMail and, optionally, publishes a notification to Amazon SNS.
    */
-  workmailAction?: CfnReceiptRule.WorkmailActionProperty;
+  readonly workmailAction?: CfnReceiptRule.WorkmailActionProperty;
 }
 
 /**
@@ -69,13 +69,13 @@ export interface ReceiptRuleAddHeaderActionProps {
    * inclusive, and consist of alphanumeric (a-z, A-Z, 0-9) characters
    * and dashes only.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * The value of the header to add. Must be less than 2048 characters,
    * and must not contain newline characters ("\r" or "\n").
    */
-  value: string;
+  readonly value: string;
 }
 
 /**
@@ -117,21 +117,21 @@ export interface ReceiptRuleBounceActionTemplateProps {
   /**
    * Human-readable text to include in the bounce message.
    */
-  message: string;
+  readonly message: string;
 
   /**
    * The SMTP reply code, as defined by RFC 5321.
    *
    * @see https://tools.ietf.org/html/rfc5321
    */
-  smtpReplyCode: string;
+  readonly smtpReplyCode: string;
 
   /**
    * The SMTP enhanced status code, as defined by RFC 3463.
    *
    * @see https://tools.ietf.org/html/rfc3463
    */
-  statusCode?: string;
+  readonly statusCode?: string;
 }
 
 /**
@@ -186,20 +186,20 @@ export interface ReceiptRuleBounceActionProps {
   /**
    * The template containing the message, reply code and status code.
    */
-  template: ReceiptRuleBounceActionTemplate;
+  readonly template: ReceiptRuleBounceActionTemplate;
 
   /**
    * The email address of the sender of the bounced email. This is the address
    * from which the bounce message will be sent.
    */
-  sender: string;
+  readonly sender: string;
 
   /**
    * The SNS topic to notify when the bounce action is taken.
    *
    * @default no notification
    */
-  topic?: sns.ITopic;
+  readonly topic?: sns.ITopic;
 }
 
 /**
@@ -247,21 +247,21 @@ export interface ReceiptRuleLambdaActionProps {
   /**
    * The Lambda function to invoke.
    */
-  function: lambda.IFunction
+  readonly function: lambda.IFunction
 
   /**
    * The invocation type of the Lambda function.
    *
    * @default Event
    */
-  invocationType?: LambdaInvocationType;
+  readonly invocationType?: LambdaInvocationType;
 
   /**
    * The SNS topic to notify when the Lambda action is taken.
    *
    * @default no notification
    */
-  topic?: sns.ITopic;
+  readonly topic?: sns.ITopic;
 }
 
 /**
@@ -301,7 +301,7 @@ export interface ReceiptRuleS3ActionProps {
   /**
    * The S3 bucket that incoming email will be saved to.
    */
-  bucket: s3.IBucket;
+  readonly bucket: s3.IBucket;
 
   /**
    * The master key that SES should use to encrypt your emails before saving
@@ -309,21 +309,21 @@ export interface ReceiptRuleS3ActionProps {
    *
    * @default no encryption
    */
-  kmsKey?: kms.IEncryptionKey;
+  readonly kmsKey?: kms.IEncryptionKey;
 
   /**
    * The key prefix of the S3 bucket.
    *
    * @default no prefix
    */
-  objectKeyPrefix?: string;
+  readonly objectKeyPrefix?: string;
 
   /**
    * The SNS topic to notify when the S3 action is taken.
    *
    * @default no notification
    */
-  topic?: sns.ITopic;
+  readonly topic?: sns.ITopic;
 }
 
 /**
@@ -404,12 +404,12 @@ export interface ReceiptRuleSnsActionProps {
    *
    * @default UTF-8
    */
-  encoding?: EmailEncoding;
+  readonly encoding?: EmailEncoding;
 
   /**
    * The SNS topic to notify.
    */
-  topic: sns.ITopic;
+  readonly topic: sns.ITopic;
 }
 
 /**
@@ -436,7 +436,7 @@ export interface ReceiptRuleStopActionProps {
   /**
    * The SNS topic to notify when the stop action is taken.
    */
-  topic?: sns.ITopic;
+  readonly topic?: sns.ITopic;
 }
 
 /**

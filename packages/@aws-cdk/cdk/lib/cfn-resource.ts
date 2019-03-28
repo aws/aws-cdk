@@ -13,12 +13,12 @@ export interface CfnResourceProps {
   /**
    * CloudFormation resource type.
    */
-  type: string;
+  readonly type: string;
 
   /**
    * CloudFormation properties.
    */
-  properties?: any;
+  readonly properties?: any;
 }
 
 export interface ITaggable {
@@ -64,7 +64,7 @@ export class CfnResource extends CfnRefElement {
   /**
    * Options for this resource, such as condition, update policy etc.
    */
-  public readonly options: ResourceOptions = {};
+  public readonly options: IResourceOptions = {};
 
   /**
    * AWS resource type.
@@ -205,6 +205,7 @@ export class CfnResource extends CfnRefElement {
 
   /**
    * Emits CloudFormation for this resource.
+   * @internal
    */
   public _toCloudFormation(): object {
     try {
@@ -266,7 +267,7 @@ export enum TagType {
   NotTaggable = 'NotTaggable',
 }
 
-export interface ResourceOptions {
+export interface IResourceOptions {
   /**
    * A condition to associate with this resource. This means that only if the condition evaluates to 'true' when the stack
    * is deployed, the resource will be included. This is provided to allow CDK projects to produce legacy templates, but noramlly

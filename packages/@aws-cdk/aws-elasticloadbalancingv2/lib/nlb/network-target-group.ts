@@ -12,14 +12,14 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
   /**
    * The port on which the listener listens for requests.
    */
-  port: number;
+  readonly port: number;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.
    *
    * @default false
    */
-  proxyProtocolV2?: boolean;
+  readonly proxyProtocolV2?: boolean;
 
   /**
    * The targets to add to this target group.
@@ -28,7 +28,7 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
    */
-  targets?: INetworkLoadBalancerTarget[];
+  readonly targets?: INetworkLoadBalancerTarget[];
 }
 
 /**
