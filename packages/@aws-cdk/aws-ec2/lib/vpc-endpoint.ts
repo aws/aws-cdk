@@ -44,14 +44,22 @@ export enum VpcEndpointType {
 /**
  * A VPC endpoint service.
  */
-export class VpcEndpointService {
-  constructor(public readonly name: string, public readonly type: VpcEndpointType) {}
+export interface VpcEndpointService {
+  /**
+   * The name of the service.
+   */
+  readonly name: string;
+
+  /**
+   * The type of the service.
+   */
+  readonly type: VpcEndpointType;
 }
 
 /**
  * A VPC endpoint AWS service.
  */
-export class VpcEndpointAwsService extends VpcEndpointService {
+export class VpcEndpointAwsService implements VpcEndpointService {
   public static readonly SageMakerNotebook = new VpcEndpointAwsService('sagemaker', VpcEndpointType.Interface, 'aws.sagemaker');
   public static readonly CloudFormation = new VpcEndpointAwsService('cloudformation');
   public static readonly CloudTrail = new VpcEndpointAwsService('cloudtrail');
@@ -92,8 +100,19 @@ export class VpcEndpointAwsService extends VpcEndpointService {
   public static readonly Sts = new VpcEndpointAwsService('sts');
   public static readonly Transfer = new VpcEndpointAwsService('transfer.server');
 
+  /**
+   * The name of the service.
+   */
+  public readonly name: string;
+
+  /**
+   * The type of the service.
+   */
+  public readonly type: VpcEndpointType;
+
   constructor(name: string, type?: VpcEndpointType, prefix?: string) {
-    super(`${prefix || 'com.amazonaws'}.${cdk.Aws.region}.${name}`, type || VpcEndpointType.Interface);
+    this.name = `${prefix || 'com.amazonaws'}.${cdk.Aws.region}.${name}`;
+    this.type = type || VpcEndpointType.Interface;
   }
 }
 
@@ -102,7 +121,7 @@ export class VpcEndpointAwsService extends VpcEndpointService {
  */
 export interface VpcEndpointOptions {
   /**
-   * The name of the service.
+   * The service to use for this VPC endpoint.
    */
   readonly service: VpcEndpointService;
 }
