@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.cognito",
-        "module": "aws_cdk.cognito"
+        "distName": "aws-cdk.aws-cognito",
+        "module": "aws_cdk.aws_cognito"
       }
     }
   },

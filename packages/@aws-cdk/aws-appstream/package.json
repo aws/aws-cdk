@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.appstream",
-        "module": "aws_cdk.appstream"
+        "distName": "aws-cdk.aws-appstream",
+        "module": "aws_cdk.aws_appstream"
       }
     }
   },

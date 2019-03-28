@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.budgets",
-        "module": "aws_cdk.budgets"
+        "distName": "aws-cdk.aws-budgets",
+        "module": "aws_cdk.aws_budgets"
       }
     }
   },

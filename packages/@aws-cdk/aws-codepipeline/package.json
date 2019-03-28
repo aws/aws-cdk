@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.codepipeline",
-        "module": "aws_cdk.codepipeline"
+        "distName": "aws-cdk.aws-codepipeline",
+        "module": "aws_cdk.aws_codepipeline"
       }
     }
   },

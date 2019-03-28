@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.lambda",
-        "module": "aws_cdk.lambda"
+        "distName": "aws-cdk.aws-lambda",
+        "module": "aws_cdk.aws_lambda"
       }
     }
   },

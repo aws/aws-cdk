@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.ecr",
-        "module": "aws_cdk.ecr"
+        "distName": "aws-cdk.aws-ecr",
+        "module": "aws_cdk.aws_ecr"
       }
     }
   },

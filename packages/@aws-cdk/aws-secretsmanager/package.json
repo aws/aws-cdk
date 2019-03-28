@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.secretsmanager",
-        "module": "aws_cdk.secretsmanager"
+        "distName": "aws-cdk.aws-secretsmanager",
+        "module": "aws_cdk.aws_secretsmanager"
       }
     }
   },

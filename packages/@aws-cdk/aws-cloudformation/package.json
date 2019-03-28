@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.cloudformation",
-        "module": "aws_cdk.cloudformation"
+        "distName": "aws-cdk.aws-cloudformation",
+        "module": "aws_cdk.aws_cloudformation"
       }
     }
   },

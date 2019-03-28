@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.iot1click",
-        "module": "aws_cdk.iot1click"
+        "distName": "aws-cdk.aws-iot1click",
+        "module": "aws_cdk.aws_iot1click"
       }
     }
   },

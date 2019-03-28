@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.dynamodb",
-        "module": "aws_cdk.dynamodb"
+        "distName": "aws-cdk.aws-dynamodb",
+        "module": "aws_cdk.aws_dynamodb"
       }
     }
   },

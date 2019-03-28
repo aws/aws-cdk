@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.waf",
-        "module": "aws_cdk.waf"
+        "distName": "aws-cdk.aws-waf",
+        "module": "aws_cdk.aws_waf"
       }
     }
   },

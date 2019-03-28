@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.glue",
-        "module": "aws_cdk.glue"
+        "distName": "aws-cdk.aws-glue",
+        "module": "aws_cdk.aws_glue"
       }
     }
   },

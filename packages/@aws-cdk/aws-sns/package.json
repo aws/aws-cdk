@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.sns",
-        "module": "aws_cdk.sns"
+        "distName": "aws-cdk.aws-sns",
+        "module": "aws_cdk.aws_sns"
       }
     },
     "excludeTypescript": [

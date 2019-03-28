@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.cloudwatch",
-        "module": "aws_cdk.cloudwatch"
+        "distName": "aws-cdk.aws-cloudwatch",
+        "module": "aws_cdk.aws_cloudwatch"
       }
     }
   },

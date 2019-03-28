@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.elasticloadbalancing",
-        "module": "aws_cdk.elasticloadbalancing"
+        "distName": "aws-cdk.aws-elasticloadbalancing",
+        "module": "aws_cdk.aws_elasticloadbalancing"
       }
     }
   },

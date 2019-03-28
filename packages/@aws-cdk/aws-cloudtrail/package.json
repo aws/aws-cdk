@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.cloudtrail",
-        "module": "aws_cdk.cloudtrail"
+        "distName": "aws-cdk.aws-cloudtrail",
+        "module": "aws_cdk.aws_cloudtrail"
       }
     }
   },

@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.cloudfront",
-        "module": "aws_cdk.cloudfront"
+        "distName": "aws-cdk.aws-cloudfront",
+        "module": "aws_cdk.aws_cloudfront"
       }
     }
   },

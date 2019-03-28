@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.kinesisanalytics",
-        "module": "aws_cdk.kinesisanalytics"
+        "distName": "aws-cdk.aws-kinesisanalytics",
+        "module": "aws_cdk.aws_kinesisanalytics"
       }
     }
   },

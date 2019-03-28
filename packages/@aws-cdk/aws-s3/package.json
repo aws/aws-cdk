@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.s3",
-        "module": "aws_cdk.s3"
+        "distName": "aws-cdk.aws-s3",
+        "module": "aws_cdk.aws_s3"
       }
     }
   },

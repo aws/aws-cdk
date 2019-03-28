@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.codedeploy",
-        "module": "aws_cdk.codedeploy"
+        "distName": "aws-cdk.aws-codedeploy",
+        "module": "aws_cdk.aws_codedeploy"
       }
     }
   },

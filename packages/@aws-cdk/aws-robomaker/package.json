@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.robomaker",
-        "module": "aws_cdk.robomaker"
+        "distName": "aws-cdk.aws-robomaker",
+        "module": "aws_cdk.aws_robomaker"
       }
     }
   },

@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.cloud9",
-        "module": "aws_cdk.cloud9"
+        "distName": "aws-cdk.aws-cloud9",
+        "module": "aws_cdk.aws_cloud9"
       }
     }
   },

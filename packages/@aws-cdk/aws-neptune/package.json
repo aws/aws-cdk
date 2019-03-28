@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.neptune",
-        "module": "aws_cdk.neptune"
+        "distName": "aws-cdk.aws-neptune",
+        "module": "aws_cdk.aws_neptune"
       }
     }
   },

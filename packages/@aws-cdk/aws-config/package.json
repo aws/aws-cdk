@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.config",
-        "module": "aws_cdk.config"
+        "distName": "aws-cdk.aws-config",
+        "module": "aws_cdk.aws_config"
       }
     }
   },

@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.autoscaling",
-        "module": "aws_cdk.autoscaling"
+        "distName": "aws-cdk.aws-autoscaling",
+        "module": "aws_cdk.aws_autoscaling"
       }
     }
   },

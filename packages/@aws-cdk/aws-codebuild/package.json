@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.codebuild",
-        "module": "aws_cdk.codebuild"
+        "distName": "aws-cdk.aws-codebuild",
+        "module": "aws_cdk.aws_codebuild"
       }
     }
   },

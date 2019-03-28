@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.events",
-        "module": "aws_cdk.events"
+        "distName": "aws-cdk.aws-events",
+        "module": "aws_cdk.aws_events"
       }
     }
   },

@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.amazonmq",
-        "module": "aws_cdk.amazonmq"
+        "distName": "aws-cdk.aws-amazonmq",
+        "module": "aws_cdk.aws_amazonmq"
       }
     }
   },

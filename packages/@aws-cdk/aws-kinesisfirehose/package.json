@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.kinesisfirehose",
-        "module": "aws_cdk.kinesisfirehose"
+        "distName": "aws-cdk.aws-kinesisfirehose",
+        "module": "aws_cdk.aws_kinesisfirehose"
       }
     }
   },

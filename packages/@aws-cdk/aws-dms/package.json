@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.dms",
-        "module": "aws_cdk.dms"
+        "distName": "aws-cdk.aws-dms",
+        "module": "aws_cdk.aws_dms"
       }
     }
   },

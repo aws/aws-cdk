@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.greengrass",
-        "module": "aws_cdk.greengrass"
+        "distName": "aws-cdk.aws-greengrass",
+        "module": "aws_cdk.aws_greengrass"
       }
     }
   },

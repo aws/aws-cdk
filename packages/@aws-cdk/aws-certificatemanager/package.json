@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.certificatemanager",
-        "module": "aws_cdk.certificatemanager"
+        "distName": "aws-cdk.aws-certificatemanager",
+        "module": "aws_cdk.aws_certificatemanager"
       }
     }
   },

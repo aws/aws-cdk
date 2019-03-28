@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.servicediscovery",
-        "module": "aws_cdk.servicediscovery"
+        "distName": "aws-cdk.aws-servicediscovery",
+        "module": "aws_cdk.aws_servicediscovery"
       }
     }
   },

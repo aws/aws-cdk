@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.stepfunctions",
-        "module": "aws_cdk.stepfunctions"
+        "distName": "aws-cdk.aws-stepfunctions",
+        "module": "aws_cdk.aws_stepfunctions"
       }
     }
   },

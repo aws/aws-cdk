@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.opsworkscm",
-        "module": "aws_cdk.opsworkscm"
+        "distName": "aws-cdk.aws-opsworkscm",
+        "module": "aws_cdk.aws_opsworkscm"
       }
     }
   },

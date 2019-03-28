@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.sagemaker",
-        "module": "aws_cdk.sagemaker"
+        "distName": "aws-cdk.aws-sagemaker",
+        "module": "aws_cdk.aws_sagemaker"
       }
     }
   },

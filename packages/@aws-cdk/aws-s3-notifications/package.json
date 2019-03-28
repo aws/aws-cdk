@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.s3-notifications",
-        "module": "aws_cdk.s3_notifications"
+        "distName": "aws-cdk.aws-s3-notifications",
+        "module": "aws_cdk.aws_s3_notifications"
       }
     }
   },

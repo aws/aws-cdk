@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.ses",
-        "module": "aws_cdk.ses"
+        "distName": "aws-cdk.aws-ses",
+        "module": "aws_cdk.aws_ses"
       }
     }
   },

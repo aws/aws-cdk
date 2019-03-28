@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.appsync",
-        "module": "aws_cdk.appsync"
+        "distName": "aws-cdk.aws-appsync",
+        "module": "aws_cdk.aws_appsync"
       }
     }
   },

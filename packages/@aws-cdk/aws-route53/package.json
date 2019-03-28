@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.route53",
-        "module": "aws_cdk.route53"
+        "distName": "aws-cdk.aws-route53",
+        "module": "aws_cdk.aws_route53"
       }
     }
   },

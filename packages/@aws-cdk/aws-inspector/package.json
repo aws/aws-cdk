@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.inspector",
-        "module": "aws_cdk.inspector"
+        "distName": "aws-cdk.aws-inspector",
+        "module": "aws_cdk.aws_inspector"
       }
     }
   },

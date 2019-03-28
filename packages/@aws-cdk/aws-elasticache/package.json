@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.elasticache",
-        "module": "aws_cdk.elasticache"
+        "distName": "aws-cdk.aws-elasticache",
+        "module": "aws_cdk.aws_elasticache"
       }
     }
   },

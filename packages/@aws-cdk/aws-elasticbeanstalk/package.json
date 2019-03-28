@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.elasticbeanstalk",
-        "module": "aws_cdk.elasticbeanstalk"
+        "distName": "aws-cdk.aws-elasticbeanstalk",
+        "module": "aws_cdk.aws_elasticbeanstalk"
       }
     }
   },

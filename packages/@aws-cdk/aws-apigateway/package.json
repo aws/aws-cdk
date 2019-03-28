@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.apigateway",
-        "module": "aws_cdk.apigateway"
+        "distName": "aws-cdk.aws-apigateway",
+        "module": "aws_cdk.aws_apigateway"
       }
     }
   },

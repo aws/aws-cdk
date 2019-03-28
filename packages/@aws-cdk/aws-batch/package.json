@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.batch",
-        "module": "aws_cdk.batch"
+        "distName": "aws-cdk.aws-batch",
+        "module": "aws_cdk.aws_batch"
       }
     }
   },

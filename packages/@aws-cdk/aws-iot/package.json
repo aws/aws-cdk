@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.iot",
-        "module": "aws_cdk.iot"
+        "distName": "aws-cdk.aws-iot",
+        "module": "aws_cdk.aws_iot"
       }
     }
   },

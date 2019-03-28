@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.directoryservice",
-        "module": "aws_cdk.directoryservice"
+        "distName": "aws-cdk.aws-directoryservice",
+        "module": "aws_cdk.aws_directoryservice"
       }
     }
   },

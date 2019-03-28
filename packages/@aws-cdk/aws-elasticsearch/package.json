@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.elasticsearch",
-        "module": "aws_cdk.elasticsearch"
+        "distName": "aws-cdk.aws-elasticsearch",
+        "module": "aws_cdk.aws_elasticsearch"
       }
     }
   },

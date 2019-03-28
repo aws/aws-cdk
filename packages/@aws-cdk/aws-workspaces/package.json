@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.workspaces",
-        "module": "aws_cdk.workspaces"
+        "distName": "aws-cdk.aws-workspaces",
+        "module": "aws_cdk.aws_workspaces"
       }
     }
   },

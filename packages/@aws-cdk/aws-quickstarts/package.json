@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.quickstarts",
-        "module": "aws_cdk.quickstarts"
+        "distName": "aws-cdk.aws-quickstarts",
+        "module": "aws_cdk.aws_quickstarts"
       }
     }
   },

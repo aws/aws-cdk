@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.redshift",
-        "module": "aws_cdk.redshift"
+        "distName": "aws-cdk.aws-redshift",
+        "module": "aws_cdk.aws_redshift"
       }
     }
   },

@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.guardduty",
-        "module": "aws_cdk.guardduty"
+        "distName": "aws-cdk.aws-guardduty",
+        "module": "aws_cdk.aws_guardduty"
       }
     }
   },

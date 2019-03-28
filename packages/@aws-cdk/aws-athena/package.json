@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.athena",
-        "module": "aws_cdk.athena"
+        "distName": "aws-cdk.aws-athena",
+        "module": "aws_cdk.aws_athena"
       }
     }
   },

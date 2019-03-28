@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.fsx",
-        "module": "aws_cdk.fsx"
+        "distName": "aws-cdk.aws-fsx",
+        "module": "aws_cdk.aws_fsx"
       }
     }
   },

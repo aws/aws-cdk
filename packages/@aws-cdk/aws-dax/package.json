@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.dax",
-        "module": "aws_cdk.dax"
+        "distName": "aws-cdk.aws-dax",
+        "module": "aws_cdk.aws_dax"
       }
     }
   },

@@ -22,8 +22,8 @@
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.gamelift",
-        "module": "aws_cdk.gamelift"
+        "distName": "aws-cdk.aws-gamelift",
+        "module": "aws_cdk.aws_gamelift"
       }
     }
   },
