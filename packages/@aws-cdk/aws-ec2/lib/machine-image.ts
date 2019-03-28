@@ -50,28 +50,28 @@ export interface AmazonLinuxImageProps {
    *
    * @default AmazonLinux
    */
-  generation?: AmazonLinuxGeneration;
+  readonly generation?: AmazonLinuxGeneration;
 
   /**
    * What edition of Amazon Linux to use
    *
    * @default Standard
    */
-  edition?: AmazonLinuxEdition;
+  readonly edition?: AmazonLinuxEdition;
 
   /**
    * Virtualization type
    *
    * @default HVM
    */
-  virtualization?: AmazonLinuxVirt;
+  readonly virtualization?: AmazonLinuxVirt;
 
   /**
    * What storage backed image to use
    *
    * @default GeneralPurpose
    */
-  storage?: AmazonLinuxStorage;
+  readonly storage?: AmazonLinuxStorage;
 }
 
 /**

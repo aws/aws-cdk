@@ -90,7 +90,8 @@ export class Stage implements cpapi.IStage {
   private renderAction(action: cpapi.Action): CfnPipeline.ActionDeclarationProperty {
     return {
       name: action.actionName,
-      inputArtifacts: action._inputArtifacts.map(a => ({ name: a.artifactName })),
+      // TODO: remove "as any"
+      inputArtifacts: (action as any)._inputArtifacts.map((a: any) => ({ name: a.artifactName })),
       actionTypeId: {
         category: action.category.toString(),
         version: action.version,
@@ -98,7 +99,8 @@ export class Stage implements cpapi.IStage {
         provider: action.provider,
       },
       configuration: action.configuration,
-      outputArtifacts: action._outputArtifacts.map(a => ({ name: a.artifactName })),
+      // TODO: remove "as any"
+      outputArtifacts: (action as any)._outputArtifacts.map((a: any) => ({ name: a.artifactName })),
       runOrder: action.runOrder,
       roleArn: action.role ? action.role.roleArn : undefined
     };

@@ -13,33 +13,33 @@ export interface BaseLoadBalancerProps {
    *
    * @default Automatically generated name
    */
-  loadBalancerName?: string;
+  readonly loadBalancerName?: string;
 
   /**
    * The VPC network to place the load balancer in
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 
   /**
    * Whether the load balancer has an internet-routable address
    *
    * @default false
    */
-  internetFacing?: boolean;
+  readonly internetFacing?: boolean;
 
   /**
    * Where in the VPC to place the load balancer
    *
    * @default Public subnets if internetFacing, otherwise private subnets
    */
-  vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Indicates whether deletion protection is enabled.
    *
    * @default false
    */
-  deletionProtection?: boolean;
+  readonly deletionProtection?: boolean;
 }
 
 /**

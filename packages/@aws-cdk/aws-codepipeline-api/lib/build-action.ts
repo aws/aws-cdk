@@ -8,36 +8,36 @@ export interface BuildActionProps extends CommonActionProps {
   /**
    * The source to use as input for this build.
    */
-  inputArtifact: Artifact;
+  readonly inputArtifact: Artifact;
 
   /**
    * The service provider that the action calls. For example, a valid provider for Source actions is CodeBuild.
    */
-  provider: string;
+  readonly provider: string;
 
   /**
    * The upper and lower bounds on the number of input and output artifacts for this Action.
    */
-  artifactBounds: ActionArtifactBounds;
+  readonly artifactBounds: ActionArtifactBounds;
 
   /**
    * The build Action owner (could be 'AWS', 'ThirdParty' or 'Custom').
    *
    * @default 'AWS'
    */
-  owner?: string;
+  readonly owner?: string;
 
   /**
    * The build Action version.
    *
    * @default '1'
    */
-  version?: string;
+  readonly version?: string;
 
   /**
    * The name of the build's output artifact.
    */
-  outputArtifactName: string;
+  readonly outputArtifactName: string;
 
   /**
    * The action's configuration. These are key-value pairs that specify input values for an action.
@@ -45,7 +45,7 @@ export interface BuildActionProps extends CommonActionProps {
    *
    * http://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements
    */
-  configuration?: any;
+  readonly configuration?: any;
 }
 
 /**

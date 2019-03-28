@@ -7,21 +7,21 @@ export interface TextWidgetProps {
   /**
    * The text to display, in MarkDown format
    */
-  markdown: string;
+  readonly markdown: string;
 
   /**
    * Width of the widget, in a grid of 24 units wide
    *
    * @default 6
    */
-  width?: number;
+  readonly width?: number;
 
   /**
    * Height of the widget
    *
    * @default 2
    */
-  height?: number;
+  readonly height?: number;
 }
 
 /**

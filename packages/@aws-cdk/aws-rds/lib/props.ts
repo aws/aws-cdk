@@ -18,24 +18,24 @@ export interface InstanceProps {
   /**
    * What type of instance to start for the replicas
    */
-  instanceType: ec2.InstanceType;
+  readonly instanceType: ec2.InstanceType;
 
   /**
    * What subnets to run the RDS instances in.
    *
    * Must be at least 2 subnets in two different AZs.
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 
   /**
    * Where to place the instances within the VPC
    */
-  vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Security group. If not specified a new one will be created.
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 /**
@@ -46,7 +46,7 @@ export interface BackupProps {
   /**
    * How many days to retain the backup
    */
-  retentionDays: number;
+  readonly retentionDays: number;
 
   /**
    * A daily time range in 24-hours UTC format in which backups preferably execute.
@@ -55,7 +55,7 @@ export interface BackupProps {
    *
    * Example: '01:00-02:00'
    */
-  preferredWindow?: string;
+  readonly preferredWindow?: string;
 }
 
 /**
@@ -65,7 +65,7 @@ export interface Login {
   /**
    * Username
    */
-  username: string;
+  readonly username: string;
 
   /**
    * Password
@@ -74,14 +74,14 @@ export interface Login {
    *
    * @default a Secrets Manager generated password
    */
-  password?: string;
+  readonly password?: string;
 
   /**
    * KMS encryption key to encrypt the generated secret.
    *
    * @default default master key
    */
-  kmsKey?: kms.IEncryptionKey;
+  readonly kmsKey?: kms.IEncryptionKey;
 }
 
 /**

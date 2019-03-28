@@ -11,19 +11,19 @@ export interface ScalableTargetProps {
   /**
    * The minimum value that Application Auto Scaling can use to scale a target during a scaling activity.
    */
-  minCapacity: number;
+  readonly minCapacity: number;
 
   /**
    * The maximum value that Application Auto Scaling can use to scale a target during a scaling activity.
    */
-  maxCapacity: number;
+  readonly maxCapacity: number;
 
   /**
    * Role that allows Application Auto Scaling to modify your scalable target.
    *
    * @default A role is automatically created
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * The resource identifier to associate with this scalable target.
@@ -33,7 +33,7 @@ export interface ScalableTargetProps {
    * @example service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_RegisterScalableTarget.html
    */
-  resourceId: string;
+  readonly resourceId: string;
 
   /**
    * The scalable dimension that's associated with the scalable target.
@@ -43,7 +43,7 @@ export interface ScalableTargetProps {
    * @example ecs:service:DesiredCount
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_ScalingPolicy.html
    */
-  scalableDimension: string;
+  readonly scalableDimension: string;
 
   /**
    * The namespace of the AWS service that provides the resource or
@@ -55,7 +55,7 @@ export interface ScalableTargetProps {
    *
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_RegisterScalableTarget.html
    */
-  serviceNamespace: ServiceNamespace;
+  readonly serviceNamespace: ServiceNamespace;
 }
 
 /**
@@ -169,21 +169,21 @@ export interface ScalingSchedule {
    *
    * @example rate(12 hours)
    */
-  schedule: string;
+  readonly schedule: string;
 
   /**
    * When this scheduled action becomes active.
    *
    * @default The rule is activate immediately
    */
-  startTime?: Date
+  readonly startTime?: Date
 
   /**
    * When this scheduled action expires.
    *
    * @default The rule never expires.
    */
-  endTime?: Date;
+  readonly endTime?: Date;
 
   /**
    * The new minimum capacity.
@@ -195,7 +195,7 @@ export interface ScalingSchedule {
    *
    * @default No new minimum capacity
    */
-  minCapacity?: number;
+  readonly minCapacity?: number;
 
   /**
    * The new maximum capacity.
@@ -207,7 +207,7 @@ export interface ScalingSchedule {
    *
    * @default No new maximum capacity
    */
-  maxCapacity?: number;
+  readonly maxCapacity?: number;
 }
 
 /**

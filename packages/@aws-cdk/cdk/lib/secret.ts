@@ -18,23 +18,23 @@ export interface SecretParameterProps {
   /**
    * The name of the SSM parameter where the secret value is stored.
    */
-  ssmParameter: string;
+  readonly ssmParameter: string;
 
   /**
    * A string of up to 4000 characters that describes the parameter.
    * @default No description
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * A regular expression that represents the patterns to allow for String types.
    */
-  allowedPattern?: string;
+  readonly allowedPattern?: string;
 
   /**
    * An array containing the list of values allowed for the parameter.
    */
-  allowedValues?: string[];
+  readonly allowedValues?: string[];
 
   /**
    * A string that explains a constraint when the constraint is violated.
@@ -42,17 +42,17 @@ export interface SecretParameterProps {
    * pattern of [A-Za-z0-9]+ displays the following error message when the user specifies
    * an invalid value:
    */
-  constraintDescription?: string;
+  readonly constraintDescription?: string;
 
   /**
    * An integer value that determines the largest number of characters you want to allow for String types.
    */
-  maxLength?: number;
+  readonly maxLength?: number;
 
   /**
    * An integer value that determines the smallest number of characters you want to allow for String types.
    */
-  minLength?: number;
+  readonly minLength?: number;
 }
 
 /**

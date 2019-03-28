@@ -37,14 +37,14 @@ export function generateArbitraryIntervals(mrng: IRandomGenerator): ArbitraryInt
         if (mrng.nextBoolean()) {
           ret.splice(ret.indexOf(noChanges[0]), 1);
         } else {
-          noChanges[0].change = -1 * factor + bias;
+          noChanges[0] = { ...noChanges[0], change: -1 * factor + bias };
         }
       }
       if (mrng.nextBoolean()) {
         if (mrng.nextBoolean()) {
           ret.splice(ret.indexOf(noChanges[1]), 1);
         } else {
-          noChanges[1].change = 1 * factor + bias;
+          noChanges[1] = { ...noChanges[1], change: 1 * factor + bias };
         }
       }
     } else {
@@ -54,8 +54,8 @@ export function generateArbitraryIntervals(mrng: IRandomGenerator): ArbitraryInt
         ret.splice(ret.indexOf(noChanges[0]), 1);
         ret.splice(ret.indexOf(noChanges[1]), 1);
       } else {
-        noChanges[0].change = -1 * factor + bias;
-        noChanges[1].change = 1 * factor + bias;
+        noChanges[0] = { ...noChanges[0], change: -1 * factor + bias };
+        noChanges[1] = { ...noChanges[1], change: 1 * factor + bias };
       }
     }
 
@@ -77,13 +77,13 @@ export function generateArbitraryIntervals(mrng: IRandomGenerator): ArbitraryInt
         // scrap lower bound
         // okay if current interval has an upper bound AND the preceding interval has an upper bound
         if (ret[i].upper !== undefined && (i === 0 || ret[i - 1].upper !== undefined)) {
-          ret[i].lower = undefined;
+          ret[i] = { ...ret[i], lower: undefined };
         }
       } else {
         // scrap upper bound
         // okay if current interval has a lower bound AND the succeeding interval has a lower bound
         if (ret[i].lower !== undefined && (i === ret.length - 1 || ret[i + 1].lower !== undefined)) {
-          ret[i].upper = undefined;
+          ret[i] = { ...ret[i], upper: undefined };
         }
       }
     }
@@ -97,6 +97,6 @@ export interface IRandomGenerator {
 }
 
 export interface ArbitraryIntervals {
-  absolute: boolean;
-  intervals: appscaling.ScalingInterval[];
+  readonly absolute: boolean;
+  readonly intervals: appscaling.ScalingInterval[];
 }
