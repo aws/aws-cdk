@@ -168,7 +168,7 @@ export = {
             cluster,
             taskDefinition,
             vpcSubnets: {
-              subnetType: ec2.SubnetType.Public
+              subnetTypes: [ec2.SubnetType.Public]
             }
           });
         });
@@ -249,7 +249,7 @@ export = {
           cluster,
           taskDefinition,
           vpcSubnets: {
-            subnetType: ec2.SubnetType.Public
+            subnetTypes: [ec2.SubnetType.Public]
           }
         });
 

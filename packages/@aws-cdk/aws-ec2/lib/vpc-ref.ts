@@ -75,7 +75,7 @@ export interface IVpcNetwork extends IConstruct {
   /**
    * Return the subnets appropriate for the placement strategy
    */
-  subnets(selection?: SubnetSelection): IVpcSubnet[];
+  selectSubnets(selection?: SubnetSelection): IVpcSubnet[];
 
   /**
    * Return a dependable object representing internet connectivity for the given subnets
@@ -152,16 +152,16 @@ export enum SubnetType {
  */
 export interface SubnetSelection {
   /**
-   * Place the instances in the subnets of the given type
+   * Place the instances in the subnets of the given types
    *
    * At most one of `subnetType` and `subnetName` can be supplied.
    *
    * @default SubnetType.Private
    */
-  readonly subnetType?: SubnetType;
+  readonly subnetTypes?: SubnetType[];
 
   /**
-   * Place the instances in the subnets with the given name
+   * Place the instances in the subnets with the given names
    *
    * (This is the name supplied in subnetConfiguration).
    *
@@ -169,7 +169,7 @@ export interface SubnetSelection {
    *
    * @default name
    */
-  readonly subnetName?: string;
+  readonly subnetNames?: string[];
 }
 
 /**
@@ -223,7 +223,7 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   public subnetIds(selection: SubnetSelection = {}): string[] {
     selection = reifySelectionDefaults(selection);
 
-    const nets = this.subnets(selection);
+    const nets = this.selectSubnets(selection);
     if (nets.length === 0) {
       throw new Error(`There are no ${describeSelection(selection)} in this VPC. Use a different VPC subnet selection.`);
     }
@@ -238,7 +238,7 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
     selection = reifySelectionDefaults(selection);
 
     const ret = new CompositeDependable();
-    for (const subnet of this.subnets(selection)) {
+    for (const subnet of this.selectSubnets(selection)) {
       ret.add(subnet.internetConnectivityEstablished);
     }
     return ret;
@@ -287,27 +287,34 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   /**
    * Return the subnets appropriate for the placement strategy
    */
-  public subnets(selection: SubnetSelection = {}): IVpcSubnet[] {
+  public selectSubnets(selection: SubnetSelection = {}): IVpcSubnet[] {
     selection = reifySelectionDefaults(selection);
 
     // Select by name
-    if (selection.subnetName !== undefined) {
-      const allSubnets = this.privateSubnets.concat(this.publicSubnets).concat(this.isolatedSubnets);
-      const selectedSubnets = allSubnets.filter(s => subnetName(s) === selection.subnetName);
-      if (selectedSubnets.length === 0) {
-        throw new Error(`No subnets with name: ${selection.subnetName}`);
+    if (selection.subnetNames !== undefined) {
+      const allSubnets = [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
+      const names = selection.subnetNames;
+      const nameSubnets = allSubnets.filter(s => names.includes(subnetName(s)));
+      if (nameSubnets.length === 0) {
+        throw new Error(`No subnets with names in: ${selection.subnetNames}`);
       }
-      return selectedSubnets;
+      return nameSubnets;
     }
 
     // Select by type
-    if (selection.subnetType === undefined) { return this.privateSubnets; }
+    if (selection.subnetTypes === undefined) { return this.privateSubnets; }
 
-    return {
-      [SubnetType.Isolated]: this.isolatedSubnets,
-      [SubnetType.Private]: this.privateSubnets,
-      [SubnetType.Public]: this.publicSubnets,
-    }[selection.subnetType];
+    let typeSubnets: IVpcSubnet[] = [];
+    if (selection.subnetTypes.includes(SubnetType.Public)) {
+      typeSubnets = [...typeSubnets, ...this.publicSubnets];
+    }
+    if (selection.subnetTypes.includes(SubnetType.Private)) {
+      typeSubnets = [...typeSubnets, ...this.privateSubnets];
+    }
+    if (selection.subnetTypes.includes(SubnetType.Isolated)) {
+      typeSubnets = [...typeSubnets, ...this.isolatedSubnets];
+    }
+    return typeSubnets;
   }
 }
 
@@ -392,12 +399,12 @@ export interface VpcSubnetImportProps {
  * Returns "private subnets" by default.
  */
 function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
-    if (placement.subnetType !== undefined && placement.subnetName !== undefined) {
+    if (placement.subnetTypes !== undefined && placement.subnetNames !== undefined) {
       throw new Error('Only one of subnetType and subnetName can be supplied');
     }
 
-    if (placement.subnetType === undefined && placement.subnetName === undefined) {
-      return { subnetType: SubnetType.Private };
+    if (placement.subnetTypes === undefined && placement.subnetNames === undefined) {
+      return { subnetTypes: [SubnetType.Private] };
     }
 
     return placement;
@@ -407,13 +414,17 @@ function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
  * Describe the given placement strategy
  */
 function describeSelection(placement: SubnetSelection): string {
-  if (placement.subnetType !== undefined) {
-    return `'${DEFAULT_SUBNET_NAME[placement.subnetType]}' subnets`;
+  if (placement.subnetTypes !== undefined) {
+    return `'${joinCommaOr(placement.subnetTypes.map(type => DEFAULT_SUBNET_NAME[type]))}' subnets`;
   }
-  if (placement.subnetName !== undefined) {
-    return `subnets named '${placement.subnetName}'`;
+  if (placement.subnetNames !== undefined) {
+    return `subnets named '${joinCommaOr(placement.subnetNames)}'`;
   }
   return JSON.stringify(placement);
+}
+
+function joinCommaOr(array: string[]) {
+  return [array.slice(0, -1).join(', '), array.slice(-1)[0]].join(array.length < 2 ? '' : ' or ');
 }
 
 class CompositeDependable implements IDependable {

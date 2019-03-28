@@ -292,7 +292,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     };
 
     if (!props.vpc.isPublicSubnets(subnetIds) && props.associatePublicIpAddress) {
-      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.Public })");
+      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetTypes: [SubnetType.Public] })");
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);

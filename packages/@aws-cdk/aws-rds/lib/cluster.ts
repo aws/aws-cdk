@@ -312,7 +312,9 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
                      props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                      undefined;
 
-      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.Public;
+      const publiclyAccessible = props.instanceProps.vpcSubnets &&
+        props.instanceProps.vpcSubnets.subnetTypes &&
+        props.instanceProps.vpcSubnets.subnetTypes.includes(ec2.SubnetType.Public);
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster

@@ -27,13 +27,13 @@ export interface ClusterProps {
    *
    * ```ts
    * vpcSubnets: [
-   *   { subnetType: ec2.SubnetType.Private }
+   *   { subnetTypes: [ec2.SubnetType.Private] }
    * ]
    * ```
    *
    * @default All public and private subnets
    */
-  readonly vpcSubnets?: ec2.SubnetSelection[];
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf.
@@ -162,8 +162,8 @@ export class Cluster extends ClusterBase {
     });
 
     // Get subnetIds for all selected subnets
-    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.Public }, { subnetType: ec2.SubnetType.Private }];
-    const subnetIds = flatMap(placements, p => this.vpc.subnetIds(p));
+    const placements = props.vpcSubnets || { subnetTypes: [ec2.SubnetType.Public, ec2.SubnetType.Private] };
+    const subnetIds = this.vpc.subnetIds(placements);
 
     const resource = new CfnCluster(this, 'Resource', {
       name: props.clusterName,
@@ -331,12 +331,4 @@ class ImportedCluster extends ClusterBase {
       i++;
     }
   }
-}
-
-function flatMap<T, U>(xs: T[], f: (x: T) => U[]): U[] {
-  const ret = new Array<U>();
-  for (const x of xs) {
-    ret.push(...f(x));
-  }
-  return ret;
 }
