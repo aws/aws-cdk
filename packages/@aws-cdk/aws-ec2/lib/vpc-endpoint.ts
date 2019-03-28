@@ -32,11 +32,18 @@ export interface IVpcGatewayEndpoint extends IVpcEndpoint {
 export enum VpcEndpointType {
   /**
    * Interface
+   *
+   * An interface endpoint is an elastic network interface with a private IP
+   * address that serves as an entry point for traffic destined to a supported
+   * service.
    */
   Interface = 'Interface',
 
   /**
    * Gateway
+   *
+   * A gateway endpoint is a gateway that is a target for a specified route in
+   * your route table, used for traffic destined to a supported AWS service.
    */
   Gateway = 'Gateway'
 }
@@ -44,7 +51,7 @@ export enum VpcEndpointType {
 /**
  * A VPC endpoint service.
  */
-export interface VpcEndpointService {
+export interface IVpcEndpointService {
   /**
    * The name of the service.
    */
@@ -59,7 +66,7 @@ export interface VpcEndpointService {
 /**
  * A VPC endpoint AWS service.
  */
-export class VpcEndpointAwsService implements VpcEndpointService {
+export class VpcEndpointAwsService implements IVpcEndpointService {
   public static readonly SageMakerNotebook = new VpcEndpointAwsService('sagemaker', VpcEndpointType.Interface, 'aws.sagemaker');
   public static readonly CloudFormation = new VpcEndpointAwsService('cloudformation');
   public static readonly CloudTrail = new VpcEndpointAwsService('cloudtrail');
@@ -123,7 +130,7 @@ export interface VpcEndpointOptions {
   /**
    * The service to use for this VPC endpoint.
    */
-  readonly service: VpcEndpointService;
+  readonly service: IVpcEndpointService;
 }
 
 /**
