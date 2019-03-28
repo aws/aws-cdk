@@ -2,7 +2,7 @@ import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { LogGroup } from '../lib';
+import { LogGroup, RetentionDays } from '../lib';
 
 export = {
   'fixed retention'(test: Test) {
@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: 7
+      retentionDays: RetentionDays.OneWeek
     });
 
     // THEN
