@@ -73,6 +73,13 @@ async function main() {
       ? lowcaseModuleName
       : `${moduleFamily.toLocaleLowerCase()}-${lowcaseModuleName}`;
 
+    // python names
+    const pythonDistSubName = moduleFamily === 'AWS'
+      ? lowcaseModuleName
+      : `${moduleFamily.toLocaleLowerCase()}.${lowcaseModuleName}`;
+    const pythonDistName = `aws-cdk.${pythonDistSubName}`;
+    const pythonModuleName = pythonDistName.replace(/-/g, "_");
+
     async function write(relativePath: string, contents: string[] | string | object) {
       const fullPath = path.join(packagePath, relativePath);
       const dir = path.dirname(fullPath);
@@ -115,6 +122,10 @@ async function main() {
               groupId: javaGroupId,
               artifactId: javaArtifactId
             }
+          },
+          pytohn: {
+            distName: pythonDistName,
+            module: pythonModuleName
           },
           sphinx: {}
         }
