@@ -1,7 +1,7 @@
 'use strict';
 
 const AWS = require('aws-sdk-mock');
-const LambdaTester = require('lambda-tester');
+const LambdaTester = require('lambda-tester').noVersionCheck();
 const sinon = require('sinon');
 const handler = require('..');
 const nock = require('nock');
