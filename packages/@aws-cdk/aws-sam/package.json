@@ -20,7 +20,11 @@
           "artifactId": "sam"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-sam",
+        "module": "aws_cdk.aws_sam"
+      }
     }
   },
   "repository": {

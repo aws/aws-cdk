@@ -20,7 +20,11 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-kinesisanalytics",
+        "module": "aws_cdk.aws_kinesisanalytics"
+      }
     }
   },
   "repository": {

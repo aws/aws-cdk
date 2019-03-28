@@ -20,7 +20,11 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-elasticloadbalancing",
+        "module": "aws_cdk.aws_elasticloadbalancing"
+      }
     }
   },
   "repository": {
