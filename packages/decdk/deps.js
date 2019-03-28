@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const pkg = require('./package.json');
-const deps = pkg.dependencies || {};
+const deps = pkg.dependencies || (pkg.dependencies = {});
 
 const root = path.resolve('..', '..', 'packages', '@aws-cdk');
 const modules = fs.readdirSync(root);
@@ -18,8 +18,17 @@ for (const dir of modules) {
     continue;
   }
   const meta = require(path.join(module, 'package.json'));
-
   const exists = deps[meta.name];
+
+  if (meta.deprecated) {
+    if (exists) {
+      console.error(`spurious dependency on deprecated: ${meta.name}`);
+      errors = true;
+    }
+    delete deps[meta.name];
+    continue;
+  }
+
   if (!exists) {
     console.error(`missing dependency: ${meta.name}`);
     errors = true;

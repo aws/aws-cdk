@@ -176,7 +176,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     new CfnPermission(this, id, {
       action,
       principal,
-      functionName: this.functionName,
+      functionName: this.functionArn,
       eventSourceToken: permission.eventSourceToken,
       sourceAccount: permission.sourceAccount,
       sourceArn: permission.sourceArn,
