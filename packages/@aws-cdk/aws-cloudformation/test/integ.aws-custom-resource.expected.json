@@ -8,12 +8,9 @@
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
-            "SingletonLambda679f53fac002430cb0da5b7982bd2287AF41E197",
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
             "Arn"
           ]
-        },
-        "PhysicalResourceId": {
-          "Ref": "TopicBFC7AF6E"
         },
         "Create": {
           "service": "SNS",
@@ -23,6 +20,9 @@
             "TopicArn": {
               "Ref": "TopicBFC7AF6E"
             }
+          },
+          "physicalResourceId": {
+            "Ref": "TopicBFC7AF6E"
           }
         },
         "Update": {
@@ -33,11 +33,14 @@
             "TopicArn": {
               "Ref": "TopicBFC7AF6E"
             }
+          },
+          "physicalResourceId": {
+            "Ref": "TopicBFC7AF6E"
           }
         }
       }
     },
-    "SingletonLambda679f53fac002430cb0da5b7982bd2287ServiceRole905CAE98": {
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -78,23 +81,13 @@
         ]
       }
     },
-    "SingletonLambda679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicy4215D22C": {
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
           "Statement": [
             {
               "Action": "sns:Publish",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "sns:Publish",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": "sns:ListTopics",
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -106,20 +99,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "SingletonLambda679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicy4215D22C",
+        "PolicyName": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
         "Roles": [
           {
-            "Ref": "SingletonLambda679f53fac002430cb0da5b7982bd2287ServiceRole905CAE98"
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ]
       }
     },
-    "SingletonLambda679f53fac002430cb0da5b7982bd2287AF41E197": {
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "SingletonLambda679f53fac002430cb0da5b7982bd2287CodeS3Bucket277B9EBE"
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287CodeS3BucketF55839B6"
           },
           "S3Key": {
             "Fn::Join": [
@@ -132,7 +125,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "SingletonLambda679f53fac002430cb0da5b7982bd2287CodeS3VersionKey7868E97C"
+                          "Ref": "AWS679f53fac002430cb0da5b7982bd2287CodeS3VersionKey3C45B02F"
                         }
                       ]
                     }
@@ -145,7 +138,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "SingletonLambda679f53fac002430cb0da5b7982bd2287CodeS3VersionKey7868E97C"
+                          "Ref": "AWS679f53fac002430cb0da5b7982bd2287CodeS3VersionKey3C45B02F"
                         }
                       ]
                     }
@@ -158,15 +151,15 @@
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "SingletonLambda679f53fac002430cb0da5b7982bd2287ServiceRole905CAE98",
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
             "Arn"
           ]
         },
         "Runtime": "nodejs8.10"
       },
       "DependsOn": [
-        "SingletonLambda679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicy4215D22C",
-        "SingletonLambda679f53fac002430cb0da5b7982bd2287ServiceRole905CAE98"
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
       ]
     },
     "ListTopicsCE1E0341": {
@@ -174,32 +167,31 @@
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
-            "SingletonLambda679f53fac002430cb0da5b7982bd2287AF41E197",
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
             "Arn"
           ]
         },
-        "PhysicalResourceId": {
-          "Ref": "TopicBFC7AF6E"
-        },
         "Create": {
           "service": "SNS",
-          "action": "listTopics"
+          "action": "listTopics",
+          "physicalResourceIdPath": "Topics.0.TopicArn"
         },
         "Update": {
           "service": "SNS",
-          "action": "listTopics"
+          "action": "listTopics",
+          "physicalResourceIdPath": "Topics.0.TopicArn"
         }
       }
     }
   },
   "Parameters": {
-    "SingletonLambda679f53fac002430cb0da5b7982bd2287CodeS3Bucket277B9EBE": {
+    "AWS679f53fac002430cb0da5b7982bd2287CodeS3BucketF55839B6": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"aws-cdk-sdk-js/SingletonLambda679f53fac002430cb0da5b7982bd2287/Code\""
+      "Description": "S3 bucket for asset \"aws-cdk-sdk-js/AWS679f53fac002430cb0da5b7982bd2287/Code\""
     },
-    "SingletonLambda679f53fac002430cb0da5b7982bd2287CodeS3VersionKey7868E97C": {
+    "AWS679f53fac002430cb0da5b7982bd2287CodeS3VersionKey3C45B02F": {
       "Type": "String",
-      "Description": "S3 key for asset version \"aws-cdk-sdk-js/SingletonLambda679f53fac002430cb0da5b7982bd2287/Code\""
+      "Description": "S3 key for asset version \"aws-cdk-sdk-js/AWS679f53fac002430cb0da5b7982bd2287/Code\""
     }
   },
   "Outputs": {

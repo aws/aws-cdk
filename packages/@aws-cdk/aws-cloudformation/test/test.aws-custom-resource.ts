@@ -13,14 +13,14 @@ export = {
 
     // WHEN
     new AwsCustomResource(stack, 'AwsSdk', {
-      physicalResourceId: 'id1234',
       onCreate: {
         service: 'CloudWatchLogs',
         action: 'putRetentionPolicy',
         parameters: {
           logGroupName: '/aws/lambda/loggroup',
           retentionInDays: 90
-        }
+        },
+        physicalResourceId: 'loggroup'
       },
       onDelete: {
         service: 'CloudWatchLogs',
@@ -33,14 +33,14 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('Custom::AWS', {
-      "PhysicalResourceId": "id1234",
       "Create": {
         "service": "CloudWatchLogs",
         "action": "putRetentionPolicy",
         "parameters": {
           "logGroupName": "/aws/lambda/loggroup",
           "retentionInDays": 90
-        }
+        },
+        "physicalResourceId": "loggroup"
       },
       "Delete": {
         "service": "CloudWatchLogs",
@@ -78,7 +78,6 @@ export = {
 
     // WHEN
     new AwsCustomResource(stack, 'AwsSdk', {
-      physicalResourceId: 'id1234',
       onUpdate: {
         service: 's3',
         action: 'putObject',
@@ -86,13 +85,13 @@ export = {
           Bucket: 'my-bucket',
           Key: 'my-key',
           Body: 'my-body'
-        }
+        },
+        physicalResourceIdPath: 'ETag'
       },
     });
 
     // THEN
     expect(stack).to(haveResource('Custom::AWS', {
-      "PhysicalResourceId": "id1234",
       "Create": {
         "service": "s3",
         "action": "putObject",
@@ -100,7 +99,8 @@ export = {
           "Bucket": "my-bucket",
           "Key": "my-key",
           "Body": "my-body"
-        }
+        },
+        "physicalResourceIdPath": "ETag"
       },
       "Update": {
         "service": "s3",
@@ -109,7 +109,8 @@ export = {
           "Bucket": "my-bucket",
           "Key": "my-key",
           "Body": "my-body"
-        }
+        },
+        "physicalResourceIdPath": "ETag"
       },
     }));
 
@@ -122,7 +123,6 @@ export = {
 
     // WHEN
     new AwsCustomResource(stack, 'AwsSdk', {
-      physicalResourceId: 'id1234',
       onUpdate: {
         service: 'S3',
         action: 'putObject',
@@ -130,7 +130,8 @@ export = {
           Bucket: 'my-bucket',
           Key: 'my-key',
           Body: 'my-body'
-        }
+        },
+        physicalResourceIdPath: 'ETag'
       },
       policyStatements: [
         new iam.PolicyStatement()
@@ -160,8 +161,27 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => {
-      new AwsCustomResource(stack, 'AwsSdk', { physicalResourceId: 'id1234' });
+      new AwsCustomResource(stack, 'AwsSdk', {});
     }, /`onCreate`.+`onUpdate`.+`onDelete`/);
+
+    test.done();
+  },
+
+  'fails when no physical resource method is specified'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => {
+      new AwsCustomResource(stack, 'AwsSdk', {
+        onUpdate: {
+          service: 'CloudWatchLogs',
+          action: 'putRetentionPolicy',
+          parameters: {
+            logGroupName: '/aws/lambda/loggroup',
+            retentionInDays: 90
+          }
+        }
+      });
+    }, /`physicalResourceId`.+`physicalResourceIdPath`/);
 
     test.done();
   }

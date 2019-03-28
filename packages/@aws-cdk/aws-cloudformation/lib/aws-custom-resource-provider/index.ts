@@ -1,5 +1,6 @@
 // tslint:disable:no-console
 import AWS = require('aws-sdk');
+import { AwsSdkCall } from '../aws-custom-resource';
 
 /**
  * Flattens a nested object
@@ -7,7 +8,7 @@ import AWS = require('aws-sdk');
  * @param object the object to be flattened
  * @returns a flat object with path as keys
  */
-function flatten(object: object): object {
+function flatten(object: object): { [key: string]: string } {
   return Object.assign(
     {},
     ...function _flatten(child: any, path: string[] = []): any {
@@ -26,18 +27,22 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     console.log(JSON.stringify(event));
     console.log('AWS SDK VERSION: ' + (AWS as any).VERSION);
 
-    let data = {};
+    let physicalResourceId = (event as any).PhysicalResourceId;
+    let data: { [key: string]: string } = {};
+    const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
-    const physicalResourceId = event.ResourceProperties.PhysicalResourceId;
+    if (call) {
+      const awsService = new (AWS as any)[call.service]();
 
-    if (event.ResourceProperties[event.RequestType]) {
-      const { service, action, parameters = {} } = event.ResourceProperties[event.RequestType];
-
-      const awsService = new (AWS as any)[service]();
-
-      const response = await awsService[action](parameters).promise();
+      const response = await awsService[call.action](call.parameters).promise();
 
       data = flatten(response);
+
+      if (call.physicalResourceIdPath) {
+        physicalResourceId = data[call.physicalResourceIdPath];
+      } else {
+        physicalResourceId = call.physicalResourceId!;
+      }
     }
 
     await respond('SUCCESS', 'OK', physicalResourceId, data);

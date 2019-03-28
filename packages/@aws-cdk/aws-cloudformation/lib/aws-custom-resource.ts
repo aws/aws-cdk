@@ -30,14 +30,27 @@ export interface AwsSdkCall {
    * The parameters for the service action
    */
   readonly parameters?: any;
+
+  /**
+   * The path to the data in the API call response to use as the physical
+   * resource id. Either `physicalResourceId` or `physicalResourceIdPath`
+   * must be specified for onCreate or onUpdate calls.
+   *
+   * @default no path
+   */
+  readonly physicalResourceIdPath?: string;
+
+  /**
+   * The physical resource id of the custom resource for this call. Either
+   * `physicalResourceId` or `physicalResourceIdPath` must be specified for
+   * onCreate or onUpdate calls.
+   *
+   * @default no phyiscal resource id
+   */
+  readonly physicalResourceId?: string;
 }
 
 export interface AwsCustomResourceProps {
-  /**
-   * The physical resource id of the custom resource.
-   */
-  readonly physicalResourceId: string;
-
   /**
    * The AWS SDK call to make when the resource is created.
    * At least onCreate, onUpdate or onDelete must be specified.
@@ -64,40 +77,12 @@ export interface AwsCustomResourceProps {
    * The IAM policy statements to allow the different calls. Use only if
    * resource restriction is needed.
    *
-   * @default Allow onCreate, onUpdate and onDelete calls on all resources ('*')
+   * @default extract the permissions for the calls
    */
   readonly policyStatements?: iam.PolicyStatement[];
 }
 
 export class AwsCustomResource extends cdk.Construct {
-  /**
-   * The physical resource id of the custom resource.
-   */
-  public readonly physicalResourceId: string;
-
-  /**
-   * The AWS SDK call made when the resource is created.
-   */
-  public readonly onCreate?: AwsSdkCall;
-
-  /**
-   * The AWS SDK call made when the resource is udpated.
-   */
-  public readonly onUpdate?: AwsSdkCall;
-
-  /**
-   * The AWS SDK call made when the resource is deleted.
-   */
-  public readonly onDelete?: AwsSdkCall;
-
-  /**
-   * The IAM policy statements used by the lambda provider.
-   */
-  public readonly policyStatements: iam.PolicyStatement[];
-
-  /**
-   * The custom resource making the AWS SDK calls.
-   */
   private readonly customResource: CustomResource;
 
   constructor(scope: cdk.Construct, id: string, props: AwsCustomResourceProps) {
@@ -107,45 +92,47 @@ export class AwsCustomResource extends cdk.Construct {
       throw new Error('At least `onCreate`, `onUpdate` or `onDelete` must be specified.');
     }
 
-    this.onCreate = props.onCreate || props.onUpdate;
-    this.onUpdate = props.onUpdate;
-    this.onDelete = props.onDelete;
-    this.physicalResourceId = props.physicalResourceId;
+    for (const call of [props.onCreate, props.onUpdate]) {
+      if (call && !call.physicalResourceId && !call.physicalResourceIdPath) {
+        throw new Error('Either `physicalResourceId` or `physicalResourceIdPath` must be specified for onCreate and onUpdate calls.');
+      }
+    }
 
-    const fn = new lambda.SingletonFunction(this, 'Function', {
+    const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.asset(path.join(__dirname, 'aws-custom-resource-provider')),
       runtime: lambda.Runtime.NodeJS810,
       handler: 'index.handler',
-      uuid: '679f53fa-c002-430c-b0da-5b7982bd2287'
+      uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
+      lambdaPurpose: 'AWS'
     });
 
     if (props.policyStatements) {
-      props.policyStatements.forEach(statement => {
-        fn.addToRolePolicy(statement);
-      });
-      this.policyStatements = props.policyStatements;
+      for (const statement of props.policyStatements) {
+        provider.addToRolePolicy(statement);
+      }
     } else { // Derive statements from AWS SDK calls
-      this.policyStatements = [];
+      const statementActions: string[] = [];
 
-      [this.onCreate, this.onUpdate, this.onDelete].forEach(call => {
-        if (call) {
-          const statement = new iam.PolicyStatement()
+      for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
+        if (call && !statementActions.includes(`${call.service}-${call.action}`)) { // Avoid duplicate statements
+          provider.addToRolePolicy(
+            new iam.PolicyStatement()
             .addAction(awsSdkToIamAction(call.service, call.action))
-            .addAllResources();
-          fn.addToRolePolicy(statement); // TODO: remove duplicates?
-          this.policyStatements.push(statement);
+            .addAllResources()
+          );
+
+          statementActions.push(`${call.service}-${call.action}`);
         }
-      });
+      }
     }
 
     this.customResource = new CustomResource(this, 'Resource', {
       resourceType: 'Custom::AWS',
-      lambdaProvider: fn,
+      lambdaProvider: provider,
       properties: {
-        physicalResourceId: this.physicalResourceId,
-        create: this.onCreate,
-        update: this.onUpdate,
-        delete: this.onDelete
+        create: props.onCreate || props.onUpdate,
+        update: props.onUpdate,
+        delete: props.onDelete
       }
     });
   }

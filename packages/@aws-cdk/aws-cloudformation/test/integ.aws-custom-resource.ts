@@ -10,22 +10,22 @@ const stack = new cdk.Stack(app, 'aws-cdk-sdk-js');
 const topic = new sns.Topic(stack, 'Topic');
 
 const snsPublish = new AwsCustomResource(stack, 'Publish', {
-  physicalResourceId: topic.topicArn,
   onUpdate: {
     service: 'SNS',
     action: 'publish',
     parameters: {
       Message: 'hello',
       TopicArn: topic.topicArn
-    }
+    },
+    physicalResourceId: topic.topicArn,
   }
 });
 
 const listTopics = new AwsCustomResource(stack, 'ListTopics', {
-  physicalResourceId: topic.topicArn,
   onUpdate: {
     service: 'SNS',
-    action: 'listTopics'
+    action: 'listTopics',
+    physicalResourceIdPath: 'Topics.0.TopicArn'
   }
 });
 
