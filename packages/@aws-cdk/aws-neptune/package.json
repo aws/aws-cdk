@@ -20,7 +20,11 @@
           "artifactId": "neptune"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-neptune",
+        "module": "aws_cdk.aws_neptune"
+      }
     }
   },
   "repository": {

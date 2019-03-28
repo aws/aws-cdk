@@ -20,7 +20,11 @@
           "artifactId": "robomaker"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-robomaker",
+        "module": "aws_cdk.aws_robomaker"
+      }
     }
   },
   "repository": {

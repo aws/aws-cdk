@@ -20,7 +20,11 @@
           "artifactId": "iotanalytics"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-iotanalytics",
+        "module": "aws_cdk.aws_iotanalytics"
+      }
     }
   },
   "repository": {

@@ -19,6 +19,10 @@
         "packageId": "Amazon.CDK.AppDelivery",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "python": {
+        "distName": "aws-cdk.app-delivery",
+        "module": "aws_cdk.app_delivery"
       }
     },
     "outdir": "dist"

@@ -20,7 +20,11 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-directoryservice",
+        "module": "aws_cdk.aws_directoryservice"
+      }
     }
   },
   "repository": {

@@ -20,7 +20,11 @@
           "artifactId": "amazonmq"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-amazonmq",
+        "module": "aws_cdk.aws_amazonmq"
+      }
     }
   },
   "repository": {

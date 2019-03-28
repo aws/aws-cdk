@@ -20,7 +20,11 @@
           "artifactId": "secretsmanager"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-secretsmanager",
+        "module": "aws_cdk.aws_secretsmanager"
+      }
     }
   },
   "repository": {
