@@ -142,7 +142,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -180,7 +183,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -218,7 +224,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -256,7 +265,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -290,7 +302,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -324,7 +339,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -1132,7 +1150,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloWorldFunctionB2AB6E79",
+          "Fn::GetAtt": Array [
+            "HelloWorldFunctionB2AB6E79",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -1170,7 +1191,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloWorldFunctionB2AB6E79",
+          "Fn::GetAtt": Array [
+            "HelloWorldFunctionB2AB6E79",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -1208,7 +1232,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloWorldFunctionB2AB6E79",
+          "Fn::GetAtt": Array [
+            "HelloWorldFunctionB2AB6E79",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -1242,7 +1269,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloWorldFunctionB2AB6E79",
+          "Fn::GetAtt": Array [
+            "HelloWorldFunctionB2AB6E79",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -1352,7 +1382,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloWorldFunctionB2AB6E79",
+          "Fn::GetAtt": Array [
+            "HelloWorldFunctionB2AB6E79",
+            "Arn",
+          ],
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": Object {
@@ -1595,7 +1628,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "LambdaD247545B",
+          "Fn::GetAtt": Array [
+            "LambdaD247545B",
+            "Arn",
+          ],
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": Object {
