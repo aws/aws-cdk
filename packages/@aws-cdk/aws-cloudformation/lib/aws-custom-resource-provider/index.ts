@@ -1,24 +1,30 @@
-const AWS = require('aws-sdk');
+// tslint:disable:no-console
+import AWS = require('aws-sdk');
 
 /**
- * Flattens a nested object. Keys are path.
+ * Flattens a nested object
+ *
+ * @param object the object to be flattened
+ * @returns a flat object with path as keys
  */
-function flatten(object) {
+function flatten(object: object): object {
   return Object.assign(
     {},
-    ...function _flatten(child, path = []) {
-      return [].concat(...Object.keys(child).map(key => typeof child[key] === 'object'
-          ? _flatten(child[key], path.concat([key]))
-          : ({ [path.concat([key]).join('.')] : child[key] })
+    ...function _flatten(child: any, path: string[] = []): any {
+      return [].concat(...Object.keys(child)
+        .map(key =>
+          typeof child[key] === 'object'
+            ? _flatten(child[key], path.concat([key]))
+            : ({ [path.concat([key]).join('.')]: child[key] })
       ));
     }(object)
   );
 }
 
-exports.handler = async function(event, context) {
+export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
     console.log(JSON.stringify(event));
-    console.log('AWS SDK VERSION: ' + AWS.VERSION);
+    console.log('AWS SDK VERSION: ' + (AWS as any).VERSION);
 
     let data = {};
 
@@ -27,7 +33,7 @@ exports.handler = async function(event, context) {
     if (event.ResourceProperties[event.RequestType]) {
       const { service, action, parameters = {} } = event.ResourceProperties[event.RequestType];
 
-      const awsService = new AWS[service]();
+      const awsService = new (AWS as any)[service]();
 
       const response = await awsService[action](parameters).promise();
 
@@ -40,7 +46,7 @@ exports.handler = async function(event, context) {
     await respond('FAILED', e.message, context.logStreamName, {});
   }
 
-  function respond(responseStatus, reason, physicalResourceId, data) {
+  function respond(responseStatus: string, reason: string, physicalResourceId: string, data: any) {
     const responseBody = JSON.stringify({
       Status: responseStatus,
       Reason: reason,
@@ -52,7 +58,7 @@ exports.handler = async function(event, context) {
       Data: data
     });
 
-    console.log('Responding', JSON.stringify(responseBody));
+    console.log('Responding', responseBody);
 
     const parsedUrl = require('url').parse(event.ResponseURL);
     const requestOptions = {
