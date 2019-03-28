@@ -8,7 +8,7 @@ export interface AssetImageProps {
   /**
    * The directory where the Dockerfile is stored
    */
-  directory: string;
+  readonly directory: string;
 }
 
 /**

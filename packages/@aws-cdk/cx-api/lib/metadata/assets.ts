@@ -30,49 +30,49 @@ export interface FileAssetMetadataEntry {
   /**
    * Requested packaging style
    */
-  packaging: 'zip' | 'file';
+  readonly packaging: 'zip' | 'file';
 
   /**
    * Path on disk to the asset
    */
-  path: string;
+  readonly path: string;
 
   /**
    * Logical identifier for the asset
    */
-  id: string;
+  readonly id: string;
 
   /**
    * Name of parameter where S3 bucket should be passed in
    */
-  s3BucketParameter: string;
+  readonly s3BucketParameter: string;
 
   /**
    * Name of parameter where S3 key should be passed in
    */
-  s3KeyParameter: string;
+  readonly s3KeyParameter: string;
 }
 
 export interface ContainerImageAssetMetadataEntry {
   /**
    * Type of asset
    */
-  packaging: 'container-image';
+  readonly packaging: 'container-image';
 
   /**
    * Path on disk to the asset
    */
-  path: string;
+  readonly path: string;
 
   /**
    * Logical identifier for the asset
    */
-  id: string;
+  readonly id: string;
 
   /**
    * ECR Repository name and tag (separated by ":") where this asset is stored.
    */
-  imageNameParameter: string;
+  readonly imageNameParameter: string;
 
   /**
    * ECR repository name, if omitted a default name based on the asset's
@@ -83,14 +83,14 @@ export interface ContainerImageAssetMetadataEntry {
    *
    * * @default automatically derived from the asset's ID.
    */
-  repositoryName?: string;
+  readonly repositoryName?: string;
 
   /**
    * Image tag within ECR repository.
    *
    * @default tag image with tag calculated by CDK.
    */
-  imageTag?: string;
+  readonly imageTag?: string;
 
   /**
    * Whether to allow image layer caching while building the image.
@@ -106,7 +106,7 @@ export interface ContainerImageAssetMetadataEntry {
    * @default If not set, the default local layer caching of the docker daemon
    *          is enabled, but `--cache-from` is not used.
    */
-  allowLayerCaching?: boolean;
+  readonly allowLayerCaching?: boolean;
 }
 
 export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry;

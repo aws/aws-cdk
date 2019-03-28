@@ -45,6 +45,8 @@ export interface IJenkinsProvider extends cdk.IConstruct {
    * This method will be automatically called when creating
    * a {@link JenkinsBuildAction},
    * so you should never need to call it explicitly.
+   *
+   * @internal
    */
   _registerBuildProvider(): void;
 
@@ -53,6 +55,8 @@ export interface IJenkinsProvider extends cdk.IConstruct {
    * This method will be automatically called when creating
    * a {@link JenkinsTestAction},
    * so you should never need to call it explicitly.
+   *
+   * @internal
    */
   _registerTestProvider(): void;
 }
@@ -66,21 +70,21 @@ export interface JenkinsProviderImportProps {
    *
    * @example 'MyJenkinsProvider'
    */
-  providerName: string;
+  readonly providerName: string;
 
   /**
    * The base URL of your Jenkins server.
    *
    * @example 'http://myjenkins.com:8080'
    */
-  serverUrl: string;
+  readonly serverUrl: string;
 
   /**
    * The version of your provider.
    *
    * @default '1'
    */
-  version?: string;
+  readonly version?: string;
 }
 
 export interface JenkinsProviderProps {
@@ -89,33 +93,33 @@ export interface JenkinsProviderProps {
    *
    * @example 'MyJenkinsProvider'
    */
-  providerName: string;
+  readonly providerName: string;
 
   /**
    * The base URL of your Jenkins server.
    *
    * @example 'http://myjenkins.com:8080'
    */
-  serverUrl: string;
+  readonly serverUrl: string;
 
   /**
    * The version of your provider.
    *
    * @default '1'
    */
-  version?: string;
+  readonly version?: string;
 
   /**
    * Whether to immediately register a Jenkins Provider for the build category.
    * The Provider will always be registered if you create a {@link JenkinsBuildAction}.
    */
-  forBuild?: boolean;
+  readonly forBuild?: boolean;
 
   /**
    * Whether to immediately register a Jenkins Provider for the test category.
    * The Provider will always be registered if you create a {@link JenkinsTestAction}.
    */
-  forTest?: boolean;
+  readonly forTest?: boolean;
 }
 
 export abstract class BaseJenkinsProvider extends cdk.Construct implements IJenkinsProvider {
@@ -157,7 +161,14 @@ export abstract class BaseJenkinsProvider extends cdk.Construct implements IJenk
     });
   }
 
+  /**
+   * @internal
+   */
   public abstract _registerBuildProvider(): void;
+
+  /**
+   * @internal
+   */
   public abstract _registerTestProvider(): void;
 }
 
@@ -199,6 +210,9 @@ export class JenkinsProvider extends BaseJenkinsProvider {
     }
   }
 
+  /**
+   * @internal
+   */
   public _registerBuildProvider(): void {
     if (this.buildIncluded) {
       return;
@@ -207,6 +221,9 @@ export class JenkinsProvider extends BaseJenkinsProvider {
     this.registerJenkinsCustomAction('JenkinsBuildProviderResource', cpapi.ActionCategory.Build);
   }
 
+  /**
+   * @internal
+   */
   public _registerTestProvider(): void {
     if (this.testIncluded) {
       return;

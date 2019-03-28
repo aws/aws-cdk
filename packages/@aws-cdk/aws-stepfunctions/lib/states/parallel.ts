@@ -13,7 +13,7 @@ export interface ParallelProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * JSONPath expression to select part of the state to be the input to this state.
@@ -23,7 +23,7 @@ export interface ParallelProps {
      *
      * @default $
      */
-    inputPath?: string;
+    readonly inputPath?: string;
 
     /**
      * JSONPath expression to select part of the state to be the output to this state.
@@ -33,7 +33,7 @@ export interface ParallelProps {
      *
      * @default $
      */
-    outputPath?: string;
+    readonly outputPath?: string;
 
     /**
      * JSONPath expression to indicate where to inject the state's output
@@ -43,7 +43,7 @@ export interface ParallelProps {
      *
      * @default $
      */
-    resultPath?: string;
+    readonly resultPath?: string;
 }
 
 /**

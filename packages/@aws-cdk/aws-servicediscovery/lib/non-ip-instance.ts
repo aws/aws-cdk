@@ -15,7 +15,7 @@ export interface NonIpInstanceProps extends NonIpInstanceBaseProps {
   /**
    * The Cloudmap service this resource is registered to.
    */
-  service: IService;
+  readonly service: IService;
 }
 
 /*

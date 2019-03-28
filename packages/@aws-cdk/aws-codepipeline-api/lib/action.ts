@@ -99,7 +99,7 @@ export interface CommonActionProps {
    * The physical, human-readable name of the Action.
    * Not that Action names must be unique within a single Stage.
    */
-  actionName: string;
+  readonly actionName: string;
 
   /**
    * The runOrder property for this Action.
@@ -108,22 +108,22 @@ export interface CommonActionProps {
    * @default 1
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
    */
-  runOrder?: number;
+  readonly runOrder?: number;
 }
 
 /**
  * Construction properties of the low-level {@link Action Action class}.
  */
 export interface ActionProps extends CommonActionProps {
-  category: ActionCategory;
-  provider: string;
+  readonly category: ActionCategory;
+  readonly provider: string;
 
   /**
    * The region this Action resides in.
    *
    * @default the Action resides in the same region as the Pipeline
    */
-  region?: string;
+  readonly region?: string;
 
   /**
    * The service role that is assumed during execution of action.
@@ -132,12 +132,12 @@ export interface ActionProps extends CommonActionProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions.html
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
-  artifactBounds: ActionArtifactBounds;
-  configuration?: any;
-  version?: string;
-  owner?: string;
+  readonly artifactBounds: ActionArtifactBounds;
+  readonly configuration?: any;
+  readonly version?: string;
+  readonly owner?: string;
 }
 
 /**
@@ -235,10 +235,16 @@ export abstract class Action {
     return rule;
   }
 
+  /**
+   * @internal
+   */
   public get _inputArtifacts(): Artifact[] {
     return this._actionInputArtifacts.slice();
   }
 
+  /**
+   * @internal
+   */
   public get _outputArtifacts(): Artifact[] {
     return this._actionOutputArtifacts.slice();
   }

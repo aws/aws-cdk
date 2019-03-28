@@ -46,11 +46,11 @@ export class ConstructNode {
   private readonly _children: { [name: string]: IConstruct } = { };
   private readonly context: { [key: string]: any } = { };
   private readonly _metadata = new Array<MetadataEntry>();
-  private readonly references = new Set<Token>();
+  private readonly references = new Set<Reference>();
   private readonly dependencies = new Set<IDependable>();
 
   /** Will be used to cache the value of ``this.stack``. */
-  private _stack?: Stack;
+  private _stack?: import('./stack').Stack;
 
   /**
    * If this is set to 'true'. addChild() calls for this construct and any child
@@ -91,11 +91,13 @@ export class ConstructNode {
   /**
    * The stack the construct is a part of.
    */
-  public get stack(): Stack {
+  public get stack(): import('./stack').Stack {
+    // Lazy import to break cyclic import
+    const stack: typeof import('./stack') = require('./stack');
     return this._stack || (this._stack = _lookStackUp(this));
 
-    function _lookStackUp(_this: ConstructNode) {
-      if (Stack.isStack(_this.host)) {
+    function _lookStackUp(_this: ConstructNode): import('./stack').Stack  {
+      if (stack.Stack.isStack(_this.host)) {
         return _this.host;
       }
       if (!_this.scope) {
@@ -471,7 +473,7 @@ export class ConstructNode {
    */
   public recordReference(...refs: Token[]) {
     for (const ref of refs) {
-      if (ref.isReference) {
+      if (Reference.isReference(ref)) {
         this.references.add(ref);
       }
     }
@@ -480,12 +482,12 @@ export class ConstructNode {
   /**
    * Return all references of the given type originating from this node or any of its children
    */
-  public findReferences(): Token[] {
-    const ret = new Set<Token>();
+  public findReferences(): OutgoingReference[] {
+    const ret = new Set<OutgoingReference>();
 
     function recurse(node: ConstructNode) {
-      for (const ref of node.references) {
-        ret.add(ref);
+      for (const reference of node.references) {
+        ret.add({ source: node.host, reference });
       }
 
       for (const child of node.children) {
@@ -649,17 +651,17 @@ export interface MetadataEntry {
   /**
    * The type of the metadata entry.
    */
-  type: string;
+  readonly type: string;
 
   /**
    * The data.
    */
-  data?: any;
+  readonly data?: any;
 
   /**
    * A stack trace for when the entry was created.
    */
-  trace: string[];
+  readonly trace: string[];
 }
 
 export class ValidationError {
@@ -706,12 +708,12 @@ export interface Dependency {
   /**
    * Source the dependency
    */
-  source: IConstruct;
+  readonly source: IConstruct;
 
   /**
    * Target of the dependency
    */
-  target: IConstruct;
+  readonly target: IConstruct;
 }
 
 /**
@@ -721,13 +723,18 @@ export interface Dependency {
   /**
    * Source the dependency
    */
-  source: IConstruct;
+  readonly source: IConstruct;
 
   /**
    * Target of the dependency
    */
-  target: IConstruct;
+  readonly target: IConstruct;
+}
+
+export interface OutgoingReference {
+  readonly source: IConstruct;
+  readonly reference: Reference;
 }
 
 // Import this _after_ everything else to help node work the classes out in the correct order...
-import { Stack } from './stack';
+import { Reference } from './reference';

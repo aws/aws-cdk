@@ -19,19 +19,19 @@ export interface CustomResourceProps {
    *
    * Optional, exactly one of lamdaProvider or topicProvider must be set.
    */
-  lambdaProvider?: lambda.IFunction;
+  readonly lambdaProvider?: lambda.IFunction;
 
   /**
    * The SNS Topic for the provider that implements this custom resource.
    *
    * Optional, exactly one of lamdaProvider or topicProvider must be set.
    */
-  topicProvider?: sns.ITopic;
+  readonly topicProvider?: sns.ITopic;
 
   /**
    * Properties to pass to the Lambda
    */
-  properties?: Properties;
+  readonly properties?: Properties;
 
   /**
    * For custom resources, you can specify AWS::CloudFormation::CustomResource
@@ -52,7 +52,7 @@ export interface CustomResourceProps {
    * @see
    * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html#aws-cfn-resource-type-name
    */
-  resourceType?: string;
+  readonly resourceType?: string;
 }
 
 /**

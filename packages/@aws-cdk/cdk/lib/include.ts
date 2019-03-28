@@ -5,7 +5,7 @@ export interface IncludeProps {
   /**
    * The CloudFormation template to include in the stack (as is).
    */
-  template: object;
+  readonly template: object;
 }
 
 /**
@@ -31,6 +31,9 @@ export class Include extends CfnElement {
     this.template = props.template;
   }
 
+  /**
+   * @internal
+   */
   public _toCloudFormation() {
     return this.template;
   }

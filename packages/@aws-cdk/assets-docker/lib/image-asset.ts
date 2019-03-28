@@ -9,7 +9,7 @@ export interface DockerImageAssetProps {
   /**
    * The directory where the Dockerfile is stored
    */
-  directory: string;
+  readonly directory: string;
 
   /**
    * ECR repository name
@@ -20,14 +20,14 @@ export interface DockerImageAssetProps {
    *
    * @default automatically derived from the asset's ID.
    */
-  repositoryName?: string;
+  readonly repositoryName?: string;
 
   /**
    * Image tag within ECR repository.
    *
    * @default tag image with tag calculated by CDK.
    */
-  imageTag?: string;
+  readonly imageTag?: string;
 
   /**
    * Whether to allow image layer caching while building the image.
@@ -43,7 +43,7 @@ export interface DockerImageAssetProps {
    * @default If not set, the default local layer caching of the docker daemon
    *          is enabled, but `--cache-from` is not used.
    */
-  allowLayerCaching?: boolean;
+  readonly allowLayerCaching?: boolean;
 }
 
 /**
