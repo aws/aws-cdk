@@ -329,43 +329,51 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
 
   // ignore unused private method (it's actually used in Stage)
   // @ts-ignore
-  private _attachActionToRegion(stage: Stage, action: cpapi.Action): void {
-    // handle cross-region Actions here
-    if (!action.region) {
-      return;
+  private _attachActionToPipeline(stage: Stage, action: cpapi.Action, actionScope: cdk.Construct): void {
+    if (action.region) {
+      // handle cross-region Actions here
+      this.ensureReplicationBucketExistsFor(action.region);
     }
+    (action as any)._actionAttachedToPipeline({
+      pipeline: this,
+      stage,
+      scope: actionScope,
+      role: this.role,
+    });
+  }
 
+  private ensureReplicationBucketExistsFor(region: string) {
     // get the region the Pipeline itself is in
     const pipelineRegion = this.node.stack.requireRegion(
-      "You need to specify an explicit region when using CodePipeline's cross-region support");
+        "You need to specify an explicit region when using CodePipeline's cross-region support");
 
     // if we already have an ArtifactStore generated for this region, or it's the Pipeline's region, nothing to do
-    if (this.artifactStores[action.region] || action.region === pipelineRegion) {
+    if (this.artifactStores[region] || region === pipelineRegion) {
       return;
     }
 
-    let replicationBucketName = this.crossRegionReplicationBuckets[action.region];
+    let replicationBucketName = this.crossRegionReplicationBuckets[region];
     if (!replicationBucketName) {
       const pipelineAccount = this.node.stack.requireAccountId(
-        "You need to specify an explicit account when using CodePipeline's cross-region support");
+          "You need to specify an explicit account when using CodePipeline's cross-region support");
       const app = this.node.stack.parentApp();
       if (!app) {
         throw new Error(`Pipeline stack which uses cross region actions must be part of an application`);
       }
       const crossRegionScaffoldStack = new CrossRegionScaffoldStack(app, {
-        region: action.region,
+        region,
         account: pipelineAccount,
       });
-      this._crossRegionScaffoldStacks[action.region] = crossRegionScaffoldStack;
+      this._crossRegionScaffoldStacks[region] = crossRegionScaffoldStack;
       replicationBucketName = crossRegionScaffoldStack.replicationBucketName;
     }
 
-    const replicationBucket = s3.Bucket.import(this, 'CrossRegionCodePipelineReplicationBucket-' + action.region, {
+    const replicationBucket = s3.Bucket.import(this, 'CrossRegionCodePipelineReplicationBucket-' + region, {
       bucketName: replicationBucketName,
     });
     replicationBucket.grantReadWrite(this.role);
 
-    this.artifactStores[action.region] = {
+    this.artifactStores[region] = {
       Location: replicationBucket.bucketName,
       Type: 'S3',
     };

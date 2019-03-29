@@ -116,9 +116,8 @@ export class PipelineExecuteChangeSetAction extends PipelineCloudFormationAction
     this.props = props;
   }
 
-  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
-    SingletonPolicy.forRole(stage.pipeline.role)
-      .grantExecuteChangeSet(this.props);
+  protected bind(info: codepipeline.ActionBind): void {
+    SingletonPolicy.forRole(info.role).grantExecuteChangeSet(this.props);
   }
 }
 
@@ -257,11 +256,11 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
     return this.getDeploymentRole('property role()');
   }
 
-  protected bind(stage: codepipeline.IStage, scope: cdk.Construct): void {
+  protected bind(info: codepipeline.ActionBind): void {
     if (this.props.deploymentRole) {
       this._deploymentRole = this.props.deploymentRole;
     } else {
-      this._deploymentRole = new iam.Role(scope, 'Role', {
+      this._deploymentRole = new iam.Role(info.scope, 'Role', {
         assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com')
       });
 
@@ -270,7 +269,7 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
       }
     }
 
-    SingletonPolicy.forRole(stage.pipeline.role).grantPassRole(this._deploymentRole);
+    SingletonPolicy.forRole(info.role).grantPassRole(this._deploymentRole);
   }
 
   private getDeploymentRole(member: string): iam.IRole {
@@ -321,10 +320,10 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
     this.props2 = props;
   }
 
-  protected bind(stage: codepipeline.IStage, scope: cdk.Construct): void {
-    super.bind(stage, scope);
+  protected bind(info: codepipeline.ActionBind): void {
+    super.bind(info);
 
-    SingletonPolicy.forRole(stage.pipeline.role).grantCreateReplaceChangeSet(this.props2);
+    SingletonPolicy.forRole(info.role).grantCreateReplaceChangeSet(this.props2);
   }
 }
 
@@ -384,10 +383,10 @@ export class PipelineCreateUpdateStackAction extends PipelineCloudFormationDeplo
     this.props2 = props;
   }
 
-  protected bind(stage: codepipeline.IStage, scope: cdk.Construct): void {
-    super.bind(stage, scope);
+  protected bind(info: codepipeline.ActionBind): void {
+    super.bind(info);
 
-    SingletonPolicy.forRole(stage.pipeline.role).grantCreateUpdateStack(this.props2);
+    SingletonPolicy.forRole(info.role).grantCreateUpdateStack(this.props2);
   }
 }
 
@@ -415,10 +414,10 @@ export class PipelineDeleteStackAction extends PipelineCloudFormationDeployActio
     this.props2 = props;
   }
 
-  protected bind(stage: codepipeline.IStage, scope: cdk.Construct): void {
-    super.bind(stage, scope);
+  protected bind(info: codepipeline.ActionBind): void {
+    super.bind(info);
 
-    SingletonPolicy.forRole(stage.pipeline.role).grantDeleteStack(this.props2);
+    SingletonPolicy.forRole(info.role).grantDeleteStack(this.props2);
   }
 }
 
@@ -469,7 +468,7 @@ class SingletonPolicy extends cdk.Construct {
    * @param role the Role this policy is bound to.
    * @returns the SingletonPolicy for this role.
    */
-  public static forRole(role: iam.Role): SingletonPolicy {
+  public static forRole(role: iam.IRole): SingletonPolicy {
     const found = role.node.tryFindChild(SingletonPolicy.UUID);
     return (found as SingletonPolicy) || new SingletonPolicy(role);
   }
@@ -478,8 +477,8 @@ class SingletonPolicy extends cdk.Construct {
 
   private statements: { [key: string]: iam.PolicyStatement } = {};
 
-  private constructor(private readonly role: iam.Role) {
-    super(role, SingletonPolicy.UUID);
+  private constructor(private readonly role: iam.IRole) {
+    super(role as unknown as cdk.Construct, SingletonPolicy.UUID);
   }
 
   public grantExecuteChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {

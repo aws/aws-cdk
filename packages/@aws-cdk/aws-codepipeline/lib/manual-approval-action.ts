@@ -1,11 +1,11 @@
-import actions = require('@aws-cdk/aws-codepipeline-api');
+import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 
 /**
  * Construction properties of the {@link ManualApprovalAction}.
  */
-export interface ManualApprovalActionProps extends actions.CommonActionProps {
+export interface ManualApprovalActionProps extends cpapi.CommonActionProps {
   /**
    * Optional SNS topic to send notifications to when an approval is pending.
    */
@@ -27,7 +27,7 @@ export interface ManualApprovalActionProps extends actions.CommonActionProps {
 /**
  * Manual approval action.
  */
-export class ManualApprovalAction extends actions.Action {
+export class ManualApprovalAction extends cpapi.Action {
   /**
    * The SNS Topic passed when constructing the Action.
    * If no Topic was passed, but `notifyEmails` were provided,
@@ -39,7 +39,7 @@ export class ManualApprovalAction extends actions.Action {
   constructor(props: ManualApprovalActionProps) {
     super({
       ...props,
-      category: actions.ActionCategory.Approval,
+      category: cpapi.ActionCategory.Approval,
       provider: 'Manual',
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 0, maxOutputs: 0 },
       configuration: new cdk.Token(() => this.actionConfiguration()),
@@ -52,15 +52,15 @@ export class ManualApprovalAction extends actions.Action {
     return this._notificationTopic;
   }
 
-  protected bind(stage: actions.IStage, scope: cdk.Construct): void {
+  protected bind(info: cpapi.ActionBind): void {
     if (this.props.notificationTopic) {
       this._notificationTopic = this.props.notificationTopic;
     } else if ((this.props.notifyEmails || []).length > 0) {
-      this._notificationTopic = new sns.Topic(scope, 'TopicResource');
+      this._notificationTopic = new sns.Topic(info.scope, 'TopicResource');
     }
 
     if (this._notificationTopic) {
-      this._notificationTopic.grantPublish(stage.pipeline.role);
+      this._notificationTopic.grantPublish(info.role);
       for (const notifyEmail of this.props.notifyEmails || []) {
         this._notificationTopic.subscribeEmail(`Subscription-${notifyEmail}`, notifyEmail);
       }
