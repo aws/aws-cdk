@@ -62,24 +62,8 @@
     "cdk-integ-tools": "^0.27.0",
     "pkglint": "^0.27.0"
   },
-  "dependencies": {
-    "@aws-cdk/aws-events": "^0.27.0",
-    "@aws-cdk/aws-iam": "^0.27.0",
-    "@aws-cdk/cdk": "^0.27.0"
-  },
   "homepage": "https://github.com/awslabs/aws-cdk",
-  "peerDependencies": {
-    "@aws-cdk/aws-events": "^0.27.0",
-    "@aws-cdk/aws-iam": "^0.27.0",
-    "@aws-cdk/cdk": "^0.27.0"
-  },
   "engines": {
     "node": ">= 8.10.0"
-  },
-  "awslint": {
-    "exclude": [
-      "construct-ctor:@aws-cdk/aws-codepipeline-api.Artifact.<initializer>.params[0]",
-      "construct-ctor:@aws-cdk/aws-codepipeline-api.Artifact.<initializer>.params[1]"
-    ]
   }
 }

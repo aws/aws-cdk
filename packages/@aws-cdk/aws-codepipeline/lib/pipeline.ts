@@ -1,11 +1,12 @@
-import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
+import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';
 import { Stage } from './stage';
+import { validateName, validateSourceAction } from "./validation";
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -21,13 +22,13 @@ export interface StagePlacement {
    * Inserts the new Stage as a parent of the given Stage
    * (changing its current parent Stage, if it had one).
    */
-  readonly rightBefore?: cpapi.IStage;
+  readonly rightBefore?: IStage;
 
   /**
    * Inserts the new Stage as a child of the given Stage
    * (changing its current child Stage, if it had one).
    */
-  readonly justAfter?: cpapi.IStage;
+  readonly justAfter?: IStage;
 
   /**
    * Inserts the new Stage at the given index in the Pipeline,
@@ -53,7 +54,7 @@ export interface StageProps {
    * The list of Actions to create this Stage with.
    * You can always add more Actions later by calling {@link IStage#addAction}.
    */
-  readonly actions?: cpapi.Action[];
+  readonly actions?: Action[];
 }
 
 export interface StageAddToPipelineProps extends StageProps {
@@ -107,7 +108,7 @@ export interface PipelineProps {
  * const sourceStage = pipeline.addStage({ name: 'Source' });
  *
  * // add a source action to the stage
- * sourceStage.addAction(new codecommit.PipelineSourceAction({
+ * sourceStage.addAction(new codepipeline_actions.CodeCommitSourceAction({
  *   actionName: 'Source',
  *   outputArtifactName: 'SourceArtifact',
  *   repository: repo,
@@ -115,7 +116,7 @@ export interface PipelineProps {
  *
  * // ... add more stages
  */
-export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
+export class Pipeline extends cdk.Construct implements IPipeline {
   /**
    * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
    * a more specific IAM role.
@@ -153,7 +154,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     super(scope, id);
     props = props || {};
 
-    cpapi.validateName('Pipeline', props.pipelineName);
+    validateName('Pipeline', props.pipelineName);
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = props.artifactBucket;
@@ -204,7 +205,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
    * @param props the creation properties of the new Stage
    * @returns the newly created Stage
    */
-  public addStage(props: StageAddToPipelineProps): cpapi.IStage {
+  public addStage(props: StageAddToPipelineProps): IStage {
     // check for duplicate Stages and names
     if (this.stages.find(s => s.stageName === props.name)) {
       throw new Error(`Stage with duplicate name '${props.name}' added to the Pipeline`);
@@ -329,7 +330,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
 
   // ignore unused private method (it's actually used in Stage)
   // @ts-ignore
-  private _attachActionToPipeline(stage: Stage, action: cpapi.Action, actionScope: cdk.Construct): void {
+  private _attachActionToPipeline(stage: Stage, action: Action, actionScope: cdk.Construct): void {
     if (action.region) {
       // handle cross-region Actions here
       this.ensureReplicationBucketExistsFor(action.region);
@@ -420,7 +421,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     return this.stageCount;
   }
 
-  private findStageIndex(targetStage: cpapi.IStage) {
+  private findStageIndex(targetStage: IStage) {
     return this.stages.findIndex(stage => stage === targetStage);
   }
 
@@ -430,7 +431,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     for (const stage of this.stages) {
       const onlySourceActionsPermitted = firstStage;
       for (const action of stage.actions) {
-        errors.push(...cpapi.validateSourceAction(onlySourceActionsPermitted, action.category, action.actionName, stage.stageName));
+        errors.push(...validateSourceAction(onlySourceActionsPermitted, action.category, action.actionName, stage.stageName));
       }
       firstStage = false;
     }

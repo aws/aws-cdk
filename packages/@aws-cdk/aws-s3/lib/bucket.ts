@@ -6,10 +6,6 @@ import cdk = require('@aws-cdk/cdk');
 import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
-import {
-  CommonPipelineDeployActionProps, CommonPipelineSourceActionProps,
-  PipelineDeployAction, PipelineSourceAction
-} from './pipeline-actions';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
@@ -54,22 +50,6 @@ export interface IBucket extends cdk.IConstruct {
    * Exports this bucket from the stack.
    */
   export(): BucketImportProps;
-
-  /**
-   * Convenience method for creating a new {@link PipelineSourceAction}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction;
-
-  /**
-   * Convenience method for creating a new {@link PipelineDeployAction}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineDeployAction}
-   */
-  toCodePipelineDeployAction(props: CommonPipelineDeployActionProps): PipelineDeployAction;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -295,20 +275,6 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * Exports this bucket from the stack.
    */
   public abstract export(): BucketImportProps;
-
-  public toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction {
-    return new PipelineSourceAction({
-      ...props,
-      bucket: this,
-    });
-  }
-
-  public toCodePipelineDeployAction(props: CommonPipelineDeployActionProps): PipelineDeployAction {
-    return new PipelineDeployAction({
-      ...props,
-      bucket: this,
-    });
-  }
 
   public onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule {
     const eventRule = new events.EventRule(this, name, {
