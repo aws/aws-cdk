@@ -1,6 +1,5 @@
+import { beASupersetOfTemplate, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-
-import { beASupersetOfTemplate, expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import lambda = require('../lib');
@@ -36,6 +35,33 @@ export = {
           Name: "prod"
         }
         }
+    }));
+
+    test.done();
+  },
+
+  'can use newVersion to create a new Version'(test: Test) {
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NodeJS610,
+    });
+
+    const version = fn.newVersion();
+
+    new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::Lambda::Version', {
+      FunctionName: { Ref: "MyLambdaCCE802FB" },
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
+      FunctionName: { Ref: "MyLambdaCCE802FB" },
+      Name: "prod"
     }));
 
     test.done();
