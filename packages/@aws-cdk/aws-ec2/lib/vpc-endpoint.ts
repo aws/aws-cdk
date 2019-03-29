@@ -18,12 +18,13 @@ export interface IVpcEndpoint extends cdk.IConstruct {
 }
 
 export abstract class VpcEndpoint extends cdk.Construct implements IVpcEndpoint {
-  public abstract vpcEndpointId: string;
+  public abstract readonly vpcEndpointId: string;
 
   protected policyDocument?: iam.PolicyDocument;
 
   /**
-   * Adds a statement to the policy document of the VPC endpoint.
+   * Adds a statement to the policy document of the VPC endpoint. The statement
+   * must have a Principal.
    *
    * Not all interface VPC endpoints support policy. For more information
    * see https://docs.aws.amazon.com/vpc/latest/userguide/vpce-interface.html
