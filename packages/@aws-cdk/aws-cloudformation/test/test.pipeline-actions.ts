@@ -342,7 +342,12 @@ class StageDouble implements cpapi.IStage {
     const stageParent = new cdk.Construct(pipeline, this.stageName);
     for (const action of actions) {
       const actionParent = new cdk.Construct(stageParent, action.actionName);
-      (action as any)._attachActionToPipeline(this, actionParent);
+      (action as any)._actionAttachedToPipeline({
+        pipeline,
+        stage: this,
+        scope: actionParent,
+        role: pipeline.role,
+      });
     }
     this.actions = actions;
   }

@@ -313,7 +313,7 @@ class FakeAction extends api.Action {
     this.outputArtifact = new api.Artifact('OutputArtifact');
   }
 
-  protected bind(_stage: api.IStage, _scope: cdk.Construct): void {
+  protected bind(_info: api.ActionBind): void {
     // do nothing
   }
 }

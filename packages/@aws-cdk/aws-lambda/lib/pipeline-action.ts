@@ -1,6 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
 import { IFunction } from './function-base';
 
 /**
@@ -122,14 +121,14 @@ export class PipelineInvokeAction extends codepipeline.Action {
     }
   }
 
-  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
+  protected bind(info: codepipeline.ActionBind): void {
     // allow pipeline to list functions
-    stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
+    info.role.addToPolicy(new iam.PolicyStatement()
       .addAction('lambda:ListFunctions')
       .addAllResources());
 
     // allow pipeline to invoke this lambda functionn
-    stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
+    info.role.addToPolicy(new iam.PolicyStatement()
       .addAction('lambda:InvokeFunction')
       .addResource(this.props.lambda.functionArn));
 

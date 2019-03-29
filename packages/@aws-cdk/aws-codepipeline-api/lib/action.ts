@@ -37,6 +37,32 @@ export function defaultBounds(): ActionArtifactBounds {
 }
 
 /**
+ * The interface used in the {@link Action#bind()} callback.
+ */
+export interface ActionBind {
+  /**
+   * The pipeline this action has been added to.
+   */
+  readonly pipeline: IPipeline;
+
+  /**
+   * The stage this action has been added to.
+   */
+  readonly stage: IStage;
+
+  /**
+   * The scope construct for this action.
+   * Can be used by the action implementation to create any resources it needs to work correctly.
+   */
+  readonly scope: cdk.Construct;
+
+  /**
+   * The IAM Role to add the necessary permissions to.
+   */
+  readonly role: iam.IRole;
+}
+
+/**
  * The abstract view of an AWS CodePipeline as required and used by Actions.
  * It extends {@link events.IEventRuleTarget},
  * so this interface can be used as a Target for CloudWatch Events.
@@ -51,11 +77,6 @@ export interface IPipeline extends cdk.IConstruct, events.IEventRuleTarget {
    * The ARN of the Pipeline.
    */
   readonly pipelineArn: string;
-
-  /**
-   * The service Role of the Pipeline.
-   */
-  readonly role: iam.Role;
 
   /**
    * Grants read permissions to the Pipeline's S3 Bucket to the given Identity.
@@ -80,11 +101,6 @@ export interface IStage {
    * The physical, human-readable name of this Pipeline Stage.
    */
   readonly stageName: string;
-
-  /**
-   * The Pipeline this Stage belongs to.
-   */
-  readonly pipeline: IPipeline;
 
   addAction(action: Action): void;
 
@@ -202,6 +218,7 @@ export abstract class Action {
   private readonly _actionOutputArtifacts = new Array<Artifact>();
   private readonly artifactBounds: ActionArtifactBounds;
 
+  private _pipeline?: IPipeline;
   private _stage?: IStage;
   private _scope?: cdk.Construct;
 
@@ -226,7 +243,7 @@ export abstract class Action {
     rule.addEventPattern({
       detailType: [ 'CodePipeline Stage Execution State Change' ],
       source: [ 'aws.codepipeline' ],
-      resources: [ this.stage.pipeline.pipelineArn ],
+      resources: [ this.pipeline.pipelineArn ],
       detail: {
         stage: [ this.stage.stageName ],
         action: [ this.actionName ],
@@ -303,24 +320,32 @@ export abstract class Action {
    * The method called when an Action is attached to a Pipeline.
    * This method is guaranteed to be called only once for each Action instance.
    *
-   * @param stage the stage this action has been added to
-   *   (includes a reference to the pipeline as well)
-   * @param scope the scope construct for this action,
-   *   can be used by the action implementation to create any resources it needs to work correctly
+   * @info an instance of the {@link ActionBind} class,
+   *   that contains the necessary information for the Action
+   *   to configure itself, like a reference to the Pipeline, Stage, Role, etc.
    */
-  protected abstract bind(stage: IStage, scope: cdk.Construct): void;
+  protected abstract bind(info: ActionBind): void;
 
-  // ignore unused private method (it's actually used in Stage)
+  // ignore unused private method (it's actually used in Pipeline)
   // @ts-ignore
-  private _attachActionToPipeline(stage: IStage, scope: cdk.Construct): void {
+  private _actionAttachedToPipeline(info: ActionBind): void {
     if (this._stage) {
       throw new Error(`Action '${this.actionName}' has been added to a pipeline twice`);
     }
 
-    this._stage = stage;
-    this._scope = scope;
+    this._pipeline = info.pipeline;
+    this._stage = info.stage;
+    this._scope = info.scope;
 
-    this.bind(stage, scope);
+    this.bind(info);
+  }
+
+  private get pipeline(): IPipeline {
+    if (this._pipeline) {
+      return this._pipeline;
+    } else {
+      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
+    }
   }
 
   private get stage(): IStage {

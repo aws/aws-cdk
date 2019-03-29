@@ -1,6 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
 import { IProject } from './project';
 
 /**
@@ -103,8 +102,8 @@ export class PipelineBuildAction extends codepipeline.BuildAction {
     return findOutputArtifact(this.additionalOutputArtifacts(), name);
   }
 
-  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
-    setCodeBuildNeededPermissions(stage, this.props.project, true);
+  protected bind(info: codepipeline.ActionBind): void {
+    setCodeBuildNeededPermissions(info, this.props.project, true);
   }
 }
 
@@ -192,16 +191,16 @@ export class PipelineTestAction extends codepipeline.TestAction {
     return findOutputArtifact(this.additionalOutputArtifacts(), name);
   }
 
-  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
+  protected bind(info: codepipeline.ActionBind): void {
     // TODO: revert "as any" when we centralize pipeline actions
-    setCodeBuildNeededPermissions(stage, this.props.project, (this as any)._outputArtifacts.length > 0);
+    setCodeBuildNeededPermissions(info, this.props.project, (this as any)._outputArtifacts.length > 0);
   }
 }
 
-function setCodeBuildNeededPermissions(stage: codepipeline.IStage, project: IProject,
-                                       needsPipelineBucketWrite: boolean) {
+function setCodeBuildNeededPermissions(info: codepipeline.ActionBind, project: IProject,
+                                       needsPipelineBucketWrite: boolean): void {
   // grant the Pipeline role the required permissions to this Project
-  stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
+  info.role.addToPolicy(new iam.PolicyStatement()
     .addResource(project.projectArn)
     .addActions(
       'codebuild:BatchGetBuilds',
@@ -211,9 +210,9 @@ function setCodeBuildNeededPermissions(stage: codepipeline.IStage, project: IPro
 
   // allow the Project access to the Pipline's artifact Bucket
   if (needsPipelineBucketWrite) {
-    stage.pipeline.grantBucketReadWrite(project.role);
+    info.pipeline.grantBucketReadWrite(project.role);
   } else {
-    stage.pipeline.grantBucketRead(project.role);
+    info.pipeline.grantBucketRead(project.role);
   }
 }
 

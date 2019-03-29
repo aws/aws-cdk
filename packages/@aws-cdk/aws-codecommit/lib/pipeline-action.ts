@@ -1,6 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
 import { IRepository } from './repository';
 
 /**
@@ -62,10 +61,10 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
     this.props = props;
   }
 
-  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
+  protected bind(info: codepipeline.ActionBind): void {
     if (!this.props.pollForSourceChanges) {
-      this.props.repository.onCommit(stage.pipeline.node.uniqueId + 'EventRule',
-          stage.pipeline, this.props.branch || 'master');
+      this.props.repository.onCommit(info.pipeline.node.uniqueId + 'EventRule',
+          info.pipeline, this.props.branch || 'master');
     }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
@@ -77,7 +76,7 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
       'codecommit:CancelUploadArchive',
     ];
 
-    stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
+    info.role.addToPolicy(new iam.PolicyStatement()
       .addResource(this.props.repository.repositoryArn)
       .addActions(...actions));
   }

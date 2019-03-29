@@ -1,5 +1,4 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
-import cdk = require('@aws-cdk/cdk');
 import { IBucket } from './bucket';
 
 /**
@@ -66,14 +65,14 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
     this.props = props;
   }
 
-  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
+  protected bind(info: codepipeline.ActionBind): void {
     if (this.props.pollForSourceChanges === false) {
-      this.props.bucket.onPutObject(stage.pipeline.node.uniqueId + 'SourceEventRule',
-          stage.pipeline, this.props.bucketKey);
+      this.props.bucket.onPutObject(info.pipeline.node.uniqueId + 'SourceEventRule',
+          info.pipeline, this.props.bucketKey);
     }
 
     // pipeline needs permissions to read from the S3 bucket
-    this.props.bucket.grantRead(stage.pipeline.role);
+    this.props.bucket.grantRead(info.role);
   }
 }
 
@@ -137,8 +136,8 @@ export class PipelineDeployAction extends codepipeline.DeployAction {
     this.bucket = props.bucket;
   }
 
-  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
+  protected bind(info: codepipeline.ActionBind): void {
     // pipeline needs permissions to write to the S3 bucket
-    this.bucket.grantWrite(stage.pipeline.role);
+    this.bucket.grantWrite(info.role);
   }
 }

@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
-import actions = require('@aws-cdk/aws-codepipeline-api');
+import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
@@ -35,27 +35,27 @@ export = {
   'action type validation': {
 
     'must be source and is source'(test: Test) {
-      const result = actions.validateSourceAction(true, actions.ActionCategory.Source, 'test action', 'test stage');
+      const result = cpapi.validateSourceAction(true, cpapi.ActionCategory.Source, 'test action', 'test stage');
       test.deepEqual(result.length, 0);
       test.done();
     },
 
     'must be source and is not source'(test: Test) {
-      const result = actions.validateSourceAction(true, actions.ActionCategory.Deploy, 'test action', 'test stage');
+      const result = cpapi.validateSourceAction(true, cpapi.ActionCategory.Deploy, 'test action', 'test stage');
       test.deepEqual(result.length, 1);
       test.ok(result[0].match(/may only contain Source actions/), 'the validation should have failed');
       test.done();
     },
 
     'cannot be source and is source'(test: Test) {
-      const result = actions.validateSourceAction(false, actions.ActionCategory.Source, 'test action', 'test stage');
+      const result = cpapi.validateSourceAction(false, cpapi.ActionCategory.Source, 'test action', 'test stage');
       test.deepEqual(result.length, 1);
       test.ok(result[0].match(/may only occur in first stage/), 'the validation should have failed');
       test.done();
     },
 
     'cannot be source and is not source'(test: Test) {
-      const result = actions.validateSourceAction(false, actions.ActionCategory.Deploy, 'test action', 'test stage');
+      const result = cpapi.validateSourceAction(false, cpapi.ActionCategory.Deploy, 'test action', 'test stage');
       test.deepEqual(result.length, 0);
       test.done();
     },
@@ -152,7 +152,7 @@ export = {
 
   'input Artifacts': {
     'can be added multiple times to an Action safely'(test: Test) {
-      const artifact = new actions.Artifact('SomeArtifact');
+      const artifact = new cpapi.Artifact('SomeArtifact');
 
       const stack = new cdk.Stack();
       const project = new codebuild.PipelineProject(stack, 'Project');
@@ -168,8 +168,8 @@ export = {
     },
 
     'cannot have duplicate names'(test: Test) {
-      const artifact1 = new actions.Artifact('SomeArtifact');
-      const artifact2 = new actions.Artifact('SomeArtifact');
+      const artifact1 = new cpapi.Artifact('SomeArtifact');
+      const artifact2 = new cpapi.Artifact('SomeArtifact');
 
       const stack = new cdk.Stack();
       const project = new codebuild.PipelineProject(stack, 'Project');
@@ -188,7 +188,7 @@ export = {
 
   'output Artifact names': {
     'accept the same name multiple times safely'(test: Test) {
-      const artifact = new actions.Artifact('SomeArtifact');
+      const artifact = new cpapi.Artifact('SomeArtifact');
 
       const stack = new cdk.Stack();
       const project = new codebuild.PipelineProject(stack, 'Project');
@@ -210,24 +210,24 @@ export = {
 };
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {
-  const artifacts: actions.Artifact[] = [];
+  const artifacts: cpapi.Artifact[] = [];
   for (let i = 0; i < numberOfArtifacts; i++) {
-    artifacts.push(new actions.Artifact(`TestArtifact${i}`));
+    artifacts.push(new cpapi.Artifact(`TestArtifact${i}`));
   }
-  return actions.validateArtifactBounds('output', artifacts, min, max, 'testCategory', 'testProvider');
+  return cpapi.validateArtifactBounds('output', artifacts, min, max, 'testCategory', 'testProvider');
 }
 
-class FakeAction extends actions.Action {
+class FakeAction extends cpapi.Action {
   constructor(actionName: string) {
     super({
       actionName,
-      category: actions.ActionCategory.Source,
+      category: cpapi.ActionCategory.Source,
       provider: 'SomeService',
-      artifactBounds: actions.defaultBounds(),
+      artifactBounds: cpapi.defaultBounds(),
     });
   }
 
-  protected bind(_stage: actions.IStage, _scope: cdk.Construct): void {
+  protected bind(_info: cpapi.ActionBind): void {
     // do nothing
   }
 }

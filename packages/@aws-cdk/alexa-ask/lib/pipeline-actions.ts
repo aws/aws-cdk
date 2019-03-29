@@ -64,7 +64,7 @@ export class AlexaSkillDeployAction extends codepipeline.DeployAction {
     }
   }
 
-  protected bind(_stage: codepipeline.IStage, _scope: cdk.Construct): void {
+  protected bind(_info: codepipeline.ActionBind): void {
     // nothing to do
   }
 }

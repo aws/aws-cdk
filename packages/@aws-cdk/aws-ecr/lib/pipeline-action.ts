@@ -1,6 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
 import { IRepository } from './repository-ref';
 
 /**
@@ -55,14 +54,14 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
     this.props = props;
   }
 
-  protected bind(stage: codepipeline.IStage, _scope: cdk.Construct): void {
-    stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
+  protected bind(info: codepipeline.ActionBind): void {
+    info.role.addToPolicy(new iam.PolicyStatement()
       .addActions(
         'ecr:DescribeImages',
       )
       .addResource(this.props.repository.repositoryArn));
 
-    this.props.repository.onImagePushed(stage.pipeline.node.uniqueId + 'SourceEventRule',
-        stage.pipeline, this.props.imageTag);
+    this.props.repository.onImagePushed(info.pipeline.node.uniqueId + 'SourceEventRule',
+        info.pipeline, this.props.imageTag);
   }
 }
