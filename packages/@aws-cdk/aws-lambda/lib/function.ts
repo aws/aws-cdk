@@ -486,6 +486,25 @@ export class Function extends FunctionBase {
     });
   }
 
+  /**
+   * Add a new version for this Lambda, always with a different name.
+   *
+   * This is similar to the {@link addVersion} method,
+   * but useful when deploying this Lambda through CodePipeline with blue/green deployments.
+   * When using {@link addVersion},
+   * your Alias will not be updated until you change the name passed to {@link addVersion} in your CDK code.
+   * When deploying through a Pipeline,
+   * that might lead to a situation where a change to your Lambda application code will never be activated,
+   * even though it traveled through the entire Pipeline,
+   * because the Alias is still pointing to an old Version.
+   * This method creates a new, unique Version every time the CDK code is executed,
+   * and so prevents that from happening.
+   */
+  public newVersion(): Version {
+    const now = new Date();
+    return this.addVersion(now.toISOString());
+  }
+
   private renderEnvironment() {
     if (!this.environment || Object.keys(this.environment).length === 0) {
       return undefined;
