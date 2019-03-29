@@ -229,3 +229,51 @@ const project = new codebuild.Project(this, 'MyProject', {
   },
 });
 ```
+
+### Definition of VPC configuration in CodeBuild Project
+
+Typically, resources in an VPC are not accessible by AWS CodeBuild. To enable
+access, you must provide additional VPC-specific configuration information as
+part of your CodeBuild project configuration. This includes the VPC ID, the
+VPC subnet IDs, and the VPC security group IDs. VPC-enabled builds are then
+able to access resources inside your VPC.
+
+For further Information see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
+
+**Use Cases**
+VPC connectivity from AWS CodeBuild builds makes it possible to:
+
+* Run integration tests from your build against data in an Amazon RDS database that's isolated on a private subnet.
+* Query data in an Amazon ElastiCache cluster directly from tests.
+* Interact with internal web services hosted on Amazon EC2, Amazon ECS, or services that use internal Elastic Load Balancing.
+* Retrieve dependencies from self-hosted, internal artifact repositories, such as PyPI for Python, Maven for Java, and npm for Node.js.
+* Access objects in an Amazon S3 bucket configured to allow access through an Amazon VPC endpoint only.
+* Query external web services that require fixed IP addresses through the Elastic IP address of the NAT gateway or NAT instance associated with your subnet(s).
+
+Your builds can access any resource that's hosted in your VPC.
+
+**Enable Amazon VPC Access in your CodeBuild Projects**
+
+Include these settings in your VPC configuration:
+
+* For VPC ID, choose the VPC that CodeBuild uses.
+* For Subnets, choose a private subnet SubnetSelection with NAT translation that includes or has routes to the resources used CodeBuild.
+* For Security Groups, choose the security groups that CodeBuild uses to allow access to resources in the VPCs.
+
+For example:
+
+```ts
+const stack = new cdk.Stack(app, 'aws-cdk-codebuild-project-vpc');
+const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+    allowAllOutbound: true,
+    description: 'Example',
+    groupName: 'MySecurityGroup',
+    vpc: vpc,
+});
+new Project(stack, 'MyProject', {
+    buildScriptAsset: new assets.ZipDirectoryAsset(stack, 'Bundle', { path: 'script_bundle' }),
+    securityGroups: [securityGroup],
+    vpc: vpc
+});
+```

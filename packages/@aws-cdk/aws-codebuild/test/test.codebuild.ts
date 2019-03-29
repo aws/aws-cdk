@@ -1,5 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import codecommit = require('@aws-cdk/aws-codecommit');
+import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -479,6 +480,99 @@ export = {
 
       test.done();
     },
+    'with VPC configuration'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+          groupName: 'Bob',
+          vpc,
+          allowAllOutbound: true,
+          description: 'Example',
+      });
+      new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.S3BucketSource({
+          bucket,
+          path: 'path/to/source.zip',
+        }),
+        vpc,
+        securityGroups: [securityGroup]
+      });
+      expect(stack).to(haveResourceLike("AWS::CodeBuild::Project", {
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "SecurityGroup1F554B36F",
+                "GroupId"
+              ]
+            }
+          ],
+          "Subnets": [
+            {
+              "Ref": "MyVPCPrivateSubnet1Subnet641543F4"
+            },
+            {
+              "Ref": "MyVPCPrivateSubnet2SubnetA420D3F0"
+            },
+            {
+              "Ref": "MyVPCPrivateSubnet3SubnetE1B8B1B4"
+            }
+          ],
+          "VpcId": {
+            "Ref": "MyVPCAFB07A31"
+          }
+        }
+      }));
+      test.done();
+    },
+    'without VPC configuration but security group identified'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+          groupName: 'Bob',
+          vpc,
+          allowAllOutbound: true,
+          description: 'Example',
+      });
+
+      test.throws(() =>
+        new codebuild.Project(stack, 'MyProject', {
+          source: new codebuild.S3BucketSource({
+            bucket,
+            path: 'path/to/source.zip',
+          }),
+          securityGroups: [securityGroup]
+        })
+      , /Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC/);
+      test.done();
+    },
+    'with VPC configuration but allowAllOutbound identified'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+          groupName: 'Bob',
+          vpc,
+          allowAllOutbound: true,
+          description: 'Example',
+      });
+      test.throws(() =>
+        new codebuild.Project(stack, 'MyProject', {
+          source: new codebuild.S3BucketSource({
+            bucket,
+            path: 'path/to/source.zip',
+          }),
+          vpc,
+          allowAllOutbound: true,
+          securityGroups: [securityGroup]
+        })
+      , /Configure 'allowAllOutbound' directly on the supplied SecurityGroup/);
+      test.done();
+    }
   },
 
   'using timeout and path in S3 artifacts sets it correctly'(test: Test) {
@@ -680,7 +774,7 @@ export = {
         test.done();
       },
 
-      'if sourcde is set to CodePipeline, and artifacts are not set, they are defaulted to CodePipeline'(test: Test) {
+      'if source is set to CodePipeline, and artifacts are not set, they are defaulted to CodePipeline'(test: Test) {
         const stack = new cdk.Stack();
 
         new codebuild.Project(stack, 'MyProject', {
