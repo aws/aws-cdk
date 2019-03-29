@@ -183,10 +183,22 @@ export interface SubnetConfiguration {
   /**
    * The common Logical Name for the `VpcSubnet`
    *
-   * Thi name will be suffixed with an integer correlating to a specific
+   * This name will be suffixed with an integer correlating to a specific
    * availability zone.
    */
   name: string;
+
+ /**
+  * Subnet is not to be created but IP space needs to be reserved.
+  *
+  * When true, the IP space for the subnet is reserved but no actual
+  * resources are provisioned. This space is only dependent on the
+  * number of availibility zones and on `cidrMask` - all other subnet
+  * properties are ignored.
+  *
+  * @default false
+  */
+  reserved?: boolean;
 }
 
 /**
@@ -501,6 +513,12 @@ export class VpcNetwork extends VpcNetworkBase {
 
   private createSubnetResources(subnetConfig: SubnetConfiguration, cidrMask: number) {
     this.availabilityZones.forEach((zone, index) => {
+      if (subnetConfig.reserved === true) {
+        // For reserved subnets, just allocate ip space but do not create any resources
+        this.networkBuilder.addSubnet(cidrMask);
+        return;
+      }
+
       const name = subnetId(subnetConfig.name, index);
       const subnetProps: VpcSubnetProps = {
         availabilityZone: zone,
