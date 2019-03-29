@@ -46,8 +46,8 @@
     "cloudformation": "AWS::CodePipeline"
   },
   "nyc": {
-    "statements": 66,
-    "lines": 66
+    "statements": 50,
+    "lines": 50
   },
   "keywords": [
     "aws",
@@ -65,22 +65,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/alexa-ask": "^0.27.0",
     "@aws-cdk/assert": "^0.27.0",
-    "@aws-cdk/aws-cloudformation": "^0.27.0",
-    "@aws-cdk/aws-cloudtrail": "^0.27.0",
-    "@aws-cdk/aws-codebuild": "^0.27.0",
-    "@aws-cdk/aws-codecommit": "^0.27.0",
-    "@aws-cdk/aws-codedeploy": "^0.27.0",
-    "@aws-cdk/aws-ecr": "^0.27.0",
-    "@aws-cdk/aws-lambda": "^0.27.0",
     "cdk-build-tools": "^0.27.0",
     "cdk-integ-tools": "^0.27.0",
     "cfn2ts": "^0.27.0",
     "pkglint": "^0.27.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.27.0",
     "@aws-cdk/aws-events": "^0.27.0",
     "@aws-cdk/aws-iam": "^0.27.0",
     "@aws-cdk/aws-s3": "^0.27.0",
@@ -89,7 +80,6 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.27.0",
     "@aws-cdk/aws-events": "^0.27.0",
     "@aws-cdk/aws-iam": "^0.27.0",
     "@aws-cdk/aws-s3": "^0.27.0",
@@ -102,7 +92,9 @@
   "awslint": {
     "exclude": [
       "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[0]",
-      "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[1]"
+      "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[1]",
+      "export:@aws-cdk/aws-codepipeline.IPipeline",
+      "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps"
     ]
   }
 }
