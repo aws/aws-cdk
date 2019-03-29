@@ -1,7 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
 import { CfnRepository } from './codecommit.generated';
-import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 
 export interface IRepository extends cdk.IConstruct {
   /** The ARN of this Repository. */
@@ -15,14 +14,6 @@ export interface IRepository extends cdk.IConstruct {
 
   /** The SSH clone URL */
   readonly repositoryCloneUrlSsh: string;
-
-  /**
-   * Convenience method for creating a new {@link PipelineSourceAction}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction;
 
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
@@ -118,13 +109,6 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   public abstract readonly repositoryCloneUrlSsh: string;
 
   public abstract export(): RepositoryImportProps;
-
-  public toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction {
-    return new PipelineSourceAction({
-      ...props,
-      repository: this,
-    });
-  }
 
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use

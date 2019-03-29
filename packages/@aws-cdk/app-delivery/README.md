@@ -29,9 +29,11 @@ The example below defines a *CDK App* that contains 3 stacks:
 ```
 
 #### `index.ts`
+
 ```typescript
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
 import cdk = require('@aws-cdk/cdk');
 import cicd = require('@aws-cdk/cicd');
 
@@ -48,7 +50,7 @@ const pipeline = new codepipeline.Pipeline(pipelineStack, 'CodePipeline', {
 });
 
 // Configure the CodePipeline source - where your CDK App's source code is hosted
-const source = new codepipeline.GitHubSourceAction({
+const source = new codepipeline_actions.GitHubSourceAction({
   actionName: 'GitHub',
   /* ... */
 });
@@ -67,8 +69,9 @@ const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild', {
   * },
   */
 });
-const buildAction = project.toCodePipelineBuildAction({
+const buildAction = new codepipeline_actions.CodeBuildBuildAction({
   actionName: 'CodeBuild',
+  project,
   inputArtifact: source.outputArtifact,
 });
 pipeline.addStage({

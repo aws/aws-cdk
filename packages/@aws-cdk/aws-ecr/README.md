@@ -23,31 +23,3 @@ is important here):
 repository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });
 repository.addLifecycleRule({ maxImageAgeDays: 30 });
 ```
-
-### Using with CodePipeline
-
-This package also contains a source Action that allows you to use an ECR Repository as a source for CodePipeline.
-Example:
-
-```ts
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const sourceAction = new ecr.PipelineSourceAction({
-  actionName: 'ECR',
-  repository: ecrRepository,
-  imageTag: 'some-tag', // optional, default: 'latest'
-  outputArtifactName: 'SomeName', // optional
-});
-pipeline.addStage({
-  actionName: 'Source',
-  actions: [sourceAction],
-});
-```
-
-You can also create the action from the Repository directly:
-
-```ts
-// equivalent to the code above:
-const sourceAction = ecrRepository.toCodePipelineSourceAction({ actionName: 'ECR' });
-```

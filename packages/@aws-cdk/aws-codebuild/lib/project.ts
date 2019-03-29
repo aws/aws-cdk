@@ -9,10 +9,6 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { CfnProject } from './codebuild.generated';
-import {
-  CommonPipelineBuildActionProps, CommonPipelineTestActionProps,
-  PipelineBuildAction, PipelineTestAction
-} from './pipeline-actions';
 import { BuildSource, NoSource, SourceType } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
@@ -28,22 +24,6 @@ export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
   readonly role?: iam.IRole;
-
-  /**
-   * Convenience method for creating a new {@link PipelineBuildAction CodeBuild build Action}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineBuildAction CodeBuild build Action}
-   */
-  toCodePipelineBuildAction(props: CommonPipelineBuildActionProps): PipelineBuildAction;
-
-  /**
-   * Convenience method for creating a new {@link PipelineTestAction CodeBuild test Action}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineTestAction CodeBuild test Action}
-   */
-  toCodePipelineTestAction(props: CommonPipelineTestActionProps): PipelineTestAction;
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state
@@ -188,20 +168,6 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
   private eventsRole?: iam.Role;
 
   public abstract export(): ProjectImportProps;
-
-  public toCodePipelineBuildAction(props: CommonPipelineBuildActionProps): PipelineBuildAction {
-    return new PipelineBuildAction({
-      ...props,
-      project: this,
-    });
-  }
-
-  public toCodePipelineTestAction(props: CommonPipelineTestActionProps): PipelineTestAction {
-    return new PipelineTestAction({
-      ...props,
-      project: this,
-    });
-  }
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state

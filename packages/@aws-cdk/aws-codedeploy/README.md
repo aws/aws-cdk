@@ -160,42 +160,6 @@ const deploymentConfig = codedeploy.ServerDeploymentConfig.import(this, 'Existin
 });
 ```
 
-### Use in CodePipeline
-
-This module also contains an Action that allows you to use CodeDeploy with AWS CodePipeline.
-
-Example:
-
-```ts
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
-  pipelineName: 'MyPipeline',
-});
-
-// add the source and build Stages to the Pipeline...
-
-const deployAction = new codedeploy.PipelineDeployAction({
-  actionName: 'CodeDeploy',
-  inputArtifact: buildAction.outputArtifact,
-  deploymentGroup,
-});
-pipeline.addStage({
-  name: 'Deploy',
-  actions: [deployAction],
-});
-```
-
-You can also create an action from the Deployment Group directly:
-
-```ts
-// equivalent to the code above:
-const deployAction = deploymentGroup.toCodePipelineDeployAction({
-  actionName: 'CodeDeploy',
-  inputArtifact: buildAction.outputArtifact,
-});
-```
-
 ### Lambda Applications
 
 To create a new CodeDeploy Application that deploys to a Lambda function:

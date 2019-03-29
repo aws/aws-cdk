@@ -24,7 +24,7 @@
             "name": "Source",
             "actions": [
               {
-                "@aws-cdk/aws-codecommit.PipelineSourceAction": {
+                "@aws-cdk/aws-codepipeline-actions.CodeCommitSourceAction":  {
                   "repository": { "Ref": "Repo" },
                   "actionName": "Source"
                 }
@@ -35,11 +35,11 @@
             "name": "Build",
             "actions": [
               {
-                "@aws-cdk/aws-codebuild.PipelineBuildAction": {
+                "@aws-cdk/aws-codepipeline-actions.CodeBuildBuildAction":   {
                   "actionName": "Build",
                   "project": { "Ref": "BuildProject" },
                   "inputArtifact": {
-                    "@aws-cdk/aws-codepipeline-api.Artifact": {
+                    "@aws-cdk/aws-codepipeline.Artifact": {
                       "artifactName": "Source"
                     }
                   }

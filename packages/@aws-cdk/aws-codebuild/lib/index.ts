@@ -1,4 +1,3 @@
-export * from './pipeline-actions';
 export * from './pipeline-project';
 export * from './project';
 export * from './source';

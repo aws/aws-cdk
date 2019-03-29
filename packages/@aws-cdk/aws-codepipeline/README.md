@@ -49,7 +49,7 @@ const sourceStage = pipeline.addStage({
 You can insert the new Stage at an arbitrary point in the Pipeline:
 
 ```ts
-pipeline.addStage({
+const someStage = pipeline.addStage({
   name: 'SomeStage',
   placement: {
     // note: you can only specify one of the below properties
@@ -63,98 +63,14 @@ pipeline.addStage({
 
 ### Actions
 
-To add an Action to a Stage:
+Actions live in a separate package, `@aws-cdk/aws-codepipeline-actions`.
+
+To add an Action to a Stage, you can provide it when creating the Stage,
+in the `actions` property,
+or you can use the `IStage.addAction()` method to mutate an existing Stage:
 
 ```ts
-const sourceAction = new codepipeline.GitHubSourceAction({
-  actionName: 'GitHub_Source',
-  owner: 'awslabs',
-  repo: 'aws-cdk',
-  branch: 'develop', // default: 'master'
-  oauthToken: ...,
-  outputArtifactName: 'SourceOutput', // this will be the name of the output artifact in the Pipeline
-});
-sourceStage.addAction(sourceAction);
-```
-
-#### Manual approval Action
-
-This package contains an Action that stops the Pipeline until someone manually clicks the approve button:
-
-```typescript
-const manualApprovalAction = new codepipeline.ManualApprovalAction({
-  actionName: 'Approve',
-  notificationTopic: new sns.Topic(this, 'Topic'), // optional
-  notifyEmails: [
-    'some_email@example.com',
-  ], // optional
-  additionalInformation: 'additional info', // optional
-});
-approveStage.addAction(manualApprovalAction);
-// `manualApprovalAction.notificationTopic` can be used to access the Topic
-// after the Action has been added to a Pipeline
-```
-
-If the `notificationTopic` has not been provided,
-but `notifyEmails` were,
-a new SNS Topic will be created
-(and accessible through the `notificationTopic` property of the Action).
-
-#### Jenkins Actions
-
-In order to use Jenkins Actions in the Pipeline,
-you first need to create a `JenkinsProvider`:
-
-```ts
-const jenkinsProvider = new codepipeline.JenkinsProvider(this, 'JenkinsProvider', {
-  providerName: 'MyJenkinsProvider',
-  serverUrl: 'http://my-jenkins.com:8080',
-  version: '2', // optional, default: '1'
-});
-```
-
-If you've registered a Jenkins provider in a different CDK app,
-or outside the CDK (in the CodePipeline AWS Console, for example),
-you can import it:
-
-```ts
-const jenkinsProvider = codepipeline.JenkinsProvider.import(this, 'JenkinsProvider', {
-  providerName: 'MyJenkinsProvider',
-  serverUrl: 'http://my-jenkins.com:8080',
-  version: '2', // optional, default: '1'
-});
-```
-
-Note that a Jenkins provider
-(identified by the provider name-category(build/test)-version tuple)
-must always be registered in the given account, in the given AWS region,
-before it can be used in CodePipeline.
-
-With a `JenkinsProvider`,
-we can create a Jenkins Action:
-
-```ts
-const buildAction = new codepipeline.JenkinsBuildAction({
-  actionName: 'JenkinsBuild',
-  jenkinsProvider: jenkinsProvider,
-  projectName: 'MyProject',
-});
-// there's also a JenkinsTestAction that works identically
-```
-
-You can also add the Action to the Pipeline directly:
-
-```ts
-// equivalent to the code above:
-const buildAction = jenkinsProvider.toCodePipelineBuildAction({
-  actionName: 'JenkinsBuild',
-  projectName: 'MyProject',
-});
-
-const testAction = jenkinsProvider.toCodePipelineTestAction({
-  actionName: 'JenkinsTest',
-  projectName: 'MyProject',
-});
+sourceStage.addAction(someAction);
 ```
 
 ### Cross-region CodePipelines
@@ -174,7 +90,7 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 });
 
 // later in the code...
-new cloudformation.PipelineCreateUpdateStackAction({
+new codepipeline_actions.CloudFormationCreateUpdateStackAction({
   actionName: 'CFN_US_West_1',
   // ...
   region: 'us-west-1',

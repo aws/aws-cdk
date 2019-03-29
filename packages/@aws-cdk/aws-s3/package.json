@@ -65,7 +65,6 @@
     "pkglint": "^0.27.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.27.0",
     "@aws-cdk/aws-events": "^0.27.0",
     "@aws-cdk/aws-iam": "^0.27.0",
     "@aws-cdk/aws-kms": "^0.27.0",
@@ -74,7 +73,6 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.27.0",
     "@aws-cdk/aws-events": "^0.27.0",
     "@aws-cdk/aws-iam": "^0.27.0",
     "@aws-cdk/aws-kms": "^0.27.0",
