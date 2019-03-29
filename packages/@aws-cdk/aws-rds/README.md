@@ -2,6 +2,13 @@
 
 The `aws-cdk-rds` package contains Constructs for setting up RDS instances.
 
+> Note: the functionality this package is currently limited, as the CDK team is
+> focusing on other use cases first. If your use case is not listed below, you
+> will have to use achieve it using CloudFormation resources.
+>
+> If you would like to help improve the state of this library, Pull Requests are
+> welcome.
+
 Supported:
 
 * Clustered databases
@@ -61,7 +68,7 @@ When the master password is generated and stored in AWS Secrets Manager, it can 
 
 Rotation of the master password is also supported for an existing cluster:
 ```ts
-new rds.RotationSingleUser(stack, 'Rotation', {
+new RotationSingleUser(stack, 'Rotation', {
     secret: importedSecret,
     engine: DatabaseEngine.Oracle,
     target: importedCluster,

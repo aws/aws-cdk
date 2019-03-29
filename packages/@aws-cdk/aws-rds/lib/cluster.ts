@@ -1,4 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 import { IClusterParameterGroup } from './cluster-parameter-group';
@@ -15,7 +16,7 @@ export interface DatabaseClusterProps {
   /**
    * What kind of database to start
    */
-  engine: DatabaseClusterEngine;
+  readonly engine: DatabaseClusterEngine;
 
   /**
    * How many replicas/instances to create
@@ -24,36 +25,36 @@ export interface DatabaseClusterProps {
    *
    * @default 2
    */
-  instances?: number;
+  readonly instances?: number;
 
   /**
    * Settings for the individual instances that are launched
    */
-  instanceProps: InstanceProps;
+  readonly instanceProps: InstanceProps;
 
   /**
    * Username and password for the administrative user
    */
-  masterUser: Login;
+  readonly masterUser: Login;
 
   /**
    * Backup settings
    */
-  backup?: BackupProps;
+  readonly backup?: BackupProps;
 
   /**
    * What port to listen on
    *
    * If not supplied, the default for the engine is used.
    */
-  port?: number;
+  readonly port?: number;
 
   /**
    * An optional identifier for the cluster
    *
    * If not supplied, a name is automatically generated.
    */
-  clusterIdentifier?: string;
+  readonly clusterIdentifier?: string;
 
   /**
    * Base identifier for instances
@@ -64,17 +65,27 @@ export interface DatabaseClusterProps {
    *
    * If clusterIdentifier is also not given, the identifier is automatically generated.
    */
-  instanceIdentifierBase?: string;
+  readonly instanceIdentifierBase?: string;
 
   /**
    * Name of a database which is automatically created inside the cluster
    */
-  defaultDatabaseName?: string;
+  readonly defaultDatabaseName?: string;
 
   /**
-   * ARN of KMS key if you want to enable storage encryption
+   * Whether to enable storage encryption
+   *
+   * @default false
    */
-  kmsKeyArn?: string;
+  readonly storageEncrypted?: boolean
+
+  /**
+   * The KMS key for storage encryption. If specified `storageEncrypted`
+   * will be set to `true`.
+   *
+   * @default default master key
+   */
+  readonly kmsKey?: kms.IEncryptionKey;
 
   /**
    * A daily time range in 24-hours UTC format in which backups preferably execute.
@@ -83,14 +94,22 @@ export interface DatabaseClusterProps {
    *
    * Example: '01:00-02:00'
    */
-  preferredMaintenanceWindow?: string;
+  readonly preferredMaintenanceWindow?: string;
 
   /**
    * Additional parameters to pass to the database engine
    *
    * @default No parameter group
    */
-  parameterGroup?: IClusterParameterGroup;
+  readonly parameterGroup?: IClusterParameterGroup;
+
+  /**
+   * The CloudFormation policy to apply when the cluster and its instances
+   * are removed from the stack or replaced during an update.
+   *
+   * @default Retain
+   */
+  readonly deleteReplacePolicy?: cdk.DeletionPolicy
 }
 
 /**
@@ -261,9 +280,13 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
       // Encryption
-      kmsKeyId: props.kmsKeyArn,
-      storageEncrypted: props.kmsKeyArn ? true : false,
+      kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
+      storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
+
+    const deleteReplacePolicy = props.deleteReplacePolicy || cdk.DeletionPolicy.Retain;
+    cluster.options.deletionPolicy = deleteReplacePolicy;
+    cluster.options.updateReplacePolicy = deleteReplacePolicy;
 
     this.clusterIdentifier = cluster.ref;
     this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, cluster.dbClusterEndpointPort);
@@ -302,6 +325,9 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
       });
+
+      instance.options.deletionPolicy = deleteReplacePolicy;
+      instance.options.updateReplacePolicy = deleteReplacePolicy;
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.

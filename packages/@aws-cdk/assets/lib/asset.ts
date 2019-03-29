@@ -25,18 +25,18 @@ export interface GenericAssetProps {
   /**
    * The disk location of the asset.
    */
-  path: string;
+  readonly path: string;
 
   /**
    * The packaging type for this asset.
    */
-  packaging: AssetPackaging;
+  readonly packaging: AssetPackaging;
 
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
    */
-  readers?: iam.IPrincipal[];
+  readonly readers?: iam.IPrincipal[];
 }
 
 /**
@@ -184,13 +184,13 @@ export interface FileAssetProps {
   /**
    * File path.
    */
-  path: string;
+  readonly path: string;
 
   /**
    * A list of principals that should be able to read this file asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
    */
-  readers?: iam.IPrincipal[];
+  readonly readers?: iam.IPrincipal[];
 }
 
 /**
@@ -206,13 +206,13 @@ export interface ZipDirectoryAssetProps {
   /**
    * Path of the directory.
    */
-  path: string;
+  readonly path: string;
 
   /**
    * A list of principals that should be able to read this ZIP file from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
    */
-  readers?: iam.IPrincipal[];
+  readonly readers?: iam.IPrincipal[];
 }
 
 /**

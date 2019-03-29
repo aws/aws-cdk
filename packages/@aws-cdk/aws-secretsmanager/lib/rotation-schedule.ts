@@ -10,7 +10,7 @@ export interface RotationScheduleOptions {
   /**
    * THe Lambda function that can rotate the secret.
    */
-  rotationLambda: lambda.IFunction;
+  readonly rotationLambda: lambda.IFunction;
 
   /**
    * Specifies the number of days after the previous rotation before
@@ -18,7 +18,7 @@ export interface RotationScheduleOptions {
    *
    * @default 30
    */
-  automaticallyAfterDays?: number;
+  readonly automaticallyAfterDays?: number;
 }
 
 /**
@@ -28,7 +28,7 @@ export interface RotationScheduleProps extends RotationScheduleOptions {
   /**
    * The secret to rotate.
    */
-  secret: ISecret;
+  readonly secret: ISecret;
 }
 
 /**

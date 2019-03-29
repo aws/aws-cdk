@@ -34,7 +34,7 @@ export interface VpnTunnelOption {
    *
    * @default an Amazon generated pre-shared key
    */
-  preSharedKey?: string;
+  readonly preSharedKey?: string;
 
   /**
    * The range of inside IP addresses for the tunnel. Any specified CIDR blocks must be
@@ -43,28 +43,28 @@ export interface VpnTunnelOption {
    *
    * @default an Amazon generated inside IP CIDR
    */
-  tunnelInsideCidr?: string;
+  readonly tunnelInsideCidr?: string;
 }
 
 export interface VpnConnectionOptions {
   /**
    * The ip address of the customer gateway.
    */
-  ip: string;
+  readonly ip: string;
 
   /**
    * The ASN of the customer gateway.
    *
    * @default 65000
    */
-  asn?: number;
+  readonly asn?: number;
 
   /**
    * The static routes to be routed from the VPN gateway to the customer gateway.
    *
    * @default Dynamic routing (BGP)
    */
-  staticRoutes?: string[];
+  readonly staticRoutes?: string[];
 
   /**
    * The tunnel options for the VPN connection. At most two elements (one per tunnel).
@@ -72,14 +72,14 @@ export interface VpnConnectionOptions {
    *
    * @default Amazon generated tunnel options
    */
-  tunnelOptions?: VpnTunnelOption[];
+  readonly tunnelOptions?: VpnTunnelOption[];
 }
 
 export interface VpnConnectionProps extends VpnConnectionOptions {
   /**
    * The VPC to connect to.
    */
-  vpc: IVpcNetwork;
+  readonly vpc: IVpcNetwork;
 }
 
 /**

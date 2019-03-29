@@ -81,7 +81,7 @@ export interface ILogGroup extends cdk.IConstruct {
  * Properties for importing a LogGroup
  */
 export interface LogGroupImportProps {
-  logGroupArn: string;
+  readonly logGroupArn: string;
 }
 
 /**
@@ -190,6 +190,96 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
 }
 
 /**
+ * How long, in days, the log contents will be retained.
+ */
+export enum RetentionDays {
+  /**
+   * 1 day
+   */
+  OneDay = 1,
+
+  /**
+   * 3 days
+   */
+  ThreeDays = 3,
+
+  /**
+   * 5 days
+   */
+  FiveDays = 5,
+
+  /**
+   * 1 week
+   */
+  OneWeek = 7,
+
+  /**
+   * 2 weeks
+   */
+  TwoWeeks =  14,
+
+  /**
+   * 1 month
+   */
+  OneMonth = 30,
+
+  /**
+   * 2 months
+   */
+  TwoMonths = 60,
+
+  /**
+   * 3 months
+   */
+  ThreeMonths = 90,
+
+  /**
+   * 4 months
+   */
+  FourMonths = 120,
+
+  /**
+   * 5 months
+   */
+  FiveMonths = 150,
+
+  /**
+   * 6 months
+   */
+  SixMonths = 180,
+
+  /**
+   * 1 year
+   */
+  OneYear = 365,
+
+  /**
+   * 13 months
+   */
+  ThirteenMonths = 400,
+
+  /**
+   * 18 months
+   */
+  EighteenMonths = 545,
+
+  /**
+   * 2 years
+   */
+  TwoYears = 731,
+
+  /**
+   * 5 years
+   */
+  FiveYears = 1827,
+
+  /**
+   * 10 years
+   */
+  TenYears = 3653
+}
+
+/**
  * Properties for a LogGroup
  */
 export interface LogGroupProps {
@@ -198,7 +288,7 @@ export interface LogGroupProps {
    *
    * @default Automatically generated
    */
-  logGroupName?: string;
+  readonly logGroupName?: string;
 
   /**
    * How long, in days, the log contents will be retained.
@@ -207,7 +297,7 @@ export interface LogGroupProps {
    *
    * @default 731 days (2 years)
    */
-  retentionDays?: number;
+  readonly retentionDays?: RetentionDays;
 
   /**
    * Retain the log group if the stack or containing construct ceases to exist
@@ -219,7 +309,7 @@ export interface LogGroupProps {
    *
    * @default true
    */
-  retainLogGroup?: boolean;
+  readonly retainLogGroup?: boolean;
 }
 
 /**
@@ -247,7 +337,7 @@ export class LogGroup extends LogGroupBase {
     super(scope, id);
 
     let retentionInDays = props.retentionDays;
-    if (retentionInDays === undefined) { retentionInDays = 731; }
+    if (retentionInDays === undefined) { retentionInDays = RetentionDays.TwoYears; }
     if (retentionInDays === Infinity) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && retentionInDays <= 0) {
@@ -317,7 +407,7 @@ export interface NewLogStreamProps {
    *
    * @default Automatically generated
    */
-  logStreamName?: string;
+  readonly logStreamName?: string;
 }
 
 /**
@@ -329,12 +419,12 @@ export interface NewSubscriptionFilterProps {
    *
    * For example, a Kinesis stream or a Lambda function.
    */
-  destination: ILogSubscriptionDestination;
+  readonly destination: ILogSubscriptionDestination;
 
   /**
    * Log events matching this pattern will be sent to the destination.
    */
-  filterPattern: IFilterPattern;
+  readonly filterPattern: IFilterPattern;
 }
 
 /**
@@ -344,17 +434,17 @@ export interface NewMetricFilterProps {
   /**
    * Pattern to search for log events.
    */
-  filterPattern: IFilterPattern;
+  readonly filterPattern: IFilterPattern;
 
   /**
    * The namespace of the metric to emit.
    */
-  metricNamespace: string;
+  readonly metricNamespace: string;
 
   /**
    * The name of the metric to emit.
    */
-  metricName: string;
+  readonly metricName: string;
 
   /**
    * The value to emit for the metric.
@@ -371,12 +461,12 @@ export interface NewMetricFilterProps {
    *
    * @default "1"
    */
-  metricValue?: string;
+  readonly metricValue?: string;
 
   /**
    * The value to emit if the pattern does not match a particular event.
    *
    * @default No metric emitted.
    */
-  defaultValue?: number;
+  readonly defaultValue?: number;
 }

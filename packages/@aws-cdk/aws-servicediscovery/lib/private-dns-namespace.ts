@@ -8,7 +8,7 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**
    * The Amazon VPC that you want to associate the namespace with.
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 }
 
 /**

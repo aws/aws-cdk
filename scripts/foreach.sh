@@ -19,9 +19,11 @@
 #
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
+scriptdir=$(cd $(dirname $0) && pwd)
 statefile="${HOME}/.foreach.state"
 commandfile="${HOME}/.foreach.command"
 command_arg="${@:-}"
+base=$PWD
 
 function heading {
   printf "\e[38;5;81m$@\e[0m\n"
@@ -70,9 +72,11 @@ heading "${next}: ${command} (${remaining} remaining)"
 
 (
   cd ${next}
-  ${command} || {
-    error "error: last command failed. fix problem and resume by executing:"
-    error "    $0"
+  ${command} &> /tmp/foreach.stdio || {
+    cd ${base}
+    cat /tmp/foreach.stdio | ${scriptdir}/path-prefix ${next}
+    error "error: last command failed. fix problem and resume by executing: $0"
+    error "directory:    ${next}"
     exit 1
   }
 )
