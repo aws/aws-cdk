@@ -17,6 +17,32 @@ export interface IVpcEndpoint extends cdk.IConstruct {
   readonly vpcEndpointId: string;
 }
 
+export abstract class VpcEndpoint extends cdk.Construct implements IVpcEndpoint {
+  public abstract vpcEndpointId: string;
+
+  protected policyDocument?: iam.PolicyDocument;
+
+  /**
+   * Adds a statement to the policy document of the VPC endpoint.
+   *
+   * Not all interface VPC endpoints support policy. For more information
+   * see https://docs.aws.amazon.com/vpc/latest/userguide/vpce-interface.html
+   *
+   * @param statement the IAM statement to add
+   */
+  public addToPolicy(statement: iam.PolicyStatement) {
+    if (!statement.hasPrincipal) {
+      throw new Error('Statement must have a `Principal`.');
+    }
+
+    if (!this.policyDocument) {
+      this.policyDocument = new iam.PolicyDocument();
+    }
+
+    this.policyDocument.addStatement(statement);
+  }
+}
+
 /**
  * A gateway VPC endpoint.
  */
@@ -106,7 +132,7 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
 /**
  * A gateway VPC endpoint.
  */
-export class GatewayVpcEndpoint extends cdk.Construct implements IGatewayVpcEndpoint {
+export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoint {
   /**
    * Imports an existing gateway VPC endpoint.
    */
@@ -124,8 +150,6 @@ export class GatewayVpcEndpoint extends cdk.Construct implements IGatewayVpcEndp
    */
   public readonly creationTimestamp: string;
 
-  private policyDocument?: iam.PolicyDocument;
-
   constructor(scope: cdk.Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
 
@@ -142,23 +166,6 @@ export class GatewayVpcEndpoint extends cdk.Construct implements IGatewayVpcEndp
 
     this.vpcEndpointId = endpoint.vpcEndpointId;
     this.creationTimestamp = endpoint.vpcEndpointCreationTimestamp;
-  }
-
-  /**
-   * Adds a statement to the policy document.
-   *
-   * @param statement the statement to add
-   */
-  public addToPolicy(statement: iam.PolicyStatement) {
-    if (!statement.hasPrincipal) {
-      throw new Error('Statement must have a `Principal`.');
-    }
-
-    if (!this.policyDocument) {
-      this.policyDocument = new iam.PolicyDocument();
-    }
-
-    this.policyDocument.addStatement(statement);
   }
 
   /**
@@ -326,7 +333,7 @@ export interface IInterfaceVpcEndpoint extends IVpcEndpoint, IConnectable {
 /**
  * A interface VPC endpoint.
  */
-export class InterfaceVpcEndpoint extends cdk.Construct implements IInterfaceVpcEndpoint {
+export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEndpoint {
   /**
    * Imports an existing interface VPC endpoint.
    */
@@ -389,6 +396,7 @@ export class InterfaceVpcEndpoint extends cdk.Construct implements IInterfaceVpc
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled || true,
+      policyDocument: new cdk.Token(() => this.policyDocument),
       securityGroupIds: [this.securityGroupId],
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.Interface,
