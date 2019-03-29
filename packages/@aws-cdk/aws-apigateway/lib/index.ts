@@ -9,6 +9,7 @@ export * from './lambda-api';
 export * from './vpc-link';
 export * from './methodresponse';
 export * from './model';
+export * from './json-schema';
 
 // AWS::ApiGateway CloudFormation Resources:
 export * from './apigateway.generated';

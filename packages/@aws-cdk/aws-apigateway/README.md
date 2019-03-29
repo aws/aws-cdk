@@ -146,6 +146,70 @@ const proxy = resource.addProxy({
 });
 ```
 
+### Models
+
+You may define models to provide structure to request payloads sent to a method,
+and/or payloads returned to a client from a method. A model may be added to a
+REST API as follows:
+
+```ts
+// Direct addition to REST API
+const beerModel = api.addModel('Beer', {
+  contentType: 'application/json',
+  schema: {
+    $schema: 'http://json-schema.org/draft-04/schema#',
+    title: 'Beer',
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      style: { type: 'string' },
+      abv: { type: 'number' },
+      ibu: { type: 'number' },
+    },
+  },
+  description: 'Simple model for defining a beer.',
+});
+
+// Separate instantiation
+const breweryModel = new apiGateway.Model(this, 'breweryModel', {
+  restApi: api,
+  name: 'Brewery',
+  description: 'Simple model for defining a brewery.',
+  contentType: 'application/json',
+  schema: {
+    $schema: 'http://json-schema.org/draft-04/schema#',
+    title: 'Brewery',
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      address: { type: 'string' },
+      // Reference another model
+      beers: { type: 'array', items: { $ref: beerModel.referenceForSchema } }
+    },
+  },
+});
+```
+
+Given a model definition, you may either define a binding to request or response of a method via:
+
+#### Request
+
+RequestModel support not yet implemented.
+
+#### Response
+
+```ts
+const method = api.beer.addMethod('GET', getBeerLambdaHandler, {
+  methodResponses: [{
+      statusCode: '200',
+      responseModels: {
+        'application/json': beerModelJson,
+        'application/xml': beerModelXml,
+      }
+  }]
+});
+```
+
 ### Deployments
 
 By default, the `RestApi` construct will automatically create an API Gateway
@@ -213,7 +277,7 @@ list of missing features.
 
 ### Roadmap
 
-- [ ] Support defining REST API Models [#1695](https://github.com/awslabs/aws-cdk/issues/1695)
+- Validate REST API model JSON schema
 
 ----
 

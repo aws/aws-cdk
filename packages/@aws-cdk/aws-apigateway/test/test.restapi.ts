@@ -616,4 +616,28 @@ export = {
 
     test.done();
   },
+
+  'can add a model directly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'my-api');
+    api.root.addMethod('GET'); // must have at least one method
+
+    // WHEN
+    api.addModel('TestModel', {
+      contentType: 'application/xml',
+      schema: {},
+      description: 'Some kind of model'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Model', {
+      ContentType: 'application/xml',
+      Schema: {},
+      Name: 'TestModel',
+      Description: 'Some kind of model'
+    }));
+
+    test.done();
+  },
 };

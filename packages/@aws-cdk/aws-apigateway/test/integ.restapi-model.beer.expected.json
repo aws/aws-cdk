@@ -1,0 +1,634 @@
+{
+  "Resources": {
+    "BeersHandlerServiceRole107572B0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "BeersHandlerA9F3A7B5": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "exports.handler = function getAllTheBeersHandler(_event, _, callback) {\n    callback(undefined, {\n        isBase64Encoded: false,\n        statusCode: 200,\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify([{\n                id: '42095j23095u390j330r93',\n                name: 'Duff',\n            }]),\n    });\n}"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "BeersHandlerServiceRole107572B0",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs6.10"
+      },
+      "DependsOn": [
+        "BeersHandlerServiceRole107572B0"
+      ]
+    },
+    "BeersHandlerApiPermissionGETbeer6011A24E": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BeersHandlerA9F3A7B5",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "beerapi67AE41CF"
+              },
+              "/",
+              {
+                "Ref": "beerapiDeploymentStageprod3F2FBBD3"
+              },
+              "/GET/beer"
+            ]
+          ]
+        }
+      }
+    },
+    "BeersHandlerApiPermissionTestGETbeer79D5B120": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BeersHandlerA9F3A7B5",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "beerapi67AE41CF"
+              },
+              "/test-invoke-stage/GET/beer"
+            ]
+          ]
+        }
+      }
+    },
+    "BeerHandlerServiceRole54F80E23": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join":
+                  [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "BeerHandler6BFFDABA": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "exports.handler = function getTheOneBeerHandler(_event, _, callback) {\n    callback(undefined, {\n        isBase64Encoded: false,\n        statusCode: 200,\n        headers: { 'content-type': 'application/json' },\n        body: JSON.stringify({\n            id: '42095j23095u390j330r93',\n            name: 'Duff',\n            brewery: 'Duff Brewing Company',\n            style: 'American Adjunct Lager',\n            abv: 4.5,\n            ibu: 25,\n        }),\n    });\n}"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "BeerHandlerServiceRole54F80E23",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs6.10"
+      },
+      "DependsOn": [
+        "BeerHandlerServiceRole54F80E23"
+      ]
+    },
+    "BeerHandlerApiPermissionGETbeerbeerid183744F8": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BeerHandler6BFFDABA",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "beerapi67AE41CF"
+              },
+              "/",
+              {
+                "Ref": "beerapiDeploymentStageprod3F2FBBD3"
+              },
+              "/GET/beer/{beer_id}"
+            ]
+          ]
+        }
+      }
+    },
+    "BeerHandlerApiPermissionTestGETbeerbeerid39BA1CD1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "BeerHandler6BFFDABA",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "beerapi67AE41CF"
+              },
+              "/test-invoke-stage/GET/beer/{beer_id}"
+            ]
+          ]
+        }
+      }
+    },
+    "beerapi67AE41CF": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "beer-api"
+      }
+    },
+    "beerapiDeployment3077C14B2cae185d40ed71262560f2f6141fd859": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+            "Ref": "beerapi67AE41CF"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "beerapibeerbeeridGETC6C3D1B9",
+        "beerapibeerbeerid64F377BE",
+        "beerapibeerGETB7CE6E16",
+        "beerapibeerCF23738E"
+      ]
+    },
+    "beerapiDeploymentStageprod3F2FBBD3": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+            "Ref": "beerapi67AE41CF"
+        },
+        "DeploymentId": {
+            "Ref": "beerapiDeployment3077C14B2cae185d40ed71262560f2f6141fd859"
+        },
+        "StageName": "prod"
+      }
+    },
+    "beerapiCloudWatchRole81F996BB": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "apigateway.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "beerapiAccount2152DC9C": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "beerapiCloudWatchRole81F996BB",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "beerapi67AE41CF"
+      ]
+    },
+    "beerapibeerCF23738E": {
+        "Type": "AWS::ApiGateway::Resource",
+        "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "beerapi67AE41CF",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "beer",
+        "RestApiId": {
+            "Ref": "beerapi67AE41CF"
+        }
+      }
+    },
+    "beerapibeerGETB7CE6E16": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "beerapibeerCF23738E"
+        },
+        "RestApiId": {
+          "Ref": "beerapi67AE41CF"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                { 
+                  "Fn::GetAtt": [
+                    "BeersHandlerA9F3A7B5",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels": {
+                "application/json": {
+                  "Ref": "beerapiBeerSummaryModel1EE635AB"
+                }
+            },
+            "StatusCode": "200"
+          }
+        ]
+      }
+    },
+    "beerapibeerbeerid64F377BE": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "beerapibeerCF23738E"
+        },
+        "PathPart": "{beer_id}",
+        "RestApiId": {
+          "Ref": "beerapi67AE41CF"
+        }
+      }
+    },
+    "beerapibeerbeeridGETC6C3D1B9": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId":{
+          "Ref": "beerapibeerbeerid64F377BE"
+        },
+        "RestApiId":{
+          "Ref": "beerapi67AE41CF"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "BeerHandler6BFFDABA",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels":{
+                "application/json": {
+                  "Ref": "beerapiBeerDetailsModel5D942EB5" 
+                }
+            },
+            "StatusCode": "200"
+          }
+        ]
+      }
+    },
+    "beerapiBeerSummaryModel1EE635AB": {
+      "Type": "AWS::ApiGateway::Model",
+      "Properties": {
+        "RestApiId":{
+            "Ref": "beerapi67AE41CF"
+        },
+        "ContentType": "application/json",
+        "Description": "A basic summary for a beer. Used for listing a bunch of beers at a glance.",
+        "Name": "BeerSummary",
+        "Schema": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "title": "BeerSummary",
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" }
+          }
+        }
+      }
+    },
+    "beerapiBreweryModelA8E987E0": {
+      "Type": "AWS::ApiGateway::Model",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "beerapi67AE41CF"
+        },
+        "ContentType": "application/json",
+        "Description": "Models a brewery.",
+        "Name": "Brewery",
+        "Schema": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "title": "Brewery",
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "address": { "type": "string" },
+            "beers": {
+              "type": "array",
+              "items": {
+                "$ref": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "https://apigateway.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      },
+                      "/restapis/",
+                      {
+                        "Ref": "beerapi67AE41CF"
+                      },
+                      "/models/",
+                      {
+                        "Ref": "beerapiBeerSummaryModel1EE635AB"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "beerapiBeerDetailsModel5D942EB5": {
+      "Type": "AWS::ApiGateway::Model",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "beerapi67AE41CF"
+        },
+        "ContentType": "application/json",
+        "Description": "Models details of an individual beer.",
+        "Name": "BeerDetails",
+        "Schema": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "title": "Beer",
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "brewery": {
+              "type": "object",
+              "$ref": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "https://apigateway.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      },
+                      "/restapis/",
+                      {
+                        "Ref": "beerapi67AE41CF"
+                      },
+                      "/models/",
+                      {
+                        "Ref": "beerapiBreweryModelA8E987E0"
+                      }
+                    ]
+                  ]
+                }
+            },
+            "style": { "type": "string" },
+            "abv": { "type": "number" },
+            "ibu": { "type": "number"}
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "beerapiEndpointE86AAAC2": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "beerapi67AE41CF"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "beerapiDeploymentStageprod3F2FBBD3"
+            },
+            "/"
+          ]
+        ]
+      }
+    }
+  }
+}

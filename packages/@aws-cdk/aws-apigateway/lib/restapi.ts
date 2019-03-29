@@ -4,6 +4,7 @@ import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
+import { Model, ModelBaseProps } from './model';
 import { IRestApiResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 
@@ -277,6 +278,17 @@ export class RestApi extends cdk.Construct implements IRestApi {
       sep: '/',
       resourceName: `${stage}/${method}${path}`
     });
+  }
+
+  /**
+   * Adds a new model resource to the REST API, and returns it
+   * @param name A name for the model.
+   * @param contentType The content type for the model.
+   * @param schema The schema to use to transform data to one or more output formats.
+   * @param description A description that identifies this model.
+   */
+  public addModel(name: string, modelProps: ModelBaseProps): Model {
+    return new Model(this, name, { restApi: this, name, ...modelProps });
   }
 
   /**
