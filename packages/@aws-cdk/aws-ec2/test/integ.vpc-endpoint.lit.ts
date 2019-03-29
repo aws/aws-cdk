@@ -13,14 +13,14 @@ class VpcEndpointStack extends cdk.Stack {
     const vpc = new ec2.VpcNetwork(this, 'MyVpc', {
       gatewayEndpoints: {
         S3: {
-          service: ec2.VpcEndpointAwsService.S3
+          service: ec2.GatewayVpcEndpointAwsService.S3
         }
       }
     });
 
     // Alternatively gateway endpoints can be added on the VPC
     const dynamoDbEndpoint = vpc.addGatewayEndpoint('DynamoDbEndpoint', {
-      service: ec2.VpcEndpointAwsService.DynamoDb
+      service: ec2.GatewayVpcEndpointAwsService.DynamoDb
     });
 
     // This allows to customize the endpoint policy
@@ -33,12 +33,12 @@ class VpcEndpointStack extends cdk.Stack {
 
     // Add an interface endpoint
     const ecrDockerEndpoint = vpc.addInterfaceEndpoint('EcrDockerEndpoint', {
-      service: ec2.VpcEndpointAwsService.EcrDocker
+      service: ec2.InterfaceVpcEndpointAwsService.EcrDocker
     });
 
     // When working with an interface endpoint, use the connections object to
     // allow traffic to flow to the endpoint.
-    ecrDockerEndpoint.connections.allowFromAnyIPv4(new ec2.TcpPort(443));
+    ecrDockerEndpoint.connections.allowDefaultPortFromAnyIpv4();
     /// !hide
   }
 }

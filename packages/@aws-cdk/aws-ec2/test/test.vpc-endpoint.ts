@@ -2,7 +2,8 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { SubnetType, TcpPort, VpcEndpointAwsService, VpcGatewayEndpoint, VpcInterfaceEndpoint, VpcNetwork } from '../lib';
+// tslint:disable-next-line:max-line-length
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, SubnetType, VpcNetwork } from '../lib';
 
 export = {
   'gateway endpoint': {
@@ -14,7 +15,7 @@ export = {
       new VpcNetwork(stack, 'VpcNetwork', {
         gatewayEndpoints: {
           S3: {
-            service: VpcEndpointAwsService.S3
+            service: GatewayVpcEndpointAwsService.S3
           }
         }
       });
@@ -53,21 +54,6 @@ export = {
       test.done();
     },
 
-    'throws when creating with a bad endpoint type'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-
-      // WHEN
-      const vpc = new VpcNetwork(stack, 'VpcNetwork');
-
-      // THEN
-      test.throws(() => vpc.addGatewayEndpoint('Bad', {
-        service: VpcEndpointAwsService.Ec2
-      }), /`Gateway`/);
-
-      test.done();
-    },
-
     'routing on private and public subnets'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -76,7 +62,7 @@ export = {
       new VpcNetwork(stack, 'VpcNetwork', {
         gatewayEndpoints: {
           S3: {
-            service: VpcEndpointAwsService.S3,
+            service: GatewayVpcEndpointAwsService.S3,
             subnets: {
               subnetTypes: [SubnetType.Public, SubnetType.Private]
             }
@@ -132,7 +118,7 @@ export = {
       const stack = new Stack();
       const vpc = new VpcNetwork(stack, 'VpcNetwork');
       const endpoint = vpc.addGatewayEndpoint('S3', {
-        service: VpcEndpointAwsService.S3
+        service: GatewayVpcEndpointAwsService.S3
       });
 
       // WHEN
@@ -169,7 +155,7 @@ export = {
       const stack = new Stack();
       const vpc = new VpcNetwork(stack, 'VpcNetwork');
       const endpoint = vpc.addGatewayEndpoint('S3', {
-        service: VpcEndpointAwsService.S3
+        service: GatewayVpcEndpointAwsService.S3
       });
 
       // THEN
@@ -188,11 +174,11 @@ export = {
       const stack2 = new Stack();
       const vpc = new VpcNetwork(stack1, 'Vpc1');
       const endpoint = vpc.addGatewayEndpoint('DynamoDB', {
-        service: VpcEndpointAwsService.DynamoDb
+        service: GatewayVpcEndpointAwsService.DynamoDb
       });
 
       // WHEN
-      VpcGatewayEndpoint.import(stack2, 'ImportedEndpoint', endpoint.export());
+      GatewayVpcEndpoint.import(stack2, 'ImportedEndpoint', endpoint.export());
 
       // THEN: No error
       test.done();
@@ -250,7 +236,7 @@ export = {
 
       // WHEN
       vpc.addInterfaceEndpoint('EcrDocker', {
-        service: VpcEndpointAwsService.EcrDocker
+        service: InterfaceVpcEndpointAwsService.EcrDocker
       });
 
       // THEN
@@ -303,21 +289,6 @@ export = {
       test.done();
     },
 
-    'throws when creating with a bad endpoint type'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-
-      // WHEN
-      const vpc = new VpcNetwork(stack, 'VpcNetwork');
-
-      // THEN
-      test.throws(() => vpc.addInterfaceEndpoint('Bad', {
-        service: VpcEndpointAwsService.S3
-      }), /`Interface`/);
-
-      test.done();
-    },
-
     'throws when using more than one subnet per availability zone'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -333,7 +304,7 @@ export = {
 
       // THEN
       test.throws(() => vpc.addInterfaceEndpoint('Bad', {
-        service: VpcEndpointAwsService.SecretsManager
+        service: InterfaceVpcEndpointAwsService.SecretsManager
       }), /availability zone/);
 
       test.done();
@@ -345,12 +316,12 @@ export = {
       const stack2 = new Stack();
       const vpc = new VpcNetwork(stack1, 'Vpc1');
       const endpoint = vpc.addInterfaceEndpoint('EC2', {
-        service: VpcEndpointAwsService.Ec2
+        service: InterfaceVpcEndpointAwsService.Ec2
       });
 
       // WHEN
-      const importedEndpoint = VpcInterfaceEndpoint.import(stack2, 'ImportedEndpoint', endpoint.export());
-      importedEndpoint.connections.allowFromAnyIPv4(new TcpPort(443));
+      const importedEndpoint = InterfaceVpcEndpoint.import(stack2, 'ImportedEndpoint', endpoint.export());
+      importedEndpoint.connections.allowDefaultPortFromAnyIpv4();
 
       // THEN
       expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {

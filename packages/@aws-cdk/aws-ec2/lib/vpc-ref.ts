@@ -1,6 +1,6 @@
 import { Construct, IConstruct, IDependable } from "@aws-cdk/cdk";
 import { DEFAULT_SUBNET_NAME, subnetName } from './util';
-import { VpcInterfaceEndpoint, VpcInterfaceEndpointOptions } from './vpc-endpoint';
+import { InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { VpnConnection, VpnConnectionOptions } from './vpn';
 
 export interface IVpcSubnet extends IConstruct {
@@ -95,7 +95,7 @@ export interface IVpcNetwork extends IConstruct {
   /**
    * Adds a new interface endpoint to this VPC
    */
-  addInterfaceEndpoint(id: string, options: VpcInterfaceEndpointOptions): VpcInterfaceEndpoint
+  addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint
 
   /**
    * Exports this VPC so it can be consumed by another stack.
@@ -257,8 +257,8 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   /**
    * Adds a new interface endpoint to this VPC
    */
-  public addInterfaceEndpoint(id: string, options: VpcInterfaceEndpointOptions): VpcInterfaceEndpoint {
-    return new VpcInterfaceEndpoint(this, id, {
+  public addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint {
+    return new InterfaceVpcEndpoint(this, id, {
       vpc: this,
       ...options
     });

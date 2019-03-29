@@ -4,7 +4,7 @@ import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, Cfn
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId  } from './util';
-import { VpcEndpointAwsService, VpcGatewayEndpoint, VpcGatewayEndpointOptions } from './vpc-endpoint';
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions } from './vpc-endpoint';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
 import { IVpcNetwork, IVpcSubnet, SubnetSelection, SubnetType, VpcNetworkBase, VpcNetworkImportProps, VpcSubnetImportProps } from './vpc-ref';
 import { VpnConnectionOptions, VpnConnectionType } from './vpn';
@@ -149,7 +149,7 @@ export interface VpcNetworkProps {
   /**
    * Gateway endpoints to add to this VPC.
    */
-  readonly gatewayEndpoints?: { [id: string]: VpcGatewayEndpointOptions }
+  readonly gatewayEndpoints?: { [id: string]: GatewayVpcEndpointOptions }
 }
 
 /**
@@ -433,8 +433,8 @@ export class VpcNetwork extends VpcNetworkBase {
   /**
    * Adds a new gateway endpoint to this VPC
    */
-  public addGatewayEndpoint(id: string, options: VpcGatewayEndpointOptions): VpcGatewayEndpoint {
-    return new VpcGatewayEndpoint(this, id, {
+  public addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint {
+    return new GatewayVpcEndpoint(this, id, {
       vpc: this,
       ...options
     });
@@ -443,9 +443,9 @@ export class VpcNetwork extends VpcNetworkBase {
   /**
    * Adds a new S3 gateway endpoint to this VPC
    */
-  public addS3Endpoint(id: string, subnets?: SubnetSelection): VpcGatewayEndpoint {
-    return new VpcGatewayEndpoint(this, id, {
-      service: VpcEndpointAwsService.S3,
+  public addS3Endpoint(id: string, subnets?: SubnetSelection): GatewayVpcEndpoint {
+    return new GatewayVpcEndpoint(this, id, {
+      service: GatewayVpcEndpointAwsService.S3,
       vpc: this,
       subnets
     });
@@ -454,9 +454,9 @@ export class VpcNetwork extends VpcNetworkBase {
   /**
    * Adds a new DynamoDB gateway endpoint to this VPC
    */
-  public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection): VpcGatewayEndpoint {
-    return new VpcGatewayEndpoint(this, id, {
-      service: VpcEndpointAwsService.DynamoDb,
+  public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection): GatewayVpcEndpoint {
+    return new GatewayVpcEndpoint(this, id, {
+      service: GatewayVpcEndpointAwsService.DynamoDb,
       vpc: this,
       subnets
     });
