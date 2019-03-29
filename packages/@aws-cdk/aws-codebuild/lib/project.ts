@@ -1,6 +1,7 @@
 import assets = require('@aws-cdk/assets');
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/assets-docker';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import ec2 = require('@aws-cdk/aws-ec2');
 import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
@@ -229,8 +230,8 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     const rule = new events.EventRule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
-      source: [ 'aws.codebuild' ],
-      detailType: [ 'CodeBuild Build State Change' ],
+      source: ['aws.codebuild'],
+      detailType: ['CodeBuild Build State Change'],
       detail: {
         'project-name': [
           this.projectName
@@ -250,8 +251,8 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     const rule = new events.EventRule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
-      source: [ 'aws.codebuild' ],
-      detailType: [ 'CodeBuild Build Phase Change' ],
+      source: ['aws.codebuild'],
+      detailType: ['CodeBuild Build Phase Change'],
       detail: {
         'project-name': [
           this.projectName
@@ -268,7 +269,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
-        'build-status': [ 'IN_PROGRESS' ]
+        'build-status': ['IN_PROGRESS']
       }
     });
     return rule;
@@ -281,7 +282,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
-        'build-status': [ 'FAILED' ]
+        'build-status': ['FAILED']
       }
     });
     return rule;
@@ -294,7 +295,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
-        'build-status': [ 'SUCCEEDED' ]
+        'build-status': ['SUCCEEDED']
       }
     });
     return rule;
@@ -507,8 +508,44 @@ export interface CommonProjectProps {
    * The physical, human-readable name of the CodeBuild Project.
    */
   readonly projectName?: string;
-}
 
+  /**
+   * VPC network to place codebuild network interfaces
+   *
+   * Specify this if the codebuild project needs to access resources in a VPC.
+   */
+  readonly vpc?: ec2.IVpcNetwork;
+
+  /**
+   * Where to place the network interfaces within the VPC.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default All private subnets
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * What security group to associate with the codebuild project's network interfaces.
+   * If no security group is identified, one will be created automatically.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Whether to allow the CodeBuild to send all network traffic
+   *
+   * If set to false, you must individually add traffic rules to allow the
+   * CodeBuild project to connect to network targets.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default true
+   */
+  readonly allowAllOutbound?: boolean;
+}
 export interface ProjectProps extends CommonProjectProps {
   /**
    * The source of the build.
@@ -588,6 +625,7 @@ export class Project extends ProjectBase {
   private readonly buildImage: IBuildImage;
   private readonly _secondarySources: BuildSource[];
   private readonly _secondaryArtifacts: BuildArtifacts[];
+  private _securityGroups: ec2.ISecurityGroup[] = [];
 
   constructor(scope: cdk.Construct, id: string, props: ProjectProps) {
     super(scope, id);
@@ -681,12 +719,17 @@ export class Project extends ProjectBase {
       secondarySources: new cdk.Token(() => this.renderSecondarySources()),
       secondaryArtifacts: new cdk.Token(() => this.renderSecondaryArtifacts()),
       triggers: this.source.buildTriggers(),
+      vpcConfig: this.configureVpc(props),
     });
 
     this.projectArn = resource.projectArn;
-    this.projectName = resource.ref;
+    this.projectName = resource.projectName;
 
     this.addToRolePolicy(this.createLoggingPermission());
+  }
+
+  public get securityGroups(): ec2.ISecurityGroup[] {
+    return this._securityGroups.slice();
   }
 
   /**
@@ -705,6 +748,20 @@ export class Project extends ProjectBase {
   public addToRolePolicy(statement: iam.PolicyStatement) {
     if (this.role) {
       this.role.addToPolicy(statement);
+    }
+  }
+
+  /**
+   * Add a permission only if there's a policy attached.
+   * @param statement The permissions statement to add
+   */
+  public addToRoleInlinePolicy(statement: iam.PolicyStatement) {
+    if (this.role) {
+      const policy = new iam.Policy(this, 'PolicyDocument', {
+        policyName: 'CodeBuildEC2Policy',
+        statements: [statement]
+      });
+      this.role.attachInlinePolicy(policy);
     }
   }
 
@@ -776,8 +833,7 @@ export class Project extends ProjectBase {
   }
 
   private renderEnvironment(env: BuildEnvironment = {},
-                            projectVars: { [name: string]: BuildEnvironmentVariable } = {}):
-      CfnProject.EnvironmentProperty {
+                            projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
 
@@ -823,6 +879,63 @@ export class Project extends ProjectBase {
       : this._secondaryArtifacts.map((secondaryArtifact) => secondaryArtifact.toArtifactsJSON());
   }
 
+  /**
+   * If configured, set up the VPC-related properties
+   *
+   * Returns the VpcConfig that should be added to the
+   * codebuild creation properties.
+   */
+  private configureVpc(props: ProjectProps): CfnProject.VpcConfigProperty | undefined {
+    if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
+      throw new Error(`Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC`);
+    }
+
+    if (!props.vpc) { return undefined; }
+
+    if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
+      throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
+    }
+
+    if (props.securityGroups && props.securityGroups.length > 0) {
+      this._securityGroups = props.securityGroups.slice();
+    } else {
+      const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+        description: 'Automatic generated security group for CodeBuild ' + this.node.uniqueId,
+        allowAllOutbound: props.allowAllOutbound
+      });
+      this._securityGroups = [securityGroup];
+    }
+    const subnetSelection: ec2.SubnetSelection = props.subnetSelection ? props.subnetSelection : {
+      subnetType: ec2.SubnetType.Private
+    };
+    this.addToRoleInlinePolicy(new iam.PolicyStatement()
+      .addAllResources()
+      .addActions(
+        'ec2:CreateNetworkInterface',
+        'ec2:DescribeNetworkInterfaces',
+        'ec2:DeleteNetworkInterface',
+        'ec2:DescribeSubnets',
+        'ec2:DescribeSecurityGroups',
+        'ec2:DescribeDhcpOptions',
+        'ec2:DescribeVpcs'
+      ));
+    this.addToRolePolicy(new iam.PolicyStatement()
+      .addResource(`arn:aws:ec2:${cdk.Aws.region}:${cdk.Aws.accountId}:network-interface/*`)
+      .addCondition('StringEquals', {
+        "ec2:Subnet": [
+          `arn:aws:ec2:${cdk.Aws.region}:${cdk.Aws.accountId}:subnet/[[subnets]]`
+        ],
+        "ec2:AuthorizedService": "codebuild.amazonaws.com"
+      })
+      .addAction('ec2:CreateNetworkInterfacePermission'));
+    return {
+      vpcId: props.vpc.vpcId,
+      subnets: props.vpc.subnetIds(subnetSelection).map(s => s),
+      securityGroupIds: this._securityGroups.map(s => s.securityGroupId)
+    };
+  }
+
   private parseArtifacts(props: ProjectProps) {
     if (props.artifacts) {
       return props.artifacts;
@@ -840,7 +953,7 @@ export class Project extends ProjectBase {
 
     if ((sourceType === CODEPIPELINE_TYPE || artifactsType === CODEPIPELINE_TYPE) &&
       (sourceType !== artifactsType)) {
-        throw new Error('Both source and artifacts must be set to CodePipeline');
+      throw new Error('Both source and artifacts must be set to CodePipeline');
     }
   }
 }
@@ -849,9 +962,9 @@ export class Project extends ProjectBase {
  * Build machine compute type.
  */
 export enum ComputeType {
-  Small  = 'BUILD_GENERAL1_SMALL',
+  Small = 'BUILD_GENERAL1_SMALL',
   Medium = 'BUILD_GENERAL1_MEDIUM',
-  Large  = 'BUILD_GENERAL1_LARGE'
+  Large = 'BUILD_GENERAL1_LARGE'
 }
 
 export interface BuildEnvironment {
