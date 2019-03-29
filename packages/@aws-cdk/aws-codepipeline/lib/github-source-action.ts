@@ -1,11 +1,11 @@
-import actions = require('@aws-cdk/aws-codepipeline-api');
+import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
 import { CfnWebhook } from './codepipeline.generated';
 
 /**
  * Construction properties of the {@link GitHubSourceAction GitHub source action}.
  */
-export interface GitHubSourceActionProps extends actions.CommonActionProps {
+export interface GitHubSourceActionProps extends cpapi.CommonActionProps {
   /**
    * The name of the source's output artifact. CfnOutput artifacts are used by CodePipeline as
    * inputs into other actions.
@@ -52,7 +52,7 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps {
 /**
  * Source that is provided by a GitHub repository.
  */
-export class GitHubSourceAction extends actions.SourceAction {
+export class GitHubSourceAction extends cpapi.SourceAction {
   private readonly props: GitHubSourceActionProps;
 
   constructor(props: GitHubSourceActionProps) {
@@ -73,9 +73,9 @@ export class GitHubSourceAction extends actions.SourceAction {
     this.props = props;
   }
 
-  protected bind(stage: actions.IStage, scope: cdk.Construct): void {
+  protected bind(info: cpapi.ActionBind): void {
     if (!this.props.pollForSourceChanges) {
-      new CfnWebhook(scope, 'WebhookResource', {
+      new CfnWebhook(info.scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
           secretToken: this.props.oauthToken.toString(),
@@ -87,7 +87,7 @@ export class GitHubSourceAction extends actions.SourceAction {
           },
         ],
         targetAction: this.actionName,
-        targetPipeline: stage.pipeline.pipelineName,
+        targetPipeline: info.pipeline.pipelineName,
         targetPipelineVersion: 1,
         registerWithThirdParty: true,
       });

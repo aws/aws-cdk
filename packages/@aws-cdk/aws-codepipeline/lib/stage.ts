@@ -79,12 +79,9 @@ export class Stage implements cpapi.IStage {
   }
 
   private attachActionToPipeline(action: cpapi.Action) {
-    const actionParent = new cdk.Construct(this.scope, action.actionName);
-    (action as any)._attachActionToPipeline(this, actionParent);
-
-    // also notify the Pipeline of the new Action
-    // (useful for cross-region Actions, for example)
-    (this.pipeline as any)._attachActionToRegion(this, action);
+    // notify the Pipeline of the new Action
+    const actionScope = new cdk.Construct(this.scope, action.actionName);
+    (this.pipeline as any)._attachActionToPipeline(this, action, actionScope);
   }
 
   private renderAction(action: cpapi.Action): CfnPipeline.ActionDeclarationProperty {
