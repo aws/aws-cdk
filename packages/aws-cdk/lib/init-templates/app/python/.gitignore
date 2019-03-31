@@ -1,0 +1,6 @@
+*.swp
+cdk.context.json
+package-lock.json
+__pycache__
+.pytest_cache
+.env
