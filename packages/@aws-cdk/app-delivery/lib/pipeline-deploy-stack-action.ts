@@ -1,5 +1,6 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
-import codepipeline = require('@aws-cdk/aws-codepipeline-api');
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
@@ -120,7 +121,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
     const changeSetName = props.changeSetName || 'CDK-CodePipeline-ChangeSet';
 
     const capabilities = cfnCapabilities(props.adminPermissions, props.capabilities);
-    const changeSetAction = new cfn.PipelineCreateReplaceChangeSetAction({
+    const changeSetAction = new cpactions.CloudFormationCreateReplaceChangeSetAction({
       actionName: 'ChangeSet',
       changeSetName,
       runOrder: createChangeSetRunOrder,
@@ -131,7 +132,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
       capabilities,
     });
     props.stage.addAction(changeSetAction);
-    props.stage.addAction(new cfn.PipelineExecuteChangeSetAction({
+    props.stage.addAction(new cpactions.CloudFormationExecuteChangeSetAction({
       actionName: 'Execute',
       changeSetName,
       runOrder: executeChangeSetRunOrder,
