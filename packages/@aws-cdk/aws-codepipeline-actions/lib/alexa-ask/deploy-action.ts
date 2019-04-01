@@ -41,6 +41,9 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
  */
 export class AlexaSkillDeployAction extends codepipeline.DeployAction {
   constructor(props: AlexaSkillDeployActionProps) {
+    cdk.Secret.assertSafeSecret(props.clientSecret, 'clientSecret');
+    cdk.Secret.assertSafeSecret(props.refreshToken, 'refreshToken');
+
     super({
       ...props,
       artifactBounds: {

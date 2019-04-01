@@ -1,6 +1,7 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
+import cdk = require('@aws-cdk/cdk');
 import { CfnProject } from './codebuild.generated';
 import { Project } from './project';
 
@@ -241,6 +242,7 @@ export class GitHubSource extends GitBuildSource {
 
   constructor(props: GitHubSourceProps) {
     super(props);
+    cdk.Secret.assertSafeSecret(props.oauthToken, 'oauthToken');
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
     this.oauthToken = props.oauthToken;
     this.webhook = props.webhook;
@@ -297,6 +299,7 @@ export class GitHubEnterpriseSource extends GitBuildSource {
 
   constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
+    cdk.Secret.assertSafeSecret(props.oauthToken, 'oauthToken');
     this.httpsCloneUrl = props.httpsCloneUrl;
     this.oauthToken = props.oauthToken;
     this.ignoreSslErrors = props.ignoreSslErrors;

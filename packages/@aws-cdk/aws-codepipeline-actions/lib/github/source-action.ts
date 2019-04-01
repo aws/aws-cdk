@@ -54,6 +54,8 @@ export class GitHubSourceAction extends codepipeline.SourceAction {
   private readonly props: GitHubSourceActionProps;
 
   constructor(props: GitHubSourceActionProps) {
+    cdk.Secret.assertSafeSecret(props.oauthToken, 'oauthToken');
+
     super({
       ...props,
       owner: 'ThirdParty',
@@ -76,7 +78,7 @@ export class GitHubSourceAction extends codepipeline.SourceAction {
       new codepipeline.CfnWebhook(info.scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
-          secretToken: this.props.oauthToken.toString(),
+          secretToken: this.props.oauthToken,
         },
         filters: [
           {
