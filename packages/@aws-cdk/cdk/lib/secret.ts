@@ -13,7 +13,7 @@ import { unresolved } from "./unresolved";
  * secret values will not allow you to pass in a literal secret value. They do
  * so by calling `Secret.assertSafeSecret()`.
  *
- * You can escape the check by calling `Secret.unsafeSecret()`, but doing
+ * You can escape the check by calling `Secret.plainTex()`, but doing
  * so is highly discouraged.
  */
 export class Secret {
@@ -27,7 +27,7 @@ export class Secret {
       const theParameter = parameterName ? `'${parameterName}'` : 'The value';
 
       // tslint:disable-next-line:max-line-length
-      throw new Error(`${theParameter} should be a secret. Store it in SecretsManager or Systems Manager Parameter Store and retrieve it from there. Secret.unsafeSecret() can be used to bypass this check, but do so for testing purposes only.`);
+      throw new Error(`${theParameter} should be a secret. Store it in SecretsManager or Systems Manager Parameter Store and retrieve it from there. Secret.plainTex() can be used to bypass this check, but do so for testing purposes only.`);
     }
   }
 
@@ -38,7 +38,7 @@ export class Secret {
    *
    * The only reasonable use case for using this method is when you are testing.
    */
-  public static unsafeSecret(secret: string): string {
+  public static plainText(secret: string): string {
     return new Token(() => secret).toString();
   }
 

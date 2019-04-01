@@ -10,7 +10,7 @@ export = {
   },
 
   'can bypass'(test: Test) {
-    cdk.Secret.assertSafeSecret(cdk.Secret.unsafeSecret('bla'));
+    cdk.Secret.assertSafeSecret(cdk.Secret.plainText('bla'));
     test.done();
   },
 };
