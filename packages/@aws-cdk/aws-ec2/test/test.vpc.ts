@@ -115,6 +115,74 @@ export = {
       test.done();
     },
 
+    "with subnets and reserved subnets defined, VPC subnet count should not contain reserved subnets "(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'TheVPC', {
+        cidr: '10.0.0.0/16',
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            subnetType: SubnetType.Private,
+            name: 'Private',
+          },
+          {
+            cidrMask: 24,
+            name: 'reserved',
+            subnetType: SubnetType.Private,
+            reserved: true,
+          },
+          {
+            cidrMask: 28,
+            name: 'rds',
+            subnetType: SubnetType.Isolated,
+          }
+        ],
+        maxAZs: 3
+      });
+      expect(stack).to(countResources("AWS::EC2::Subnet", 6));
+      test.done();
+    },
+    "with reserved subnets, any other subnets should not have cidrBlock from within reserved space"(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'TheVPC', {
+        cidr: '10.0.0.0/16',
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.Private,
+          },
+          {
+            cidrMask: 24,
+            name: 'reserved',
+            subnetType: SubnetType.Private,
+            reserved: true,
+          },
+          {
+            cidrMask: 24,
+            name: 'rds',
+            subnetType: SubnetType.Private,
+          }
+        ],
+        maxAZs: 3
+      });
+      for (let i = 0; i < 3; i++) {
+        expect(stack).to(haveResource("AWS::EC2::Subnet", {
+          CidrBlock: `10.0.${i}.0/24`
+        }));
+      }
+      for (let i = 3; i < 6; i++) {
+        expect(stack).notTo(haveResource("AWS::EC2::Subnet", {
+          CidrBlock: `10.0.${i}.0/24`
+        }));
+      }
+      for (let i = 6; i < 9; i++) {
+        expect(stack).to(haveResource("AWS::EC2::Subnet", {
+          CidrBlock: `10.0.${i}.0/24`
+        }));
+      }
+      test.done();
+    },
     "with custom subnets, the VPC should have the right number of subnets, an IGW, and a NAT Gateway per AZ"(test: Test) {
       const stack = getTestStack();
       const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;

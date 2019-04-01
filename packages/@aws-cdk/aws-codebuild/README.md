@@ -165,87 +165,6 @@ const rule = project.onStateChange('BuildStateChange');
 rule.addTarget(lambdaFunction);
 ```
 
-## Using a CodeBuild Project as an AWS CodePipeline action
-
-Example of a Project used in CodePipeline, alongside CodeCommit:
-
-```typescript
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-
-const repository = new codecommit.Repository(this, 'MyRepository', {
-  repositoryName: 'MyRepository',
-});
-const project = new codebuild.PipelineProject(this, 'MyProject');
-
-const sourceAction = repository.toCodePipelineSourceAction({ actionName: 'CodeCommit' });
-const buildAction = new codebuild.PipelineBuildAction({
-  actionName: 'CodeBuild',
-  project,
-  inputArtifact: sourceAction.outputArtifact,
-});
-
-new codepipeline.Pipeline(this, 'MyPipeline', {
-  stages: [
-    {
-      name: 'Source',
-      actions: [sourceAction],
-    },
-    {
-      name: 'Build',
-      actions: [buildAction],
-    },
-  ],
-});
-```
-
-The `PipelineProject` utility class is a simple sugar around the `Project`
-class, it's equivalent to:
-
-```ts
-const project = new codebuild.Project(this, 'MyProject', {
-  source: new codebuild.CodePipelineSource(),
-  artifacts: new codebuild.CodePipelineBuildArtifacts(),
-  // rest of the properties from PipelineProject are passed unchanged...
-}
-```
-
-You can also create the action from the Project directly:
-
-```ts
-// equivalent to the code above:
-const buildAction = project.toCodePipelineBuildAction({
-  actionName: 'CodeBuild',
-  inputArtifact: sourceAction.outputArtifact,
-});
-```
-
-In addition to the build Action, there is also a test Action. It works very
-similarly to the build Action, the only difference is that the test Action does
-not always produce an output artifact.
-
-Examples:
-
-```typescript
-const testAction = new codebuild.PipelineTestAction({
-  actionName: 'IntegrationTest',
-  project,
-  inputArtifact: sourceAction.outputArtifact,
-  // outputArtifactName is optional - if you don't specify it,
-  // the Action will have an undefined `outputArtifact` property
-  outputArtifactName: 'IntegrationTestOutput',
-});
-
-// equivalent to the code above:
-const testAction = project.toCodePipelineTestAction({
-  actionName: 'IntegrationTest',
-  inputArtifact: sourceAction.outputArtifact,
-  // of course, this property is optional here as well
-  outputArtifactName: 'IntegrationTestOutput',
-});
-```
-
 ## Secondary sources and artifacts
 
 CodeBuild Projects can get their sources from multiple places, and produce
@@ -255,16 +174,16 @@ multiple outputs. For example:
 const project = new codebuild.Project(this, 'MyProject', {
   secondarySources: [
     new codebuild.CodeCommitSource({
-    identifier: 'source2',
-    repository: repo,
+      identifier: 'source2',
+      repository: repo,
     }),
   ],
   secondaryArtifacts: [
     new codebuild.S3BucketBuildArtifacts({
-    identifier: 'artifact2',
-    bucket: bucket,
-    path: 'some/path',
-    name: 'file.zip',
+      identifier: 'artifact2',
+      bucket: bucket,
+      path: 'some/path',
+      name: 'file.zip',
     }),
   ],
   // ...
@@ -290,91 +209,71 @@ const project = new codebuild.Project(this, 'MyProject', {
   buildSpec: {
     version: '0.2',
     phases: {
-    build: {
-      commands: [
-        'cd $CODEBUILD_SRC_DIR_source2',
-        'touch output2.txt',
-      ],
-    },
-    },
-    artifacts: {
-    'secondary-artifacts': {
-      'artifact2': {
-        'base-directory': '$CODEBUILD_SRC_DIR_source2',
-        'files': [
-        'output2.txt',
-        ],
-      },
-    },
-    },
-  },
-});
-```
-
-### Multiple inputs and outputs in CodePipeline
-
-When you want to have multiple inputs and/or outputs for a Project used in a
-Pipeline, instead of using the `secondarySources` and `secondaryArtifacts`
-properties, you need to use the `additionalInputArtifacts` and
-`additionalOutputArtifactNames` properties of the CodeBuild CodePipeline
-Actions. Example:
-
-```ts
-const sourceAction1 = repository1.toCodePipelineSourceAction({
-  actionName: 'Source1',
-});
-const sourceAction2 = repository2.toCodePipelineSourceAction({
-  actionName: 'Source2',
-  outputArtifactName: 'source2',
-});
-
-const buildAction = project.toCodePipelineBuildAction({
-  actionName: 'Build',
-  inputArtifact: sourceAction1.outputArtifact,
-  outputArtifactName: 'artifact1', // for better buildspec readability - see below
-  additionalInputArtifacts: [
-    sourceAction2.outputArtifact, // this is where 'source2' comes from
-  ],
-  additionalOutputArtifactNames: [
-    'artifact2',
-  ],
-});
-```
-
-**Note**: when a CodeBuild Action in a Pipeline has more than one output, it
-only uses the `secondary-artifacts` field of the buildspec, never the
-primary output specification directly under `artifacts`. Because of that, it
-pays to name even your primary output artifact on the Pipeline, like we did
-above, so that you know what name to use in the buildspec.
-
-Example buildspec for the above project:
-
-```ts
-const project = new codebuild.PipelineProject(this, 'MyProject', {
-  buildSpec: {
-    version: '0.2',
-    phases: {
-    build: {
-      commands: [
-        // By default, you're in a directory with the contents of the repository from sourceAction1.
-          // Use the CODEBUILD_SRC_DIR_source2 environment variable
-          // to get a path to the directory with the contents of the second input repository.
+      build: {
+        commands: [
+          'cd $CODEBUILD_SRC_DIR_source2',
+          'touch output2.txt',
         ],
       },
     },
     artifacts: {
       'secondary-artifacts': {
-        'artifact1': {
-          // primary Action output artifact,
-          // available as buildAction.outputArtifact
-        },
         'artifact2': {
-          // additional output artifact,
-          // available as buildAction.additionalOutputArtifact('artifact2')
+          'base-directory': '$CODEBUILD_SRC_DIR_source2',
+          'files': [
+            'output2.txt',
+          ],
         },
       },
     },
   },
-  // ...
+});
+```
+
+### Definition of VPC configuration in CodeBuild Project
+
+Typically, resources in an VPC are not accessible by AWS CodeBuild. To enable
+access, you must provide additional VPC-specific configuration information as
+part of your CodeBuild project configuration. This includes the VPC ID, the
+VPC subnet IDs, and the VPC security group IDs. VPC-enabled builds are then
+able to access resources inside your VPC.
+
+For further Information see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
+
+**Use Cases**
+VPC connectivity from AWS CodeBuild builds makes it possible to:
+
+* Run integration tests from your build against data in an Amazon RDS database that's isolated on a private subnet.
+* Query data in an Amazon ElastiCache cluster directly from tests.
+* Interact with internal web services hosted on Amazon EC2, Amazon ECS, or services that use internal Elastic Load Balancing.
+* Retrieve dependencies from self-hosted, internal artifact repositories, such as PyPI for Python, Maven for Java, and npm for Node.js.
+* Access objects in an Amazon S3 bucket configured to allow access through an Amazon VPC endpoint only.
+* Query external web services that require fixed IP addresses through the Elastic IP address of the NAT gateway or NAT instance associated with your subnet(s).
+
+Your builds can access any resource that's hosted in your VPC.
+
+**Enable Amazon VPC Access in your CodeBuild Projects**
+
+Include these settings in your VPC configuration:
+
+* For VPC ID, choose the VPC that CodeBuild uses.
+* For Subnets, choose a private subnet SubnetSelection with NAT translation that includes or has routes to the resources used CodeBuild.
+* For Security Groups, choose the security groups that CodeBuild uses to allow access to resources in the VPCs.
+
+For example:
+
+```ts
+const stack = new cdk.Stack(app, 'aws-cdk-codebuild-project-vpc');
+const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+    allowAllOutbound: true,
+    description: 'Example',
+    groupName: 'MySecurityGroup',
+    vpc: vpc,
+});
+new Project(stack, 'MyProject', {
+    buildScriptAsset: new assets.ZipDirectoryAsset(stack, 'Bundle', { path: 'script_bundle' }),
+    securityGroups: [securityGroup],
+    vpc: vpc
 });
 ```

@@ -172,6 +172,52 @@ The `VpcNetwork` above will have the exact same subnet definitions as listed
 above. However, this time the VPC will have only 1 NAT Gateway and all
 Application subnets will route to the NAT Gateway.
 
+#### Reserving subnet IP space
+There are situations where the IP space for a subnet or number of subnets
+ will need to be reserved. This is useful in situations where subnets
+would need to be added after the vpc is originally deployed, without causing
+IP renumbering for existing subnets. The IP space for a subnet may be reserved
+by setting the `reserved` subnetConfiguration property to true, as shown below:
+
+```ts
+import ec2 = require('@aws-cdk/aws-ec2');
+const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
+  cidr: '10.0.0.0/16',
+  natGateways: 1,
+  subnetConfiguration: [
+    {
+      cidrMask: 26,
+      name: 'Public',
+      subnetType: SubnetType.Public,
+    },
+    {
+      cidrMask: 26,
+      name: 'Application1',
+      subnetType: SubnetType.Private,
+    },
+    {
+      cidrMask: 26,
+      name: 'Application2',
+      subnetType: SubnetType.Private,
+      reserved: true,
+    },
+    {
+      cidrMask: 27,
+      name: 'Database',
+      subnetType: SubnetType.Isolated,
+    }
+  ],
+});
+```
+
+In the example above, the subnet for Application2 is not actually provisioned
+but its IP space is still reserved. If in the future this subnet needs to be
+provisioned, then the `reserved: true` property should be removed. Most
+importantly, this action would not cause the Database subnet to get renumbered,
+but rather the IP space that was previously reserved will be used for the 
+subnet provisioned for Application2. The `reserved` property also takes into
+consideration the number of availability zones when reserving IP space.
+
 #### Sharing VPCs between stacks
 
 If you are creating multiple `Stack`s inside the same CDK application, you
