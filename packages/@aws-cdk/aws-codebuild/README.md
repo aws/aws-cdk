@@ -90,9 +90,9 @@ Example:
 const gitHubSource = new codebuild.GitHubSource({
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: new cdk.SecretParameter(this, 'GitHubOAuthToken', {
-    ssmParameter: 'my-github-token',
-  }).value,
+  oauthToken: new secretsmanager.SecretString(this, 'GitHubOAuthToken', {
+    secretId: 'my-github-token',
+  }).stringValue,
   webhook: true, // optional, default: false
 });
 ```

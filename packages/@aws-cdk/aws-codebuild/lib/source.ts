@@ -213,7 +213,7 @@ export interface GitHubSourceProps extends GitBuildSourceProps {
    * Note that you need to give CodeBuild permissions to your GitHub account in order for the token to work.
    * That is a one-time operation that can be done through the AWS Console for CodeBuild.
    */
-  readonly oauthToken: cdk.Secret;
+  readonly oauthToken: string;
 
   /**
    * Whether to create a webhook that will trigger a build every time a commit is pushed to the GitHub repository.
@@ -236,12 +236,13 @@ export interface GitHubSourceProps extends GitBuildSourceProps {
 export class GitHubSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.GitHub;
   private readonly httpsCloneUrl: string;
-  private readonly oauthToken: cdk.Secret;
+  private readonly oauthToken: string;
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
 
   constructor(props: GitHubSourceProps) {
     super(props);
+    cdk.Secret.assertSafeSecret(props.oauthToken, 'oauthToken');
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
     this.oauthToken = props.oauthToken;
     this.webhook = props.webhook;
@@ -277,7 +278,7 @@ export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
   /**
    * The OAuth token used to authenticate when cloning the git repository.
    */
-  readonly oauthToken: cdk.Secret;
+  readonly oauthToken: string;
 
   /**
    * Whether to ignore SSL errors when connecting to the repository.
@@ -293,11 +294,12 @@ export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
 export class GitHubEnterpriseSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.GitHubEnterprise;
   private readonly httpsCloneUrl: string;
-  private readonly oauthToken: cdk.Secret;
+  private readonly oauthToken: string;
   private readonly ignoreSslErrors?: boolean;
 
   constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
+    cdk.Secret.assertSafeSecret(props.oauthToken, 'oauthToken');
     this.httpsCloneUrl = props.httpsCloneUrl;
     this.oauthToken = props.oauthToken;
     this.ignoreSslErrors = props.ignoreSslErrors;

@@ -8,17 +8,17 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
   /**
    * The client id of the developer console token
    */
-  readonly clientId: cdk.Secret;
+  readonly clientId: string;
 
   /**
    * The client secret of the developer console token
    */
-  readonly clientSecret: cdk.Secret;
+  readonly clientSecret: string;
 
   /**
    * The refresh token of the developer console token
    */
-  readonly refreshToken: cdk.Secret;
+  readonly refreshToken: string;
 
   /**
    * The Alexa skill id
@@ -41,6 +41,9 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
  */
 export class AlexaSkillDeployAction extends codepipeline.DeployAction {
   constructor(props: AlexaSkillDeployActionProps) {
+    cdk.Secret.assertSafeSecret(props.clientSecret, 'clientSecret');
+    cdk.Secret.assertSafeSecret(props.refreshToken, 'refreshToken');
+
     super({
       ...props,
       artifactBounds: {
