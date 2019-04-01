@@ -1,5 +1,5 @@
 
-Welcome to your CDK Python project!
+# Welcome to your CDK Python project!
 
 You should explore the contents of this template. It demonstrates a CDK app with two instances of
 a stack (`HelloStack`) which also uses a user-defined construct (`HelloConstruct`).
@@ -21,7 +21,7 @@ $ python setup.py develop
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
-$ cdk synthesize
+$ cdk synth
 ```
 
 You can now begin exploring the source code, contained in the hello directory.
@@ -30,6 +30,10 @@ There is also a very trivial test included that can be run like this:
 ```
 $ pytest
 ```
+
+To add additional dependencies, for example other CDK libraries, just add to
+your requirements.txt file and rerun the `pip install -r requirements.txt`
+command.
 
 # Useful commands
 
