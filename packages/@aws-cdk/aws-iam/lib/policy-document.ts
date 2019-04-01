@@ -57,11 +57,7 @@ export abstract class PrincipalBase implements IPrincipal {
   /**
    * When this Principal is used in an AssumeRole policy, the action to use.
    */
-  protected _assumeRoleAction: string = 'sts:AssumeRole';
-
-  public get assumeRoleAction(): string {
-    return this._assumeRoleAction;
-  }
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   public addToPolicy(_statement: PolicyStatement): boolean {
     // This base class is used for non-identity principals. None of them
@@ -182,13 +178,15 @@ export class CanonicalUserPrincipal extends PrincipalBase {
 }
 
 export class FederatedPrincipal extends PrincipalBase {
+  public readonly assumeRoleAction: string;
+
   constructor(
     public readonly federated: string,
     public readonly conditions: {[key: string]: any},
     assumeRoleAction: string = 'sts:AssumeRole') {
     super();
 
-    this._assumeRoleAction = assumeRoleAction;
+    this.assumeRoleAction = assumeRoleAction;
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
@@ -230,11 +228,12 @@ export class AnyPrincipal extends ArnPrincipal {
 export class Anyone extends AnyPrincipal { }
 
 export class CompositePrincipal extends PrincipalBase {
+  public readonly assumeRoleAction: string;
   private readonly principals = new Array<PrincipalBase>();
 
   constructor(principal: PrincipalBase, ...additionalPrincipals: PrincipalBase[]) {
     super();
-    this._assumeRoleAction = principal.assumeRoleAction;
+    this.assumeRoleAction = principal.assumeRoleAction;
     this.addPrincipals(principal);
     this.addPrincipals(...additionalPrincipals);
   }

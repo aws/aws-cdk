@@ -15,7 +15,7 @@ export interface RoleProps {
    * You can later modify the assume role policy document by accessing it via
    * the `assumeRolePolicy` property.
    */
-  readonly assumbedBy: IPrincipal;
+  readonly assumedBy: IPrincipal;
 
   /**
    * ID that the role assumer needs to provide when assuming this role

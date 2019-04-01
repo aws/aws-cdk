@@ -11,17 +11,17 @@ export interface CommonGrantOptions {
    *
    * @default if principal is undefined, no work is done.
    */
-  principal?: IPrincipal;
+  readonly principal?: IPrincipal;
 
   /**
    * The actions to grant
    */
-  actions: string[];
+  readonly actions: string[];
 
   /**
    * The resource ARNs to grant to
    */
-  resourceArns: string[];
+  readonly resourceArns: string[];
 }
 
 /**
@@ -34,7 +34,7 @@ export interface GrantWithResourceOptions extends CommonGrantOptions {
    * The statement will be added to the resource policy if it couldn't be
    * added to the principal policy.
    */
-  resource: IResourceWithPolicy;
+  readonly resource: IResourceWithPolicy;
 
   /**
    * When referring to the resource in a resource policy, use this as ARN.
@@ -43,7 +43,7 @@ export interface GrantWithResourceOptions extends CommonGrantOptions {
    *
    * @default Same as regular resource ARNs
    */
-  resourceSelfArns?: string[];
+  readonly resourceSelfArns?: string[];
 }
 
 /**
@@ -53,7 +53,7 @@ export interface GrantOnPrincipalOptions extends CommonGrantOptions {
   /**
    * Construct to report warnings on in case grant could not be registered
    */
-  scope?: cdk.IConstruct;
+  readonly scope?: cdk.IConstruct;
 }
 
 /**
@@ -65,7 +65,7 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
    *
    * The statement will always be added to the resource policy.
    */
-  resource: IResourceWithPolicy;
+  readonly resource: IResourceWithPolicy;
 
   /**
    * When referring to the resource in a resource policy, use this as ARN.
@@ -74,7 +74,7 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
    *
    * @default Same as regular resource ARNs
    */
-  resourceSelfArns?: string[];
+  readonly resourceSelfArns?: string[];
 }
 
 /**
@@ -224,10 +224,10 @@ function describeGrant(options: CommonGrantOptions) {
 }
 
 interface GrantProps {
-  options: CommonGrantOptions;
-  principalMissing?: boolean;
-  principalStatement?: PolicyStatement;
-  resourceStatement?: PolicyStatement;
+  readonly options: CommonGrantOptions;
+  readonly principalMissing?: boolean;
+  readonly principalStatement?: PolicyStatement;
+  readonly resourceStatement?: PolicyStatement;
 }
 
 /**
