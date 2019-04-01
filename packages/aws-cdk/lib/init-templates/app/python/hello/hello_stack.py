@@ -7,16 +7,19 @@ from aws_cdk import (
 
 from hello_construct import HelloConstruct
 
+
 class MyStack(cdk.Stack):
 
     def __init__(self, app: cdk.App, id: str) -> None:
         super().__init__(app, id)
 
-        queue = sqs.Queue(self, "MyFirstQueue",
+        queue = sqs.Queue(
+            self, "MyFirstQueue",
             visibility_timeout_sec=300,
         )
 
-        topic = sns.Topic(self, "MyFirstTopic",
+        topic = sns.Topic(
+            self, "MyFirstTopic",
             display_name="My First Topic"
         )
 
