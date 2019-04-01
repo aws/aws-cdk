@@ -7,17 +7,17 @@
     "pkglint": "tools/pkglint/bin/pkglint -f ."
   },
   "devDependencies": {
+    "@types/jest": "^24.0.11",
     "@types/node": "8.10.40",
     "@types/nodeunit": "^0.0.30",
     "conventional-changelog-cli": "^2.0.12",
+    "jest": "^24.4.0",
     "lerna": "^3.13.1",
     "nodeunit": "^0.11.2",
     "nyc": "^13.3.0",
+    "ts-jest": "^24.0.1",
     "tslint": "^5.13.1",
-    "@types/jest": "^24.0.11",
-    "jest": "^24.4.0",
-    "ts-jest": "^24.0.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.4.1"
   },
   "repository": {
     "type": "git",
