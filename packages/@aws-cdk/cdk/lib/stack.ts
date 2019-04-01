@@ -4,7 +4,6 @@ import { CfnParameter } from './cfn-parameter';
 import { Construct, IConstruct, PATH_SEP } from './construct';
 import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
-import { Reference } from './reference';
 import { ISynthesisSession } from './synthesis';
 import { makeUniqueId } from './uniqueid';
 
@@ -15,21 +14,21 @@ export interface StackProps {
    * If not supplied, the `default-account` and `default-region` context parameters will be
    * used. If they are undefined, it will not be possible to deploy the stack.
    */
-  env?: Environment;
+  readonly env?: Environment;
 
   /**
    * Name to deploy the stack with
    *
    * @default Derived from construct path
    */
-  stackName?: string;
+  readonly stackName?: string;
 
   /**
    * Strategy for logical ID generation
    *
    * Optional. If not supplied, the HashedNamingScheme will be used.
    */
-  namingScheme?: IAddressingScheme;
+  readonly namingScheme?: IAddressingScheme;
 
   /**
    * Should the Stack be deployed when running `cdk deploy` without arguments
@@ -40,8 +39,10 @@ export interface StackProps {
    *
    * @default true
    */
-  autoDeploy?: boolean;
+  readonly autoDeploy?: boolean;
 }
+
+const STACK_SYMBOL = Symbol('@aws-cdk/cdk.CfnReference');
 
 /**
  * A root construct which represents a single CloudFormation stack.
@@ -65,8 +66,8 @@ export class Stack extends Construct {
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
-  public static isStack(construct: IConstruct): construct is Stack {
-    return (construct as any)._isStack;
+  public static isStack(x: any): x is Stack {
+    return x[STACK_SYMBOL] === true;
   }
 
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
@@ -91,7 +92,7 @@ export class Stack extends Construct {
   /**
    * Options for CloudFormation template (like version, transform, description).
    */
-  public readonly templateOptions: TemplateOptions = {};
+  public readonly templateOptions: ITemplateOptions = {};
 
   /**
    * The CloudFormation stack name.
@@ -112,15 +113,10 @@ export class Stack extends Construct {
    */
   public readonly autoDeploy: boolean;
 
-  /*
-   * Used to determine if this construct is a stack.
-   */
-  protected readonly _isStack = true;
-
   /**
    * Other stacks this stack depends on
    */
-  private readonly stackDependencies = new Set<Stack>();
+  private readonly stackDependencies = new Set<StackDependency>();
 
   /**
    * Values set for parameters in cloud assembly.
@@ -144,6 +140,8 @@ export class Stack extends Construct {
   public constructor(scope?: Construct, name?: string, props: StackProps = {}) {
     // For unit test convenience parents are optional, so bypass the type check when calling the parent.
     super(scope!, name!);
+
+    Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
     if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
       throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
@@ -282,19 +280,23 @@ export class Stack extends Construct {
   /**
    * Add a dependency between this stack and another stack
    */
-  public addDependency(stack: Stack) {
-    if (stack.dependsOnStack(this)) {
+  public addDependency(stack: Stack, reason?: string) {
+    if (stack === this) { return; }  // Can ignore a dependency on self
+
+    reason = reason || 'dependency added using stack.addDependency()';
+    const dep = stack.stackDependencyReasons(this);
+    if (dep !== undefined) {
         // tslint:disable-next-line:max-line-length
-        throw new Error(`Stack '${this.name}' already depends on stack '${stack.name}'. Adding this dependency would create a cyclic reference.`);
+        throw new Error(`'${stack.node.path}' depends on '${this.node.path}' (${dep.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
-    this.stackDependencies.add(stack);
+    this.stackDependencies.add({ stack, reason });
   }
 
   /**
    * Return the stacks this stack depends on
    */
   public dependencies(): Stack[] {
-    return Array.from(this.stackDependencies.values());
+    return Array.from(this.stackDependencies.values()).map(d => d.stack);
   }
 
   /**
@@ -449,6 +451,8 @@ export class Stack extends Construct {
    *
    * CloudFormation stack names can include dashes in addition to the regular identifier
    * character classes, and we don't allow one of the magic markers.
+   *
+   * @internal
    */
   protected _validateId(name: string) {
     if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
@@ -466,8 +470,8 @@ export class Stack extends Construct {
   protected prepare() {
     // References
     for (const ref of this.node.findReferences()) {
-      if (Reference.isReferenceToken(ref)) {
-        ref.consumeFromStack(this);
+      if (CfnReference.isCfnReference(ref.reference)) {
+        ref.reference.consumeFromStack(this, ref.source);
       }
     }
 
@@ -492,66 +496,49 @@ export class Stack extends Construct {
     // write the CloudFormation template as a JSON file
     session.store.writeJson(template, this._toCloudFormation());
 
-    const artifact: cxapi.Artifact = {
+    const deps = this.dependencies().map(s => s.name);
+    const meta = this.collectMetadata();
+
+    // add an artifact that represents this stack
+    session.addArtifact(this.name, {
       type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: this.environment,
       properties: {
         templateFile: template,
+        parameters: Object.keys(this.parameterValues).length > 0 ? this.node.resolve(this.parameterValues) : undefined
       },
       autoDeploy: this.autoDeploy ? undefined : false,
-    };
-
-    if (Object.keys(this.parameterValues).length > 0) {
-      artifact.properties = artifact.properties || { };
-      artifact.properties.parameters = this.node.resolve(this.parameterValues);
-    }
-
-    const deps = this.dependencies().map(s => s.name);
-    if (deps.length > 0) {
-      artifact.dependencies = deps;
-    }
-
-    const meta = this.collectMetadata();
-    if (Object.keys(meta).length > 0) {
-      artifact.metadata = meta;
-    }
-
-    if (this.missingContext && Object.keys(this.missingContext).length > 0) {
-      artifact.missing = this.missingContext;
-    }
-
-    // add an artifact that represents this stack
-    session.addArtifact(this.name, artifact);
+      dependencies: deps.length > 0 ? deps : undefined,
+      metadata: Object.keys(meta).length > 0 ? meta : undefined,
+      missing: this.missingContext && Object.keys(this.missingContext).length > 0 ? this.missingContext : undefined
+    });
   }
 
   /**
    * Applied defaults to environment attributes.
    */
   private parseEnvironment(env: Environment = {}) {
-    const ret: Environment = {...env};
-
-    // if account is not specified, attempt to read from context.
-    if (!ret.account) {
-      ret.account = this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY);
-    }
-
-    // if region is not specified, attempt to read from context.
-    if (!ret.region) {
-      ret.region = this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY);
-    }
-
-    return ret;
+    return {
+      account: env.account ? env.account : this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY),
+      region: env.region ? env.region : this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY)
+    };
   }
 
   /**
    * Check whether this stack has a (transitive) dependency on another stack
+   *
+   * Returns the list of reasons on the dependency path, or undefined
+   * if there is no dependency.
    */
-  private dependsOnStack(other: Stack) {
-    if (this === other) { return true; }
+  private stackDependencyReasons(other: Stack): string[] | undefined {
+    if (this === other) { return []; }
     for (const dep of this.stackDependencies) {
-      if (dep.dependsOnStack(other)) { return true; }
+      const ret = dep.stack.stackDependencyReasons(other);
+      if (ret !== undefined) {
+        return [dep.reason].concat(ret);
+      }
     }
-    return false;
+    return undefined;
   }
 
   private collectMetadata() {
@@ -623,7 +610,7 @@ function merge(template: any, part: any) {
 /**
  * CloudFormation template options for a stack.
  */
-export interface TemplateOptions {
+export interface ITemplateOptions {
   /**
    * Gets or sets the description of this stack.
    * If provided, it will be included in the CloudFormation template's "Description" attribute.
@@ -671,6 +658,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 // These imports have to be at the end to prevent circular imports
 import { ArnComponents, arnFromComponents, parseArn } from './arn';
 import { CfnElement } from './cfn-element';
+import { CfnReference } from './cfn-reference';
 import { CfnResource } from './cfn-resource';
 import { Aws, ScopedAws } from './pseudo';
 
@@ -683,4 +671,9 @@ function findResources(roots: Iterable<IConstruct>): CfnResource[] {
     ret.push(...root.node.findAll().filter(CfnResource.isCfnResource));
   }
   return ret;
+}
+
+interface StackDependency {
+  stack: Stack;
+  reason: string;
 }

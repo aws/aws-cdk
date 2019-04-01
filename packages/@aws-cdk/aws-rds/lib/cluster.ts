@@ -1,4 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 import { IClusterParameterGroup } from './cluster-parameter-group';
@@ -15,7 +16,7 @@ export interface DatabaseClusterProps {
   /**
    * What kind of database to start
    */
-  engine: DatabaseClusterEngine;
+  readonly engine: DatabaseClusterEngine;
 
   /**
    * How many replicas/instances to create
@@ -24,36 +25,36 @@ export interface DatabaseClusterProps {
    *
    * @default 2
    */
-  instances?: number;
+  readonly instances?: number;
 
   /**
    * Settings for the individual instances that are launched
    */
-  instanceProps: InstanceProps;
+  readonly instanceProps: InstanceProps;
 
   /**
    * Username and password for the administrative user
    */
-  masterUser: Login;
+  readonly masterUser: Login;
 
   /**
    * Backup settings
    */
-  backup?: BackupProps;
+  readonly backup?: BackupProps;
 
   /**
    * What port to listen on
    *
    * If not supplied, the default for the engine is used.
    */
-  port?: number;
+  readonly port?: number;
 
   /**
    * An optional identifier for the cluster
    *
    * If not supplied, a name is automatically generated.
    */
-  clusterIdentifier?: string;
+  readonly clusterIdentifier?: string;
 
   /**
    * Base identifier for instances
@@ -64,17 +65,27 @@ export interface DatabaseClusterProps {
    *
    * If clusterIdentifier is also not given, the identifier is automatically generated.
    */
-  instanceIdentifierBase?: string;
+  readonly instanceIdentifierBase?: string;
 
   /**
    * Name of a database which is automatically created inside the cluster
    */
-  defaultDatabaseName?: string;
+  readonly defaultDatabaseName?: string;
 
   /**
-   * ARN of KMS key if you want to enable storage encryption
+   * Whether to enable storage encryption
+   *
+   * @default false
    */
-  kmsKeyArn?: string;
+  readonly storageEncrypted?: boolean
+
+  /**
+   * The KMS key for storage encryption. If specified `storageEncrypted`
+   * will be set to `true`.
+   *
+   * @default default master key
+   */
+  readonly kmsKey?: kms.IEncryptionKey;
 
   /**
    * A daily time range in 24-hours UTC format in which backups preferably execute.
@@ -83,14 +94,22 @@ export interface DatabaseClusterProps {
    *
    * Example: '01:00-02:00'
    */
-  preferredMaintenanceWindow?: string;
+  readonly preferredMaintenanceWindow?: string;
 
   /**
    * Additional parameters to pass to the database engine
    *
    * @default No parameter group
    */
-  parameterGroup?: IClusterParameterGroup;
+  readonly parameterGroup?: IClusterParameterGroup;
+
+  /**
+   * The CloudFormation policy to apply when the cluster and its instances
+   * are removed from the stack or replaced during an update.
+   *
+   * @default Retain
+   */
+  readonly deleteReplacePolicy?: cdk.DeletionPolicy
 }
 
 /**
@@ -203,29 +222,29 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
   /**
    * The VPC where the DB subnet group is created.
    */
-  public readonly vpc: ec2.IVpcNetwork;
+  private readonly vpc: ec2.IVpcNetwork;
 
   /**
    * The subnets used by the DB subnet group.
    */
-  public readonly vpcPlacement?: ec2.VpcPlacementStrategy;
+  private readonly vpcSubnets?: ec2.SubnetSelection;
 
   constructor(scope: cdk.Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
 
     this.vpc = props.instanceProps.vpc;
-    this.vpcPlacement = props.instanceProps.vpcPlacement;
+    this.vpcSubnets = props.instanceProps.vpcSubnets;
 
-    const subnets = this.vpc.subnets(this.vpcPlacement);
+    const subnetIds = props.instanceProps.vpc.subnetIds(props.instanceProps.vpcSubnets);
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
-    if (subnets.length < 2) {
-      throw new Error(`Cluster requires at least 2 subnets, got ${subnets.length}`);
+    if (subnetIds.length < 2) {
+      throw new Error(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
       dbSubnetGroupDescription: `Subnets for ${id} database`,
-      subnetIds: subnets.map(s => s.subnetId)
+      subnetIds,
     });
 
     const securityGroup = props.instanceProps.securityGroup !== undefined ?
@@ -261,9 +280,13 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
       // Encryption
-      kmsKeyId: props.kmsKeyArn,
-      storageEncrypted: props.kmsKeyArn ? true : false,
+      kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
+      storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
+
+    const deleteReplacePolicy = props.deleteReplacePolicy || cdk.DeletionPolicy.Retain;
+    cluster.options.deletionPolicy = deleteReplacePolicy;
+    cluster.options.updateReplacePolicy = deleteReplacePolicy;
 
     this.clusterIdentifier = cluster.ref;
     this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, cluster.dbClusterEndpointPort);
@@ -280,6 +303,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       throw new Error('At least one instance is required');
     }
 
+    // Get the actual subnet objects so we can depend on internet connectivity.
+    const internetConnected = props.instanceProps.vpc.subnetInternetDependencies(props.instanceProps.vpcSubnets);
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -287,7 +312,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
                      props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                      undefined;
 
-      const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.subnetsToUse === ec2.SubnetType.Public;
+      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.Public;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
@@ -301,9 +326,12 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
         dbSubnetGroupName: subnetGroup.ref,
       });
 
+      instance.options.deletionPolicy = deleteReplacePolicy;
+      instance.options.updateReplacePolicy = deleteReplacePolicy;
+
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
-      instance.node.addDependency(...subnets.map(s => s.internetConnectivityEstablished));
+      instance.node.addDependency(internetConnected);
 
       this.instanceIdentifiers.push(instance.ref);
       this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort));
@@ -324,7 +352,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       secret: this.secret,
       engine: toDatabaseEngine(this.engine),
       vpc: this.vpc,
-      vpcPlacement: this.vpcPlacement,
+      vpcSubnets: this.vpcSubnets,
       target: this,
       ...options
     });

@@ -10,17 +10,17 @@ export interface HostedZoneProviderProps {
   /**
    * The zone domain e.g. example.com
    */
-  domainName: string;
+  readonly domainName: string;
 
   /**
    * Is this a private zone
    */
-  privateZone?: boolean;
+  readonly privateZone?: boolean;
 
   /**
    * If this is a private zone which VPC is assocaitated
    */
-  vpcId?: string;
+  readonly vpcId?: string;
 }
 
 const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {

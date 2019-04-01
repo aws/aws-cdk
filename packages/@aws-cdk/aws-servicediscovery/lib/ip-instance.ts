@@ -14,7 +14,7 @@ export interface IpInstanceBaseProps extends BaseInstanceProps {
    *
    * @default 80
    */
-  port?: number;
+  readonly port?: number;
 
   /**
    *  If the service that you specify contains a template for an A record, the IPv4 address that you want AWS Cloud
@@ -22,7 +22,7 @@ export interface IpInstanceBaseProps extends BaseInstanceProps {
    *
    * @default none
    */
-  ipv4?: string;
+  readonly ipv4?: string;
 
   /**
    *  If the service that you specify contains a template for an AAAA record, the IPv6 address that you want AWS Cloud
@@ -30,7 +30,7 @@ export interface IpInstanceBaseProps extends BaseInstanceProps {
    *
    * @default none
    */
-  ipv6?: string;
+  readonly ipv6?: string;
 }
 
 /*
@@ -40,7 +40,7 @@ export interface IpInstanceProps extends IpInstanceBaseProps {
   /**
    * The Cloudmap service this resource is registered to.
    */
-  service: IService;
+  readonly service: IService;
 }
 
 /*

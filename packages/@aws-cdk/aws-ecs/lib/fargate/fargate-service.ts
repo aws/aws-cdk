@@ -12,33 +12,33 @@ export interface FargateServiceProps extends BaseServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: ICluster; // should be required? do we assume 'default' exists?
+  readonly cluster: ICluster; // should be required? do we assume 'default' exists?
 
   /**
    * Task Definition used for running tasks in the service
    */
-  taskDefinition: TaskDefinition;
+  readonly taskDefinition: TaskDefinition;
 
   /**
    * Assign public IP addresses to each task
    *
    * @default false
    */
-  assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean;
 
   /**
    * In what subnets to place the task's ENIs
    *
    * @default Private subnet if assignPublicIp, public subnets otherwise
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Existing security group to use for the tasks
    *
    * @default A new security group is created
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Fargate platform version to run this service on
@@ -48,7 +48,7 @@ export interface FargateServiceProps extends BaseServiceProps {
    *
    * @default Latest
    */
-  platformVersion?: FargatePlatformVersion;
+  readonly platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -70,7 +70,7 @@ export class FargateService extends BaseService {
       platformVersion: props.platformVersion,
     }, props.cluster.clusterName, props.taskDefinition);
 
-    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcPlacement, props.securityGroup);
+    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
 
     if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');

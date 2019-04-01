@@ -519,7 +519,7 @@ export default class CodeGenerator {
     const javascriptPropertyName = genspec.cloudFormationToScriptName(propName);
 
     this.docLink(spec.Documentation, additionalDocs);
-    this.code.line(`${javascriptPropertyName}${question}: ${this.findNativeType(context, spec, propName)};`);
+    this.code.line(`readonly ${javascriptPropertyName}${question}: ${this.findNativeType(context, spec, propName)};`);
 
     return javascriptPropertyName;
   }

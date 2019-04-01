@@ -2,6 +2,13 @@
 
 The `aws-cdk-rds` package contains Constructs for setting up RDS instances.
 
+> Note: the functionality this package is currently limited, as the CDK team is
+> focusing on other use cases first. If your use case is not listed below, you
+> will have to use achieve it using CloudFormation resources.
+>
+> If you would like to help improve the state of this library, Pull Requests are
+> welcome.
+
 Supported:
 
 * Clustered databases
@@ -15,7 +22,7 @@ Not supported:
 ### Starting a Clustered Database
 
 To set up a clustered database (like Aurora), create an instance of `DatabaseCluster`. You must
-always launch a database in a VPC. Use the `vpcPlacement` attribute to control whether
+always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
 ```ts
@@ -26,8 +33,8 @@ const cluster = new DatabaseCluster(this, 'Database', {
     },
     instanceProps: {
         instanceType: new InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Small),
-        vpcPlacement: {
-            subnetsToUse: ec2.SubnetType.Public,
+        vpcSubnets: {
+            subnetType: ec2.SubnetType.Public,
         },
         vpc
     }
@@ -61,7 +68,7 @@ When the master password is generated and stored in AWS Secrets Manager, it can 
 
 Rotation of the master password is also supported for an existing cluster:
 ```ts
-new rds.RotationSingleUser(stack, 'Rotation', {
+new RotationSingleUser(stack, 'Rotation', {
     secret: importedSecret,
     engine: DatabaseEngine.Oracle,
     target: importedCluster,

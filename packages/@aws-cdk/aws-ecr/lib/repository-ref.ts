@@ -1,7 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 
 /**
  * Represents an ECR repository.
@@ -38,15 +37,6 @@ export interface IRepository extends cdk.IConstruct {
    * Add a policy statement to the repository's resource policy
    */
   addToResourcePolicy(statement: iam.PolicyStatement): void;
-
-  /**
-   * Convenience method for creating a new {@link PipelineSourceAction}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  toCodePipelineSourceAction(props: CommonPipelineSourceActionProps):
-      PipelineSourceAction;
 
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
@@ -88,7 +78,7 @@ export interface RepositoryImportProps {
    * account/region as the current stack, you can set `repositoryName` instead
    * and the ARN will be formatted with the current region and account.
    */
-  repositoryArn?: string;
+  readonly repositoryArn?: string;
 
   /**
    * The full name of the repository to import.
@@ -100,7 +90,7 @@ export interface RepositoryImportProps {
    * If the repository is in the same region/account as the stack, it is sufficient
    * to only specify the repository name.
    */
-  repositoryName?: string;
+  readonly repositoryName?: string;
 }
 
 /**
@@ -168,13 +158,6 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Export this repository from the stack
    */
   public abstract export(): RepositoryImportProps;
-
-  public toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction {
-    return new PipelineSourceAction({
-      ...props,
-      repository: this,
-    });
-  }
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this

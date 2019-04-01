@@ -15,12 +15,12 @@ export interface Ec2ServiceProps extends BaseServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: ICluster;
+  readonly cluster: ICluster;
 
   /**
    * Task Definition used for running tasks in the service
    */
-  taskDefinition: TaskDefinition;
+  readonly taskDefinition: TaskDefinition;
 
   /**
    * In what subnets to place the task's ENIs
@@ -29,7 +29,7 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default Private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Existing security group to use for the task's ENIs
@@ -38,14 +38,14 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default A new security group is created
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Whether to start services on distinct instances
    *
    * @default true
    */
-  placeOnDistinctInstances?: boolean;
+  readonly placeOnDistinctInstances?: boolean;
 
   /**
    * Deploy exactly one task on each instance in your cluster.
@@ -55,7 +55,7 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default false
    */
-  daemon?: boolean;
+  readonly daemon?: boolean;
 }
 
 /**
@@ -102,7 +102,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
     this.daemon = props.daemon || false;
 
     if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcPlacement, props.securityGroup);
+      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcSubnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
       validateNoNetworkingProps(props);
@@ -244,8 +244,8 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
  * Validate combinations of networking arguments
  */
 function validateNoNetworkingProps(props: Ec2ServiceProps) {
-  if (props.vpcPlacement !== undefined || props.securityGroup !== undefined) {
-    throw new Error('vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
+  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined) {
+    throw new Error('vpcSubnets and securityGroup can only be used in AwsVpc networking mode');
   }
 }
 
