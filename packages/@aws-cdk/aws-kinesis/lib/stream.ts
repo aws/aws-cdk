@@ -62,12 +62,12 @@ export interface StreamImportProps {
   /**
    * The ARN of the stream.
    */
-  streamArn: string;
+  readonly streamArn: string;
 
   /**
    * The KMS key securing the contents of the stream if encryption is enabled.
    */
-  encryptionKey?: kms.EncryptionKeyImportProps;
+  readonly encryptionKey?: kms.EncryptionKeyImportProps;
 }
 
 /**
@@ -242,19 +242,19 @@ export interface StreamProps {
    * Enforces a particular physical stream name.
    * @default <generated>
    */
-  streamName?: string;
+  readonly streamName?: string;
 
   /**
    * The number of hours for the data records that are stored in shards to remain accessible.
    * @default 24
    */
-  retentionPeriodHours?: number;
+  readonly retentionPeriodHours?: number;
 
   /**
    * The number of shards for the stream.
    * @default 1
    */
-  shardCount?: number;
+  readonly shardCount?: number;
 
   /**
    * The kind of server-side encryption to apply to this stream.
@@ -264,7 +264,7 @@ export interface StreamProps {
    *
    * @default Unencrypted
    */
-  encryption?: StreamEncryption;
+  readonly encryption?: StreamEncryption;
 
   /**
    * External KMS key to use for stream encryption.
@@ -274,7 +274,7 @@ export interface StreamProps {
    * @default If encryption is set to "Kms" and this property is undefined, a
    * new KMS key will be created and associated with this stream.
    */
-  encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IEncryptionKey;
 }
 
 /**

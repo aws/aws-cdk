@@ -15,7 +15,7 @@ export interface RoleProps {
    * You can later modify the assume role policy document by accessing it via
    * the `assumeRolePolicy` property.
    */
-  assumedBy: IPrincipal;
+  readonly assumbedBy: IPrincipal;
 
   /**
    * ID that the role assumer needs to provide when assuming this role
@@ -25,14 +25,14 @@ export interface RoleProps {
    *
    * @default No external ID required
    */
-  externalId?: string;
+  readonly externalId?: string;
 
   /**
    * A list of ARNs for managed policies associated with this role.
    * You can add managed policies later using `attachManagedPolicy(arn)`.
    * @default No managed policies.
    */
-  managedPolicyArns?: string[];
+  readonly managedPolicyArns?: string[];
 
   /**
    * A list of named policies to inline into this role. These policies will be
@@ -41,13 +41,13 @@ export interface RoleProps {
    * dependencies that could otherwise be introduced).
    * @default No policy is inlined in the Role resource.
    */
-  inlinePolicies?: { [name: string]: PolicyDocument };
+  readonly inlinePolicies?: { [name: string]: PolicyDocument };
 
   /**
    * The path associated with this role. For information about IAM paths, see
    * Friendly Names and Paths in IAM User Guide.
    */
-  path?: string;
+  readonly path?: string;
 
   /**
    * A name for the IAM role. For valid values, see the RoleName parameter for
@@ -63,7 +63,7 @@ export interface RoleProps {
    * acknowledge your template's capabilities. For more information, see
    * Acknowledging IAM Resources in AWS CloudFormation Templates.
    */
-  roleName?: string;
+  readonly roleName?: string;
 
   /**
    * The maximum session duration (in seconds) that you want to set for the
@@ -84,7 +84,7 @@ export interface RoleProps {
    *
    * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html
    */
-  maxSessionDurationSec?: number;
+  readonly maxSessionDurationSec?: number;
 }
 
 /**
@@ -292,7 +292,7 @@ export interface RoleImportProps {
   /**
    * The role's ARN
    */
-  roleArn: string;
+  readonly roleArn: string;
 
   /**
    * The stable and unique string identifying the role. For example,
@@ -301,7 +301,7 @@ export interface RoleImportProps {
    * @default If "roleId" is not specified for an imported role, then
    * `role.roleId` will throw an exception. In most cases, role ID is not really needed.
    */
-  roleId?: string;
+  readonly roleId?: string;
 }
 
 /**

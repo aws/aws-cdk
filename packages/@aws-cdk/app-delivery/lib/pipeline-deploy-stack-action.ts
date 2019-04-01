@@ -1,5 +1,6 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
-import codepipeline = require('@aws-cdk/aws-codepipeline-api');
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
@@ -8,39 +9,39 @@ export interface PipelineDeployStackActionProps {
   /**
    * The CDK stack to be deployed.
    */
-  stack: cdk.Stack;
+  readonly stack: cdk.Stack;
 
   /**
    * The CodePipeline stage in which to perform the deployment.
    */
-  stage: codepipeline.IStage;
+  readonly stage: codepipeline.IStage;
 
   /**
    * The CodePipeline artifact that holds the synthesized app, which is the
    * contents of the ``<directory>`` when running ``cdk synth -o <directory>``.
    */
-  inputArtifact: codepipeline.Artifact;
+  readonly inputArtifact: codepipeline.Artifact;
 
   /**
    * The name to use when creating a ChangeSet for the stack.
    *
    * @default CDK-CodePipeline-ChangeSet
    */
-  changeSetName?: string;
+  readonly changeSetName?: string;
 
   /**
    * The runOrder for the CodePipeline action creating the ChangeSet.
    *
    * @default 1
    */
-  createChangeSetRunOrder?: number;
+  readonly createChangeSetRunOrder?: number;
 
   /**
    * The runOrder for the CodePipeline action executing the ChangeSet.
    *
    * @default ``createChangeSetRunOrder + 1``
    */
-  executeChangeSetRunOrder?: number;
+  readonly executeChangeSetRunOrder?: number;
 
   /**
    * IAM role to assume when deploying changes.
@@ -51,7 +52,7 @@ export interface PipelineDeployStackActionProps {
    *
    * @default A fresh role with admin or no permissions (depending on the value of `adminPermissions`).
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Acknowledge certain changes made as part of deployment
@@ -64,7 +65,7 @@ export interface PipelineDeployStackActionProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    * @default AnonymousIAM, unless `adminPermissions` is true
    */
-  capabilities?: cfn.CloudFormationCapabilities;
+  readonly capabilities?: cfn.CloudFormationCapabilities;
 
   /**
    * Whether to grant admin permissions to CloudFormation while deploying this template.
@@ -81,7 +82,7 @@ export interface PipelineDeployStackActionProps {
    * use `addToRolePolicy` and `capabilities` to control what the CloudFormation
    * deployment is allowed to do.
    */
-  adminPermissions: boolean;
+  readonly adminPermissions: boolean;
 }
 
 /**
@@ -120,7 +121,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
     const changeSetName = props.changeSetName || 'CDK-CodePipeline-ChangeSet';
 
     const capabilities = cfnCapabilities(props.adminPermissions, props.capabilities);
-    const changeSetAction = new cfn.PipelineCreateReplaceChangeSetAction({
+    const changeSetAction = new cpactions.CloudFormationCreateReplaceChangeSetAction({
       actionName: 'ChangeSet',
       changeSetName,
       runOrder: createChangeSetRunOrder,
@@ -131,7 +132,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
       capabilities,
     });
     props.stage.addAction(changeSetAction);
-    props.stage.addAction(new cfn.PipelineExecuteChangeSetAction({
+    props.stage.addAction(new cpactions.CloudFormationExecuteChangeSetAction({
       actionName: 'Execute',
       changeSetName,
       runOrder: executeChangeSetRunOrder,

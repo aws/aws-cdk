@@ -12,19 +12,19 @@ export interface Ec2EventRuleTargetProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: ICluster;
+  readonly cluster: ICluster;
 
   /**
    * Task Definition of the task that should be started
    */
-  taskDefinition: TaskDefinition;
+  readonly taskDefinition: TaskDefinition;
 
   /**
    * How many tasks should be started when this event is triggered
    *
    * @default 1
    */
-  taskCount?: number;
+  readonly taskCount?: number;
 }
 
 /**

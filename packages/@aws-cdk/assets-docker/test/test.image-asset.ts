@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -18,7 +18,7 @@ export = {
     });
 
     // THEN
-    const template = stack._toCloudFormation();
+    const template = SynthUtils.toCloudFormation(stack);
 
     test.deepEqual(template.Parameters.ImageImageName5E684353, {
       Type: 'String',

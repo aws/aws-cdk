@@ -1,6 +1,7 @@
 import assets = require('@aws-cdk/assets');
 import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/assets-docker';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import ec2 = require('@aws-cdk/aws-ec2');
 import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
@@ -9,10 +10,6 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { CfnProject } from './codebuild.generated';
-import {
-  CommonPipelineBuildActionProps, CommonPipelineTestActionProps,
-  PipelineBuildAction, PipelineTestAction
-} from './pipeline-actions';
 import { BuildSource, NoSource, SourceType } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
@@ -28,22 +25,6 @@ export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
   readonly role?: iam.IRole;
-
-  /**
-   * Convenience method for creating a new {@link PipelineBuildAction CodeBuild build Action}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineBuildAction CodeBuild build Action}
-   */
-  toCodePipelineBuildAction(props: CommonPipelineBuildActionProps): PipelineBuildAction;
-
-  /**
-   * Convenience method for creating a new {@link PipelineTestAction CodeBuild test Action}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineTestAction CodeBuild test Action}
-   */
-  toCodePipelineTestAction(props: CommonPipelineTestActionProps): PipelineTestAction;
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state
@@ -161,7 +142,7 @@ export interface ProjectImportProps {
    * The human-readable name of the CodeBuild Project we're referencing.
    * The Project must be in the same account and region as the root Stack.
    */
-  projectName: string;
+  readonly projectName: string;
 }
 
 /**
@@ -189,20 +170,6 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
 
   public abstract export(): ProjectImportProps;
 
-  public toCodePipelineBuildAction(props: CommonPipelineBuildActionProps): PipelineBuildAction {
-    return new PipelineBuildAction({
-      ...props,
-      project: this,
-    });
-  }
-
-  public toCodePipelineTestAction(props: CommonPipelineTestActionProps): PipelineTestAction {
-    return new PipelineTestAction({
-      ...props,
-      project: this,
-    });
-  }
-
   /**
    * Defines a CloudWatch event rule triggered when the build project state
    * changes. You can filter specific build status events using an event
@@ -229,8 +196,8 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     const rule = new events.EventRule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
-      source: [ 'aws.codebuild' ],
-      detailType: [ 'CodeBuild Build State Change' ],
+      source: ['aws.codebuild'],
+      detailType: ['CodeBuild Build State Change'],
       detail: {
         'project-name': [
           this.projectName
@@ -250,8 +217,8 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     const rule = new events.EventRule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
-      source: [ 'aws.codebuild' ],
-      detailType: [ 'CodeBuild Build Phase Change' ],
+      source: ['aws.codebuild'],
+      detailType: ['CodeBuild Build Phase Change'],
       detail: {
         'project-name': [
           this.projectName
@@ -268,7 +235,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
-        'build-status': [ 'IN_PROGRESS' ]
+        'build-status': ['IN_PROGRESS']
       }
     });
     return rule;
@@ -281,7 +248,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
-        'build-status': [ 'FAILED' ]
+        'build-status': ['FAILED']
       }
     });
     return rule;
@@ -294,7 +261,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
-        'build-status': [ 'SUCCEEDED' ]
+        'build-status': ['SUCCEEDED']
       }
     });
     return rule;
@@ -428,13 +395,13 @@ export interface CommonProjectProps {
    * A description of the project. Use the description to identify the purpose
    * of the project.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Filename or contents of buildspec in JSON format.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-example
    */
-  buildSpec?: any;
+  readonly buildSpec?: any;
 
   /**
    * Run a script from an asset as build script
@@ -447,68 +414,104 @@ export interface CommonProjectProps {
    *
    * @default No asset build script
    */
-  buildScriptAsset?: assets.Asset;
+  readonly buildScriptAsset?: assets.Asset;
 
   /**
    * The script in the asset to run.
    *
    * @default build.sh
    */
-  buildScriptAssetEntrypoint?: string;
+  readonly buildScriptAssetEntrypoint?: string;
 
   /**
    * Service Role to assume while running the build.
    * If not specified, a role will be created.
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Encryption key to use to read and write artifacts
    * If not specified, a role will be created.
    */
-  encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IEncryptionKey;
 
   /**
    * Bucket to store cached source artifacts
    * If not specified, source artifacts will not be cached.
    */
-  cacheBucket?: s3.IBucket;
+  readonly cacheBucket?: s3.IBucket;
 
   /**
    * Subdirectory to store cached artifacts
    */
-  cacheDir?: string;
+  readonly cacheDir?: string;
 
   /**
    * Build environment to use for the build.
    */
-  environment?: BuildEnvironment;
+  readonly environment?: BuildEnvironment;
 
   /**
    * Indicates whether AWS CodeBuild generates a publicly accessible URL for
    * your project's build badge. For more information, see Build Badges Sample
    * in the AWS CodeBuild User Guide.
    */
-  badge?: boolean;
+  readonly badge?: boolean;
 
   /**
    * The number of minutes after which AWS CodeBuild stops the build if it's
    * not complete. For valid values, see the timeoutInMinutes field in the AWS
    * CodeBuild User Guide.
    */
-  timeout?: number;
+  readonly timeout?: number;
 
   /**
    * Additional environment variables to add to the build environment.
    */
-  environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+  readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 
   /**
    * The physical, human-readable name of the CodeBuild Project.
    */
-  projectName?: string;
-}
+  readonly projectName?: string;
 
+  /**
+   * VPC network to place codebuild network interfaces
+   *
+   * Specify this if the codebuild project needs to access resources in a VPC.
+   */
+  readonly vpc?: ec2.IVpcNetwork;
+
+  /**
+   * Where to place the network interfaces within the VPC.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default All private subnets
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * What security group to associate with the codebuild project's network interfaces.
+   * If no security group is identified, one will be created automatically.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Whether to allow the CodeBuild to send all network traffic
+   *
+   * If set to false, you must individually add traffic rules to allow the
+   * CodeBuild project to connect to network targets.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default true
+   */
+  readonly allowAllOutbound?: boolean;
+}
 export interface ProjectProps extends CommonProjectProps {
   /**
    * The source of the build.
@@ -517,7 +520,7 @@ export interface ProjectProps extends CommonProjectProps {
    *
    * @default NoSource
    */
-  source?: BuildSource;
+  readonly source?: BuildSource;
 
   /**
    * Defines where build artifacts will be stored.
@@ -525,7 +528,7 @@ export interface ProjectProps extends CommonProjectProps {
    *
    * @default NoBuildArtifacts
    */
-  artifacts?: BuildArtifacts;
+  readonly artifacts?: BuildArtifacts;
 
   /**
    * The secondary sources for the Project.
@@ -534,7 +537,7 @@ export interface ProjectProps extends CommonProjectProps {
    * @default []
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  secondarySources?: BuildSource[];
+  readonly secondarySources?: BuildSource[];
 
   /**
    * The secondary artifacts for the Project.
@@ -543,7 +546,7 @@ export interface ProjectProps extends CommonProjectProps {
    * @default []
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  secondaryArtifacts?: BuildArtifacts[];
+  readonly secondaryArtifacts?: BuildArtifacts[];
 }
 
 /**
@@ -588,6 +591,7 @@ export class Project extends ProjectBase {
   private readonly buildImage: IBuildImage;
   private readonly _secondarySources: BuildSource[];
   private readonly _secondaryArtifacts: BuildArtifacts[];
+  private _securityGroups: ec2.ISecurityGroup[] = [];
 
   constructor(scope: cdk.Construct, id: string, props: ProjectProps) {
     super(scope, id);
@@ -602,7 +606,7 @@ export class Project extends ProjectBase {
 
     let cache: CfnProject.ProjectCacheProperty | undefined;
     if (props.cacheBucket) {
-      const cacheDir = props.cacheDir != null ? props.cacheDir : new cdk.AwsNoValue().toString();
+      const cacheDir = props.cacheDir != null ? props.cacheDir : cdk.Aws.noValue;
       cache = {
         type: 'S3',
         location: cdk.Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),
@@ -633,16 +637,27 @@ export class Project extends ProjectBase {
     }
 
     // Render the source and add in the buildspec
-    const sourceJson = this.source.toSourceJSON();
-    if (typeof buildSpec === 'string') {
-      sourceJson.buildSpec = buildSpec; // Filename to buildspec file
-    } else if (Object.keys(buildSpec).length > 0) {
-      // We have to pretty-print the buildspec, otherwise
-      // CodeBuild will not recognize it as an inline buildspec.
-      sourceJson.buildSpec = JSON.stringify(buildSpec, undefined, 2); // Literal buildspec
-    } else if (this.source.type === SourceType.None) {
-      throw new Error("If the Project's source is NoSource, you need to provide a buildSpec");
-    }
+
+    const renderSource = () => {
+      const sourceJson = this.source.toSourceJSON();
+      if (typeof buildSpec === 'string') {
+        return {
+          ...sourceJson,
+          buildSpec // Filename to buildspec file
+        };
+      } else if (Object.keys(buildSpec).length > 0) {
+        // We have to pretty-print the buildspec, otherwise
+        // CodeBuild will not recognize it as an inline buildspec.
+        return {
+          ...sourceJson,
+          buildSpec: JSON.stringify(buildSpec, undefined, 2)
+        };
+      } else if (this.source.type === SourceType.None) {
+        throw new Error("If the Project's source is NoSource, you need to provide a buildSpec");
+      } else {
+        return sourceJson;
+      }
+    };
 
     this._secondarySources = [];
     for (const secondarySource of props.secondarySources || []) {
@@ -658,7 +673,7 @@ export class Project extends ProjectBase {
 
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
-      source: sourceJson,
+      source: renderSource(),
       artifacts: artifacts.toArtifactsJSON(),
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
@@ -670,12 +685,17 @@ export class Project extends ProjectBase {
       secondarySources: new cdk.Token(() => this.renderSecondarySources()),
       secondaryArtifacts: new cdk.Token(() => this.renderSecondaryArtifacts()),
       triggers: this.source.buildTriggers(),
+      vpcConfig: this.configureVpc(props),
     });
 
     this.projectArn = resource.projectArn;
-    this.projectName = resource.ref;
+    this.projectName = resource.projectName;
 
     this.addToRolePolicy(this.createLoggingPermission());
+  }
+
+  public get securityGroups(): ec2.ISecurityGroup[] {
+    return this._securityGroups.slice();
   }
 
   /**
@@ -694,6 +714,20 @@ export class Project extends ProjectBase {
   public addToRolePolicy(statement: iam.PolicyStatement) {
     if (this.role) {
       this.role.addToPolicy(statement);
+    }
+  }
+
+  /**
+   * Add a permission only if there's a policy attached.
+   * @param statement The permissions statement to add
+   */
+  public addToRoleInlinePolicy(statement: iam.PolicyStatement) {
+    if (this.role) {
+      const policy = new iam.Policy(this, 'PolicyDocument', {
+        policyName: 'CodeBuildEC2Policy',
+        statements: [statement]
+      });
+      this.role.attachInlinePolicy(policy);
     }
   }
 
@@ -765,8 +799,7 @@ export class Project extends ProjectBase {
   }
 
   private renderEnvironment(env: BuildEnvironment = {},
-                            projectVars: { [name: string]: BuildEnvironmentVariable } = {}):
-      CfnProject.EnvironmentProperty {
+                            projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
 
@@ -812,6 +845,63 @@ export class Project extends ProjectBase {
       : this._secondaryArtifacts.map((secondaryArtifact) => secondaryArtifact.toArtifactsJSON());
   }
 
+  /**
+   * If configured, set up the VPC-related properties
+   *
+   * Returns the VpcConfig that should be added to the
+   * codebuild creation properties.
+   */
+  private configureVpc(props: ProjectProps): CfnProject.VpcConfigProperty | undefined {
+    if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
+      throw new Error(`Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC`);
+    }
+
+    if (!props.vpc) { return undefined; }
+
+    if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
+      throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
+    }
+
+    if (props.securityGroups && props.securityGroups.length > 0) {
+      this._securityGroups = props.securityGroups.slice();
+    } else {
+      const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+        description: 'Automatic generated security group for CodeBuild ' + this.node.uniqueId,
+        allowAllOutbound: props.allowAllOutbound
+      });
+      this._securityGroups = [securityGroup];
+    }
+    const subnetSelection: ec2.SubnetSelection = props.subnetSelection ? props.subnetSelection : {
+      subnetType: ec2.SubnetType.Private
+    };
+    this.addToRoleInlinePolicy(new iam.PolicyStatement()
+      .addAllResources()
+      .addActions(
+        'ec2:CreateNetworkInterface',
+        'ec2:DescribeNetworkInterfaces',
+        'ec2:DeleteNetworkInterface',
+        'ec2:DescribeSubnets',
+        'ec2:DescribeSecurityGroups',
+        'ec2:DescribeDhcpOptions',
+        'ec2:DescribeVpcs'
+      ));
+    this.addToRolePolicy(new iam.PolicyStatement()
+      .addResource(`arn:aws:ec2:${cdk.Aws.region}:${cdk.Aws.accountId}:network-interface/*`)
+      .addCondition('StringEquals', {
+        "ec2:Subnet": [
+          `arn:aws:ec2:${cdk.Aws.region}:${cdk.Aws.accountId}:subnet/[[subnets]]`
+        ],
+        "ec2:AuthorizedService": "codebuild.amazonaws.com"
+      })
+      .addAction('ec2:CreateNetworkInterfacePermission'));
+    return {
+      vpcId: props.vpc.vpcId,
+      subnets: props.vpc.subnetIds(subnetSelection).map(s => s),
+      securityGroupIds: this._securityGroups.map(s => s.securityGroupId)
+    };
+  }
+
   private parseArtifacts(props: ProjectProps) {
     if (props.artifacts) {
       return props.artifacts;
@@ -829,7 +919,7 @@ export class Project extends ProjectBase {
 
     if ((sourceType === CODEPIPELINE_TYPE || artifactsType === CODEPIPELINE_TYPE) &&
       (sourceType !== artifactsType)) {
-        throw new Error('Both source and artifacts must be set to CodePipeline');
+      throw new Error('Both source and artifacts must be set to CodePipeline');
     }
   }
 }
@@ -838,9 +928,9 @@ export class Project extends ProjectBase {
  * Build machine compute type.
  */
 export enum ComputeType {
-  Small  = 'BUILD_GENERAL1_SMALL',
+  Small = 'BUILD_GENERAL1_SMALL',
   Medium = 'BUILD_GENERAL1_MEDIUM',
-  Large  = 'BUILD_GENERAL1_LARGE'
+  Large = 'BUILD_GENERAL1_LARGE'
 }
 
 export interface BuildEnvironment {
@@ -849,7 +939,7 @@ export interface BuildEnvironment {
    *
    * @default LinuxBuildImage.UBUNTU_14_04_BASE
    */
-  buildImage?: IBuildImage;
+  readonly buildImage?: IBuildImage;
 
   /**
    * The type of compute to use for this build.
@@ -857,7 +947,7 @@ export interface BuildEnvironment {
    *
    * @default taken from {@link #buildImage#defaultComputeType}
    */
-  computeType?: ComputeType;
+  readonly computeType?: ComputeType;
 
   /**
    * Indicates how the project builds Docker images. Specify true to enable
@@ -869,12 +959,12 @@ export interface BuildEnvironment {
    *
    * @default false
    */
-  privileged?: boolean;
+  readonly privileged?: boolean;
 
   /**
    * The environment variables that your builds can use.
    */
-  environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+  readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 }
 
 /**
@@ -1128,13 +1218,13 @@ export interface BuildEnvironmentVariable {
    * The type of environment variable.
    * @default PlainText
    */
-  type?: BuildEnvironmentVariableType;
+  readonly type?: BuildEnvironmentVariableType;
 
   /**
    * The value of the environment variable (or the name of the parameter in
    * the SSM parameter store.)
    */
-  value: any;
+  readonly value: any;
 }
 
 export enum BuildEnvironmentVariableType {

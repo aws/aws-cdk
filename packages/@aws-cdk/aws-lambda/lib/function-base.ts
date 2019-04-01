@@ -9,7 +9,6 @@ import cdk = require('@aws-cdk/cdk');
 import { IEventSource } from './event-source';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
-import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
 
 export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
   s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource {
@@ -46,14 +45,6 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
    * @param id The id ƒor the permission construct
    */
   addPermission(id: string, permission: Permission): void;
-
-  /**
-   * Convenience method for creating a new {@link PipelineInvokeAction}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineInvokeAction}
-   */
-  toCodePipelineInvokeAction(props: CommonPipelineInvokeActionProps): PipelineInvokeAction;
 
   addToRolePolicy(statement: iam.PolicyStatement): void;
 
@@ -105,14 +96,14 @@ export interface FunctionImportProps {
    *
    * Format: arn:<partition>:lambda:<region>:<account-id>:function:<function-name>
    */
-  functionArn: string;
+  readonly functionArn: string;
 
   /**
    * The IAM execution role associated with this function.
    *
    * If the role is not specified, any role-related operations will no-op.
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Id of the securityGroup for this Lambda, if in a VPC.
@@ -120,7 +111,7 @@ export interface FunctionImportProps {
    * This needs to be given in order to support allowing connections
    * to this Lambda.
    */
-  securityGroupId?: string;
+  readonly securityGroupId?: string;
 }
 
 export abstract class FunctionBase extends cdk.Construct implements IFunction  {
@@ -151,6 +142,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
    * Actual connections object for this Lambda
    *
    * May be unset, in which case this Lambda is not configured use in a VPC.
+   * @internal
    */
   protected _connections?: ec2.Connections;
 
@@ -175,7 +167,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     new CfnPermission(this, id, {
       action,
       principal,
-      functionName: this.functionName,
+      functionName: this.functionArn,
       eventSourceToken: permission.eventSourceToken,
       sourceAccount: permission.sourceAccount,
       sourceArn: permission.sourceArn,
@@ -184,13 +176,6 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
   public get id() {
     return this.node.id;
-  }
-
-  public toCodePipelineInvokeAction(props: CommonPipelineInvokeActionProps): PipelineInvokeAction {
-    return new PipelineInvokeAction({
-      ...props,
-      lambda: this,
-    });
   }
 
   public addToRolePolicy(statement: iam.PolicyStatement) {

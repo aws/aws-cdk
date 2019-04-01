@@ -18,14 +18,6 @@ export const RESOLVE_METHOD = 'resolve';
  * semantics.
  */
 export class Token {
-  /**
-   * Indicate whether this Token represent a "reference"
-   *
-   * The Construct tree can be queried for the Reference Tokens that
-   * are used in it.
-   */
-  public readonly isReference?: boolean;
-
   private tokenStringification?: string;
   private tokenListification?: string[];
 
@@ -128,8 +120,8 @@ export class Token {
  * Current resolution context for tokens
  */
 export interface ResolveContext {
-  scope: IConstruct;
-  prefix: string[];
+  readonly scope: IConstruct;
+  readonly prefix: string[];
 }
 
 /**

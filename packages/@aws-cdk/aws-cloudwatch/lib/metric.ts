@@ -14,17 +14,17 @@ export interface MetricProps {
    *
    * @default No dimensions
    */
-  dimensions?: DimensionHash;
+  readonly dimensions?: DimensionHash;
 
   /**
    * Namespace of the metric.
    */
-  namespace: string;
+  readonly namespace: string;
 
   /**
    * Name of the metric.
    */
-  metricName: string;
+  readonly metricName: string;
 
   /**
    * The period over which the specified statistic is applied.
@@ -33,7 +33,7 @@ export interface MetricProps {
    *
    * @default 300
    */
-  periodSec?: number;
+  readonly periodSec?: number;
 
   /**
    * What function to use for aggregating.
@@ -49,22 +49,22 @@ export interface MetricProps {
    *
    * @default Average
    */
-  statistic?: string;
+  readonly statistic?: string;
 
   /**
    * Unit for the metric that is associated with the alarm
    */
-  unit?: Unit;
+  readonly unit?: Unit;
 
   /**
    * Label for this metric when added to a Graph in a Dashboard
    */
-  label?: string;
+  readonly label?: string;
 
   /**
    * Color for this metric when added to a Graph in a Dashboard
    */
-  color?: string;
+  readonly color?: string;
 }
 
 /**
@@ -189,12 +189,12 @@ export interface Dimension {
   /**
    * Name of the dimension
    */
-  name: string;
+  readonly name: string;
 
   /**
    * Value of the dimension
    */
-  value: any;
+  readonly value: any;
 }
 
 /**
@@ -250,7 +250,7 @@ export interface MetricCustomization {
    *
    * @default No dimensions
    */
-  dimensions?: DimensionHash;
+  readonly dimensions?: DimensionHash;
 
   /**
    * The period over which the specified statistic is applied.
@@ -259,7 +259,7 @@ export interface MetricCustomization {
    *
    * @default 300
    */
-  periodSec?: number;
+  readonly periodSec?: number;
 
   /**
    * What function to use for aggregating.
@@ -275,22 +275,22 @@ export interface MetricCustomization {
    *
    * @default Average
    */
-  statistic?: string;
+  readonly statistic?: string;
 
   /**
    * Unit for the metric that is associated with the alarm
    */
-  unit?: Unit;
+  readonly unit?: Unit;
 
   /**
    * Label for this metric when added to a Graph in a Dashboard
    */
-  label?: string;
+  readonly label?: string;
 
   /**
    * Color for this metric when added to a Graph in a Dashboard
    */
-  color?: string;
+  readonly color?: string;
 }
 
 /**
@@ -304,7 +304,7 @@ export interface MetricAlarmProps {
    *
    * @default 300
    */
-  periodSec?: number;
+  readonly periodSec?: number;
 
   /**
    * What function to use for aggregating.
@@ -320,59 +320,59 @@ export interface MetricAlarmProps {
    *
    * @default Average
    */
-  statistic?: string;
+  readonly statistic?: string;
 
   /**
    * Name of the alarm
    *
    * @default Automatically generated name
    */
-  alarmName?: string;
+  readonly alarmName?: string;
 
   /**
    * Description for the alarm
    *
    * @default No description
    */
-  alarmDescription?: string;
+  readonly alarmDescription?: string;
 
   /**
    * Comparison to use to check if metric is breaching
    *
    * @default GreaterThanOrEqualToThreshold
    */
-  comparisonOperator?: ComparisonOperator;
+  readonly comparisonOperator?: ComparisonOperator;
 
   /**
    * The value against which the specified statistic is compared.
    */
-  threshold: number;
+  readonly threshold: number;
 
   /**
    * The number of periods over which data is compared to the specified threshold.
    */
-  evaluationPeriods: number;
+  readonly evaluationPeriods: number;
 
   /**
    * Specifies whether to evaluate the data and potentially change the alarm state if there are too few data points to be statistically significant.
    *
    * Used only for alarms that are based on percentiles.
    */
-  evaluateLowSampleCountPercentile?: string;
+  readonly evaluateLowSampleCountPercentile?: string;
 
   /**
    * Sets how this alarm is to handle missing data points.
    *
    * @default TreatMissingData.Missing
    */
-  treatMissingData?: TreatMissingData;
+  readonly treatMissingData?: TreatMissingData;
 
   /**
    * Whether the actions for this alarm are enabled
    *
    * @default true
    */
-  actionsEnabled?: boolean;
+  readonly actionsEnabled?: boolean;
 
   /**
    * The number of datapoints that must be breaching to trigger the alarm. This is used only if you are setting an "M
@@ -383,7 +383,7 @@ export interface MetricAlarmProps {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarm-evaluation
    */
-  datapointsToAlarm?: number;
+  readonly datapointsToAlarm?: number;
 }
 
 function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {

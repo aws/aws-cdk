@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+
+## [0.27.0](https://github.com/awslabs/aws-cdk/compare/v0.26.0...v0.27.0) (2019-03-28)
+
+### Highlights
+
+* Python support (experimental)
+* You can now run the CLI through `npx cdk`
+* Make sure to go through the BREAKING CHANGES section below
+
+### Bug Fixes
+
+* **autoscaling:** verify public subnets for associatePublicIpAddress ([#2077](https://github.com/awslabs/aws-cdk/issues/2077)) ([1e3d41e](https://github.com/awslabs/aws-cdk/commit/1e3d41e))
+* **ec2:** descriptive error message when selecting 0 subnets ([#2025](https://github.com/awslabs/aws-cdk/issues/2025)) ([0de2206](https://github.com/awslabs/aws-cdk/commit/0de2206)), closes [#2011](https://github.com/awslabs/aws-cdk/issues/2011)
+* **lambda:** use Alias ARN directly ([#2091](https://github.com/awslabs/aws-cdk/issues/2091)) ([bc40494](https://github.com/awslabs/aws-cdk/commit/bc40494))
+* **rds:** remove Instance class ([#2081](https://github.com/awslabs/aws-cdk/issues/2081)) ([6699fed](https://github.com/awslabs/aws-cdk/commit/6699fed))
+* **secretsmanager:** allow templated string creation ([#2010](https://github.com/awslabs/aws-cdk/issues/2010)) ([4e105a3](https://github.com/awslabs/aws-cdk/commit/4e105a3))
+* **secretsmanager/ssm:** verify presence of parameter name ([#2066](https://github.com/awslabs/aws-cdk/issues/2066)) ([b93350f](https://github.com/awslabs/aws-cdk/commit/b93350f))
+* **serverless:** rename aws-serverless to aws-sam ([#2074](https://github.com/awslabs/aws-cdk/issues/2074)) ([4a82f13](https://github.com/awslabs/aws-cdk/commit/4a82f13))
+* **stepfunctions:** make Fail.error optional ([#2042](https://github.com/awslabs/aws-cdk/issues/2042)) ([86e9d03](https://github.com/awslabs/aws-cdk/commit/86e9d03))
+
+
+### Code Refactoring
+
+* readonly struct properties and hide internals ([#2106](https://github.com/awslabs/aws-cdk/issues/2106)) ([66dd228](https://github.com/awslabs/aws-cdk/commit/66dd228)), closes [awslabs/cdk-ops#321](https://github.com/awslabs/cdk-ops/issues/321)
+
+
+### Features
+
+* **toolkit:**: new 'cdk' package to allow executing the cli through `npx cdk` ([#2113](https://github.com/awslabs/aws-cdk/issues/2113)) ([32bca05](https://github.com/awslabs/aws-cdk/commit/32bca05))
+* Python Support ([#2009](https://github.com/awslabs/aws-cdk/issues/2009)) ([e6083fa](https://github.com/awslabs/aws-cdk/commit/e6083fa))
+* **core:** present reason for cyclic references ([#2061](https://github.com/awslabs/aws-cdk/issues/2061)) ([e82e208](https://github.com/awslabs/aws-cdk/commit/e82e208))
+* **lambda:** add support for log retention ([#2067](https://github.com/awslabs/aws-cdk/issues/2067)) ([63132ec](https://github.com/awslabs/aws-cdk/commit/63132ec)), closes [#667](https://github.com/awslabs/aws-cdk/issues/667) [#667](https://github.com/awslabs/aws-cdk/issues/667)
+* **rds:** cluster retention, reference KMS key by object ([#2063](https://github.com/awslabs/aws-cdk/issues/2063)) ([99ab46d](https://github.com/awslabs/aws-cdk/commit/99ab46d))
+* **secretsmanager/rds:** support credential rotation ([#2052](https://github.com/awslabs/aws-cdk/issues/2052)) ([bf79c82](https://github.com/awslabs/aws-cdk/commit/bf79c82))
+* **toolkit:** introduce the concept of auto-deployed Stacks. ([#2046](https://github.com/awslabs/aws-cdk/issues/2046)) ([abacc66](https://github.com/awslabs/aws-cdk/commit/abacc66))
+
+
+### BREAKING CHANGES
+
+* **lambda:** `cloudWatchLogsRetentionTimeDays` in `@aws-cdk/aws-cloudtrail`
+now uses a `logs.RetentionDays` instead of a `LogRetention`.
+* **core:** `stack._toCloudFormation` method is now unavailable and is replaced by `@aws-cdk/assert.SynthUtils.toCloudFormation(stack)`.
+* **rds:** replaced `kmsKeyArn: string` by `kmsKey: kms.IEncryptionKey` in `DatabaseClusterProps`
+* **autoscaling:** `VpcNetwork.isPublicSubnet()` has been renamed to
+`VpcNetwork.isPublicSubnetIds()`.
+* **serverless:** renamed `aws-serverless` to `aws-sam`
+* **ec2:** `vpcPlacement` has been renamed to `vpcSubnets`
+on all objects, `subnetsToUse` has been renamed to `subnetType`.
+`natGatewayPlacement` has been renamed to `natGatewaySubnets`.
+* All properties of all structs (interfaces that do not begin with an "I") are now readonly since it is passed by-value and not by-ref (Python is the first language to require that). This may impact code in all languages that assumed it is possible to mutate these structs. Let us know if this blocks you in any way.
+
+
 ## [0.26.0](https://github.com/awslabs/aws-cdk/compare/v0.25.3...v0.26.0) (2019-03-20)
 
 ### Bug Fixes

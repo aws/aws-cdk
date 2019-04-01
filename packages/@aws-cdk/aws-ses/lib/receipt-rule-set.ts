@@ -32,13 +32,13 @@ export interface ReceiptRuleSetProps {
    *
    * @default a CloudFormation generated name
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * The list of rules to add to this rule set. Rules are added in the same
    * order as they appear in the list.
    */
-  rules?: ReceiptRuleOptions[]
+  readonly rules?: ReceiptRuleOptions[]
 
   /**
    * Whether to add a first rule to stop processing messages
@@ -46,7 +46,7 @@ export interface ReceiptRuleSetProps {
    *
    * @default false
    */
-  dropSpam?: boolean;
+  readonly dropSpam?: boolean;
 }
 
 /**
@@ -133,7 +133,7 @@ export interface ReceiptRuleSetImportProps {
   /**
    * The receipt rule set name.
    */
-  name: string;
+  readonly name: string;
 }
 
 /**

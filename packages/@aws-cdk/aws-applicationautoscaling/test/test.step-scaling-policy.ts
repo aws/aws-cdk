@@ -1,3 +1,4 @@
+import { SynthUtils } from '@aws-cdk/assert';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import fc = require('fast-check');
@@ -129,7 +130,7 @@ function setupStepScaling(intervals: appscaling.ScalingInterval[]) {
     scalingSteps: intervals
   });
 
-  return new ScalingStackTemplate(stack._toCloudFormation());
+  return new ScalingStackTemplate(SynthUtils.toCloudFormation(stack));
 }
 
 class ScalingStackTemplate {

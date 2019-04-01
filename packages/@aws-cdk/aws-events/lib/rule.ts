@@ -10,20 +10,20 @@ export interface EventRuleProps {
   /**
    * A description of the rule's purpose.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * A name for the rule. If you don't specify a name, AWS CloudFormation
    * generates a unique physical ID and uses that ID for the rule name. For
    * more information, see Name Type.
    */
-  ruleName?: string;
+  readonly ruleName?: string;
 
   /**
    * Indicates whether the rule is enabled.
    * @default Rule is enabled
    */
-  enabled?: boolean;
+  readonly enabled?: boolean;
 
   /**
    * The schedule or rate (frequency) that determines when CloudWatch Events
@@ -34,7 +34,7 @@ export interface EventRuleProps {
    *
    * You must specify this property, the `eventPattern` property, or both.
    */
-  scheduleExpression?: string;
+  readonly scheduleExpression?: string;
 
   /**
    * Describes which events CloudWatch Events routes to the specified target.
@@ -49,7 +49,7 @@ export interface EventRuleProps {
    * method `addEventPattern` can be used to add filter values to the event
    * pattern.
    */
-  eventPattern?: EventPattern;
+  readonly eventPattern?: EventPattern;
 
   /**
    * Targets to invoke when this rule matches an event.
@@ -57,7 +57,7 @@ export interface EventRuleProps {
    * Input will be the full matched event. If you wish to specify custom
    * target input, use `addTarget(target[, inputOptions])`.
    */
-  targets?: IEventRuleTarget[];
+  readonly targets?: IEventRuleTarget[];
 }
 
 /**

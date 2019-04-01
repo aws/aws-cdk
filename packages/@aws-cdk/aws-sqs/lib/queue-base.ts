@@ -290,21 +290,21 @@ export interface QueueImportProps {
   /**
    * The ARN of the queue.
    */
-  queueArn: string;
+  readonly queueArn: string;
 
   /**
    * The URL of the queue.
    */
-  queueUrl: string;
+  readonly queueUrl: string;
 
   /**
    * The name of the queue.
    * @default if queue name is not specified, the name will be derived from the queue ARN
    */
-  queueName?: string;
+  readonly queueName?: string;
 
   /**
    * KMS encryption key, if this queue is server-side encrypted by a KMS key.
    */
-  keyArn?: string;
+  readonly keyArn?: string;
 }

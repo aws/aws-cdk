@@ -11,14 +11,14 @@ export interface EncryptionKeyAliasProps {
    * forward slash, such as alias/. You can't specify aliases that begin with
    * alias/AWS. These aliases are reserved.
    */
-  alias: string;
+  readonly alias: string;
 
   /**
    * The ID of the key for which you are creating the alias. Specify the key's
    * globally unique identifier or Amazon Resource Name (ARN). You can't
    * specify another alias.
    */
-  key: IEncryptionKey;
+  readonly key: IEncryptionKey;
 }
 
 /**

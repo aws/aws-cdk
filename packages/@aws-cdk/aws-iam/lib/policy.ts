@@ -15,31 +15,31 @@ export interface PolicyProps {
    * @default Uses the logical ID of the policy resource, which is ensured to
    *      be unique within the stack.
    */
-  policyName?: string;
+  readonly policyName?: string;
 
   /**
    * Users to attach this policy to.
    * You can also use `attachToUser(user)` to attach this policy to a user.
    */
-  users?: User[];
+  readonly users?: User[];
 
   /**
    * Roles to attach this policy to.
    * You can also use `attachToRole(role)` to attach this policy to a role.
    */
-  roles?: IRole[];
+  readonly roles?: IRole[];
 
   /**
    * Groups to attach this policy to.
    * You can also use `attachToGroup(group)` to attach this policy to a group.
    */
-  groups?: Group[];
+  readonly groups?: Group[];
 
   /**
    * Initial set of permissions to add to this policy document.
    * You can also use `addPermission(statement)` to add permissions later.
    */
-  statements?: PolicyStatement[];
+  readonly statements?: PolicyStatement[];
 }
 
 /**

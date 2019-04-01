@@ -345,8 +345,8 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
  * Reference to an external topic.
  */
 export interface TopicImportProps {
-  topicArn: string;
-  topicName: string;
+  readonly topicArn: string;
+  readonly topicName: string;
 }
 
 /**
@@ -359,5 +359,5 @@ export interface EmailSubscriptionOptions {
    *
    * @default Message text (false)
    */
-  json?: boolean;
+  readonly json?: boolean;
 }

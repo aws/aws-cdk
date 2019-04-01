@@ -22,12 +22,12 @@ export interface EnableScalingProps {
   /**
    * Minimum capacity to scale to
    */
-  minCapacity: number;
+  readonly minCapacity: number;
 
   /**
    * Maximum capacity to scale to
    */
-  maxCapacity: number;
+  readonly maxCapacity: number;
 }
 
 /**
@@ -37,5 +37,5 @@ export interface UtilizationScalingProps extends appscaling.BaseTargetTrackingPr
   /**
    * Target utilization percentage for the attribute
    */
-  targetUtilizationPercent: number;
+  readonly targetUtilizationPercent: number;
 }

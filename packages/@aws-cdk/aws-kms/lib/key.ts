@@ -55,7 +55,7 @@ export interface EncryptionKeyImportProps {
   /**
    * The ARN of the external KMS key.
    */
-  keyArn: string;
+  readonly keyArn: string;
 }
 
 export abstract class EncryptionKeyBase extends Construct implements IEncryptionKey {
@@ -155,19 +155,19 @@ export interface EncryptionKeyProps {
    * A description of the key. Use a description that helps your users decide
    * whether the key is appropriate for a particular task.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Indicates whether AWS KMS rotates the key.
    * @default false
    */
-  enableKeyRotation?: boolean;
+  readonly enableKeyRotation?: boolean;
 
   /**
    * Indicates whether the key is available for use.
    * @default Key is enabled
    */
-  enabled?: boolean;
+  readonly enabled?: boolean;
 
   /**
    * Custom policy document to attach to the KMS key.
@@ -175,7 +175,7 @@ export interface EncryptionKeyProps {
    * @default A policy document with permissions for the account root to
    * administer the key will be created.
    */
-  policy?: PolicyDocument;
+  readonly policy?: PolicyDocument;
 
   /**
    * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
@@ -183,7 +183,7 @@ export interface EncryptionKeyProps {
    *
    * @default true
    */
-  retain?: boolean;
+  readonly retain?: boolean;
 }
 
 /**

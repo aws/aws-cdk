@@ -14,7 +14,7 @@ export interface Permission {
    *
    * @default 'lambda:InvokeFunction'
    */
-  action?: string;
+  readonly action?: string;
 
   /**
    * A unique token that must be supplied by the principal invoking the
@@ -22,7 +22,7 @@ export interface Permission {
    *
    * @default The caller would not need to present a token.
    */
-  eventSourceToken?: string;
+  readonly eventSourceToken?: string;
 
   /**
    * The entity for which you are granting permission to invoke the Lambda
@@ -34,7 +34,7 @@ export interface Permission {
    *
    * The principal can be either an AccountPrincipal or a ServicePrincipal.
    */
-  principal: iam.IPrincipal;
+  readonly principal: iam.IPrincipal;
 
   /**
    * The AWS account ID (without hyphens) of the source owner. For example, if
@@ -42,7 +42,7 @@ export interface Permission {
    * bucket owner's account ID. You can use this property to ensure that all
    * source principals are owned by a specific account.
    */
-  sourceAccount?: string;
+  readonly sourceAccount?: string;
 
   /**
    * The ARN of a resource that is invoking your function. When granting
@@ -52,5 +52,5 @@ export interface Permission {
    * any bucket from any AWS account that creates a mapping to your function,
    * can invoke the function.
    */
-  sourceArn?: string;
+  readonly sourceArn?: string;
 }
