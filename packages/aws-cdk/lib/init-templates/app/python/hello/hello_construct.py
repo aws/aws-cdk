@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from aws_cdk import (
     aws_iam as iam,
     aws_s3 as s3,
