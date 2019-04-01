@@ -4,8 +4,7 @@
 You should explore the contents of this template. It demonstrates a CDK app with two instances of
 a stack (`HelloStack`) which also uses a user-defined construct (`HelloConstruct`).
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app. It uses a script called `app.sh`
-to do that.
+The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 This project is set up like a standard Python project.  The initialization process also creates
 a virtualenv within this project, stored under the .env directory.
