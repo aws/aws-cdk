@@ -81,6 +81,9 @@ export class Cluster extends cdk.Construct implements ICluster {
    * Map service.
    */
   public addDefaultCloudMapNamespace(options: NamespaceOptions): cloudmap.INamespace {
+    if (this._defaultNamespace !== undefined) {
+      throw new Error("Can only add default namespace once.");
+    }
 
     const namespaceType = options.type !== undefined
       ? options.type
