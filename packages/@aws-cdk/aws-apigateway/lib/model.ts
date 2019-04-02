@@ -144,6 +144,11 @@ export class Model extends cdk.Construct implements IModel {
    */
   public readonly restApi: IRestApi;
 
+  /**
+   * The content type for the model.
+   */
+  public readonly contentType: string;
+
   constructor(scope: cdk.Construct, id: string, props: ModelProps) {
     super(scope, id);
 
@@ -157,6 +162,7 @@ export class Model extends cdk.Construct implements IModel {
 
     this.modelId = model.ref;
     this.restApi = props.restApi;
+    this.contentType = props.contentType;
   }
 
   /**

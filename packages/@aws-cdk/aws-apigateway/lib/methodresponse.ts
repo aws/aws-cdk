@@ -1,6 +1,6 @@
-import { IModelRef } from './model';
+import { IModelRef, Model } from './model';
 
-export interface MethodResponse {
+export interface IMethodResponse {
 
   /**
    * The method response's status code, which you map to an IntegrationResponse.
@@ -25,4 +25,43 @@ export interface MethodResponse {
    * @default None
    */
   readonly responseModels?: { [contentType: string]: IModelRef };
+}
+
+export interface MethodResponseProps {
+  readonly statusCode: string;
+  readonly responseParameters?: { [destination: string]: boolean };
+  readonly responseModels?: { [contentType: string]: IModelRef };
+}
+
+export class MethodResponse implements IMethodResponse {
+  public readonly statusCode: string;
+  public readonly responseParameters?: { [destination: string]: boolean };
+  private responseModelsInt?: { [contentType: string]: IModelRef };
+
+  public get responseModels(): { [contentType: string]: IModelRef } | undefined {
+    return this.responseModelsInt;
+  }
+
+  constructor(props: MethodResponseProps) {
+    this.statusCode = props.statusCode;
+    this.responseParameters = props.responseParameters;
+    this.responseModelsInt = props.responseModels;
+  }
+
+  public addResponseModelForContentType(contentType: string, model: IModelRef) {
+    if (!this.responseModelsInt) {
+      this.responseModelsInt = {};
+    }
+
+    if (this.responseModelsInt[contentType]) {
+      throw new Error(`A model has already been registered for the content type ${contentType}`);
+    }
+    this.responseModelsInt[contentType] = model;
+
+    return this;
+  }
+
+  public addResponseModel(model: Model): MethodResponse {
+    return this.addResponseModelForContentType(model.contentType, model);
+  }
 }

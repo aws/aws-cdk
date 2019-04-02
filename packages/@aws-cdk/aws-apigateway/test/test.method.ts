@@ -5,7 +5,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
-import { ConnectionType, EmptyModel, ErrorModel } from '../lib';
+import { ConnectionType, EmptyModel, ErrorModel, JsonSchemaSchema, MethodResponse, Model } from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -357,6 +357,149 @@ export = {
         }
       ]
     }));
+
+    test.done();
+  },
+
+  'can create methodresponse, matching content type with model'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    const universalModel = api.addModel('AnswerToLifeTheUniverseAndEverything', {
+      contentType: 'application/xml',
+      schema: {
+        schema: JsonSchemaSchema.draft4,
+        title: 'AnswerToLifeTheUniverseAndEverything',
+        type: 'object',
+        properties: {
+          answer: { type: 'integer', minimum: 42, maximum: 42 },
+        }
+      }
+    });
+    const customErrorModel = api.addModel('CustomError', {
+      contentType: 'application/xml',
+      schema: {
+        schema: JsonSchemaSchema.draft4,
+        title: 'CustomError',
+        type: 'object',
+        properties: {
+          message: { type: 'string' },
+          code: { type: 'integer' },
+        }
+      }
+    });
+    const ok200Response = new MethodResponse({
+      statusCode: '200',
+    }).addResponseModel(universalModel);
+
+    const errorResponse = new MethodResponse({
+      statusCode: '400',
+    }).addResponseModel(customErrorModel);
+
+    new apigateway.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        methodResponses: [
+          ok200Response,
+          errorResponse,
+        ],
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      MethodResponses: [{
+          StatusCode: "200",
+          ResponseModels: {
+            'application/xml': { Ref: 'testapiAnswerToLifeTheUniverseAndEverythingModel48FC957B'}
+          }
+        }, {
+          StatusCode: "400",
+          ResponseModels: {
+            'application/xml': { Ref: 'testapiCustomErrorModel41D1802D'}
+          }
+        },
+      ]
+    }));
+
+    test.done();
+  },
+
+  'can create methodresponse from an imported model with assumed content type'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    const importedModel = Model.import(stack, 'imported-model', { modelId: 'something-imported' });
+
+    new apigateway.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        methodResponses: [
+          new MethodResponse({
+            statusCode: '200',
+          }).addResponseModelForContentType('application/json', importedModel)
+        ],
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      MethodResponses: [{
+          StatusCode: "200",
+          ResponseModels: {
+            'application/json': "something-imported"
+          }
+        },
+      ]
+    }));
+
+    test.done();
+  },
+
+  'throws error if duplicate model added for content type'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    const universalModel = api.addModel('AnswerToLifeTheUniverseAndEverything', {
+      contentType: 'application/xml',
+      schema: {
+        schema: JsonSchemaSchema.draft4,
+        title: 'AnswerToLifeTheUniverseAndEverything',
+        type: 'object',
+        properties: {
+          answer: { type: 'integer', minimum: 42, maximum: 42 },
+        }
+      }
+    });
+    const customErrorModel = api.addModel('CustomError', {
+      contentType: 'application/xml',
+      schema: {
+        schema: JsonSchemaSchema.draft4,
+        title: 'CustomError',
+        type: 'object',
+        properties: {
+          message: { type: 'string' },
+          code: { type: 'integer' },
+        }
+      }
+    });
+    test.throws(() => {
+      new MethodResponse({
+        statusCode: '200',
+      })
+        .addResponseModel(universalModel)
+        .addResponseModel(customErrorModel);
+    });
 
     test.done();
   },

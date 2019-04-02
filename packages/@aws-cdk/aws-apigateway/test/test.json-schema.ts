@@ -1,11 +1,11 @@
 import { Test } from 'nodeunit';
-import { JsonSchema, JsonSchemaMapper } from '../lib';
+import { JsonSchema, JsonSchemaMapper, JsonSchemaSchema } from '../lib';
 
 export = {
     'toCfnJsonSchema adds missing $ character into schema property'(test: Test) {
         // GIVEN
         const schema: JsonSchema = {
-            schema: 'http://json-schema.org/draft-04/schema#',
+            schema: JsonSchemaSchema.draft4,
             title: 'This model references Scooby Doo',
             type: 'object',
             properties: {
@@ -48,7 +48,7 @@ export = {
     'toCfnJsonSchema does not accidentally replace ref or schema in schema values'(test: Test) {
         // GIVEN
         const schema: JsonSchema = {
-            schema: 'http://json-schema.org/draft-04/schema#',
+            schema: JsonSchemaSchema.draft4,
             title: 'This is a schema full of "ref": fun and also some "schema":',
         };
 

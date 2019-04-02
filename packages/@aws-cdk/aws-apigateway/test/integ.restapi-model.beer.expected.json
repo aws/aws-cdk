@@ -148,8 +148,7 @@
               "Effect": "Allow",
               "Principal": {
                 "Service": {
-                  "Fn::Join":
-                  [
+                  "Fn::Join": [
                     "",
                     [
                       "lambda.",
@@ -287,7 +286,7 @@
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
-            "Ref": "beerapi67AE41CF"
+          "Ref": "beerapi67AE41CF"
         },
         "Description": "Automatically created by the RestApi construct"
       },
@@ -302,17 +301,17 @@
       "Type": "AWS::ApiGateway::Stage",
       "Properties": {
         "RestApiId": {
-            "Ref": "beerapi67AE41CF"
+          "Ref": "beerapi67AE41CF"
         },
         "DeploymentId": {
-            "Ref": "beerapiDeployment3077C14B2cae185d40ed71262560f2f6141fd859"
+          "Ref": "beerapiDeployment3077C14B2cae185d40ed71262560f2f6141fd859"
         },
         "StageName": "prod"
       }
     },
     "beerapiCloudWatchRole81F996BB": {
-        "Type": "AWS::IAM::Role",
-        "Properties": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
             {
@@ -366,8 +365,8 @@
       ]
     },
     "beerapibeerCF23738E": {
-        "Type": "AWS::ApiGateway::Resource",
-        "Properties": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
         "ParentId": {
           "Fn::GetAtt": [
             "beerapi67AE41CF",
@@ -376,7 +375,7 @@
         },
         "PathPart": "beer",
         "RestApiId": {
-            "Ref": "beerapi67AE41CF"
+          "Ref": "beerapi67AE41CF"
         }
       }
     },
@@ -407,7 +406,7 @@
                   "Ref": "AWS::Region"
                 },
                 ":lambda:path/2015-03-31/functions/",
-                { 
+                {
                   "Fn::GetAtt": [
                     "BeersHandlerA9F3A7B5",
                     "Arn"
@@ -421,9 +420,9 @@
         "MethodResponses": [
           {
             "ResponseModels": {
-                "application/json": {
-                  "Ref": "beerapiBeerSummaryModel1EE635AB"
-                }
+              "application/json": {
+                "Ref": "beerapiBeerSummaryModel1EE635AB"
+              }
             },
             "StatusCode": "200"
           }
@@ -446,10 +445,10 @@
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
         "HttpMethod": "GET",
-        "ResourceId":{
+        "ResourceId": {
           "Ref": "beerapibeerbeerid64F377BE"
         },
-        "RestApiId":{
+        "RestApiId": {
           "Ref": "beerapi67AE41CF"
         },
         "AuthorizationType": "NONE",
@@ -482,10 +481,10 @@
         },
         "MethodResponses": [
           {
-            "ResponseModels":{
-                "application/json": {
-                  "Ref": "beerapiBeerDetailsModel5D942EB5" 
-                }
+            "ResponseModels": {
+              "application/json": {
+                "Ref": "beerapiBeerDetailsModel5D942EB5"
+              }
             },
             "StatusCode": "200"
           }
@@ -495,8 +494,8 @@
     "beerapiBeerSummaryModel1EE635AB": {
       "Type": "AWS::ApiGateway::Model",
       "Properties": {
-        "RestApiId":{
-            "Ref": "beerapi67AE41CF"
+        "RestApiId": {
+          "Ref": "beerapi67AE41CF"
         },
         "ContentType": "application/json",
         "Description": "A basic summary for a beer. Used for listing a bunch of beers at a glance.",
@@ -506,8 +505,12 @@
           "title": "BeerSummary",
           "type": "object",
           "properties": {
-            "id": { "type": "string" },
-            "name": { "type": "string" }
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            }
           }
         }
       }
@@ -526,9 +529,15 @@
           "title": "Brewery",
           "type": "object",
           "properties": {
-            "id": { "type": "string" },
-            "name": { "type": "string" },
-            "address": { "type": "string" },
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "address": {
+              "type": "string"
+            },
             "beers": {
               "type": "array",
               "items": {
@@ -571,33 +580,43 @@
           "title": "Beer",
           "type": "object",
           "properties": {
-            "id": { "type": "string" },
-            "name": { "type": "string" },
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
             "brewery": {
               "type": "object",
               "$ref": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "https://apigateway.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      },
-                      "/restapis/",
-                      {
-                        "Ref": "beerapi67AE41CF"
-                      },
-                      "/models/",
-                      {
-                        "Ref": "beerapiBreweryModelA8E987E0"
-                      }
-                    ]
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://apigateway.",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/restapis/",
+                    {
+                      "Ref": "beerapi67AE41CF"
+                    },
+                    "/models/",
+                    {
+                      "Ref": "beerapiBreweryModelA8E987E0"
+                    }
                   ]
-                }
+                ]
+              }
             },
-            "style": { "type": "string" },
-            "abv": { "type": "number" },
-            "ibu": { "type": "number"}
+            "style": {
+              "type": "string"
+            },
+            "abv": {
+              "type": "number"
+            },
+            "ibu": {
+              "type": "number"
+            }
           }
         }
       }

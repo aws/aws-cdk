@@ -1,7 +1,7 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { MockIntegration, Model, RestApi } from '../lib';
+import { JsonSchemaSchema, MockIntegration, Model, RestApi } from '../lib';
 
 export = {
   'minimal setup'(test: Test) {
@@ -30,7 +30,7 @@ export = {
 
     // WHEN
     const schema = {
-      schema: 'http://json-schema.org/draft-04/schema#',
+      schema: JsonSchemaSchema.draft4,
       title: 'ChocolateBars',
       type: 'array',
       items: {

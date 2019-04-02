@@ -157,7 +157,7 @@ REST API as follows:
 const beerModel = api.addModel('Beer', {
   contentType: 'application/json',
   schema: {
-    $schema: 'http://json-schema.org/draft-04/schema#',
+    $schema: JsonSchemaSchema.draft4,
     title: 'Beer',
     type: 'object',
     properties: {
@@ -177,7 +177,7 @@ const breweryModel = new apiGateway.Model(this, 'breweryModel', {
   description: 'Simple model for defining a brewery.',
   contentType: 'application/json',
   schema: {
-    $schema: 'http://json-schema.org/draft-04/schema#',
+    $schema: JsonSchemaSchema.draft4,
     title: 'Brewery',
     type: 'object',
     properties: {
@@ -200,13 +200,14 @@ RequestModel support not yet implemented.
 
 ```ts
 const method = api.beer.addMethod('GET', getBeerLambdaHandler, {
-  methodResponses: [{
-      statusCode: '200',
-      responseModels: {
-        'application/json': beerModelJson,
-        'application/xml': beerModelXml,
-      }
-  }]
+  methodResponses: [
+      new MethodResponse({ statusCode: '200' })
+        .addResponseModel(beerModelJson)
+        .addResonseModel(beerModelXml),
+      new MethodResponse({ statusCode: '400' })
+        .addResponseModel(errorModelJson)
+        .addResonseModel(errorModelXml),
+  ]
 });
 ```
 

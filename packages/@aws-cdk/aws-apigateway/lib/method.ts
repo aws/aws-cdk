@@ -2,7 +2,7 @@ import cdk = require('@aws-cdk/cdk');
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
-import { MethodResponse } from './methodresponse';
+import { IMethodResponse } from './methodresponse';
 import { IRestApiResource } from './resource';
 import { RestApi } from './restapi';
 import { validateHttpMethod } from './util';
@@ -44,7 +44,7 @@ export interface MethodOptions {
    * for the integration response to be correctly mapped to a response to the client.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-settings-method-response.html
    */
-  readonly methodResponses?: MethodResponse[]
+  readonly methodResponses?: IMethodResponse[]
 
   /**
    * The request parameters that API Gateway accepts. Specify request parameters
@@ -209,7 +209,7 @@ export class Method extends cdk.Construct {
     };
   }
 
-  private renderMethodResponses(methodResponses: MethodResponse[] | undefined): CfnMethod.MethodResponseProperty[] | undefined {
+  private renderMethodResponses(methodResponses: IMethodResponse[] | undefined): CfnMethod.MethodResponseProperty[] | undefined {
     if (!methodResponses) {
       // Fall back to nothing
       return undefined;

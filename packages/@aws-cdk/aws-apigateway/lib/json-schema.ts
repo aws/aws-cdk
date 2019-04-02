@@ -70,3 +70,17 @@ export class JsonSchemaMapper {
 
   private static readonly PropsWithPrefix = ['schema', 'ref'];
 }
+
+export class JsonSchemaSchema {
+  public static get draft4(): string {
+    return JsonSchemaSchema.schemaUrlTemplate('draft-04');
+  }
+
+  public static get draft7(): string {
+    return JsonSchemaSchema.schemaUrlTemplate('draft-07');
+  }
+
+  public static schemaUrlTemplate(draft: string): string {
+    return `http://json-schema.org/${draft}/schema#`;
+  }
+}
