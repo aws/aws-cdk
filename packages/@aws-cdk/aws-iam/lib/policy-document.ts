@@ -49,6 +49,8 @@ export class PolicyDocument extends cdk.Token {
  * Base class for policy principals
  */
 export abstract class PrincipalBase implements IPrincipal {
+  public readonly grantPrincipal: IPrincipal = this;
+
   /**
    * Return the policy fragment that identifies this principal in a Policy.
    */

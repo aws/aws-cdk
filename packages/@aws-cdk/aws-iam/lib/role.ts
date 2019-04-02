@@ -101,6 +101,8 @@ export class Role extends Construct implements IRole {
     return new ImportedRole(scope, id, props);
   }
 
+  public readonly grantPrincipal: IPrincipal = this;
+
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   /**
@@ -211,7 +213,7 @@ export class Role extends Construct implements IRole {
    */
   public grant(principal: IPrincipal, ...actions: string[]) {
     return Grant.onPrincipal({
-      principal,
+      grantee: principal,
       actions,
       resourceArns: [this.roleArn],
       scope: this
@@ -308,6 +310,7 @@ export interface RoleImportProps {
  * A role that already exists
  */
 class ImportedRole extends Construct implements IRole {
+  public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
   public readonly policyFragment: PrincipalPolicyFragment;
   public readonly roleArn: string;
@@ -354,7 +357,7 @@ class ImportedRole extends Construct implements IRole {
    */
   public grant(principal: IPrincipal, ...actions: string[]): Grant {
     return Grant.onPrincipal({
-      principal,
+      grantee: principal,
       actions,
       resourceArns: [this.roleArn],
       scope: this

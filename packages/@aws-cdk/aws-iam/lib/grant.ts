@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { PolicyStatement } from "./policy-document";
-import { IPrincipal } from "./principals";
+import { IGrantable } from "./principals";
 
 /**
  * Basic options for a grant operation
@@ -11,7 +11,7 @@ export interface CommonGrantOptions {
    *
    * @default if principal is undefined, no work is done.
    */
-  readonly principal: IPrincipal;
+  readonly grantee: IGrantable;
 
   /**
    * The actions to grant
@@ -109,7 +109,7 @@ export class Grant {
     const statement = new PolicyStatement()
       .addActions(...options.actions)
       .addResources(...(options.resourceSelfArns || options.resourceArns))
-      .addPrincipal(options.principal!);
+      .addPrincipal(options.grantee!.grantPrincipal);
 
     options.resource.addToResourcePolicy(statement);
 
@@ -127,7 +127,7 @@ export class Grant {
       .addActions(...options.actions)
       .addResources(...options.resourceArns);
 
-    const addedToPrincipal = options.principal.addToPolicy(statement);
+    const addedToPrincipal = options.grantee.grantPrincipal.addToPolicy(statement);
 
     return new Grant({ principalStatement: addedToPrincipal ? statement : undefined, options });
   }
@@ -150,7 +150,7 @@ export class Grant {
     const statement = new PolicyStatement()
       .addActions(...options.actions)
       .addResources(...(options.resourceSelfArns || options.resourceArns))
-      .addPrincipal(options.principal!);
+      .addPrincipal(options.grantee!.grantPrincipal);
 
     options.resource.addToResourcePolicy(statement);
 
@@ -204,7 +204,7 @@ export class Grant {
 }
 
 function describeGrant(options: CommonGrantOptions) {
-  return `Permissions for '${options.principal}' to call '${options.actions}' on '${options.resourceArns}'`;
+  return `Permissions for '${options.grantee}' to call '${options.actions}' on '${options.resourceArns}'`;
 }
 
 interface GrantProps {

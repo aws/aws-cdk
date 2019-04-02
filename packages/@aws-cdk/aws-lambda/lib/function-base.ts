@@ -11,7 +11,7 @@ import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
 export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
-  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource {
+  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource, iam.IGrantable {
 
   /**
    * Logical ID of this Function.
