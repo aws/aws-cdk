@@ -13,7 +13,7 @@ import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-co
 
 export interface IServerDeploymentGroup extends cdk.IConstruct {
   readonly application: IServerApplication;
-  readonly role?: iam.Role;
+  readonly role: iam.Role;
   readonly deploymentGroupName: string;
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
@@ -60,7 +60,7 @@ export interface ServerDeploymentGroupImportProps {
  */
 export abstract class ServerDeploymentGroupBase extends cdk.Construct implements IServerDeploymentGroup {
   public abstract readonly application: IServerApplication;
-  public abstract readonly role?: iam.Role;
+  public abstract readonly role: iam.Role;
   public abstract readonly deploymentGroupName: string;
   public abstract readonly deploymentGroupArn: string;
   public readonly deploymentConfig: IServerDeploymentConfig;
@@ -76,7 +76,7 @@ export abstract class ServerDeploymentGroupBase extends cdk.Construct implements
 
 class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly application: IServerApplication;
-  public readonly role?: iam.Role = undefined;
+  public readonly role: iam.Role = undefined;
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;

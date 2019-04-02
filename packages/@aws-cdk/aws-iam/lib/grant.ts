@@ -11,7 +11,7 @@ export interface CommonGrantOptions {
    *
    * @default if principal is undefined, no work is done.
    */
-  readonly principal?: IPrincipal;
+  readonly principal: IPrincipal;
 
   /**
    * The actions to grant
@@ -123,14 +123,6 @@ export class Grant {
    * the permissions to a present principal is not an error.
    */
   public static onPrincipal(options: GrantOnPrincipalOptions): Grant {
-    if (!options.principal) {
-      if (options.scope) {
-        // tslint:disable-next-line:max-line-length
-        options.scope.node.addWarning(`Could not add grant '${options.actions}' on '${options.resourceArns}' because the principal was not available. Add the permissions by hand.`);
-      }
-      return new Grant({ principalMissing: true, options });
-    }
-
     const statement = new PolicyStatement()
       .addActions(...options.actions)
       .addResources(...options.resourceArns);
@@ -155,8 +147,6 @@ export class Grant {
       scope: options.resource,
     });
 
-    if (result.principalMissing) { return result; }
-
     const statement = new PolicyStatement()
       .addActions(...options.actions)
       .addResources(...(options.resourceSelfArns || options.resourceArns))
@@ -166,11 +156,6 @@ export class Grant {
 
     return new Grant({ principalStatement: statement, resourceStatement: result.resourceStatement, options });
   }
-
-  /**
-   * There was no principal to add the permissions to
-   */
-  public readonly principalMissing: boolean;
 
   /**
    * The statement that was added to the principal's policy
@@ -196,7 +181,6 @@ export class Grant {
 
   private constructor(props: GrantProps) {
     this.options = props.options;
-    this.principalMissing = !!props.principalMissing;
     this.principalStatement = props.principalStatement;
     this.resourceStatement = props.resourceStatement;
   }
@@ -205,7 +189,7 @@ export class Grant {
    * Whether the grant operation was successful
    */
   public get success(): boolean {
-    return this.principalMissing || this.principalStatement !== undefined || this.resourceStatement !== undefined;
+    return this.principalStatement !== undefined || this.resourceStatement !== undefined;
   }
 
   /**
@@ -225,7 +209,6 @@ function describeGrant(options: CommonGrantOptions) {
 
 interface GrantProps {
   readonly options: CommonGrantOptions;
-  readonly principalMissing?: boolean;
   readonly principalStatement?: PolicyStatement;
   readonly resourceStatement?: PolicyStatement;
 }

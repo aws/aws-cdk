@@ -31,7 +31,7 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   /**
    * The IAM role associated with this function.
    */
-  readonly role?: iam.IRole;
+  readonly role: iam.IRole;
 
   /**
    * Whether or not this Lambda function was bound to a VPC
@@ -51,7 +51,7 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  grantInvoke(identity?: iam.IPrincipal): iam.Grant;
+  grantInvoke(identity: iam.IPrincipal): iam.Grant;
 
   /**
    * Return the given named metric for this Lambda
@@ -129,7 +129,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   /**
    * The IAM role associated with this function.
    */
-  public abstract readonly role?: iam.IRole;
+  public abstract readonly role: iam.IRole;
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -231,7 +231,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  public grantInvoke(principal?: iam.IPrincipal): iam.Grant {
+  public grantInvoke(principal: iam.IPrincipal): iam.Grant {
     return iam.Grant.withResource({
       principal,
       actions: ['lambda:InvokeFunction'],

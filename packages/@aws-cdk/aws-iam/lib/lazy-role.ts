@@ -89,14 +89,14 @@ export class LazyRole extends cdk.Construct implements IRole {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  public grant(identity?: IPrincipal, ...actions: string[]): Grant {
+  public grant(identity: IPrincipal, ...actions: string[]): Grant {
     return this.instantiate().grant(identity, ...actions);
   }
 
   /**
    * Grant permissions to the given principal to pass this role.
    */
-  public grantPassRole(identity?: IPrincipal): Grant {
+  public grantPassRole(identity: IPrincipal): Grant {
     return this.instantiate().grantPassRole(identity);
   }
 

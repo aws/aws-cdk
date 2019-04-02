@@ -41,17 +41,17 @@ export interface IRepository extends cdk.IConstruct {
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
-  grant(identity?: iam.IPrincipal, ...actions: string[]): iam.Grant;
+  grant(identity: iam.IPrincipal, ...actions: string[]): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull images in this repository.
    */
-  grantPull(identity?: iam.IPrincipal): iam.Grant;
+  grantPull(identity: iam.IPrincipal): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
    */
-  grantPullPush(identity?: iam.IPrincipal): iam.Grant;
+  grantPullPush(identity: iam.IPrincipal): iam.Grant;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -189,7 +189,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
-  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
+  public grant(principal: iam.IPrincipal, ...actions: string[]) {
     return iam.Grant.withResource({
       principal,
       actions,
@@ -201,7 +201,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Grant the given identity permissions to use the images in this repository
    */
-  public grantPull(principal?: iam.IPrincipal) {
+  public grantPull(principal: iam.IPrincipal) {
     const ret = this.grant(principal, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
 
     iam.Grant.onPrincipal({
@@ -217,7 +217,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Grant the given identity permissions to pull and push images to this repository.
    */
-  public grantPullPush(identity?: iam.IPrincipal) {
+  public grantPullPush(identity: iam.IPrincipal) {
     this.grantPull(identity);
     return this.grant(identity,
       "ecr:PutImage",

@@ -69,12 +69,12 @@ export interface ILogGroup extends cdk.IConstruct {
   /**
    * Give permissions to write to create and write to streams in this log group
    */
-  grantWrite(principal?: iam.IPrincipal): iam.Grant;
+  grantWrite(principal: iam.IPrincipal): iam.Grant;
 
   /**
    * Give the indicated permissions on this log group and all streams
    */
-  grant(principal?: iam.IPrincipal, ...actions: string[]): iam.Grant;
+  grant(principal: iam.IPrincipal, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -171,14 +171,14 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
   /**
    * Give permissions to write to create and write to streams in this log group
    */
-  public grantWrite(principal?: iam.IPrincipal) {
+  public grantWrite(principal: iam.IPrincipal) {
     return this.grant(principal, 'logs:CreateLogStream', 'logs:PutLogEvents');
   }
 
   /**
    * Give the indicated permissions on this log group and all streams
    */
-  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
+  public grant(principal: iam.IPrincipal, ...actions: string[]) {
     return iam.Grant.onPrincipal({
       principal,
       actions,

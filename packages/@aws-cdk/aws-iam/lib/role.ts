@@ -209,7 +209,7 @@ export class Role extends Construct implements IRole {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  public grant(principal?: IPrincipal, ...actions: string[]) {
+  public grant(principal: IPrincipal, ...actions: string[]) {
     return Grant.onPrincipal({
       principal,
       actions,
@@ -221,7 +221,7 @@ export class Role extends Construct implements IRole {
   /**
    * Grant permissions to the given principal to pass this role.
    */
-  public grantPassRole(identity?: IPrincipal) {
+  public grantPassRole(identity: IPrincipal) {
     return this.grant(identity, 'iam:PassRole');
   }
 }
@@ -254,12 +254,12 @@ export interface IRole extends IIdentity {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  grant(identity?: IPrincipal, ...actions: string[]): Grant;
+  grant(identity: IPrincipal, ...actions: string[]): Grant;
 
   /**
    * Grant permissions to the given principal to pass this role.
    */
-  grantPassRole(identity?: IPrincipal): Grant;
+  grantPassRole(identity: IPrincipal): Grant;
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalId?: string) {
@@ -352,7 +352,7 @@ class ImportedRole extends Construct implements IRole {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  public grant(principal?: IPrincipal, ...actions: string[]): Grant {
+  public grant(principal: IPrincipal, ...actions: string[]): Grant {
     return Grant.onPrincipal({
       principal,
       actions,
@@ -364,7 +364,7 @@ class ImportedRole extends Construct implements IRole {
   /**
    * Grant permissions to the given principal to pass this role.
    */
-  public grantPassRole(identity?: IPrincipal): Grant {
+  public grantPassRole(identity: IPrincipal): Grant {
     return this.grant(identity, 'iam:PassRole');
   }
 }

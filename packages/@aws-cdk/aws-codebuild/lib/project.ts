@@ -24,7 +24,7 @@ export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
   readonly projectName: string;
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
-  readonly role?: iam.IRole;
+  readonly role: iam.IRole;
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state
@@ -162,8 +162,8 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
   /** The human-visible name of this Project. */
   public abstract readonly projectName: string;
 
-  /** The IAM service Role of this Project. Undefined for imported Projects. */
-  public abstract readonly role?: iam.IRole;
+  /** The IAM service Role of this Project. */
+  public abstract readonly role: iam.IRole;
 
   /** A role used by CloudWatch events to trigger a build */
   private eventsRole?: iam.Role;
@@ -371,7 +371,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
 class ImportedProject extends ProjectBase {
   public readonly projectArn: string;
   public readonly projectName: string;
-  public readonly role?: iam.Role = undefined;
+  public readonly role: iam.Role = undefined;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: ProjectImportProps) {
     super(scope, id);
@@ -575,7 +575,7 @@ export class Project extends ProjectBase {
   /**
    * The IAM role for this project.
    */
-  public readonly role?: iam.IRole;
+  public readonly role: iam.IRole;
 
   /**
    * The ARN of the project.

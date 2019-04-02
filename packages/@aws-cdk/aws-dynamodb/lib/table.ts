@@ -178,7 +178,7 @@ export class Table extends Construct {
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @param principal The principal (no-op if undefined)
    */
-  public static grantListStreams(principal?: iam.IPrincipal): iam.Grant {
+  public static grantListStreams(principal: iam.IPrincipal): iam.Grant {
     return iam.Grant.onPrincipal({
       principal,
       actions: ['dynamodb:ListStreams'],
@@ -407,7 +407,7 @@ export class Table extends Construct {
    * @param principal The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
-  public grant(principal?: iam.IPrincipal, ...actions: string[]): iam.Grant {
+  public grant(principal: iam.IPrincipal, ...actions: string[]): iam.Grant {
     return iam.Grant.onPrincipal({
       principal,
       actions,
@@ -425,7 +425,7 @@ export class Table extends Construct {
    * @param principal The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    */
-  public grantStream(principal?: iam.IPrincipal, ...actions: string[]) {
+  public grantStream(principal: iam.IPrincipal, ...actions: string[]) {
     return iam.Grant.onPrincipal({
       principal,
       actions,
@@ -439,7 +439,7 @@ export class Table extends Construct {
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
    * @param principal The principal to grant access to
    */
-  public grantReadData(principal?: iam.IPrincipal) {
+  public grantReadData(principal: iam.IPrincipal) {
     return this.grant(principal, ...READ_DATA_ACTIONS);
   }
 
@@ -449,7 +449,7 @@ export class Table extends Construct {
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
    * @param principal The principal to grant access to
    */
-  public grantStreamRead(principal?: iam.IPrincipal) {
+  public grantStreamRead(principal: iam.IPrincipal) {
     return this.grantStream(principal, ...READ_STREAM_DATA_ACTIONS);
   }
 
@@ -458,7 +458,7 @@ export class Table extends Construct {
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
    * @param principal The principal to grant access to
    */
-  public grantWriteData(principal?: iam.IPrincipal) {
+  public grantWriteData(principal: iam.IPrincipal) {
     return this.grant(principal, ...WRITE_DATA_ACTIONS);
   }
 
@@ -468,7 +468,7 @@ export class Table extends Construct {
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem
    * @param principal The principal to grant access to
    */
-  public grantReadWriteData(principal?: iam.IPrincipal) {
+  public grantReadWriteData(principal: iam.IPrincipal) {
     return this.grant(principal, ...READ_DATA_ACTIONS, ...WRITE_DATA_ACTIONS);
   }
 
@@ -476,7 +476,7 @@ export class Table extends Construct {
    * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
    * @param principal The principal to grant access to
    */
-  public grantFullAccess(principal?: iam.IPrincipal) {
+  public grantFullAccess(principal: iam.IPrincipal) {
     return this.grant(principal, 'dynamodb:*');
   }
 

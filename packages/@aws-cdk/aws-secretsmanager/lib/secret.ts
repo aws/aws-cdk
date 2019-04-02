@@ -51,7 +51,7 @@ export interface ISecret extends cdk.IConstruct {
    * @param versionStages the version stages the grant is limited to. If not specified, no restriction on the version
    *                      stages is applied.
    */
-  grantRead(principal?: iam.IPrincipal, versionStages?: string[]): iam.Grant;
+  grantRead(principal: iam.IPrincipal, versionStages?: string[]): iam.Grant;
 
   /**
    * Adds a rotation schedule to the secret.
@@ -118,7 +118,7 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
 
   public abstract export(): SecretImportProps;
 
-  public grantRead(principal?: iam.IPrincipal, versionStages?: string[]): iam.Grant {
+  public grantRead(principal: iam.IPrincipal, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
     const result = iam.Grant.onPrincipal({

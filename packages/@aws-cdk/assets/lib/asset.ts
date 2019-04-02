@@ -171,7 +171,7 @@ export class Asset extends cdk.Construct {
   /**
    * Grants read permissions to the principal on the asset's S3 object.
    */
-  public grantRead(principal?: iam.IPrincipal) {
+  public grantRead(principal: iam.IPrincipal) {
     // We give permissions on all files with the same prefix. Presumably
     // different versions of the same file will have the same prefix
     // and we don't want to accidentally revoke permission on old versions

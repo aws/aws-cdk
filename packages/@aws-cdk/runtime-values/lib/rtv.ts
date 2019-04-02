@@ -74,7 +74,7 @@ export class RuntimeValue extends cdk.Construct {
    * Grants a principal read permissions on this runtime value.
    * @param principal The principal (e.g. Role, User, Group)
    */
-  public grantRead(principal?: iam.IPrincipal) {
+  public grantRead(principal: iam.IPrincipal) {
 
     // sometimes "role" is optional, so we want `rtv.grantRead(role)` to be a no-op
     if (!principal) {
