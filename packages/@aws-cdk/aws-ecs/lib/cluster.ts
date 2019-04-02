@@ -76,11 +76,11 @@ export class Cluster extends cdk.Construct implements ICluster {
   }
 
   /**
-   * Add an AWS Cloud Map Private DNS namespace for this cluster.
+   * Add an AWS Cloud Map DNS namespace for this cluster.
    * NOTE: HttpNamespaces are not supported, as ECS always requires a DNSConfig when registering an instance to a Cloud
    * Map service.
    */
-  public setDefaultCloudMapNamespace(options: NamespaceOptions): cloudmap.INamespace {
+  public addDefaultCloudMapNamespace(options: NamespaceOptions): cloudmap.INamespace {
 
     const namespaceType = options.type !== undefined
       ? options.type

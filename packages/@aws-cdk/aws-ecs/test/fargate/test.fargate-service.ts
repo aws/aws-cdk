@@ -279,7 +279,7 @@ export = {
       container.addPortMappings({ containerPort: 8000 });
 
       // WHEN
-      cluster.setDefaultCloudMapNamespace({
+      cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
@@ -339,7 +339,7 @@ export = {
       container.addPortMappings({ containerPort: 8000 });
 
       // WHEN
-      cluster.setDefaultCloudMapNamespace({
+      cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
