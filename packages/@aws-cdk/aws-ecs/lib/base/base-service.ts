@@ -17,7 +17,7 @@ export interface BaseServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: ICluster;
+  readonly cluster: ICluster;
 
   /**
    * Number of desired copies of running tasks
@@ -275,28 +275,28 @@ export interface ServiceDiscoveryOptions {
    *
    * @default CloudFormation-generated name
    */
-  name?: string,
+  readonly name?: string,
 
   /**
    * The DNS type of the record that you want AWS Cloud Map to create. Supported record types include A or SRV.
    *
    * @default: A
    */
-  dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
+  readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
 
   /**
    * The amount of time, in seconds, that you want DNS resolvers to cache the settings for this record.
    *
    * @default 60
    */
-  dnsTtlSec?: number;
+  readonly dnsTtlSec?: number;
 
   /**
    * The number of 30-second intervals that you want Cloud Map to wait after receiving an
    * UpdateInstanceCustomHealthStatus request before it changes the health status of a service instance.
    * NOTE: This is used for HealthCheckCustomConfig
    */
-  failureThreshold?: number,
+  readonly failureThreshold?: number,
 }
 
 /**
@@ -306,7 +306,7 @@ export interface ServiceRegistry {
   /**
    * Arn of the Cloud Map Service that will register a Cloud Map Instance for your ECS Service
    */
-  arn: string;
+  readonly arn: string;
 
   /**
    * The container name value, already specified in the task definition, to be used for your service discovery service.
@@ -315,7 +315,7 @@ export interface ServiceRegistry {
    * If the task definition that your service task specifies uses the awsvpc network mode and a type SRV DNS record is
    * used, you must specify either a containerName and containerPort combination or a port value, but not both.
    */
-  containerName?: string;
+  readonly containerName?: string;
 
   /**
    * The container port value, already specified in the task definition, to be used for your service discovery service.
@@ -324,5 +324,5 @@ export interface ServiceRegistry {
    * If the task definition that your service task specifies uses the awsvpc network mode and a type SRV DNS record is
    * used, you must specify either a containerName and containerPort combination or a port value, but not both.
    */
-  containerPort?: number;
+  readonly containerPort?: number;
 }

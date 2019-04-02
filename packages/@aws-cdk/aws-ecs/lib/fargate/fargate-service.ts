@@ -10,11 +10,6 @@ import { isFargateCompatible } from '../util';
  */
 export interface FargateServiceProps extends BaseServiceProps {
   /**
-   * Cluster where service will be deployed
-   */
-  readonly cluster: ICluster; // should be required? do we assume 'default' exists?
-
-  /**
    * Task Definition used for running tasks in the service
    */
   readonly taskDefinition: TaskDefinition;

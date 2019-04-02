@@ -83,9 +83,6 @@ export class Cluster extends cdk.Construct implements ICluster {
    * FIXME Support adding public dns namespace as import?
    */
   public addNamespace(options: NamespaceOptions): cloudmap.INamespace {
-    if (options.type === cloudmap.NamespaceType.Http) {
-      throw new Error("Http Namespaces are not supported in ECS.");
-    }
 
     const namespaceType = options.type !== undefined
       ? options.type
@@ -441,19 +438,19 @@ export interface NamespaceOptions {
   /**
    * The domain name for the namespace, such as foo.com
    */
-  name: string;
+  readonly name: string;
 
   /**
    * The type of CloudMap Namespace to create in your cluster
    *
    * @default PrivateDns
    */
-  type?: cloudmap.NamespaceType;
+  readonly type?: cloudmap.NamespaceType.DnsPrivate | cloudmap.NamespaceType.DnsPublic;
 
   /**
    * The Amazon VPC that you want to associate the namespace with. Required for Private DNS namespaces
    *
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
-  vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpcNetwork;
 }

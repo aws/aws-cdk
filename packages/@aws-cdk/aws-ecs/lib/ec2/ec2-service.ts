@@ -13,11 +13,6 @@ import { isEc2Compatible } from '../util';
  */
 export interface Ec2ServiceProps extends BaseServiceProps {
   /**
-   * Cluster where service will be deployed
-   */
-  readonly cluster: ICluster;
-
-  /**
    * Task Definition used for running tasks in the service
    */
   readonly taskDefinition: TaskDefinition;
