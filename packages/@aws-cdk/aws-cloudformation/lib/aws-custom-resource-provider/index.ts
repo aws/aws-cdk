@@ -34,9 +34,14 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     if (call) {
       const awsService = new (AWS as any)[call.service]();
 
-      const response = await awsService[call.action](call.parameters).promise();
-
-      data = flatten(response);
+      try {
+        const response = await awsService[call.action](call.parameters).promise();
+        data = flatten(response);
+      } catch (e) {
+        if (!call.catchErrorPattern || !new RegExp(call.catchErrorPattern).test(e.code)) {
+          throw e;
+        }
+      }
 
       if (call.physicalResourceIdPath) {
         physicalResourceId = data[call.physicalResourceIdPath];

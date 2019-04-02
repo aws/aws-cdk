@@ -48,6 +48,15 @@ export interface AwsSdkCall {
    * @default no physical resource id
    */
   readonly physicalResourceId?: string;
+
+  /**
+   * The regex pattern to use to catch API errors. The `code` property of the
+   * `Error` object will be tested against this pattern. If there is a match an
+   * error will not be thrown.
+   *
+   * @default do not catch errors
+   */
+  readonly catchErrorPattern?: string;
 }
 
 export interface AwsCustomResourceProps {

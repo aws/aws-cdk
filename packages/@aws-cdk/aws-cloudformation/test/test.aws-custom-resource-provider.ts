@@ -148,5 +148,42 @@ export = {
     test.equal(request.isDone(), true);
 
     test.done();
+  },
+
+  async 'catch errors'(test: Test) {
+    const error: NodeJS.ErrnoException = new Error();
+    error.code = 'NoSuchBucket';
+    const listObjectsFake = sinon.fake.rejects(error);
+
+    AWS.mock('S3', 'listObjects', listObjectsFake);
+
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: {
+          service: 'S3',
+          action: 'listObjects',
+          parameters: {
+            Bucket: 'my-bucket'
+          },
+          physicalResourceId: 'physicalResourceId',
+          catchErrorPattern: 'NoSuchBucket'
+        } as AwsSdkCall
+      }
+    };
+
+    const request = createRequest(body =>
+      body.Status === 'SUCCESS' &&
+      body.PhysicalResourceId === 'physicalResourceId' &&
+      Object.keys(body.Data!).length === 0
+    );
+
+    await handler(event, {} as AWSLambda.Context);
+
+    test.equal(request.isDone(), true);
+
+    test.done();
   }
 };
