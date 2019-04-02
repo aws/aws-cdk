@@ -57,6 +57,11 @@ export interface BaseServiceProps {
    * @default ??? FIXME
    */
   readonly healthCheckGracePeriodSeconds?: number;
+
+  /**
+   * Options for enabling AWS Cloud Map service discovery for the service
+   */
+  readonly serviceDiscoveryOptions?: ServiceDiscoveryOptions;
 }
 
 /**

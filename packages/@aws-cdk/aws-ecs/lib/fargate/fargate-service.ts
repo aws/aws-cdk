@@ -67,12 +67,16 @@ export class FargateService extends BaseService {
 
     this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
 
+    if (props.serviceDiscoveryOptions) {
+      this.enableServiceDiscovery(props.serviceDiscoveryOptions);
+    }
+
     if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
   }
 
-  public enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
+  private enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
     const sdNamespace = this.cluster.defaultNamespace();
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");

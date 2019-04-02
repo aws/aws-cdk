@@ -253,12 +253,14 @@ export = {
       });
       container.addPortMappings({ containerPort: 8000 });
 
-      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
-
       // THEN
       test.throws(() => {
-        service.enableServiceDiscovery({
-          name: 'myApp',
+        new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          serviceDiscoveryOptions: {
+            name: 'myApp',
+          }
         });
       }, /Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
 
@@ -275,7 +277,6 @@ export = {
         image: ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
-      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
 
       // WHEN
       cluster.setDefaultCloudMapNamespace({
@@ -283,8 +284,12 @@ export = {
         type: cloudmap.NamespaceType.DnsPrivate
       });
 
-      service.enableServiceDiscovery({
-        name: 'myApp',
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp'
+        }
       });
 
       // THEN
@@ -332,7 +337,6 @@ export = {
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
-      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
 
       // WHEN
       cluster.setDefaultCloudMapNamespace({
@@ -340,9 +344,13 @@ export = {
         type: cloudmap.NamespaceType.DnsPrivate
       });
 
-      service.enableServiceDiscovery({
-        name: 'myApp',
-        dnsRecordType: cloudmap.DnsRecordType.SRV
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp',
+          dnsRecordType: cloudmap.DnsRecordType.SRV
+        }
       });
 
       // THEN
