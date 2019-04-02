@@ -491,8 +491,8 @@
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-             "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
-             "Arn"
+            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
+            "Arn"
           ]
         },
         "Principal": "sns.amazonaws.com",
@@ -912,7 +912,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "TaskDefTaskRole1EDB4A67",
+                  "TaskDefExecutionRoleB4775C97",
                   "Arn"
                 ]
               }
