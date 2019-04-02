@@ -190,6 +190,7 @@ export class Cluster extends cdk.Construct implements ICluster {
       vpc: this.vpc.export(),
       securityGroups: this.connections.securityGroups.map(sg => sg.export()),
       hasEc2Capacity: this.hasEc2Capacity,
+      defaultNamespace: this._defaultNamespace && this._defaultNamespace.export(),
     };
   }
 
@@ -336,6 +337,13 @@ export interface ClusterImportProps {
    * @default true
    */
   readonly hasEc2Capacity?: boolean;
+
+  /**
+   * Default namespace properties
+   *
+   * @default - No default namespace
+   */
+  readonly defaultNamespace?: cloudmap.NamespaceImportProps;
 }
 
 /**
@@ -370,13 +378,14 @@ class ImportedCluster extends cdk.Construct implements ICluster {
   /**
    * Cloudmap namespace created in the cluster
    */
-  private _defaultNamespace: cloudmap.INamespace;
+  private _defaultNamespace?: cloudmap.INamespace;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: ClusterImportProps) {
     super(scope, id);
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
+    this._defaultNamespace = props.defaultNamespace && cloudmap.Namespace.import(this, 'Namespace', props.defaultNamespace);
 
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
       service: 'ecs',

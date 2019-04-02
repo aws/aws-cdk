@@ -244,4 +244,10 @@ export = {
 
     test.done();
   },
+
+  'export/import of a cluster with a namespace'(test: Test) {
+    const stack1 = new cdk.Stack();
+
+    test.done();
+  },
 };
