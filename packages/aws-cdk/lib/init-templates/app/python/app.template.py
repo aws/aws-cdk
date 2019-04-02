@@ -2,10 +2,10 @@
 
 from aws_cdk import cdk
 
-from hello.hello_stack import PyStack
+from %name%.%name%_stack import PyStack
 
 
 app = cdk.App()
-PyStack(app, "hello-cdk-1")
+PyStack(app, "%name%-cdk-1")
 
 app.run()

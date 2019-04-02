@@ -10,8 +10,8 @@ from hello_construct import HelloConstruct
 
 class MyStack(cdk.Stack):
 
-    def __init__(self, app: cdk.App, id: str) -> None:
-        super().__init__(app, id)
+    def __init__(self, app: cdk.App, id: str, **kwargs) -> None:
+        super().__init__(app, id, **kwargs)
 
         queue = sqs.Queue(
             self, "MyFirstQueue",

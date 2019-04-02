@@ -14,7 +14,6 @@ After the init process completes, you can use the following steps to get your pr
 ```
 $ source .env/bin/activate
 $ pip install -r requirements.txt
-$ python setup.py develop
 ```
 
 At this point you can now synthesize the CloudFormation template for this code.

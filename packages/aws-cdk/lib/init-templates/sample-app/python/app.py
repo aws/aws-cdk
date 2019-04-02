@@ -6,7 +6,7 @@ from hello.hello_stack import MyStack
 
 
 app = cdk.App()
-MyStack(app, "hello-cdk-1")
-MyStack(app, "hello-cdk-2")
+MyStack(app, "hello-cdk-1", env={'region': 'us-east-2'})
+MyStack(app, "hello-cdk-2", env={'region': 'us-west-2'})
 
 app.run()
