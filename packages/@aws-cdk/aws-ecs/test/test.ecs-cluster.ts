@@ -220,7 +220,7 @@ export = {
     test.done();
   },
 
-  "allows adding service discovery namespace"(test: Test) {
+  "allows adding default service discovery namespace"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
@@ -241,6 +241,30 @@ export = {
         Vpc: {
           Ref: 'MyVpcF9F0CA6F'
         }
+    }));
+
+    test.done();
+  },
+
+  "allows adding public service discovery namespace"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+    });
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      name: "foo.com",
+      type: ecs.NamespaceType.PublicDns
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::ServiceDiscovery::PublicDnsNamespace", {
+       Name: 'foo.com',
     }));
 
     test.done();

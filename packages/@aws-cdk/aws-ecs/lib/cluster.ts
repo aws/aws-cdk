@@ -85,11 +85,11 @@ export class Cluster extends cdk.Construct implements ICluster {
       throw new Error("Can only add default namespace once.");
     }
 
-    const namespaceType = options.type !== undefined
-      ? options.type
-      : cloudmap.NamespaceType.DnsPrivate;
+    const namespaceType = options.type === undefined || options.type === NamespaceType.PrivateDns
+      ? cloudmap.NamespaceType.DnsPrivate
+      : cloudmap.NamespaceType.DnsPublic;
 
-    const sdNamespace = namespaceType === NamespaceType.PrivateDns ?
+    const sdNamespace = namespaceType === cloudmap.NamespaceType.DnsPrivate ?
       new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
         name: options.name,
         vpc: this.vpc
