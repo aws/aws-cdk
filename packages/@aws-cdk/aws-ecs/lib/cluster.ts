@@ -106,7 +106,7 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * Getter for namespace added to cluster
    */
-  public defaultNamespace(): cloudmap.INamespace | undefined {
+  public get defaultNamespace(): cloudmap.INamespace | undefined {
     return this._defaultNamespace;
   }
 
@@ -297,7 +297,7 @@ export interface ICluster extends cdk.IConstruct {
   /**
    * Getter for Cloudmap namespace created in the cluster
    */
-  defaultNamespace(): cloudmap.INamespace | undefined;
+  readonly defaultNamespace?: cloudmap.INamespace;
 
   /**
    * Export the Cluster
@@ -400,7 +400,7 @@ class ImportedCluster extends cdk.Construct implements ICluster {
     }
   }
 
-  public defaultNamespace(): cloudmap.INamespace | undefined {
+  public get defaultNamespace(): cloudmap.INamespace | undefined {
     return this._defaultNamespace;
   }
 
@@ -455,7 +455,7 @@ export interface NamespaceOptions {
    *
    * @default PrivateDns
    */
-  readonly type?: cloudmap.NamespaceType.DnsPrivate | cloudmap.NamespaceType.DnsPublic;
+  readonly type?: NamespaceType;
 
   /**
    * The Amazon VPC that you want to associate the namespace with. Required for Private DNS namespaces
@@ -463,4 +463,9 @@ export interface NamespaceOptions {
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
   readonly vpc?: ec2.IVpcNetwork;
+}
+
+export enum NamespaceType {
+  PrivateDns = cloudmap.NamespaceType.DnsPrivate,
+  PublicDns = cloudmap.NamespaceType.DnsPublic
 }

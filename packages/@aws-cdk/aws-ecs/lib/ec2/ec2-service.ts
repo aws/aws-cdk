@@ -230,8 +230,6 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
     }
     return ret;
   }
-
-
 }
 
 /**

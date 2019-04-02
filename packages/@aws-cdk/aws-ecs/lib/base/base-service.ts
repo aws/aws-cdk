@@ -95,7 +95,7 @@ export abstract class BaseService extends cdk.Construct
    */
   public readonly taskDefinition: TaskDefinition;
 
-  protected cloudmapService: cloudmap.Service;
+  protected cloudmapService?: cloudmap.Service;
   protected cluster: ICluster;
   protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
@@ -274,7 +274,7 @@ export abstract class BaseService extends cdk.Construct
    * Enable CloudMap service discovery for the service
    */
   private enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
-    const sdNamespace = this.cluster.defaultNamespace();
+    const sdNamespace = this.cluster.defaultNamespace;
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
     }
