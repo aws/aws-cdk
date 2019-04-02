@@ -86,6 +86,8 @@ export function runCommand(command: string, args: string[], additionalEnv?: Node
       debug(`Command PID: ${child.pid}`);
       const stdout = new Array<Buffer>();
       const stderr = new Array<Buffer>();
+      if (!child.stdout) { throw new Error('expected pipe in child.stdout'); }
+      if (!child.stderr) { throw new Error('expected pipe in child.stderr'); }
       child.stdout.on('data', chunk => {
         if (!silent) { process.stdout.write(chunk); }
         stdout.push(chunk as Buffer);

@@ -26,7 +26,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/yargs": "^8.0.3",
+    "@types/yargs": "^12.0.11",
     "cdk-build-tools": "^0.27.0",
     "pkglint": "^0.27.0"
   },
@@ -34,7 +34,7 @@
     "@aws-cdk/cloudformation-diff": "^0.27.0",
     "@aws-cdk/cx-api": "^0.27.0",
     "aws-cdk": "^0.27.0",
-    "yargs": "^9.0.1"
+    "yargs": "^13.2.2"
   },
   "keywords": [
     "aws",

@@ -13,15 +13,17 @@ async function main() {
     .epilog('if --scope is not defined, cfn2ts will try to obtain the scope from the local package.json under the "cdk-build.cloudformation" key.')
     .argv;
 
-  if (!argv.scope) {
-    argv.scope = await tryAutoDetectScope();
+  let scope: string | string[] | undefined = argv.scope;
+
+  if (!scope) {
+    scope = await tryAutoDetectScope();
   }
 
-  if (!argv.scope) {
+  if (!scope) {
     throw new Error(`--scope is not provided and cannot be auto-detected from package.json (under "cdk-build.cloudformation")`);
   }
 
-  await generate(argv.scope, argv.out);
+  await generate(scope, argv.out);
 }
 
 main().catch(err => {

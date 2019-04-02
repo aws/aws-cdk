@@ -65,7 +65,7 @@
     "cdk-build-tools": "^0.27.0",
     "cdk-integ-tools": "^0.27.0",
     "pkglint": "^0.27.0",
-    "@types/lodash": "^4.14.118",
+    "@types/lodash": "^4.14.123",
     "lodash": "^4.17.11"
   },
   "dependencies": {

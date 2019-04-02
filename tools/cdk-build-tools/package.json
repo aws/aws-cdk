@@ -29,21 +29,21 @@
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",
     "@types/jest": "^24.0.11",
-    "@types/yargs": "^12.0.9",
+    "@types/yargs": "^12.0.11",
     "pkglint": "^0.27.0"
   },
   "dependencies": {
     "awslint": "^0.27.0",
     "fs-extra": "^7.0.1",
-    "jest": "^24.4.0",
+    "jest": "^24.6.0",
     "jsii": "^0.8.2",
     "jsii-pacmak": "^0.8.2",
     "nodeunit": "^0.11.3",
     "nyc": "^13.3.0",
-    "ts-jest": "^24.0.0",
-    "tslint": "^5.13.1",
-    "typescript": "^3.3.3333",
-    "yargs": "^13.2.1"
+    "ts-jest": "^24.0.1",
+    "tslint": "^5.15.0",
+    "typescript": "^3.4.1",
+    "yargs": "^13.2.2"
   },
   "keywords": [
     "aws",
