@@ -15,6 +15,7 @@ import { IRole, Role, RoleImportProps, RoleProps } from './role';
  * not be synthesized or deployed.
  */
 export class LazyRole extends cdk.Construct implements IRole {
+  public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
   private role?: Role;
   private readonly statements = new Array<PolicyStatement>();

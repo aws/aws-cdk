@@ -11,7 +11,7 @@ import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
 export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
-  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource {
+  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource, iam.IGrantable {
 
   /**
    * Logical ID of this Function.
@@ -31,7 +31,7 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   /**
    * The IAM role associated with this function.
    */
-  readonly role: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Whether or not this Lambda function was bound to a VPC
@@ -51,7 +51,7 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  grantInvoke(identity: iam.IPrincipal): iam.Grant;
+  grantInvoke(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Return the given named metric for this Lambda
@@ -115,6 +115,10 @@ export interface FunctionImportProps {
 }
 
 export abstract class FunctionBase extends cdk.Construct implements IFunction  {
+  /**
+   * The principal this Lambda Function is running as
+   */
+  public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * The name of the function.
@@ -128,8 +132,10 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
   /**
    * The IAM role associated with this function.
+   *
+   * Undefined if the function was imported without a role.
    */
-  public abstract readonly role: iam.IRole;
+  public abstract readonly role?: iam.IRole;
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -231,9 +237,9 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  public grantInvoke(principal: iam.IPrincipal): iam.Grant {
+  public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.withResource({
-      principal,
+      grantee,
       actions: ['lambda:InvokeFunction'],
       resourceArns: [this.functionArn],
 
@@ -242,9 +248,9 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
       resource: {
         addToResourcePolicy: (_statement) => {
           // Couldn't add permissions to the principal, so add them locally.
-          const identifier = 'Invoke' + JSON.stringify(principal!.policyFragment.principalJson);
+          const identifier = 'Invoke' + JSON.stringify(grantee!.grantPrincipal.policyFragment.principalJson);
           this.addPermission(identifier, {
-            principal: principal!,
+            principal: grantee.grantPrincipal!,
             action: 'lambda:InvokeFunction',
           });
         },
@@ -330,7 +336,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     source.bind(this);
   }
 
-  private parsePermissionPrincipal(principal?: iam.IPrincipal) {
+  private parsePermissionPrincipal(principal?: iam.IGrantable) {
     if (!principal) {
       return undefined;
     }

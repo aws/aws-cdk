@@ -85,11 +85,11 @@ export class Metric {
   /**
    * Grant permissions to the given identity to write metrics.
    *
-   * @param principal The IAM identity to give permissions to.
+   * @param grantee The IAM identity to give permissions to.
    */
-  public static grantPutMetricData(principal: iam.IPrincipal): iam.Grant {
+  public static grantPutMetricData(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.onPrincipal({
-      principal,
+      grantee,
       actions: ['cloudwatch:PutMetricData'],
       resourceArns: ['*']
     });

@@ -1,6 +1,16 @@
 import { PolicyStatement, PrincipalPolicyFragment } from './policy-document';
 
 /**
+ * Any object that has an associated principal that a permission can be granted to
+ */
+export interface IGrantable {
+  /**
+   * The principal to grant permissions to
+   */
+  readonly grantPrincipal: IPrincipal;
+}
+
+/**
  * Represents a logical IAM principal.
  *
  * An IPrincipal describes a logical entity that can perform AWS API calls
@@ -17,7 +27,7 @@ import { PolicyStatement, PrincipalPolicyFragment } from './policy-document';
  * For example, `new OrganizationPrincipal('o-1234')` represents all
  * identities that are part of the given AWS Organization.
  */
-export interface IPrincipal {
+export interface IPrincipal extends IGrantable {
   /**
    * When this Principal is used in an AssumeRole policy, the action to use.
    */

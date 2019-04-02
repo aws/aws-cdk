@@ -264,11 +264,11 @@ export class Table extends cdk.Construct implements ITable {
   /**
    * Grant read permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
-   * @param principal the principal
+   * @param grantee the principal
    */
-  public grantRead(principal: iam.IPrincipal): iam.Grant {
-    const ret = this.grant(principal, readPermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantDecrypt(principal); }
+  public grantRead(grantee: iam.IGrantable): iam.Grant {
+    const ret = this.grant(grantee, readPermissions);
+    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantDecrypt(grantee); }
     this.bucket.grantRead(principal, this.s3Prefix);
     return ret;
   }
@@ -276,30 +276,30 @@ export class Table extends cdk.Construct implements ITable {
   /**
    * Grant write permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
-   * @param principal the principal
+   * @param grantee the principal
    */
-  public grantWrite(principal: iam.IPrincipal): iam.Grant {
-    const ret = this.grant(principal, writePermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantEncrypt(principal); }
-    this.bucket.grantWrite(principal, this.s3Prefix);
+  public grantWrite(grantee: iam.IGrantable): iam.Grant {
+    const ret = this.grant(grantee, writePermissions);
+    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantEncrypt(grantee); }
+    this.bucket.grantWrite(grantee, this.s3Prefix);
     return ret;
   }
 
   /**
    * Grant read and write permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
-   * @param principal the principal
+   * @param grantee the principal
    */
-  public grantReadWrite(principal: iam.IPrincipal): iam.Grant {
-    const ret = this.grant(principal, [...readPermissions, ...writePermissions]);
-    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantEncryptDecrypt(principal); }
+  public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
+    const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
+    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantEncryptDecrypt(grantee); }
     this.bucket.grantReadWrite(principal, this.s3Prefix);
     return ret;
   }
 
-  private grant(principal: iam.IPrincipal, actions: string[]) {
+  private grant(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.onPrincipal({
-      principal,
+      grantee,
       resourceArns: [this.tableArn],
       actions,
     });

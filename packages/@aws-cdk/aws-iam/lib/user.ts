@@ -5,6 +5,7 @@ import { IIdentity } from './identity-base';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-document';
 import { ArnPrincipal, PrincipalPolicyFragment } from './policy-document';
+import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface UserProps {
@@ -65,6 +66,7 @@ export interface UserProps {
 }
 
 export class User extends Construct implements IIdentity {
+  public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   /**

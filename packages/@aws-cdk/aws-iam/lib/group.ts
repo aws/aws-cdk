@@ -3,6 +3,7 @@ import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
 import { ArnPrincipal, PolicyStatement, PrincipalPolicyFragment } from './policy-document';
+import { IPrincipal } from './principals';
 import { User } from './user';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -36,6 +37,7 @@ export interface GroupProps {
 }
 
 export class Group extends Construct implements IIdentity {
+  public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
   /**
    * The runtime name of this group.

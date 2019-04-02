@@ -26,14 +26,14 @@ export interface IParameter extends cdk.IConstruct {
    *
    * @param grantee the role to be granted read-only access to the parameter.
    */
-  grantRead(grantee: iam.IPrincipal): void;
+  grantRead(grantee: iam.IGrantable): void;
 
   /**
    * Grants write (PutParameter) permissions on the SSM Parameter.
    *
    * @param grantee the role to be granted write access to the parameter.
    */
-  grantWrite(grantee: iam.IPrincipal): void;
+  grantWrite(grantee: iam.IGrantable): void;
 }
 
 /**
@@ -124,14 +124,14 @@ export abstract class ParameterBase extends cdk.Construct implements IParameter 
     });
   }
 
-  public grantRead(grantee: iam.IPrincipal): void {
+  public grantRead(grantee: iam.IGrantable): void {
     grantee.addToPolicy(new iam.PolicyStatement()
       .allow()
       .addActions('ssm:DescribeParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory')
       .addResource(this.parameterArn));
   }
 
-  public grantWrite(grantee: iam.IPrincipal): void {
+  public grantWrite(grantee: iam.IGrantable): void {
     grantee.addToPolicy(new iam.PolicyStatement()
       .allow()
       .addAction('ssm:PutParameter')

@@ -51,7 +51,7 @@ export interface ISecret extends cdk.IConstruct {
    * @param versionStages the version stages the grant is limited to. If not specified, no restriction on the version
    *                      stages is applied.
    */
-  grantRead(principal: iam.IPrincipal, versionStages?: string[]): iam.Grant;
+  grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant;
 
   /**
    * Adds a rotation schedule to the secret.
@@ -118,11 +118,11 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
 
   public abstract export(): SecretImportProps;
 
-  public grantRead(principal: iam.IPrincipal, versionStages?: string[]): iam.Grant {
+  public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
     const result = iam.Grant.onPrincipal({
-      principal,
+      grantee,
       actions: ['secretsmanager:GetSecretValue'],
       resourceArns: [this.secretArn],
       scope: this
@@ -133,10 +133,10 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
       });
     }
 
-    if (this.encryptionKey && principal) {
+    if (this.encryptionKey) {
       // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.grantDecrypt(
-        new kms.ViaServicePrincipal(`secretsmanager.${this.node.stack.region}.amazonaws.com`, principal)
+        new kms.ViaServicePrincipal(`secretsmanager.${this.node.stack.region}.amazonaws.com`, grantee.grantPrincipal)
       );
     }
 

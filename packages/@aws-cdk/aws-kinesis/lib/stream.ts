@@ -32,7 +32,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  grantRead(identity: iam.IPrincipal): iam.Grant;
+  grantRead(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant write permissions for this stream and its contents to an IAM
@@ -41,7 +41,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to ues the key to encrypt the
    * contents of the stream will also be granted.
    */
-  grantWrite(identity: iam.IPrincipal): iam.Grant;
+  grantWrite(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grants read/write permissions for this stream and its contents to an IAM
@@ -50,7 +50,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    */
-  grantReadWrite(identity: iam.IPrincipal): iam.Grant;
+  grantReadWrite(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -117,11 +117,11 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantRead(principal: iam.IPrincipal) {
-    const ret = this.grant(principal, 'kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator');
+  public grantRead(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator');
 
     if (this.encryptionKey) {
-      this.encryptionKey.grantDecrypt(principal);
+      this.encryptionKey.grantDecrypt(grantee);
     }
 
     return ret;
@@ -134,11 +134,11 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantWrite(principal: iam.IPrincipal) {
-    const ret = this.grant(principal, 'kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords');
+  public grantWrite(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords');
 
     if (this.encryptionKey) {
-      this.encryptionKey.grantEncrypt(principal);
+      this.encryptionKey.grantEncrypt(grantee);
     }
 
     return ret;
@@ -151,9 +151,9 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    */
-  public grantReadWrite(principal: iam.IPrincipal) {
+  public grantReadWrite(grantee: iam.IGrantable) {
     const ret = this.grant(
-        principal,
+        grantee,
         'kinesis:DescribeStream',
         'kinesis:GetRecords',
         'kinesis:GetShardIterator',
@@ -161,7 +161,7 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
         'kinesis:PutRecords');
 
     if (this.encryptionKey) {
-      this.encryptionKey.grantEncryptDecrypt(principal);
+      this.encryptionKey.grantEncryptDecrypt(grantee);
     }
 
     return ret;
@@ -227,9 +227,9 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
     return dest.logSubscriptionDestination(sourceLogGroup);
   }
 
-  private grant(principal: iam.IPrincipal, ...actions: string[]) {
+  private grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.onPrincipal({
-      principal,
+      grantee,
       actions,
       resourceArns: [this.streamArn],
       scope: this,

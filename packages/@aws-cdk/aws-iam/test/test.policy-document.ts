@@ -279,6 +279,7 @@ export = {
   'addPrincipal correctly merges array in'(test: Test) {
     const stack = new Stack();
     const arrayPrincipal: IPrincipal = {
+      get grantPrincipal() { return this; },
       assumeRoleAction: 'sts:AssumeRole',
       policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
       addToPolicy() { return false; }

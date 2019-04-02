@@ -101,6 +101,8 @@ export class Role extends Construct implements IRole {
     return new ImportedRole(scope, id, props);
   }
 
+  public readonly grantPrincipal: IPrincipal = this;
+
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   /**
@@ -209,9 +211,9 @@ export class Role extends Construct implements IRole {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  public grant(principal: IPrincipal, ...actions: string[]) {
+  public grant(grantee: IPrincipal, ...actions: string[]) {
     return Grant.onPrincipal({
-      principal,
+      grantee,
       actions,
       resourceArns: [this.roleArn],
       scope: this
@@ -254,12 +256,12 @@ export interface IRole extends IIdentity {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  grant(identity: IPrincipal, ...actions: string[]): Grant;
+  grant(grantee: IPrincipal, ...actions: string[]): Grant;
 
   /**
    * Grant permissions to the given principal to pass this role.
    */
-  grantPassRole(identity: IPrincipal): Grant;
+  grantPassRole(grantee: IPrincipal): Grant;
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalId?: string) {
@@ -308,6 +310,7 @@ export interface RoleImportProps {
  * A role that already exists
  */
 class ImportedRole extends Construct implements IRole {
+  public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
   public readonly policyFragment: PrincipalPolicyFragment;
   public readonly roleArn: string;
@@ -352,9 +355,9 @@ class ImportedRole extends Construct implements IRole {
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  public grant(principal: IPrincipal, ...actions: string[]): Grant {
+  public grant(grantee: IPrincipal, ...actions: string[]): Grant {
     return Grant.onPrincipal({
-      principal,
+      grantee,
       actions,
       resourceArns: [this.roleArn],
       scope: this
