@@ -196,6 +196,47 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   }
 
   /**
+   * Return the given named metric for this Service
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ECS',
+      metricName,
+      dimensions: { ClusterName: this.clusterName, ServiceName: this.serviceName },
+      ...props
+    });
+  }
+
+  /**
+   * Metric for cluster Memory utilization
+   *
+   * @default average over 5 minutes
+   */
+  public metricMemoryUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metric('MemoryUtilization', props );
+  }
+
+  /**
+   * Metric for cluster CPU utilization
+   *
+   * @default average over 5 minutes
+   */
+  public metricCpuUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metric('CPUUtilization', props);
+  }
+
+  /**
+   * Validate this Ec2Service
+   */
+  protected validate(): string[] {
+    const ret = super.validate();
+    if (!this.cluster.hasEc2Capacity) {
+      ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
+    }
+    return ret;
+  }
+
+  /**
    * Enable CloudMap service discovery for the service
    */
   private enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
@@ -255,46 +296,6 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
     return cloudmapService;
   }
 
-  /**
-   * Return the given named metric for this Service
-   */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/ECS',
-      metricName,
-      dimensions: { ClusterName: this.clusterName, ServiceName: this.serviceName },
-      ...props
-    });
-  }
-
-  /**
-   * Metric for cluster Memory utilization
-   *
-   * @default average over 5 minutes
-   */
-  public metricMemoryUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('MemoryUtilization', props );
-  }
-
-  /**
-   * Metric for cluster CPU utilization
-   *
-   * @default average over 5 minutes
-   */
-  public metricCpuUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-    return this.metric('CPUUtilization', props);
-  }
-
-  /**
-   * Validate this Ec2Service
-   */
-  protected validate(): string[] {
-    const ret = super.validate();
-    if (!this.cluster.hasEc2Capacity) {
-      ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
-    }
-    return ret;
-  }
 }
 
 /**

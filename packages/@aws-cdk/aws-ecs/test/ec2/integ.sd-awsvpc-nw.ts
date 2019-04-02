@@ -16,7 +16,7 @@ cluster.addCapacity('DefaultAutoScalingGroup', {
 
 // Add Private DNS Namespace
 const domainName = "scorekeep.com";
-cluster.setDefaultCloudMapNamespace({
+cluster.addDefaultCloudMapNamespace({
   name: domainName,
 });
 

@@ -572,7 +572,7 @@ export = {
       });
       container.addPortMappings({ containerPort: 8000 });
 
-      cluster.setDefaultCloudMapNamespace({ name: 'foo.com' });
+      cluster.addDefaultCloudMapNamespace({ name: 'foo.com' });
 
       // THEN
       test.throws(() => {
@@ -604,7 +604,7 @@ export = {
       container.addPortMappings({ containerPort: 8000 });
 
       // WHEN
-      cluster.setDefaultCloudMapNamespace({
+      cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
@@ -681,7 +681,7 @@ export = {
       container.addPortMappings({ containerPort: 8000 });
 
       // WHEN
-      cluster.setDefaultCloudMapNamespace({
+      cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
@@ -756,7 +756,7 @@ export = {
       });
       container.addPortMappings({ containerPort: 8000 });
 
-      cluster.setDefaultCloudMapNamespace({
+      cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
       });
 
@@ -792,7 +792,7 @@ export = {
       container.addPortMappings({ containerPort: 8000 });
 
       // WHEN
-      cluster.setDefaultCloudMapNamespace({
+      cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
@@ -867,7 +867,7 @@ export = {
       container.addPortMappings({ containerPort: 8000 });
 
       // WHEN
-      cluster.setDefaultCloudMapNamespace({
+      cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
