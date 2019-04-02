@@ -1,6 +1,6 @@
 ## AWS Cloud Development Kit Core Library
 
-This library includes the basic building blocks of 
+This library includes the basic building blocks of
 the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) (AWS CDK).
 
 ## Aspects
@@ -184,4 +184,26 @@ setting for removing tags uses a higher priority than the standard tag.
 const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
 vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { priority: 2 }));
 // ... snip
+```
+
+## Secrets
+
+To help avoid accidental storage of secrets as plain text we use the `SecretValue` type to
+represent secrets.
+
+The best practice is to store secrets in AWS Secrets Manager and reference them using `SecretValue.secretsManager`:
+
+```ts
+const secret = SecretValue.secretsManager('secretId', {
+  jsonField: 'password' // key of a JSON field to retrieve (defaults to all content),
+  versionId: 'id'       // id of the version (default AWSCURRENT)
+  versionStage: 'stage' // version stage name (default AWSCURRENT)
+});
+```
+
+If you understand the implications, you can also create a `SecretValue` and store it as
+plain text in your code:
+
+```ts
+const secret = SecretValue.plainText('bad-practice');
 ```

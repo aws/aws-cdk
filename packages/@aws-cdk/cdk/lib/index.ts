@@ -33,5 +33,5 @@ export * from './context';
 export * from './environment';
 
 export * from './runtime';
-export * from './secret';
+export * from './secret-value';
 export * from './synthesis';

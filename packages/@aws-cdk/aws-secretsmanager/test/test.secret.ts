@@ -3,6 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
+import { Stack, SecretValue } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import secretsmanager = require('../lib');
 
@@ -261,7 +262,7 @@ export = {
     test.done();
   },
 
-  'toSecretString'(test: Test) {
+  'secretValue'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const key = new kms.EncryptionKey(stack, 'KMS');
@@ -271,7 +272,7 @@ export = {
     new cdk.CfnResource(stack, 'FakeResource', {
       type: 'CDK::Phony::Resource',
       properties: {
-        value: secret.stringValue
+        value: secret.secretValue
       }
     });
 
@@ -302,6 +303,8 @@ export = {
     // THEN
     test.equals(secret.secretArn, secretArn);
     test.same(secret.encryptionKey, encryptionKey);
+    test.deepEqual(stack.node.resolve(secret.secretValue), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:::}}');
+    test.deepEqual(stack.node.resolve(secret.secretJsonValue('password')), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:password::}}');
     test.done();
   },
 
@@ -388,6 +391,19 @@ export = {
       }
     }), /`secretStringTemplate`.+`generateStringKey`/);
 
+    test.done();
+  },
+
+  'equivalence of SecretValue and Secret.import'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const imported = secretsmanager.Secret.import(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretJsonValue('password');
+    const value = SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
+
+    // THEN
+    test.deepEqual(stack.node.resolve(imported), stack.node.resolve(value));
     test.done();
   }
 };

@@ -7,13 +7,10 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const ref = new DynamicReference(stack, 'Ref', {
-      service: DynamicReferenceService.Ssm,
-      referenceKey: 'a:b:c',
-    });
+    const ref = new DynamicReference(DynamicReferenceService.Ssm, 'a:b:c');
 
     // THEN
-    test.equal(stack.node.resolve(ref.stringValue), '{{resolve:ssm:a:b:c}}');
+    test.equal(stack.node.resolve(ref), '{{resolve:ssm:a:b:c}}');
 
     test.done();
   },
