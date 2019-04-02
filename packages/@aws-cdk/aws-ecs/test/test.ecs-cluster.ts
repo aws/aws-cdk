@@ -244,4 +244,29 @@ export = {
 
     test.done();
   },
+
+  "throws if default service discovery namespace added more than once"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+    });
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      name: "foo.com"
+    });
+
+    // THEN
+    test.throws(() => {
+      cluster.addDefaultCloudMapNamespace({
+        name: "foo.com"
+      });
+    }, /Can only add default namespace once./);
+
+    test.done();
+  },
 };

@@ -87,9 +87,9 @@ export class Cluster extends cdk.Construct implements ICluster {
 
     const namespaceType = options.type !== undefined
       ? options.type
-      : cloudmap.NamespaceType.DnsPrivate;
+      : NamespaceType.PrivateDns;
 
-    const sdNamespace = namespaceType === cloudmap.NamespaceType.DnsPrivate ?
+    const sdNamespace = namespaceType === NamespaceType.PrivateDns ?
       new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
         name: options.name,
         vpc: this.vpc
@@ -446,7 +446,7 @@ export interface NamespaceOptions {
    *
    * @default PrivateDns
    */
-  readonly type?: cloudmap.NamespaceType.DnsPrivate | cloudmap.NamespaceType.DnsPublic;
+  readonly type?: NamespaceType
 
   /**
    * The Amazon VPC that you want to associate the namespace with. Required for Private DNS namespaces
@@ -454,4 +454,9 @@ export interface NamespaceOptions {
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
   readonly vpc?: ec2.IVpcNetwork;
+}
+
+export enum NamespaceType {
+  PrivateDns = cloudmap.NamespaceType.DnsPrivate,
+  PublicDns = cloudmap.NamespaceType.DnsPublic
 }
