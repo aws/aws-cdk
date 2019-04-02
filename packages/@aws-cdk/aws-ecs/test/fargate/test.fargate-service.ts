@@ -278,7 +278,7 @@ export = {
       const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
 
       // WHEN
-      cluster.addNamespace({
+      cluster.setDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
@@ -335,7 +335,7 @@ export = {
       const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
 
       // WHEN
-      cluster.addNamespace({
+      cluster.setDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });

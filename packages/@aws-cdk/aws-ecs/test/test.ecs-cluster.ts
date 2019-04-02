@@ -230,7 +230,7 @@ export = {
     });
 
     // WHEN
-    cluster.addNamespace({
+    cluster.setDefaultCloudMapNamespace({
       name: "foo.com"
     });
 
