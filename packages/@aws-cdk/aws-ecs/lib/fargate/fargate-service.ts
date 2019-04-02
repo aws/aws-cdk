@@ -73,7 +73,7 @@ export class FargateService extends BaseService {
   }
 
   public enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
-    const sdNamespace = this.cluster.serviceDiscoveryNamespace();
+    const sdNamespace = this.cluster.defaultNamespace();
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
     }

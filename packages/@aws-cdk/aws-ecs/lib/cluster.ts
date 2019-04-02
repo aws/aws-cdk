@@ -58,7 +58,7 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * The service discovery namespace created in this cluster
    */
-  private _serviceDiscoveryNamespace?: cloudmap.INamespace;
+  private _defaultNamespace?: cloudmap.INamespace;
 
   /**
    * Whether the cluster has EC2 capacity associated with it
@@ -79,10 +79,8 @@ export class Cluster extends cdk.Construct implements ICluster {
    * Add an AWS Cloud Map Private DNS namespace for this cluster.
    * NOTE: HttpNamespaces are not supported, as ECS always requires a DNSConfig when registering an instance to a Cloud
    * Map service.
-   *
-   * FIXME Support adding public dns namespace as import?
    */
-  public addNamespace(options: NamespaceOptions): cloudmap.INamespace {
+  public setDefaultCloudMapNamespace(options: NamespaceOptions): cloudmap.INamespace {
 
     const namespaceType = options.type !== undefined
       ? options.type
@@ -97,7 +95,7 @@ export class Cluster extends cdk.Construct implements ICluster {
         name: options.name,
       });
 
-    this._serviceDiscoveryNamespace = sdNamespace;
+    this._defaultNamespace = sdNamespace;
 
     return sdNamespace;
   }
@@ -105,8 +103,8 @@ export class Cluster extends cdk.Construct implements ICluster {
   /**
    * Getter for namespace added to cluster
    */
-  public serviceDiscoveryNamespace(): cloudmap.INamespace | undefined {
-    return this._serviceDiscoveryNamespace;
+  public defaultNamespace(): cloudmap.INamespace | undefined {
+    return this._defaultNamespace;
   }
 
   /**
@@ -295,7 +293,7 @@ export interface ICluster extends cdk.IConstruct {
   /**
    * Getter for Cloudmap namespace created in the cluster
    */
-  serviceDiscoveryNamespace(): cloudmap.INamespace | undefined;
+  defaultNamespace(): cloudmap.INamespace | undefined;
 
   /**
    * Export the Cluster
@@ -369,7 +367,7 @@ class ImportedCluster extends cdk.Construct implements ICluster {
   /**
    * Cloudmap namespace created in the cluster
    */
-  private _serviceDiscoveryNamespace: cloudmap.INamespace;
+  private _defaultNamespace: cloudmap.INamespace;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: ClusterImportProps) {
     super(scope, id);
@@ -390,8 +388,8 @@ class ImportedCluster extends cdk.Construct implements ICluster {
     }
   }
 
-  public serviceDiscoveryNamespace(): cloudmap.INamespace | undefined {
-    return this._serviceDiscoveryNamespace;
+  public defaultNamespace(): cloudmap.INamespace | undefined {
+    return this._defaultNamespace;
   }
 
   public export() {

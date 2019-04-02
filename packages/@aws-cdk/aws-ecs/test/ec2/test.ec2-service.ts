@@ -571,7 +571,7 @@ export = {
       container.addPortMappings({ containerPort: 8000 });
       const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
 
-      cluster.addNamespace({ name: 'foo.com' });
+      cluster.setDefaultCloudMapNamespace({ name: 'foo.com' });
 
       // THEN
       test.throws(() => {
@@ -601,7 +601,7 @@ export = {
       const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
 
       // WHEN
-      cluster.addNamespace({
+      cluster.setDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
@@ -675,7 +675,7 @@ export = {
       const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
 
       // WHEN
-      cluster.addNamespace({
+      cluster.setDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
@@ -748,7 +748,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
 
-      cluster.addNamespace({
+      cluster.setDefaultCloudMapNamespace({
         name: 'foo.com',
       });
 
@@ -782,7 +782,7 @@ export = {
       const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
 
       // WHEN
-      cluster.addNamespace({
+      cluster.setDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
@@ -854,7 +854,7 @@ export = {
       const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
 
       // WHEN
-      cluster.addNamespace({
+      cluster.setDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });

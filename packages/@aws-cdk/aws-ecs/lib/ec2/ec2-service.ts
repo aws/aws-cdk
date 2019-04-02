@@ -195,7 +195,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    * Enable CloudMap service discovery for the service
    */
   public enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
-    const sdNamespace = this.cluster.serviceDiscoveryNamespace();
+    const sdNamespace = this.cluster.defaultNamespace();
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
     }
