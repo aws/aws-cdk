@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
-import { Stack, SecretValue } from '@aws-cdk/cdk';
+import { SecretValue, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import secretsmanager = require('../lib');
 
