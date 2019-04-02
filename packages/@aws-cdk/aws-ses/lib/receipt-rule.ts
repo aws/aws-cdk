@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
-import { IReceiptRuleAction, LambdaInvocationType, ReceiptRuleActionProps, ReceiptRuleLambdaAction } from './receipt-rule-action';
+import { IReceiptRuleAction, LambdaInvocationType, ReceiptRuleLambdaAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
 
@@ -110,7 +110,7 @@ export class ReceiptRule extends cdk.Construct implements IReceiptRule {
   }
 
   public readonly name: string;
-  private readonly renderedActions = new Array<ReceiptRuleActionProps>();
+  private readonly renderedActions = new Array<CfnReceiptRule.ActionProperty>();
 
   constructor(scope: cdk.Construct, id: string, props: ReceiptRuleProps) {
     super(scope, id);
@@ -139,8 +139,7 @@ export class ReceiptRule extends cdk.Construct implements IReceiptRule {
    * Adds an action to this receipt rule.
    */
   public addAction(action: IReceiptRuleAction) {
-    const renderedAction = action.render();
-
+    const renderedAction = action._render();
     this.renderedActions.push(renderedAction);
   }
 

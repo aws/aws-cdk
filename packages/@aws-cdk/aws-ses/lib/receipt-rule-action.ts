@@ -7,57 +7,14 @@ import cdk = require('@aws-cdk/cdk');
 import { CfnReceiptRule } from './ses.generated';
 
 /**
- * Properties for a receipt rule action.
- */
-export interface ReceiptRuleActionProps {
-  /**
-   * Adds a header to the received email.
-   */
-  readonly addHeaderAction?: CfnReceiptRule.AddHeaderActionProperty
-
-  /**
-   * Rejects the received email by returning a bounce response to the sender and,
-   * optionally, publishes a notification to Amazon SNS.
-   */
-  readonly bounceAction?: CfnReceiptRule.BounceActionProperty;
-
-  /**
-   * Calls an AWS Lambda function, and optionally, publishes a notification to
-   * Amazon SNS.
-   */
-  readonly lambdaAction?: CfnReceiptRule.LambdaActionProperty;
-
-  /**
-   * Saves the received message to an Amazon S3 bucket and, optionally, publishes
-   * a notification to Amazon SNS.
-   */
-  readonly s3Action?: CfnReceiptRule.S3ActionProperty;
-
-  /**
-   * Publishes the email content within a notification to Amazon SNS.
-   */
-  readonly snsAction?: CfnReceiptRule.SNSActionProperty;
-
-  /**
-   * Terminates the evaluation of the receipt rule set and optionally publishes a
-   * notification to Amazon SNS.
-   */
-  readonly stopAction?: CfnReceiptRule.StopActionProperty;
-
-  /**
-   * Calls Amazon WorkMail and, optionally, publishes a notification to Amazon SNS.
-   */
-  readonly workmailAction?: CfnReceiptRule.WorkmailActionProperty;
-}
-
-/**
  * An abstract action for a receipt rule.
  */
 export interface IReceiptRuleAction {
   /**
    * Renders the action specification
+   * @internal
    */
-  render(): ReceiptRuleActionProps;
+  _render(): CfnReceiptRule.ActionProperty;
 }
 
 /**
@@ -100,7 +57,10 @@ export class ReceiptRuleAddHeaderAction implements IReceiptRuleAction {
     this.value = props.value;
   }
 
-  public render(): ReceiptRuleActionProps {
+  /**
+   * @internal
+   */
+  public _render() {
     return {
       addHeaderAction: {
         headerName: this.name,
@@ -210,7 +170,10 @@ export class ReceiptRuleBounceAction implements IReceiptRuleAction {
   constructor(private readonly props: ReceiptRuleBounceActionProps) {
   }
 
-  public render(): ReceiptRuleActionProps {
+  /**
+   * @internal
+   */
+  public _render() {
     return {
       bounceAction: {
         sender: this.props.sender,
@@ -272,7 +235,10 @@ export class ReceiptRuleLambdaAction implements IReceiptRuleAction {
   constructor(private readonly props: ReceiptRuleLambdaActionProps) {
   }
 
-  public render(): ReceiptRuleActionProps {
+  /**
+   * @internal
+   */
+  public _render() {
     // Allow SES to invoke Lambda function
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-lambda
     const permissionId = 'AllowSes';
@@ -334,7 +300,10 @@ export class ReceiptRuleS3Action implements IReceiptRuleAction {
   constructor(private readonly props: ReceiptRuleS3ActionProps) {
   }
 
-  public render(): ReceiptRuleActionProps {
+  /**
+   * @internal
+   */
+  public _render(): CfnReceiptRule.ActionProperty {
     // Allow SES to write to S3 bucket
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-s3
     const keyPattern = this.props.objectKeyPrefix || '';
@@ -370,7 +339,7 @@ export class ReceiptRuleS3Action implements IReceiptRuleAction {
     }
 
     return {
-      s3Action: {
+      s3action: {
         bucketName: this.props.bucket.bucketName,
         kmsKeyArn: this.props.kmsKey ? this.props.kmsKey.keyArn : undefined,
         objectKeyPrefix: this.props.objectKeyPrefix,
@@ -419,7 +388,10 @@ export class ReceiptRuleSnsAction implements IReceiptRuleAction {
   constructor(private readonly props: ReceiptRuleSnsActionProps) {
   }
 
-  public render(): ReceiptRuleActionProps {
+  /**
+   * @internal
+   */
+  public _render() {
     return {
       snsAction: {
         encoding: this.props.encoding,
@@ -447,7 +419,10 @@ export class ReceiptRuleStopAction implements IReceiptRuleAction {
   constructor(private readonly props?: ReceiptRuleStopActionProps) {
   }
 
-  public render(): ReceiptRuleActionProps {
+  /**
+   * @internal
+   */
+  public _render() {
     return {
       stopAction: {
         scope: 'RuleSet',
