@@ -307,10 +307,7 @@ export = {
                       "Resource": "*"
                     },
                     {
-                      "Action": [
-                        "kms:Decrypt",
-                        "kms:DescribeKey"
-                      ],
+                      "Action": "kms:Decrypt",
                       "Effect": "Allow",
                       "Principal": {
                         "AWS": {
@@ -367,7 +364,7 @@ export = {
                       }
                     },
                     {
-                      "Action": ["kms:Decrypt", "kms:DescribeKey"],
+                      "Action": "kms:Decrypt",
                       "Effect": "Allow",
                       "Resource": {
                         "Fn::GetAtt": [
@@ -592,7 +589,6 @@ export = {
                     {
                       "Action": [
                         "kms:Decrypt",
-                        "kms:DescribeKey",
                         "kms:Encrypt",
                         "kms:ReEncrypt*",
                         "kms:GenerateDataKey*"
@@ -657,7 +653,6 @@ export = {
                     {
                       "Action": [
                         "kms:Decrypt",
-                        "kms:DescribeKey",
                         "kms:Encrypt",
                         "kms:ReEncrypt*",
                         "kms:GenerateDataKey*"
@@ -1054,7 +1049,7 @@ export = {
                     }
                   },
                   {
-                    "Action": ["kms:Decrypt", "kms:DescribeKey"],
+                    "Action": "kms:Decrypt",
                     "Effect": "Allow",
                     "Resource": {
                       "Fn::ImportValue": "Stack:MyStreamKeyKeyArn967BCB03"

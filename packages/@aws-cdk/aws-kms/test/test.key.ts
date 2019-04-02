@@ -344,7 +344,7 @@ export = {
           },
           // This is the interesting one
           {
-            Action: [ "kms:Decrypt", "kms:DescribeKey" ],
+            Action: "kms:Decrypt",
             Effect: "Allow",
             Principal: { AWS: { "Fn::GetAtt": [ "User00B015A1", "Arn" ] } },
             Resource: "*"
@@ -358,7 +358,7 @@ export = {
       PolicyDocument: {
         Statement: [
           {
-            Action: [ "kms:Decrypt", "kms:DescribeKey" ],
+            Action: "kms:Decrypt",
             Effect: "Allow",
             Resource: { "Fn::GetAtt": [ "Key961B73FD", "Arn" ] }
           }
