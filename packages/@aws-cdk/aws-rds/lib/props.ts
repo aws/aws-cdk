@@ -83,8 +83,3 @@ export interface Login {
    */
   readonly kmsKey?: kms.IEncryptionKey;
 }
-
-/**
- * Type for database parameters
- */
-export type Parameters = {[key: string]: any};

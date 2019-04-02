@@ -170,24 +170,6 @@ export = {
     test.done();
   },
 
-  'import/export cluster parameter group'(test: Test) {
-    // GIVEN
-    const stack = testStack();
-    const group = new ClusterParameterGroup(stack, 'Params', {
-      family: 'hello',
-      description: 'desc'
-    });
-
-    // WHEN
-    const exported = group.export();
-    const imported = ClusterParameterGroup.import(stack, 'ImportParams', exported);
-
-    // THEN
-    test.deepEqual(stack.node.resolve(exported), { parameterGroupName: { 'Fn::ImportValue': 'Stack:ParamsParameterGroupNameA6B808D7' } });
-    test.deepEqual(stack.node.resolve(imported.parameterGroupName), { 'Fn::ImportValue': 'Stack:ParamsParameterGroupNameA6B808D7' });
-    test.done();
-  },
-
   'creates a secret when master credentials are not specified'(test: Test) {
     // GIVEN
     const stack = testStack();

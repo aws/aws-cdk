@@ -2,9 +2,9 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
-import { IClusterParameterGroup } from './cluster-parameter-group';
 import { DatabaseClusterImportProps, Endpoint, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
+import { IParameterGroup } from './parameter-group';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 import { DatabaseEngine, RotationSingleUser, RotationSingleUserOptions } from './rotation-single-user';
@@ -101,7 +101,7 @@ export interface DatabaseClusterProps {
    *
    * @default No parameter group
    */
-  readonly parameterGroup?: IClusterParameterGroup;
+  readonly parameterGroup?: IParameterGroup;
 
   /**
    * The CloudFormation policy to apply when the cluster and its instances
