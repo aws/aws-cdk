@@ -2,9 +2,11 @@ import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
+import { Construct } from '@aws-cdk/cdk';
+import { CodeBuildBuildAction } from '../codebuild/pipeline-actions';
 // import { DeploymentPipeline } from './application-pipeline';
 
-export interface DeployActionProps {
+export interface CdkDeployActionProps {
   /**
    * Names of all the stacks to deploy.
    * @default - deploys all stacks in the assembly that are not marked "autoDeploy: false"
@@ -16,6 +18,11 @@ export interface DeployActionProps {
    * @default false deploys all stacks and their dependencies in topological order.
    */
   readonly exclusively?: boolean;
+
+  /**
+   * Runtime environment for your CDK app.
+   */
+  readonly environment?: codebuild.BuildEnvironment;
 
   /**
    * Grant administrator permissions to the deployment action. This is likely to
@@ -45,66 +52,22 @@ export interface DeployActionProps {
  * This action can only be added to an `ApplicationPipeline` which is bound to a
  * bootstrap pipeline source.
  */
-export class DeployStackAction extends codepipeline.Action {
-  private readonly stacks: string;
-  private _buildAction?: cpactions.CodeBuildBuildAction;
-  private _project?: codebuild.Project;
-  private readonly admin: boolean;
-  private readonly toolchainVersion: string;
-  private readonly assembly: codepipeline.Artifact;
-  private readonly exclusively: boolean;
+export class CdkDeployAction extends CodeBuildBuildAction {
+  private readonly project: codebuild.Project;
 
-  constructor(props: DeployActionProps) {
+  constructor(scope: Construct, id: string, props: CdkDeployActionProps) {
+    const child = new Construct(scope, id);
     const stacks = props.stacks ? props.stacks.join(' ') : '';
+    const toolchainVersion = props.version || 'latest';
+    const exclusively = props.exclusively ? '--exclusively' : '';
+    const actionName = (props.stacks || [ 'all' ]).join('-');
 
-    super({
-      category: codepipeline.ActionCategory.Build,
-      provider: 'CodeBuild',
-      artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 },
-      actionName: (props.stacks || [ 'all' ]).join('-'),
-    });
+    const environment = props.environment || {
+      buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
+    };
 
-    this.stacks = stacks;
-    this.admin = props.admin;
-    this.toolchainVersion = props.version || 'latest';
-    this.assembly = props.assembly;
-    this.exclusively = props.exclusively === undefined ? false : true;
-
-    Object.defineProperty(this, 'configuration', {
-      get: () => this.buildAction.configuration
-    });
-  }
-
-  // public get configuration(): any | undefined {
-  //   return this.buildAction.configuration;
-  // }
-  //
-  // public set configuration(_: any) {
-  //   return;
-  // }
-
-  private get buildAction() {
-    if (!this._buildAction) {
-      throw new Error(`Action not bound to pipeline`);
-    }
-
-    return this._buildAction;
-  }
-
-  public get project() {
-    if (!this._project) {
-      throw new Error(`Action not bound to pipeline`);
-    }
-
-    return this._project;
-  }
-
-  public bind(info: codepipeline.ActionBind) {
-    const exclusively = this.exclusively ? '--exclusively' : '';
-    const project = new codebuild.PipelineProject(info.scope, `DeployStackProject`, {
-      environment: {
-        buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
-      },
+    const project = new codebuild.PipelineProject(child, `DeployStackProject`, {
+      environment,
       buildSpec: {
         version: '0.2',
         phases: {
@@ -115,26 +78,22 @@ export class DeployStackAction extends codepipeline.Action {
           },
           build: {
             commands: [
-              `npx --package aws-cdk@${this.toolchainVersion} -- cdk deploy ${exclusively} --require-approval=never ${this.stacks}`
+              `npx --package aws-cdk@${toolchainVersion} -- cdk deploy ${exclusively} --require-approval=never ${stacks}`
             ]
           }
         }
       }
     });
 
-    this.addInputArtifact(this.assembly);
-
-    this._project = project;
-
-    this._buildAction = new cpactions.CodeBuildBuildAction({
-      actionName: this.actionName,
-      inputArtifact: this.assembly,
+    super({
+      actionName,
       project,
+      inputArtifact: props.assembly,
     });
 
-    (this._buildAction as any).bind(info);
+    this.project = project;
 
-    if (this.admin) {
+    if (props.admin) {
       this.addToRolePolicy(new iam.PolicyStatement()
         .addAllResources()
         .addAction('*'));

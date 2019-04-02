@@ -96,14 +96,14 @@ class MyAppPipeline extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
-    new DeploymentPipeline(this, 'Pipeline', {
+    new codepipelinePipeline(this, 'Pipeline', {
       bootstrap: 'cdk-workshop',
       stages: [
         {
           name: 'Deploy',
           actions: [
-            new DeployStackAction({ stack: new WorkshopStack(app, 'workshop-stack'), admin: true }),
-            new DeployStackAction({ stack: new RandomStack(app, 'random-stack'), admin: true })
+            new CdkDeployAction({ stacks: [ new WorkshopStack(app, 'workshop-stack').name ], admin: true }),
+            new CdkDeployAction({ stack: [ new RandomStack(app, 'random-stack').name ], admin: true })
           ]
         }
       ]

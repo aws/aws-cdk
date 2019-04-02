@@ -552,3 +552,11 @@ lambdaAction.outputArtifact('Out2'); // returns the named output Artifact, or th
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
 on how to write a Lambda function invoked from CodePipeline.
+
+#### AWS CDK
+
+TODO
+
+ * [ ] `CdkBuildAction`
+ * [ ] `CdkDeployAction`
+ * [ ] `CdkSourceAction`

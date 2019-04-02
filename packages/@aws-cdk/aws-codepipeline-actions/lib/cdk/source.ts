@@ -1,35 +1,44 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Fn } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, Fn } from '@aws-cdk/cdk';
+import { S3SourceAction } from '../s3/source-action';
 
-export interface SourceActionProps {
+export interface CdkSourceActionProps {
   /**
-   * The name of the bootstrap pipeline to monitor as defined in
-   * `cdk.pipelines.yaml`.
+   * The name of the bootstrap pipeline to read sources from.
    */
-  readonly bootstrap: string;
+  readonly bootstrapId: string;
 }
+
+const BUCKET_EXPORT = 'bucketName';
+const OBJECT_KEY_EXPORT = 'objectKey';
 
 /**
  * An AWS CodePipeline source action that is monitors the output of a boostrap pipeline
  * and triggers the pipeline when a new cloud assembly is available for deployment.
  */
-export class SourceAction extends cpactions.S3SourceAction {
-  constructor(scope: Construct, id: string, props: SourceActionProps) {
-    const exportPrefix = `cdk-pipeline:${props.bootstrap}`;
+export class CdkSourceAction extends S3SourceAction {
+  public static exportArtifacts(scope: Construct, attributes: BootstrapArtifact) {
+    const child = new Construct(scope, `BootstrapArtifacts:${attributes.boostrapId}`);
 
-    const attributes: BootstrapPipelineAttributes = {
-      bucketName: Fn.importValue(`${exportPrefix}-bucket`),
-      objectKey: Fn.importValue(`${exportPrefix}-object-key`),
-      toolchainVersion: Fn.importValue(`${exportPrefix}-toolchain-version`),
-    };
+    new CfnOutput(child, 'PublishBucketName', {
+      value: attributes.bucketName,
+      export: bootstrapExportName(attributes.boostrapId, BUCKET_EXPORT)
+    });
 
-    const bucket = s3.Bucket.import(scope, `${id}/Bucket`, { bucketName: attributes.bucketName });
+    new CfnOutput(child, 'PublishObjectKey', {
+      value: attributes.objectKey,
+      export: bootstrapExportName(attributes.boostrapId, OBJECT_KEY_EXPORT)
+    });
+  }
+
+  constructor(scope: Construct, id: string, props: CdkSourceActionProps) {
+    const { bucketName, objectKey } = importBootstrapArtifacts(props.bootstrapId);
     super({
       actionName: 'Pull',
-      bucket,
-      bucketKey: attributes.objectKey,
+      bucket: s3.Bucket.import(scope, `${id}/Bucket`, { bucketName }),
+      bucketKey: objectKey,
       outputArtifactName: 'CloudAssembly'
     });
   }
@@ -39,23 +48,19 @@ export class SourceAction extends cpactions.S3SourceAction {
   }
 }
 
-/**
- * Attributes of the bootstrap pipeline.
- */
-interface BootstrapPipelineAttributes {
-  /**
-   * The bucket name into which the the bootstrap pipeline artifacts are
-   * published.
-   */
+export interface BootstrapArtifact {
+  readonly boostrapId: string;
   readonly bucketName: string;
-
-  /**
-   * The S3 object key for pipeline artifacts.
-   */
   readonly objectKey: string;
+}
 
-  /**
-   * The semantic version specification of the CDK CLI to use.
-   */
-  readonly toolchainVersion: string;
+function bootstrapExportName(bootstrapId: string, key: string) {
+  return `cdk-pipeline:${bootstrapId}:${key}`;
+}
+
+function importBootstrapArtifacts(bootstrapId: string) {
+  return {
+    bucketName: Fn.importValue(bootstrapExportName(bootstrapId, BUCKET_EXPORT)),
+    objectKey: Fn.importValue(bootstrapExportName(bootstrapId, OBJECT_KEY_EXPORT))
+  };
 }

@@ -2,8 +2,9 @@ import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import { Construct } from '@aws-cdk/cdk';
+import { CodeBuildBuildAction } from '../codebuild/pipeline-actions';
 
-export interface BuildActionProps {
+export interface CdkBuildActionProps {
   /**
    * Working directory to run build command.
    * @default - root directory of your repository
@@ -12,6 +13,7 @@ export interface BuildActionProps {
 
   /**
    * CodeBuild environment to use.
+   * @default - Node.js 10.1.0
    */
   readonly environment?: codebuild.BuildEnvironment;
 
@@ -37,11 +39,12 @@ export interface BuildActionProps {
   readonly sourceArtifact: codepipeline.Artifact;
 }
 
-export class BuildAction extends Construct {
-  public readonly action: cpactions.CodeBuildBuildAction;
-
-  constructor(scope: Construct, id: string, props: BuildActionProps) {
-    super(scope, id);
+/**
+ * A CodePipeline build action for building your CDK app.
+ */
+export class CdkBuildAction extends CodeBuildBuildAction {
+  constructor(scope: Construct, id: string, props: CdkBuildActionProps) {
+    const parent = new Construct(scope, id);
 
     const workdir = props.workdir || '.';
     const install = props.install || 'npx npm@latest ci';
@@ -72,15 +75,19 @@ export class BuildAction extends Construct {
       }
     };
 
-    const buildProject = new codebuild.PipelineProject(this, 'BuildDeploy', {
+    const buildProject = new codebuild.PipelineProject(parent, 'BuildDeploy', {
       environment,
       buildSpec
     });
 
-    this.action = new cpactions.CodeBuildBuildAction({
+    super({
       inputArtifact: props.sourceArtifact,
       project: buildProject,
       actionName: 'Build',
     });
+  }
+
+  public get assembly() {
+    return this.outputArtifact;
   }
 }
