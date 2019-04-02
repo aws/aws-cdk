@@ -132,6 +132,11 @@ export abstract class BaseService extends cdk.Construct
     this.serviceName = this.resource.serviceName;
     this.clusterName = clusterName;
     this.cluster = props.cluster;
+
+    if (props.serviceDiscoveryOptions) {
+      this.enableServiceDiscovery(props.serviceDiscoveryOptions);
+    }
+
   }
 
   /**
@@ -177,14 +182,6 @@ export abstract class BaseService extends cdk.Construct
       role: this.makeAutoScalingRole(),
       ...props
     });
-  }
-
-  /**
-   * Associate Service Discovery (Cloud Map) service
-   */
-  public addServiceRegistry(registry: ServiceRegistry) {
-    const sr = this.renderServiceRegistry(registry);
-    this.serviceRegistries.push(sr);
   }
 
   /**
@@ -263,6 +260,74 @@ export abstract class BaseService extends cdk.Construct
         resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',
       })
     });
+  }
+
+  /**
+   * Associate Service Discovery (Cloud Map) service
+   */
+  private addServiceRegistry(registry: ServiceRegistry) {
+    const sr = this.renderServiceRegistry(registry);
+    this.serviceRegistries.push(sr);
+  }
+
+  /**
+   * Enable CloudMap service discovery for the service
+   */
+  private enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
+    const sdNamespace = this.cluster.defaultNamespace();
+    if (sdNamespace === undefined) {
+      throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
+    }
+
+    // Determine DNS type based on network mode
+    const networkMode = this.taskDefinition.networkMode;
+    if (networkMode === NetworkMode.None) {
+      throw new Error("Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
+    }
+
+    // Bridge or host network mode requires SRV records
+    let dnsRecordType = options.dnsRecordType;
+
+    if (networkMode === NetworkMode.Bridge || networkMode === NetworkMode.Host) {
+      if (dnsRecordType ===  undefined) {
+        dnsRecordType = cloudmap.DnsRecordType.SRV;
+      }
+      if (dnsRecordType !== cloudmap.DnsRecordType.SRV) {
+        throw new Error("SRV records must be used when network mode is Bridge or Host.");
+      }
+    }
+
+    // Default DNS record type for AwsVpc network mode is A Records
+    if (networkMode === NetworkMode.AwsVpc) {
+      if (dnsRecordType ===  undefined) {
+        dnsRecordType = cloudmap.DnsRecordType.A;
+      }
+    }
+
+    // If the task definition that your service task specifies uses the AWSVPC network mode and a type SRV DNS record is
+    // used, you must specify a containerName and containerPort combination
+    const containerName = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.node.id : undefined;
+    const containerPort = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.containerPort : undefined;
+
+    const cloudmapService = new cloudmap.Service(this, 'CloudmapService', {
+      namespace: sdNamespace,
+      name: options.name,
+      dnsRecordType: dnsRecordType!,
+      customHealthCheck: { failureThreshold: options.failureThreshold || 1 }
+    });
+
+    const serviceArn = cloudmapService.serviceArn;
+
+    // add Cloudmap service to the ECS Service's serviceRegistry
+    this.addServiceRegistry({
+      arn: serviceArn,
+      containerName,
+      containerPort
+    });
+
+    this.cloudmapService = cloudmapService;
+
+    return cloudmapService;
   }
 }
 
