@@ -36,13 +36,12 @@ frontend.addPortMappings({
   protocol: ecs.Protocol.Tcp
 });
 
-const frontendService = new ecs.Ec2Service(stack, "FrontendService", {
+new ecs.Ec2Service(stack, "FrontendService", {
   cluster,
   taskDefinition: frontendTD,
-});
-
-frontendService.enableServiceDiscovery({
-  name: "frontend",
+  serviceDiscoveryOptions: {
+    name: "frontend"
+  }
 });
 
 app.run();

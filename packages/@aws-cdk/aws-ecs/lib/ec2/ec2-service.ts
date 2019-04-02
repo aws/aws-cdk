@@ -106,6 +106,10 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       this.constraints.push({ type: 'distinctInstance' });
     }
 
+    if (props.serviceDiscoveryOptions) {
+      this.enableServiceDiscovery(props.serviceDiscoveryOptions);
+    }
+
     if (!this.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
@@ -194,7 +198,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   /**
    * Enable CloudMap service discovery for the service
    */
-  public enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
+  private enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
     const sdNamespace = this.cluster.defaultNamespace();
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");

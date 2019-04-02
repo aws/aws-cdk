@@ -543,12 +543,14 @@ export = {
       });
       container.addPortMappings({ containerPort: 8000 });
 
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
-
       // THEN
       test.throws(() => {
-        service.enableServiceDiscovery({
-          name: 'myApp',
+        new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          serviceDiscoveryOptions: {
+            name: 'myApp',
+          }
         });
       }, /Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
 
@@ -569,14 +571,17 @@ export = {
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
 
       cluster.setDefaultCloudMapNamespace({ name: 'foo.com' });
 
       // THEN
       test.throws(() => {
-        service.enableServiceDiscovery({
-          name: 'myApp',
+        new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          serviceDiscoveryOptions: {
+            name: 'myApp',
+          }
         });
       }, /Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
 
@@ -598,16 +603,18 @@ export = {
       });
       container.addPortMappings({ containerPort: 8000 });
 
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
-
       // WHEN
       cluster.setDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
 
-      service.enableServiceDiscovery({
-        name: 'myApp',
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp',
+        }
       });
 
       // THEN
@@ -672,7 +679,6 @@ export = {
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
 
       // WHEN
       cluster.setDefaultCloudMapNamespace({
@@ -680,8 +686,12 @@ export = {
         type: cloudmap.NamespaceType.DnsPrivate
       });
 
-      service.enableServiceDiscovery({
-        name: 'myApp',
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp',
+        }
       });
 
       // THEN
@@ -746,17 +756,19 @@ export = {
       });
       container.addPortMappings({ containerPort: 8000 });
 
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
-
       cluster.setDefaultCloudMapNamespace({
         name: 'foo.com',
       });
 
       // THEN
       test.throws(() => {
-        service.enableServiceDiscovery({
-          name: 'myApp',
-          dnsRecordType: cloudmap.DnsRecordType.A
+        new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          serviceDiscoveryOptions: {
+            name: 'myApp',
+            dnsRecordType: cloudmap.DnsRecordType.A
+          }
         });
       }, /SRV records must be used when network mode is Bridge or Host./);
 
@@ -779,16 +791,18 @@ export = {
       });
       container.addPortMappings({ containerPort: 8000 });
 
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
-
       // WHEN
       cluster.setDefaultCloudMapNamespace({
         name: 'foo.com',
         type: cloudmap.NamespaceType.DnsPrivate
       });
 
-      service.enableServiceDiscovery({
-        name: 'myApp',
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp',
+        }
       });
 
       // THEN
@@ -851,7 +865,6 @@ export = {
         memoryLimitMiB: 512
       });
       container.addPortMappings({ containerPort: 8000 });
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
 
       // WHEN
       cluster.setDefaultCloudMapNamespace({
@@ -859,9 +872,13 @@ export = {
         type: cloudmap.NamespaceType.DnsPrivate
       });
 
-      service.enableServiceDiscovery({
-        name: 'myApp',
-        dnsRecordType: cloudmap.DnsRecordType.SRV
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp',
+          dnsRecordType: cloudmap.DnsRecordType.SRV
+        }
       });
 
       // THEN
