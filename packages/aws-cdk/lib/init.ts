@@ -231,6 +231,8 @@ async function postInstall(language: string, canUseNetwork: boolean) {
     return await postInstallTypescript(canUseNetwork);
   case 'java':
     return await postInstallJava(canUseNetwork);
+  case 'python':
+    return await postInstallPython(canUseNetwork);
   }
 }
 
@@ -258,6 +260,20 @@ async function postInstallJava(canUseNetwork: boolean) {
 
   print(`Executing ${colors.green('mvn package')}...`);
   await execute('mvn', 'package');
+}
+
+async function postInstallPython(canUseNetwork: boolean) {
+  if (!canUseNetwork) {
+    print(`Please run ${colors.green('python -m venv .env')}!`);
+    return;
+  }
+
+  print(`Executing ${colors.green('python -m venv .env')}`);
+  try {
+    await execute('python3', '-m venv', '.env');
+  } catch (e) {
+    throw new Error(`${colors.green('python3 -m venv .env')} failed: ` + e.message);
+  }
 }
 
 /**
