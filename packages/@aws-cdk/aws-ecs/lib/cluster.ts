@@ -89,7 +89,7 @@ export class Cluster extends cdk.Construct implements ICluster {
       ? options.type
       : cloudmap.NamespaceType.DnsPrivate;
 
-    const sdNamespace = namespaceType === cloudmap.NamespaceType.DnsPrivate ?
+    const sdNamespace = namespaceType === NamespaceType.PrivateDns ?
       new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
         name: options.name,
         vpc: this.vpc
@@ -465,7 +465,17 @@ export interface NamespaceOptions {
   readonly vpc?: ec2.IVpcNetwork;
 }
 
+/**
+ * The type of CloudMap namespace to create
+ */
 export enum NamespaceType {
-  PrivateDns = cloudmap.NamespaceType.DnsPrivate,
-  PublicDns = cloudmap.NamespaceType.DnsPublic
+  /**
+   * Create a private DNS namespace
+   */
+  PrivateDns = 'PrivateDns',
+
+  /**
+   * Create a public DNS namespace
+   */
+  PublicDns = 'PublicDns',
 }
