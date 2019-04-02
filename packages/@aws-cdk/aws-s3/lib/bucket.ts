@@ -639,6 +639,13 @@ export interface BucketProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
    */
   readonly blockPublicAccess?: BlockPublicAccess;
+
+  /**
+   * The metrics configuration of this bucket.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-metricsconfiguration.html
+   */
+  readonly metricsConfigurations?: Array<CfnBucket.MetricsConfigurationProperty | cdk.Token> | cdk.Token;
 }
 
 /**
@@ -735,7 +742,8 @@ export class Bucket extends BucketBase {
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: new Token(() => this.parseLifecycleConfiguration()),
       websiteConfiguration: this.renderWebsiteConfiguration(props),
-      publicAccessBlockConfiguration: props.blockPublicAccess
+      publicAccessBlockConfiguration: props.blockPublicAccess,
+      metricsConfigurations: props.metricsConfigurations
     });
 
     applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
