@@ -31,13 +31,12 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
   /**
    * A GitHub OAuth token to use for authentication.
    *
-   * It is recommended to use a `SecretParameter` to obtain the token from the SSM
-   * Parameter Store:
+   * It is recommended to use a Secrets Manager `SecretString` to obtain the token:
    *
-   *   const oauth = new cdk.SecretParameter(this, 'GitHubOAuthToken', { ssmParameter: 'my-github-token' });
+   *   const oauth = new secretsmanager.SecretString(this, 'GitHubOAuthToken', { secretId: 'my-github-token' });
    *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth.value, ... });
    */
-  readonly oauthToken: cdk.Secret;
+  readonly oauthToken: string;
 
   /**
    * Whether AWS CodePipeline should poll for source changes.
@@ -55,6 +54,8 @@ export class GitHubSourceAction extends codepipeline.SourceAction {
   private readonly props: GitHubSourceActionProps;
 
   constructor(props: GitHubSourceActionProps) {
+    cdk.Secret.assertSafeSecret(props.oauthToken, 'oauthToken');
+
     super({
       ...props,
       owner: 'ThirdParty',
@@ -77,7 +78,7 @@ export class GitHubSourceAction extends codepipeline.SourceAction {
       new codepipeline.CfnWebhook(info.scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
-          secretToken: this.props.oauthToken.toString(),
+          secretToken: this.props.oauthToken,
         },
         filters: [
           {
