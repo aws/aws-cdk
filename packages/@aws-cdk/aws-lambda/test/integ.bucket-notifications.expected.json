@@ -110,7 +110,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyFunction3BAA72D1"
+          "Fn::GetAtt": [
+            "MyFunction3BAA72D1",
+            "Arn"
+          ]
         },
         "Principal": "s3.amazonaws.com",
         "SourceAccount": {
@@ -129,7 +132,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyFunction3BAA72D1"
+          "Fn::GetAtt": [
+            "MyFunction3BAA72D1",
+            "Arn"
+          ]
         },
         "Principal": "s3.amazonaws.com",
         "SourceAccount": {

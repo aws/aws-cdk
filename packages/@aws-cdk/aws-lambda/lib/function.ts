@@ -1,6 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
+import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
@@ -9,6 +10,7 @@ import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
 import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
+import { LogRetention } from './log-retention';
 import { Runtime } from './runtime';
 
 /**
@@ -198,6 +200,15 @@ export interface FunctionProps {
    * You can also add event sources using `addEventSource`.
    */
   readonly events?: IEventSource[];
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `Infinity`.
+   *
+   * @default logs never expire
+   */
+  readonly logRetentionDays?: logs.RetentionDays;
 }
 
 /**
@@ -395,6 +406,14 @@ export class Function extends FunctionBase {
     for (const event of props.events || []) {
       this.addEventSource(event);
     }
+
+    // Log retention
+    if (props.logRetentionDays) {
+      new LogRetention(this, 'LogRetention', {
+        logGroupName: `/aws/lambda/${this.functionName}`,
+        retentionDays: props.logRetentionDays
+      });
+    }
   }
 
   /**
@@ -465,6 +484,25 @@ export class Function extends FunctionBase {
       codeSha256,
       description,
     });
+  }
+
+  /**
+   * Add a new version for this Lambda, always with a different name.
+   *
+   * This is similar to the {@link addVersion} method,
+   * but useful when deploying this Lambda through CodePipeline with blue/green deployments.
+   * When using {@link addVersion},
+   * your Alias will not be updated until you change the name passed to {@link addVersion} in your CDK code.
+   * When deploying through a Pipeline,
+   * that might lead to a situation where a change to your Lambda application code will never be activated,
+   * even though it traveled through the entire Pipeline,
+   * because the Alias is still pointing to an old Version.
+   * This method creates a new, unique Version every time the CDK code is executed,
+   * and so prevents that from happening.
+   */
+  public newVersion(): Version {
+    const now = new Date();
+    return this.addVersion(now.toISOString());
   }
 
   private renderEnvironment() {

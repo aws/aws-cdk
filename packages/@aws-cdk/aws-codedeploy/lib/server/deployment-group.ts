@@ -6,7 +6,6 @@ import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { CfnDeploymentGroup } from '../codedeploy.generated';
-import { CommonPipelineDeployActionProps, PipelineDeployAction } from '../pipeline-action';
 import { AutoRollbackConfig } from '../rollback-config';
 import { deploymentGroupNameToArn, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
 import { IServerApplication, ServerApplication } from './application';
@@ -20,14 +19,6 @@ export interface IServerDeploymentGroup extends cdk.IConstruct {
   readonly deploymentConfig: IServerDeploymentConfig;
   readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
   export(): ServerDeploymentGroupImportProps;
-
-  /**
-   * Convenience method for creating a new {@link PipelineDeployAction}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineDeployAction}
-   */
-  toCodePipelineDeployAction(props: CommonPipelineDeployActionProps): PipelineDeployAction;
 }
 
 /**
@@ -81,14 +72,6 @@ export abstract class ServerDeploymentGroupBase extends cdk.Construct implements
   }
 
   public abstract export(): ServerDeploymentGroupImportProps;
-
-  public toCodePipelineDeployAction(props: CommonPipelineDeployActionProps):
-      PipelineDeployAction {
-    return new PipelineDeployAction({
-      ...props,
-      deploymentGroup: this,
-    });
-  }
 }
 
 class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {

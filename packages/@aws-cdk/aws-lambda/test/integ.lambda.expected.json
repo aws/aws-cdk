@@ -104,6 +104,16 @@
         },
         "Name": "prod"
       }
+    },
+    "AliasAliasPermissionAF30F9E8": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "Alias325C5727"
+        },
+        "Principal": "cloudformation.amazonaws.com"
+      }
     }
   }
 }

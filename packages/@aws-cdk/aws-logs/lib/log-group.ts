@@ -190,6 +190,96 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
 }
 
 /**
+ * How long, in days, the log contents will be retained.
+ */
+export enum RetentionDays {
+  /**
+   * 1 day
+   */
+  OneDay = 1,
+
+  /**
+   * 3 days
+   */
+  ThreeDays = 3,
+
+  /**
+   * 5 days
+   */
+  FiveDays = 5,
+
+  /**
+   * 1 week
+   */
+  OneWeek = 7,
+
+  /**
+   * 2 weeks
+   */
+  TwoWeeks =  14,
+
+  /**
+   * 1 month
+   */
+  OneMonth = 30,
+
+  /**
+   * 2 months
+   */
+  TwoMonths = 60,
+
+  /**
+   * 3 months
+   */
+  ThreeMonths = 90,
+
+  /**
+   * 4 months
+   */
+  FourMonths = 120,
+
+  /**
+   * 5 months
+   */
+  FiveMonths = 150,
+
+  /**
+   * 6 months
+   */
+  SixMonths = 180,
+
+  /**
+   * 1 year
+   */
+  OneYear = 365,
+
+  /**
+   * 13 months
+   */
+  ThirteenMonths = 400,
+
+  /**
+   * 18 months
+   */
+  EighteenMonths = 545,
+
+  /**
+   * 2 years
+   */
+  TwoYears = 731,
+
+  /**
+   * 5 years
+   */
+  FiveYears = 1827,
+
+  /**
+   * 10 years
+   */
+  TenYears = 3653
+}
+
+/**
  * Properties for a LogGroup
  */
 export interface LogGroupProps {
@@ -207,7 +297,7 @@ export interface LogGroupProps {
    *
    * @default 731 days (2 years)
    */
-  readonly retentionDays?: number;
+  readonly retentionDays?: RetentionDays;
 
   /**
    * Retain the log group if the stack or containing construct ceases to exist
@@ -247,7 +337,7 @@ export class LogGroup extends LogGroupBase {
     super(scope, id);
 
     let retentionInDays = props.retentionDays;
-    if (retentionInDays === undefined) { retentionInDays = 731; }
+    if (retentionInDays === undefined) { retentionInDays = RetentionDays.TwoYears; }
     if (retentionInDays === Infinity) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && retentionInDays <= 0) {

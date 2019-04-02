@@ -9,7 +9,6 @@ import cdk = require('@aws-cdk/cdk');
 import { IEventSource } from './event-source';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
-import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
 
 export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
   s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource {
@@ -46,14 +45,6 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
    * @param id The id ƒor the permission construct
    */
   addPermission(id: string, permission: Permission): void;
-
-  /**
-   * Convenience method for creating a new {@link PipelineInvokeAction}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineInvokeAction}
-   */
-  toCodePipelineInvokeAction(props: CommonPipelineInvokeActionProps): PipelineInvokeAction;
 
   addToRolePolicy(statement: iam.PolicyStatement): void;
 
@@ -176,7 +167,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     new CfnPermission(this, id, {
       action,
       principal,
-      functionName: this.functionName,
+      functionName: this.functionArn,
       eventSourceToken: permission.eventSourceToken,
       sourceAccount: permission.sourceAccount,
       sourceArn: permission.sourceArn,
@@ -185,13 +176,6 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
   public get id() {
     return this.node.id;
-  }
-
-  public toCodePipelineInvokeAction(props: CommonPipelineInvokeActionProps): PipelineInvokeAction {
-    return new PipelineInvokeAction({
-      ...props,
-      lambda: this,
-    });
   }
 
   public addToRolePolicy(statement: iam.PolicyStatement) {
