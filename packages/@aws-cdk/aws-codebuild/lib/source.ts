@@ -1,7 +1,7 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { SecretValue } from '@aws-cdk/cdk';
 import { CfnProject } from './codebuild.generated';
 import { Project } from './project';
 
@@ -213,7 +213,7 @@ export interface GitHubSourceProps extends GitBuildSourceProps {
    * Note that you need to give CodeBuild permissions to your GitHub account in order for the token to work.
    * That is a one-time operation that can be done through the AWS Console for CodeBuild.
    */
-  readonly oauthToken: string;
+  readonly oauthToken: SecretValue;
 
   /**
    * Whether to create a webhook that will trigger a build every time a commit is pushed to the GitHub repository.
@@ -236,13 +236,12 @@ export interface GitHubSourceProps extends GitBuildSourceProps {
 export class GitHubSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.GitHub;
   private readonly httpsCloneUrl: string;
-  private readonly oauthToken: string;
+  private readonly oauthToken: SecretValue;
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
 
   constructor(props: GitHubSourceProps) {
     super(props);
-    cdk.Secret.assertSafeSecret(props.oauthToken, 'oauthToken');
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
     this.oauthToken = props.oauthToken;
     this.webhook = props.webhook;
@@ -278,7 +277,7 @@ export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
   /**
    * The OAuth token used to authenticate when cloning the git repository.
    */
-  readonly oauthToken: string;
+  readonly oauthToken: SecretValue;
 
   /**
    * Whether to ignore SSL errors when connecting to the repository.
@@ -294,12 +293,11 @@ export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
 export class GitHubEnterpriseSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.GitHubEnterprise;
   private readonly httpsCloneUrl: string;
-  private readonly oauthToken: string;
+  private readonly oauthToken: SecretValue;
   private readonly ignoreSslErrors?: boolean;
 
   constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
-    cdk.Secret.assertSafeSecret(props.oauthToken, 'oauthToken');
     this.httpsCloneUrl = props.httpsCloneUrl;
     this.oauthToken = props.oauthToken;
     this.ignoreSslErrors = props.ignoreSslErrors;
