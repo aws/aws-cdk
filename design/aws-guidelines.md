@@ -326,9 +326,9 @@ export interface IFoo extends cdk.IConstruct, ISomething {
   readonly connections: ec2.Connections;
 
   // permission grants (adds statements to the principal's policy)
-  grant(principal?: iam.IPrincipal, ...actions: string[]): void;
-  grantFoo(principal?: iam.IPrincipal): void;
-  grantBar(principal?: iam.IPrincipal): void;
+  grant(grantee?: iam.IGrantable, ...actions: string[]): void;
+  grantFoo(grantee?: iam.IGrantable): void;
+  grantBar(grantee?: iam.IGrantable): void;
 
   // resource policy (if applicable)
   addToResourcePolicy(statement: iam.PolicyStatement): void;
@@ -364,7 +364,7 @@ export abstract class FooBase extends cdk.Construct implements IFoo {
   public abstract export(): FooAttributes;
 
   // grants can usually be shared
-  public grantYyy(principal?: iam.IPrincipal) {
+  public grantYyy(grantee?: iam.IGrantable) {
     // ...
   }
 
