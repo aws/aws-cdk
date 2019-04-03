@@ -84,16 +84,21 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   private readonly certificates?: INetworkListenerCertificateProps[];
 
   constructor(scope: cdk.Construct, id: string, props: NetworkListenerProps) {
+    let proto = props.protocol || Protocol.Tcp;
+
+    if (props.certificates && props.certificates.length > 0) {
+      proto = Protocol.Tls;
+    }
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      protocol: props.protocol || Protocol.Tcp,
+      protocol: proto,
       port: props.port,
       sslPolicy: props.sslPolicy,
       certificates: props.certificates
     });
 
-    this.protocol = props.protocol || Protocol.Tcp;
-    // this.sslPolicy = props.sslPolicy;
+    this.protocol = proto;
     this.certificates = props.certificates;
 
     this.loadBalancer = props.loadBalancer;
