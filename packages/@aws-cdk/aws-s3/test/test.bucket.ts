@@ -743,6 +743,65 @@ export = {
       test.done();
     },
 
+    'grant permissions to non-identity principal'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
+
+      // WHEN
+      bucket.grantRead(new iam.OrganizationPrincipal('o-1234'));
+
+      // THEN
+      expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [ "s3:GetObject*", "s3:GetBucket*", "s3:List*" ],
+              "Condition": { "StringEquals": { "aws:PrincipalOrgID": "o-1234" } },
+              "Effect": "Allow",
+              "Principal": "*",
+              "Resource": [
+                { "Fn::GetAtt": [ "MyBucketF68F3FF0", "Arn" ] },
+                { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "MyBucketF68F3FF0", "Arn" ] }, "/*" ] ] }
+              ]
+            }
+          ]
+        }
+      }));
+
+      expect(stack).to(haveResource('AWS::KMS::Key', {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*",
+                  "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion" ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [ "", [
+                      "arn:", { "Ref": "AWS::Partition" }, ":iam::", { "Ref": "AWS::AccountId" }, ":root"
+                  ]]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [ "kms:Decrypt", "kms:DescribeKey" ],
+              "Effect": "Allow",
+              "Resource": "*",
+              "Principal": "*",
+              "Condition": { "StringEquals": { "aws:PrincipalOrgID": "o-1234" } },
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+
+      }));
+
+      test.done();
+    },
+
     'if an encryption key is included, encrypt/decrypt permissions are also added both ways'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
@@ -1214,8 +1273,8 @@ export = {
       const bucket = new s3.Bucket(stack, 'b');
 
       // WHEN
-      const statement = bucket.grantPublicAccess();
-      statement.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+      const result = bucket.grantPublicAccess();
+      result.resourceStatement!.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
 
       // THEN
       expect(stack).to(haveResource('AWS::S3::BucketPolicy', {

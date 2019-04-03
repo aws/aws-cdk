@@ -27,7 +27,7 @@ class TestStack extends cdk.Stack {
 
     // this line adds read permissions for this SSM parameter to the policies associated with
     // the IAM roles of the Lambda function and the EC2 fleet
-    queueUrlRtv.grantRead(fn.role);
+    queueUrlRtv.grantRead(fn);
 
     // adds the `RTV_STACK_NAME` to the environment of the lambda function
     // and the fleet (via user-data)

@@ -105,5 +105,10 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "grant-result:@aws-cdk/aws-lambda.LayerVersionBase.grantUsage"
+    ]
   }
 }

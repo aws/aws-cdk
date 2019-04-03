@@ -36,7 +36,7 @@ export interface GenericAssetProps {
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
    */
-  readonly readers?: iam.IPrincipal[];
+  readonly readers?: iam.IGrantable[];
 }
 
 /**
@@ -171,12 +171,12 @@ export class Asset extends cdk.Construct {
   /**
    * Grants read permissions to the principal on the asset's S3 object.
    */
-  public grantRead(principal?: iam.IPrincipal) {
+  public grantRead(grantee: iam.IGrantable) {
     // We give permissions on all files with the same prefix. Presumably
     // different versions of the same file will have the same prefix
     // and we don't want to accidentally revoke permission on old versions
     // when deploying a new version.
-    this.bucket.grantRead(principal, `${this.s3Prefix}*`);
+    this.bucket.grantRead(grantee, `${this.s3Prefix}*`);
   }
 }
 
@@ -190,7 +190,7 @@ export interface FileAssetProps {
    * A list of principals that should be able to read this file asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
    */
-  readonly readers?: iam.IPrincipal[];
+  readonly readers?: iam.IGrantable[];
 }
 
 /**
@@ -212,7 +212,7 @@ export interface ZipDirectoryAssetProps {
    * A list of principals that should be able to read this ZIP file from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
    */
-  readonly readers?: iam.IPrincipal[];
+  readonly readers?: iam.IGrantable[];
 }
 
 /**

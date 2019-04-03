@@ -1,7 +1,9 @@
 import { Construct } from '@aws-cdk/cdk';
 import { CfnGroup } from './iam.generated';
-import { IPrincipal, Policy } from './policy';
-import { ArnPrincipal, PolicyPrincipal, PolicyStatement } from './policy-document';
+import { IIdentity } from './identity-base';
+import { Policy } from './policy';
+import { ArnPrincipal, PolicyStatement, PrincipalPolicyFragment } from './policy-document';
+import { IPrincipal } from './principals';
 import { User } from './user';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -34,7 +36,9 @@ export interface GroupProps {
   readonly path?: string;
 }
 
-export class Group extends Construct implements IPrincipal {
+export class Group extends Construct implements IIdentity {
+  public readonly grantPrincipal: IPrincipal = this;
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
   /**
    * The runtime name of this group.
    */
@@ -45,10 +49,7 @@ export class Group extends Construct implements IPrincipal {
    */
   public readonly groupArn: string;
 
-  /**
-   * An "AWS" policy principal that represents this group.
-   */
-  public readonly principal: PolicyPrincipal;
+  public readonly policyFragment: PrincipalPolicyFragment;
 
   private readonly managedPolicies: string[];
   private readonly attachedPolicies = new AttachedPolicies();
@@ -67,7 +68,7 @@ export class Group extends Construct implements IPrincipal {
 
     this.groupName = group.groupName;
     this.groupArn = group.groupArn;
-    this.principal = new ArnPrincipal(this.groupArn);
+    this.policyFragment = new ArnPrincipal(this.groupArn).policyFragment;
   }
 
   /**
@@ -97,12 +98,13 @@ export class Group extends Construct implements IPrincipal {
   /**
    * Adds an IAM statement to the default policy.
    */
-  public addToPolicy(statement: PolicyStatement) {
+  public addToPolicy(statement: PolicyStatement): boolean {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.defaultPolicy.attachToGroup(this);
     }
 
     this.defaultPolicy.addStatement(statement);
+    return true;
   }
 }

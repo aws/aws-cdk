@@ -51,7 +51,7 @@ export interface ISecret extends cdk.IConstruct {
    * @param versionStages the version stages the grant is limited to. If not specified, no restriction on the version
    *                      stages is applied.
    */
-  grantRead(grantee: iam.IPrincipal, versionStages?: string[]): void;
+  grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant;
 
   /**
    * Adds a rotation schedule to the secret.
@@ -118,30 +118,29 @@ export abstract class SecretBase extends cdk.Construct implements ISecret {
 
   public abstract export(): SecretImportProps;
 
-  public grantRead(grantee: iam.IPrincipal, versionStages?: string[]): void {
+  public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
-    const statement = new iam.PolicyStatement()
-    .allow()
-    .addAction('secretsmanager:GetSecretValue')
-    .addResource(this.secretArn);
-    if (versionStages != null) {
-      statement.addCondition('ForAnyValue:StringEquals', {
+
+    const result = iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['secretsmanager:GetSecretValue'],
+      resourceArns: [this.secretArn],
+      scope: this
+    });
+    if (versionStages != null && result.principalStatement) {
+      result.principalStatement.addCondition('ForAnyValue:StringEquals', {
         'secretsmanager:VersionStage': versionStages
       });
     }
-    grantee.addToPolicy(statement);
 
     if (this.encryptionKey) {
       // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
-      this.encryptionKey.addToResourcePolicy(new iam.PolicyStatement()
-      .allow()
-      .addPrincipal(grantee.principal)
-      .addAction('kms:Decrypt')
-      .addAllResources()
-      .addCondition('StringEquals', {
-        'kms:ViaService': `secretsmanager.${this.node.stack.region}.amazonaws.com`
-      }));
+      this.encryptionKey.grantDecrypt(
+        new kms.ViaServicePrincipal(`secretsmanager.${this.node.stack.region}.amazonaws.com`, grantee.grantPrincipal)
+      );
     }
+
+    return result;
   }
 
   public get secretString() {

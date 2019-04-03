@@ -85,14 +85,14 @@ export class Metric {
   /**
    * Grant permissions to the given identity to write metrics.
    *
-   * @param identity The IAM identity to give permissions to.
+   * @param grantee The IAM identity to give permissions to.
    */
-  public static grantPutMetricData(identity?: iam.IPrincipal) {
-    if (!identity) { return; }
-
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addAllResources()
-      .addAction("cloudwatch:PutMetricData"));
+  public static grantPutMetricData(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['cloudwatch:PutMetricData'],
+      resourceArns: ['*']
+    });
   }
 
   public readonly dimensions?: DimensionHash;

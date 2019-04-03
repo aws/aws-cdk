@@ -167,7 +167,7 @@ export class S3BucketSource extends BuildSource {
    * @internal
    */
   public _bind(project: Project) {
-    this.bucket.grantRead(project.role);
+    this.bucket.grantRead(project);
   }
 
   protected toSourceProperty(): any {
