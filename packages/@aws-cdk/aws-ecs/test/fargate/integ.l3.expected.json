@@ -642,7 +642,8 @@
               }
             ]
           }
-        }
+        },
+        "ServiceRegistries": []
       },
       "DependsOn": [
         "L3LBPublicListenerECSGroup648EEA11",

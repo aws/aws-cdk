@@ -101,6 +101,10 @@ export class Alias extends FunctionBase {
     return this.underlyingLambda.role;
   }
 
+  public get grantPrincipal() {
+    return this.underlyingLambda.grantPrincipal;
+  }
+
   public metric(metricName: string, props: cloudwatch.MetricCustomization = {}): cloudwatch.Metric {
     // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differes from the base behavior.
     return super.metric(metricName, {

@@ -83,14 +83,14 @@ export interface IPipeline extends cdk.IConstruct, events.IEventRuleTarget {
    *
    * @param identity the IAM Identity to grant the permissions to
    */
-  grantBucketRead(identity?: iam.IPrincipal): void;
+  grantBucketRead(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Grants read & write permissions to the Pipeline's S3 Bucket to the given Identity.
    *
    * @param identity the IAM Identity to grant the permissions to
    */
-  grantBucketReadWrite(identity?: iam.IPrincipal): void;
+  grantBucketReadWrite(identity: iam.IGrantable): iam.Grant;
 }
 
 /**

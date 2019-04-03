@@ -95,7 +95,7 @@ export class Ec2EventRuleTarget extends cdk.Construct implements events.IEventRu
     //
     // It never needs permissions to the Task Role.
     if (this.taskDefinition.executionRole !== undefined) {
-      this.taskDefinition.taskRole.grantPassRole(this.eventsRole);
+      this.taskDefinition.executionRole.grantPassRole(this.eventsRole);
     }
   }
 }

@@ -69,12 +69,12 @@ export interface ILogGroup extends cdk.IConstruct {
   /**
    * Give permissions to write to create and write to streams in this log group
    */
-  grantWrite(principal?: iam.IPrincipal): void;
+  grantWrite(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Give the indicated permissions on this log group and all streams
    */
-  grant(principal?: iam.IPrincipal, ...actions: string[]): void;
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -171,21 +171,22 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
   /**
    * Give permissions to write to create and write to streams in this log group
    */
-  public grantWrite(principal?: iam.IPrincipal) {
-    this.grant(principal, 'logs:CreateLogStream', 'logs:PutLogEvents');
+  public grantWrite(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'logs:CreateLogStream', 'logs:PutLogEvents');
   }
 
   /**
    * Give the indicated permissions on this log group and all streams
    */
-  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    if (!principal) { return; }
-
-    principal.addToPolicy(new iam.PolicyStatement()
-      .addActions(...actions)
-      // This ARN includes a ':*' at the end to include the log streams.
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.
       // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
-      .addResource(`${this.logGroupArn}`));
+      resourceArns: [this.logGroupArn],
+      scope: this,
+    });
   }
 }
 
