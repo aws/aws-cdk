@@ -706,6 +706,7 @@ Object {
             ],
           },
         },
+        "ServiceRegistries": Array [],
         "TaskDefinition": Object {
           "Ref": "MyTaskDef01F0D39B",
         },
