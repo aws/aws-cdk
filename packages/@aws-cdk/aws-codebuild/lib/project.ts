@@ -872,9 +872,6 @@ export class Project extends ProjectBase {
       });
       this._securityGroups = [securityGroup];
     }
-    const subnetSelection: ec2.SubnetSelection = props.subnetSelection ? props.subnetSelection : {
-      subnetType: ec2.SubnetType.Private
-    };
     this.addToRoleInlinePolicy(new iam.PolicyStatement()
       .addAllResources()
       .addActions(
@@ -897,7 +894,7 @@ export class Project extends ProjectBase {
       .addAction('ec2:CreateNetworkInterfacePermission'));
     return {
       vpcId: props.vpc.vpcId,
-      subnets: props.vpc.subnetIds(subnetSelection).map(s => s),
+      subnets: props.vpc.selectSubnetIds(props.subnetSelection),
       securityGroupIds: this._securityGroups.map(s => s.securityGroupId)
     };
   }

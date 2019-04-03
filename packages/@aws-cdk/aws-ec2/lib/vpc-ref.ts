@@ -1,5 +1,6 @@
-import { Construct, IConstruct, IDependable } from "@aws-cdk/cdk";
+import { Construct, IConstruct, IDependable } from '@aws-cdk/cdk';
 import { DEFAULT_SUBNET_NAME, subnetName } from './util';
+import { VpcSubnet } from './vpc';
 import { InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { VpnConnection, VpnConnectionOptions } from './vpn';
 
@@ -70,12 +71,23 @@ export interface IVpcNetwork extends IConstruct {
    * Prefer to use this method over {@link subnets} if you need to pass subnet
    * IDs to a CloudFormation Resource.
    */
-  subnetIds(selection?: SubnetSelection): string[];
+  selectSubnetIds(selection?: SubnetSelection): string[];
 
   /**
-   * Return the subnets appropriate for the placement strategy
+   * Return IDs of the route tables appropriate for the given selection strategy
+   *
+   * Requires that at least once subnet is matched, throws a descriptive
+   * error message otherwise.
    */
-  subnets(selection?: SubnetSelection): IVpcSubnet[];
+  selectRouteTableIds(selection?: SubnetSelection): string[];
+
+  /**
+   * Return availability zones for the given selection strategy
+   *
+   * Requires that at least once subnet is matched, throws a descriptive
+   * error message otherwise.
+   */
+  selectSubnetAZs(selection?: SubnetSelection): string[];
 
   /**
    * Return a dependable object representing internet connectivity for the given subnets
@@ -220,15 +232,25 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   /**
    * Returns IDs of selected subnets
    */
-  public subnetIds(selection: SubnetSelection = {}): string[] {
-    selection = reifySelectionDefaults(selection);
+  public selectSubnetIds(selection: SubnetSelection = {}): string[] {
+    const subnets = this.selectSubnets(selection);
+    return subnets.map(s => s.subnetId);
+  }
 
-    const nets = this.subnets(selection);
-    if (nets.length === 0) {
-      throw new Error(`There are no ${describeSelection(selection)} in this VPC. Use a different VPC subnet selection.`);
-    }
+  /**
+   * Returns IDs of the route tables associated with the selected subnets
+   */
+  public selectRouteTableIds(selection: SubnetSelection = {}): string[] {
+    const subnets = this.selectSubnets(selection);
+    return (subnets as VpcSubnet[]).map(s => s.routeTableId);
+  }
 
-    return nets.map(n => n.subnetId);
+  /**
+   * Returns the availability zones for the selected subnets
+   */
+  public selectSubnetAZs(selection: SubnetSelection = {}): string[] {
+    const subnets = this.selectSubnets(selection);
+    return [...new Set(subnets.map(s => s.availabilityZone))];
   }
 
   /**
@@ -238,7 +260,7 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
     selection = reifySelectionDefaults(selection);
 
     const ret = new CompositeDependable();
-    for (const subnet of this.subnets(selection)) {
+    for (const subnet of this.selectSubnets(selection)) {
       ret.add(subnet.internetConnectivityEstablished);
     }
     return ret;
@@ -287,27 +309,28 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   /**
    * Return the subnets appropriate for the placement strategy
    */
-  public subnets(selection: SubnetSelection = {}): IVpcSubnet[] {
+  protected selectSubnets(selection: SubnetSelection = {}): IVpcSubnet[] {
     selection = reifySelectionDefaults(selection);
+    let subnets: IVpcSubnet[] = [];
 
-    // Select by name
-    if (selection.subnetName !== undefined) {
-      const allSubnets = this.privateSubnets.concat(this.publicSubnets).concat(this.isolatedSubnets);
-      const selectedSubnets = allSubnets.filter(s => subnetName(s) === selection.subnetName);
-      if (selectedSubnets.length === 0) {
-        throw new Error(`No subnets with name: ${selection.subnetName}`);
-      }
-      return selectedSubnets;
+    if (selection.subnetName !== undefined) { // Select by name
+      const allSubnets =  [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
+      subnets = allSubnets.filter(s => subnetName(s) === selection.subnetName);
+    } else if (selection.subnetType === undefined) { // No type
+      subnets = this.privateSubnets;
+    } else { // Select by type
+      subnets = {
+        [SubnetType.Isolated]: this.isolatedSubnets,
+        [SubnetType.Private]: this.privateSubnets,
+        [SubnetType.Public]: this.publicSubnets,
+      }[selection.subnetType];
     }
 
-    // Select by type
-    if (selection.subnetType === undefined) { return this.privateSubnets; }
+    if (subnets.length === 0) {
+      throw new Error(`There are no ${describeSelection(selection)} in this VPC. Use a different VPC subnet selection.`);
+    }
 
-    return {
-      [SubnetType.Isolated]: this.isolatedSubnets,
-      [SubnetType.Private]: this.privateSubnets,
-      [SubnetType.Public]: this.publicSubnets,
-    }[selection.subnetType];
+    return subnets;
   }
 }
 
@@ -392,15 +415,15 @@ export interface VpcSubnetImportProps {
  * Returns "private subnets" by default.
  */
 function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
-    if (placement.subnetType !== undefined && placement.subnetName !== undefined) {
-      throw new Error('Only one of subnetType and subnetName can be supplied');
-    }
+  if (placement.subnetType !== undefined && placement.subnetName !== undefined) {
+    throw new Error('Only one of subnetType and subnetName can be supplied');
+  }
 
-    if (placement.subnetType === undefined && placement.subnetName === undefined) {
-      return { subnetType: SubnetType.Private };
-    }
+  if (placement.subnetType === undefined && placement.subnetName === undefined) {
+    return { subnetType: SubnetType.Private };
+  }
 
-    return placement;
+  return placement;
 }
 
 /**

@@ -144,7 +144,7 @@ export interface VpcNetworkProps {
    *
    * @default on the route tables associated with private subnets
    */
-  readonly vpnRoutePropagation?: SubnetType[]
+  readonly vpnRoutePropagation?: SubnetSelection[]
 
   /**
    * Gateway endpoints to add to this VPC.
@@ -414,19 +414,10 @@ export class VpcNetwork extends VpcNetworkBase {
       this.vpnGatewayId = vpnGateway.vpnGatewayName;
 
       // Propagate routes on route tables associated with the right subnets
-      const vpnRoutePropagation = props.vpnRoutePropagation || [SubnetType.Private];
-      let subnets: IVpcSubnet[] = [];
-      if (vpnRoutePropagation.includes(SubnetType.Public)) {
-        subnets = [...subnets, ...this.publicSubnets];
-      }
-      if (vpnRoutePropagation.includes(SubnetType.Private)) {
-        subnets = [...subnets, ...this.privateSubnets];
-      }
-      if (vpnRoutePropagation.includes(SubnetType.Isolated)) {
-        subnets = [...subnets, ...this.isolatedSubnets];
-      }
+      const vpnRoutePropagation = props.vpnRoutePropagation || [{ subnetType: SubnetType.Private }];
+      const routeTableIds = [...new Set(Array().concat(...vpnRoutePropagation.map(s => this.selectRouteTableIds(s))))];
       const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
-        routeTableIds: (subnets as VpcSubnet[]).map(subnet => subnet.routeTableId),
+        routeTableIds,
         vpnGatewayId: this.vpnGatewayId
       });
 
@@ -514,7 +505,7 @@ export class VpcNetwork extends VpcNetworkBase {
 
     let natSubnets: VpcPublicSubnet[];
     if (placement) {
-      const subnets = this.subnets(placement);
+      const subnets = this.selectSubnets(placement);
       for (const sub of subnets) {
         if (this.publicSubnets.indexOf(sub) === -1) {
           throw new Error(`natGatewayPlacement ${placement} contains non public subnet ${sub}`);

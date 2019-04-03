@@ -439,7 +439,11 @@ export = {
           { subnetType: SubnetType.Isolated, name: 'Isolated' },
         ],
         vpnGateway: true,
-        vpnRoutePropagation: [SubnetType.Isolated]
+        vpnRoutePropagation: [
+          {
+            subnetType: SubnetType.Isolated
+          }
+        ]
       });
 
       expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
@@ -470,8 +474,12 @@ export = {
         ],
         vpnGateway: true,
         vpnRoutePropagation: [
-          SubnetType.Private,
-          SubnetType.Isolated
+          {
+            subnetType: SubnetType.Private
+          },
+          {
+            subnetType: SubnetType.Isolated
+          }
         ]
       });
 
@@ -601,7 +609,7 @@ export = {
       const vpc = new VpcNetwork(stack, 'VPC');
 
       // WHEN
-      const nets = vpc.subnetIds();
+      const nets = vpc.selectSubnetIds();
 
       // THEN
       test.deepEqual(nets, vpc.privateSubnets.map(s => s.subnetId));
@@ -614,7 +622,7 @@ export = {
       const vpc = new VpcNetwork(stack, 'VPC');
 
       // WHEN
-      const nets = vpc.subnetIds({ subnetType: SubnetType.Public });
+      const nets = vpc.selectSubnetIds({ subnetType: SubnetType.Public });
 
       // THEN
       test.deepEqual(nets, vpc.publicSubnets.map(s => s.subnetId));
@@ -633,7 +641,7 @@ export = {
       });
 
       // WHEN
-      const nets = vpc.subnetIds({ subnetType: SubnetType.Isolated });
+      const nets = vpc.selectSubnetIds({ subnetType: SubnetType.Isolated });
 
       // THEN
       test.deepEqual(nets, vpc.isolatedSubnets.map(s => s.subnetId));
@@ -652,7 +660,7 @@ export = {
       });
 
       // WHEN
-      const nets = vpc.subnetIds({ subnetName: 'DontTalkToMe' });
+      const nets = vpc.selectSubnetIds({ subnetName: 'DontTalkToMe' });
 
       // THEN
       test.deepEqual(nets, vpc.privateSubnets.map(s => s.subnetId));
@@ -669,7 +677,7 @@ export = {
       });
 
       test.throws(() => {
-        vpc.subnetIds();
+        vpc.selectSubnetIds();
       }, /There are no 'Private' subnets in this VPC/);
 
       test.done();
@@ -733,7 +741,7 @@ export = {
       });
 
       // WHEN
-      const nets = importedVpc.subnetIds({ subnetType: SubnetType.Isolated });
+      const nets = importedVpc.selectSubnetIds({ subnetType: SubnetType.Isolated });
 
       // THEN
       test.equal(3, importedVpc.isolatedSubnets.length);
@@ -756,7 +764,7 @@ export = {
         });
 
         // WHEN
-        const nets = importedVpc.subnetIds({ subnetName: isolatedName });
+        const nets = importedVpc.selectSubnetIds({ subnetName: isolatedName });
 
         // THEN
         test.equal(3, importedVpc.isolatedSubnets.length);

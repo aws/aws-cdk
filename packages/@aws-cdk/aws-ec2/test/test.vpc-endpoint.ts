@@ -64,8 +64,12 @@ export = {
           S3: {
             service: GatewayVpcEndpointAwsService.S3,
             subnets: [
-              { subnetType: SubnetType.Public },
-              { subnetType: SubnetType.Private }
+              {
+                subnetType: SubnetType.Public
+              },
+              {
+                subnetType: SubnetType.Private
+              }
             ]
           }
         }

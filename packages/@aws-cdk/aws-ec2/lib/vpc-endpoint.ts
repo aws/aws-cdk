@@ -4,8 +4,7 @@ import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { SecurityGroup } from './security-group';
 import { TcpPort, TcpPortFromAttribute } from './security-group-rule';
-import { VpcSubnet } from './vpc';
-import { IVpcNetwork, IVpcSubnet, SubnetSelection } from './vpc-ref';
+import { IVpcNetwork, SubnetSelection, SubnetType } from './vpc-ref';
 
 /**
  * A VPC endpoint.
@@ -154,16 +153,8 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
   constructor(scope: cdk.Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
 
-    let subnets: IVpcSubnet[] = [];
-    if (props.subnets) {
-      for (const selection of props.subnets) {
-        subnets.push(...props.vpc.subnets(selection));
-      }
-    } else {
-      subnets = props.vpc.subnets();
-    }
-
-    const routeTableIds = (subnets as VpcSubnet[]).map(subnet => subnet.routeTableId);
+    const subnets = props.subnets || [{ subnetType: SubnetType.Private }];
+    const routeTableIds = [...new Set(Array().concat(...subnets.map(s => props.vpc.selectRouteTableIds(s))))];
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       policyDocument: new cdk.Token(() => this.policyDocument),
@@ -396,11 +387,11 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       securityGroups: [securityGroup]
     });
 
-    const subnets = props.vpc.subnets(props.subnets);
+    const subnetIds = props.vpc.selectSubnetIds(props.subnets);
 
-    const availabilityZones = new Set(subnets.map(s => s.availabilityZone));
+    const availabilityZones = props.vpc.selectSubnetAZs(props.subnets);
 
-    if (availabilityZones.size !== subnets.length) {
+    if (availabilityZones.length !== subnetIds.length) {
       throw new Error('Only one subnet per availability zone is allowed.');
     }
 
@@ -410,7 +401,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       securityGroupIds: [this.securityGroupId],
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.Interface,
-      subnetIds: subnets.map(s => s.subnetId),
+      subnetIds,
       vpcId: props.vpc.vpcId
     });
 
