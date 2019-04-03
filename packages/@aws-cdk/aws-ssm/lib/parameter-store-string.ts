@@ -48,11 +48,8 @@ export class ParameterStoreString extends cdk.Construct {
       this.stringValue = param.stringValue;
     } else {
       // Use a dynamic reference
-      const dynRef = new cdk.DynamicReference(this, 'Reference', {
-        service: cdk.DynamicReferenceService.Ssm,
-        referenceKey: `${props.parameterName}:${props.version}`,
-      });
-      this.stringValue = dynRef.stringValue;
+      const dynRef = new cdk.CfnDynamicReference(cdk.CfnDynamicReferenceService.Ssm, `${props.parameterName}:${props.version}`);
+      this.stringValue = dynRef.toString();
     }
   }
 }
@@ -80,12 +77,9 @@ export interface ParameterStoreSecureStringProps {
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html
  */
-export class ParameterStoreSecureString extends cdk.DynamicReference {
-  constructor(scope: cdk.Construct, id: string, props: ParameterStoreSecureStringProps) {
-    super(scope, id, {
-      service: cdk.DynamicReferenceService.SsmSecure,
-      referenceKey: `${props.parameterName}:${props.version}`,
-    });
+export class ParameterStoreSecureString extends cdk.CfnDynamicReference {
+  constructor(props: ParameterStoreSecureStringProps) {
+    super(cdk.CfnDynamicReferenceService.SsmSecure, `${props.parameterName}:${props.version}`);
 
     // If we don't validate this here it will lead to a very unclear
     // error message in CloudFormation, so better do it.
