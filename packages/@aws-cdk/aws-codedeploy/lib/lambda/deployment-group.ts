@@ -194,7 +194,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
       throw new Error('A pre-hook function is already defined for this deployment group');
     }
     this.preHook = preHook;
-    this.grantPutLifecycleEventHookExecutionStatus(this.preHook.role);
+    this.grantPutLifecycleEventHookExecutionStatus(this.preHook);
     this.preHook.grantInvoke(this.role);
   }
 
@@ -208,7 +208,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
       throw new Error('A post-hook function is already defined for this deployment group');
     }
     this.postHook = postHook;
-    this.grantPutLifecycleEventHookExecutionStatus(this.postHook.role);
+    this.grantPutLifecycleEventHookExecutionStatus(this.postHook);
     this.postHook.grantInvoke(this.role);
   }
 
@@ -217,12 +217,12 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
    * on this deployment group resource.
    * @param principal to grant permission to
    */
-  public grantPutLifecycleEventHookExecutionStatus(principal?: iam.IPrincipal): void {
-    if (principal) {
-      principal.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.deploymentGroupArn)
-        .addAction('codedeploy:PutLifecycleEventHookExecutionStatus'));
-    }
+  public grantPutLifecycleEventHookExecutionStatus(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      resourceArns: [this.deploymentGroupArn],
+      actions: ['codedeploy:PutLifecycleEventHookExecutionStatus'],
+    });
   }
 
   public export(): LambdaDeploymentGroupImportProps {
