@@ -72,6 +72,11 @@ export abstract class PrincipalBase implements IPrincipal {
     // should return something nicer.
     return JSON.stringify(this.policyFragment.principalJson);
   }
+
+  public toJSON() {
+    // Have to implement toJSON() because the default will lead to infinite recursion.
+    return this.policyFragment.principalJson;
+  }
 }
 
 /**
