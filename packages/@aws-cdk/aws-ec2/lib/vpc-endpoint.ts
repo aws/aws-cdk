@@ -5,7 +5,7 @@ import { CfnVPCEndpoint } from './ec2.generated';
 import { SecurityGroup } from './security-group';
 import { TcpPort, TcpPortFromAttribute } from './security-group-rule';
 import { VpcSubnet } from './vpc';
-import { IVpcNetwork, SubnetSelection } from './vpc-ref';
+import { IVpcNetwork, IVpcSubnet, SubnetSelection } from './vpc-ref';
 
 /**
  * A VPC endpoint.
@@ -117,7 +117,7 @@ export interface GatewayVpcEndpointOptions {
    *
    * @default private subnets
    */
-  readonly subnets?: SubnetSelection
+  readonly subnets?: SubnetSelection[]
 }
 
 /**
@@ -154,7 +154,15 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
   constructor(scope: cdk.Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
 
-    const subnets = props.vpc.selectSubnets(props.subnets);
+    let subnets: IVpcSubnet[] = [];
+    if (props.subnets) {
+      for (const selection of props.subnets) {
+        subnets.push(...props.vpc.subnets(selection));
+      }
+    } else {
+      subnets = props.vpc.subnets();
+    }
+
     const routeTableIds = (subnets as VpcSubnet[]).map(subnet => subnet.routeTableId);
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
@@ -388,7 +396,8 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       securityGroups: [securityGroup]
     });
 
-    const subnets = props.vpc.selectSubnets(props.subnets);
+    const subnets = props.vpc.subnets(props.subnets);
+
     const availabilityZones = new Set(subnets.map(s => s.availabilityZone));
 
     if (availabilityZones.size !== subnets.length) {

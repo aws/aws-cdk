@@ -419,7 +419,7 @@ export = {
       maxCapacity: 0,
       desiredCapacity: 0,
 
-      vpcSubnets: { subnetTypes: [ec2.SubnetType.Public] },
+      vpcSubnets: { subnetType: ec2.SubnetType.Public },
       associatePublicIpAddress: true,
     });
 

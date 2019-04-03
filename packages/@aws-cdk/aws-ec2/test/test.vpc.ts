@@ -222,7 +222,7 @@ export = {
       }
       test.done();
     },
-    "with custom subnets and natGateways = 2 there should be only two NATGW"(test: Test) {
+    "with custom subents and natGateways = 2 there should be only two NATGW"(test: Test) {
       const stack = getTestStack();
       new VpcNetwork(stack, 'TheVPC', {
         cidr: '10.0.0.0/21',
@@ -358,7 +358,7 @@ export = {
           },
         ],
         natGatewaySubnets: {
-          subnetNames: ['egress']
+          subnetName: 'egress'
         },
       });
       expect(stack).to(countResources("AWS::EC2::NatGateway", 3));
@@ -386,7 +386,7 @@ export = {
           },
         ],
         natGatewaySubnets: {
-          subnetNames: ['notthere'],
+          subnetName: 'notthere',
         },
       }));
       test.done();
@@ -439,9 +439,7 @@ export = {
           { subnetType: SubnetType.Isolated, name: 'Isolated' },
         ],
         vpnGateway: true,
-        vpnRoutePropagation: {
-          subnetTypes: [SubnetType.Isolated]
-        }
+        vpnRoutePropagation: [SubnetType.Isolated]
       });
 
       expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
@@ -471,9 +469,10 @@ export = {
           { subnetType: SubnetType.Isolated, name: 'Isolated' },
         ],
         vpnGateway: true,
-        vpnRoutePropagation: {
-          subnetTypes: [SubnetType.Private, SubnetType.Isolated]
-        }
+        vpnRoutePropagation: [
+          SubnetType.Private,
+          SubnetType.Isolated
+        ]
       });
 
       expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
@@ -615,7 +614,7 @@ export = {
       const vpc = new VpcNetwork(stack, 'VPC');
 
       // WHEN
-      const nets = vpc.subnetIds({ subnetTypes: [SubnetType.Public] });
+      const nets = vpc.subnetIds({ subnetType: SubnetType.Public });
 
       // THEN
       test.deepEqual(nets, vpc.publicSubnets.map(s => s.subnetId));
@@ -634,7 +633,7 @@ export = {
       });
 
       // WHEN
-      const nets = vpc.subnetIds({ subnetTypes: [SubnetType.Isolated] });
+      const nets = vpc.subnetIds({ subnetType: SubnetType.Isolated });
 
       // THEN
       test.deepEqual(nets, vpc.isolatedSubnets.map(s => s.subnetId));
@@ -653,7 +652,7 @@ export = {
       });
 
       // WHEN
-      const nets = vpc.subnetIds({ subnetNames: ['DontTalkToMe'] });
+      const nets = vpc.subnetIds({ subnetName: 'DontTalkToMe' });
 
       // THEN
       test.deepEqual(nets, vpc.privateSubnets.map(s => s.subnetId));
@@ -734,7 +733,7 @@ export = {
       });
 
       // WHEN
-      const nets = importedVpc.subnetIds({ subnetTypes: [SubnetType.Isolated] });
+      const nets = importedVpc.subnetIds({ subnetType: SubnetType.Isolated });
 
       // THEN
       test.equal(3, importedVpc.isolatedSubnets.length);
@@ -757,7 +756,7 @@ export = {
         });
 
         // WHEN
-        const nets = importedVpc.subnetIds({ subnetNames: [isolatedName] });
+        const nets = importedVpc.subnetIds({ subnetName: isolatedName });
 
         // THEN
         test.equal(3, importedVpc.isolatedSubnets.length);

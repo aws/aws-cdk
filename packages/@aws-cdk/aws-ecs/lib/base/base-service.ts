@@ -179,7 +179,7 @@ export abstract class BaseService extends cdk.Construct
   // tslint:disable-next-line:max-line-length
   protected configureAwsVpcNetworking(vpc: ec2.IVpcNetwork, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
     if (vpcSubnets === undefined) {
-      vpcSubnets = { subnetTypes: assignPublicIp ? [ec2.SubnetType.Public] : [ec2.SubnetType.Private] };
+      vpcSubnets = { subnetType: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
     }
     if (securityGroup === undefined) {
       securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });

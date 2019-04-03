@@ -144,7 +144,7 @@ export interface VpcNetworkProps {
    *
    * @default on the route tables associated with private subnets
    */
-  readonly vpnRoutePropagation?: SubnetSelection
+  readonly vpnRoutePropagation?: SubnetType[]
 
   /**
    * Gateway endpoints to add to this VPC.
@@ -414,7 +414,17 @@ export class VpcNetwork extends VpcNetworkBase {
       this.vpnGatewayId = vpnGateway.vpnGatewayName;
 
       // Propagate routes on route tables associated with the right subnets
-      const subnets = this.selectSubnets(props.vpnRoutePropagation);
+      const vpnRoutePropagation = props.vpnRoutePropagation || [SubnetType.Private];
+      let subnets: IVpcSubnet[] = [];
+      if (vpnRoutePropagation.includes(SubnetType.Public)) {
+        subnets = [...subnets, ...this.publicSubnets];
+      }
+      if (vpnRoutePropagation.includes(SubnetType.Private)) {
+        subnets = [...subnets, ...this.privateSubnets];
+      }
+      if (vpnRoutePropagation.includes(SubnetType.Isolated)) {
+        subnets = [...subnets, ...this.isolatedSubnets];
+      }
       const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
         routeTableIds: (subnets as VpcSubnet[]).map(subnet => subnet.routeTableId),
         vpnGatewayId: this.vpnGatewayId
@@ -455,7 +465,7 @@ export class VpcNetwork extends VpcNetworkBase {
   /**
    * Adds a new S3 gateway endpoint to this VPC
    */
-  public addS3Endpoint(id: string, subnets?: SubnetSelection): GatewayVpcEndpoint {
+  public addS3Endpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
       service: GatewayVpcEndpointAwsService.S3,
       vpc: this,
@@ -466,7 +476,7 @@ export class VpcNetwork extends VpcNetworkBase {
   /**
    * Adds a new DynamoDB gateway endpoint to this VPC
    */
-  public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection): GatewayVpcEndpoint {
+  public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
       service: GatewayVpcEndpointAwsService.DynamoDb,
       vpc: this,
@@ -504,7 +514,7 @@ export class VpcNetwork extends VpcNetworkBase {
 
     let natSubnets: VpcPublicSubnet[];
     if (placement) {
-      const subnets = this.selectSubnets(placement);
+      const subnets = this.subnets(placement);
       for (const sub of subnets) {
         if (this.publicSubnets.indexOf(sub) === -1) {
           throw new Error(`natGatewayPlacement ${placement} contains non public subnet ${sub}`);

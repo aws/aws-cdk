@@ -24,7 +24,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   },
   instanceProps: {
     instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
-    vpcSubnets: { subnetTypes: [ec2.SubnetType.Public] },
+    vpcSubnets: { subnetType: ec2.SubnetType.Public },
     vpc
   },
   parameterGroup: params,
