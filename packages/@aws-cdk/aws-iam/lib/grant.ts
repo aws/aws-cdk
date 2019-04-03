@@ -98,7 +98,7 @@ export class Grant {
    *   case of imported resources) leads to a warning being added to the
    *   resource construct.
    */
-  public static withResource(options: GrantWithResourceOptions): Grant {
+  public static onPrincipalOrResource(options: GrantWithResourceOptions): Grant {
     const result = Grant.onPrincipal({
       ...options,
       scope: options.resource

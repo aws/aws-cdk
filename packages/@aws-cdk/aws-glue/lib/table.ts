@@ -269,7 +269,7 @@ export class Table extends cdk.Construct implements ITable {
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
     if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantDecrypt(grantee); }
-    this.bucket.grantRead(principal, this.s3Prefix);
+    this.bucket.grantRead(grantee, this.s3Prefix);
     return ret;
   }
 
@@ -293,7 +293,7 @@ export class Table extends cdk.Construct implements ITable {
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
     if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantEncryptDecrypt(grantee); }
-    this.bucket.grantReadWrite(principal, this.s3Prefix);
+    this.bucket.grantReadWrite(grantee, this.s3Prefix);
     return ret;
   }
 

@@ -270,9 +270,9 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
   /**
    * Grant topic publishing permissions to the given identity
    */
-  public grantPublish(principal: iam.IGrantable) {
-    return iam.Grant.withResource({
-      principal,
+  public grantPublish(grantee: iam.IGrantable) {
+    return iam.Grant.onPrincipalOrResource({
+      grantee,
       actions: ['sns:Publish'],
       resourceArns: [this.topicArn],
       resource: this,

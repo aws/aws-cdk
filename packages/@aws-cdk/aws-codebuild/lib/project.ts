@@ -16,7 +16,7 @@ const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
-export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
+export interface IProject extends cdk.IConstruct, events.IEventRuleTarget, iam.IGrantable {
   /** The ARN of this Project. */
   readonly projectArn: string;
 
@@ -24,7 +24,7 @@ export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
   readonly projectName: string;
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
-  readonly role: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state
@@ -156,6 +156,8 @@ export interface ProjectImportProps {
  * use the {@link import} method.
  */
 export abstract class ProjectBase extends cdk.Construct implements IProject {
+  public abstract readonly grantPrincipal: iam.IPrincipal;
+
   /** The ARN of this Project. */
   public abstract readonly projectArn: string;
 
@@ -163,7 +165,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
   public abstract readonly projectName: string;
 
   /** The IAM service Role of this Project. */
-  public abstract readonly role: iam.IRole;
+  public abstract readonly role?: iam.IRole;
 
   /** A role used by CloudWatch events to trigger a build */
   private eventsRole?: iam.Role;
@@ -369,9 +371,10 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
 }
 
 class ImportedProject extends ProjectBase {
+  public readonly grantPrincipal: iam.IPrincipal;
   public readonly projectArn: string;
   public readonly projectName: string;
-  public readonly role: iam.Role = undefined;
+  public readonly role?: iam.Role = undefined;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: ProjectImportProps) {
     super(scope, id);
@@ -381,6 +384,7 @@ class ImportedProject extends ProjectBase {
       resource: 'project',
       resourceName: props.projectName,
     });
+    this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
 
     this.projectName = props.projectName;
   }
@@ -572,10 +576,12 @@ export class Project extends ProjectBase {
     return new ImportedProject(scope, id, props);
   }
 
+  public readonly grantPrincipal: iam.IPrincipal;
+
   /**
    * The IAM role for this project.
    */
-  public readonly role: iam.IRole;
+  public readonly role?: iam.IRole;
 
   /**
    * The ARN of the project.
@@ -603,6 +609,7 @@ export class Project extends ProjectBase {
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
+    this.grantPrincipal = this.role;
 
     let cache: CfnProject.ProjectCacheProperty | undefined;
     if (props.cacheBucket) {

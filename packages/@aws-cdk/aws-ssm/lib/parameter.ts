@@ -124,18 +124,20 @@ export abstract class ParameterBase extends cdk.Construct implements IParameter 
     });
   }
 
-  public grantRead(grantee: iam.IGrantable): void {
-    grantee.addToPolicy(new iam.PolicyStatement()
-      .allow()
-      .addActions('ssm:DescribeParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory')
-      .addResource(this.parameterArn));
+  public grantRead(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.onPrincipal({
+      grantee,
+      actions: ['ssm:DescribeParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
+      resourceArns: [this.parameterArn],
+    });
   }
 
-  public grantWrite(grantee: iam.IGrantable): void {
-    grantee.addToPolicy(new iam.PolicyStatement()
-      .allow()
-      .addAction('ssm:PutParameter')
-      .addResource(this.parameterArn));
+  public grantWrite(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.onPrincipal({
+      grantee,
+      actions: ['ssm:PutParameter'],
+      resourceArns: [this.parameterArn],
+    });
   }
 }
 

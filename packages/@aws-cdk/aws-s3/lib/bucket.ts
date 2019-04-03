@@ -471,7 +471,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
 
     allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
 
-    return iam.Grant.withResource({
+    return iam.Grant.onPrincipalOrResource({
       actions: allowedActions,
       resourceArns: [this.arnForObjects(keyPrefix)],
       grantee: new iam.Anyone(),
@@ -485,7 +485,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
                 resourceArn: string, ...otherResourceArns: string[]) {
     const resources = [ resourceArn, ...otherResourceArns ];
 
-    const ret = iam.Grant.withResource({
+    const ret = iam.Grant.onPrincipalOrResource({
       grantee,
       actions: bucketActions,
       resourceArns: resources,
