@@ -149,7 +149,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
   /**
    * The date and time the gateway VPC endpoint was created.
    */
-  public readonly creationTimestamp: string;
+  public readonly vpcEndpointCreationTimestamp: string;
 
   constructor(scope: cdk.Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
@@ -166,7 +166,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     });
 
     this.vpcEndpointId = endpoint.vpcEndpointId;
-    this.creationTimestamp = endpoint.vpcEndpointCreationTimestamp;
+    this.vpcEndpointCreationTimestamp = endpoint.vpcEndpointCreationTimestamp;
   }
 
   /**
@@ -350,7 +350,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
   /**
    * The date and time the interface VPC endpoint was created.
    */
-  public readonly creationTimestamp: string;
+  public readonly vpcEndpointCreationTimestamp: string;
 
   /**
    * The DNS entries for the interface VPC endpoint.
@@ -406,7 +406,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     });
 
     this.vpcEndpointId = endpoint.vpcEndpointId;
-    this.creationTimestamp = endpoint.vpcEndpointCreationTimestamp;
+    this.vpcEndpointCreationTimestamp = endpoint.vpcEndpointCreationTimestamp;
     this.dnsEntries = endpoint.vpcEndpointDnsEntries;
     this.networkInterfaceIds = endpoint.vpcEndpointNetworkInterfaceIds;
   }
