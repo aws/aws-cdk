@@ -355,18 +355,12 @@ Cycle: @aws-cdk/aws-sns => @aws-cdk/aws-lambda => @aws-cdk/aws-codecommit => @aw
 
 ### Updating all Dependencies
 
-We use `npm update` to
+To update all dependencies (without bumping major versions):
 
-1. Obtain a fresh clone from “master”
-2. Run `./install.sh` and `./build.sh` to make sure the current HEAD is not broken (should never be...).
-3. Once build succeeded, run:
-    ```shell
-    $ npm update # to update the root deps
-    $ lerna exec npm update # to update deps in all modules
-    ```
-4. This will probably install some new versions and update `package.json` and `package-lock.json` files.
-5. Now, run `./build.sh` again to verify all tests pass.
-6. Submit a Pull Request.
+1. Obtain a fresh clone from "master".
+2. Run `./install.sh`
+2. Run `./scripts/update-dependencies.sh --mode full` (use `--mode semver` to avoid bumping major versions)
+3. Submit a Pull Request.
 
 ### Troubleshooting common issues
 
