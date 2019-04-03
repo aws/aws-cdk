@@ -179,7 +179,7 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
    * Give the indicated permissions on this log group and all streams
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.onPrincipal({
+    return iam.Grant.addToPrincipal({
       grantee,
       actions,
       // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.
