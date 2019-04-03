@@ -894,7 +894,7 @@ export class Project extends ProjectBase {
       .addAction('ec2:CreateNetworkInterfacePermission'));
     return {
       vpcId: props.vpc.vpcId,
-      subnets: props.vpc.selectSubnets(props.subnetSelection).map(s => s.subnetId),
+      subnets: props.vpc.subnetIds(props.subnetSelection),
       securityGroupIds: this._securityGroups.map(s => s.securityGroupId)
     };
   }

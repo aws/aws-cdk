@@ -602,10 +602,10 @@ export = {
       const vpc = new VpcNetwork(stack, 'VPC');
 
       // WHEN
-      const nets = vpc.selectSubnets();
+      const nets = vpc.subnetIds();
 
       // THEN
-      test.deepEqual(nets, vpc.privateSubnets);
+      test.deepEqual(nets, vpc.privateSubnets.map(s => s.subnetId));
       test.done();
     },
 
@@ -615,10 +615,10 @@ export = {
       const vpc = new VpcNetwork(stack, 'VPC');
 
       // WHEN
-      const nets = vpc.selectSubnets({ subnetTypes: [SubnetType.Public] });
+      const nets = vpc.subnetIds({ subnetTypes: [SubnetType.Public] });
 
       // THEN
-      test.deepEqual(nets, vpc.publicSubnets);
+      test.deepEqual(nets, vpc.publicSubnets.map(s => s.subnetId));
 
       test.done();
     },
@@ -634,10 +634,10 @@ export = {
       });
 
       // WHEN
-      const nets = vpc.selectSubnets({ subnetTypes: [SubnetType.Isolated] });
+      const nets = vpc.subnetIds({ subnetTypes: [SubnetType.Isolated] });
 
       // THEN
-      test.deepEqual(nets, vpc.isolatedSubnets);
+      test.deepEqual(nets, vpc.isolatedSubnets.map(s => s.subnetId));
 
       test.done();
     },
@@ -653,10 +653,10 @@ export = {
       });
 
       // WHEN
-      const nets = vpc.selectSubnets({ subnetNames: ['DontTalkToMe'] });
+      const nets = vpc.subnetIds({ subnetNames: ['DontTalkToMe'] });
 
       // THEN
-      test.deepEqual(nets, vpc.privateSubnets);
+      test.deepEqual(nets, vpc.privateSubnets.map(s => s.subnetId));
       test.done();
     },
 
@@ -670,7 +670,7 @@ export = {
       });
 
       test.throws(() => {
-        vpc.selectSubnets();
+        vpc.subnetIds();
       }, /There are no 'Private' subnets in this VPC/);
 
       test.done();
@@ -734,11 +734,11 @@ export = {
       });
 
       // WHEN
-      const nets = importedVpc.selectSubnets({ subnetTypes: [SubnetType.Isolated] });
+      const nets = importedVpc.subnetIds({ subnetTypes: [SubnetType.Isolated] });
 
       // THEN
       test.equal(3, importedVpc.isolatedSubnets.length);
-      test.deepEqual(nets, importedVpc.isolatedSubnets);
+      test.deepEqual(nets, importedVpc.isolatedSubnets.map(s => s.subnetId));
 
       test.done();
     },
@@ -757,11 +757,11 @@ export = {
         });
 
         // WHEN
-        const nets = importedVpc.selectSubnets({ subnetNames: [isolatedName] });
+        const nets = importedVpc.subnetIds({ subnetNames: [isolatedName] });
 
         // THEN
         test.equal(3, importedVpc.isolatedSubnets.length);
-        test.deepEqual(nets, importedVpc.isolatedSubnets);
+        test.deepEqual(nets, importedVpc.isolatedSubnets.map(s => s.subnetId));
       }
 
       test.done();

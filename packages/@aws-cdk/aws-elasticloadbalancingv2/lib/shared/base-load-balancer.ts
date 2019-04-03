@@ -101,7 +101,7 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
     const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
       { subnetTypes: internetFacing ? [ec2.SubnetType.Public] : [ec2.SubnetType.Private] });
 
-    const subnets = baseProps.vpc.selectSubnets(vpcSubnets).map(s => s.subnetId);
+    const subnets = baseProps.vpc.subnetIds(vpcSubnets);
 
     this.vpc = baseProps.vpc;
 

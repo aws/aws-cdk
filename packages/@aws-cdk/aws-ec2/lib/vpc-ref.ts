@@ -64,18 +64,16 @@ export interface IVpcNetwork extends IConstruct {
   /**
    * Return IDs of the subnets appropriate for the given selection strategy
    *
-   * Requires that at least one subnet is matched, throws a descriptive
+   * Requires that at least once subnet is matched, throws a descriptive
    * error message otherwise.
    *
-   * @deprecated map over the results of `selectSubnets`
+   * Prefer to use this method over {@link subnets} if you need to pass subnet
+   * IDs to a CloudFormation Resource.
    */
   subnetIds(selection?: SubnetSelection): string[];
 
   /**
    * Return the subnets appropriate for the placement strategy
-   *
-   * Requires that at least one subnet is matched, throws a descriptive
-   * error message otherwise.
    */
   selectSubnets(selection?: SubnetSelection): IVpcSubnet[];
 
@@ -221,8 +219,6 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
 
   /**
    * Returns IDs of selected subnets
-   *
-   * @deprecated map over the results of `selectSubnets`
    */
   public subnetIds(selection: SubnetSelection = {}): string[] {
     selection = reifySelectionDefaults(selection);
@@ -293,31 +289,32 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
    */
   public selectSubnets(selection: SubnetSelection = {}): IVpcSubnet[] {
     selection = reifySelectionDefaults(selection);
-    let subnets: IVpcSubnet[] = [];
 
-    if (selection.subnetNames !== undefined) { // Select by name
+    // Select by name
+    if (selection.subnetNames !== undefined) {
       const allSubnets = [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
       const names = selection.subnetNames;
-      subnets = allSubnets.filter(s => names.includes(subnetName(s)));
-    } else if (selection.subnetTypes === undefined) { // No type
-      subnets = this.privateSubnets;
-    } else { // Select by type
-      if (selection.subnetTypes.includes(SubnetType.Public)) {
-        subnets = [...subnets, ...this.publicSubnets];
+      const nameSubnets = allSubnets.filter(s => names.includes(subnetName(s)));
+      if (nameSubnets.length === 0) {
+        throw new Error(`No subnets with names in: ${selection.subnetNames}`);
       }
-      if (selection.subnetTypes.includes(SubnetType.Private)) {
-        subnets = [...subnets, ...this.privateSubnets];
-      }
-      if (selection.subnetTypes.includes(SubnetType.Isolated)) {
-        subnets = [...subnets, ...this.isolatedSubnets];
-      }
+      return nameSubnets;
     }
 
-    if (subnets.length === 0) {
-      throw new Error(`There are no ${describeSelection(selection)} in this VPC. Use a different VPC subnet selection.`);
-    }
+    // Select by type
+    if (selection.subnetTypes === undefined) { return this.privateSubnets; }
 
-    return subnets;
+    let typeSubnets: IVpcSubnet[] = [];
+    if (selection.subnetTypes.includes(SubnetType.Public)) {
+      typeSubnets = [...typeSubnets, ...this.publicSubnets];
+    }
+    if (selection.subnetTypes.includes(SubnetType.Private)) {
+      typeSubnets = [...typeSubnets, ...this.privateSubnets];
+    }
+    if (selection.subnetTypes.includes(SubnetType.Isolated)) {
+      typeSubnets = [...typeSubnets, ...this.isolatedSubnets];
+    }
+    return typeSubnets;
   }
 }
 
