@@ -1,10 +1,11 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require("@aws-cdk/aws-elasticloadbalancingv2");
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
-import { ContainerImage } from '../../lib';
+import { ContainerImage, NamespaceType } from '../../lib';
 
 export = {
   "When creating a Fargate Service": {
@@ -237,6 +238,151 @@ export = {
 
       test.done();
     }
+  },
 
+  'When enabling service discovery': {
+    'throws if namespace has not been added to cluster'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // THEN
+      test.throws(() => {
+        new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          serviceDiscoveryOptions: {
+            name: 'myApp',
+          }
+        });
+      }, /Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
+
+      test.done();
+    },
+
+    'creates cloud map service for Private DNS namespace'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // WHEN
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: NamespaceType.PrivateDns
+      });
+
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp'
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+         DnsConfig: {
+          DnsRecords: [
+            {
+              TTL: "60",
+              Type: "A"
+            }
+          ],
+          NamespaceId: {
+            "Fn::GetAtt": [
+              "EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F",
+              "Id"
+            ]
+          },
+          RoutingPolicy: "MULTIVALUE"
+        },
+        HealthCheckCustomConfig: {
+          FailureThreshold: 1
+        },
+        Name: "myApp",
+        NamespaceId: {
+          'Fn::GetAtt': [
+            "EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F",
+            "Id"
+          ]
+        }
+      }));
+
+      test.done();
+    },
+
+    'creates AWS Cloud Map service for Private DNS namespace with SRV records'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // WHEN
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: NamespaceType.PrivateDns
+      });
+
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp',
+          dnsRecordType: cloudmap.DnsRecordType.SRV
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+        DnsConfig: {
+          DnsRecords: [
+            {
+              TTL: "60",
+              Type: "SRV"
+            }
+          ],
+          NamespaceId: {
+            'Fn::GetAtt': [
+              'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+              'Id'
+            ]
+          },
+          RoutingPolicy: 'MULTIVALUE'
+        },
+        HealthCheckCustomConfig: {
+          FailureThreshold: 1
+        },
+        Name: "myApp",
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+            'Id'
+          ]
+        }
+      }));
+
+      test.done();
+    },
   }
 };
