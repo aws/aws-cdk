@@ -139,7 +139,7 @@ export class RotationSingleUser extends cdk.Construct {
       vpc: props.vpc
     });
 
-    const vpcSubnetIds = props.vpc.subnetIds(props.vpcSubnets);
+    const vpcSubnetIds = props.vpc.selectSubnets(props.vpcSubnets).map(s => s.subnetId);
 
     props.target.connections.allowDefaultPortFrom(securityGroup);
 

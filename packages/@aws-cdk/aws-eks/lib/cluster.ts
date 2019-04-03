@@ -163,7 +163,7 @@ export class Cluster extends ClusterBase {
 
     // Get subnetIds for all selected subnets
     const placements = props.vpcSubnets || { subnetTypes: [ec2.SubnetType.Public, ec2.SubnetType.Private] };
-    const subnetIds = this.vpc.subnetIds(placements);
+    const subnetIds = this.vpc.selectSubnets(placements).map(s => s.subnetId);
 
     const resource = new CfnCluster(this, 'Resource', {
       name: props.clusterName,

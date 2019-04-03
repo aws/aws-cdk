@@ -544,7 +544,7 @@ export class Function extends FunctionBase {
     // won't work because the ENIs don't get a Public IP.
     // Why are we not simply forcing vpcSubnets? Because you might still be choosing
     // Isolated networks or selecting among 2 sets of Private subnets by name.
-    const subnetIds = props.vpc.subnetIds(props.vpcSubnets);
+    const subnetIds = props.vpc.selectSubnets(props.vpcSubnets).map(s => s.subnetId);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
     for (const subnetId of subnetIds) {
       if (publicSubnetIds.has(subnetId)) {
