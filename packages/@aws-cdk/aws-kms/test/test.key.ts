@@ -1,5 +1,5 @@
 import { exactlyMatchTemplate, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
+import { PolicyDocument, PolicyStatement, User } from '@aws-cdk/aws-iam';
 import { App, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { EncryptionKey } from '../lib';
@@ -317,6 +317,55 @@ export = {
         }
       }
     });
+
+    test.done();
+  },
+
+  'grant decrypt on a key'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const key = new EncryptionKey(stack, 'Key');
+    const user = new User(stack, 'User');
+
+    // WHEN
+    key.grantDecrypt(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          // This one is there by default
+          {
+            // tslint:disable-next-line:max-line-length
+            Action: [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*", "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion" ],
+            Effect: "Allow",
+            Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::", { Ref: "AWS::AccountId" }, ":root" ] ] } },
+            Resource: "*"
+          },
+          // This is the interesting one
+          {
+            Action: "kms:Decrypt",
+            Effect: "Allow",
+            Principal: { AWS: { "Fn::GetAtt": [ "User00B015A1", "Arn" ] } },
+            Resource: "*"
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    }));
+
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "kms:Decrypt",
+            Effect: "Allow",
+            Resource: { "Fn::GetAtt": [ "Key961B73FD", "Arn" ] }
+          }
+        ],
+        Version: "2012-10-17"
+      },
+    }));
 
     test.done();
   },

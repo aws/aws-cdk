@@ -1,4 +1,4 @@
-import { PolicyPrincipal } from '@aws-cdk/aws-iam';
+import iam = require('@aws-cdk/aws-iam');
 
 /**
  * Represents a permission statement that can be added to a Lambda's resource policy
@@ -34,7 +34,7 @@ export interface Permission {
    *
    * The principal can be either an AccountPrincipal or a ServicePrincipal.
    */
-  readonly principal: PolicyPrincipal;
+  readonly principal: iam.IPrincipal;
 
   /**
    * The AWS account ID (without hyphens) of the source owner. For example, if

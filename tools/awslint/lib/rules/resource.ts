@@ -11,6 +11,8 @@ export const resourceLinter = new Linter<ResourceLinterContext>(assembly => {
   }));
 });
 
+const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
+
 interface ResourceLinterContext {
   readonly ts: reflect.TypeSystem;
   readonly resource: CfnResourceSpec;
@@ -97,10 +99,10 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'resource-interface-extends-construct',
-  message: 'resource interface must extends cdk.IConstruct',
+  message: 'resource interface must extend cdk.IConstruct',
   eval: e => {
     if (!e.ctx.resourceInterface) { return; }
-    e.assert(e.ctx.resourceInterface.interfaces.some(i => i.fqn === CONSTRUCT_INTERFACE_FQN), e.ctx.resourceInterface.fqn);
+    e.assert(e.ctx.resourceInterface.getInterfaces(true).some(i => i.fqn === CONSTRUCT_INTERFACE_FQN), e.ctx.resourceInterface.fqn);
   }
 });
 
@@ -149,7 +151,7 @@ resourceLinter.add({
     }
 
     e.assertSignature(importMethod, {
-      returns: e.ctx.resourceInterface.fqn,
+      returns: e.ctx.resourceInterface,
       parameters: [
         { name: 'scope', type: CONSTRUCT_FQN },
         { name: 'id', type: 'string' },
@@ -173,8 +175,25 @@ resourceLinter.add({
     if (!e.ctx.importPropsInterface) { return; }
 
     e.assertSignature(exportMethod, {
-      returns: e.ctx.importPropsInterface.fqn,
+      returns: e.ctx.importPropsInterface,
       parameters: []
     });
+  }
+});
+
+resourceLinter.add({
+  code: 'grant-result',
+  message: `"grant" method must return ${GRANT_RESULT_FQN}`,
+  eval: e => {
+    if (!e.ctx.resourceClass) { return; }
+
+    const grantResultType = e.ctx.ts.findFqn(GRANT_RESULT_FQN);
+    const grantMethods = e.ctx.resourceClass.getMethods(true).filter(m => m.name.startsWith('grant'));
+
+    for (const grantMethod of grantMethods) {
+      e.assertSignature(grantMethod, {
+        returns: grantResultType
+      });
+    }
   }
 });

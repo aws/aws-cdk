@@ -333,6 +333,11 @@ export class Function extends FunctionBase {
    */
   public readonly handler: string;
 
+  /**
+   * The principal this Lambda Function is running as
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+
   protected readonly canCreatePermissions = true;
 
   private readonly layers: ILayerVersion[] = [];
@@ -361,6 +366,7 @@ export class Function extends FunctionBase {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicyArns,
     });
+    this.grantPrincipal = this.role;
 
     for (const statement of (props.initialPolicy || [])) {
       this.role.addToPolicy(statement);
@@ -600,6 +606,7 @@ export class Function extends FunctionBase {
 }
 
 export class ImportedFunction extends FunctionBase {
+  public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;
   public readonly role?: iam.IRole;
@@ -612,6 +619,7 @@ export class ImportedFunction extends FunctionBase {
     this.functionArn = props.functionArn;
     this.functionName = extractNameFromArn(props.functionArn);
     this.role = props.role;
+    this.grantPrincipal = this.role || new iam.ImportedResourcePrincipal({ resource: this } );
 
     if (props.securityGroupId) {
       this._connections = new ec2.Connections({

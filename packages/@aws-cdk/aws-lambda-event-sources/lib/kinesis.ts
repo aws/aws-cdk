@@ -37,6 +37,6 @@ export class KinesisEventSource implements lambda.IEventSource {
       eventSourceArn: this.stream.streamArn,
     });
 
-    this.stream.grantRead(target.role);
+    this.stream.grantRead(target);
   }
 }
