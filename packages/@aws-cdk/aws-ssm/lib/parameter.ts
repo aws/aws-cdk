@@ -26,14 +26,14 @@ export interface IParameter extends cdk.IConstruct {
    *
    * @param grantee the role to be granted read-only access to the parameter.
    */
-  grantRead(grantee: iam.IGrantable): void;
+  grantRead(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grants write (PutParameter) permissions on the SSM Parameter.
    *
    * @param grantee the role to be granted write access to the parameter.
    */
-  grantWrite(grantee: iam.IGrantable): void;
+  grantWrite(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
