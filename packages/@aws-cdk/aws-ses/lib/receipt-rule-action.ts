@@ -339,7 +339,7 @@ export class ReceiptRuleS3Action implements IReceiptRuleAction {
     }
 
     return {
-      s3action: {
+      s3Action: {
         bucketName: this.props.bucket.bucketName,
         kmsKeyArn: this.props.kmsKey ? this.props.kmsKey.keyArn : undefined,
         objectKeyPrefix: this.props.objectKeyPrefix,

@@ -81,4 +81,6 @@ echo "DONE. Doing a validating build.."
 # Doing a full test. Must do it here instead of per-package since our tooling
 # makes a number of assumptions on the format of package.json which does not
 # include supporting "file:..." references.
+node_modules/.bin/lerna run --stream build
 node_modules/.bin/lerna run --stream test
+
