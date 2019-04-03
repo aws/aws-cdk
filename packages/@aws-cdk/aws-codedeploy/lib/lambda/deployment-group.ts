@@ -218,7 +218,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
    * @param principal to grant permission to
    */
   public grantPutLifecycleEventHookExecutionStatus(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.onPrincipal({
+    return iam.Grant.addToPrincipal({
       grantee,
       resourceArns: [this.deploymentGroupArn],
       actions: ['codedeploy:PutLifecycleEventHookExecutionStatus'],

@@ -88,7 +88,7 @@ export class Metric {
    * @param grantee The IAM identity to give permissions to.
    */
   public static grantPutMetricData(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.onPrincipal({
+    return iam.Grant.addToPrincipal({
       grantee,
       actions: ['cloudwatch:PutMetricData'],
       resourceArns: ['*']

@@ -125,7 +125,7 @@ export abstract class ParameterBase extends cdk.Construct implements IParameter 
   }
 
   public grantRead(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.onPrincipal({
+    return iam.Grant.addToPrincipal({
       grantee,
       actions: ['ssm:DescribeParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],
       resourceArns: [this.parameterArn],
@@ -133,7 +133,7 @@ export abstract class ParameterBase extends cdk.Construct implements IParameter 
   }
 
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.onPrincipal({
+    return iam.Grant.addToPrincipal({
       grantee,
       actions: ['ssm:PutParameter'],
       resourceArns: [this.parameterArn],

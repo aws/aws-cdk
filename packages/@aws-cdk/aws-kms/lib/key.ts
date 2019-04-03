@@ -105,7 +105,7 @@ export abstract class EncryptionKeyBase extends Construct implements IEncryption
    * must not be empty and so default grants won't work.
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.onPrincipalAndResource({
+    return iam.Grant.addToPrincipalAndResource({
       grantee,
       actions,
       resourceArns: [this.keyArn],

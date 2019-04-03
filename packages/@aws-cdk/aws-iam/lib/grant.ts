@@ -98,8 +98,8 @@ export class Grant {
    *   case of imported resources) leads to a warning being added to the
    *   resource construct.
    */
-  public static onPrincipalOrResource(options: GrantWithResourceOptions): Grant {
-    const result = Grant.onPrincipal({
+  public static addToPrincipalOrResource(options: GrantWithResourceOptions): Grant {
+    const result = Grant.addToPrincipal({
       ...options,
       scope: options.resource
     });
@@ -122,7 +122,7 @@ export class Grant {
    * Absence of a principal leads to a warning, but failing to add
    * the permissions to a present principal is not an error.
    */
-  public static onPrincipal(options: GrantOnPrincipalOptions): Grant {
+  public static addToPrincipal(options: GrantOnPrincipalOptions): Grant {
     const statement = new PolicyStatement()
       .addActions(...options.actions)
       .addResources(...options.resourceArns);
@@ -141,8 +141,8 @@ export class Grant {
    *
    * Statement will be the resource statement.
    */
-  public static onPrincipalAndResource(options: GrantOnPrincipalAndResourceOptions): Grant {
-    const result = Grant.onPrincipal({
+  public static addToPrincipalAndResource(options: GrantOnPrincipalAndResourceOptions): Grant {
+    const result = Grant.addToPrincipal({
       ...options,
       scope: options.resource,
     });

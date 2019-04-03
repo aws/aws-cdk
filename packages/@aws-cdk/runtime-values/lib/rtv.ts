@@ -75,7 +75,7 @@ export class RuntimeValue extends cdk.Construct {
    * @param principal The principal (e.g. Role, User, Group)
    */
   public grantRead(grantee: iam.IGrantable) {
-    return iam.Grant.onPrincipal({
+    return iam.Grant.addToPrincipal({
       grantee,
       resourceArns: [this.parameterArn],
       actions: RuntimeValue.SSM_READ_ACTIONS

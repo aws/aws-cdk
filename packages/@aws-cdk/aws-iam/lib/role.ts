@@ -212,7 +212,7 @@ export class Role extends Construct implements IRole {
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
   public grant(grantee: IPrincipal, ...actions: string[]) {
-    return Grant.onPrincipal({
+    return Grant.addToPrincipal({
       grantee,
       actions,
       resourceArns: [this.roleArn],
@@ -356,7 +356,7 @@ class ImportedRole extends Construct implements IRole {
    * Grant the actions defined in actions to the identity Principal on this resource.
    */
   public grant(grantee: IPrincipal, ...actions: string[]): Grant {
-    return Grant.onPrincipal({
+    return Grant.addToPrincipal({
       grantee,
       actions,
       resourceArns: [this.roleArn],

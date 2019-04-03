@@ -179,7 +179,7 @@ export class Table extends Construct {
    * @param grantee The principal (no-op if undefined)
    */
   public static grantListStreams(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.onPrincipal({
+    return iam.Grant.addToPrincipal({
       grantee,
       actions: ['dynamodb:ListStreams'],
       resourceArns: ['*'],
@@ -408,7 +408,7 @@ export class Table extends Construct {
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.onPrincipal({
+    return iam.Grant.addToPrincipal({
       grantee,
       actions,
       resourceArns: [
@@ -426,7 +426,7 @@ export class Table extends Construct {
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    */
   public grantStream(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.onPrincipal({
+    return iam.Grant.addToPrincipal({
       grantee,
       actions,
       resourceArns: [this.tableStreamArn],

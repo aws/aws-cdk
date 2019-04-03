@@ -298,7 +298,7 @@ export class Table extends cdk.Construct implements ITable {
   }
 
   private grant(grantee: iam.IGrantable, actions: string[]) {
-    return iam.Grant.onPrincipal({
+    return iam.Grant.addToPrincipal({
       grantee,
       resourceArns: [this.tableArn],
       actions,
