@@ -461,7 +461,8 @@
               }
             ]
           }
-        }
+        },
+        "ServiceRegistries": []
       },
       "DependsOn": [
         "LBPublicListenerFargateGroup5EE2FBAF",

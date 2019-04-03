@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "scripts": {
-    "build": "echo ok",
+    "build": "echo Nothing to build",
     "package": "mkdir -p dist/js && cd dist/js && npm pack ../../"
   },
   "engines": {

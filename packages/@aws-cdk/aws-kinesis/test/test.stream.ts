@@ -305,6 +305,19 @@ export = {
                         }
                       },
                       "Resource": "*"
+                    },
+                    {
+                      "Action": "kms:Decrypt",
+                      "Effect": "Allow",
+                      "Principal": {
+                        "AWS": {
+                          "Fn::GetAtt": [
+                            "MyUserDC45028B",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      "Resource": "*"
                     }
                   ],
                   "Version": "2012-10-17"
@@ -428,6 +441,23 @@ export = {
                         }
                       },
                       "Resource": "*"
+                    },
+                    {
+                      "Action": [
+                        "kms:Encrypt",
+                        "kms:ReEncrypt*",
+                        "kms:GenerateDataKey*"
+                      ],
+                      "Effect": "Allow",
+                      "Principal": {
+                        "AWS": {
+                          "Fn::GetAtt": [
+                            "MyUserDC45028B",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      "Resource": "*"
                     }
                   ],
                   "Version": "2012-10-17"
@@ -475,8 +505,9 @@ export = {
                     },
                     {
                       "Action": [
-                        "kms:GenerateDataKey",
-                        "kms:Encrypt"
+                        "kms:Encrypt",
+                        "kms:ReEncrypt*",
+                        "kms:GenerateDataKey*",
                       ],
                       "Effect": "Allow",
                       "Resource": {
@@ -554,6 +585,24 @@ export = {
                         }
                       },
                       "Resource": "*"
+                    },
+                    {
+                      "Action": [
+                        "kms:Decrypt",
+                        "kms:Encrypt",
+                        "kms:ReEncrypt*",
+                        "kms:GenerateDataKey*"
+                      ],
+                      "Effect": "Allow",
+                      "Principal": {
+                        "AWS": {
+                          "Fn::GetAtt": [
+                            "MyUserDC45028B",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      "Resource": "*"
                     }
                   ],
                   "Version": "2012-10-17"
@@ -604,8 +653,9 @@ export = {
                     {
                       "Action": [
                         "kms:Decrypt",
-                        "kms:GenerateDataKey",
-                        "kms:Encrypt"
+                        "kms:Encrypt",
+                        "kms:ReEncrypt*",
+                        "kms:GenerateDataKey*"
                       ],
                       "Effect": "Allow",
                       "Resource": {

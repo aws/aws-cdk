@@ -4,7 +4,8 @@
     "include": "dependencies/node-version"
   },
   "scripts": {
-    "pkglint": "tools/pkglint/bin/pkglint -f ."
+    "pkglint": "tools/pkglint/bin/pkglint -f .",
+    "build-all": "tsc -b"
   },
   "devDependencies": {
     "@types/jest": "^24.0.11",
