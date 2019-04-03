@@ -1,8 +1,8 @@
 import { Test } from 'nodeunit';
-import { SecretValue, Stack } from '../lib';
+import { CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, SecretValue, Stack } from '../lib';
 
 export = {
-  'SecretValue.plainText'(test: Test) {
+  'plainText'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
@@ -14,7 +14,7 @@ export = {
     test.done();
   },
 
-  'SecretValue.secretsManager'(test: Test) {
+  'secretsManager'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
@@ -30,7 +30,7 @@ export = {
     test.done();
   },
 
-  'SecretValue.secretsManager with defaults'(test: Test) {
+  'secretsManager with defaults'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
@@ -42,8 +42,56 @@ export = {
     test.done();
   },
 
-  'SecretValue.secretsManager with an empty ID'(test: Test) {
+  'secretsManager with an empty ID'(test: Test) {
     test.throws(() => SecretValue.secretsManager(''), /secretId cannot be empty/);
     test.done();
+  },
+
+  'ssmSecure'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const v = SecretValue.ssmSecure('param-name', 'param-version');
+
+    // THEN
+    test.deepEqual(stack.node.resolve(v), '{{resolve:ssm-secure:param-name:param-version}}');
+    test.done();
+  },
+
+  'cfnDynamicReference'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const v = SecretValue.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.Ssm, 'foo:bar'));
+
+    // THEN
+    test.deepEqual(stack.node.resolve(v), '{{resolve:ssm:foo:bar}}');
+    test.done();
+  },
+
+  'cfnParameter (with NoEcho)'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const p = new CfnParameter(stack, 'MyParam', { type: 'String', noEcho: true });
+
+    // WHEN
+    const v = SecretValue.cfnParameter(p);
+
+    // THEN
+    test.deepEqual(stack.node.resolve(v), { Ref: 'MyParam' });
+    test.done();
+  },
+
+  'fails if cfnParameter does not have NoEcho'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const p = new CfnParameter(stack, 'MyParam', { type: 'String' });
+
+    // THEN
+    test.throws(() => SecretValue.cfnParameter(p), /CloudFormation parameter must be configured with "NoEcho"/);
+    test.done();
   }
+
 };

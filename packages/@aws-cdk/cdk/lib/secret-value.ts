@@ -1,4 +1,5 @@
-import { DynamicReference, DynamicReferenceService } from './dynamic-reference';
+import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
+import { CfnParameter } from './cfn-parameter';
 import { Token } from './token';
 
 /**
@@ -46,8 +47,50 @@ export class SecretValue extends Token {
       options.versionId    || ''
     ];
 
-    const dyref = new DynamicReference(DynamicReferenceService.SecretsManager, parts.join(':'));
-    return new SecretValue(() => dyref.toString());
+    const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SecretsManager, parts.join(':'));
+    return this.cfnDynamicReference(dyref);
+  }
+
+  /**
+   * Use a secret value stored from a Systems Manager (SSM) parameter.
+   *
+   * @param parameterName The name of the parameter in the Systems Manager
+   * Parameter Store. The parameter name is case-sensitive.
+   *
+   * @param version An integer that specifies the version of the parameter to
+   * use. You must specify the exact version. You cannot currently specify that
+   * AWS CloudFormation use the latest version of a parameter.
+   */
+  public static ssmSecure(parameterName: string, version: string): SecretValue {
+    const parts = [ parameterName, version ];
+    return this.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.SsmSecure, parts.join(':')));
+  }
+
+  /**
+   * Obtain the secret value through a CloudFormation dynamic reference.
+   *
+   * If possible, use `SecretValue.ssmSecure` or `SecretValue.secretsManager` directly.
+   *
+   * @param ref The dynamic reference to use.
+   */
+  public static cfnDynamicReference(ref: CfnDynamicReference) {
+    return new SecretValue(() => ref.toString());
+  }
+
+  /**
+   * Obtain the secret value through a CloudFormation parameter.
+   *
+   * Generally, this is not a recommended approach. AWS Secrets Manager is the
+   * recommended way to reference secrets.
+   *
+   * @param param The CloudFormation parameter to use.
+   */
+  public static cfnParameter(param: CfnParameter) {
+    if (!param.noEcho) {
+      throw new Error(`CloudFormation parameter must be configured with "NoEcho"`);
+    }
+
+    return new SecretValue(param.value);
   }
 }
 

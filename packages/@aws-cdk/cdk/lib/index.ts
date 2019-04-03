@@ -23,7 +23,7 @@ export * from './resource-policy';
 export * from './cfn-rule';
 export * from './stack';
 export * from './cfn-element';
-export * from './dynamic-reference';
+export * from './cfn-dynamic-reference';
 export * from './tag';
 export * from './removal-policy';
 export * from './arn';

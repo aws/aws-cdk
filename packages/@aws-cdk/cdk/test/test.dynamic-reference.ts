@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { DynamicReference, DynamicReferenceService, Stack } from '../lib';
+import { CfnDynamicReference, CfnDynamicReferenceService, Stack } from '../lib';
 
 export = {
   'can create dynamic references with service and key with colons'(test: Test) {
@@ -7,7 +7,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const ref = new DynamicReference(DynamicReferenceService.Ssm, 'a:b:c');
+    const ref = new CfnDynamicReference(CfnDynamicReferenceService.Ssm, 'a:b:c');
 
     // THEN
     test.equal(stack.node.resolve(ref), '{{resolve:ssm:a:b:c}}');

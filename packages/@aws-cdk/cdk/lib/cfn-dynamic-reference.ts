@@ -7,7 +7,7 @@ export interface DynamicReferenceProps {
   /**
    * The service to retrieve the dynamic reference from
    */
-  readonly service: DynamicReferenceService;
+  readonly service: CfnDynamicReferenceService;
 
   /**
    * The reference key of the dynamic reference
@@ -23,8 +23,8 @@ export interface DynamicReferenceProps {
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html
  */
-export class DynamicReference extends Token {
-  constructor(service: DynamicReferenceService, key: string) {
+export class CfnDynamicReference extends Token {
+  constructor(service: CfnDynamicReferenceService, key: string) {
     super(() => '{{resolve:' + service + ':' + key + '}}');
   }
 }
@@ -32,7 +32,7 @@ export class DynamicReference extends Token {
 /**
  * The service to retrieve the dynamic reference from
  */
-export enum DynamicReferenceService {
+export enum CfnDynamicReferenceService {
   /**
    * Plaintext value stored in AWS Systems Manager Parameter Store
    */

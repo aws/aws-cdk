@@ -195,15 +195,16 @@ The best practice is to store secrets in AWS Secrets Manager and reference them 
 
 ```ts
 const secret = SecretValue.secretsManager('secretId', {
-  jsonField: 'password' // key of a JSON field to retrieve (defaults to all content),
-  versionId: 'id'       // id of the version (default AWSCURRENT)
-  versionStage: 'stage' // version stage name (default AWSCURRENT)
+  jsonField: 'password' // optional: key of a JSON field to retrieve (defaults to all content),
+  versionId: 'id'       // optional: id of the version (default AWSCURRENT)
+  versionStage: 'stage' // optional: version stage name (default AWSCURRENT)
 });
 ```
 
-If you understand the implications, you can also create a `SecretValue` and store it as
-plain text in your code:
+Using AWS Secrets Manager is the recommended way to reference secrets in a CDK app.
+However, `SecretValue` supports the following additional options:
 
-```ts
-const secret = SecretValue.plainText('bad-practice');
-```
+ * `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
+ * `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
+ * `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
+ * `SecretValue.cfnDynamicReference(ref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
