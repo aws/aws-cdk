@@ -49,13 +49,13 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const ref = new ssm.ParameterStoreSecureString(stack, 'Ref', {
+    const ref = new ssm.ParameterStoreSecureString({
       parameterName: '/some/key',
       version: 123
     });
 
     // THEN
-    test.equal(ref.node.resolve(ref.stringValue), '{{resolve:ssm-secure:/some/key:123}}');
+    test.equal(stack.node.resolve(ref), '{{resolve:ssm-secure:/some/key:123}}');
 
     test.done();
   },
