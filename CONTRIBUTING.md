@@ -46,9 +46,9 @@ Create a commit with the proposed change changes:
 * If this commit includes breaking changes, they must be listed at the end in the following format (notice how multiple breaking changes should be formatted):
 
 ```
-BREAKING CHANGE: description of what broke and how to achieve this behavior now
-* **module:** another breaking change
-* **module:** yet another breaking change
+BREAKING CHANGE: Description of what broke and how to achieve this behavior now
+* Another breaking change
+* Yet another breaking change
 ```
 
 ### Pull Request
