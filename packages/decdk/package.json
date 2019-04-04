@@ -124,6 +124,7 @@
     "@aws-cdk/cx-api": "^0.27.0",
     "@aws-cdk/region-info": "^0.27.0",
     "@aws-cdk/runtime-values": "^0.27.0",
+    "@aws-cdk/aws-appmesh": "^0.27.0",
     "fs-extra": "^7.0.1",
     "jsii-reflect": "^0.8.2",
     "jsonschema": "^1.2.4",
