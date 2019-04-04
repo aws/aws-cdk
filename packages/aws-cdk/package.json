@@ -44,7 +44,7 @@
     "@types/yaml": "^1.0.2",
     "@types/yargs": "^8.0.3",
     "cdk-build-tools": "^0.28.0",
-    "mockery": "^2.1.0",
+    "mockery": "^2.1.0"
   },
   "dependencies": {
     "pkglint": "^0.28.0",
