@@ -2,6 +2,7 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
+import { SecretValue } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine } from '../lib';
 
@@ -16,7 +17,7 @@ export = {
       engine: DatabaseClusterEngine.Aurora,
       masterUser: {
         username: 'admin',
-        password: 'tooshort',
+        password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
@@ -53,7 +54,7 @@ export = {
       engine: DatabaseClusterEngine.Aurora,
       masterUser: {
         username: 'admin',
-        password: 'tooshort',
+        password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
@@ -79,7 +80,7 @@ export = {
       instances: 1,
       masterUser: {
         username: 'admin',
-        password: 'tooshort',
+        password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
@@ -115,7 +116,7 @@ export = {
       instances: 1,
       masterUser: {
         username: 'admin',
-        password: 'tooshort',
+        password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
@@ -153,7 +154,7 @@ export = {
       engine: DatabaseClusterEngine.Aurora,
       masterUser: {
         username: 'admin',
-        password: 'tooshort',
+        password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
         instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),

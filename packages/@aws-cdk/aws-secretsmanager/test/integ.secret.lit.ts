@@ -14,7 +14,7 @@ class SecretsManagerStack extends cdk.Stack {
     secret.grantRead(role);
 
     new iam.User(this, 'User', {
-      password: secret.stringValue
+      password: secret.secretValue
     });
 
     // Templated secret
@@ -26,8 +26,8 @@ class SecretsManagerStack extends cdk.Stack {
     });
 
     new iam.User(this, 'OtherUser', {
-      userName: templatedSecret.jsonFieldValue('username'),
-      password: templatedSecret.jsonFieldValue('password')
+      userName: templatedSecret.secretJsonValue('username').toString(),
+      password: templatedSecret.secretJsonValue('password')
     });
     /// !hide
   }

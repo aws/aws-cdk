@@ -1,5 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
+import { SecretValue } from '@aws-cdk/cdk';
 
 /**
  * The engine for the database cluster
@@ -74,7 +75,7 @@ export interface Login {
    *
    * @default a Secrets Manager generated password
    */
-  readonly password?: string;
+  readonly password?: SecretValue;
 
   /**
    * KMS encryption key to encrypt the generated secret.

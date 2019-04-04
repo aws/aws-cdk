@@ -1,5 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cdk = require('@aws-cdk/cdk');
+import { SecretValue } from '@aws-cdk/cdk';
 
 /**
  * Construction properties of the {@link AlexaSkillDeployAction Alexa deploy Action}.
@@ -13,12 +13,12 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
   /**
    * The client secret of the developer console token
    */
-  readonly clientSecret: string;
+  readonly clientSecret: SecretValue;
 
   /**
    * The refresh token of the developer console token
    */
-  readonly refreshToken: string;
+  readonly refreshToken: SecretValue;
 
   /**
    * The Alexa skill id
@@ -41,9 +41,6 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
  */
 export class AlexaSkillDeployAction extends codepipeline.DeployAction {
   constructor(props: AlexaSkillDeployActionProps) {
-    cdk.Secret.assertSafeSecret(props.clientSecret, 'clientSecret');
-    cdk.Secret.assertSafeSecret(props.refreshToken, 'refreshToken');
-
     super({
       ...props,
       artifactBounds: {

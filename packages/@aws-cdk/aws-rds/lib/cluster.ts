@@ -273,8 +273,12 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
       // Admin
-      masterUsername: secret ? secret.jsonFieldValue('username') : props.masterUser.username,
-      masterUserPassword: secret ? secret.jsonFieldValue('password') : props.masterUser.password,
+      masterUsername: secret ? secret.secretJsonValue('username').toString() : props.masterUser.username,
+      masterUserPassword: secret
+        ? secret.secretJsonValue('password').toString()
+        : (props.masterUser.password
+            ? props.masterUser.password.toString()
+            : undefined),
       backupRetentionPeriod: props.backup && props.backup.retentionDays,
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,

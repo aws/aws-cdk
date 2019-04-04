@@ -1,6 +1,6 @@
 ## AWS Cloud Development Kit Core Library
 
-This library includes the basic building blocks of 
+This library includes the basic building blocks of
 the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) (AWS CDK).
 
 ## Aspects
@@ -185,3 +185,26 @@ const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
 vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { priority: 2 }));
 // ... snip
 ```
+
+## Secrets
+
+To help avoid accidental storage of secrets as plain text we use the `SecretValue` type to
+represent secrets.
+
+The best practice is to store secrets in AWS Secrets Manager and reference them using `SecretValue.secretsManager`:
+
+```ts
+const secret = SecretValue.secretsManager('secretId', {
+  jsonField: 'password' // optional: key of a JSON field to retrieve (defaults to all content),
+  versionId: 'id'       // optional: id of the version (default AWSCURRENT)
+  versionStage: 'stage' // optional: version stage name (default AWSCURRENT)
+});
+```
+
+Using AWS Secrets Manager is the recommended way to reference secrets in a CDK app.
+However, `SecretValue` supports the following additional options:
+
+ * `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
+ * `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
+ * `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
+ * `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).

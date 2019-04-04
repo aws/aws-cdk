@@ -1,4 +1,4 @@
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, SecretValue, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { User } from '../lib';
 
@@ -17,7 +17,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new User(stack, 'MyUser', {
-      password: '1234'
+      password: SecretValue.plainText('1234')
     });
     test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
       { MyUserDC45028B:
