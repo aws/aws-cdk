@@ -1,5 +1,6 @@
 import { IConstruct } from "./construct";
 import { TOKEN_MAP } from "./encoding";
+import { unresolved } from './unresolved';
 
 /**
  * If objects has a function property by this name, they will be considered tokens, and this
@@ -18,6 +19,16 @@ export const RESOLVE_METHOD = 'resolve';
  * semantics.
  */
 export class Token {
+  /**
+   * Returns true if obj is a token (i.e. has the resolve() method or is a string
+   * that includes token markers), or it's a listifictaion of a Token string.
+   *
+   * @param obj The object to test.
+   */
+  public static unresolved(obj: any): boolean {
+    return unresolved(obj);
+  }
+
   private tokenStringification?: string;
   private tokenListification?: string[];
 
