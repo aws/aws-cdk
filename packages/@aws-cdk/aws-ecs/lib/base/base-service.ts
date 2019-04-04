@@ -110,11 +110,6 @@ export abstract class BaseService extends cdk.Construct
    */
   public readonly taskDefinition: TaskDefinition;
 
-  /**
-   * Whether the new long ARN format has been enabled on ECS services.
-   */
-  public readonly longArnEnabled: boolean;
-
   protected cloudmapService?: cloudmap.Service;
   protected cluster: ICluster;
   protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
@@ -149,12 +144,12 @@ export abstract class BaseService extends cdk.Construct
       ...additionalProps
     });
 
-    this.longArnEnabled = props.longArnEnabled !== undefined ? props.longArnEnabled : false;
     this.serviceArn = this.resource.serviceArn;
 
     // This is a workaround for CFN bug that returns the cluster name instead of the service name when long ARN formats
     // are enabled for the principal in a given region.
-    this.serviceName = this.longArnEnabled
+    const longArnEnabled = props.longArnEnabled !== undefined ? props.longArnEnabled : false;
+    this.serviceName = longArnEnabled
       ? cdk.Fn.select(2, cdk.Fn.split('/', this.serviceArn))
       : this.resource.serviceName;
 
