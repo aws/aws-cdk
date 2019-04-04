@@ -4607,6 +4607,66 @@
         ],
         "description": "Set RefKind of AWS::Greengrass::SubscriptionDefinitionVersion to Arn"
       }
+    },
+    "AWS::AppMesh::Mesh": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::Mesh to Arn"
+      }
+    },
+    "AWS::AppMesh::Route": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::Route to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualNode": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualNode to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualRouter": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualRouter to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualService": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualService to Arn"
+      }
     }
   }
 }
