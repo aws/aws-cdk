@@ -2,6 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
+import { SecretValue } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import rds = require('../lib');
 
@@ -167,7 +168,7 @@ export = {
       engine: rds.DatabaseClusterEngine.AuroraMysql,
       masterUser: {
         username: 'admin',
-        password: 'tooshort'
+        password: SecretValue.plainText('tooshort')
       },
       instanceProps: {
         instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
