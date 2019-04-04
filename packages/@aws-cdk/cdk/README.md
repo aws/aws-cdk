@@ -207,4 +207,4 @@ However, `SecretValue` supports the following additional options:
  * `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
  * `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
  * `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
- * `SecretValue.cfnDynamicReference(ref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+ * `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
