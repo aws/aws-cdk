@@ -298,7 +298,7 @@ export class Service extends cdk.Construct implements IService {
 }
 
 function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtlSec?: number): CfnService.DnsRecordProperty[] {
-  const ttl = dnsTtlSec !== undefined ? dnsTtlSec.toString() : '60';
+  const ttl = dnsTtlSec !== undefined ? dnsTtlSec : 60;
 
   if (dnsRecordType === DnsRecordType.A_AAAA) {
     return [{

@@ -1,5 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cdk = require('@aws-cdk/cdk');
+import { SecretValue } from '@aws-cdk/cdk';
 
 /**
  * Construction properties of the {@link GitHubSourceAction GitHub source action}.
@@ -36,7 +36,7 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
    *   const oauth = new secretsmanager.SecretString(this, 'GitHubOAuthToken', { secretId: 'my-github-token' });
    *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth.value, ... });
    */
-  readonly oauthToken: string;
+  readonly oauthToken: SecretValue;
 
   /**
    * Whether AWS CodePipeline should poll for source changes.
@@ -54,8 +54,6 @@ export class GitHubSourceAction extends codepipeline.SourceAction {
   private readonly props: GitHubSourceActionProps;
 
   constructor(props: GitHubSourceActionProps) {
-    cdk.Secret.assertSafeSecret(props.oauthToken, 'oauthToken');
-
     super({
       ...props,
       owner: 'ThirdParty',
@@ -64,7 +62,7 @@ export class GitHubSourceAction extends codepipeline.SourceAction {
         Owner: props.owner,
         Repo: props.repo,
         Branch: props.branch || "master",
-        OAuthToken: props.oauthToken,
+        OAuthToken: props.oauthToken.toString(),
         PollForSourceChanges: props.pollForSourceChanges || false,
       },
       outputArtifactName: props.outputArtifactName
@@ -78,7 +76,7 @@ export class GitHubSourceAction extends codepipeline.SourceAction {
       new codepipeline.CfnWebhook(info.scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
-          secretToken: this.props.oauthToken,
+          secretToken: this.props.oauthToken.toString(),
         },
         filters: [
           {

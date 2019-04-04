@@ -380,7 +380,7 @@ export = {
          DnsConfig: {
           DnsRecords: [
             {
-              TTL: "60",
+              TTL: 60,
               Type: "A"
             }
           ],
@@ -441,7 +441,7 @@ export = {
         DnsConfig: {
           DnsRecords: [
             {
-              TTL: "60",
+              TTL: 60,
               Type: "SRV"
             }
           ],

@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, SecretValue } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -50,9 +50,12 @@ export interface UserProps {
    * The password for the user. This is required so the user can access the
    * AWS Management Console.
    *
+   * You can use `SecretValue.plainText` to specify a password in plain text or
+   * use `secretsmanager.Secret.import` to reference a secret in Secrets Manager.
+   *
    * @default User won't be able to access the management console without a password.
    */
-  readonly password?: string;
+  readonly password?: SecretValue;
 
   /**
    * Specifies whether the user is required to set a new password the next
@@ -147,7 +150,7 @@ export class User extends Construct implements IIdentity {
   private parseLoginProfile(props: UserProps): CfnUser.LoginProfileProperty | undefined {
     if (props.password) {
       return {
-        password: props.password,
+        password: props.password.toString(),
         passwordResetRequired: props.passwordResetRequired
       };
     }
