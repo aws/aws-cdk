@@ -27,7 +27,6 @@ container.addPortMappings({
 const service = new ecs.FargateService(stack, "Service", {
   cluster,
   taskDefinition,
-  longArnEnabled: true
 });
 
 const scaling = service.autoScaleTaskCount({ maxCapacity: 10 });
