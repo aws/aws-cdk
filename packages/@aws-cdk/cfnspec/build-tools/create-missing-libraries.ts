@@ -123,7 +123,7 @@ async function main() {
               artifactId: javaArtifactId
             }
           },
-          pytohn: {
+          python: {
             distName: pythonDistName,
             module: pythonModuleName
           },

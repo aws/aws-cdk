@@ -358,11 +358,11 @@
         "DnsConfig": {
           "DnsRecords": [
             {
-              "TTL": "30",
+              "TTL": 30,
               "Type": "A"
             },
             {
-              "TTL": "30",
+              "TTL": 30,
               "Type": "AAAA"
             }
           ],
