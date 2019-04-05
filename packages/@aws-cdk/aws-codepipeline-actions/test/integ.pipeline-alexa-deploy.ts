@@ -1,15 +1,15 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { App, RemovalPolicy, SecretValue, Stack } from '@aws-cdk/cdk';
 import cpactions = require('../lib');
 
-const app = new cdk.App();
+const app = new App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-alexa-deploy');
+const stack = new Stack(app, 'aws-cdk-codepipeline-alexa-deploy');
 
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: RemovalPolicy.Destroy,
 });
 const sourceAction = new cpactions.S3SourceAction({
   actionName: 'Source',
@@ -30,8 +30,8 @@ const deployStage = {
       runOrder: 1,
       inputArtifact: sourceAction.outputArtifact,
       clientId: 'clientId',
-      clientSecret: cdk.Secret.plainText('clientSecret'),
-      refreshToken: cdk.Secret.plainText('refreshToken'),
+      clientSecret: SecretValue.plainText('clientSecret'),
+      refreshToken: SecretValue.plainText('refreshToken'),
       skillId: 'amzn1.ask.skill.12345678-1234-1234-1234-123456789012',
     }),
   ],

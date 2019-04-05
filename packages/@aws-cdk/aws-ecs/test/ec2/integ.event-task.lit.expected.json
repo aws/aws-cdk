@@ -491,8 +491,8 @@
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-             "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
-             "Arn"
+            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
+            "Arn"
           ]
         },
         "Principal": "sns.amazonaws.com",
@@ -826,11 +826,7 @@
               }
             },
             {
-              "Action": [
-                "ecr:GetAuthorizationToken",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
+              "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -912,7 +908,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "TaskDefTaskRole1EDB4A67",
+                  "TaskDefExecutionRoleB4775C97",
                   "Arn"
                 ]
               }

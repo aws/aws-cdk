@@ -4,7 +4,6 @@ import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { isEc2Compatible } from '../util';
 
@@ -12,11 +11,6 @@ import { isEc2Compatible } from '../util';
  * Properties to define an ECS service
  */
 export interface Ec2ServiceProps extends BaseServiceProps {
-  /**
-   * Cluster where service will be deployed
-   */
-  readonly cluster: ICluster;
-
   /**
    * Task Definition used for running tasks in the service
    */
@@ -70,7 +64,6 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   private readonly constraints: CfnService.PlacementConstraintProperty[];
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
-  private readonly cluster: ICluster;
 
   constructor(scope: cdk.Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
@@ -95,7 +88,6 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.cluster.clusterName, props.taskDefinition);
 
-    this.cluster = props.cluster;
     this.clusterName = props.cluster.clusterName;
     this.constraints = [];
     this.strategies = [];

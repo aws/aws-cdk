@@ -176,15 +176,15 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
 export class Table extends Construct {
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
-   * @param principal The principal (no-op if undefined)
+   * @param grantee The principal (no-op if undefined)
    */
-  public static grantListStreams(principal?: iam.IPrincipal): void {
-    if (principal) {
-      principal.addToPolicy(new iam.PolicyStatement()
-        .addAction('dynamodb:ListStreams')
-        .addResource("*"));
-    }
-  }
+  public static grantListStreams(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['dynamodb:ListStreams'],
+      resourceArns: ['*'],
+    });
+ }
 
   public readonly tableArn: string;
   public readonly tableName: string;
@@ -404,31 +404,34 @@ export class Table extends Construct {
   /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
-   * @param principal The principal (no-op if undefined)
+   * @param grantee The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
-  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    if (!principal) {
-      return;
-    }
-    principal.addToPolicy(new iam.PolicyStatement()
-      .addResources(this.tableArn, new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : cdk.Aws.noValue).toString())
-      .addActions(...actions));
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [
+        this.tableArn,
+        new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : cdk.Aws.noValue).toString()
+      ],
+      scope: this,
+    });
   }
 
   /**
    * Adds an IAM policy statement associated with this table's stream to an
    * IAM principal's policy.
-   * @param principal The principal (no-op if undefined)
+   * @param grantee The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    */
-  public grantStream(principal?: iam.IPrincipal, ...actions: string[]) {
-    if (!principal) {
-      return;
-    }
-    principal.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.tableStreamArn)
-      .addActions(...actions));
+  public grantStream(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.tableStreamArn],
+      scope: this,
+    });
   }
 
   /**
@@ -436,18 +439,18 @@ export class Table extends Construct {
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
    * @param principal The principal to grant access to
    */
-  public grantReadData(principal?: iam.IPrincipal) {
-    this.grant(principal, ...READ_DATA_ACTIONS);
+  public grantReadData(grantee: iam.IGrantable) {
+    return this.grant(grantee, ...READ_DATA_ACTIONS);
   }
 
   /**
    * Permis an IAM principal all stream data read operations for this
    * table's stream:
    * DescribeStream, GetRecords, GetShardIterator, ListStreams.
-   * @param principal The principal to grant access to
+   * @param grantee The principal to grant access to
    */
-  public grantStreamRead(principal?: iam.IPrincipal) {
-    this.grantStream(principal, ...READ_STREAM_DATA_ACTIONS);
+  public grantStreamRead(grantee: iam.IGrantable) {
+    return this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
   }
 
   /**
@@ -455,26 +458,26 @@ export class Table extends Construct {
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
    * @param principal The principal to grant access to
    */
-  public grantWriteData(principal?: iam.IPrincipal) {
-    this.grant(principal, ...WRITE_DATA_ACTIONS);
+  public grantWriteData(grantee: iam.IGrantable) {
+    return this.grant(grantee, ...WRITE_DATA_ACTIONS);
   }
 
   /**
    * Permits an IAM principal to all data read/write operations to this table.
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem
-   * @param principal The principal to grant access to
+   * @param grantee The principal to grant access to
    */
-  public grantReadWriteData(principal?: iam.IPrincipal) {
-    this.grant(principal, ...READ_DATA_ACTIONS, ...WRITE_DATA_ACTIONS);
+  public grantReadWriteData(grantee: iam.IGrantable) {
+    return this.grant(grantee, ...READ_DATA_ACTIONS, ...WRITE_DATA_ACTIONS);
   }
 
   /**
    * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
-   * @param principal The principal to grant access to
+   * @param grantee The principal to grant access to
    */
-  public grantFullAccess(principal?: iam.IPrincipal) {
-    this.grant(principal, 'dynamodb:*');
+  public grantFullAccess(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'dynamodb:*');
   }
 
   /**
