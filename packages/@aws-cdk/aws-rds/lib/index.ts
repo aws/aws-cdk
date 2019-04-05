@@ -6,6 +6,7 @@ export * from './rotation-single-user';
 export * from './database-secret';
 export * from './endpoint';
 export * from './option-group';
+export * from './instance';
 
 // AWS::RDS CloudFormation Resources:
 export * from './rds.generated';
