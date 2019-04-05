@@ -7,9 +7,25 @@ a stack (`HelloStack`) which also uses a user-defined construct (`HelloConstruct
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 This project is set up like a standard Python project.  The initialization process also creates
-a virtualenv within this project, stored under the .env directory.
+a virtualenv within this project, stored under the .env directory.  To create the virtualenv 
+it assumes that there is a `python3` executable in your path with access to the `venv` package.
+If for any reason the automatic creation of the virtualenv fails, you can create the virtualenv
+manually once the init process completes.
 
-After the init process completes, you can use the following step to activate your virtualenv.
+To manually create a virtualenv on MacOS and Linux:
+
+```
+$ python3 -m venv .env
+```
+
+For Windows, use:
+
+```
+% python -m venv .env
+```
+
+After the init process completes and the virtualenv is created, you can use the following
+step to activate your virtualenv.
 
 ```
 $ source .env/bin/activate

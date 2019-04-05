@@ -11,7 +11,20 @@ it assumes that there is a `python3` executable in your path with access to the 
 If for any reason the automatic creation of the virtualenv fails, you can create the virtualenv
 manually once the init process completes.
 
-After the init process completes, you can use the following step to activate your virtualenv.
+To manually create a virtualenv on MacOS and Linux:
+
+```
+$ python3 -m venv .env
+```
+
+For Windows, use:
+
+```
+% python -m venv .env
+```
+
+After the init process completes and the virtualenv is created, you can use the following
+step to activate your virtualenv.
 
 ```
 $ source .env/bin/activate
