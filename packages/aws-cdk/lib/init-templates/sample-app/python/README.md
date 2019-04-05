@@ -9,10 +9,21 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 This project is set up like a standard Python project.  The initialization process also creates
 a virtualenv within this project, stored under the .env directory.
 
-After the init process completes, you can use the following steps to get your project set up.
+After the init process completes, you can use the following step to activate your virtualenv.
 
 ```
 $ source .env/bin/activate
+```
+
+If you are a Windows platform, you would activate the virtualenv like this:
+
+```
+% .env\Scripts\activate.bat
+```
+
+Once the virtualenv is activated, you can install the required dependencies.
+
+```
 $ pip install -r requirements.txt
 ```
 
