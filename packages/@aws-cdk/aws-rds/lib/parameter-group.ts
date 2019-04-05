@@ -27,8 +27,10 @@ export interface ParameterGroupProps {
 
   /**
    * Description for this parameter group
+   *
+   * @default a CDK generated description
    */
-  readonly description: string;
+  readonly description?: string;
 
   /**
    * The parameters in this parameter group
@@ -75,7 +77,7 @@ export class ParameterGroup extends ParameterGroupBase {
     super(scope, id);
 
     const resource = new CfnDBParameterGroup(this, 'Resource', {
-      description: props.description,
+      description: props.description || `Parameter group for ${props.family}`,
       family: props.family,
       parameters: props.parameters,
     });
@@ -97,7 +99,7 @@ export class ClusterParameterGroup extends ParameterGroupBase {
     super(scope, id);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
-      description: props.description,
+      description: props.description || `Cluster parameter group for ${props.family}`,
       family: props.family,
       parameters: props.parameters,
     });
