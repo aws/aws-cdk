@@ -1,31 +1,32 @@
-import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
+import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { Pipeline, StageProps } from './pipeline';
+import { validateName } from "./validation";
 
 /**
  * A Stage in a Pipeline.
  *
  * Stages are added to a Pipeline by calling {@link Pipeline#addStage},
- * which returns an instance of {@link cpapi.IStage}.
+ * which returns an instance of {@link codepipeline.IStage}.
  *
  * This class is private to the CodePipeline module.
  */
-export class Stage implements cpapi.IStage {
+export class Stage implements IStage {
   /**
    * The Pipeline this Stage is a part of.
    */
-  public readonly pipeline: cpapi.IPipeline;
+  public readonly pipeline: IPipeline;
   public readonly stageName: string;
   private readonly scope: cdk.Construct;
-  private readonly _actions = new Array<cpapi.Action>();
+  private readonly _actions = new Array<Action>();
 
   /**
    * Create a new Stage.
    */
   constructor(props: StageProps, pipeline: Pipeline) {
-    cpapi.validateName('Stage', props.name);
+    validateName('Stage', props.name);
 
     this.stageName = props.name;
     this.pipeline = pipeline;
@@ -39,7 +40,7 @@ export class Stage implements cpapi.IStage {
   /**
    * Get a duplicate of this stage's list of actions.
    */
-  public get actions(): cpapi.Action[] {
+  public get actions(): Action[] {
     return this._actions.slice();
   }
 
@@ -50,7 +51,7 @@ export class Stage implements cpapi.IStage {
     };
   }
 
-  public addAction(action: cpapi.Action): void {
+  public addAction(action: Action): void {
     // check for duplicate Actions and names
     if (this._actions.find(a => a.actionName === action.actionName)) {
       throw new Error(`Stage ${this.stageName} already contains an action with name '${action.actionName}'`);
@@ -78,19 +79,17 @@ export class Stage implements cpapi.IStage {
     return this.validateHasActions();
   }
 
-  private attachActionToPipeline(action: cpapi.Action) {
-    const actionParent = new cdk.Construct(this.scope, action.actionName);
-    (action as any)._attachActionToPipeline(this, actionParent);
-
-    // also notify the Pipeline of the new Action
-    // (useful for cross-region Actions, for example)
-    (this.pipeline as any)._attachActionToRegion(this, action);
+  private attachActionToPipeline(action: Action) {
+    // notify the Pipeline of the new Action
+    const actionScope = new cdk.Construct(this.scope, action.actionName);
+    (this.pipeline as any)._attachActionToPipeline(this, action, actionScope);
   }
 
-  private renderAction(action: cpapi.Action): CfnPipeline.ActionDeclarationProperty {
+  private renderAction(action: Action): CfnPipeline.ActionDeclarationProperty {
     return {
       name: action.actionName,
-      inputArtifacts: action._inputArtifacts.map(a => ({ name: a.artifactName })),
+      // TODO: remove "as any"
+      inputArtifacts: (action as any).actionInputArtifacts.map((a: any) => ({ name: a.artifactName })),
       actionTypeId: {
         category: action.category.toString(),
         version: action.version,
@@ -98,7 +97,8 @@ export class Stage implements cpapi.IStage {
         provider: action.provider,
       },
       configuration: action.configuration,
-      outputArtifacts: action._outputArtifacts.map(a => ({ name: a.artifactName })),
+      // TODO: remove "as any"
+      outputArtifacts: (action as any).actionOutputArtifacts.map((a: any) => ({ name: a.artifactName })),
       runOrder: action.runOrder,
       roleArn: action.role ? action.role.roleArn : undefined
     };

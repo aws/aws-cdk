@@ -1,6 +1,7 @@
 export * from './assertion';
 export * from './expect';
 export * from './inspector';
+export * from './synth-utils';
 
 export * from './assertions/exist';
 export * from './assertions/have-resource';

@@ -9,14 +9,14 @@ export interface CrossRegionScaffoldStackProps {
   /**
    * The AWS region this Stack resides in.
    */
-  region: string;
+  readonly region: string;
 
   /**
    * The AWS account ID this Stack belongs to.
    *
    * @example '012345678901'
    */
-  account: string;
+  readonly account: string;
 }
 
 /**

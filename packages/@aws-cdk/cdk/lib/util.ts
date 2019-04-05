@@ -51,6 +51,28 @@ export function ignoreEmpty(obj: any): any {
 }
 
 /**
+ * Returns a copy of `obj` without undefined values in maps or arrays.
+ */
+export function filterUndefined(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.filter(x => x !== undefined).map(x => filterUndefined(x));
+  }
+
+  if (typeof(obj) === 'object') {
+    const ret: any = { };
+    for (const [key, value] of Object.entries(obj)) {
+      if (value === undefined) {
+        continue;
+      }
+      ret[key] = filterUndefined(value);
+    }
+    return ret;
+  }
+
+  return obj;
+}
+
+/**
  * A Token that applies a function AFTER resolve resolution
  */
 export class PostResolveToken extends Token implements IResolvedValuePostProcessor {

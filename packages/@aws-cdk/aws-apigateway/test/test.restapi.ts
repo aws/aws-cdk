@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -344,7 +344,7 @@ export = {
 
     // THEN
     stack.node.prepareTree();
-    test.deepEqual(stack._toCloudFormation().Outputs.MyRestApiRestApiIdB93C5C2D, {
+    test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs.MyRestApiRestApiIdB93C5C2D, {
       Value: { Ref: 'MyRestApi2D1F47A9' },
       Export: { Name: 'Stack:MyRestApiRestApiIdB93C5C2D' }
     });

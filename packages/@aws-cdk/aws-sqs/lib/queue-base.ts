@@ -53,9 +53,9 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    *   - sqs:GetQueueAttributes
    *   - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant consume rights to
+   * @param grantee Principal to grant consume rights to
    */
-  grantConsumeMessages(identity?: iam.IPrincipal): void;
+  grantConsumeMessages(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant access to send messages to a queue to the given identity.
@@ -67,9 +67,9 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant send rights to
+   * @param grantee Principal to grant send rights to
    */
-  grantSendMessages(identity?: iam.IPrincipal): void;
+  grantSendMessages(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant an IAM principal permissions to purge all messages from the queue.
@@ -80,19 +80,19 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant send rights to
+   * @param grantee Principal to grant send rights to
    * @param queueActions additional queue actions to allow
    */
-  grantPurge(identity?: iam.IPrincipal): void;
+  grantPurge(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the actions defined in queueActions to the identity Principal given
    * on this SQS queue resource.
    *
-   * @param identity Principal to grant right to
+   * @param grantee Principal to grant right to
    * @param queueActions The actions to grant
    */
-  grant(identity?: iam.IPrincipal, ...queueActions: string[]): void;
+  grant(grantee: iam.IGrantable, ...queueActions: string[]): iam.Grant;
 }
 
 /**
@@ -214,10 +214,10 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    *   - sqs:GetQueueAttributes
    *   - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant consume rights to
+   * @param grantee Principal to grant consume rights to
    */
-  public grantConsumeMessages(identity?: iam.IPrincipal) {
-    this.grant(identity,
+  public grantConsumeMessages(grantee: iam.IGrantable) {
+    return this.grant(grantee,
       'sqs:ReceiveMessage',
       'sqs:ChangeMessageVisibility',
       'sqs:ChangeMessageVisibilityBatch',
@@ -237,10 +237,10 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant send rights to
+   * @param grantee Principal to grant send rights to
    */
-  public grantSendMessages(identity?: iam.IPrincipal) {
-    this.grant(identity,
+  public grantSendMessages(grantee: iam.IGrantable) {
+    return this.grant(grantee,
       'sqs:SendMessage',
       'sqs:SendMessageBatch',
       'sqs:GetQueueAttributes',
@@ -256,11 +256,11 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant send rights to
+   * @param grantee Principal to grant send rights to
    * @param queueActions additional queue actions to allow
    */
-  public grantPurge(identity?: iam.IPrincipal) {
-    this.grant(identity,
+  public grantPurge(grantee: iam.IGrantable) {
+    return this.grant(grantee,
       'sqs:PurgeQueue',
       'sqs:GetQueueAttributes',
       'sqs:GetQueueUrl');
@@ -270,17 +270,16 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    * Grant the actions defined in queueActions to the identity Principal given
    * on this SQS queue resource.
    *
-   * @param identity Principal to grant right to
-   * @param queueActions The actions to grant
+   * @param grantee Principal to grant right to
+   * @param actions The actions to grant
    */
-  public grant(identity?: iam.IPrincipal, ...queueActions: string[]) {
-      if (!identity) {
-        return;
-      }
-
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.queueArn)
-        .addActions(...queueActions));
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions,
+      resourceArns: [this.queueArn],
+      resource: this,
+    });
   }
 }
 
@@ -291,21 +290,21 @@ export interface QueueImportProps {
   /**
    * The ARN of the queue.
    */
-  queueArn: string;
+  readonly queueArn: string;
 
   /**
    * The URL of the queue.
    */
-  queueUrl: string;
+  readonly queueUrl: string;
 
   /**
    * The name of the queue.
    * @default if queue name is not specified, the name will be derived from the queue ARN
    */
-  queueName?: string;
+  readonly queueName?: string;
 
   /**
    * KMS encryption key, if this queue is server-side encrypted by a KMS key.
    */
-  keyArn?: string;
+  readonly keyArn?: string;
 }

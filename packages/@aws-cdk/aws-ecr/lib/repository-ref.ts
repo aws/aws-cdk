@@ -1,7 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 
 /**
  * Represents an ECR repository.
@@ -40,28 +39,19 @@ export interface IRepository extends cdk.IConstruct {
   addToResourcePolicy(statement: iam.PolicyStatement): void;
 
   /**
-   * Convenience method for creating a new {@link PipelineSourceAction}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  toCodePipelineSourceAction(props: CommonPipelineSourceActionProps):
-      PipelineSourceAction;
-
-  /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
-  grant(identity?: iam.IPrincipal, ...actions: string[]): void;
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull images in this repository.
    */
-  grantPull(identity?: iam.IPrincipal): void;
+  grantPull(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
    */
-  grantPullPush(identity?: iam.IPrincipal): void;
+  grantPullPush(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -88,7 +78,7 @@ export interface RepositoryImportProps {
    * account/region as the current stack, you can set `repositoryName` instead
    * and the ARN will be formatted with the current region and account.
    */
-  repositoryArn?: string;
+  readonly repositoryArn?: string;
 
   /**
    * The full name of the repository to import.
@@ -100,7 +90,7 @@ export interface RepositoryImportProps {
    * If the repository is in the same region/account as the stack, it is sufficient
    * to only specify the repository name.
    */
-  repositoryName?: string;
+  readonly repositoryName?: string;
 }
 
 /**
@@ -169,13 +159,6 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    */
   public abstract export(): RepositoryImportProps;
 
-  public toCodePipelineSourceAction(props: CommonPipelineSourceActionProps): PipelineSourceAction {
-    return new PipelineSourceAction({
-      ...props,
-      repository: this,
-    });
-  }
-
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
    * repository.
@@ -206,38 +189,41 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
-  public grant(identity?: iam.IPrincipal, ...actions: string[]) {
-    if (!identity) {
-      return;
-    }
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.repositoryArn)
-      .addActions(...actions));
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions,
+      resourceArns: [this.repositoryArn],
+      resource: this,
+    });
   }
 
   /**
    * Grant the given identity permissions to use the images in this repository
    */
-  public grantPull(identity?: iam.IPrincipal) {
-    this.grant(identity, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
+  public grantPull(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
 
-    if (identity) {
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addActions("ecr:GetAuthorizationToken", "logs:CreateLogStream", "logs:PutLogEvents")
-        .addAllResources());
-    }
+    iam.Grant.addToPrincipal({
+      grantee,
+      actions: ["ecr:GetAuthorizationToken"],
+      resourceArns: ['*'],
+      scope: this,
+    });
+
+    return ret;
   }
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
    */
-  public grantPullPush(identity?: iam.IPrincipal) {
-      this.grantPull(identity);
-      this.grant(identity,
-        "ecr:PutImage",
-        "ecr:InitiateLayerUpload",
-        "ecr:UploadLayerPart",
-        "ecr:CompleteLayerUpload");
+  public grantPullPush(grantee: iam.IGrantable) {
+    this.grantPull(grantee);
+    return this.grant(grantee,
+      "ecr:PutImage",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload");
   }
 }
 

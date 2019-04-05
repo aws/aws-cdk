@@ -1,9 +1,8 @@
-import iam = require('@aws-cdk/aws-iam');
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
 import { Version } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
-import { Permission } from './permission';
 
 /**
  * Properties for a new Lambda alias
@@ -14,19 +13,19 @@ export interface AliasProps {
    *
    * @default No description
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Function version this alias refers to
    *
    * Use lambda.addVersion() to obtain a new lambda version to refer to.
    */
-  version: Version;
+  readonly version: Version;
 
   /**
    * Name of this alias
    */
-  aliasName: string;
+  readonly aliasName: string;
 
   /**
    * Additional versions with individual weights this alias points to
@@ -45,7 +44,7 @@ export interface AliasProps {
    *
    * @default No additional versions
    */
-  additionalVersions?: VersionWeight[];
+  readonly additionalVersions?: VersionWeight[];
 }
 
 /**
@@ -68,12 +67,7 @@ export class Alias extends FunctionBase {
    */
   public readonly functionArn: string;
 
-  /**
-   * Role associated with this alias
-   */
-  public readonly role?: iam.IRole | undefined;
-
-  protected readonly canCreatePermissions: boolean = true; // Not used anyway
+  protected readonly canCreatePermissions: boolean = true;
 
   /**
    * The actual Lambda function object that this Alias is pointing to
@@ -84,9 +78,8 @@ export class Alias extends FunctionBase {
     super(scope, id);
 
     this.underlyingLambda = props.version.lambda;
-    this.role = this.underlyingLambda.role;
 
-    new CfnAlias(this, 'Resource', {
+    const alias = new CfnAlias(this, 'Resource', {
       name: props.aliasName,
       description: props.description,
       functionName: this.underlyingLambda.functionName,
@@ -94,21 +87,39 @@ export class Alias extends FunctionBase {
       routingConfig: this.determineRoutingConfig(props)
     });
 
-    // Not actually the name, but an ARN can be used in all places
-    // where the name is expected, and an ARN can refer to an Alias.
-    this.functionName = `${props.version.lambda.functionArn}:${props.aliasName}`;
-    this.functionArn = `${props.version.lambda.functionArn}:${props.aliasName}`;
+    // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
+    // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
+    // an implicit dependency on the resource.
+    this.functionName = `${this.node.stack.parseArn(alias.aliasArn, ":").resourceName!}:${props.aliasName}`;
+    this.functionArn = alias.aliasArn;
+  }
+
+  /**
+   * Role associated with this alias
+   */
+  public get role() {
+    return this.underlyingLambda.role;
+  }
+
+  public get grantPrincipal() {
+    return this.underlyingLambda.grantPrincipal;
+  }
+
+  public metric(metricName: string, props: cloudwatch.MetricCustomization = {}): cloudwatch.Metric {
+    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differes from the base behavior.
+    return super.metric(metricName, {
+      dimensions: {
+        FunctionName: this.underlyingLambda.functionName,
+        Resource: this.functionArn
+      },
+      ...props
+    });
   }
 
   public export(): FunctionImportProps {
     return {
       functionArn: new cdk.CfnOutput(this, 'AliasArn', { value: this.functionArn }).makeImportValue().toString()
     };
-  }
-
-  public addPermission(name: string, permission: Permission) {
-    // Forward addPermission() to the underlying Lambda object
-    this.underlyingLambda.addPermission(name, permission);
   }
 
   /**

@@ -6,14 +6,14 @@ export interface CfnOutputProps {
    * A String type that describes the output value.
    * The description can be a maximum of 4 K in length.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * The value of the property returned by the aws cloudformation describe-stacks command.
    * The value of an output can include literals, parameter references, pseudo-parameters,
    * a mapping value, or intrinsic functions.
    */
-  value?: any;
+  readonly value?: any;
 
   /**
    * The name used to export the value of this output across stacks.
@@ -24,7 +24,7 @@ export interface CfnOutputProps {
    * @default Automatically allocate a name when `makeImportValue()`  is
    * called.
    */
-  export?: string;
+  readonly export?: string;
 
   /**
    * Disables the automatic allocation of an export name for this output.
@@ -34,14 +34,14 @@ export interface CfnOutputProps {
    *
    * @default false
    */
-  disableExport?: boolean;
+  readonly disableExport?: boolean;
 
   /**
    * A condition from the "Conditions" section to associate with this output
    * value. If the condition evaluates to `false`, this output value will not
    * be included in the stack.
    */
-  condition?: CfnCondition;
+  readonly condition?: CfnCondition;
 }
 
 export class CfnOutput extends CfnElement {
@@ -111,6 +111,9 @@ export class CfnOutput extends CfnElement {
     return fn().importValue(this.obtainExportName());
   }
 
+  /**
+   * @internal
+   */
   public _toCloudFormation(): object {
     return {
       Outputs: {

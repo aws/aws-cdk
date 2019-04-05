@@ -69,19 +69,19 @@ export interface ILogGroup extends cdk.IConstruct {
   /**
    * Give permissions to write to create and write to streams in this log group
    */
-  grantWrite(principal?: iam.IPrincipal): void;
+  grantWrite(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Give the indicated permissions on this log group and all streams
    */
-  grant(principal?: iam.IPrincipal, ...actions: string[]): void;
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
  * Properties for importing a LogGroup
  */
 export interface LogGroupImportProps {
-  logGroupArn: string;
+  readonly logGroupArn: string;
 }
 
 /**
@@ -171,22 +171,113 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
   /**
    * Give permissions to write to create and write to streams in this log group
    */
-  public grantWrite(principal?: iam.IPrincipal) {
-    this.grant(principal, 'logs:CreateLogStream', 'logs:PutLogEvents');
+  public grantWrite(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'logs:CreateLogStream', 'logs:PutLogEvents');
   }
 
   /**
    * Give the indicated permissions on this log group and all streams
    */
-  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    if (!principal) { return; }
-
-    principal.addToPolicy(new iam.PolicyStatement()
-      .addActions(...actions)
-      // This ARN includes a ':*' at the end to include the log streams.
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.
       // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
-      .addResource(`${this.logGroupArn}`));
+      resourceArns: [this.logGroupArn],
+      scope: this,
+    });
   }
+}
+
+/**
+ * How long, in days, the log contents will be retained.
+ */
+export enum RetentionDays {
+  /**
+   * 1 day
+   */
+  OneDay = 1,
+
+  /**
+   * 3 days
+   */
+  ThreeDays = 3,
+
+  /**
+   * 5 days
+   */
+  FiveDays = 5,
+
+  /**
+   * 1 week
+   */
+  OneWeek = 7,
+
+  /**
+   * 2 weeks
+   */
+  TwoWeeks =  14,
+
+  /**
+   * 1 month
+   */
+  OneMonth = 30,
+
+  /**
+   * 2 months
+   */
+  TwoMonths = 60,
+
+  /**
+   * 3 months
+   */
+  ThreeMonths = 90,
+
+  /**
+   * 4 months
+   */
+  FourMonths = 120,
+
+  /**
+   * 5 months
+   */
+  FiveMonths = 150,
+
+  /**
+   * 6 months
+   */
+  SixMonths = 180,
+
+  /**
+   * 1 year
+   */
+  OneYear = 365,
+
+  /**
+   * 13 months
+   */
+  ThirteenMonths = 400,
+
+  /**
+   * 18 months
+   */
+  EighteenMonths = 545,
+
+  /**
+   * 2 years
+   */
+  TwoYears = 731,
+
+  /**
+   * 5 years
+   */
+  FiveYears = 1827,
+
+  /**
+   * 10 years
+   */
+  TenYears = 3653
 }
 
 /**
@@ -198,7 +289,7 @@ export interface LogGroupProps {
    *
    * @default Automatically generated
    */
-  logGroupName?: string;
+  readonly logGroupName?: string;
 
   /**
    * How long, in days, the log contents will be retained.
@@ -207,7 +298,7 @@ export interface LogGroupProps {
    *
    * @default 731 days (2 years)
    */
-  retentionDays?: number;
+  readonly retentionDays?: RetentionDays;
 
   /**
    * Retain the log group if the stack or containing construct ceases to exist
@@ -219,7 +310,7 @@ export interface LogGroupProps {
    *
    * @default true
    */
-  retainLogGroup?: boolean;
+  readonly retainLogGroup?: boolean;
 }
 
 /**
@@ -247,7 +338,7 @@ export class LogGroup extends LogGroupBase {
     super(scope, id);
 
     let retentionInDays = props.retentionDays;
-    if (retentionInDays === undefined) { retentionInDays = 731; }
+    if (retentionInDays === undefined) { retentionInDays = RetentionDays.TwoYears; }
     if (retentionInDays === Infinity) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && retentionInDays <= 0) {
@@ -317,7 +408,7 @@ export interface NewLogStreamProps {
    *
    * @default Automatically generated
    */
-  logStreamName?: string;
+  readonly logStreamName?: string;
 }
 
 /**
@@ -329,12 +420,12 @@ export interface NewSubscriptionFilterProps {
    *
    * For example, a Kinesis stream or a Lambda function.
    */
-  destination: ILogSubscriptionDestination;
+  readonly destination: ILogSubscriptionDestination;
 
   /**
    * Log events matching this pattern will be sent to the destination.
    */
-  filterPattern: IFilterPattern;
+  readonly filterPattern: IFilterPattern;
 }
 
 /**
@@ -344,17 +435,17 @@ export interface NewMetricFilterProps {
   /**
    * Pattern to search for log events.
    */
-  filterPattern: IFilterPattern;
+  readonly filterPattern: IFilterPattern;
 
   /**
    * The namespace of the metric to emit.
    */
-  metricNamespace: string;
+  readonly metricNamespace: string;
 
   /**
    * The name of the metric to emit.
    */
-  metricName: string;
+  readonly metricName: string;
 
   /**
    * The value to emit for the metric.
@@ -371,12 +462,12 @@ export interface NewMetricFilterProps {
    *
    * @default "1"
    */
-  metricValue?: string;
+  readonly metricValue?: string;
 
   /**
    * The value to emit if the pattern does not match a particular event.
    *
    * @default No metric emitted.
    */
-  defaultValue?: number;
+  readonly defaultValue?: number;
 }

@@ -1,4 +1,4 @@
-import { CfnRefElement, Ref } from './cfn-element';
+import { CfnRefElement } from './cfn-element';
 import { Construct } from './construct';
 import { Token } from './token';
 
@@ -6,24 +6,24 @@ export interface CfnParameterProps {
   /**
    * The data type for the parameter (DataType).
    */
-  type: string;
+  readonly type: string;
 
   /**
    * A value of the appropriate type for the template to use if no value is specified
    * when a stack is created. If you define constraints for the parameter, you must specify
    * a value that adheres to those constraints.
    */
-  default?: any;
+  readonly default?: any;
 
   /**
    * A regular expression that represents the patterns to allow for String types.
    */
-  allowedPattern?: string;
+  readonly allowedPattern?: string;
 
   /**
    * An array containing the list of values allowed for the parameter.
    */
-  allowedValues?: string[];
+  readonly allowedValues?: string[];
 
   /**
    * A string that explains a constraint when the constraint is violated.
@@ -31,38 +31,38 @@ export interface CfnParameterProps {
    * pattern of [A-Za-z0-9]+ displays the following error message when the user specifies
    * an invalid value:
    */
-  constraintDescription?: string;
+  readonly constraintDescription?: string;
 
   /**
    * A string of up to 4000 characters that describes the parameter.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * An integer value that determines the largest number of characters you want to allow for String types.
    */
-  maxLength?: number;
+  readonly maxLength?: number;
 
   /**
    * A numeric value that determines the largest numeric value you want to allow for Number types.
    */
-  maxValue?: number;
+  readonly maxValue?: number;
 
   /**
    * An integer value that determines the smallest number of characters you want to allow for String types.
    */
-  minLength?: number;
+  readonly minLength?: number;
 
   /**
    * A numeric value that determines the smallest numeric value you want to allow for Number types.
    */
-  minValue?: number;
+  readonly minValue?: number;
 
   /**
    * Whether to mask the parameter value when anyone makes a call that describes the stack.
    * If you set the value to ``true``, the parameter value is masked with asterisks (``*****``).
    */
-  noEcho?: boolean;
+  readonly noEcho?: boolean;
 }
 
 /**
@@ -86,6 +86,11 @@ export class CfnParameter extends CfnRefElement {
    */
   public stringListValue: string[];
 
+  /**
+   * Indicates if this parameter has "NoEcho" set.
+   */
+  public readonly noEcho: boolean;
+
   private properties: CfnParameterProps;
 
   /**
@@ -99,11 +104,15 @@ export class CfnParameter extends CfnRefElement {
   constructor(scope: Construct, id: string, props: CfnParameterProps) {
     super(scope, id);
     this.properties = props;
-    this.value = new Ref(this);
+    this.value = this.referenceToken;
     this.stringValue = this.value.toString();
     this.stringListValue = this.value.toList();
+    this.noEcho = props.noEcho || false;
   }
 
+  /**
+   * @internal
+   */
   public _toCloudFormation(): object {
     return {
       Parameters: {

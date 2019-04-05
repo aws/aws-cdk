@@ -2,6 +2,100 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.28.0](https://github.com/awslabs/aws-cdk/compare/v0.27.0...v0.28.0) (2019-04-04)
+
+
+### Bug Fixes
+
+* **aws-ecs:** use executionRole for event rule target ([#2165](https://github.com/awslabs/aws-cdk/issues/2165)) ([aa6f7bc](https://github.com/awslabs/aws-cdk/commit/aa6f7bc)), closes [#2015](https://github.com/awslabs/aws-cdk/issues/2015)
+* **core:** remove cdk.Secret ([#2068](https://github.com/awslabs/aws-cdk/issues/2068)) ([b53d04d](https://github.com/awslabs/aws-cdk/commit/b53d04d)), closes [#2064](https://github.com/awslabs/aws-cdk/issues/2064)
+
+
+*  feat(aws-iam): refactor grants, add OrganizationPrincipal  (#1623) ([1bb8ca9](https://github.com/awslabs/aws-cdk/commit/1bb8ca9)), closes [#1623](https://github.com/awslabs/aws-cdk/issues/1623) [#236](https://github.com/awslabs/aws-cdk/issues/236)
+
+
+### Code Refactoring
+
+* **cdk:** introduce SecretValue to represent secrets ([#2161](https://github.com/awslabs/aws-cdk/issues/2161)) ([a3d9f2e](https://github.com/awslabs/aws-cdk/commit/a3d9f2e))
+
+### Features
+
+* **codepipeline:** move all of the Pipeline Actions to their dedicated package. ([#2098](https://github.com/awslabs/aws-cdk/issues/2098)) ([b314ecf](https://github.com/awslabs/aws-cdk/commit/b314ecf))
+* **codepipeline:** re-factor the CodePipeline Action `bind` method to take a Role separately from the Pipeline. ([#2085](https://github.com/awslabs/aws-cdk/issues/2085)) ([ffe0046](https://github.com/awslabs/aws-cdk/commit/ffe0046))
+* **ec2:** support reserving IP space in VPCs ([#2090](https://github.com/awslabs/aws-cdk/issues/2090)) ([4819ff4](https://github.com/awslabs/aws-cdk/commit/4819ff4))
+* Add python support to cdk init ([#2130](https://github.com/awslabs/aws-cdk/issues/2130)) ([997dbcc](https://github.com/awslabs/aws-cdk/commit/997dbcc))
+* **ecs:** support AWS Cloud Map (service discovery) ([#2065](https://github.com/awslabs/aws-cdk/issues/2065)) ([4864cc8](https://github.com/awslabs/aws-cdk/commit/4864cc8)), closes [#1554](https://github.com/awslabs/aws-cdk/issues/1554)
+* **lambda:** add a `newVersion` method. ([#2099](https://github.com/awslabs/aws-cdk/issues/2099)) ([6fc179a](https://github.com/awslabs/aws-cdk/commit/6fc179a))
+* update CloudFormation resource spec to v2.29.0 ([#2170](https://github.com/awslabs/aws-cdk/issues/2170)) ([ebc490d](https://github.com/awslabs/aws-cdk/commit/ebc490d))
+
+
+### BREAKING CHANGES
+
+* The `secretsmanager.SecretString` class has been removed in favor of `cdk.SecretValue.secretsManager(id[, options])`
+* The following prop types have been changed from `string` to `cdk.SecretValue`: `codepipeline-actions.AlexaSkillDeployAction.clientSecret`, `codepipeline-actions.AlexaSkillDeployAction.refreshToken`, `codepipeline-actions.GitHubSourceAction.oauthToken`, `iam.User.password`
+* `secretsmanager.Secret.stringValue` and `jsonFieldValue` have been removed. Use `secretsmanage.Secret.secretValue` and `secretJsonValue` instead.
+* `secretsmanager.Secret.secretString` have been removed. Use `cdk.SecretValue.secretsManager()` or `secretsmanager.Secret.import(..).secretValue`.
+* The class `cdk.Secret` has been removed. Use `cdk.SecretValue` instead.
+* The class `cdk.DynamicReference` is no longer a construct, and it's constructor signature was changed and was renamed `cdk.CfnDynamicReference`.
+* `grant(function.role)` and `grant(project.role)` are now `grant(function)` and `grant(role)`.
+* **core:** Replace use of `cdk.Secret` with `secretsmanager.SecretString` (preferred) or `ssm.ParameterStoreSecureString`.
+* **codepipeline:** this changes the package of all CodePipeline Actions to be aws-codepipeline-actions.
+* **codepipeline:** this moves all classes from the aws-codepipeline-api package to the aws-codepipeline package.
+* **codepipeline:** this changes the CodePipeline Action naming scheme from <service>.Pipeline<Category>Action (s3.PipelineSourceAction) to codepipeline_actions.<Service><Category>Action (codepipeline_actions.S3SourceAction).
+
+
+
+## [0.27.0](https://github.com/awslabs/aws-cdk/compare/v0.26.0...v0.27.0) (2019-03-28)
+
+### Highlights
+
+* Python support (experimental)
+* You can now run the CLI through `npx cdk`
+* Make sure to go through the BREAKING CHANGES section below
+
+### Bug Fixes
+
+* **autoscaling:** verify public subnets for associatePublicIpAddress ([#2077](https://github.com/awslabs/aws-cdk/issues/2077)) ([1e3d41e](https://github.com/awslabs/aws-cdk/commit/1e3d41e))
+* **ec2:** descriptive error message when selecting 0 subnets ([#2025](https://github.com/awslabs/aws-cdk/issues/2025)) ([0de2206](https://github.com/awslabs/aws-cdk/commit/0de2206)), closes [#2011](https://github.com/awslabs/aws-cdk/issues/2011)
+* **lambda:** use Alias ARN directly ([#2091](https://github.com/awslabs/aws-cdk/issues/2091)) ([bc40494](https://github.com/awslabs/aws-cdk/commit/bc40494))
+* **rds:** remove Instance class ([#2081](https://github.com/awslabs/aws-cdk/issues/2081)) ([6699fed](https://github.com/awslabs/aws-cdk/commit/6699fed))
+* **secretsmanager:** allow templated string creation ([#2010](https://github.com/awslabs/aws-cdk/issues/2010)) ([4e105a3](https://github.com/awslabs/aws-cdk/commit/4e105a3))
+* **secretsmanager/ssm:** verify presence of parameter name ([#2066](https://github.com/awslabs/aws-cdk/issues/2066)) ([b93350f](https://github.com/awslabs/aws-cdk/commit/b93350f))
+* **serverless:** rename aws-serverless to aws-sam ([#2074](https://github.com/awslabs/aws-cdk/issues/2074)) ([4a82f13](https://github.com/awslabs/aws-cdk/commit/4a82f13))
+* **stepfunctions:** make Fail.error optional ([#2042](https://github.com/awslabs/aws-cdk/issues/2042)) ([86e9d03](https://github.com/awslabs/aws-cdk/commit/86e9d03))
+
+
+### Code Refactoring
+
+* readonly struct properties and hide internals ([#2106](https://github.com/awslabs/aws-cdk/issues/2106)) ([66dd228](https://github.com/awslabs/aws-cdk/commit/66dd228)), closes [awslabs/cdk-ops#321](https://github.com/awslabs/cdk-ops/issues/321)
+
+
+### Features
+
+* **toolkit:**: new 'cdk' package to allow executing the cli through `npx cdk` ([#2113](https://github.com/awslabs/aws-cdk/issues/2113)) ([32bca05](https://github.com/awslabs/aws-cdk/commit/32bca05))
+* Python Support ([#2009](https://github.com/awslabs/aws-cdk/issues/2009)) ([e6083fa](https://github.com/awslabs/aws-cdk/commit/e6083fa))
+* **core:** present reason for cyclic references ([#2061](https://github.com/awslabs/aws-cdk/issues/2061)) ([e82e208](https://github.com/awslabs/aws-cdk/commit/e82e208))
+* **lambda:** add support for log retention ([#2067](https://github.com/awslabs/aws-cdk/issues/2067)) ([63132ec](https://github.com/awslabs/aws-cdk/commit/63132ec)), closes [#667](https://github.com/awslabs/aws-cdk/issues/667) [#667](https://github.com/awslabs/aws-cdk/issues/667)
+* **rds:** cluster retention, reference KMS key by object ([#2063](https://github.com/awslabs/aws-cdk/issues/2063)) ([99ab46d](https://github.com/awslabs/aws-cdk/commit/99ab46d))
+* **secretsmanager/rds:** support credential rotation ([#2052](https://github.com/awslabs/aws-cdk/issues/2052)) ([bf79c82](https://github.com/awslabs/aws-cdk/commit/bf79c82))
+* **toolkit:** introduce the concept of auto-deployed Stacks. ([#2046](https://github.com/awslabs/aws-cdk/issues/2046)) ([abacc66](https://github.com/awslabs/aws-cdk/commit/abacc66))
+
+
+### BREAKING CHANGES
+
+* **lambda:** `cloudWatchLogsRetentionTimeDays` in `@aws-cdk/aws-cloudtrail`
+now uses a `logs.RetentionDays` instead of a `LogRetention`.
+* **core:** `stack._toCloudFormation` method is now unavailable and is replaced by `@aws-cdk/assert.SynthUtils.toCloudFormation(stack)`.
+* **rds:** replaced `kmsKeyArn: string` by `kmsKey: kms.IEncryptionKey` in `DatabaseClusterProps`
+* **autoscaling:** `VpcNetwork.isPublicSubnet()` has been renamed to
+`VpcNetwork.isPublicSubnetIds()`.
+* **serverless:** renamed `aws-serverless` to `aws-sam`
+* **ec2:** `vpcPlacement` has been renamed to `vpcSubnets`
+on all objects, `subnetsToUse` has been renamed to `subnetType`.
+`natGatewayPlacement` has been renamed to `natGatewaySubnets`.
+* All properties of all structs (interfaces that do not begin with an "I") are now readonly since it is passed by-value and not by-ref (Python is the first language to require that). This may impact code in all languages that assumed it is possible to mutate these structs. Let us know if this blocks you in any way.
+
+
 ## [0.26.0](https://github.com/awslabs/aws-cdk/compare/v0.25.3...v0.26.0) (2019-03-20)
 
 ### Bug Fixes
