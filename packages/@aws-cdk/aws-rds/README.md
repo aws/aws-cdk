@@ -45,33 +45,85 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
+### Starting an Instance Database
+To set up a instance database, create an instance of `DatabaseInstance`. You must
+always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
+your instances will be launched privately or publicly:
+
+```ts
+const instance = new DatabaseInstance(stack, 'Instance', {
+    engine: rds.DatabaseInstanceEngine.OracleSE1,
+    instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+    masterUsername: 'syscdk',
+    vpc
+});
+```
+By default, the master password will be generated and stored in AWS Secrets Manager.
+
+Use `DatabaseInstanceFromSnapshot` and `DatabaseInstanceReadReplica` to create an instance from snapshot or
+a source database respectively:
+
+```ts
+new DatabaseInstanceFromSnapshot(stack, 'Instance', {
+    snapshotIdentifier: 'my-snapshot',
+    engine: rds.DatabaseInstanceEngine.Postgres,
+    instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+    vpc
+});
+
+new DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+    sourceDatabaseInstance: sourceInstance,
+    engine: rds.DatabaseInstanceEngine.Postgres,
+    instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+    vpc
+});
+```
+Creating a "production" Oracle database instance with option and parameter groups:
+
+[example of setting up a production oracle instance](test/integ.instance.lit.ts)
+
+
+### Instance events
+To define Amazon CloudWatch event rules for database instances, use the `onEvent`
+method:
+
+```ts
+const rule = instance.onEvent('InstanceEvent');
+rule.addTarget(lambdaFunction);
+```
+
 ### Connecting
 
-To control who can access the cluster, use the `.connections` attribute. RDS database have
+To control who can access the cluster/instance, use the `.connections` attribute. RDS database have
 a default port, so you don't need to specify the port:
 
 ```ts
 cluster.connections.allowFromAnyIpv4('Open to the world');
 ```
 
-The endpoints to access your database will be available as the `.clusterEndpoint` and `.readerEndpoint`
+The endpoints to access your cluster database will be available as the `.clusterEndpoint` and `.readerEndpoint`
 attributes:
 
 ```ts
 const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
-### Rotating master password
-When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
+For an instance database:
+```ts
+const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
+```
 
-[example of setting up master password rotation](test/integ.cluster-rotation.lit.ts)
+### Rotating master password
+When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically both for a cluster and an instance:
+
+[example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
 
 Rotation of the master password is also supported for an existing cluster:
 ```ts
 new RotationSingleUser(stack, 'Rotation', {
     secret: importedSecret,
     engine: DatabaseEngine.Oracle,
-    target: importedCluster,
+    target: importedCluster, // or importedInstance
     vpc: importedVpc,
 })
 ```
