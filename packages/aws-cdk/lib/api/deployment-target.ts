@@ -28,7 +28,7 @@ export interface DeployStackOptions {
   ci?: boolean;
   toolkitStackName?: string;
   reuseAssets?: string[];
-  tags?: [ {Key: string, Value: string}]
+  tags?: [ {Key: string, Value: string}];
 }
 
 export interface ProvisionerProps {

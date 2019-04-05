@@ -235,5 +235,5 @@ export interface DeployOptions {
   /**
    * Tags to pass to CloudFormation for deployment
    */
-  tags?: [ {Key: string, Value: string}]
+  tags?: [ {Key: string, Value: string}];
 }

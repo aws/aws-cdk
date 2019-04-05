@@ -187,20 +187,6 @@ export class Settings {
     const context = this.parseStringContextListToObject(argv);
     const tags = this.parseStringTagsListToObject(argv);
 
-    // Turn list of KEY=VALUE strings into an object
-    for (const assignment of ((argv as any).tags || [])) {
-      const tag = {Key: "", Value: ""};
-      const parts = assignment.split('=', 2);
-      if (parts.length === 2) {
-        debug('CLI argument tags: %s=%s', parts[0], parts[1]);
-        tag.Key = parts[0];
-        tag.Value = parts[1];
-        tags.push(tag);
-      } else {
-        warning('Tags argument is not an assignment (key=value): %s', assignment);
-      }
-    }
-
     return new Settings({
       app: argv.app,
       browser: argv.browser,
