@@ -28,6 +28,7 @@ export interface DeployStackOptions {
   ci?: boolean;
   toolkitStackName?: string;
   reuseAssets?: string[];
+  tags?: [ {Key: string, Value: string}]
 }
 
 export interface ProvisionerProps {
@@ -71,6 +72,7 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
       ci: options.ci,
       reuseAssets: options.reuseAssets,
       toolkitInfo,
+      tags: options.tags
     });
   }
 }

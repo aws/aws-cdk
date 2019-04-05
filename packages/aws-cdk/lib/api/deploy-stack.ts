@@ -32,6 +32,7 @@ export interface DeployStackOptions {
   quiet?: boolean;
   ci?: boolean;
   reuseAssets?: string[];
+  tags?: [ {Key: string, Value: string}]
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -73,7 +74,8 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     TemplateURL: bodyParameter.TemplateURL,
     Parameters: params,
     RoleARN: options.roleArn,
-    Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ]
+    Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
+    Tags: options.tags
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);

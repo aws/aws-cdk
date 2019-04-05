@@ -177,25 +177,27 @@ export class Context {
  * A single bag of settings
  */
 export class Settings {
+
   /**
    * Parse Settings out of CLI arguments.
    * @param argv the received CLI arguments.
    * @returns a new Settings object.
    */
   public static fromCommandLineArguments(argv: yargs.Arguments): Settings {
-    const context: any = {};
+    const context = this.parseStringContextListToObject(argv);
+    const tags = this.parseStringTagsListToObject(argv);
 
     // Turn list of KEY=VALUE strings into an object
-    for (const assignment of ((argv as any).context || [])) {
+    for (const assignment of ((argv as any).tags || [])) {
+      const tag = {Key: "", Value: ""};
       const parts = assignment.split('=', 2);
       if (parts.length === 2) {
-        debug('CLI argument context: %s=%s', parts[0], parts[1]);
-        if (parts[0].match(/^aws:.+/)) {
-          throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
-        }
-        context[parts[0]] = parts[1];
+        debug('CLI argument tags: %s=%s', parts[0], parts[1]);
+        tag.Key = parts[0];
+        tag.Value = parts[1];
+        tags.push(tag);
       } else {
-        warning('Context argument is not an assignment (key=value): %s', assignment);
+        warning('Tags argument is not an assignment (key=value): %s', assignment);
       }
     }
 
@@ -203,6 +205,7 @@ export class Settings {
       app: argv.app,
       browser: argv.browser,
       context,
+      tags,
       language: argv.language,
       pathMetadata: argv.pathMetadata,
       assetMetadata: argv.assetMetadata,
@@ -219,6 +222,42 @@ export class Settings {
       ret = ret.merge(setting);
     }
     return ret;
+  }
+
+  private static parseStringContextListToObject(argv: yargs.Arguments) {
+    const context: any = {};
+
+    for (const assignment of ((argv as any).context || [])) {
+      const parts = assignment.split('=', 2);
+      if (parts.length === 2) {
+        debug('CLI argument context: %s=%s', parts[0], parts[1]);
+        if (parts[0].match(/^aws:.+/)) {
+          throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
+        }
+        context[parts[0]] = parts[1];
+      } else {
+        warning('Context argument is not an assignment (key=value): %s', assignment);
+      }
+    }
+    return context;
+  }
+
+  private static parseStringTagsListToObject(argv: yargs.Arguments) {
+    const tags: any = [];
+
+    for (const assignment of ((argv as any).tags || [])) {
+      const tag = {Key: "", Value: ""};
+      const parts = assignment.split('=', 2);
+      if (parts.length === 2) {
+        debug('CLI argument tags: %s=%s', parts[0], parts[1]);
+        tag.Key = parts[0];
+        tag.Value = parts[1];
+        tags.push(tag);
+      } else {
+        warning('Tags argument is not an assignment (key=value): %s', assignment);
+      }
+    }
+    return tags;
   }
 
   constructor(private settings: SettingsMap = {}, public readonly readOnly = false) {}

@@ -117,6 +117,7 @@ export class CdkToolkit {
           ci: options.ci,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
+          tags: options.tags
         });
 
         const message = result.noOp
@@ -230,4 +231,9 @@ export interface DeployOptions {
    * Reuse the assets with the given asset IDs
    */
   reuseAssets?: string[];
+
+  /**
+   * Tags to pass to CloudFormation for deployment
+   */
+  tags?: [ {Key: string, Value: string}]
 }
