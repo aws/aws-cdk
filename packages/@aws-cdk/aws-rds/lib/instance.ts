@@ -537,7 +537,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    *
    * @default a Secrets Manager generated password
    */
-  readonly masterUserPassword?: string;
+  readonly masterUserPassword?: cdk.SecretValue;
 
   /**
    * The KMS key to use to encrypt the secret for the master user password.
@@ -588,7 +588,6 @@ export abstract class DatabaseInstanceSource extends DatabaseInstanceNew impleme
       engine: props.engine,
       engineVersion: props.engineVersion,
       licenseModel: props.licenseModel,
-      masterUserPassword: props.masterUserPassword,
       timezone: props.timezone
     };
   }
@@ -667,8 +666,12 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
       kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
-      masterUsername: secret ? secret.jsonFieldValue('username') : props.masterUsername,
-      masterUserPassword: secret ? secret.jsonFieldValue('password') : props.masterUserPassword,
+      masterUsername: secret ? secret.secretJsonValue('username').toString() : props.masterUsername,
+      masterUserPassword: secret
+        ? secret.secretJsonValue('password').toString()
+        : (props.masterUserPassword
+          ? props.masterUserPassword.toString()
+          : undefined),
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
@@ -749,8 +752,12 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       dbSnapshotIdentifier: props.snapshotIdentifier,
-      masterUsername: secret ? secret.jsonFieldValue('username') : props.masterUsername,
-      masterUserPassword: secret ? secret.jsonFieldValue('password') : props.masterUserPassword,
+      masterUsername: secret ? secret.secretJsonValue('username').toString() : props.masterUsername,
+      masterUserPassword: secret
+        ? secret.secretJsonValue('password').toString()
+        : (props.masterUserPassword
+          ? props.masterUserPassword.toString()
+          : undefined),
     });
 
     this.instanceIdentifier = instance.dbInstanceId;

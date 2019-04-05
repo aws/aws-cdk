@@ -385,7 +385,7 @@ export = {
       engine: rds.DatabaseInstanceEngine.SqlServerEE,
       instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
       masterUsername: 'syscdk',
-      masterUserPassword: 'tooshort',
+      masterUserPassword: SecretValue.plainText('tooshort'),
       vpc
     });
 
