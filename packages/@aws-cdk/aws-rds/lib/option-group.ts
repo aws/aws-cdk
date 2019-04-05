@@ -86,7 +86,7 @@ export class OptionGroup extends cdk.Construct implements IOptionGroup {
   /**
    * Import an existing option group.
    */
-  public static import(scope: cdk.Construct, id: string, props: OptionGroupImportProps) {
+  public static import(scope: cdk.Construct, id: string, props: OptionGroupImportProps): IOptionGroup {
     return new ImportedOptionGroup(scope, id, props);
   }
 
@@ -119,7 +119,7 @@ export interface OptionGroupImportProps {
   readonly optionGroupName: string;
 }
 
-export class ImportedOptionGroup extends cdk.Construct implements IOptionGroup {
+class ImportedOptionGroup extends cdk.Construct implements IOptionGroup {
   public readonly optionGroupName: string;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: OptionGroupImportProps) {
