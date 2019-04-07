@@ -220,7 +220,7 @@ export = {
   'staging': {
 
     'copy file assets under .assets/fingerprint.ext'(test: Test) {
-      const tempdir = fs.mkdtempSync(os.tmpdir());
+      const tempdir = mkdtempSync();
       process.chdir(tempdir); // change current directory to somewhere in /tmp
 
       // GIVEN
@@ -247,7 +247,7 @@ export = {
     },
 
     'copy directory under .assets/fingerprint/**'(test: Test) {
-      const tempdir = fs.mkdtempSync(os.tmpdir());
+      const tempdir = mkdtempSync();
       process.chdir(tempdir); // change current directory to somewhere in /tmp
 
       // GIVEN
@@ -272,7 +272,7 @@ export = {
 
     'staging path is relative if the dir is below the working directory'(test: Test) {
       // GIVEN
-      const tempdir = fs.mkdtempSync(os.tmpdir());
+      const tempdir = mkdtempSync();
       process.chdir(tempdir); // change current directory to somewhere in /tmp
 
       const staging = '.my-awesome-staging-directory';
@@ -303,7 +303,7 @@ export = {
 
     'if staging directory is absolute, asset path is absolute'(test: Test) {
       // GIVEN
-      const staging = path.resolve(fs.mkdtempSync(os.tmpdir()));
+      const staging = path.resolve(mkdtempSync());
       const app = new App({
         context: {
           [cxapi.ASSET_STAGING_DIR_CONTEXT]: staging,
@@ -331,7 +331,7 @@ export = {
 
     'cdk metadata points to staged asset'(test: Test) {
       // GIVEN
-      const tempdir = fs.mkdtempSync(os.tmpdir());
+      const tempdir = mkdtempSync();
       process.chdir(tempdir); // change current directory to somewhere in /tmp
 
       const staging = '.stageme';
@@ -356,5 +356,8 @@ export = {
     }
 
   }
-
 };
+
+function mkdtempSync() {
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'test.assets'));
+}

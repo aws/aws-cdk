@@ -149,7 +149,7 @@ export = {
   },
 
   'docker directory is staged if asset staging is enabled'(test: Test) {
-    const workdir = fs.mkdtempSync(os.tmpdir());
+    const workdir = mkdtempSync();
     process.chdir(workdir);
 
     const app = new cdk.App({
@@ -171,3 +171,7 @@ export = {
     test.done();
   }
 };
+
+function mkdtempSync() {
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'test.assets'));
+}
