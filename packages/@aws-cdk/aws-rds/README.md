@@ -139,3 +139,13 @@ The `importedSecret` must be a JSON string with the following format:
   "port": "<optional: if not specified, default port will be used>"
 }
 ```
+
+### Metrics
+Database instances expose [metrics (cloudwatch.Metric)](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md):
+```ts
+// The number of database connections in use (average over 5 minutes)
+const dbConnections = instance.metricDatabaseConnections();
+
+// The average amount of time taken per disk I/O operation (average over 1 minute)
+const readLatency = instance.metric('ReadLatency', { statistic: 'Average', periodSec: 60 });
+```

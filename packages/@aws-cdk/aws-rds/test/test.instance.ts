@@ -370,5 +370,30 @@ export = {
     }));
 
     test.done();
+  },
+
+  'can use metricCPUUtilization'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.Mysql,
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      masterUsername: 'admin',
+      vpc
+    });
+
+    // THEN
+    test.deepEqual(stack.node.resolve(instance.metricCPUUtilization()), {
+      dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
+      namespace: 'AWS/RDS',
+      metricName: 'CPUUtilization',
+      periodSec: 300,
+      statistic: 'Average'
+    });
+
+    test.done();
   }
 };

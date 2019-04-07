@@ -10,3 +10,5 @@ export * from './instance';
 
 // AWS::RDS CloudFormation Resources:
 export * from './rds.generated';
+
+import './rds-augmentations.generated';
