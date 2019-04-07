@@ -112,7 +112,7 @@ export = {
     test.throws(() => expect(stack), /DNS zone hello.com is not authoritative for certificate domain name example.com/);
     test.done();
   },
-  
+
   'test root certificate'(test: Test) {
     const stack = new Stack();
 
