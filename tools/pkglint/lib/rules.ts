@@ -4,7 +4,7 @@ import path = require('path');
 import semver = require('semver');
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
-import { deepGet, deepSet, expectDevDependency, expectJSON, fileShouldBe, fileShouldContain, monoRepoVersion } from './util';
+import { deepGet, deepSet, expectDevDependency, expectJSON, fileShouldBe, fileShouldContain, findInnerPackages, monoRepoVersion } from './util';
 
 /**
  * Verify that the package name matches the directory name
@@ -746,6 +746,36 @@ export class JestCoverageTarget extends ValidationRule {
           });
         }
       }
+    }
+  }
+}
+
+/**
+ * Packages inside JSII packages (typically used for embedding Lambda handles)
+ * must only have dev dependencies and their node_modules must have been
+ * blacklisted for publishing
+ *
+ * We might loosen this at some point but we'll have to bundle all runtime dependencies
+ * and we don't have good transitive license checks.
+ */
+export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
+  public name = 'lambda-packages-no-runtime-deps';
+
+  public validate(pkg: PackageJson) {
+    if (!isJSII(pkg)) { return; }
+
+    for (const inner of findInnerPackages(pkg.packageRoot)) {
+      const innerPkg = PackageJson.fromDirectory(inner);
+
+      if (Object.keys(innerPkg.dependencies).length > 0) {
+        pkg.report({
+          ruleName: `${this.name}:1`,
+          message: `NPM Package '${innerPkg.packageName}' inside jsii package can only have devDepencencies`
+        });
+      }
+
+      const nodeModulesRelPath = path.relative(pkg.packageRoot, innerPkg.packageRoot) + '/node_modules';
+      fileShouldContain(`${this.name}:2`, pkg, '.npmignore', nodeModulesRelPath);
     }
   }
 }
