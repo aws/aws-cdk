@@ -125,8 +125,18 @@ export = {
       hostedZone: exampleDotComZone,
     });
 
-    // a bit of a hack: expect(stack) will trigger validation.
-    expect(stack);
+    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+      DomainName: 'example.com',
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'CertificateCertificateRequestorFunction5E845413',
+          'Arn'
+        ]
+      },
+      HostedZoneId: {
+        Ref: 'ExampleDotCom4D1B83AA',
+      }
+    }));
     test.done();
   },
 };
