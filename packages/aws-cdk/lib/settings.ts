@@ -2,6 +2,7 @@ import fs = require('fs-extra');
 import os = require('os');
 import fs_path = require('path');
 import yargs = require('yargs');
+import { Tag, Tags } from './api/cxapp/stacks';
 import { debug, warning } from './logging';
 import util = require('./util');
 
@@ -229,16 +230,13 @@ export class Settings {
   }
 
   private static parseStringTagsListToObject(argv: yargs.Arguments) {
-    const tags: any = [];
+    const tags: Tags = [];
 
     for (const assignment of ((argv as any).tags || [])) {
-      const tag = {Key: "", Value: ""};
       const parts = assignment.split('=', 2);
       if (parts.length === 2) {
         debug('CLI argument tags: %s=%s', parts[0], parts[1]);
-        tag.Key = parts[0];
-        tag.Value = parts[1];
-        tags.push(tag);
+        tags.push(new Tag(parts[0], parts[1]));
       } else {
         warning('Tags argument is not an assignment (key=value): %s', assignment);
       }

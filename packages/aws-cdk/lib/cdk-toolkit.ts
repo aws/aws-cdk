@@ -1,7 +1,7 @@
 import colors = require('colors/safe');
 import fs = require('fs-extra');
 import { format, promisify } from 'util';
-import { AppStacks, ExtendedStackSelection } from "./api/cxapp/stacks";
+import { AppStacks, ExtendedStackSelection, Tags } from "./api/cxapp/stacks";
 import { IDeploymentTarget } from './api/deployment-target';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success } from './logging';
@@ -107,6 +107,10 @@ export class CdkToolkit {
         print('%s: deploying... (was %s)', colors.bold(stack.name), colors.bold(stack.originalName));
       } else {
         print('%s: deploying...', colors.bold(stack.name));
+      }
+
+      if (!options.tags || options.tags.length === 0) {
+        options.tags = this.appStacks.getTagsFromStackMetadata(stack);
       }
 
       try {
@@ -235,5 +239,5 @@ export interface DeployOptions {
   /**
    * Tags to pass to CloudFormation for deployment
    */
-  tags?: [ {Key: string, Value: string}];
+  tags?: Tags;
 }

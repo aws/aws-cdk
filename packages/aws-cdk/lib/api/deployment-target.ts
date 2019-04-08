@@ -1,4 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { Tags } from "../api/cxapp/stacks";
 import { debug } from '../logging';
 import { deserializeStructure } from '../serialize';
 import { Mode } from './aws-auth/credentials';
@@ -28,7 +29,7 @@ export interface DeployStackOptions {
   ci?: boolean;
   toolkitStackName?: string;
   reuseAssets?: string[];
-  tags?: [ {Key: string, Value: string}];
+  tags?: Tags;
 }
 
 export interface ProvisionerProps {

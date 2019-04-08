@@ -2,6 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
 import uuid = require('uuid');
+import { Tags } from "../api/cxapp/stacks";
 import { prepareAssets } from '../assets';
 import { debug, error, print } from '../logging';
 import { toYAML } from '../serialize';
@@ -32,7 +33,7 @@ export interface DeployStackOptions {
   quiet?: boolean;
   ci?: boolean;
   reuseAssets?: string[];
-  tags?: [ {Key: string, Value: string}]
+  tags?: Tags;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;

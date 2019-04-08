@@ -61,6 +61,7 @@ export interface AppStacksProps {
  * In a class because it shares some global state
  */
 export class AppStacks {
+
   /**
    * Since app execution basically always synthesizes all the stacks,
    * we can invoke it once and cache the response for subsequent calls.
@@ -225,6 +226,23 @@ export class AppStacks {
     }
   }
 
+  public getTagsFromStackMetadata(stack: SelectedStack): Tags {
+    const tags = [];
+    for (const id of Object.keys(stack.metadata)) {
+      const metadata = stack.metadata[id];
+      for (const entry of metadata) {
+        switch (entry.type) {
+          case "Tags":
+            for (const tag of entry.data) {
+              print(tag.key, tag.value);
+              tags.push(new Tag(tag.key, tag.value));
+            }
+        }
+      }
+    }
+    return tags;
+  }
+
   /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */
@@ -372,4 +390,14 @@ export interface SelectedStack extends cxapi.SynthesizedStack {
    * The original name of the stack before renaming
    */
   originalName: string;
+}
+
+export type Tags = Tag[];
+export class Tag {
+  public readonly Key: string;
+  public Value: string;
+  constructor(key: string, value: string) {
+    this.Key = key;
+    this.Value = value;
+  }
 }
