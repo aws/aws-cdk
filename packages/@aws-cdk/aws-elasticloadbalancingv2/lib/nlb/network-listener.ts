@@ -44,7 +44,7 @@ export interface INetworkListenerCertificateProps {
   /**
    * Certificate ARN from ACM
    */
-  certificateArn: string
+  readonly certificateArn: string
 }
 
 /**
