@@ -61,22 +61,13 @@ export = {
                   ":",
                   { "Ref": "AWS::AccountId" },
                   ":repository/",
-                  {
-                      "Fn::GetAtt": [
-                        "ImageAdoptRepositoryE1E84E35",
-                        "RepositoryName"
-                      ]
-                  }
+                  { "Fn::GetAtt": [ "ImageAdoptRepositoryE1E84E35", "RepositoryName" ] }
                 ]
               ]
             }
           },
           {
-            "Action": [
-              "ecr:GetAuthorizationToken",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents"
-            ],
+            "Action": "ecr:GetAuthorizationToken",
             "Effect": "Allow",
             "Resource": "*"
           }

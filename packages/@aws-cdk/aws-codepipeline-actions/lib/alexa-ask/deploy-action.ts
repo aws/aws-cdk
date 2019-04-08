@@ -1,5 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cdk = require('@aws-cdk/cdk');
+import { SecretValue } from '@aws-cdk/cdk';
 
 /**
  * Construction properties of the {@link AlexaSkillDeployAction Alexa deploy Action}.
@@ -8,17 +8,17 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
   /**
    * The client id of the developer console token
    */
-  readonly clientId: cdk.Secret;
+  readonly clientId: string;
 
   /**
    * The client secret of the developer console token
    */
-  readonly clientSecret: cdk.Secret;
+  readonly clientSecret: SecretValue;
 
   /**
    * The refresh token of the developer console token
    */
-  readonly refreshToken: cdk.Secret;
+  readonly refreshToken: SecretValue;
 
   /**
    * The Alexa skill id

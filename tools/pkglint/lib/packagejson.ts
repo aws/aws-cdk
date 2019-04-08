@@ -49,6 +49,10 @@ export interface Report {
  * Class representing a package.json file and the issues we found with it
  */
 export class PackageJson {
+  public static fromDirectory(dir: string) {
+    return new PackageJson(path.join(dir, 'package.json'));
+  }
+
   public readonly json: { [key: string]: any };
   public readonly packageRoot: string;
   public readonly packageName: string;

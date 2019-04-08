@@ -6,6 +6,7 @@ import { RESOLVE_METHOD } from "./token";
  * that includes token markers), or it's a listifictaion of a Token string.
  *
  * @param obj The object to test.
+ * @deprecated use `Token.unresolved`
  */
 export function unresolved(obj: any): boolean {
   if (typeof(obj) === 'string') {

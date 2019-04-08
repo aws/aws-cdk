@@ -37,11 +37,18 @@ function success {
   printf "\e[32;5;81m$@\e[0m\n"
 }
 
+if [[ "${1:-}" == "--reset" ]]; then
+    rm -f ~/.foreach.*
+    success "state cleared. you are free to start a new command."
+    exit 0
+fi
+
+
 if [ -f "${statefile}" ] && [ -f "${commandfile}" ]; then
   command="$(cat ${commandfile})"
   if [ ! -z "${command_arg}" ] && [ "${command}" != "${command_arg}" ]; then
     error "error: there is still an active session for: \"${command}\". to reset:"
-    error "   rm -f ~/.foreach.*"
+    error "   $0 --reset"
     exit 1
   fi
 fi
@@ -61,7 +68,7 @@ fi
 next="$(head -n1 ${statefile})"
 if [ -z "${next}" ]; then
   success "done (queue is empty). to reset:"
-  success "   rm -f ~/.foreach.*"
+  success "   $0 --reset"
   exit 0
 fi
 
