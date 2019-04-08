@@ -74,17 +74,14 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   private readonly loadBalancer: INetworkLoadBalancer;
 
   constructor(scope: cdk.Construct, id: string, props: NetworkListenerProps) {
-    const proto = props.protocol || Protocol.Tcp;
+    const certs = props.certificates || [];
+    const proto = props.protocol || (certs.length > 0 ? Protocol.Tls : Protocol.Tcp);
 
     if ([Protocol.Tcp, Protocol.Tls].indexOf(proto) === -1) {
       throw new Error(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${props.protocol}`);
     }
 
-    const certs = props.certificates || [];
-
-    if (proto === Protocol.Tls && (certs.length === 0 || certs.filter(v => {
-      return v.certificateArn == null;
-    }).length > 0)) {
+    if (proto === Protocol.Tls && certs.filter(v => v != null).length === 0) {
       throw new Error(`When the protocol is set to TLS, you must specify certificates`);
     }
 
