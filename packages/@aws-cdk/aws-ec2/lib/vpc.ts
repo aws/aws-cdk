@@ -415,7 +415,7 @@ export class VpcNetwork extends VpcNetworkBase {
 
       // Propagate routes on route tables associated with the right subnets
       const vpnRoutePropagation = props.vpnRoutePropagation || [{ subnetType: SubnetType.Private }];
-      const routeTableIds = [...new Set(Array().concat(...vpnRoutePropagation.map(s => this.selectRouteTableIds(s))))];
+      const routeTableIds = [...new Set(Array().concat(...vpnRoutePropagation.map(s => this.selectSubnets(s).routeTableIds)))];
       const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
         routeTableIds,
         vpnGatewayId: this.vpnGatewayId
@@ -505,7 +505,7 @@ export class VpcNetwork extends VpcNetworkBase {
 
     let natSubnets: VpcPublicSubnet[];
     if (placement) {
-      const subnets = this.selectSubnets(placement);
+      const subnets = this.selectSubnetObjects(placement);
       for (const sub of subnets) {
         if (this.publicSubnets.indexOf(sub) === -1) {
           throw new Error(`natGatewayPlacement ${placement} contains non public subnet ${sub}`);
@@ -660,7 +660,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
   /**
    * The routeTableId attached to this subnet.
    */
-  public readonly routeTableId: string;
+  public readonly routeTableId?: string;
 
   private readonly internetDependencies = new ConcreteDependable();
 
@@ -701,7 +701,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
 
   protected addDefaultRouteToNAT(natGatewayId: string) {
     const route = new CfnRoute(this, `DefaultRoute`, {
-      routeTableId: this.routeTableId,
+      routeTableId: this.routeTableId!,
       destinationCidrBlock: '0.0.0.0/0',
       natGatewayId
     });
@@ -716,7 +716,7 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
     gateway: CfnInternetGateway,
     gatewayAttachment: CfnVPCGatewayAttachment) {
     const route = new CfnRoute(this, `DefaultRoute`, {
-      routeTableId: this.routeTableId,
+      routeTableId: this.routeTableId!,
       destinationCidrBlock: '0.0.0.0/0',
       gatewayId: gateway.ref
     });
@@ -819,6 +819,7 @@ class ImportedVpcSubnet extends cdk.Construct implements IVpcSubnet {
   public readonly internetConnectivityEstablished: cdk.IDependable = new cdk.ConcreteDependable();
   public readonly availabilityZone: string;
   public readonly subnetId: string;
+  public readonly routeTableId?: string = undefined;
 
   constructor(scope: cdk.Construct, id: string, private readonly props: VpcSubnetImportProps) {
     super(scope, id);

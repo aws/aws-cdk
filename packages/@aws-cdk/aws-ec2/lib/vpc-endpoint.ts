@@ -154,7 +154,11 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     super(scope, id);
 
     const subnets = props.subnets || [{ subnetType: SubnetType.Private }];
-    const routeTableIds = [...new Set(Array().concat(...subnets.map(s => props.vpc.selectRouteTableIds(s))))];
+    const routeTableIds = [...new Set(Array().concat(...subnets.map(s => props.vpc.selectSubnets(s).routeTableIds)))];
+
+    if (routeTableIds.length === 0) {
+      throw new Error(`Can't add an endpoint to VPC; route table IDs are not available`);
+    }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       policyDocument: new cdk.Token(() => this.policyDocument),
@@ -387,13 +391,8 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       securityGroups: [securityGroup]
     });
 
-    const subnetIds = props.vpc.selectSubnetIds(props.subnets);
-
-    const availabilityZones = props.vpc.selectSubnetAZs(props.subnets);
-
-    if (availabilityZones.length !== subnetIds.length) {
-      throw new Error('Only one subnet per availability zone is allowed.');
-    }
+    const subnets = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
+    const subnetIds = subnets.subnetIds;
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled || true,

@@ -294,27 +294,6 @@ export = {
       test.done();
     },
 
-    'throws when using more than one subnet per availability zone'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-
-      // WHEN
-      const vpc = new VpcNetwork(stack, 'VpcNetwork', {
-        maxAZs: 1,
-        subnetConfiguration: [
-          {name: 'app', subnetType: SubnetType.Private },
-          {name: 'db', subnetType: SubnetType.Private },
-        ]
-      });
-
-      // THEN
-      test.throws(() => vpc.addInterfaceEndpoint('Bad', {
-        service: InterfaceVpcEndpointAwsService.SecretsManager
-      }), /availability zone/);
-
-      test.done();
-    },
-
     'import/export'(test: Test) {
       // GIVEN
       const stack1 = new Stack();
