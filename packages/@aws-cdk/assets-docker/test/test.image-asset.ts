@@ -153,9 +153,7 @@ export = {
     process.chdir(workdir);
 
     const app = new cdk.App({
-      context: {
-        [cxapi.ASSET_STAGING_DIR_CONTEXT]: '.stage-me'
-      }
+      context: { [cxapi.ASSET_STAGING_DIR_CONTEXT]: '.stage-me' }
     });
 
     const stack = new cdk.Stack(app, 'stack');
