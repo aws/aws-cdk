@@ -42,6 +42,9 @@ export async function execProgram(aws: SDK, config: Configuration): Promise<cxap
     context[cxapi.DISABLE_VERSION_REPORTING] = true;
   }
 
+  const stagingDir = config.settings.get(['staging']);
+  context[cxapi.ASSET_STAGING_DIR_CONTEXT] = stagingDir;
+
   debug('context:', context);
 
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
