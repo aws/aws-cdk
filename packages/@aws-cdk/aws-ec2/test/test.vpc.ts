@@ -609,10 +609,10 @@ export = {
       const vpc = new VpcNetwork(stack, 'VPC');
 
       // WHEN
-      const nets = vpc.selectSubnetIds();
+      const { subnetIds } = vpc.selectSubnets();
 
       // THEN
-      test.deepEqual(nets, vpc.privateSubnets.map(s => s.subnetId));
+      test.deepEqual(subnetIds, vpc.privateSubnets.map(s => s.subnetId));
       test.done();
     },
 
@@ -622,10 +622,10 @@ export = {
       const vpc = new VpcNetwork(stack, 'VPC');
 
       // WHEN
-      const nets = vpc.selectSubnetIds({ subnetType: SubnetType.Public });
+      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.Public });
 
       // THEN
-      test.deepEqual(nets, vpc.publicSubnets.map(s => s.subnetId));
+      test.deepEqual(subnetIds, vpc.publicSubnets.map(s => s.subnetId));
 
       test.done();
     },
@@ -641,10 +641,10 @@ export = {
       });
 
       // WHEN
-      const nets = vpc.selectSubnetIds({ subnetType: SubnetType.Isolated });
+      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.Isolated });
 
       // THEN
-      test.deepEqual(nets, vpc.isolatedSubnets.map(s => s.subnetId));
+      test.deepEqual(subnetIds, vpc.isolatedSubnets.map(s => s.subnetId));
 
       test.done();
     },
@@ -660,10 +660,10 @@ export = {
       });
 
       // WHEN
-      const nets = vpc.selectSubnetIds({ subnetName: 'DontTalkToMe' });
+      const { subnetIds } = vpc.selectSubnets({ subnetName: 'DontTalkToMe' });
 
       // THEN
-      test.deepEqual(nets, vpc.privateSubnets.map(s => s.subnetId));
+      test.deepEqual(subnetIds, vpc.privateSubnets.map(s => s.subnetId));
       test.done();
     },
 
@@ -677,7 +677,7 @@ export = {
       });
 
       test.throws(() => {
-        vpc.selectSubnetIds();
+        vpc.selectSubnets();
       }, /There are no 'Private' subnets in this VPC/);
 
       test.done();
@@ -695,11 +695,11 @@ export = {
       });
 
       // WHEN
-      const nets = vpc.selectSubnets({ onePerAz: true });
+      const { subnetIds } = vpc.selectSubnets({ onePerAz: true });
 
       // THEN
-      test.deepEqual(nets.subnetIds.length, 1);
-      test.deepEqual(nets.subnetIds[0], vpc.privateSubnets[0].subnetId);
+      test.deepEqual(subnetIds.length, 1);
+      test.deepEqual(subnetIds[0], vpc.privateSubnets[0].subnetId);
       test.done();
     }
   },
@@ -761,11 +761,11 @@ export = {
       });
 
       // WHEN
-      const nets = importedVpc.selectSubnetIds({ subnetType: SubnetType.Isolated });
+      const { subnetIds } = importedVpc.selectSubnets({ subnetType: SubnetType.Isolated });
 
       // THEN
       test.equal(3, importedVpc.isolatedSubnets.length);
-      test.deepEqual(nets, importedVpc.isolatedSubnets.map(s => s.subnetId));
+      test.deepEqual(subnetIds, importedVpc.isolatedSubnets.map(s => s.subnetId));
 
       test.done();
     },
@@ -784,11 +784,11 @@ export = {
         });
 
         // WHEN
-        const nets = importedVpc.selectSubnetIds({ subnetName: isolatedName });
+        const { subnetIds } = importedVpc.selectSubnets({ subnetName: isolatedName });
 
         // THEN
         test.equal(3, importedVpc.isolatedSubnets.length);
-        test.deepEqual(nets, importedVpc.isolatedSubnets.map(s => s.subnetId));
+        test.deepEqual(subnetIds, importedVpc.isolatedSubnets.map(s => s.subnetId));
       }
 
       test.done();

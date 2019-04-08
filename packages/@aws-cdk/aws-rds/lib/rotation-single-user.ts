@@ -139,7 +139,7 @@ export class RotationSingleUser extends cdk.Construct {
       vpc: props.vpc
     });
 
-    const vpcSubnetIds = props.vpc.selectSubnetIds(props.vpcSubnets);
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
 
     props.target.connections.allowDefaultPortFrom(securityGroup);
 
@@ -149,7 +149,7 @@ export class RotationSingleUser extends cdk.Construct {
         endpoint: `https://secretsmanager.${this.node.stack.region}.${this.node.stack.urlSuffix}`,
         functionName: rotationFunctionName,
         vpcSecurityGroupIds: securityGroup.securityGroupId,
-        vpcSubnetIds: vpcSubnetIds.join(',')
+        vpcSubnetIds: subnetIds.join(',')
       }
     });
 

@@ -268,7 +268,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
     }
 
-    const subnetIds = props.vpc.selectSubnetIds(props.vpcSubnets);
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
       minSize: minCapacity.toString(),

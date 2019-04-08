@@ -235,7 +235,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     this.vpc = props.instanceProps.vpc;
     this.vpcSubnets = props.instanceProps.vpcSubnets;
 
-    const subnetIds = props.instanceProps.vpc.selectSubnetIds(props.instanceProps.vpcSubnets);
+    const { subnetIds } = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets);
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
