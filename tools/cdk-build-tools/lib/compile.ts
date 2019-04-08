@@ -9,8 +9,8 @@ import { Timers } from "./timer";
 export async function compileCurrentPackage(timers: Timers, compilers: CompilerOverrides = {}): Promise<void> {
   const stdout = await shell(packageCompiler(compilers), timers);
 
-  // WORKAROUND: jsii 0.8.2 does not exist with non-zero on compilation errors
-  // this is a workaround until this is released (https://github.com/awslabs/jsii/pull/442)
+  // WORKAROUND: jsii 0.8.2 does not exit with non-zero on compilation errors
+  // until this is released: https://github.com/awslabs/jsii/pull/442
   if (stdout.trim()) {
     throw new Error(`Compilation failed`);
   }
