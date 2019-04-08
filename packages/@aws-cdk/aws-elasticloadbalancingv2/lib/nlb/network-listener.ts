@@ -166,24 +166,6 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       listenerArn: new cdk.CfnOutput(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
     };
   }
-
-  // protected validate(): string[] {
-  //   const errors: string[] = [];
-
-  //   if ([Protocol.Tcp, Protocol.Tls].indexOf(this.protocol) === -1) {
-  //     errors.push(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${this.protocol}`);
-  //   }
-
-  //   const certs = this.certificates || [];
-
-  //   if (this.protocol === Protocol.Tls && (certs.length === 0 || certs.filter(v => {
-  //     return v.certificateArn == null;
-  //   }).length > 0)) {
-  //     errors.push(`When the protocol is set to TLS, you must specify certificates`);
-  //   }
-
-  //   return errors;
-  // }
 }
 
 /**
