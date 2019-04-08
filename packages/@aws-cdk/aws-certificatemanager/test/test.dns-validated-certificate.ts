@@ -126,15 +126,15 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
-        "ServiceToken": {
-        "Fn::GetAtt": [
-          "CertCertificateRequestorFunction98FDF273",
-          "Arn"
+        ServiceToken: {
+        'Fn::GetAtt': [
+          'CertCertificateRequestorFunction98FDF273',
+          'Arn'
           ]
         },
-        "DomainName": "example.com",
-        "HostedZoneId": {
-          "Ref": "ExampleDotCom4D1B83AA"
+        DomainName: 'example.com',
+        HostedZoneId: {
+          Ref: 'ExampleDotCom4D1B83AA'
         }
       }));
     test.done();
