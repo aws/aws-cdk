@@ -426,7 +426,7 @@ function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
   }
 
   if (placement.subnetType === undefined && placement.subnetName === undefined) {
-    return { subnetType: SubnetType.Private };
+    return { subnetType: SubnetType.Private, onePerAz: placement.onePerAz };
   }
 
   return placement;

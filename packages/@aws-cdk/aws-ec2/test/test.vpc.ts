@@ -681,6 +681,26 @@ export = {
       }, /There are no 'Private' subnets in this VPC/);
 
       test.done();
+    },
+
+    'select subnets with az restriction'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new VpcNetwork(stack, 'VpcNetwork', {
+        maxAZs: 1,
+        subnetConfiguration: [
+          {name: 'app', subnetType: SubnetType.Private },
+          {name: 'db', subnetType: SubnetType.Private },
+        ]
+      });
+
+      // WHEN
+      const nets = vpc.selectSubnets({ onePerAz: true });
+
+      // THEN
+      test.deepEqual(nets.subnetIds.length, 1);
+      test.deepEqual(nets.subnetIds[0], vpc.privateSubnets[0].subnetId);
+      test.done();
     }
   },
 
