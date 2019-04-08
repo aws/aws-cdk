@@ -24,17 +24,17 @@ export interface BaseNetworkListenerProps {
   /**
    * Protocol for listener, expects TCP or TLS
    */
-  protocol?: Protocol;
+  readonly protocol?: Protocol;
 
   /**
    * Certificate list of ACM cert ARNs
    */
-  certificates?: INetworkListenerCertificateProps[];
+  readonly certificates?: INetworkListenerCertificateProps[];
 
   /**
-   * SSL Policy to use for the listener
+   * SSL Policy
    */
-  sslPolicy?: SslPolicy;
+  readonly sslPolicy?: SslPolicy;
 }
 
 /**
@@ -73,20 +73,10 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   private readonly loadBalancer: INetworkLoadBalancer;
 
-  /**
-   * Protocol assigned to listener
-   */
-  private readonly protocol: Protocol;
-
-  /**
-   * Certificates array
-   */
-  private readonly certificates?: INetworkListenerCertificateProps[];
-
   constructor(scope: cdk.Construct, id: string, props: NetworkListenerProps) {
-    let proto = props.protocol || Protocol.Tcp;
+    const proto = props.protocol || Protocol.Tcp;
 
-    if ([Protocol.Tcp, Protocol.Tls].indexOf(props.protocol) === -1) {
+    if ([Protocol.Tcp, Protocol.Tls].indexOf(proto) === -1) {
       throw new Error(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${props.protocol}`);
     }
 
@@ -98,8 +88,8 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       throw new Error(`When the protocol is set to TLS, you must specify certificates`);
     }
 
-    if (proto != Protocol.Tls && certs.length > 0) {
-      throw new Error(`Protocol must be TLS when certificates have been specified`)
+    if (proto !== Protocol.Tls && certs.length > 0) {
+      throw new Error(`Protocol must be TLS when certificates have been specified`);
     }
 
     super(scope, id, {
@@ -109,9 +99,6 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       sslPolicy: props.sslPolicy,
       certificates: props.certificates
     });
-
-    this.protocol = proto;
-    this.certificates = props.certificates;
 
     this.loadBalancer = props.loadBalancer;
 
