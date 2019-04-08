@@ -234,7 +234,6 @@ export class AppStacks {
         switch (entry.type) {
           case "Tags":
             for (const tag of entry.data) {
-              print(tag.key, tag.value);
               tags.push(new Tag(tag.key, tag.value));
             }
         }
