@@ -56,7 +56,7 @@ export class Staging extends Construct {
     this.stagedPath = new Token(() => this._preparedAssetPath).toString();
   }
 
-  public prepare() {
+  protected prepare() {
     const stagingDir = this.node.getContext(cxapi.ASSET_STAGING_DIR_CONTEXT);
     if (!stagingDir) {
       this._preparedAssetPath = this.sourcePath;
