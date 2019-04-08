@@ -69,7 +69,7 @@ export interface IVpcNetwork extends IConstruct {
   /**
    * Return IDs of the subnets appropriate for the given selection strategy
    *
-   * Requires that at least once subnet is matched, throws a descriptive
+   * Requires that at least one subnet is matched, throws a descriptive
    * error message otherwise.
    *
    * @deprecated Use selectSubnets() instead.
@@ -79,7 +79,7 @@ export interface IVpcNetwork extends IConstruct {
   /**
    * Return information on the subnets appropriate for the given selection strategy
    *
-   * Requires that at least once subnet is matched, throws a descriptive
+   * Requires that at least one subnet is matched, throws a descriptive
    * error message otherwise.
    */
   selectSubnets(selection?: SubnetSelection): SelectedSubnets;

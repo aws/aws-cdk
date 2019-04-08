@@ -230,6 +230,24 @@ export = {
       }));
 
       test.done();
+    },
+
+    'throws with an imported vpc'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = VpcNetwork.import(stack, 'VPC', {
+        vpcId: 'id',
+        privateSubnetIds: ['1', '2', '3'],
+        availabilityZones: ['a', 'b', 'c']
+      });
+
+      // THEN
+      test.throws(() => new GatewayVpcEndpoint(stack, 'Gateway', {
+        service: GatewayVpcEndpointAwsService.S3,
+        vpc
+      }), /route table/);
+
+      test.done();
     }
   },
 
