@@ -1,3 +1,4 @@
+import s3 = require("@aws-cdk/aws-s3");
 import { Token } from "@aws-cdk/cdk";
 
 /**
@@ -46,6 +47,17 @@ export class Artifact {
    */
   public getParam(jsonFile: string, keyName: string) {
     return artifactGetParam(this, jsonFile, keyName);
+  }
+
+  /**
+   * Returns the coordinates of the .zip file in S3 that this Artifact represents.
+   * Used by Lambda's `CfnParametersCode` when being deployed in a CodePipeline.
+   */
+  public get s3Coordinates(): s3.Coordinates {
+    return {
+      bucketName: this.bucketName,
+      objectKey: this.objectKey,
+    };
   }
 
   public toString() {

@@ -75,7 +75,6 @@
     "@aws-cdk/aws-events": "^0.28.0",
     "@aws-cdk/aws-iam": "^0.28.0",
     "@aws-cdk/aws-s3": "^0.28.0",
-    "@aws-cdk/aws-sns": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
@@ -83,7 +82,6 @@
     "@aws-cdk/aws-events": "^0.28.0",
     "@aws-cdk/aws-iam": "^0.28.0",
     "@aws-cdk/aws-s3": "^0.28.0",
-    "@aws-cdk/aws-sns": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0"
   },
   "engines": {
