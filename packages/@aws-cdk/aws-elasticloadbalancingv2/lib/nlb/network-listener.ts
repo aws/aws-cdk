@@ -86,8 +86,20 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   constructor(scope: cdk.Construct, id: string, props: NetworkListenerProps) {
     let proto = props.protocol || Protocol.Tcp;
 
-    if (props.certificates && props.certificates.length > 0) {
-      proto = Protocol.Tls;
+    if ([Protocol.Tcp, Protocol.Tls].indexOf(props.protocol) === -1) {
+      throw new Error(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${props.protocol}`);
+    }
+
+    const certs = props.certificates || [];
+
+    if (proto === Protocol.Tls && (certs.length === 0 || certs.filter(v => {
+      return v.certificateArn == null;
+    }).length > 0)) {
+      throw new Error(`When the protocol is set to TLS, you must specify certificates`);
+    }
+
+    if (proto != Protocol.Tls && certs.length > 0) {
+      throw new Error(`Protocol must be TLS when certificates have been specified`)
     }
 
     super(scope, id, {
@@ -155,23 +167,23 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     };
   }
 
-  protected validate(): string[] {
-    const errors: string[] = [];
+  // protected validate(): string[] {
+  //   const errors: string[] = [];
 
-    if ([Protocol.Tcp, Protocol.Tls].indexOf(this.protocol) === -1) {
-      errors.push(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${this.protocol}`);
-    }
+  //   if ([Protocol.Tcp, Protocol.Tls].indexOf(this.protocol) === -1) {
+  //     errors.push(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${this.protocol}`);
+  //   }
 
-    const certs = this.certificates || [];
+  //   const certs = this.certificates || [];
 
-    if (this.protocol === Protocol.Tls && (certs.length === 0 || certs.filter(v => {
-      return v.certificateArn == null;
-    }).length > 0)) {
-      errors.push(`When the protocol is set to TLS, you must specify certificates`);
-    }
+  //   if (this.protocol === Protocol.Tls && (certs.length === 0 || certs.filter(v => {
+  //     return v.certificateArn == null;
+  //   }).length > 0)) {
+  //     errors.push(`When the protocol is set to TLS, you must specify certificates`);
+  //   }
 
-    return errors;
-  }
+  //   return errors;
+  // }
 }
 
 /**
