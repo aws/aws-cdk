@@ -113,7 +113,7 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
       ...additionalProps
     });
     if (internetFacing) {
-      resource.node.addDependency(baseProps.vpc.subnetInternetDependencies(vpcSubnets));
+      resource.node.addDependency(baseProps.vpc.selectSubnets(vpcSubnets).internetConnectedDependency);
     }
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
