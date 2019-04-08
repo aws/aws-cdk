@@ -126,8 +126,7 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
-      DomainName: 'example.com',
-      "ServiceToken": {
+        "ServiceToken": {
         "Fn::GetAtt": [
           "CertCertificateRequestorFunction98FDF273",
           "Arn"
