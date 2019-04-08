@@ -30,7 +30,7 @@ export interface ServerApplicationImportProps {
    * The physical, human-readable name of the CodeDeploy EC2/on-premise Application we're referencing.
    * The Application must be in the same account and region as the root Stack.
    */
-  applicationName: string;
+  readonly applicationName: string;
 }
 
 class ImportedServerApplication extends cdk.Construct implements IServerApplication {
@@ -58,7 +58,7 @@ export interface ServerApplicationProps {
    *
    * @default an auto-generated name will be used
    */
-  applicationName?: string;
+  readonly applicationName?: string;
 }
 
 /**
@@ -95,7 +95,7 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
 
   public export(): ServerApplicationImportProps {
     return {
-      applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
+      applicationName: new cdk.CfnOutput(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
     };
   }
 }

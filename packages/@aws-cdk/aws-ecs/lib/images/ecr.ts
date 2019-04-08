@@ -1,6 +1,7 @@
 import ecr = require('@aws-cdk/aws-ecr');
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage } from '../container-image';
+import { CfnTaskDefinition } from '../ecs.generated';
 
 /**
  * An image from an ECR repository
@@ -17,5 +18,9 @@ export class EcrImage extends ContainerImage {
 
   public bind(containerDefinition: ContainerDefinition): void {
     this.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
+  }
+
+  public toRepositoryCredentialsJson(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined {
+    return undefined;
   }
 }

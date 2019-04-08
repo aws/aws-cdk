@@ -89,7 +89,7 @@ export = {
         'one-stack': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://unknown-account/unknown-region',
-          properties: { templateFile: 'one-stack.template.json' }
+          properties: { templateFile: 'one-stack.template.json' },
         }
       },
     });
@@ -114,7 +114,7 @@ const storeTests = {
     test.throws(() => store.writeFile('bla.txt', 'override is forbidden'));
 
     // WHEN
-    store.finalize();
+    store.lock();
 
     // THEN
     test.throws(() => store.writeFile('another.txt', 'locked!'));
@@ -142,7 +142,7 @@ const storeTests = {
     test.throws(() => store.mkdir('dir1'));
 
     // WHEN
-    store.finalize();
+    store.lock();
     test.throws(() => store.mkdir('dir3'));
     test.done();
   },
@@ -255,7 +255,7 @@ const storeTests = {
     // GIVEN
     const app = createModernApp();
     const stack = new cdk.Stack(app, 'my-stack');
-    const param = new cdk.Parameter(stack, 'MyParam', { type: 'string' });
+    const param = new cdk.CfnParameter(stack, 'MyParam', { type: 'string' });
 
     // WHEN
     stack.setParameterValue(param, 'Foo');
@@ -269,7 +269,7 @@ const storeTests = {
     test.done();
   },
 
-  'addBuildStep can be used to produce build.json'(test: Test) {
+  'addBuildStep can be used to produce build.json in root of cdk.out'(test: Test) {
     // GIVEN
     const app = createModernApp();
 
@@ -289,8 +289,7 @@ const storeTests = {
 
     // THEN
     const session  = app.run();
-    test.deepEqual(session.assembly.list(), [ 'build.json', 'manifest.json' ]);
-    test.deepEqual(session.assembly.readJson('build.json'), {
+    test.deepEqual(session.store.readJson('build.json'), {
       steps: {
         step_id: { type: 'build-step-type', parameters: { boom: 123 } }
       }

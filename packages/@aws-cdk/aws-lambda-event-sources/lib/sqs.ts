@@ -11,7 +11,7 @@ export interface SqsEventSourceProps {
    *
    * @default 10
    */
-  batchSize?: number;
+  readonly batchSize?: number;
 }
 
 /**
@@ -31,6 +31,6 @@ export class SqsEventSource implements lambda.IEventSource {
       eventSourceArn: this.queue.queueArn,
     });
 
-    this.queue.grantConsumeMessages(target.role);
+    this.queue.grantConsumeMessages(target);
   }
 }

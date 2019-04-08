@@ -9,30 +9,30 @@ export interface LayerVersionProps {
    *
    * @default All runtimes are supported
    */
-  compatibleRuntimes?: Runtime[];
+  readonly compatibleRuntimes?: Runtime[];
 
   /**
    * The content of this Layer. Using *inline* (per ``code.isInline``) code is not permitted.
    */
-  code: Code;
+  readonly code: Code;
 
   /**
    * The description the this Lambda Layer.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * The SPDX licence identifier or URL to the license file for this layer.
    *
    * @default no license information will be recorded.
    */
-  license?: string;
+  readonly license?: string;
 
   /**
    * The name of the layer.
    * @default a name will be generated.
    */
-  name?: string;
+  readonly name?: string;
 }
 
 export interface ILayerVersion extends cdk.IConstruct {
@@ -87,7 +87,7 @@ export abstract class LayerVersionBase extends cdk.Construct implements ILayerVe
 
   public export(): LayerVersionImportProps {
     return {
-      layerVersionArn: new cdk.Output(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
+      layerVersionArn: new cdk.CfnOutput(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
       compatibleRuntimes: this.compatibleRuntimes,
     };
   }
@@ -101,14 +101,14 @@ export interface LayerVersionUsageGrantee {
    * The AWS Account id of the account that is authorized to use a Lambda Layer Version. The wild-card ``'*'`` can be
    * used to grant access to "any" account (or any account in an organization when ``organizationId`` is specified).
    */
-  accountId: string;
+  readonly accountId: string;
 
   /**
    * The ID of the AWS Organization to hwich the grant is restricted.
    *
    * Can only be specified if ``accountId`` is ``'*'``
    */
-  organizationId?: string;
+  readonly organizationId?: string;
 }
 
 /**
@@ -118,12 +118,12 @@ export interface LayerVersionImportProps {
   /**
    * The ARN of the LayerVersion.
    */
-  layerVersionArn: string;
+  readonly layerVersionArn: string;
 
   /**
    * The list of compatible runtimes with this Layer.
    */
-  compatibleRuntimes?: Runtime[];
+  readonly compatibleRuntimes?: Runtime[];
 }
 
 /**
@@ -194,7 +194,7 @@ export interface SingletonLayerVersionProps extends LayerVersionProps {
    * The identifier should be unique across all layer providers.
    * We recommend generating a UUID per provider.
    */
-  uuid: string;
+  readonly uuid: string;
 }
 
 /**

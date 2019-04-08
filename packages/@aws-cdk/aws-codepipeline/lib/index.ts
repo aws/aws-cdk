@@ -1,9 +1,12 @@
+export * from './action';
+export * from './artifact';
+export * from './build-action';
 export * from './cross-region-scaffold-stack';
-export * from './github-source-action';
-export * from './jenkins-actions';
-export * from './jenkins-provider';
-export * from './manual-approval-action';
+export * from './deploy-action';
 export * from './pipeline';
+export * from './source-action';
+export * from './test-action';
+export * from './validation';
 
 // AWS::CodePipeline CloudFormation Resources:
 export * from './codepipeline.generated';

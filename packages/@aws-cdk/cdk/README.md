@@ -1,6 +1,6 @@
 ## AWS Cloud Development Kit Core Library
 
-This library includes the basic building blocks of 
+This library includes the basic building blocks of
 the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) (AWS CDK).
 
 ## Aspects
@@ -9,7 +9,7 @@ Aspects are a mechanism to extend the CDK without having to directly impact the
 class hierarchy. We have implemented aspects using the [Visitor
 Pattern](https://en.wikipedia.org/wiki/Visitor_pattern).
 
-An aspect in the CDK is defined by this [interface](lib/aspects/aspect.ts)
+An aspect in the CDK is defined by this [interface](lib/aspect.ts)
 
 Aspects can be applied to any construct. During the tree
 "prepare" phase the aspect will visit each construct in the tree once.
@@ -117,10 +117,18 @@ has a few features that are covered later to explain how this works.
 
 ### API
 
-In order to enable additional controls a Tags can specifically include or
+In order to enable additional controls a Tag can specifically include or
 exclude a CloudFormation Resource Type, propagate tags for an autoscaling group,
 and use priority to override the default precedence. See the `TagProps` 
 interface for more details. 
+
+Tags can be configured by using the properties for the AWS CloudFormation layer
+resources or by using the tag aspects described here. The aspects will always
+take precedence over the AWS CloudFormation layer in the event of a name
+collision. The tags will be merged otherwise. For the aspect based tags, the
+tags applied closest to the resource will take precedence, given an equal
+priority. A higher priority tag will always take precedence over a lower
+priority tag.
 
 #### applyToLaunchedInstances
 
@@ -177,3 +185,26 @@ const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
 vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { priority: 2 }));
 // ... snip
 ```
+
+## Secrets
+
+To help avoid accidental storage of secrets as plain text we use the `SecretValue` type to
+represent secrets.
+
+The best practice is to store secrets in AWS Secrets Manager and reference them using `SecretValue.secretsManager`:
+
+```ts
+const secret = SecretValue.secretsManager('secretId', {
+  jsonField: 'password' // optional: key of a JSON field to retrieve (defaults to all content),
+  versionId: 'id'       // optional: id of the version (default AWSCURRENT)
+  versionStage: 'stage' // optional: version stage name (default AWSCURRENT)
+});
+```
+
+Using AWS Secrets Manager is the recommended way to reference secrets in a CDK app.
+However, `SecretValue` supports the following additional options:
+
+ * `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
+ * `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
+ * `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
+ * `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).

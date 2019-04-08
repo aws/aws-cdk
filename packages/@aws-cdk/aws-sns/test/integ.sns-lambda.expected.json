@@ -12,7 +12,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -56,15 +66,15 @@
     "EchoMyTopicSubscriptionA634C6D7": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "MyTopic86869434"
+        },
         "Endpoint": {
           "Fn::GetAtt": [
             "Echo11F3FB29",
             "Arn"
           ]
-        },
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "MyTopic86869434"
         }
       }
     },
@@ -73,7 +83,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "Echo11F3FB29"
+          "Fn::GetAtt": [
+            "Echo11F3FB29",
+            "Arn"
+          ]
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {

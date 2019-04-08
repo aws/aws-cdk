@@ -1,39 +1,70 @@
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
+import { ConstructOrder, IConstruct } from './construct';
 import { collectRuntimeInformation } from './runtime-info';
+import { filterUndefined } from './util';
 
 export interface ISynthesizable {
   synthesize(session: ISynthesisSession): void;
 }
 
 export interface ISynthesisSession {
+  readonly store: ISessionStore;
   readonly assembly: ISessionStore;
   readonly staging: ISessionStore;
   readonly manifest: cxapi.AssemblyManifest;
   readonly path: string;
   addArtifact(id: string, droplet: cxapi.Artifact): void;
   addBuildStep(id: string, step: cxapi.BuildStep): void;
+  tryGetArtifact(id: string): cxapi.Artifact | undefined;
   getArtifact(id: string): cxapi.Artifact;
 }
 
-export interface SynthesisSessionOptions {
+export interface SynthesisOptions extends ManifestOptions {
   /**
    * The file store used for this session.
    */
-  store: ISessionStore;
+  readonly store: ISessionStore;
 
   /**
-   * Emit the legacy manifest (`cdk.out`) when the session is closed (alongside `manifest.json`).
+   * Whether synthesis should skip the validation phase.
    * @default false
    */
-  legacyManifest?: boolean;
+  readonly skipValidation?: boolean;
+}
 
-  /**
-   * Include runtime information (module versions) in manifest.
-   * @default true
-   */
-  runtimeInformation?: boolean;
+export class Synthesizer {
+  public synthesize(root: IConstruct, options: SynthesisOptions): ISynthesisSession {
+    const session = new SynthesisSession(options);
+
+    // the three holy phases of synthesis: prepare, validate and synthesize
+
+    // prepare
+    root.node.prepareTree();
+
+    // validate
+    const validate = options.skipValidation === undefined ? true : !options.skipValidation;
+    if (validate) {
+      const errors = root.node.validateTree();
+      if (errors.length > 0) {
+        const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+        throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
+      }
+    }
+
+    // synthesize (leaves first)
+    for (const c of root.node.findAll(ConstructOrder.PostOrder)) {
+      if (SynthesisSession.isSynthesizable(c)) {
+        c.synthesize(session);
+      }
+    }
+
+    // write session manifest and lock store
+    session.close(options);
+
+    return session;
+  }
 }
 
 export class SynthesisSession implements ISynthesisSession {
@@ -44,19 +75,19 @@ export class SynthesisSession implements ISynthesisSession {
     return 'synthesize' in obj;
   }
 
+  public readonly store: ISessionStore;
   public readonly assembly: ISessionStore;
   public readonly staging: ISessionStore;
   public readonly path: string;
 
-  private readonly store: ISessionStore;
   private readonly artifacts: { [id: string]: cxapi.Artifact } = { };
   private readonly buildSteps: { [id: string]: cxapi.BuildStep } = { };
   private _manifest?: cxapi.AssemblyManifest;
-  private readonly runtimeInfo: boolean;
+  // private readonly runtimeInfo: boolean;
 
-  constructor(options: SynthesisSessionOptions) {
+  constructor(options: SynthesisOptions) {
     this.store = options.store;
-    this.runtimeInfo = options.runtimeInformation !== undefined ? options.runtimeInformation : true;
+    // this.runtimeInfo = options.runtimeInformation !== undefined ? options.runtimeInformation : true;
     this.assembly = this.store.substore('assembly');
     this.staging = this.store.substore('staging');
     this.path = this.store.path;
@@ -72,33 +103,36 @@ export class SynthesisSession implements ISynthesisSession {
 
   public addArtifact(id: string, artifact: cxapi.Artifact): void {
     cxapi.validateArtifact(artifact);
-    this.artifacts[id] = artifact;
+    this.artifacts[id] = filterUndefined(artifact);
+  }
+
+  public tryGetArtifact(id: string): cxapi.Artifact | undefined {
+    return this.artifacts[id];
   }
 
   public getArtifact(id: string): cxapi.Artifact {
-    if (!(id in this.artifacts)) {
-      throw new Error(`Artifact not found ${id}`);
+    const artifact = this.tryGetArtifact(id);
+    if (!artifact) {
+      throw new Error(`Cannot find artifact ${id}`);
     }
-
-    return this.artifacts[id];
+    return artifact;
   }
 
   public addBuildStep(id: string, step: cxapi.BuildStep) {
     if (id in this.buildSteps) {
       throw new Error(`Build step ${id} already exists`);
     }
-    this.buildSteps[id] = step;
+    this.buildSteps[id] = filterUndefined(step);
   }
 
-  public close(): cxapi.AssemblyManifest {
-    const manifest: cxapi.AssemblyManifest = this._manifest = {
+  public close(options: ManifestOptions = { }): cxapi.AssemblyManifest {
+    const runtimeInfo = options.runtimeInformation !== undefined ? options.runtimeInformation : true;
+
+    const manifest: cxapi.AssemblyManifest = this._manifest = filterUndefined({
       version: cxapi.PROTO_RESPONSE_VERSION,
       artifacts: this.artifacts,
-    };
-
-    if (this.runtimeInfo) {
-      manifest.runtime = collectRuntimeInformation();
-    }
+      runtime: runtimeInfo ? collectRuntimeInformation() : undefined
+    });
 
     this.assembly.writeFile(cxapi.MANIFEST_FILE, JSON.stringify(manifest, undefined, 2));
 
@@ -108,18 +142,34 @@ export class SynthesisSession implements ISynthesisSession {
         steps: this.buildSteps
       };
 
+      // how to build cdk.out, referencing files in staging/ and outputting to assembly/
       this.store.writeFile(cxapi.BUILD_FILE, JSON.stringify(buildManifest, undefined, 2));
     }
 
+    this.store.lock();
     return manifest;
   }
+}
+
+export interface ManifestOptions {
+  /**
+   * Emit the legacy manifest (`cdk.out`) when the session is closed (alongside `manifest.json`).
+   * @default false
+   */
+  readonly legacyManifest?: boolean;
+
+  /**
+   * Include runtime information (module versions) in manifest.
+   * @default true
+   */
+  readonly runtimeInformation?: boolean;
 }
 
 export interface ISessionStore {
   /**
    * The local directory where the store resides.
    */
-  path: string;
+  readonly path: string;
 
   /**
    * Creates a subdirectory named `directoryName` and returns a session store that
@@ -185,26 +235,19 @@ export interface ISessionStore {
   /**
    * Do not allow further writes into the store.
    */
-  finalize(): void;
-}
-
-export interface SynthesisSessionOptions {
-  /**
-   * Where to store the
-   */
-  store: ISessionStore;
+  lock(): void;
 }
 
 export interface FileSystemStoreOptions {
   /**
    * The output directory for synthesis artifacts
    */
-  path: string;
+  readonly path: string;
 
   /**
    * The parent store (optional)
    */
-  parent?: FileSystemStore;
+  readonly parent?: FileSystemStore;
 }
 
 /**
@@ -212,12 +255,12 @@ export interface FileSystemStoreOptions {
  */
 export class FileSystemStore implements ISessionStore {
   public readonly path: string;
-  private readonly parent?: FileSystemStore;
+  // private readonly parent?: FileSystemStore;
   private locked = false;
 
   constructor(options: FileSystemStoreOptions) {
     this.path = options.path;
-    this.parent = options.parent;
+    // this.parent = options.parent;
     return;
   }
 
@@ -278,7 +321,7 @@ export class FileSystemStore implements ISessionStore {
     return fs.readdirSync(this.path).sort();
   }
 
-  public finalize() {
+  public lock() {
     this.locked = true;
   }
 
@@ -290,8 +333,8 @@ export class FileSystemStore implements ISessionStore {
     if (this.exists(artifactName)) {
       throw new Error(`An artifact named ${artifactName} was already written to this session`);
     }
-    if (this.locked || (this.parent && this.parent.locked)) {
-      throw new Error('Store (or parent store) has already been closed');
+    if (this.locked) {
+      throw new Error('Session has already been finalized');
     }
   }
 }

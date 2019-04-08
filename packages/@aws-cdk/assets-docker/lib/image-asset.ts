@@ -9,7 +9,18 @@ export interface DockerImageAssetProps {
   /**
    * The directory where the Dockerfile is stored
    */
-  directory: string;
+  readonly directory: string;
+
+  /**
+   * ECR repository name
+   *
+   * Specify this property if you need to statically address the image, e.g.
+   * from a Kubernetes Pod. Note, this is only the repository name, without the
+   * registry and the tag parts.
+   *
+   * @default automatically derived from the asset's ID.
+   */
+  readonly repositoryName?: string;
 }
 
 /**
@@ -46,7 +57,7 @@ export class DockerImageAsset extends cdk.Construct {
       throw new Error(`No 'Dockerfile' found in ${this.directory}`);
     }
 
-    const imageNameParameter = new cdk.Parameter(this, 'ImageName', {
+    const imageNameParameter = new cdk.CfnParameter(this, 'ImageName', {
       type: 'String',
       description: `ECR repository name and tag asset "${this.node.path}"`,
     });
@@ -55,7 +66,8 @@ export class DockerImageAsset extends cdk.Construct {
       packaging: 'container-image',
       path: this.directory,
       id: this.node.uniqueId,
-      imageNameParameter: imageNameParameter.logicalId
+      imageNameParameter: imageNameParameter.logicalId,
+      repositoryName: props.repositoryName,
     };
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);

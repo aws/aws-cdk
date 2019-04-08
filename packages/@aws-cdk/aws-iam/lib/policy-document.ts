@@ -1,4 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
+import { Default, RegionInfo } from '@aws-cdk/region-info';
+import { IPrincipal } from './principals';
+import { mergePrincipal } from './util';
 
 export class PolicyDocument extends cdk.Token {
   private statements = new Array<PolicyStatement>();
@@ -43,18 +46,37 @@ export class PolicyDocument extends cdk.Token {
 }
 
 /**
- * Represents an IAM principal.
+ * Base class for policy principals
  */
-export abstract class PolicyPrincipal {
-  /**
-   * When this Principal is used in an AssumeRole policy, the action to use.
-   */
-  public assumeRoleAction: string = 'sts:AssumeRole';
+export abstract class PrincipalBase implements IPrincipal {
+  public readonly grantPrincipal: IPrincipal = this;
 
   /**
    * Return the policy fragment that identifies this principal in a Policy.
    */
-  public abstract policyFragment(): PrincipalPolicyFragment;
+  public abstract readonly policyFragment: PrincipalPolicyFragment;
+
+  /**
+   * When this Principal is used in an AssumeRole policy, the action to use.
+   */
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+
+  public addToPolicy(_statement: PolicyStatement): boolean {
+    // This base class is used for non-identity principals. None of them
+    // have a PolicyDocument to add to.
+    return false;
+  }
+
+  public toString() {
+    // This is a first pass to make the object readable. Descendant principals
+    // should return something nicer.
+    return JSON.stringify(this.policyFragment.principalJson);
+  }
+
+  public toJSON() {
+    // Have to implement toJSON() because the default will lead to infinite recursion.
+    return this.policyFragment.principalJson;
+  }
 }
 
 /**
@@ -70,13 +92,17 @@ export class PrincipalPolicyFragment {
   }
 }
 
-export class ArnPrincipal extends PolicyPrincipal {
+export class ArnPrincipal extends PrincipalBase {
   constructor(public readonly arn: string) {
     super();
   }
 
-  public policyFragment(): PrincipalPolicyFragment {
+  public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({ AWS: [ this.arn ] });
+  }
+
+  public toString() {
+    return `ArnPrincipal(${this.arn})`;
   }
 }
 
@@ -84,18 +110,50 @@ export class AccountPrincipal extends ArnPrincipal {
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
   }
+
+  public toString() {
+    return `AccountPrincipal(${this.accountId})`;
+  }
 }
 
 /**
  * An IAM principal that represents an AWS service (i.e. sqs.amazonaws.com).
  */
-export class ServicePrincipal extends PolicyPrincipal {
-  constructor(public readonly service: string) {
+export class ServicePrincipal extends PrincipalBase {
+  constructor(public readonly service: string, private readonly opts: ServicePrincipalOpts = {}) {
     super();
   }
 
-  public policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ Service: [ this.service ] });
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new PrincipalPolicyFragment({
+      Service: [
+        new ServicePrincipalToken(this.service, this.opts).toString()
+      ]
+    });
+  }
+
+  public toString() {
+    return `ServicePrincipal(${this.service})`;
+  }
+}
+
+/**
+ * A principal that represents an AWS Organization
+ */
+export class OrganizationPrincipal extends PrincipalBase {
+  constructor(public readonly organizationId: string) {
+    super();
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new PrincipalPolicyFragment(
+      { AWS: ['*'] },
+      { StringEquals: { 'aws:PrincipalOrgID': this.organizationId } }
+    );
+  }
+
+  public toString() {
+    return `OrganizationPrincipal(${this.organizationId})`;
   }
 }
 
@@ -112,32 +170,48 @@ export class ServicePrincipal extends PolicyPrincipal {
  * for more details.
  *
  */
-export class CanonicalUserPrincipal extends PolicyPrincipal {
+export class CanonicalUserPrincipal extends PrincipalBase {
   constructor(public readonly canonicalUserId: string) {
     super();
   }
 
-  public policyFragment(): PrincipalPolicyFragment {
+  public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({ CanonicalUser: [ this.canonicalUserId ] });
+  }
+
+  public toString() {
+    return `CanonicalUserPrincipal(${this.canonicalUserId})`;
   }
 }
 
-export class FederatedPrincipal extends PolicyPrincipal {
+export class FederatedPrincipal extends PrincipalBase {
+  public readonly assumeRoleAction: string;
+
   constructor(
     public readonly federated: string,
     public readonly conditions: {[key: string]: any},
-    public assumeRoleAction: string = 'sts:AssumeRole') {
+    assumeRoleAction: string = 'sts:AssumeRole') {
     super();
+
+    this.assumeRoleAction = assumeRoleAction;
   }
 
-  public policyFragment(): PrincipalPolicyFragment {
+  public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment({ Federated: [ this.federated ] }, this.conditions);
+  }
+
+  public toString() {
+    return `FederatedPrincipal(${this.federated})`;
   }
 }
 
 export class AccountRootPrincipal extends AccountPrincipal {
   constructor() {
     super(new StackDependentToken(stack => stack.accountId).toString());
+  }
+
+  public toString() {
+    return `AccountRootPrincipal()`;
   }
 }
 
@@ -148,6 +222,10 @@ export class AnyPrincipal extends ArnPrincipal {
   constructor() {
     super('*');
   }
+
+  public toString() {
+    return `AnyPrincipal()`;
+  }
 }
 
 /**
@@ -156,17 +234,18 @@ export class AnyPrincipal extends ArnPrincipal {
  */
 export class Anyone extends AnyPrincipal { }
 
-export class CompositePrincipal extends PolicyPrincipal {
-  private readonly principals = new Array<PolicyPrincipal>();
+export class CompositePrincipal extends PrincipalBase {
+  public readonly assumeRoleAction: string;
+  private readonly principals = new Array<PrincipalBase>();
 
-  constructor(principal: PolicyPrincipal, ...additionalPrincipals: PolicyPrincipal[]) {
+  constructor(principal: PrincipalBase, ...additionalPrincipals: PrincipalBase[]) {
     super();
     this.assumeRoleAction = principal.assumeRoleAction;
     this.addPrincipals(principal);
     this.addPrincipals(...additionalPrincipals);
   }
 
-  public addPrincipals(...principals: PolicyPrincipal[]): this {
+  public addPrincipals(...principals: PrincipalBase[]): this {
     for (const p of principals) {
       if (p.assumeRoleAction !== this.assumeRoleAction) {
         throw new Error(
@@ -174,7 +253,7 @@ export class CompositePrincipal extends PolicyPrincipal {
           `Expecting "${this.assumeRoleAction}", got "${p.assumeRoleAction}"`);
       }
 
-      const fragment = p.policyFragment();
+      const fragment = p.policyFragment;
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
         throw new Error(
           `Components of a CompositePrincipal must not have conditions. ` +
@@ -187,14 +266,18 @@ export class CompositePrincipal extends PolicyPrincipal {
     return this;
   }
 
-  public policyFragment(): PrincipalPolicyFragment {
+  public get policyFragment(): PrincipalPolicyFragment {
     const principalJson: { [key: string]: string[] } = { };
 
     for (const p of this.principals) {
-      mergePrincipal(principalJson, p.policyFragment().principalJson);
+      mergePrincipal(principalJson, p.policyFragment.principalJson);
     }
 
     return new PrincipalPolicyFragment(principalJson);
+  }
+
+  public toString() {
+    return `CompositePrincipal(${this.principals})`;
   }
 }
 
@@ -239,8 +322,8 @@ export class PolicyStatement extends cdk.Token {
     return Object.keys(this.principal).length > 0;
   }
 
-  public addPrincipal(principal: PolicyPrincipal): this {
-    const fragment = principal.policyFragment();
+  public addPrincipal(principal: IPrincipal): this {
+    const fragment = principal.policyFragment;
     mergePrincipal(this.principal, fragment.principalJson);
     this.addConditions(fragment.conditions);
     return this;
@@ -258,8 +341,14 @@ export class PolicyStatement extends cdk.Token {
     return this.addAwsPrincipal(arn);
   }
 
-  public addServicePrincipal(service: string): this {
-    return this.addPrincipal(new ServicePrincipal(service));
+  /**
+   * Adds a service principal to this policy statement.
+   *
+   * @param service the service name for which a service principal is requested (e.g: `s3.amazonaws.com`).
+   * @param region  the region in which the service principal lives (defaults to the current stack's region).
+   */
+  public addServicePrincipal(service: string, opts?: ServicePrincipalOpts): this {
+    return this.addPrincipal(new ServicePrincipal(service, opts));
   }
 
   public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}): this {
@@ -435,21 +524,6 @@ export enum PolicyStatementEffect {
   Deny = 'Deny',
 }
 
-function mergePrincipal(target: { [key: string]: string[] }, source: { [key: string]: string[] }) {
-  for (const key of Object.keys(source)) {
-    target[key] = target[key] || [];
-
-    const value = source[key];
-    if (!Array.isArray(value)) {
-      throw new Error(`Principal value must be an array (it will be normalized later): ${value}`);
-    }
-
-    target[key].push(...value);
-  }
-
-  return target;
-}
-
 /**
  * A lazy token that requires an instance of Stack to evaluate
  */
@@ -461,4 +535,29 @@ class StackDependentToken extends cdk.Token {
   public resolve(context: cdk.ResolveContext) {
     return this.fn(context.scope.node.stack);
   }
+}
+
+class ServicePrincipalToken extends cdk.Token {
+  constructor(private readonly service: string,
+              private readonly opts: ServicePrincipalOpts) {
+    super();
+  }
+
+  public resolve(ctx: cdk.ResolveContext) {
+    const region = this.opts.region || ctx.scope.node.stack.region;
+    const fact = RegionInfo.get(region).servicePrincipal(this.service);
+    return fact || Default.servicePrincipal(this.service, region, ctx.scope.node.stack.urlSuffix);
+  }
+}
+
+/**
+ * Options for a service principal.
+ */
+export interface ServicePrincipalOpts {
+  /**
+   * The region in which the service is operating.
+   *
+   * @default the current Stack's region.
+   */
+  readonly region?: string;
 }

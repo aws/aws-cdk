@@ -31,6 +31,8 @@ export function renderFullSchema(typeSystem: jsiiReflect.TypeSystem, options: Re
 
   const output = require('../cloudformation.schema.json');
 
+  output.definitions = output.definitions || { };
+
   const ctx = SchemaContext.root(output.definitions);
 
   for (const deco of deconstructs) {
@@ -98,7 +100,7 @@ export function schemaForResource(construct: ConstructAndProps, ctx: SchemaConte
 }
 
 function isCfnResource(klass: jsiiReflect.ClassType) {
-  const resource = klass.system.findClass('@aws-cdk/cdk.Resource');
+  const resource = klass.system.findClass('@aws-cdk/cdk.CfnResource');
   return extendsType(klass, resource);
 }
 

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -18,7 +18,7 @@ export = {
     });
 
     // THEN
-    const template = stack.toCloudFormation();
+    const template = SynthUtils.toCloudFormation(stack);
 
     test.deepEqual(template.Parameters.ImageImageName5E684353, {
       Type: 'String',
@@ -61,22 +61,13 @@ export = {
                   ":",
                   { "Ref": "AWS::AccountId" },
                   ":repository/",
-                  {
-                      "Fn::GetAtt": [
-                        "ImageAdoptRepositoryE1E84E35",
-                        "RepositoryName"
-                      ]
-                  }
+                  { "Fn::GetAtt": [ "ImageAdoptRepositoryE1E84E35", "RepositoryName" ] }
                 ]
               ]
             }
           },
           {
-            "Action": [
-              "ecr:GetAuthorizationToken",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents"
-            ],
+            "Action": "ecr:GetAuthorizationToken",
             "Effect": "Allow",
             "Resource": "*"
           }
@@ -104,7 +95,7 @@ export = {
     // WHEN
     asset.repository.addToResourcePolicy(new iam.PolicyStatement()
       .addAction('BOOM')
-      .addPrincipal(new iam.ServicePrincipal('DAMN')));
+      .addPrincipal(new iam.ServicePrincipal('test.service')));
 
     // THEN
     expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {
@@ -117,7 +108,7 @@ export = {
             "Action": "BOOM",
             "Effect": "Allow",
             "Principal": {
-              "Service": "DAMN"
+              "Service": "test.service"
             }
           }
         ],

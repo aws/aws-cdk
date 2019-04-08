@@ -142,7 +142,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -180,7 +183,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -218,7 +224,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -256,7 +265,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -290,7 +302,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -324,7 +339,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloLambda3D9C82D6",
+          "Fn::GetAtt": Array [
+            "HelloLambda3D9C82D6",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -362,7 +380,17 @@ Object {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": "lambda.amazonaws.com",
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "lambda.",
+                      Object {
+                        "Ref": "AWS::URLSuffix",
+                      },
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -456,7 +484,17 @@ Object {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": "apigateway.amazonaws.com",
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "apigateway.",
+                      Object {
+                        "Ref": "AWS::URLSuffix",
+                      },
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -619,7 +657,17 @@ Object {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": "ecs-tasks.amazonaws.com",
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "ecs-tasks.",
+                      Object {
+                        "Ref": "AWS::URLSuffix",
+                      },
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -658,6 +706,7 @@ Object {
             ],
           },
         },
+        "ServiceRegistries": Array [],
         "TaskDefinition": Object {
           "Ref": "MyTaskDef01F0D39B",
         },
@@ -938,7 +987,17 @@ Object {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": "apigateway.amazonaws.com",
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "apigateway.",
+                      Object {
+                        "Ref": "AWS::URLSuffix",
+                      },
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -1092,7 +1151,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloWorldFunctionB2AB6E79",
+          "Fn::GetAtt": Array [
+            "HelloWorldFunctionB2AB6E79",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -1130,7 +1192,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloWorldFunctionB2AB6E79",
+          "Fn::GetAtt": Array [
+            "HelloWorldFunctionB2AB6E79",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -1168,7 +1233,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloWorldFunctionB2AB6E79",
+          "Fn::GetAtt": Array [
+            "HelloWorldFunctionB2AB6E79",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -1202,7 +1270,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloWorldFunctionB2AB6E79",
+          "Fn::GetAtt": Array [
+            "HelloWorldFunctionB2AB6E79",
+            "Arn",
+          ],
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": Object {
@@ -1312,7 +1383,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "HelloWorldFunctionB2AB6E79",
+          "Fn::GetAtt": Array [
+            "HelloWorldFunctionB2AB6E79",
+            "Arn",
+          ],
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": Object {
@@ -1344,7 +1418,17 @@ Object {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": "lambda.amazonaws.com",
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "lambda.",
+                      Object {
+                        "Ref": "AWS::URLSuffix",
+                      },
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -1508,7 +1592,17 @@ Object {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": "lambda.amazonaws.com",
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "lambda.",
+                      Object {
+                        "Ref": "AWS::URLSuffix",
+                      },
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -1535,7 +1629,10 @@ Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
-          "Ref": "LambdaD247545B",
+          "Fn::GetAtt": Array [
+            "LambdaD247545B",
+            "Arn",
+          ],
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": Object {
@@ -1606,7 +1703,17 @@ Object {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": "codebuild.amazonaws.com",
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "codebuild.",
+                      Object {
+                        "Ref": "AWS::URLSuffix",
+                      },
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -1864,7 +1971,17 @@ Object {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": "events.amazonaws.com",
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "events.",
+                      Object {
+                        "Ref": "AWS::URLSuffix",
+                      },
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -1924,7 +2041,17 @@ Object {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": Object {
-                "Service": "codepipeline.amazonaws.com",
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "codepipeline.",
+                      Object {
+                        "Ref": "AWS::URLSuffix",
+                      },
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -2083,6 +2210,24 @@ Object {
         ],
       },
       "Type": "AWS::Events::Rule",
+    },
+  },
+}
+`;
+
+exports[`pure-cfn.json: pure-cfn 1`] = `
+Object {
+  "Resources": Object {
+    "Hello4A628BD4": Object {
+      "Type": "AWS::SQS::Queue",
+    },
+    "MyLogGroup": Object {
+      "Properties": Object {
+        "LogGroupName": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Logs::LogGroup",
     },
   },
 }

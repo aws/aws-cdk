@@ -2,6 +2,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
@@ -15,12 +16,12 @@ export interface ClusterProps {
    *
    * @default CloudFormation-generated name
    */
-  clusterName?: string;
+  readonly clusterName?: string;
 
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 }
 
 /**
@@ -55,6 +56,11 @@ export class Cluster extends cdk.Construct implements ICluster {
   public readonly clusterName: string;
 
   /**
+   * The service discovery namespace created in this cluster
+   */
+  private _defaultNamespace?: cloudmap.INamespace;
+
+  /**
    * Whether the cluster has EC2 capacity associated with it
    */
   private _hasEc2Capacity: boolean = false;
@@ -67,6 +73,41 @@ export class Cluster extends cdk.Construct implements ICluster {
     this.vpc = props.vpc;
     this.clusterArn = cluster.clusterArn;
     this.clusterName = cluster.clusterName;
+  }
+
+  /**
+   * Add an AWS Cloud Map DNS namespace for this cluster.
+   * NOTE: HttpNamespaces are not supported, as ECS always requires a DNSConfig when registering an instance to a Cloud
+   * Map service.
+   */
+  public addDefaultCloudMapNamespace(options: NamespaceOptions): cloudmap.INamespace {
+    if (this._defaultNamespace !== undefined) {
+      throw new Error("Can only add default namespace once.");
+    }
+
+    const namespaceType = options.type === undefined || options.type === NamespaceType.PrivateDns
+      ? cloudmap.NamespaceType.DnsPrivate
+      : cloudmap.NamespaceType.DnsPublic;
+
+    const sdNamespace = namespaceType === cloudmap.NamespaceType.DnsPrivate ?
+      new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+        name: options.name,
+        vpc: this.vpc
+      }) :
+      new cloudmap.PublicDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
+        name: options.name,
+      });
+
+    this._defaultNamespace = sdNamespace;
+
+    return sdNamespace;
+  }
+
+  /**
+   * Getter for namespace added to cluster
+   */
+  public get defaultNamespace(): cloudmap.INamespace | undefined {
+    return this._defaultNamespace;
   }
 
   /**
@@ -144,11 +185,12 @@ export class Cluster extends cdk.Construct implements ICluster {
    */
   public export(): ClusterImportProps {
     return {
-      clusterName: new cdk.Output(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
+      clusterName: new cdk.CfnOutput(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
       clusterArn: this.clusterArn,
       vpc: this.vpc.export(),
       securityGroups: this.connections.securityGroups.map(sg => sg.export()),
       hasEc2Capacity: this.hasEc2Capacity,
+      defaultNamespace: this._defaultNamespace && this._defaultNamespace.export(),
     };
   }
 
@@ -189,7 +231,7 @@ export interface EcsOptimizedAmiProps {
    *
    * @default AmazonLinux
    */
-  generation?: ec2.AmazonLinuxGeneration;
+  readonly generation?: ec2.AmazonLinuxGeneration;
 }
 
 /**
@@ -253,6 +295,11 @@ export interface ICluster extends cdk.IConstruct {
   readonly hasEc2Capacity: boolean;
 
   /**
+   * Getter for Cloudmap namespace created in the cluster
+   */
+  readonly defaultNamespace?: cloudmap.INamespace;
+
+  /**
    * Export the Cluster
    */
   export(): ClusterImportProps;
@@ -265,31 +312,38 @@ export interface ClusterImportProps {
   /**
    * Name of the cluster
    */
-  clusterName: string;
+  readonly clusterName: string;
 
   /**
    * ARN of the cluster
    *
    * @default Derived from clusterName
    */
-  clusterArn?: string;
+  readonly clusterArn?: string;
 
   /**
    * VPC that the cluster instances are running in
    */
-  vpc: ec2.VpcNetworkImportProps;
+  readonly vpc: ec2.VpcNetworkImportProps;
 
   /**
    * Security group of the cluster instances
    */
-  securityGroups: ec2.SecurityGroupImportProps[];
+  readonly securityGroups: ec2.SecurityGroupImportProps[];
 
   /**
    * Whether the given cluster has EC2 capacity
    *
    * @default true
    */
-  hasEc2Capacity?: boolean;
+  readonly hasEc2Capacity?: boolean;
+
+  /**
+   * Default namespace properties
+   *
+   * @default - No default namespace
+   */
+  readonly defaultNamespace?: cloudmap.NamespaceImportProps;
 }
 
 /**
@@ -321,11 +375,17 @@ class ImportedCluster extends cdk.Construct implements ICluster {
    */
   public readonly hasEc2Capacity: boolean;
 
+  /**
+   * Cloudmap namespace created in the cluster
+   */
+  private _defaultNamespace?: cloudmap.INamespace;
+
   constructor(scope: cdk.Construct, id: string, private readonly props: ClusterImportProps) {
     super(scope, id);
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
+    this._defaultNamespace = props.defaultNamespace && cloudmap.Namespace.import(this, 'Namespace', props.defaultNamespace);
 
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
       service: 'ecs',
@@ -338,6 +398,10 @@ class ImportedCluster extends cdk.Construct implements ICluster {
       this.connections.addSecurityGroup(ec2.SecurityGroup.import(this, `SecurityGroup${i}`, sgProps));
       i++;
     }
+  }
+
+  public get defaultNamespace(): cloudmap.INamespace | undefined {
+    return this._defaultNamespace;
   }
 
   public export() {
@@ -354,7 +418,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * @default false
    */
-  containersAccessInstanceRole?: boolean;
+  readonly containersAccessInstanceRole?: boolean;
 
   /**
    * Give tasks this many seconds to complete when instances are being scaled in.
@@ -367,7 +431,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * @default 300
    */
-  taskDrainTimeSeconds?: number;
+  readonly taskDrainTimeSeconds?: number;
 }
 
 /**
@@ -377,5 +441,41 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
   /**
    * The type of EC2 instance to launch into your Autoscaling Group
    */
-  instanceType: ec2.InstanceType;
+  readonly instanceType: ec2.InstanceType;
+}
+
+export interface NamespaceOptions {
+  /**
+   * The domain name for the namespace, such as foo.com
+   */
+  readonly name: string;
+
+  /**
+   * The type of CloudMap Namespace to create in your cluster
+   *
+   * @default PrivateDns
+   */
+  readonly type?: NamespaceType;
+
+  /**
+   * The Amazon VPC that you want to associate the namespace with. Required for Private DNS namespaces
+   *
+   * @default VPC of the cluster for Private DNS Namespace, otherwise none
+   */
+  readonly vpc?: ec2.IVpcNetwork;
+}
+
+/**
+ * The type of CloudMap namespace to create
+ */
+export enum NamespaceType {
+  /**
+   * Create a private DNS namespace
+   */
+  PrivateDns = 'PrivateDns',
+
+  /**
+   * Create a public DNS namespace
+   */
+  PublicDns = 'PublicDns',
 }

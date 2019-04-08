@@ -3,7 +3,6 @@
  */
 
 import { Artifact } from './artifacts';
-import { Environment } from './environment';
 
 /**
  * Bump this to the library version if and only if the CX protocol changes.
@@ -40,8 +39,8 @@ export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
  * Represents a missing piece of context.
  */
 export interface MissingContext {
-  provider: string;
-  props: {
+  readonly provider: string;
+  readonly props: {
     account?: string;
     region?: string;
     [key: string]: any;
@@ -52,40 +51,26 @@ export interface AssemblyManifest {
   /**
    * Protocol version
    */
-  version: string;
+  readonly version: string;
 
   /**
    * The set of artifacts in this assembly.
    */
-  artifacts?: { [id: string]: Artifact };
+  readonly artifacts?: { [id: string]: Artifact };
 
   /**
    * Runtime information.
    */
-  runtime?: AppRuntime;
-}
-
-/**
- * @deprecated use `AssemblyManifest`
- */
-export interface SynthesizeResponse extends AssemblyManifest {
-  stacks: SynthesizedStack[];
+  readonly runtime?: AppRuntime;
 }
 
 /**
  * A complete synthesized stack
  */
 export interface SynthesizedStack {
-  name: string;
-  environment: Environment;
-  missing?: { [key: string]: MissingContext };
-  metadata: StackMetadata;
-  template: any;
-
-  /**
-   * Other stacks this stack depends on
-   */
-  dependsOn?: string[];
+  readonly name: string;
+  readonly artifact: Artifact;
+  readonly template: any;
 }
 
 /**
@@ -95,17 +80,17 @@ export interface MetadataEntry {
   /**
    * The type of the metadata entry.
    */
-  type: string;
+  readonly type: string;
 
   /**
    * The data.
    */
-  data?: any;
+  readonly data?: any;
 
   /**
    * A stack trace for when the entry was created.
    */
-  trace: string[];
+  readonly trace: string[];
 }
 
 /**
@@ -120,7 +105,7 @@ export interface AppRuntime {
   /**
    * The list of libraries loaded in the application, associated with their versions.
    */
-  libraries: { [name: string]: string };
+  readonly libraries: { [name: string]: string };
 }
 
 /**

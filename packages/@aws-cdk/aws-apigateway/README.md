@@ -63,9 +63,7 @@ item.addMethod('GET');   // GET /items/{item}
 
 // the default integration for methods is "handler", but one can
 // customize this behavior per method or even a sub path.
-item.addMethod('DELETE', {
-  integration: new apigateway.HttpIntegration('http://amazon.com')
-});
+item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 ```
 
 ### Integration Targets

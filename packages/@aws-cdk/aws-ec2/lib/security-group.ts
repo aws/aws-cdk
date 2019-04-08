@@ -1,4 +1,4 @@
-import { Construct, IConstruct, Output, Token } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IConstruct, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
@@ -44,7 +44,7 @@ export interface SecurityGroupImportProps {
   /**
    * ID of security group
    */
-  securityGroupId: string;
+  readonly securityGroupId: string;
 }
 
 /**
@@ -207,19 +207,19 @@ export interface SecurityGroupProps {
    * @default If you don't specify a GroupName, AWS CloudFormation generates a
    * unique physical ID and uses that ID for the group name.
    */
-  groupName?: string;
+  readonly groupName?: string;
 
   /**
    * A description of the security group.
    *
    * @default The default name will be the construct's CDK path.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * The VPC in which to create the security group.
    */
-  vpc: IVpcNetwork;
+  readonly vpc: IVpcNetwork;
 
   /**
    * Whether to allow all outbound traffic by default.
@@ -230,7 +230,7 @@ export interface SecurityGroupProps {
    *
    * @default true
    */
-  allowAllOutbound?: boolean;
+  readonly allowAllOutbound?: boolean;
 }
 
 /**
@@ -296,7 +296,7 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   public export(): SecurityGroupImportProps {
     return {
-      securityGroupId: new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
+      securityGroupId: new CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
     };
   }
 
@@ -460,7 +460,7 @@ export interface ConnectionRule {
    *
    * @default tcp
    */
-  protocol?: string;
+  readonly protocol?: string;
 
   /**
    * Start of port range for the TCP and UDP protocols, or an ICMP type number.
@@ -468,7 +468,7 @@ export interface ConnectionRule {
    * If you specify icmp for the IpProtocol property, you can specify
    * -1 as a wildcard (i.e., any ICMP type number).
    */
-  fromPort: number;
+  readonly fromPort: number;
 
   /**
    * End of port range for the TCP and UDP protocols, or an ICMP code.
@@ -478,7 +478,7 @@ export interface ConnectionRule {
    *
    * @default If toPort is not specified, it will be the same as fromPort.
    */
-  toPort?: number;
+  readonly toPort?: number;
 
   /**
    * Description of this connection. It is applied to both the ingress rule
@@ -486,7 +486,7 @@ export interface ConnectionRule {
    *
    * @default No description
    */
-  description?: string;
+  readonly description?: string;
 }
 
 /**

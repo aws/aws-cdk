@@ -1,0 +1,10 @@
+{
+    "extends": "standard",
+    "rules": {
+        "semi": ["error", "always"]
+    },
+    "env": {
+        "jest": true,
+        "node": true
+    }
+}

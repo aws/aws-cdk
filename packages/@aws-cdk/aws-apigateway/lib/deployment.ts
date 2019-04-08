@@ -7,12 +7,12 @@ export interface DeploymentProps  {
   /**
    * The Rest API to deploy.
    */
-  api: IRestApi;
+  readonly api: IRestApi;
 
   /**
    * A description of the purpose of the API Gateway deployment.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * When an API Gateway model is updated, a new deployment will automatically be created.
@@ -21,7 +21,7 @@ export interface DeploymentProps  {
    *
    * @default false
    */
-  retainDeployments?: boolean;
+  readonly retainDeployments?: boolean;
 }
 
 /**

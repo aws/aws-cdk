@@ -7,7 +7,7 @@ export interface QueuePolicyProps {
   /**
    * The set of queues this policy applies to.
    */
-  queues: IQueue[];
+  readonly queues: IQueue[];
 }
 
 /**

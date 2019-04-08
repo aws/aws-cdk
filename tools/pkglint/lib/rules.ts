@@ -4,7 +4,8 @@ import path = require('path');
 import semver = require('semver');
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
-import { deepGet, deepSet, expectDevDependency, expectJSON, expectJSONOneOf, fileShouldBe, fileShouldContain, monoRepoVersion } from './util';
+import { deepGet, deepSet, expectDevDependency, expectJSON, expectJSONOneOf,
+  fileShouldBe, fileShouldContain, findInnerPackages, monoRepoVersion } from './util';
 
 /**
  * Verify that the package name matches the directory name
@@ -16,8 +17,8 @@ export class PackageNameMatchesDirectoryName extends ValidationRule {
     const parts = pkg.packageRoot.split(path.sep);
 
     const expectedName = parts[parts.length - 2].startsWith('@')
-               ? parts.slice(parts.length - 2).join('/')
-               : parts[parts.length - 1];
+      ? parts.slice(parts.length - 2).join('/')
+      : parts[parts.length - 1];
 
     expectJSON(this.name, pkg, 'name', expectedName);
   }
@@ -190,6 +191,19 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
   }
 }
 
+export class JSIIPythonTarget extends ValidationRule {
+  public readonly name = 'jsii/python';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    const moduleName = cdkModuleName(pkg.json.name);
+
+    expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
+    expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
+  }
+}
+
 export class JSIISphinxTarget extends ValidationRule {
   public readonly name = 'jsii/sphinx';
 
@@ -297,13 +311,19 @@ function cdkModuleName(name: string) {
     .map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s))
     .join('.');
 
+  const pythonName = name.replace(/^@/g, "").replace(/\//g, ".").split(".").map(caseUtils.kebab).join(".");
+
   return {
     javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId:
       isCdkPkg ? 'cdk'
                : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
                                                                       : `cdk-${name}`,
-    dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`
+    dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
+    python: {
+      distName: `aws-cdk.${pythonName}`,
+      module: `aws_cdk.${pythonName.replace(/-/g, "_")}`,
+    },
   };
 }
 
@@ -701,6 +721,63 @@ export class Cfn2Ts extends ValidationRule {
     }
 
     expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
+  }
+}
+
+export class JestCoverageTarget extends ValidationRule {
+  public name = 'jest-coverage-target';
+
+  public validate(pkg: PackageJson) {
+    if (pkg.json.jest) {
+      // We enforce the key exists, but the value is just a default
+      const defaults: { [key: string]: number } = {
+        branches: 80,
+        statements: 80
+      };
+      for (const key of Object.keys(defaults)) {
+        const deepPath = ['coverageThreshold', 'global', key];
+        const setting = deepGet(pkg.json.jest, deepPath);
+        if (setting == null) {
+          pkg.report({
+            ruleName: this.name,
+            message: `When jest is used, jest.coverageThreshold.global.${key} must be set`,
+            fix: () => {
+              deepSet(pkg.json.jest, deepPath, defaults[key]);
+            },
+          });
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Packages inside JSII packages (typically used for embedding Lambda handles)
+ * must only have dev dependencies and their node_modules must have been
+ * blacklisted for publishing
+ *
+ * We might loosen this at some point but we'll have to bundle all runtime dependencies
+ * and we don't have good transitive license checks.
+ */
+export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
+  public name = 'lambda-packages-no-runtime-deps';
+
+  public validate(pkg: PackageJson) {
+    if (!isJSII(pkg)) { return; }
+
+    for (const inner of findInnerPackages(pkg.packageRoot)) {
+      const innerPkg = PackageJson.fromDirectory(inner);
+
+      if (Object.keys(innerPkg.dependencies).length > 0) {
+        pkg.report({
+          ruleName: `${this.name}:1`,
+          message: `NPM Package '${innerPkg.packageName}' inside jsii package can only have devDepencencies`
+        });
+      }
+
+      const nodeModulesRelPath = path.relative(pkg.packageRoot, innerPkg.packageRoot) + '/node_modules';
+      fileShouldContain(`${this.name}:2`, pkg, '.npmignore', nodeModulesRelPath);
+    }
   }
 }
 

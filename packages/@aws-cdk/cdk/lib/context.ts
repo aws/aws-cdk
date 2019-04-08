@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Construct } from './core/construct';
+import { Construct } from './construct';
 
 type ContextProviderProps = {[key: string]: any};
 /**
@@ -146,7 +146,7 @@ export interface SSMParameterProviderProps {
   /**
    * The name of the parameter to lookup
    */
-  parameterName: string;
+  readonly parameterName: string;
 }
 /**
  * Context provider that will read values from the SSM parameter store in the indicated account and region

@@ -253,8 +253,8 @@ so they can be imported to another stack.
 class Xxx extends XxxBase {
   public export(): XxxImportProps {
     return {
-      attr1: new cdk.Output(this, 'Attr1', { value: this.attr1 }).makeImportValue().toString(),
-      attr2: new cdk.Output(this, 'Attr2', { value: this.attr2 }).makeImportValue().toString(),
+      attr1: new cdk.CfnOutput(this, 'Attr1', { value: this.attr1 }).makeImportValue().toString(),
+      attr2: new cdk.CfnOutput(this, 'Attr2', { value: this.attr2 }).makeImportValue().toString(),
     }
   }
 }
@@ -326,9 +326,9 @@ export interface IFoo extends cdk.IConstruct, ISomething {
   readonly connections: ec2.Connections;
 
   // permission grants (adds statements to the principal's policy)
-  grant(principal?: iam.IPrincipal, ...actions: string[]): void;
-  grantFoo(principal?: iam.IPrincipal): void;
-  grantBar(principal?: iam.IPrincipal): void;
+  grant(grantee?: iam.IGrantable, ...actions: string[]): void;
+  grantFoo(grantee?: iam.IGrantable): void;
+  grantBar(grantee?: iam.IGrantable): void;
 
   // resource policy (if applicable)
   addToResourcePolicy(statement: iam.PolicyStatement): void;
@@ -364,7 +364,7 @@ export abstract class FooBase extends cdk.Construct implements IFoo {
   public abstract export(): FooAttributes;
 
   // grants can usually be shared
-  public grantYyy(principal?: iam.IPrincipal) {
+  public grantYyy(grantee?: iam.IGrantable) {
     // ...
   }
 
@@ -405,8 +405,8 @@ export class Foo extends FooBase implements IAnotherInterface {
   // for them so they can be imported to another stack.
   public export(): FooAttributes {
     return {
-      fooArn: new cdk.Output(this, 'Arn', { value: this.fooArn }).makeImportValue().toString(), // represent Fn::ImportValue as a string
-      fooBoo: new cdk.Output(this, 'Boo', { value: this.fooBoo }).makeImportValue().toList() // represent as string[]
+      fooArn: new cdk.CfnOutput(this, 'Arn', { value: this.fooArn }).makeImportValue().toString(), // represent Fn::ImportValue as a string
+      fooBoo: new cdk.CfnOutput(this, 'Boo', { value: this.fooBoo }).makeImportValue().toList() // represent as string[]
       // ...
     }
   }

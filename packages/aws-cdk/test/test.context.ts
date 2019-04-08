@@ -43,10 +43,10 @@ export = {
     test.done();
   },
 
-  async 'new context always goes to dedicated file, other context stays in source file'(test: Test) {
+  async 'context with colons gets migrated to new file'(test: Test) {
     // GIVEN
     await fs.writeJSON('cdk.context.json', { foo: 'bar' });
-    await fs.writeJSON('cdk.json', { context: { boo: 'far' } });
+    await fs.writeJSON('cdk.json', { context: { 'boo': 'far', 'boo:boo': 'far:far' } });
     const config = await new Configuration().load();
 
     // WHEN
@@ -54,30 +54,13 @@ export = {
     await config.saveContext();
 
     // THEN
-    test.deepEqual(await fs.readJSON('cdk.context.json'), { foo: 'bar', baz: 'quux' });
-    test.deepEqual(await fs.readJSON('cdk.json'), { context: { boo: 'far' } });
+    test.deepEqual(await fs.readJSON('cdk.context.json'), { 'foo': 'bar', 'boo:boo': 'far:far', 'baz': 'quux' });
+    test.deepEqual(await fs.readJSON('cdk.json'), { context: { boo: 'far'} });
 
     test.done();
   },
 
-  async 'overwritten always goes to dedicated file, removed from source file'(test: Test) {
-    // GIVEN
-    await fs.writeJSON('cdk.context.json', { foo: 'bar' });
-    await fs.writeJSON('cdk.json', { context: { foo: 'bar' } });
-    const config = await new Configuration().load();
-
-    // WHEN
-    config.context.set('foo', 'boom');
-    await config.saveContext();
-
-    // THEN
-    test.deepEqual(await fs.readJSON('cdk.context.json'), { foo: 'boom' });
-    test.deepEqual(await fs.readJSON('cdk.json'), { context: {} });
-
-    test.done();
-  },
-
-  async 'deleted context disappears from both files'(test: Test) {
+  async 'deleted context disappears from new file'(test: Test) {
     // GIVEN
     await fs.writeJSON('cdk.context.json', { foo: 'bar' });
     await fs.writeJSON('cdk.json', { context: { foo: 'bar' } });
@@ -89,12 +72,12 @@ export = {
 
     // THEN
     test.deepEqual(await fs.readJSON('cdk.context.json'), {});
-    test.deepEqual(await fs.readJSON('cdk.json'), { context: {} });
+    test.deepEqual(await fs.readJSON('cdk.json'), { context: { foo: 'bar' }});
 
     test.done();
   },
 
-  async 'clear deletes from both files'(test: Test) {
+  async 'clear deletes from new file'(test: Test) {
     // GIVEN
     await fs.writeJSON('cdk.context.json', { foo: 'bar' });
     await fs.writeJSON('cdk.json', { context: { boo: 'far' } });
@@ -106,23 +89,23 @@ export = {
 
     // THEN
     test.deepEqual(await fs.readJSON('cdk.context.json'), {});
-    test.deepEqual(await fs.readJSON('cdk.json'), { context: {} });
+    test.deepEqual(await fs.readJSON('cdk.json'), { context: { boo: 'far' } });
 
     test.done();
   },
 
   async 'surive missing new file'(test: Test) {
     // GIVEN
-    await fs.writeJSON('cdk.json', { context: { boo: 'far' } });
+    await fs.writeJSON('cdk.json', { context: { 'boo:boo' : 'far' } });
     const config = await new Configuration().load();
 
     // WHEN
-    test.deepEqual(config.context.everything(), { boo: 'far' });
+    test.deepEqual(config.context.all, { 'boo:boo' : 'far' });
     await config.saveContext();
 
     // THEN
-    test.deepEqual(await fs.readJSON('cdk.context.json'), {});
-    test.deepEqual(await fs.readJSON('cdk.json'), { context: { boo: 'far' } });
+    test.deepEqual(await fs.readJSON('cdk.context.json'), { 'boo:boo' : 'far' });
+    test.deepEqual(await fs.readJSON('cdk.json'), {});
 
     test.done();
   },
@@ -134,11 +117,22 @@ export = {
     const config = await new Configuration().load();
 
     // WHEN
-    test.deepEqual(config.context.everything(), { boo: 'far' });
+    test.deepEqual(config.context.all, { boo: 'far' });
     await config.saveContext();
 
     // THEN
     test.deepEqual(await fs.readJSON('cdk.context.json'), { boo: 'far' });
+
+    test.done();
+  },
+
+  async 'command line context is merged with stored context'(test: Test) {
+    // GIVEN
+    await fs.writeJSON('cdk.context.json', { boo: 'far' });
+    const config = await new Configuration({ context: ['foo=bar'] } as any).load();
+
+    // WHEN
+    test.deepEqual(config.context.all, { foo: 'bar', boo: 'far' });
 
     test.done();
   },

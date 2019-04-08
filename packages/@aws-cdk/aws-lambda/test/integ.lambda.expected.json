@@ -9,7 +9,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -93,6 +103,16 @@
           ]
         },
         "Name": "prod"
+      }
+    },
+    "AliasAliasPermissionAF30F9E8": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "Alias325C5727"
+        },
+        "Principal": "cloudformation.amazonaws.com"
       }
     }
   }

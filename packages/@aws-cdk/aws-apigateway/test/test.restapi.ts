@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -60,7 +60,7 @@ export = {
                 {
                   Action: "sts:AssumeRole",
                   Effect: "Allow",
-                  Principal: { Service: "apigateway.amazonaws.com" }
+                  Principal: { Service: { "Fn::Join": ["", ["apigateway.", { Ref: "AWS::URLSuffix" }]] } }
                 }
               ],
               Version: "2012-10-17"
@@ -344,12 +344,12 @@ export = {
 
     // THEN
     stack.node.prepareTree();
-    test.deepEqual(stack.toCloudFormation().Outputs.MyRestApiRestApiIdB93C5C2D, {
+    test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs.MyRestApiRestApiIdB93C5C2D, {
       Value: { Ref: 'MyRestApi2D1F47A9' },
-      Export: { Name: 'MyRestApiRestApiIdB93C5C2D' }
+      Export: { Name: 'Stack:MyRestApiRestApiIdB93C5C2D' }
     });
     test.deepEqual(imported.node.resolve(imported.restApiId), 'api-rxt4498f');
-    test.deepEqual(imported.node.resolve(exported), { restApiId: { 'Fn::ImportValue': 'MyRestApiRestApiIdB93C5C2D' } });
+    test.deepEqual(imported.node.resolve(exported), { restApiId: { 'Fn::ImportValue': 'Stack:MyRestApiRestApiIdB93C5C2D' } });
     test.done();
   },
 
@@ -517,7 +517,7 @@ export = {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
-    const resource = new cdk.Resource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
+    const resource = new cdk.CfnResource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
 
     // WHEN
     resource.node.addDependency(api);

@@ -1,8 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import os = require('os');
-import { ConstructOrder, Root } from './core/construct';
-import { FileSystemStore, ISynthesisSession, SynthesisSession } from './synthesis';
+import { Root } from './construct';
+import { FileSystemStore, ISynthesisSession, Synthesizer } from './synthesis';
 
 export interface AppProps {
   /**
@@ -11,7 +11,7 @@ export interface AppProps {
    * If the environment variable `CDK_CONTEXT_JSON` is set, it is parsed as a JSON object
    * and merged with this hash to form the application's context.
    */
-  context?: { [key: string]: string };
+  readonly context?: { [key: string]: string };
 
   /**
    * Output directory for the CDK application (takes precedence on `CDK_OUTDIR`)
@@ -19,7 +19,16 @@ export interface AppProps {
    * @default if the environment variable `CDK_OUTDIR` is set, it will be used
    * as the default value. Otherwise a temporary directory will be used.
    */
-  outdir?: string;
+  readonly outdir?: string;
+
+  /**
+   * Automatically call run before the application exits
+   *
+   * If you set this, you don't have to call `run()` anymore.
+   *
+   * @default true if running via CDK toolkit (CDK_OUTDIR is set), false otherwise
+   */
+  readonly autoRun?: boolean;
 }
 
 /**
@@ -35,7 +44,7 @@ export class App extends Root {
    * Initializes a CDK application.
    * @param request Optional toolkit request (e.g. for tests)
    */
-  constructor(props: AppProps = { }) {
+  constructor(props: AppProps = {}) {
     super();
     this.loadContext(props.context);
 
@@ -43,6 +52,14 @@ export class App extends Root {
     this.legacyManifest = this.node.getContext(cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT) ? false : true;
     this.runtimeInformation = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
     this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV] || fs.mkdtempSync(os.tmpdir());
+
+    const autoRun = props.autoRun !== undefined ? props.autoRun : cxapi.OUTDIR_ENV in process.env;
+
+    if (autoRun) {
+      // run() guarantuees it will only execute once, so a default of 'true' doesn't bite manual calling
+      // of the function.
+      process.once('beforeExit', () => this.run());
+    }
   }
 
   /**
@@ -56,35 +73,15 @@ export class App extends Root {
 
     const store = new FileSystemStore({ path: this.outdir });
 
-    const session = this._session = new SynthesisSession({
+    const synth = new Synthesizer();
+
+    this._session = synth.synthesize(this, {
       store,
       legacyManifest: this.legacyManifest,
       runtimeInformation: this.runtimeInformation
     });
 
-    // the three holy phases of synthesis: prepare, validate and synthesize
-
-    // prepare
-    this.node.prepareTree();
-
-    // validate
-    const errors = this.node.validateTree();
-    if (errors.length > 0) {
-      const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-      throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
-    }
-
-    // synthesize (leaves first)
-    for (const c of this.node.findAll(ConstructOrder.PostOrder)) {
-      if (SynthesisSession.isSynthesizable(c)) {
-        c.synthesize(session);
-      }
-    }
-
-    // write session manifest and lock store
-    session.close();
-
-    return session;
+    return this._session;
   }
 
   private loadContext(defaults: { [key: string]: string } = { }) {

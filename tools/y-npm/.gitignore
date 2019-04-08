@@ -1,8 +1,0 @@
-*.js
-*.d.ts
-
-.LAST_BUILD
-.nyc_output
-coverage
-.nycrc
-*.snk

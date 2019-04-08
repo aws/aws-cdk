@@ -7,13 +7,12 @@ export interface AvailabilityZonesContextQuery {
   /**
    * Query account
    */
-  account?: string;
+  readonly account?: string;
 
   /**
    * Query region
    */
-  region?: string;
-
+  readonly region?: string;
 }
 
 /**

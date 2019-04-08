@@ -1,6 +1,6 @@
 import { Stack, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Anyone, AnyPrincipal, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from '../lib';
+import { Anyone, AnyPrincipal, CanonicalUserPrincipal, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
 
 export = {
@@ -14,7 +14,7 @@ export = {
     p.addResource('yourQueue');
 
     p.addAllResources();
-    p.addAwsAccountPrincipal(`my${new Token({ account: 'account' })}name`);
+    p.addAwsAccountPrincipal(`my${new Token({ account: 'account' })}name`);
     p.limitToAccount('12221121221');
 
     test.deepEqual(stack.node.resolve(p), { Action:
@@ -219,7 +219,7 @@ export = {
     test.done();
   },
 
-  'the { AWS: "*" } principal is represented as `Anyone` or `AnyPrincipal`'(test: Test) {
+  'the { AWS: "*" } principal is represented as `Anyone` or `AnyPrincipal`'(test: Test) {
     const stack = new Stack();
     const p = new PolicyDocument();
 
@@ -278,9 +278,11 @@ export = {
 
   'addPrincipal correctly merges array in'(test: Test) {
     const stack = new Stack();
-    const arrayPrincipal: PolicyPrincipal = {
+    const arrayPrincipal: IPrincipal = {
+      get grantPrincipal() { return this; },
       assumeRoleAction: 'sts:AssumeRole',
-      policyFragment: () => new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
+      policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
+      addToPolicy() { return false; }
     };
     const s = new PolicyStatement().addAccountRootPrincipal()
                                    .addPrincipal(arrayPrincipal);
@@ -301,18 +303,65 @@ export = {
     const stack = new Stack();
     const s = new PolicyStatement()
       .addAwsPrincipal('349494949494')
-      .addServicePrincipal('ec2.amazonaws.com')
+      .addServicePrincipal('test.service')
       .addResource('resource')
       .addAction('action');
 
     test.deepEqual(stack.node.resolve(s), {
       Action: 'action',
       Effect: 'Allow',
-      Principal: { AWS: '349494949494', Service: 'ec2.amazonaws.com' },
+      Principal: { AWS: '349494949494', Service: 'test.service' },
       Resource: 'resource'
     });
 
     test.done();
+  },
+
+  'Service principals': {
+    'regional service principals resolve appropriately'(test: Test) {
+      const stack = new Stack(undefined, undefined, { env: { region: 'cn-north-1' } });
+      const s = new PolicyStatement()
+        .addAction('test:Action')
+        .addServicePrincipal('codedeploy.amazonaws.com');
+
+      test.deepEqual(stack.node.resolve(s), {
+        Effect: 'Allow',
+        Action: 'test:Action',
+        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
+      });
+
+      test.done();
+    },
+
+    'regional service principals resolve appropriately (with user-set region)'(test: Test) {
+      const stack = new Stack(undefined, undefined, { env: { region: 'cn-northeast-1' } });
+      const s = new PolicyStatement()
+        .addAction('test:Action')
+        .addServicePrincipal('codedeploy.amazonaws.com', { region: 'cn-north-1' });
+
+      test.deepEqual(stack.node.resolve(s), {
+        Effect: 'Allow',
+        Action: 'test:Action',
+        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
+      });
+
+      test.done();
+    },
+
+    'obscure service principals resolve to the user-provided value'(test: Test) {
+      const stack = new Stack(undefined, undefined, { env: { region: 'cn-north-1' } });
+      const s = new PolicyStatement()
+        .addAction('test:Action')
+        .addServicePrincipal('test.service-principal.dev');
+
+      test.deepEqual(stack.node.resolve(s), {
+        Effect: 'Allow',
+        Action: 'test:Action',
+        Principal: { Service: 'test.service-principal.dev' }
+      });
+
+      test.done();
+    },
   },
 
   'CompositePrincipal can be used to represent a principal that has multiple types': {

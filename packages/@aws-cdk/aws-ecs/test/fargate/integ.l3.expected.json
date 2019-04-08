@@ -346,227 +346,6 @@
     "FargateCluster7CCD5F93": {
       "Type": "AWS::ECS::Cluster"
     },
-    "L3TaskDefTaskRole21C75D10": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "ecs-tasks.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "L3TaskDef48D8ACB8": {
-      "Type": "AWS::ECS::TaskDefinition",
-      "Properties": {
-        "ContainerDefinitions": [
-          {
-            "Essential": true,
-            "Image": "amazon/amazon-ecs-sample",
-            "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
-            "LogConfiguration": {
-              "LogDriver": "awslogs",
-              "Options": {
-                "awslogs-group": {
-                  "Ref": "L3LoggingLogGroupBD1F02DD"
-                },
-                "awslogs-stream-prefix": "L3",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                }
-              }
-            },
-            "MountPoints": [],
-            "Name": "web",
-            "PortMappings": [
-              {
-                "ContainerPort": 80,
-                "Protocol": "tcp"
-              }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
-          }
-        ],
-        "Cpu": "512",
-        "ExecutionRoleArn": {
-          "Fn::GetAtt": [
-            "L3TaskDefExecutionRole49AF0996",
-            "Arn"
-          ]
-        },
-        "Family": "awsecsintegL3TaskDefAA25240E",
-        "Memory": "1GB",
-        "NetworkMode": "awsvpc",
-        "RequiresCompatibilities": [
-          "FARGATE"
-        ],
-        "TaskRoleArn": {
-          "Fn::GetAtt": [
-            "L3TaskDefTaskRole21C75D10",
-            "Arn"
-          ]
-        },
-        "Volumes": []
-      }
-    },
-    "L3TaskDefExecutionRole49AF0996": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "ecs-tasks.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "L3TaskDefExecutionRoleDefaultPolicy4656E642": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "L3LoggingLogGroupBD1F02DD",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "L3TaskDefExecutionRoleDefaultPolicy4656E642",
-        "Roles": [
-          {
-            "Ref": "L3TaskDefExecutionRole49AF0996"
-          }
-        ]
-      }
-    },
-    "L3LoggingLogGroupBD1F02DD": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 365
-      },
-      "DeletionPolicy": "Retain"
-    },
-    "L3Service616D5A93": {
-      "Type": "AWS::ECS::Service",
-      "Properties": {
-        "TaskDefinition": {
-          "Ref": "L3TaskDef48D8ACB8"
-        },
-        "Cluster": {
-          "Ref": "FargateCluster7CCD5F93"
-        },
-        "DeploymentConfiguration": {
-          "MaximumPercent": 200,
-          "MinimumHealthyPercent": 50
-        },
-        "DesiredCount": 1,
-        "LaunchType": "FARGATE",
-        "LoadBalancers": [
-          {
-            "ContainerName": "web",
-            "ContainerPort": 80,
-            "TargetGroupArn": {
-              "Ref": "L3LBPublicListenerECSGroup648EEA11"
-            }
-          }
-        ],
-        "NetworkConfiguration": {
-          "AwsvpcConfiguration": {
-            "AssignPublicIp": "DISABLED",
-            "SecurityGroups": [
-              {
-                "Fn::GetAtt": [
-                  "L3ServiceSecurityGroup677B0897",
-                  "GroupId"
-                ]
-              }
-            ],
-            "Subnets": [
-              {
-                "Ref": "VpcPrivateSubnet1Subnet536B997A"
-              },
-              {
-                "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-              }
-            ]
-          }
-        }
-      },
-      "DependsOn": [
-        "L3LBPublicListenerECSGroup648EEA11",
-        "L3LBPublicListener156FFC0F"
-      ]
-    },
-    "L3ServiceSecurityGroup677B0897": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "aws-ecs-integ/L3/Service/SecurityGroup",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "SecurityGroupIngress": [],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
-    "L3ServiceSecurityGroupfromawsecsintegL3LBSecurityGroupA70DA46C80DBDFBCD6": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "IpProtocol": "tcp",
-        "Description": "Load balancer to target",
-        "FromPort": 80,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "L3ServiceSecurityGroup677B0897",
-            "GroupId"
-          ]
-        },
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "L3LBSecurityGroupEDE61198",
-            "GroupId"
-          ]
-        },
-        "ToPort": 80
-      }
-    },
     "L3LB212FC0E0": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
@@ -659,12 +438,254 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        },
         "TargetGroupAttributes": [],
         "Targets": [],
-        "TargetType": "ip"
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
+    "L3TaskDefTaskRole21C75D10": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ecs-tasks.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "L3TaskDef48D8ACB8": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Essential": true,
+            "Image": "amazon/amazon-ecs-sample",
+            "Links": [],
+            "LinuxParameters": {
+              "Capabilities": {
+                "Add": [],
+                "Drop": []
+              },
+              "Devices": [],
+              "Tmpfs": []
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "L3LoggingLogGroupBD1F02DD"
+                },
+                "awslogs-stream-prefix": "L3",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "MountPoints": [],
+            "Name": "web",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ],
+            "Ulimits": [],
+            "VolumesFrom": []
+          }
+        ],
+        "Cpu": "512",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "L3TaskDefExecutionRole49AF0996",
+            "Arn"
+          ]
+        },
+        "Family": "awsecsintegL3TaskDefAA25240E",
+        "Memory": "1GB",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "L3TaskDefTaskRole21C75D10",
+            "Arn"
+          ]
+        },
+        "Volumes": []
+      }
+    },
+    "L3TaskDefExecutionRole49AF0996": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ecs-tasks.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "L3TaskDefExecutionRoleDefaultPolicy4656E642": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "L3LoggingLogGroupBD1F02DD",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "L3TaskDefExecutionRoleDefaultPolicy4656E642",
+        "Roles": [
+          {
+            "Ref": "L3TaskDefExecutionRole49AF0996"
+          }
+        ]
+      }
+    },
+    "L3LoggingLogGroupBD1F02DD": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 365
+      },
+      "DeletionPolicy": "Retain"
+    },
+    "L3Service616D5A93": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "TaskDefinition": {
+          "Ref": "L3TaskDef48D8ACB8"
+        },
+        "Cluster": {
+          "Ref": "FargateCluster7CCD5F93"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "DesiredCount": 1,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "web",
+            "ContainerPort": 80,
+            "TargetGroupArn": {
+              "Ref": "L3LBPublicListenerECSGroup648EEA11"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "L3ServiceSecurityGroup677B0897",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "VpcPrivateSubnet1Subnet536B997A"
+              },
+              {
+                "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+              }
+            ]
+          }
+        },
+        "ServiceRegistries": []
+      },
+      "DependsOn": [
+        "L3LBPublicListenerECSGroup648EEA11",
+        "L3LBPublicListener156FFC0F"
+      ]
+    },
+    "L3ServiceSecurityGroup677B0897": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ/L3/Service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
+    "L3ServiceSecurityGroupfromawsecsintegL3LBSecurityGroupA70DA46C80DBDFBCD6": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "FromPort": 80,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "L3ServiceSecurityGroup677B0897",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "L3LBSecurityGroupEDE61198",
+            "GroupId"
+          ]
+        },
+        "ToPort": 80
       }
     }
   },

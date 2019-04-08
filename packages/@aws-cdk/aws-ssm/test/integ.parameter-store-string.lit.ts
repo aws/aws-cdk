@@ -26,13 +26,13 @@ class UsingStack extends cdk.Stack {
 
     // Retrieve a specific version of the secret (SecureString) parameter.
     // 'version' is always required.
-    const secretValue = new ssm.ParameterStoreSecureString(this, 'SecretValue', {
+    const secretValue = new ssm.ParameterStoreSecureString({
       parameterName: '/My/Secret/Parameter',
       version: 5
-    }).stringValue;
+    });
     /// !hide
 
-    new cdk.Output(this, 'TheValue', { value: stringValue });
+    new cdk.CfnOutput(this, 'TheValue', { value: stringValue });
 
     // Cannot be provisioned so cannot be actually used
     Array.isArray(secretValue);

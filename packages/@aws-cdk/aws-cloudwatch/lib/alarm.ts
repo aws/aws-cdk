@@ -14,7 +14,7 @@ export interface AlarmProps extends MetricAlarmProps {
    * Metric objects can be obtained from most resources, or you can construct
    * custom Metric objects by instantiating one.
    */
-  metric: Metric;
+  readonly metric: Metric;
 }
 
 /**
@@ -107,9 +107,9 @@ export class Alarm extends Construct {
 
       // Actions
       actionsEnabled: props.actionsEnabled,
-      alarmActions: new Token(() => this.alarmActionArns),
-      insufficientDataActions: new Token(() => this.insufficientDataActionArns),
-      okActions: new Token(() => this.okActionArns),
+      alarmActions: new Token(() => this.alarmActionArns).toList(),
+      insufficientDataActions: new Token(() => this.insufficientDataActionArns).toList(),
+      okActions: new Token(() => this.okActionArns).toList(),
 
       // Metric
       ...metricJson(props.metric)
@@ -233,35 +233,35 @@ export interface AlarmMetricJson {
   /**
    * The dimensions to apply to the alarm
    */
-  dimensions?: Dimension[];
+  readonly dimensions?: Dimension[];
 
   /**
    * Namespace of the metric
    */
-  namespace: string;
+  readonly namespace: string;
 
   /**
    * Name of the metric
    */
-  metricName: string;
+  readonly metricName: string;
 
   /**
    * How many seconds to aggregate over
    */
-  period: number;
+  readonly period: number;
 
   /**
    * Simple aggregation function to use
    */
-  statistic?: Statistic;
+  readonly statistic?: Statistic;
 
   /**
    * Percentile aggregation function to use
    */
-  extendedStatistic?: string;
+  readonly extendedStatistic?: string;
 
   /**
    * The unit of the alarm
    */
-  unit?: Unit;
+  readonly unit?: Unit;
 }

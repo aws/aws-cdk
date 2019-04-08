@@ -32,7 +32,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  grantRead(identity?: iam.IPrincipal): void;
+  grantRead(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant write permissions for this stream and its contents to an IAM
@@ -41,7 +41,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to ues the key to encrypt the
    * contents of the stream will also be granted.
    */
-  grantWrite(identity?: iam.IPrincipal): void;
+  grantWrite(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grants read/write permissions for this stream and its contents to an IAM
@@ -50,7 +50,7 @@ export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestinatio
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    */
-  grantReadWrite(identity?: iam.IPrincipal): void;
+  grantReadWrite(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -62,12 +62,12 @@ export interface StreamImportProps {
   /**
    * The ARN of the stream.
    */
-  streamArn: string;
+  readonly streamArn: string;
 
   /**
    * The KMS key securing the contents of the stream if encryption is enabled.
    */
-  encryptionKey?: kms.EncryptionKeyImportProps;
+  readonly encryptionKey?: kms.EncryptionKeyImportProps;
 }
 
 /**
@@ -117,23 +117,14 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantRead(identity?: iam.IPrincipal) {
-    if (!identity) {
-      return;
+  public grantRead(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator');
+
+    if (this.encryptionKey) {
+      this.encryptionKey.grantDecrypt(grantee);
     }
-    this.grant(
-      identity,
-      {
-        streamActions: [
-          'kinesis:DescribeStream',
-          'kinesis:GetRecords',
-          'kinesis:GetShardIterator'
-        ],
-        keyActions: [
-          'kms:Decrypt'
-        ]
-      }
-    );
+
+    return ret;
   }
 
   /**
@@ -143,25 +134,14 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantWrite(identity?: iam.IPrincipal) {
-    if (!identity) {
-      return;
+  public grantWrite(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords');
+
+    if (this.encryptionKey) {
+      this.encryptionKey.grantEncrypt(grantee);
     }
 
-    this.grant(
-      identity,
-      {
-        streamActions: [
-          'kinesis:DescribeStream',
-          'kinesis:PutRecord',
-          'kinesis:PutRecords'
-        ],
-        keyActions: [
-          'kms:GenerateDataKey',
-          'kms:Encrypt'
-        ]
-      }
-    );
+    return ret;
   }
 
   /**
@@ -171,27 +151,20 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    */
-  public grantReadWrite(identity?: iam.IPrincipal) {
-    if (!identity) {
-      return;
+  public grantReadWrite(grantee: iam.IGrantable) {
+    const ret = this.grant(
+        grantee,
+        'kinesis:DescribeStream',
+        'kinesis:GetRecords',
+        'kinesis:GetShardIterator',
+        'kinesis:PutRecord',
+        'kinesis:PutRecords');
+
+    if (this.encryptionKey) {
+      this.encryptionKey.grantEncryptDecrypt(grantee);
     }
-    this.grant(
-      identity,
-      {
-        streamActions: [
-          'kinesis:DescribeStream',
-          'kinesis:GetRecords',
-          'kinesis:GetShardIterator',
-          'kinesis:PutRecord',
-          'kinesis:PutRecords'
-        ],
-        keyActions: [
-          'kms:Decrypt',
-          'kms:GenerateDataKey',
-          'kms:Encrypt'
-        ]
-      }
-    );
+
+    return ret;
   }
 
   public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
@@ -254,17 +227,13 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
     return dest.logSubscriptionDestination(sourceLogGroup);
   }
 
-  private grant(identity: iam.IPrincipal, actions: { streamActions: string[], keyActions: string[] }) {
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.streamArn)
-      .addActions(...actions.streamActions));
-
-    // grant key permissions if there's an associated key.
-    if (this.encryptionKey) {
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.encryptionKey.keyArn)
-        .addActions(...actions.keyActions));
-    }
+  private grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.streamArn],
+      scope: this,
+    });
   }
 }
 
@@ -273,19 +242,19 @@ export interface StreamProps {
    * Enforces a particular physical stream name.
    * @default <generated>
    */
-  streamName?: string;
+  readonly streamName?: string;
 
   /**
    * The number of hours for the data records that are stored in shards to remain accessible.
    * @default 24
    */
-  retentionPeriodHours?: number;
+  readonly retentionPeriodHours?: number;
 
   /**
    * The number of shards for the stream.
    * @default 1
    */
-  shardCount?: number;
+  readonly shardCount?: number;
 
   /**
    * The kind of server-side encryption to apply to this stream.
@@ -295,7 +264,7 @@ export interface StreamProps {
    *
    * @default Unencrypted
    */
-  encryption?: StreamEncryption;
+  readonly encryption?: StreamEncryption;
 
   /**
    * External KMS key to use for stream encryption.
@@ -305,7 +274,7 @@ export interface StreamProps {
    * @default If encryption is set to "Kms" and this property is undefined, a
    * new KMS key will be created and associated with this stream.
    */
-  encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IEncryptionKey;
 }
 
 /**
@@ -359,7 +328,7 @@ export class Stream extends StreamBase {
    */
   public export(): StreamImportProps {
     return {
-      streamArn: new cdk.Output(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
+      streamArn: new cdk.CfnOutput(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
       encryptionKey: this.encryptionKey ? this.encryptionKey.export() : undefined,
     };
   }

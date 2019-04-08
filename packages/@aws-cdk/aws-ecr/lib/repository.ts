@@ -10,14 +10,14 @@ export interface RepositoryProps {
    *
    * @default Automatically generated name.
    */
-  repositoryName?: string;
+  readonly repositoryName?: string;
 
   /**
    * Life cycle rules to apply to this registry
    *
    * @default No life cycle rules
    */
-  lifecycleRules?: LifecycleRule[];
+  readonly lifecycleRules?: LifecycleRule[];
 
   /**
    * The AWS account ID associated with the registry that contains the repository.
@@ -25,7 +25,7 @@ export interface RepositoryProps {
    * @see https://docs.aws.amazon.com/AmazonECR/latest/APIReference/API_PutLifecyclePolicy.html
    * @default The default registry is assumed.
    */
-  lifecycleRegistryId?: string;
+  readonly lifecycleRegistryId?: string;
 
   /**
    * Retain the repository on stack deletion
@@ -35,7 +35,7 @@ export interface RepositoryProps {
    *
    * @default false
    */
-  retain?: boolean;
+  readonly retain?: boolean;
 }
 
 /**
@@ -76,8 +76,8 @@ export class Repository extends RepositoryBase {
    */
   public export(): RepositoryImportProps {
     return {
-      repositoryArn: new cdk.Output(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
-      repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
+      repositoryArn: new cdk.CfnOutput(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
+      repositoryName: new cdk.CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
     };
   }
 
@@ -97,7 +97,7 @@ export class Repository extends RepositoryBase {
   public addLifecycleRule(rule: LifecycleRule) {
     // Validate rule here so users get errors at the expected location
     if (rule.tagStatus === undefined) {
-      rule.tagStatus = rule.tagPrefixList === undefined ? TagStatus.Any : TagStatus.Tagged;
+      rule = { ...rule, tagStatus: rule.tagPrefixList === undefined ? TagStatus.Any : TagStatus.Tagged };
     }
 
     if (rule.tagStatus === TagStatus.Tagged && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)) {

@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
@@ -34,9 +34,12 @@ export = {
     });
 
     // verify that now the template contains parameters for this asset
-    const template = stack.toCloudFormation();
+    const template = stack._toCloudFormation();
     test.equal(template.Parameters.assetb55390fe84158c95af1195e7d42c27e0S3Bucket.Type, 'String');
     test.equal(template.Parameters.assetb55390fe84158c95af1195e7d42c27e0S3Key.Type, 'String');
+    // const template = SynthUtils.toCloudFormation(stack);
+    // test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
+    // test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 
     test.done();
   },
@@ -78,9 +81,15 @@ export = {
     });
 
     // verify that now the template contains parameters for this asset
+<<<<<<< HEAD
     const template = stack.toCloudFormation();
     test.equal(template.Parameters.asset79b1fc4ccf3c001c3dc7aa7b45dd071fS3Bucket.Type, 'String');
     test.equal(template.Parameters.asset79b1fc4ccf3c001c3dc7aa7b45dd071fS3Key.Type, 'String');
+=======
+    const template = SynthUtils.toCloudFormation(stack);
+    test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
+    test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
+>>>>>>> master
 
     test.done();
   },
@@ -182,8 +191,13 @@ export = {
     const stack = new cdk.Stack();
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
+<<<<<<< HEAD
     const location = SAMPLE_ASSET_DIRECTORY;
     const resource = new cdk.Resource(stack, 'MyResource', { type: 'My::Resource::Type' });
+=======
+    const location = path.join(__dirname, 'sample-asset-directory');
+    const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });
+>>>>>>> master
     const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: location });
 
     // WHEN
@@ -203,8 +217,13 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
+<<<<<<< HEAD
     const location = SAMPLE_ASSET_DIRECTORY;
     const resource = new cdk.Resource(stack, 'MyResource', { type: 'My::Resource::Type' });
+=======
+    const location = path.join(__dirname, 'sample-asset-directory');
+    const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });
+>>>>>>> master
     const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: location });
 
     // WHEN

@@ -1,3 +1,4 @@
+import { ArtifactType, SynthesizedStack } from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { expect, haveResource } from '../lib/index';
 
@@ -89,15 +90,14 @@ export = {
   },
 };
 
-function mkStack(template: any) {
+function mkStack(template: any): SynthesizedStack {
   return {
     name: 'test',
     template,
-    metadata: {},
-    environment: {
-      name: 'test',
-      account: 'test',
-      region: 'test'
+    artifact: {
+      type: ArtifactType.AwsCloudFormationStack,
+      metadata: {},
+      environment: 'aws://test/test'
     }
   };
 }

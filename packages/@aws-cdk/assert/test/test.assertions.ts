@@ -14,12 +14,12 @@ passingExample('expect <synthStack> at <some path> to have <some type>', () => {
   });
   expect(synthStack).at('/TestResource').to(haveType(resourceType));
 });
-passingExample('expect <synthStack> at <some path> to have <some type>', () => {
+passingExample('expect non-synthesized stack at <some path> to have <some type>', () => {
   const resourceType = 'Test::Resource';
   const stack = new cdk.Stack();
   new TestResource(stack, 'TestResource', { type: resourceType });
-
-  expect(stack).at('/TestResource').to(haveType(resourceType));
+  // '//' because the stack has no name, which leads to an empty path entry here.
+  expect(stack).at('//TestResource').to(haveType(resourceType));
 });
 passingExample('expect <synthStack> at <some path> *not* to have <some type>', () => {
   const resourceType = 'Test::Resource';
@@ -42,7 +42,12 @@ passingExample('expect <synthStack> to match (exactly) <template>', () => {
   });
   const expected = {
     Resources: {
-      TestResource: { Type: resourceType }
+      TestResource: {
+        Type: resourceType,
+        Metadata: {
+          "aws:cdk:path": "TestStack/TestResource"
+        }
+      }
     }
   };
   expect(synthStack).to(matchTemplate(expected, MatchStyle.EXACT));
@@ -66,8 +71,19 @@ passingExample('expect <synthStack> to be a superset of <template>', () => {
   });
   const expected = {
     Resources: {
-      TestResourceA: { Type: 'Test::Resource' },
-      TestResourceB: { Type: 'Test::Resource', Properties: { Foo: 'Bar' } }
+      TestResourceA: {
+        Type: 'Test::Resource',
+        Metadata: {
+          "aws:cdk:path": "TestStack/TestResourceA"
+        }
+      },
+      TestResourceB: {
+        Type: 'Test::Resource',
+        Metadata: {
+          "aws:cdk:path": "TestStack/TestResourceB"
+        },
+        Properties: { Foo: 'Bar' }
+      }
     }
   };
   expect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));
@@ -206,17 +222,28 @@ function failingExample(title: string, cb: (test: Test) => void) {
 }
 
 function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.SynthesizedStack {
-  const app = new cdk.App();
+  const app = new cdk.App({
+    context: {
+      [cx.PATH_METADATA_ENABLE_CONTEXT]: 'true'
+    }
+  });
   const stack = new cdk.Stack(app, 'TestStack');
   fn(stack);
-  return app.synthesizeStack(stack.name);
+  const session = app.run();
+  const artifact: cx.Artifact = session.manifest.artifacts![stack.name];
+  const template = session.assembly.readJson(artifact.properties!.templateFile);
+  return {
+    name: 'TestStack',
+    artifact,
+    template
+  };
 }
 
-interface TestResourceProps extends cdk.ResourceProps {
+interface TestResourceProps extends cdk.CfnResourceProps {
   type: string;
 }
 
-class TestResource extends cdk.Resource {
+class TestResource extends cdk.CfnResource {
   constructor(scope: cdk.Construct, id: string, props: TestResourceProps) {
     super(scope, id, props);
   }

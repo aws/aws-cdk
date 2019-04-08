@@ -58,13 +58,13 @@
     "@types/fs-extra": "^5.0.5",
     "@types/jest": "^24.0.9",
     "@types/unzip": "^0.1.1",
-    "cdk-build-tools": "^0.25.0",
+    "cdk-build-tools": "^0.28.0",
     "jest": "^24.1.0",
-    "pkglint": "^0.25.0",
+    "pkglint": "^0.28.0",
     "unzip": "^0.1.11"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.25.0",
+    "@aws-cdk/cx-api": "^0.28.0",
     "archiver": "^3.0.0",
     "fs-extra": "^7.0.1"
   },
@@ -74,7 +74,7 @@
   ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cx-api": "^0.25.0"
+    "@aws-cdk/cx-api": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"

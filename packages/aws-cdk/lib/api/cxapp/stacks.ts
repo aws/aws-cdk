@@ -1,4 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
+import regionInfo = require('@aws-cdk/region-info');
 import colors = require('colors/safe');
 import minimatch = require('minimatch');
 import contextproviders = require('../../context-providers');
@@ -86,8 +87,10 @@ export class AppStacks {
     }
 
     if (selectors.length === 0) {
-      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(stacks));
-      return this.applyRenames(stacks);
+      // remove non-auto deployed Stacks
+      const autoDeployedStacks = stacks.filter(s => s.autoDeploy !== false);
+      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(autoDeployedStacks));
+      return this.applyRenames(autoDeployedStacks);
     }
 
     const allStacks = new Map<string, cxapi.SynthesizedStack>();
@@ -188,7 +191,9 @@ export class AppStacks {
           if (!stack.template.Resources) {
             stack.template.Resources = {};
           }
-          if (!stack.template.Resources.CDKMetadata) {
+          const resourcePresent = stack.environment.region === 'default-region'
+            || regionInfo.Fact.find(stack.environment.region, regionInfo.FactName.cdkMetadataResourceAvailable) === 'YES';
+          if (!stack.template.Resources.CDKMetadata && resourcePresent) {
             stack.template.Resources.CDKMetadata = {
               Type: 'AWS::CDK::Metadata',
               Properties: {

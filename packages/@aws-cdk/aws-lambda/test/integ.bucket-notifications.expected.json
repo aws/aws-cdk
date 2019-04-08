@@ -54,7 +54,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -100,7 +110,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyFunction3BAA72D1"
+          "Fn::GetAtt": [
+            "MyFunction3BAA72D1",
+            "Arn"
+          ]
         },
         "Principal": "s3.amazonaws.com",
         "SourceAccount": {
@@ -119,7 +132,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyFunction3BAA72D1"
+          "Fn::GetAtt": [
+            "MyFunction3BAA72D1",
+            "Arn"
+          ]
         },
         "Principal": "s3.amazonaws.com",
         "SourceAccount": {
@@ -177,7 +193,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],

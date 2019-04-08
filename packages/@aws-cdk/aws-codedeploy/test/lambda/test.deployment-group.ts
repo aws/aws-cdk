@@ -90,7 +90,7 @@ export = {
             Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
-              Service: "codedeploy.amazonaws.com"
+              Service: { "Fn::Join": ["", ["codedeploy.", { Ref: "AWS::Region" }, ".", { Ref: "AWS::URLSuffix" }]] }
             }
           }],
           Version: "2012-10-17"
@@ -122,7 +122,7 @@ export = {
       const application = new codedeploy.LambdaApplication(stack, 'MyApp');
       const alias = mockAlias(stack);
       const serviceRole = new iam.Role(stack, 'MyRole', {
-        assumedBy: new iam.ServicePrincipal('not-codedeploy.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('not-codedeploy.test')
       });
 
       new codedeploy.LambdaDeploymentGroup(stack, 'MyDG', {
@@ -138,7 +138,7 @@ export = {
             Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
-              Service: "not-codedeploy.amazonaws.com"
+              Service: "not-codedeploy.test"
             }
           }],
           Version: "2012-10-17"

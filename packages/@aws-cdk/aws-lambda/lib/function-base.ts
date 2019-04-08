@@ -9,10 +9,9 @@ import cdk = require('@aws-cdk/cdk');
 import { IEventSource } from './event-source';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
-import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
 
 export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
-  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource {
+  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource, iam.IGrantable {
 
   /**
    * Logical ID of this Function.
@@ -47,20 +46,12 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
    */
   addPermission(id: string, permission: Permission): void;
 
-  /**
-   * Convenience method for creating a new {@link PipelineInvokeAction}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineInvokeAction}
-   */
-  toCodePipelineInvokeAction(props: CommonPipelineInvokeActionProps): PipelineInvokeAction;
-
   addToRolePolicy(statement: iam.PolicyStatement): void;
 
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  grantInvoke(identity?: iam.IPrincipal): void;
+  grantInvoke(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Return the given named metric for this Lambda
@@ -105,14 +96,14 @@ export interface FunctionImportProps {
    *
    * Format: arn:<partition>:lambda:<region>:<account-id>:function:<function-name>
    */
-  functionArn: string;
+  readonly functionArn: string;
 
   /**
    * The IAM execution role associated with this function.
    *
    * If the role is not specified, any role-related operations will no-op.
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Id of the securityGroup for this Lambda, if in a VPC.
@@ -120,10 +111,14 @@ export interface FunctionImportProps {
    * This needs to be given in order to support allowing connections
    * to this Lambda.
    */
-  securityGroupId?: string;
+  readonly securityGroupId?: string;
 }
 
 export abstract class FunctionBase extends cdk.Construct implements IFunction  {
+  /**
+   * The principal this Lambda Function is running as
+   */
+  public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * The name of the function.
@@ -137,6 +132,8 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
   /**
    * The IAM role associated with this function.
+   *
+   * Undefined if the function was imported without a role.
    */
   public abstract readonly role?: iam.IRole;
 
@@ -151,6 +148,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
    * Actual connections object for this Lambda
    *
    * May be unset, in which case this Lambda is not configured use in a VPC.
+   * @internal
    */
   protected _connections?: ec2.Connections;
 
@@ -175,7 +173,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     new CfnPermission(this, id, {
       action,
       principal,
-      functionName: this.functionName,
+      functionName: this.functionArn,
       eventSourceToken: permission.eventSourceToken,
       sourceAccount: permission.sourceAccount,
       sourceArn: permission.sourceArn,
@@ -184,13 +182,6 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
   public get id() {
     return this.node.id;
-  }
-
-  public toCodePipelineInvokeAction(props: CommonPipelineInvokeActionProps): PipelineInvokeAction {
-    return new PipelineInvokeAction({
-      ...props,
-      lambda: this,
-    });
   }
 
   public addToRolePolicy(statement: iam.PolicyStatement) {
@@ -246,12 +237,27 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  public grantInvoke(identity?: iam.IPrincipal) {
-    if (identity) {
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addAction('lambda:InvokeFunction')
-        .addResource(this.functionArn));
-    }
+  public grantInvoke(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: ['lambda:InvokeFunction'],
+      resourceArns: [this.functionArn],
+
+      // Fake resource-like object on which to call addToResourcePolicy(), which actually
+      // calls addPermission()
+      resource: {
+        addToResourcePolicy: (_statement) => {
+          // Couldn't add permissions to the principal, so add them locally.
+          const identifier = 'Invoke' + JSON.stringify(grantee!.grantPrincipal.policyFragment.principalJson);
+          this.addPermission(identifier, {
+            principal: grantee.grantPrincipal!,
+            action: 'lambda:InvokeFunction',
+          });
+        },
+        dependencyRoots: [],
+        node: this.node,
+      },
+    });
   }
 
   public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
@@ -292,7 +298,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
     // if we have a permission resource for this relationship, add it as a dependency
     // to the bucket notifications resource, so it will be created first.
-    const permission = this.node.tryFindChild(permissionId) as cdk.Resource;
+    const permission = this.node.tryFindChild(permissionId) as cdk.CfnResource;
 
     return {
       type: s3n.BucketNotificationDestinationType.Lambda,
@@ -330,11 +336,10 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     source.bind(this);
   }
 
-  private parsePermissionPrincipal(principal?: iam.PolicyPrincipal) {
+  private parsePermissionPrincipal(principal?: iam.IPrincipal) {
     if (!principal) {
       return undefined;
     }
-
     // use duck-typing, not instance of
 
     if ('accountId' in principal) {
@@ -345,7 +350,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(this.node.resolve(principal))}. ` +
+    throw new Error(`Invalid principal type for Lambda permission statement: ${this.node.resolve(principal.toString())}. ` +
       'Supported: AccountPrincipal, ServicePrincipal');
   }
 }

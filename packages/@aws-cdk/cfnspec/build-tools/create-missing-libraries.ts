@@ -24,7 +24,7 @@ async function main() {
 
   // iterate over all cloudformation namespaces
   for (const namespace of cfnspec.namespaces()) {
-    const [ moduleFamily, moduleBaseName ] = namespace.split('::');
+    const [moduleFamily, moduleBaseName] = (namespace === 'AWS::Serverless' ? 'AWS::SAM' : namespace).split('::');
 
     const moduleName = `${moduleFamily}-${moduleBaseName.replace(/V\d+$/, '')}`.toLocaleLowerCase();
     const packagePath = path.join(root, moduleName);
@@ -73,6 +73,13 @@ async function main() {
       ? lowcaseModuleName
       : `${moduleFamily.toLocaleLowerCase()}-${lowcaseModuleName}`;
 
+    // python names
+    const pythonDistSubName = moduleFamily === 'AWS'
+      ? lowcaseModuleName
+      : `${moduleFamily.toLocaleLowerCase()}.${lowcaseModuleName}`;
+    const pythonDistName = `aws-cdk.${pythonDistSubName}`;
+    const pythonModuleName = pythonDistName.replace(/-/g, "_");
+
     async function write(relativePath: string, contents: string[] | string | object) {
       const fullPath = path.join(packagePath, relativePath);
       const dir = path.dirname(fullPath);
@@ -115,6 +122,10 @@ async function main() {
               groupId: javaGroupId,
               artifactId: javaArtifactId
             }
+          },
+          python: {
+            distName: pythonDistName,
+            module: pythonModuleName
           },
           sphinx: {}
         }

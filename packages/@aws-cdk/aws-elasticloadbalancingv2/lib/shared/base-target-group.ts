@@ -18,12 +18,12 @@ export interface BaseTargetGroupProps {
    *
    * @default Automatically generated
    */
-  targetGroupName?: string;
+  readonly targetGroupName?: string;
 
   /**
    * The virtual private cloud (VPC).
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
@@ -32,14 +32,14 @@ export interface BaseTargetGroupProps {
    *
    * @default 300
    */
-  deregistrationDelaySec?: number;
+  readonly deregistrationDelaySec?: number;
 
   /**
    * Health check configuration
    *
    * @default No health check
    */
-  healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck;
 
   /**
    * The type of targets registered to this TargetGroup, either IP or Instance.
@@ -50,7 +50,7 @@ export interface BaseTargetGroupProps {
    *
    * @default Determined automatically
    */
-  targetType?: TargetType;
+  readonly targetType?: TargetType;
 }
 
 /**
@@ -62,21 +62,21 @@ export interface HealthCheck {
    *
    * @default 30
    */
-  intervalSecs?: number;
+  readonly intervalSecs?: number;
 
   /**
    * The ping path destination where Elastic Load Balancing sends health check requests.
    *
    * @default /
    */
-  path?: string;
+  readonly path?: string;
 
   /**
    * The port that the load balancer uses when performing health checks on the targets.
    *
    * @default 'traffic-port'
    */
-  port?: string;
+  readonly port?: string;
 
   /**
    * The protocol the load balancer uses when performing health checks on targets.
@@ -86,7 +86,7 @@ export interface HealthCheck {
    *
    * @default HTTP for ALBs, TCP for NLBs
    */
-  protocol?: Protocol;
+  readonly protocol?: Protocol;
 
   /**
    * The amount of time, in seconds, during which no response from a target means a failed health check.
@@ -97,7 +97,7 @@ export interface HealthCheck {
    *
    * @default 5 for ALBs, 10 or 6 for NLBs
    */
-  timeoutSeconds?: number;
+  readonly timeoutSeconds?: number;
 
   /**
    * The number of consecutive health checks successes required before considering an unhealthy target healthy.
@@ -106,7 +106,7 @@ export interface HealthCheck {
    *
    * @default 5 for ALBs, 3 for NLBs
    */
-  healthyThresholdCount?: number;
+  readonly healthyThresholdCount?: number;
 
   /**
    * The number of consecutive health check failures required before considering a target unhealthy.
@@ -116,7 +116,7 @@ export interface HealthCheck {
    *
    * @default 2
    */
-  unhealthyThresholdCount?: number;
+  readonly unhealthyThresholdCount?: number;
 
   /**
    * HTTP code to use when checking for a successful response from a target.
@@ -125,7 +125,7 @@ export interface HealthCheck {
    * 499, and the default value is 200. You can specify multiple values (for
    * example, "200,202") or a range of values (for example, "200-299").
    */
-  healthyHttpCodes?: string;
+  readonly healthyHttpCodes?: string;
 }
 
 /**
@@ -270,8 +270,8 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
    */
   public export(): TargetGroupImportProps {
     return {
-      targetGroupArn: new cdk.Output(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue().toString(),
-      defaultPort: new cdk.Output(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
+      targetGroupArn: new cdk.CfnOutput(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue().toString(),
+      defaultPort: new cdk.CfnOutput(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
     };
   }
 
@@ -304,17 +304,17 @@ export interface TargetGroupImportProps {
   /**
    * ARN of the target group
    */
-  targetGroupArn: string;
+  readonly targetGroupArn: string;
 
   /**
    * Port target group is listening on
    */
-  defaultPort: string;
+  readonly defaultPort: string;
 
   /**
    * A Token representing the list of ARNs for the load balancer routing to this target group
    */
-  loadBalancerArns?: string;
+  readonly loadBalancerArns?: string;
 }
 
 /**
@@ -350,14 +350,14 @@ export interface LoadBalancerTargetProps {
   /**
    * What kind of target this is
    */
-  targetType: TargetType;
+  readonly targetType: TargetType;
 
   /**
    * JSON representing the target's direct addition to the TargetGroup list
    *
    * May be omitted if the target is going to register itself later.
    */
-  targetJson?: any;
+  readonly targetJson?: any;
 }
 
 /**

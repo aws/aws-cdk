@@ -6,7 +6,6 @@ import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { CfnDeploymentGroup } from '../codedeploy.generated';
-import { CommonPipelineDeployActionProps, PipelineDeployAction } from '../pipeline-action';
 import { AutoRollbackConfig } from '../rollback-config';
 import { deploymentGroupNameToArn, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
 import { IServerApplication, ServerApplication } from './application';
@@ -20,14 +19,6 @@ export interface IServerDeploymentGroup extends cdk.IConstruct {
   readonly deploymentConfig: IServerDeploymentConfig;
   readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
   export(): ServerDeploymentGroupImportProps;
-
-  /**
-   * Convenience method for creating a new {@link PipelineDeployAction}.
-   *
-   * @param props the construction properties of the new Action
-   * @returns the newly created {@link PipelineDeployAction}
-   */
-  toCodePipelineDeployAction(props: CommonPipelineDeployActionProps): PipelineDeployAction;
 }
 
 /**
@@ -41,20 +32,20 @@ export interface ServerDeploymentGroupImportProps {
    * The reference to the CodeDeploy EC2/on-premise Application
    * that this Deployment Group belongs to.
    */
-  application: IServerApplication;
+  readonly application: IServerApplication;
 
   /**
    * The physical, human-readable name of the CodeDeploy EC2/on-premise Deployment Group
    * that we are referencing.
    */
-  deploymentGroupName: string;
+  readonly deploymentGroupName: string;
 
   /**
    * The Deployment Configuration this Deployment Group uses.
    *
    * @default ServerDeploymentConfig#OneAtATime
    */
-  deploymentConfig?: IServerDeploymentConfig;
+  readonly deploymentConfig?: IServerDeploymentConfig;
 }
 
 /**
@@ -81,14 +72,6 @@ export abstract class ServerDeploymentGroupBase extends cdk.Construct implements
   }
 
   public abstract export(): ServerDeploymentGroupImportProps;
-
-  public toCodePipelineDeployAction(props: CommonPipelineDeployActionProps):
-      PipelineDeployAction {
-    return new PipelineDeployAction({
-      ...props,
-      deploymentGroup: this,
-    });
-  }
 }
 
 class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
@@ -155,27 +138,27 @@ export interface ServerDeploymentGroupProps {
    * The CodeDeploy EC2/on-premise Application this Deployment Group belongs to.
    * If you don't provide one, a new Application will be created.
    */
-  application?: IServerApplication;
+  readonly application?: IServerApplication;
 
   /**
    * The service Role of this Deployment Group.
    * If you don't provide one, a new Role will be created.
    */
-  role?: iam.Role;
+  readonly role?: iam.Role;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
    * @default an auto-generated name will be used
    */
-  deploymentGroupName?: string;
+  readonly deploymentGroupName?: string;
 
   /**
    * The EC2/on-premise Deployment Configuration to use for this Deployment Group.
    *
    * @default ServerDeploymentConfig#OneAtATime
    */
-  deploymentConfig?: IServerDeploymentConfig;
+  readonly deploymentConfig?: IServerDeploymentConfig;
 
   /**
    * The auto-scaling groups belonging to this Deployment Group.
@@ -184,7 +167,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default []
    */
-  autoScalingGroups?: autoscaling.AutoScalingGroup[];
+  readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
 
   /**
    * If you've provided any auto-scaling groups with the {@link #autoScalingGroups} property,
@@ -193,7 +176,7 @@ export interface ServerDeploymentGroupProps {
    * @default true
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install.html
    */
-  installAgent?: boolean;
+  readonly installAgent?: boolean;
 
   /**
    * The load balancer to place in front of this Deployment Group.
@@ -202,21 +185,21 @@ export interface ServerDeploymentGroupProps {
    *
    * @default the Deployment Group will not have a load balancer defined
    */
-  loadBalancer?: codedeploylb.ILoadBalancer;
+  readonly loadBalancer?: codedeploylb.ILoadBalancer;
 
   /**
    * All EC2 instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
    * @default no additional EC2 instances will be added to the Deployment Group
    */
-  ec2InstanceTags?: InstanceTagSet;
+  readonly ec2InstanceTags?: InstanceTagSet;
 
   /**
    * All on-premise instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
    * @default no additional on-premise instances will be added to the Deployment Group
    */
-  onPremiseInstanceTags?: InstanceTagSet;
+  readonly onPremiseInstanceTags?: InstanceTagSet;
 
   /**
    * The CloudWatch alarms associated with this Deployment Group.
@@ -228,19 +211,19 @@ export interface ServerDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  alarms?: cloudwatch.Alarm[];
+  readonly alarms?: cloudwatch.Alarm[];
 
   /**
    * Whether to continue a deployment even if fetching the alarm status from CloudWatch failed.
    *
    * @default false
    */
-  ignorePollAlarmsFailure?: boolean;
+  readonly ignorePollAlarmsFailure?: boolean;
 
   /**
    * The auto-rollback configuration for this Deployment Group.
    */
-  autoRollback?: AutoRollbackConfig;
+  readonly autoRollback?: AutoRollbackConfig;
 }
 
 /**
@@ -300,7 +283,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       autoScalingGroups: new cdk.Token(() =>
         this._autoScalingGroups.length === 0
           ? undefined
-          : this._autoScalingGroups.map(asg => asg.autoScalingGroupName)),
+          : this._autoScalingGroups.map(asg => asg.autoScalingGroupName)).toList(),
       loadBalancerInfo: this.loadBalancerInfo(props.loadBalancer),
       deploymentStyle: props.loadBalancer === undefined
         ? undefined
@@ -321,7 +304,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   public export(): ServerDeploymentGroupImportProps {
     return {
       application: this.application,
-      deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', {
+      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
         value: this.deploymentGroupName
       }).makeImportValue().toString(),
       deploymentConfig: this.deploymentConfig,

@@ -7,12 +7,12 @@ export interface RuntimeValueProps {
    * A namespace for the runtime value.
    * It is recommended to use the name of the library/package that advertises this value.
    */
-  package: string;
+  readonly package: string;
 
   /**
    * The value to advertise. Can be either a primitive value or a token.
    */
-  value: any;
+  readonly value: any;
 }
 
 /**
@@ -74,15 +74,12 @@ export class RuntimeValue extends cdk.Construct {
    * Grants a principal read permissions on this runtime value.
    * @param principal The principal (e.g. Role, User, Group)
    */
-  public grantRead(principal?: iam.IPrincipal) {
+  public grantRead(grantee: iam.IGrantable) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      resourceArns: [this.parameterArn],
+      actions: RuntimeValue.SSM_READ_ACTIONS
 
-    // sometimes "role" is optional, so we want `rtv.grantRead(role)` to be a no-op
-    if (!principal) {
-      return;
-    }
-
-    principal.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.parameterArn)
-      .addActions(...RuntimeValue.SSM_READ_ACTIONS));
+    });
   }
 }

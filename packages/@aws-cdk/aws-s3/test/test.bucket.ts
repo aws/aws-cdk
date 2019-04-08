@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
@@ -444,7 +444,7 @@ export = {
       test.deepEqual(bucket.bucketArn, bucketArn);
       test.deepEqual(bucket.node.resolve(bucket.bucketName), 'my-bucket');
 
-      test.deepEqual(stack.toCloudFormation(), {}, 'the ref is not a real resource');
+      test.deepEqual(SynthUtils.toCloudFormation(stack), {}, 'the ref is not a real resource');
       test.done();
     },
 
@@ -743,6 +743,65 @@ export = {
       test.done();
     },
 
+    'grant permissions to non-identity principal'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
+
+      // WHEN
+      bucket.grantRead(new iam.OrganizationPrincipal('o-1234'));
+
+      // THEN
+      expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [ "s3:GetObject*", "s3:GetBucket*", "s3:List*" ],
+              "Condition": { "StringEquals": { "aws:PrincipalOrgID": "o-1234" } },
+              "Effect": "Allow",
+              "Principal": "*",
+              "Resource": [
+                { "Fn::GetAtt": [ "MyBucketF68F3FF0", "Arn" ] },
+                { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "MyBucketF68F3FF0", "Arn" ] }, "/*" ] ] }
+              ]
+            }
+          ]
+        }
+      }));
+
+      expect(stack).to(haveResource('AWS::KMS::Key', {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*",
+                  "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion" ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [ "", [
+                      "arn:", { "Ref": "AWS::Partition" }, ":iam::", { "Ref": "AWS::AccountId" }, ":root"
+                  ]]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [ "kms:Decrypt", "kms:DescribeKey" ],
+              "Effect": "Allow",
+              "Resource": "*",
+              "Principal": "*",
+              "Condition": { "StringEquals": { "aws:PrincipalOrgID": "o-1234" } },
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+
+      }));
+
+      test.done();
+    },
+
     'if an encryption key is included, encrypt/decrypt permissions are also added both ways'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
@@ -925,7 +984,7 @@ export = {
     bucket.grantWrite(writer);
     bucket.grantDelete(deleter);
 
-    const resources = stack.toCloudFormation().Resources;
+    const resources = SynthUtils.toCloudFormation(stack).Resources;
     const actions = (id: string) => resources[id].Properties.PolicyDocument.Statement[0].Action;
 
     test.deepEqual(actions('WriterDefaultPolicyDC585BCE'), [ 's3:DeleteObject*', 's3:PutObject*', 's3:Abort*' ]);
@@ -960,7 +1019,7 @@ export = {
         ]
         },
         "Export": {
-        "Name": "MyBucketBucketArnE260558C"
+        "Name": "Stack:MyBucketBucketArnE260558C"
         }
       },
       "MyBucketBucketName8A027014": {
@@ -968,7 +1027,7 @@ export = {
         "Ref": "MyBucketF68F3FF0"
         },
         "Export": {
-        "Name": "MyBucketBucketName8A027014"
+        "Name": "Stack:MyBucketBucketName8A027014"
         }
       },
       "MyBucketDomainNameF76B9A7A": {
@@ -979,7 +1038,7 @@ export = {
           ]
         },
         "Export": {
-          "Name": "MyBucketDomainNameF76B9A7A"
+          "Name": "Stack:MyBucketDomainNameF76B9A7A"
         }
       },
       "MyBucketWebsiteURL9C222788": {
@@ -989,7 +1048,7 @@ export = {
             "WebsiteURL"
           ]
         },
-        "Export": {"Name": "MyBucketWebsiteURL9C222788"}
+        "Export": {"Name": "Stack:MyBucketWebsiteURL9C222788"}
       }
       }
     });
@@ -1013,14 +1072,14 @@ export = {
             "Effect": "Allow",
             "Resource": [
             {
-              "Fn::ImportValue": "MyBucketBucketArnE260558C"
+              "Fn::ImportValue": "Stack:MyBucketBucketArnE260558C"
             },
             {
               "Fn::Join": [
               "",
               [
                 {
-                "Fn::ImportValue": "MyBucketBucketArnE260558C"
+                "Fn::ImportValue": "Stack:MyBucketBucketArnE260558C"
                 },
                 "/*"
               ]
@@ -1049,9 +1108,9 @@ export = {
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
-    new cdk.Output(stack, 'BucketURL', { value: bucket.bucketUrl });
-    new cdk.Output(stack, 'MyFileURL', { value: bucket.urlForObject('my/file.txt') });
-    new cdk.Output(stack, 'YourFileURL', { value: bucket.urlForObject('/your/file.txt') }); // "/" is optional
+    new cdk.CfnOutput(stack, 'BucketURL', { value: bucket.bucketUrl });
+    new cdk.CfnOutput(stack, 'MyFileURL', { value: bucket.urlForObject('my/file.txt') });
+    new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.urlForObject('/your/file.txt') }); // "/" is optional
 
     expect(stack).toMatch({
       "Resources": {
@@ -1214,8 +1273,8 @@ export = {
       const bucket = new s3.Bucket(stack, 'b');
 
       // WHEN
-      const statement = bucket.grantPublicAccess();
-      statement.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+      const result = bucket.grantPublicAccess();
+      result.resourceStatement!.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
 
       // THEN
       expect(stack).to(haveResource('AWS::S3::BucketPolicy', {

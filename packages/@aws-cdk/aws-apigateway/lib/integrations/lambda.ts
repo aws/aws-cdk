@@ -9,7 +9,7 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
    * Use proxy integration or normal (request/response mapping) integration.
    * @default true
    */
-  proxy?: boolean;
+  readonly proxy?: boolean;
 
   /**
    * Allow invoking method from AWS Console UI (for testing purposes).
@@ -21,7 +21,7 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
    *
    * @default true
    */
-  allowTestInvoke?: boolean;
+  readonly allowTestInvoke?: boolean;
 }
 
 /**

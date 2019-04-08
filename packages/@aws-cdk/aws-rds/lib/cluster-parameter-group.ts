@@ -21,7 +21,7 @@ export interface IClusterParameterGroup extends cdk.IConstruct {
  * Properties to reference a cluster parameter group
  */
 export interface ClusterParameterGroupImportProps {
-  parameterGroupName: string;
+  readonly parameterGroupName: string;
 }
 
 /**
@@ -31,17 +31,17 @@ export interface ClusterParameterGroupProps {
   /**
    * Database family of this parameter group
    */
-  family: string;
+  readonly family: string;
 
   /**
    * Description for this parameter group
    */
-  description: string;
+  readonly description: string;
 
   /**
    * The parameters in this parameter group
    */
-  parameters?: Parameters;
+  readonly parameters?: Parameters;
 }
 
 /**
@@ -79,7 +79,7 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
    */
   public export(): ClusterParameterGroupImportProps {
     return {
-      parameterGroupName: new cdk.Output(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
+      parameterGroupName: new cdk.CfnOutput(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
     };
   }
 

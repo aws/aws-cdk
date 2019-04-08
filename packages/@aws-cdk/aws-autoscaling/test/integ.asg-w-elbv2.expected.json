@@ -396,7 +396,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "ec2.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -640,12 +650,12 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "VpcId": {
-          "Ref": "VPCB9E5F0B4"
-        },
         "TargetGroupAttributes": [],
         "Targets": [],
-        "TargetType": "instance"
+        "TargetType": "instance",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        }
       }
     }
   }

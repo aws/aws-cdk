@@ -12,7 +12,7 @@ export interface PassProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * JSONPath expression to select part of the state to be the input to this state.
@@ -22,7 +22,7 @@ export interface PassProps {
      *
      * @default $
      */
-    inputPath?: string;
+    readonly inputPath?: string;
 
     /**
      * JSONPath expression to select part of the state to be the output to this state.
@@ -32,7 +32,7 @@ export interface PassProps {
      *
      * @default $
      */
-    outputPath?: string;
+    readonly outputPath?: string;
 
     /**
      * JSONPath expression to indicate where to inject the state's output
@@ -42,7 +42,7 @@ export interface PassProps {
      *
      * @default $
      */
-    resultPath?: string;
+    readonly resultPath?: string;
 
     /**
      * If given, treat as the result of this operation
@@ -51,7 +51,7 @@ export interface PassProps {
      *
      * @default No injected result
      */
-    result?: any;
+    readonly result?: any;
 }
 
 /**

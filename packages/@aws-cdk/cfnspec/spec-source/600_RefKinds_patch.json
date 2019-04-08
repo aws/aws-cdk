@@ -4427,6 +4427,246 @@
         ],
         "description": "Set RefKind of AWS::RoboMaker::SimulationApplicationVersion to Arn"
       }
+    },
+    "AWS::Greengrass::ConnectorDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::ConnectorDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::ConnectorDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::ConnectorDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::CoreDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::CoreDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::CoreDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::CoreDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::DeviceDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::DeviceDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::DeviceDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::DeviceDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::FunctionDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::FunctionDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::FunctionDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::FunctionDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::Group": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::Group to Id"
+      }
+    },
+    "AWS::Greengrass::GroupVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::GroupVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::LoggerDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::LoggerDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::LoggerDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::LoggerDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::ResourceDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::ResourceDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::SubscriptionDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::SubscriptionDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::SubscriptionDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::SubscriptionDefinitionVersion to Arn"
+      }
+    },
+    "AWS::AppMesh::Mesh": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::Mesh to Arn"
+      }
+    },
+    "AWS::AppMesh::Route": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::Route to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualNode": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualNode to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualRouter": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualRouter to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualService": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualService to Arn"
+      }
     }
   }
 }

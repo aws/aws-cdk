@@ -65,7 +65,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "apigateway.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "apigateway.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -329,7 +339,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -375,7 +395,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyHandler6B74D312"
+          "Fn::GetAtt": [
+            "MyHandler6B74D312",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -413,7 +436,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyHandler6B74D312"
+          "Fn::GetAtt": [
+            "MyHandler6B74D312",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -447,7 +473,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyHandler6B74D312"
+          "Fn::GetAtt": [
+            "MyHandler6B74D312",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -485,7 +514,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyHandler6B74D312"
+          "Fn::GetAtt": [
+            "MyHandler6B74D312",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -519,7 +551,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyHandler6B74D312"
+          "Fn::GetAtt": [
+            "MyHandler6B74D312",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {
@@ -557,7 +592,10 @@
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "MyHandler6B74D312"
+          "Fn::GetAtt": [
+            "MyHandler6B74D312",
+            "Arn"
+          ]
         },
         "Principal": "apigateway.amazonaws.com",
         "SourceArn": {

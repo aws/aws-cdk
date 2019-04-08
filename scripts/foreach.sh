@@ -19,9 +19,11 @@
 #
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
+scriptdir=$(cd $(dirname $0) && pwd)
 statefile="${HOME}/.foreach.state"
 commandfile="${HOME}/.foreach.command"
 command_arg="${@:-}"
+base=$PWD
 
 function heading {
   printf "\e[38;5;81m$@\e[0m\n"
@@ -35,11 +37,18 @@ function success {
   printf "\e[32;5;81m$@\e[0m\n"
 }
 
+if [[ "${1:-}" == "--reset" ]]; then
+    rm -f ~/.foreach.*
+    success "state cleared. you are free to start a new command."
+    exit 0
+fi
+
+
 if [ -f "${statefile}" ] && [ -f "${commandfile}" ]; then
   command="$(cat ${commandfile})"
   if [ ! -z "${command_arg}" ] && [ "${command}" != "${command_arg}" ]; then
     error "error: there is still an active session for: \"${command}\". to reset:"
-    error "   rm -f ~/.foreach.*"
+    error "   $0 --reset"
     exit 1
   fi
 fi
@@ -48,7 +57,7 @@ if [ ! -f "${statefile}" ] && [ ! -f "${commandfile}" ]; then
   if [ ! -z "${command_arg}" ]; then
     command="${command_arg}"
     success "starting new session"
-    lerna ls --all --toposort -p > ${statefile}
+    node_modules/.bin/lerna ls --all --toposort -p > ${statefile}
     echo "${command}" > ${commandfile}
   else
     error "no active session, use \"$(basename $0) COMMAND\" to start a new session"
@@ -59,7 +68,7 @@ fi
 next="$(head -n1 ${statefile})"
 if [ -z "${next}" ]; then
   success "done (queue is empty). to reset:"
-  success "   rm -f ~/.foreach.*"
+  success "   $0 --reset"
   exit 0
 fi
 
@@ -70,9 +79,11 @@ heading "${next}: ${command} (${remaining} remaining)"
 
 (
   cd ${next}
-  ${command} || {
-    error "error: last command failed. fix problem and resume by executing:"
-    error "    $0"
+  ${command} &> /tmp/foreach.stdio || {
+    cd ${base}
+    cat /tmp/foreach.stdio | ${scriptdir}/path-prefix ${next}
+    error "error: last command failed. fix problem and resume by executing: $0"
+    error "directory:    ${next}"
     exit 1
   }
 )

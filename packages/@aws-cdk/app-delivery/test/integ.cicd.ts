@@ -1,5 +1,6 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
-import code = require('@aws-cdk/aws-codepipeline');
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import cicd = require('../lib');
@@ -7,16 +8,16 @@ import cicd = require('../lib');
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'CICD');
-const pipeline = new code.Pipeline(stack, 'CodePipeline', {
+const pipeline = new codepipeline.Pipeline(stack, 'CodePipeline', {
   artifactBucket: new s3.Bucket(stack, 'ArtifactBucket', {
     removalPolicy: cdk.RemovalPolicy.Destroy
   })
 });
-const source = new code.GitHubSourceAction({
+const source = new cpactions.GitHubSourceAction({
   actionName: 'GitHub',
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: new cdk.Secret('DummyToken'),
+  oauthToken: cdk.Secret.plainText('DummyToken'),
   pollForSourceChanges: true,
   outputArtifactName: 'Artifact_CICDGitHubF8BA7ADD',
 });

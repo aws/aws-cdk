@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
@@ -354,10 +354,7 @@ export = {
         },
       });
 
-      test.throws(() => {
-        stack.toCloudFormation();
-      }, /deploymentInAlarm/);
-
+      test.throws(() => SynthUtils.toCloudFormation(stack), /deploymentInAlarm/);
       test.done();
     },
   },

@@ -320,7 +320,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -355,7 +355,10 @@ export = {
           "Properties": {
           "Action": "lambda:InvokeFunction",
           "FunctionName": {
-            "Ref": "MyFunc8A243A2C"
+            "Fn::GetAtt": [
+              "MyFunc8A243A2C",
+              "Arn"
+            ]
           },
           "Principal": "sns.amazonaws.com",
           "SourceArn": {
@@ -508,7 +511,7 @@ export = {
                     "Action": "sts:AssumeRole",
                     "Effect": "Allow",
                     "Principal": {
-                      "Service": "lambda.amazonaws.com"
+                      "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
                     }
                   }
                 ],
@@ -554,7 +557,10 @@ export = {
             "Properties": {
               "Action": "lambda:InvokeFunction",
               "FunctionName": {
-                "Ref": "MyFunc8A243A2C"
+                "Fn::GetAtt": [
+                  "MyFunc8A243A2C",
+                  "Arn"
+                ]
               },
               "Principal": "sns.amazonaws.com",
               "SourceArn": {
@@ -660,7 +666,7 @@ export = {
             "Action": "sns:Publish",
             "Effect": "Allow",
             "Principal": {
-            "Service": "events.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] }
             },
             "Resource": {
             "Ref": "MyTopic86869434"
@@ -755,7 +761,7 @@ export = {
 
     // THEN
     expect(stack2).to(haveResource('AWS::SNS::Subscription', {
-    "TopicArn": { "Fn::ImportValue": "TopicTopicArnB66B79C2" },
+    "TopicArn": { "Fn::ImportValue": "Stack:TopicTopicArnB66B79C2" },
     }));
     expect(stack2).to(haveResource('AWS::SQS::QueuePolicy', {
       PolicyDocument: {
@@ -824,7 +830,7 @@ export = {
             },
             "Effect": "Allow",
             "Principal": {
-            "Service": "s3.amazonaws.com"
+            "Service": { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
             },
             "Resource": {
             "Ref": "MyTopic86869434"
@@ -840,7 +846,7 @@ export = {
             },
             "Effect": "Allow",
             "Principal": {
-            "Service": "s3.amazonaws.com"
+            "Service": { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
             },
             "Resource": {
             "Ref": "MyTopic86869434"

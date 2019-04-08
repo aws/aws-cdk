@@ -150,19 +150,37 @@ export function monoRepoVersion() {
   return lernaJson.version;
 }
 
-function findLernaJSON() {
-  let dir = process.cwd();
+export function findUpward(dir: string, pred: (x: string) => boolean): string | undefined {
   while (true) {
-    const fullPath = path.join(dir, 'lerna.json');
-    if (fs.existsSync(fullPath)) {
-      return fullPath;
-    }
+    if (pred(dir)) { return dir; }
 
     const parent = path.dirname(dir);
     if (parent === dir) {
-      throw new Error('Could not find lerna.json');
+      return undefined;
     }
 
     dir = parent;
+  }
+}
+
+function findLernaJSON() {
+  const ret = findUpward(process.cwd(), d => fs.existsSync(path.join(d, 'lerna.json')));
+  if (!ret) {
+    throw new Error('Could not find lerna.json');
+  }
+  return path.join(ret, 'lerna.json');
+}
+
+export function* findInnerPackages(dir: string): IterableIterator<string> {
+  for (const fname of fs.readdirSync(dir, { encoding: 'utf8' })) {
+    const stat = fs.statSync(path.join(dir, fname));
+    if (!stat.isDirectory()) { continue; }
+    if (fname === 'node_modules') { continue; }
+
+    if (fs.existsSync(path.join(dir, fname, 'package.json'))) {
+      yield path.join(dir, fname);
+    }
+
+    yield* findInnerPackages(path.join(dir, fname));
   }
 }

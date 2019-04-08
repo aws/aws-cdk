@@ -1,5 +1,6 @@
 import { Construct, IConstruct, IDependable } from "@aws-cdk/cdk";
-import { subnetName } from './util';
+import { DEFAULT_SUBNET_NAME, subnetName } from './util';
+import { VpnConnection, VpnConnectionOptions } from './vpn';
 
 export interface IVpcSubnet extends IConstruct {
   /**
@@ -55,18 +56,35 @@ export interface IVpcNetwork extends IConstruct {
   readonly vpcRegion: string;
 
   /**
-   * Return the subnets appropriate for the placement strategy
+   * Identifier for the VPN gateway
    */
-  subnets(placement?: VpcPlacementStrategy): IVpcSubnet[];
+  readonly vpnGatewayId?: string;
 
   /**
-   * Return whether the given subnet is one of this VPC's public subnets.
+   * Return IDs of the subnets appropriate for the given selection strategy
    *
-   * The subnet must literally be one of the subnet object obtained from
-   * this VPC. A subnet that merely represents the same subnet will
-   * never return true.
+   * Requires that at least once subnet is matched, throws a descriptive
+   * error message otherwise.
+   *
+   * Prefer to use this method over {@link subnets} if you need to pass subnet
+   * IDs to a CloudFormation Resource.
    */
-  isPublicSubnet(subnet: IVpcSubnet): boolean;
+  subnetIds(selection?: SubnetSelection): string[];
+
+  /**
+   * Return a dependable object representing internet connectivity for the given subnets
+   */
+  subnetInternetDependencies(selection?: SubnetSelection): IDependable;
+
+  /**
+   * Return whether all of the given subnets are from the VPC's public subnets.
+   */
+  isPublicSubnets(subnetIds: string[]): boolean;
+
+  /**
+   * Adds a new VPN connection to this VPC
+   */
+  addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection;
 
   /**
    * Exports this VPC so it can be consumed by another stack.
@@ -114,33 +132,33 @@ export enum SubnetType {
 }
 
 /**
- * Customize how instances are placed inside a VPC
+ * Customize subnets that are selected for placement of ENIs
  *
  * Constructs that allow customization of VPC placement use parameters of this
  * type to provide placement settings.
  *
  * By default, the instances are placed in the private subnets.
  */
-export interface VpcPlacementStrategy {
+export interface SubnetSelection {
   /**
    * Place the instances in the subnets of the given type
    *
-   * At most one of `subnetsToUse` and `subnetName` can be supplied.
+   * At most one of `subnetType` and `subnetName` can be supplied.
    *
    * @default SubnetType.Private
    */
-  subnetsToUse?: SubnetType;
+  readonly subnetType?: SubnetType;
 
   /**
    * Place the instances in the subnets with the given name
    *
    * (This is the name supplied in subnetConfiguration).
    *
-   * At most one of `subnetsToUse` and `subnetName` can be supplied.
+   * At most one of `subnetType` and `subnetName` can be supplied.
    *
    * @default name
    */
-  subnetName?: string;
+  readonly subnetName?: string;
 }
 
 /**
@@ -174,6 +192,11 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   public abstract readonly availabilityZones: string[];
 
   /**
+   * Identifier for the VPN gateway
+   */
+  public abstract readonly vpnGatewayId?: string;
+
+  /**
    * Dependencies for internet connectivity
    */
   public readonly internetDependencies = new Array<IConstruct>();
@@ -184,31 +207,40 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   public readonly natDependencies = new Array<IConstruct>();
 
   /**
-   * Return the subnets appropriate for the placement strategy
+   * Returns IDs of selected subnets
    */
-  public subnets(placement: VpcPlacementStrategy = {}): IVpcSubnet[] {
-    if (placement.subnetsToUse !== undefined && placement.subnetName !== undefined) {
-      throw new Error('At most one of subnetsToUse and subnetName can be supplied');
+  public subnetIds(selection: SubnetSelection = {}): string[] {
+    selection = reifySelectionDefaults(selection);
+
+    const nets = this.subnets(selection);
+    if (nets.length === 0) {
+      throw new Error(`There are no ${describeSelection(selection)} in this VPC. Use a different VPC subnet selection.`);
     }
 
-    // Select by name
-    if (placement.subnetName !== undefined) {
-      const allSubnets = this.privateSubnets.concat(this.publicSubnets).concat(this.isolatedSubnets);
-      const selectedSubnets = allSubnets.filter(s => subnetName(s) === placement.subnetName);
-      if (selectedSubnets.length === 0) {
-        throw new Error(`No subnets with name: ${placement.subnetName}`);
-      }
-      return selectedSubnets;
+    return nets.map(n => n.subnetId);
+  }
+
+  /**
+   * Return a dependable object representing internet connectivity for the given subnets
+   */
+  public subnetInternetDependencies(selection: SubnetSelection = {}): IDependable {
+    selection = reifySelectionDefaults(selection);
+
+    const ret = new CompositeDependable();
+    for (const subnet of this.subnets(selection)) {
+      ret.add(subnet.internetConnectivityEstablished);
     }
+    return ret;
+  }
 
-    // Select by type
-    if (placement.subnetsToUse === undefined) { return this.privateSubnets; }
-
-    return {
-      [SubnetType.Isolated]: this.isolatedSubnets,
-      [SubnetType.Private]: this.privateSubnets,
-      [SubnetType.Public]: this.publicSubnets,
-    }[placement.subnetsToUse];
+  /**
+   * Adds a new VPN connection to this VPC
+   */
+  public addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection {
+    return new VpnConnection(this, id, {
+      vpc: this,
+      ...options
+    });
   }
 
   /**
@@ -217,14 +249,11 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
   public abstract export(): VpcNetworkImportProps;
 
   /**
-   * Return whether the given subnet is one of this VPC's public subnets.
-   *
-   * The subnet must literally be one of the subnet object obtained from
-   * this VPC. A subnet that merely represents the same subnet will
-   * never return true.
+   * Return whether all of the given subnets are from the VPC's public subnets.
    */
-  public isPublicSubnet(subnet: IVpcSubnet) {
-    return this.publicSubnets.indexOf(subnet) > -1;
+  public isPublicSubnets(subnetIds: string[]): boolean {
+    const pubIds = new Set(this.publicSubnets.map(n => n.subnetId));
+    return subnetIds.every(pubIds.has.bind(pubIds));
   }
 
   /**
@@ -234,6 +263,31 @@ export abstract class VpcNetworkBase extends Construct implements IVpcNetwork {
     return this.node.stack.region;
   }
 
+  /**
+   * Return the subnets appropriate for the placement strategy
+   */
+  protected subnets(selection: SubnetSelection = {}): IVpcSubnet[] {
+    selection = reifySelectionDefaults(selection);
+
+    // Select by name
+    if (selection.subnetName !== undefined) {
+      const allSubnets = this.privateSubnets.concat(this.publicSubnets).concat(this.isolatedSubnets);
+      const selectedSubnets = allSubnets.filter(s => subnetName(s) === selection.subnetName);
+      if (selectedSubnets.length === 0) {
+        throw new Error(`No subnets with name: ${selection.subnetName}`);
+      }
+      return selectedSubnets;
+    }
+
+    // Select by type
+    if (selection.subnetType === undefined) { return this.privateSubnets; }
+
+    return {
+      [SubnetType.Isolated]: this.isolatedSubnets,
+      [SubnetType.Private]: this.privateSubnets,
+      [SubnetType.Public]: this.publicSubnets,
+    }[selection.subnetType];
+  }
 }
 
 /**
@@ -243,64 +297,122 @@ export interface VpcNetworkImportProps {
   /**
    * VPC's identifier
    */
-  vpcId: string;
+  readonly vpcId: string;
 
   /**
    * List of availability zones for the subnets in this VPC.
    */
-  availabilityZones: string[];
+  readonly availabilityZones: string[];
 
   /**
    * List of public subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
    */
-  publicSubnetIds?: string[];
+  readonly publicSubnetIds?: string[];
 
   /**
    * List of names for the public subnets
    *
    * Must be undefined or have a name for every public subnet group.
    */
-  publicSubnetNames?: string[];
+  readonly publicSubnetNames?: string[];
 
   /**
    * List of private subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
    */
-  privateSubnetIds?: string[];
+  readonly privateSubnetIds?: string[];
 
   /**
    * List of names for the private subnets
    *
    * Must be undefined or have a name for every private subnet group.
    */
-  privateSubnetNames?: string[];
+  readonly privateSubnetNames?: string[];
 
   /**
    * List of isolated subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
    */
-  isolatedSubnetIds?: string[];
+  readonly isolatedSubnetIds?: string[];
 
   /**
    * List of names for the isolated subnets
    *
    * Must be undefined or have a name for every isolated subnet group.
    */
-  isolatedSubnetNames?: string[];
+  readonly isolatedSubnetNames?: string[];
+
+  /**
+   * VPN gateway's identifier
+   */
+  readonly vpnGatewayId?: string;
 }
 
 export interface VpcSubnetImportProps {
   /**
    * The Availability Zone the subnet is located in
    */
-  availabilityZone: string;
+  readonly availabilityZone: string;
 
   /**
    * The subnetId for this particular subnet
    */
-  subnetId: string;
+  readonly subnetId: string;
+}
+
+/**
+ * If the placement strategy is completely "default", reify the defaults so
+ * consuming code doesn't have to reimplement the same analysis every time.
+ *
+ * Returns "private subnets" by default.
+ */
+function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
+    if (placement.subnetType !== undefined && placement.subnetName !== undefined) {
+      throw new Error('Only one of subnetType and subnetName can be supplied');
+    }
+
+    if (placement.subnetType === undefined && placement.subnetName === undefined) {
+      return { subnetType: SubnetType.Private };
+    }
+
+    return placement;
+}
+
+/**
+ * Describe the given placement strategy
+ */
+function describeSelection(placement: SubnetSelection): string {
+  if (placement.subnetType !== undefined) {
+    return `'${DEFAULT_SUBNET_NAME[placement.subnetType]}' subnets`;
+  }
+  if (placement.subnetName !== undefined) {
+    return `subnets named '${placement.subnetName}'`;
+  }
+  return JSON.stringify(placement);
+}
+
+class CompositeDependable implements IDependable {
+  private readonly dependables = new Array<IDependable>();
+
+  /**
+   * Add a construct to the dependency roots
+   */
+  public add(dep: IDependable) {
+    this.dependables.push(dep);
+  }
+
+  /**
+   * Retrieve the current set of dependency roots
+   */
+  public get dependencyRoots(): IConstruct[] {
+    const ret = [];
+    for (const dep of this.dependables) {
+      ret.push(...dep.dependencyRoots);
+    }
+    return ret;
+  }
 }

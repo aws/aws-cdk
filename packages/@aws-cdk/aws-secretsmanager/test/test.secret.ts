@@ -1,7 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
+import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
+import { SecretValue, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import secretsmanager = require('../lib');
 
@@ -16,6 +18,52 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
       GenerateSecretString: {}
+    }));
+
+    test.done();
+  },
+
+  'secret with generate secret string options'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        excludeUppercase: true,
+        passwordLength: 20
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        ExcludeUppercase: true,
+        PasswordLength: 20
+      }
+    }));
+
+    test.done();
+  },
+
+  'templated secret string'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({ username: 'username' }),
+        generateStringKey: 'password'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        SecretStringTemplate: '{"username":"username"}',
+        GenerateStringKey: 'password'
+      }
     }));
 
     test.done();
@@ -214,17 +262,17 @@ export = {
     test.done();
   },
 
-  'toSecretString'(test: Test) {
+  'secretValue'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const key = new kms.EncryptionKey(stack, 'KMS');
     const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
 
     // WHEN
-    new cdk.Resource(stack, 'FakeResource', {
+    new cdk.CfnResource(stack, 'FakeResource', {
       type: 'CDK::Phony::Resource',
       properties: {
-        value: secret.stringValue
+        value: secret.secretValue
       }
     });
 
@@ -255,6 +303,107 @@ export = {
     // THEN
     test.equals(secret.secretArn, secretArn);
     test.same(secret.encryptionKey, encryptionKey);
+    test.deepEqual(stack.node.resolve(secret.secretValue), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:::}}');
+    test.deepEqual(stack.node.resolve(secret.secretJsonValue('password')), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:password::}}');
+    test.done();
+  },
+
+  'attached secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const target: secretsmanager.ISecretAttachmentTarget = {
+      asSecretAttachmentTarget: () => ({
+        targetId: 'instance',
+        targetType: secretsmanager.AttachmentTargetType.Instance
+      })
+    };
+
+    // WHEN
+    secret.addTargetAttachment('AttachedSecret', { target });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SecretsManager::SecretTargetAttachment', {
+      SecretId: {
+        Ref: 'SecretA720EF05'
+      },
+      TargetId: 'instance',
+      TargetType: 'AWS::RDS::DBInstance'
+    }));
+
+    test.done();
+  },
+
+  'add a rotation schedule to an attached secret'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const target: secretsmanager.ISecretAttachmentTarget = {
+      asSecretAttachmentTarget: () => ({
+        targetId: 'cluster',
+        targetType: secretsmanager.AttachmentTargetType.Cluster
+      })
+    };
+    const attachedSecret = secret.addTargetAttachment('AttachedSecret', { target });
+    const rotationLambda = new lambda.Function(stack, 'Lambda', {
+      runtime: lambda.Runtime.NodeJS810,
+      code: lambda.Code.inline('export.handler = event => event;'),
+      handler: 'index.handler'
+    });
+
+    // WHEN
+    attachedSecret.addRotationSchedule('RotationSchedule', {
+      rotationLambda
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'SecretAttachedSecret94145316' // The secret returned by the attachment, not the secret itself.
+      }
+    }));
+
+    test.done();
+  },
+
+  'throws when specifying secretStringTemplate but not generateStringKey'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({ username: 'username' })
+      }
+    }), /`secretStringTemplate`.+`generateStringKey`/);
+
+    test.done();
+  },
+
+  'throws when specifying generateStringKey but not secretStringTemplate'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        generateStringKey: 'password'
+      }
+    }), /`secretStringTemplate`.+`generateStringKey`/);
+
+    test.done();
+  },
+
+  'equivalence of SecretValue and Secret.import'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const imported = secretsmanager.Secret.import(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretJsonValue('password');
+    const value = SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
+
+    // THEN
+    test.deepEqual(stack.node.resolve(imported), stack.node.resolve(value));
     test.done();
   }
 };

@@ -1,6 +1,7 @@
 import { countResources, expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
+import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -27,7 +28,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -61,7 +62,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns:
           // tslint:disable-next-line:max-line-length
@@ -133,7 +134,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -153,8 +154,8 @@ export = {
           "Handler": "bar",
           "Role": {
             "Fn::GetAtt": [
-            "MyLambdaServiceRole4539ECB6",
-            "Arn"
+              "MyLambdaServiceRole4539ECB6",
+              "Arn"
             ]
           },
           "Runtime": "python2.7"
@@ -168,7 +169,10 @@ export = {
           "Properties": {
           "Action": "lambda:*",
           "FunctionName": {
-            "Ref": "MyLambdaCCE802FB"
+            "Fn::GetAtt": [
+              "MyLambdaCCE802FB",
+              "Arn"
+            ]
           },
           "Principal": "s3.amazonaws.com",
           "SourceAccount": {
@@ -269,14 +273,24 @@ export = {
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       "Action": "lambda:InvokeFunction",
-      "FunctionName": { "Ref": lambdaId },
+      "FunctionName": {
+        "Fn::GetAtt": [
+          lambdaId,
+          "Arn"
+        ]
+      },
       "Principal": "events.amazonaws.com",
       "SourceArn": { "Fn::GetAtt": [ "Rule4C995B7F", "Arn" ] }
     }));
 
     expect(stack).to(haveResource('AWS::Lambda::Permission', {
       "Action": "lambda:InvokeFunction",
-      "FunctionName": { "Ref": "MyLambdaCCE802FB" },
+      "FunctionName": {
+        "Fn::GetAtt": [
+          lambdaId,
+          "Arn"
+        ]
+      },
       "Principal": "events.amazonaws.com",
       "SourceArn": { "Fn::GetAtt": [ "Rule270732244", "Arn" ] }
     }));
@@ -350,7 +364,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -461,7 +475,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -571,7 +585,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -645,7 +659,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -755,7 +769,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -1120,7 +1134,7 @@ export = {
             { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
               Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -1242,7 +1256,7 @@ export = {
             { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
               Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -1296,7 +1310,38 @@ export = {
     test.equal(rt.supportsInlineCode, false);
 
     test.done();
-  }
+  },
+
+  'specify log retention'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS,
+      logRetentionDays: logs.RetentionDays.OneMonth
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::LogRetention', {
+      'LogGroupName': {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB'
+            }
+          ]
+        ]
+      },
+      'RetentionInDays': 30
+    }));
+
+    test.done();
+   }
 };
 
 function newTestLambda(scope: cdk.Construct) {

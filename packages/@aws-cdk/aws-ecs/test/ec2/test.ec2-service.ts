@@ -1,10 +1,11 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
-import { BinPackResource, BuiltInAttributes, NetworkMode } from '../../lib';
+import { BinPackResource, BuiltInAttributes, ContainerImage, NamespaceType, NetworkMode } from '../../lib';
 
 export = {
   "When creating an ECS Service": {
@@ -17,7 +18,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -57,7 +58,7 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       taskDefinition.addContainer('BaseContainer', {
-        image: ecs.ContainerImage.fromDockerHub('test'),
+        image: ecs.ContainerImage.fromRegistry('test'),
         memoryReservationMiB: 10,
       });
 
@@ -82,7 +83,7 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
       taskDefinition.addContainer('BaseContainer', {
-        image: ecs.ContainerImage.fromDockerHub('test'),
+        image: ecs.ContainerImage.fromRegistry('test'),
         memoryReservationMiB: 10,
       });
 
@@ -128,7 +129,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -147,7 +148,7 @@ export = {
     },
 
     "with a TaskDefinition with Bridge network mode": {
-      "it errors if vpcPlacement is specified"(test: Test) {
+      "it errors if vpcSubnets is specified"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
@@ -158,7 +159,7 @@ export = {
         });
 
         taskDefinition.addContainer("web", {
-          image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+          image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
           memoryLimitMiB: 512
         });
 
@@ -167,8 +168,8 @@ export = {
           new ecs.Ec2Service(stack, "Ec2Service", {
             cluster,
             taskDefinition,
-            vpcPlacement: {
-              subnetsToUse: ec2.SubnetType.Public
+            vpcSubnets: {
+              subnetType: ec2.SubnetType.Public
             }
           });
         });
@@ -190,7 +191,7 @@ export = {
         });
 
         taskDefinition.addContainer("web", {
-          image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+          image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
           memoryLimitMiB: 512
         });
 
@@ -230,7 +231,7 @@ export = {
         test.done();
       },
 
-      "it allows vpcPlacement"(test: Test) {
+      "it allows vpcSubnets"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
@@ -241,15 +242,15 @@ export = {
         });
 
         taskDefinition.addContainer("web", {
-          image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+          image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
           memoryLimitMiB: 512
         });
 
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
           taskDefinition,
-          vpcPlacement: {
-            subnetsToUse: ec2.SubnetType.Public
+          vpcSubnets: {
+            subnetType: ec2.SubnetType.Public
           }
         });
 
@@ -267,7 +268,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -296,7 +297,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -327,7 +328,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -358,7 +359,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -385,7 +386,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -415,7 +416,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -442,7 +443,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -473,7 +474,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -501,7 +502,7 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
       const container = taskDefinition.addContainer('web', {
-        image: ecs.ContainerImage.fromDockerHub('test'),
+        image: ecs.ContainerImage.fromRegistry('test'),
         memoryLimitMiB: 1024,
       });
       container.addPortMappings({ containerPort: 808 });
@@ -520,6 +521,408 @@ export = {
             LoadBalancerName: { Ref: "LB8A12904C" }
           }
         ],
+      }));
+
+      test.done();
+    },
+  },
+
+  'When enabling service discovery': {
+    'throws if namespace has not been added to cluster'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+      // default network mode is bridge
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // THEN
+      test.throws(() => {
+        new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          serviceDiscoveryOptions: {
+            name: 'myApp',
+          }
+        });
+      }, /Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
+
+      test.done();
+    },
+
+    'throws if network mode is none'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: NetworkMode.None
+      });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      cluster.addDefaultCloudMapNamespace({ name: 'foo.com' });
+
+      // THEN
+      test.throws(() => {
+        new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          serviceDiscoveryOptions: {
+            name: 'myApp',
+          }
+        });
+      }, /Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
+
+      test.done();
+    },
+
+    'creates AWS Cloud Map service for Private DNS namespace with bridge network mode'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+      // default network mode is bridge
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // WHEN
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: NamespaceType.PrivateDns
+      });
+
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp',
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        ServiceRegistries: [
+          {
+            ContainerName: "MainContainer",
+            ContainerPort: 8000,
+            RegistryArn: {
+              "Fn::GetAtt": [
+                "ServiceCloudmapService046058A4",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }));
+
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+        DnsConfig: {
+          DnsRecords: [
+            {
+              TTL: 60,
+              Type: "SRV"
+            }
+          ],
+          NamespaceId: {
+            'Fn::GetAtt': [
+              'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+              'Id'
+            ]
+          },
+          RoutingPolicy: 'MULTIVALUE'
+        },
+        HealthCheckCustomConfig: {
+          FailureThreshold: 1
+        },
+        Name: "myApp",
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+            'Id'
+          ]
+        }
+      }));
+
+      test.done();
+    },
+
+    'creates AWS Cloud Map service for Private DNS namespace with host network mode'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: NetworkMode.Host
+      });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // WHEN
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: NamespaceType.PrivateDns
+      });
+
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp',
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        ServiceRegistries: [
+          {
+            ContainerName: "MainContainer",
+            ContainerPort: 8000,
+            RegistryArn: {
+              "Fn::GetAtt": [
+                "ServiceCloudmapService046058A4",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }));
+
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+        DnsConfig: {
+          DnsRecords: [
+            {
+              TTL: 60,
+              Type: "SRV"
+            }
+          ],
+          NamespaceId: {
+            'Fn::GetAtt': [
+              'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+              'Id'
+            ]
+          },
+          RoutingPolicy: 'MULTIVALUE'
+        },
+        HealthCheckCustomConfig: {
+          FailureThreshold: 1
+        },
+        Name: "myApp",
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+            'Id'
+          ]
+        }
+      }));
+
+      test.done();
+    },
+
+    'throws if wrong DNS record type specified with bridge network mode'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+      // default network mode is bridge
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          serviceDiscoveryOptions: {
+            name: 'myApp',
+            dnsRecordType: cloudmap.DnsRecordType.A
+          }
+        });
+      }, /SRV records must be used when network mode is Bridge or Host./);
+
+      test.done();
+    },
+
+    'creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: NetworkMode.AwsVpc
+      });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // WHEN
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: NamespaceType.PrivateDns
+      });
+
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp',
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        ServiceRegistries: [
+          {
+            RegistryArn: {
+              "Fn::GetAtt": [
+                "ServiceCloudmapService046058A4",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }));
+
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+        DnsConfig: {
+          DnsRecords: [
+            {
+              TTL: 60,
+              Type: "A"
+            }
+          ],
+          NamespaceId: {
+            'Fn::GetAtt': [
+              'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+              'Id'
+            ]
+          },
+          RoutingPolicy: 'MULTIVALUE'
+        },
+        HealthCheckCustomConfig: {
+          FailureThreshold: 1
+        },
+        Name: "myApp",
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+            'Id'
+          ]
+        }
+      }));
+
+      test.done();
+    },
+
+    'creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode with SRV records'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: NetworkMode.AwsVpc
+      });
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      // WHEN
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: NamespaceType.PrivateDns
+      });
+
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceDiscoveryOptions: {
+          name: 'myApp',
+          dnsRecordType: cloudmap.DnsRecordType.SRV
+        }
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::Service", {
+        ServiceRegistries: [
+          {
+            ContainerName: "MainContainer",
+            ContainerPort: 8000,
+            RegistryArn: {
+              "Fn::GetAtt": [
+                "ServiceCloudmapService046058A4",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }));
+
+      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+        DnsConfig: {
+          DnsRecords: [
+            {
+              TTL: 60,
+              Type: "SRV"
+            }
+          ],
+          NamespaceId: {
+            'Fn::GetAtt': [
+              'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+              'Id'
+            ]
+          },
+          RoutingPolicy: 'MULTIVALUE'
+        },
+        HealthCheckCustomConfig: {
+          FailureThreshold: 1
+        },
+        Name: "myApp",
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+            'Id'
+          ]
+        }
       }));
 
       test.done();

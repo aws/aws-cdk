@@ -13,7 +13,7 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default false
    */
-  crossZoneEnabled?: boolean;
+  readonly crossZoneEnabled?: boolean;
 }
 
 /**
@@ -49,7 +49,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    */
   public export(): NetworkLoadBalancerImportProps {
     return {
-      loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString()
+      loadBalancerArn: new cdk.CfnOutput(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString()
     };
   }
 
@@ -218,7 +218,7 @@ export interface NetworkLoadBalancerImportProps {
   /**
    * ARN of the load balancer
    */
-  loadBalancerArn: string;
+  readonly loadBalancerArn: string;
 }
 
 /**

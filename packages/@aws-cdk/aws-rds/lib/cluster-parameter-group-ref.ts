@@ -21,7 +21,7 @@ export abstract class ClusterParameterGroupRef extends cdk.Construct {
    */
   public export(): ClusterParameterGroupRefProps {
     return {
-      parameterGroupName: new cdk.Output(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
+      parameterGroupName: new cdk.CfnOutput(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
     };
   }
 }

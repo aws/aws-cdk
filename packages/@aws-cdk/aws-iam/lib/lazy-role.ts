@@ -1,6 +1,8 @@
 import cdk = require('@aws-cdk/cdk');
+import { Grant } from './grant';
 import { Policy } from './policy';
-import { PolicyPrincipal, PolicyStatement } from './policy-document';
+import { PolicyStatement, PrincipalPolicyFragment } from './policy-document';
+import { IPrincipal } from './principals';
 import { IRole, Role, RoleImportProps, RoleProps } from './role';
 
 /**
@@ -13,6 +15,8 @@ import { IRole, Role, RoleImportProps, RoleProps } from './role';
  * not be synthesized or deployed.
  */
 export class LazyRole extends cdk.Construct implements IRole {
+  public readonly grantPrincipal: IPrincipal = this;
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
   private role?: Role;
   private readonly statements = new Array<PolicyStatement>();
   private readonly policies = new Array<Policy>();
@@ -31,11 +35,12 @@ export class LazyRole extends cdk.Construct implements IRole {
    * If there is no default policy attached to this role, it will be created.
    * @param permission The permission statement to add to the policy document
    */
-  public addToPolicy(statement: PolicyStatement): void {
+  public addToPolicy(statement: PolicyStatement): boolean {
     if (this.role) {
-      this.role.addToPolicy(statement);
+      return this.role.addToPolicy(statement);
     } else {
       this.statements.push(statement);
+      return true;
     }
   }
 
@@ -78,11 +83,22 @@ export class LazyRole extends cdk.Construct implements IRole {
     return this.instantiate().roleName;
   }
 
+  public get policyFragment(): PrincipalPolicyFragment {
+    return this.instantiate().policyFragment;
+  }
+
   /**
-   * Returns a Principal object representing the ARN of this role.
+   * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  public get principal(): PolicyPrincipal {
-    return this.instantiate().principal;
+  public grant(identity: IPrincipal, ...actions: string[]): Grant {
+    return this.instantiate().grant(identity, ...actions);
+  }
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  public grantPassRole(identity: IPrincipal): Grant {
+    return this.instantiate().grantPassRole(identity);
   }
 
   private instantiate(): Role {
