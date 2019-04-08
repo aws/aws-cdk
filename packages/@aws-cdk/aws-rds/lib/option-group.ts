@@ -42,16 +42,18 @@ export interface OptionConfiguration {
   readonly version?: string;
 
   /**
-   * The port number that this option uses.
+   * The port number that this option uses. If `port` is specified then `vpc`
+   * must also be specified.
    *
    * @default no port
    */
   readonly port?: number;
 
   /**
-   * A list of VPC security group for this option.
+   * The VPC where a security group should be created for this option. If `vpc`
+   * is specified then `port` must also be specified.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly vpc?: ec2.IVpcNetwork;
 }
 
 /**
@@ -90,7 +92,15 @@ export class OptionGroup extends cdk.Construct implements IOptionGroup {
     return new ImportedOptionGroup(scope, id, props);
   }
 
+  /**
+   * The name of the option group.
+   */
   public readonly optionGroupName: string;
+
+  /**
+   * The connections object for the options.
+   */
+  public readonly optionConnections: { [key: string]: ec2.Connections } = {};
 
   constructor(scope: cdk.Construct, id: string, props: OptionGroupProps) {
     super(scope, id);
@@ -99,7 +109,7 @@ export class OptionGroup extends cdk.Construct implements IOptionGroup {
       engineName: props.engineName,
       majorEngineVersion: props.majorEngineVersion,
       optionGroupDescription: props.description || `Option group for ${props.engineName} ${props.majorEngineVersion}`,
-      optionConfigurations: renderConfigurations(props.configurations)
+      optionConfigurations: this.renderConfigurations(props.configurations)
     });
 
     this.optionGroupName = optionGroup.optionGroupName;
@@ -109,6 +119,46 @@ export class OptionGroup extends cdk.Construct implements IOptionGroup {
     return {
       optionGroupName: new cdk.CfnOutput(this, 'OptionGroupName', { value: this.optionGroupName }).makeImportValue().toString(),
     };
+  }
+
+  /**
+   * Renders the option configurations specifications.
+   */
+  private renderConfigurations(configurations: OptionConfiguration[]): CfnOptionGroup.OptionConfigurationProperty[] {
+    const configs: CfnOptionGroup.OptionConfigurationProperty[] = [];
+    for (const config of configurations) {
+      let configuration: CfnOptionGroup.OptionConfigurationProperty = {
+        optionName: config.name,
+        optionSettings: config.settings && Object.entries(config.settings).map(([name, value]) => ({ name, value })),
+        optionVersion: config.version
+      };
+
+      if (config.port) {
+        if (!config.vpc) {
+          throw new Error('`port` and `vpc` must be specified together.');
+        }
+
+        const securityGroup = new ec2.SecurityGroup(this, `SecurityGroup${config.name}`, {
+          description: `Security group for ${config.name} option`,
+          vpc: config.vpc
+        });
+
+        this.optionConnections[config.name] = new ec2.Connections({
+          securityGroups: [securityGroup],
+          defaultPortRange: new ec2.TcpPort(config.port)
+        });
+
+        configuration = {
+          ...configuration,
+          port: config.port,
+          vpcSecurityGroupMemberships: [securityGroup.securityGroupId]
+        };
+      }
+
+      configs.push(configuration);
+    }
+
+    return configs;
   }
 }
 
@@ -131,19 +181,4 @@ class ImportedOptionGroup extends cdk.Construct implements IOptionGroup {
   public export() {
     return this.props;
   }
-}
-
-/**
- * Renders the option configurations specifications.
- *
- * @param configs a list of configurations
- */
-function renderConfigurations(configs: OptionConfiguration[]): CfnOptionGroup.OptionConfigurationProperty[] {
-  return configs.map(config => ({
-    optionName: config.name,
-    optionSettings: config.settings && Object.entries(config.settings).map(([name, value]) => ({ name, value })),
-    optionVersion: config.version,
-    port: config.port,
-    vpcSecurityGroupMemberships: config.securityGroups && config.securityGroups.map(s => s.securityGroupId)
-  }));
 }
