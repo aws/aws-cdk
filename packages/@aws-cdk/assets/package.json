@@ -41,6 +41,11 @@
     "package": "cdk-package",
     "awslint": "cdk-awslint"
   },
+  "cdk-build": {
+    "pre": [
+      "cd test/fs && tar -xzvf fixtures.tar.gz" 
+    ]
+  },
   "keywords": [
     "aws",
     "cdk",
