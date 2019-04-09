@@ -21,7 +21,7 @@ Not supported:
 
 ### Starting a Clustered Database
 
-To set up a clustered database (like Aurora), create an instance of `DatabaseCluster`. You must
+To set up a clustered database (like Aurora), define a `DatabaseCluster`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
@@ -46,7 +46,7 @@ Your cluster will be empty by default. To add a default database upon constructi
 `defaultDatabaseName` attribute.
 
 ### Starting an Instance Database
-To set up a instance database, create an instance of `DatabaseInstance`. You must
+To set up a instance database, define a `DatabaseInstance`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
