@@ -163,7 +163,7 @@ export class Cluster extends ClusterBase {
 
     // Get subnetIds for all selected subnets
     const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.Public }, { subnetType: ec2.SubnetType.Private }];
-    const subnetIds = flatMap(placements, p => this.vpc.subnetIds(p));
+    const subnetIds = [...new Set(Array().concat(...placements.map(s => props.vpc.selectSubnets(s).subnetIds)))];
 
     const resource = new CfnCluster(this, 'Resource', {
       name: props.clusterName,
@@ -331,12 +331,4 @@ class ImportedCluster extends ClusterBase {
       i++;
     }
   }
-}
-
-function flatMap<T, U>(xs: T[], f: (x: T) => U[]): U[] {
-  const ret = new Array<U>();
-  for (const x of xs) {
-    ret.push(...f(x));
-  }
-  return ret;
 }

@@ -142,7 +142,8 @@ export class InitTemplate {
              .replace(/%name\.camelCased%/g, camelCase(project.name))
              .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
              .replace(/%cdk-version%/g, cdkVersion)
-             .replace(/%cdk-home%/g, CDK_HOME);
+             .replace(/%cdk-home%/g, CDK_HOME)
+             .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'));
   }
 }
 
