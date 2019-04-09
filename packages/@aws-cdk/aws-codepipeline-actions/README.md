@@ -390,6 +390,33 @@ where you will define your Pipeline,
 and deploy the `lambdaStack` using a CloudFormation CodePipeline Action
 (see above for a complete example).
 
+#### ECS
+
+CodePipeline can deploy an ECS service.
+The deploy Action receives one input Artifact which contains the [image definition file]:
+
+```typescript
+const deployStage = pipeline.addStage({
+  name: 'Deploy',
+  actions: [
+    new codepipeline_actions.EcsDeployAction({
+      actionName: 'DeployAction',
+      service,
+      // if your file is called imagedefinitions.json,
+      // use the `inputArtifact` property,
+      // and leave out the `imageFile` property
+      inputArtifact: buildAction.outputArtifact,
+      // if your file name is _not_ imagedefinitions.json,
+      // use the `imageFile` property,
+      // and leave out the `inputArtifact` property
+      imageFile: buildAction.outputArtifact.atPath('imageDef.json'),
+    }),
+  ],
+});
+```
+
+[image definition file]: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
+
 #### AWS S3
 
 To use an S3 Bucket as a deployment target in CodePipeline:
