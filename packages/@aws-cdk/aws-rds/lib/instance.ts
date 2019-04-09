@@ -225,14 +225,17 @@ export interface DatabaseInstanceNewProps {
    * The number of I/O operations per second (IOPS) that the database provisions.
    * The value must be equal to or greater than 1000.
    *
-   * @default no iops
+   * @default no provisioned iops
    */
   readonly iops?: number;
 
   /**
    * The number of CPU cores and the number of threads per core.
    *
-   * @default no processor features
+   * @default the default number of CPU cores and threads per core for the
+   * chosen instance class.
+   *
+   * See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#USER_ConfigureProcessor
    */
   readonly processorFeatures?: ProcessorFeatures;
 
@@ -274,7 +277,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default false
    */
-  readonly enableIAMDatabaseAuthentication?: boolean;
+  readonly iamAuthentication?: boolean;
 
   /**
    * The number of days during which automatic DB snapshots are retained. Set
@@ -287,7 +290,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * The daily time range during which automated backups are performed.
    *
-   * @default no preference
+   * @default an AWS RDS chosen time range
    */
   readonly preferredBackupWindow?: string;
 
@@ -364,7 +367,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * The weekly time range (in UTC) during which system maintenance can occur.
    *
-   * @default no preference
+   * @default an AWS RDS chosen time range
    */
   readonly preferredMaintenanceWindow?: string;
 
@@ -449,7 +452,7 @@ export abstract class DatabaseInstanceNew extends DatabaseInstanceBase implement
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection,
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
-      enableIamDatabaseAuthentication: props.enableIAMDatabaseAuthentication,
+      enableIamDatabaseAuthentication: props.iamAuthentication,
       enablePerformanceInsights: props.enablePerformanceInsights,
       iops,
       monitoringInterval: props.monitoringInterval,
