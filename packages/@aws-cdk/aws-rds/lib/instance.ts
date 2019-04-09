@@ -261,6 +261,8 @@ export interface DatabaseInstanceNewProps {
 
   /**
    * The port for the instance.
+   *
+   * @default the default port for the chosen engine.
    */
   readonly port?: number;
 
@@ -379,8 +381,8 @@ export interface DatabaseInstanceNewProps {
   readonly deletionProtection?: boolean;
 
   /**
-   * The CloudFormation policy to apply when the cluster and its instances
-   * are removed from the stack or replaced during an update.
+   * The CloudFormation policy to apply when the instance is removed from the
+   * stack or replaced during an update.
    *
    * @default Retain
    */
