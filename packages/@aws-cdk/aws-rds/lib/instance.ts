@@ -20,6 +20,11 @@ export interface IDatabaseInstance extends cdk.IConstruct, ec2.IConnectable, sec
   readonly instanceIdentifier: string;
 
   /**
+   * The instance arn.
+   */
+  readonly instanceArn: string;
+
+  /**
    * The instance endpoint.
    */
   readonly instanceEndpoint: Endpoint;
@@ -66,18 +71,23 @@ export abstract class DatabaseInstanceBase extends cdk.Construct implements IDat
   public onEvent(id: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
     const rule = new events.EventRule(this, id, options);
     rule.addEventPattern({
-      source: [ 'aws.rds' ],
-      resources: [
-        this.node.stack.formatArn({
-          service: 'rds',
-          resource: 'db',
-          sep: ':',
-          resourceName: this.instanceIdentifier
-        })
-      ]
+      source: ['aws.rds'],
+      resources: [this.instanceArn]
     });
     rule.addTarget(target);
     return rule;
+  }
+
+  /**
+   * The instance arn.
+   */
+  public get instanceArn(): string {
+    return this.node.stack.formatArn({
+      service: 'rds',
+      resource: 'db',
+      sep: ':',
+      resourceName: this.instanceIdentifier
+    });
   }
 
   /**
@@ -378,10 +388,6 @@ export interface DatabaseInstanceNewProps {
  * A new database instance.
  */
 export abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IDatabaseInstance {
-  public abstract readonly instanceIdentifier: string;
-  public abstract readonly instanceEndpoint: Endpoint;
-  public abstract readonly connections: ec2.Connections;
-
   public readonly securityGroupId: string;
   public readonly vpc: ec2.IVpcNetwork;
 
@@ -565,9 +571,6 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
  * A new source database instance (not a read replica)
  */
 export abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDatabaseInstance {
-  public abstract readonly instanceIdentifier: string;
-  public abstract readonly instanceEndpoint: Endpoint;
-  public abstract readonly connections: ec2.Connections;
   public abstract readonly secret?: secretsmanager.ISecret;
 
   public readonly engine: DatabaseInstanceEngine;
