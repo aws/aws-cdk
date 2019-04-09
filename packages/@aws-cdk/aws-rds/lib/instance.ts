@@ -398,7 +398,7 @@ export abstract class DatabaseInstanceNew extends DatabaseInstanceBase implement
     this.vpc = props.vpc;
     this.vpcPlacement = props.vpcPlacement;
 
-    const subnetIds = props.vpc.subnetIds(props.vpcPlacement);
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcPlacement);
 
     const subnetGroup = new CfnDBSubnetGroup(this, 'SubnetGroup', {
       dbSubnetGroupDescription: `Subnet group for ${this.node.id} database`,
