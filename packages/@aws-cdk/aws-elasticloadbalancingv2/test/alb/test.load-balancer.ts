@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
@@ -122,6 +122,8 @@ export = {
     lb.logAccessLogs(bucket);
 
     // THEN
+
+    // verify that the LB attributes reference the bucket
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       LoadBalancerAttributes: [
         {
@@ -134,12 +136,14 @@ export = {
         }
       ],
     }));
+
+    // verify the bucket policy allows the ALB to put objects in the bucket
     expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: "s3:PutObject",
+            Action: [ "s3:PutObject*", "s3:Abort*" ],
             Effect: 'Allow',
             Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root" ] ] } },
             Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/*" ] ] }
@@ -147,6 +151,11 @@ export = {
         ]
       }
     }));
+
+    // verify the ALB depends on the bucket *and* the bucket policy
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      DependsOn: [ 'AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29' ]
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },

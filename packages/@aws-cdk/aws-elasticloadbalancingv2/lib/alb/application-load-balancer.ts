@@ -88,11 +88,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       throw new Error(`Cannot enable access logging; don't know ELBv2 account for region ${region}`);
     }
 
-    // FIXME: can't use grantPut() here because that only takes IAM objects, not arbitrary principals
-    bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addPrincipal(new iam.AccountPrincipal(account))
-      .addAction('s3:PutObject')
-      .addResource(bucket.arnForObjects(prefix || '', '*')));
+    bucket.grantPut(new iam.AccountPrincipal(account));
+
+    // make sure the bucket is created before the ALB
+    this.node.addDependency(bucket);
   }
 
   /**
