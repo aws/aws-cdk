@@ -33,7 +33,7 @@ export class SecretRotationApplication {
 }
 
 /**
- * Options to add single user rotation to a database instance or cluster.
+ * Options to add secret rotation to a database instance or cluster.
  */
 export interface SecretRotationOptions {
   /**
@@ -90,7 +90,7 @@ export interface SecretRotationProps extends SecretRotationOptions {
 }
 
 /**
- * Single user secret rotation for a database instance or cluster.
+ * Secret rotation for a database instance or cluster.
  */
 export class SecretRotation extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: SecretRotationProps) {

@@ -18,7 +18,7 @@ export class DatabaseClusterEngine {
   public readonly engine: string;
 
   /**
-   * The database engine.
+   * The secret rotation application.
    */
   public readonly secretRotationApplication: SecretRotationApplication;
 
