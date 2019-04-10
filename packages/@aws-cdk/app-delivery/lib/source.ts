@@ -1,11 +1,12 @@
+import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import s3 = require('@aws-cdk/aws-s3');
 import { Construct, Fn } from '@aws-cdk/cdk';
 
-interface BootstrapPipelineSourceProps {
-  pipeline: string;
+export interface BootstrapPipelineSourceProps {
+  readonly pipeline: string;
 }
 
-export class BootstrapPipelineSource extends s3.PipelineSourceAction {
+export class BootstrapPipelineSource extends cpactions.S3SourceAction {
   public readonly pipelineAttributes: BootstrapPipelineAttributes;
 
   constructor(scope: Construct, id: string, props: BootstrapPipelineSourceProps) {

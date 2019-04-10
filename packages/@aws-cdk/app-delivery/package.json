@@ -48,15 +48,23 @@
     "@aws-cdk/aws-codepipeline": "^0.28.0",
     "@aws-cdk/aws-codepipeline-actions": "^0.28.0",
     "@aws-cdk/aws-iam": "^0.28.0",
+    "@aws-cdk/aws-secretsmanager": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0",
     "@aws-cdk/cx-api": "^0.28.0",
-    "@aws-cdk/aws-codepipeline": "^0.26.0",
     "yaml": "^1.4.0",
     "jsonschema": "^1.2.4"
   },
   "bundledDependencies": [
     "yaml", "jsonschema"
   ],
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 0,
+        "statements": 0
+      }
+    }
+  },
   "devDependencies": {
     "@aws-cdk/assert": "^0.28.0",
     "@aws-cdk/aws-s3": "^0.28.0",
@@ -92,9 +100,14 @@
     "@aws-cdk/aws-iam": "^0.28.0",
     "@aws-cdk/aws-secretsmanager": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0",
-    "@aws-cdk/cx-api": "^0.26.0"
+    "@aws-cdk/cx-api": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/app-delivery.BootstrapPipeline.<initializer>.params[0]"
+    ]
   }
 }

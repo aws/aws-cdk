@@ -1,14 +1,15 @@
 import codebuild = require('@aws-cdk/aws-codebuild');
-import codepipeline_api = require('@aws-cdk/aws-codepipeline-api');
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/cdk';
 import { ApplicationPipeline } from './application-pipeline';
 
 export interface DeployStackActionProps {
   /**
    * The stack to deploy
    */
-  stack: Stack;
+  readonly stack: Stack;
 
   /**
    * Grant administrator permissions to the deployment action. This is likely to
@@ -18,7 +19,7 @@ export interface DeployStackActionProps {
    * `addToRolePolicy` or by using a grant method on a resource and referencing
    * the `project.role`.
    */
-  admin: boolean;
+  readonly admin: boolean;
 }
 
 /**
@@ -27,15 +28,15 @@ export interface DeployStackActionProps {
  * This action can only be added to an `ApplicationPipeline` which is bound to a
  * bootstrap pipeline source.
  */
-export class DeployStackAction extends codepipeline_api.Action {
+export class DeployStackAction extends codepipeline.Action {
   private readonly stackName: string;
-  private _buildAction?: codebuild.PipelineBuildAction;
+  private _buildAction?: cpactions.CodeBuildBuildAction;
   private _project?: codebuild.Project;
   private readonly admin: boolean;
 
   constructor(props: DeployStackActionProps) {
     super({
-      category: codepipeline_api.ActionCategory.Build,
+      category: codepipeline.ActionCategory.Build,
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 },
       actionName: props.stack.name,
@@ -45,21 +46,21 @@ export class DeployStackAction extends codepipeline_api.Action {
     this.admin = props.admin;
   }
 
-  public get configuration(): any {
-    return this.buildAction.configuration;
-  }
+  // public get configuration(): any | undefined {
+  //   return this.buildAction.configuration;
+  // }
+  //
+  // public set configuration(_: any) {
+  //   return;
+  // }
 
-  public set configuration(_: any) {
-    return;
-  }
-
-  private get buildAction() {
-    if (!this._buildAction) {
-      throw new Error(`Action not bound to pipeline`);
-    }
-
-    return this._buildAction;
-  }
+  // private get buildAction() {
+  //   if (!this._buildAction) {
+  //     throw new Error(`Action not bound to pipeline`);
+  //   }
+  //
+  //   return this._buildAction;
+  // }
 
   public get project() {
     if (!this._project) {
@@ -69,12 +70,12 @@ export class DeployStackAction extends codepipeline_api.Action {
     return this._project;
   }
 
-  public bind(stage: codepipeline_api.IStage, scope: Construct) {
-    if (!ApplicationPipeline.isApplicationPipeline(stage.pipeline)) {
+  public bind(info: codepipeline.ActionBind) {
+    if (!ApplicationPipeline.isApplicationPipeline(info.pipeline)) {
       throw new Error(`DeployStackAction must be added to an ApplicationPipeline`);
     }
 
-    const source = stage.pipeline.source;
+    const source = info.pipeline.source;
     if (!source) {
       throw new Error(`Cannot find source of ApplicationPipeline`);
     }
@@ -82,7 +83,7 @@ export class DeployStackAction extends codepipeline_api.Action {
     const version = source.pipelineAttributes.toolkitVersion;
     const stackName = this.stackName;
 
-    const project = new codebuild.PipelineProject(scope, `${stackName}Deployment`, {
+    const project = new codebuild.PipelineProject(info.scope, `${stackName}Deployment`, {
       environment: {
         buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
       },
@@ -107,13 +108,13 @@ export class DeployStackAction extends codepipeline_api.Action {
 
     this._project = project;
 
-    this._buildAction = new codebuild.PipelineBuildAction({
+    this._buildAction = new cpactions.CodeBuildBuildAction({
       actionName: this.stackName,
       inputArtifact: source.outputArtifact,
       project,
     });
 
-    (this._buildAction as any).bind(stage, scope);
+    (this._buildAction as any).bind(info.stage, info.scope);
 
     if (this.admin) {
       this.addToRolePolicy(new iam.PolicyStatement()

@@ -5,7 +5,7 @@ import { BootstrapPipelineSource } from './source';
 const TYPE_MARKER = '4501D193-76B7-45D6-836E-3E657F21AD69';
 
 export interface ApplicationPipelineProps extends codepipeline.PipelineProps {
-  bootstrap: string;
+  readonly bootstrap: string;
 }
 
 export class ApplicationPipeline extends codepipeline.Pipeline {
@@ -21,7 +21,7 @@ export class ApplicationPipeline extends codepipeline.Pipeline {
     Object.defineProperty(this, '_marker', { value: TYPE_MARKER });
 
     const stages = props.stages || [];
-    delete props.stages;
+    delete (props as any).stages;
 
     const source = new BootstrapPipelineSource(this, 'Source', {
       pipeline: props.bootstrap
@@ -45,18 +45,18 @@ export interface ApplicationPipelineStackProps extends ApplicationPipelineProps 
    * The name of the application pipeline stack.
    * @default - generated from the unique ID of the stack construct.
    */
-  stackName?: string;
+  readonly stackName?: string;
 
   /**
    * Whether this stack should be deployed automatically when running `cdk deploy`.
    * @default true
    */
-  autoDeploy?: boolean;
+  readonly autoDeploy?: boolean;
 
   /**
    * Account/region in which this stack should be deployed.
    */
-  env?: Environment;
+  readonly env?: Environment;
 }
 
 /**

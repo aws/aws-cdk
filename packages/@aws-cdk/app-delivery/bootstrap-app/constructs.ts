@@ -1,58 +1,58 @@
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 
 export interface BootstrapPipelineProps {
   /**
    * Github oauth secrets manager ARN.
    */
-  oauthSecret: string;
+  readonly oauthSecret: string;
 
   /**
    * The GitHub https URL.
    */
-  source: string;
+  readonly source: string;
 
   /**
    * @default - default branch
    */
-  branch?: string;
+  readonly branch?: string;
 
   /**
    * Working directory to run build command.
    * @default - root directory of your repository
    */
-  workdir?: string;
+  readonly workdir?: string;
 
   /**
    * CodeBuild environment to use.
    */
-  environment?: codebuild.BuildEnvironment;
+  readonly environment?: codebuild.BuildEnvironment;
 
   /**
    * @default "npm ci"
    */
-  install?: string;
+  readonly install?: string;
 
   /**
    * @default "npm run build && npm test"
    */
-  build?: string;
+  readonly build?: string;
 
   /**
    * Version of the CDK Toolkit to use.
    * @default - uses latest version
    */
-  version?: string;
+  readonly version?: string;
 
   /**
    * Stack names to deploy
    * @default - deploy all stacks don't have `autoDeploy: false`
    */
-  stacks?: string[];
+  readonly stacks?: string[];
 }
 
 export class BootstrapPipeline extends cdk.Construct {
@@ -66,9 +66,9 @@ export class BootstrapPipeline extends cdk.Construct {
     const source = props.source.substr(sourcePrefix.length);
     const [ owner, repo ] = source.split('/');
 
-    const oauth = new secretsmanager.SecretString(this, 'OauthTokenSecret', {
-      secretId: props.oauthSecret
-    });
+    // const oauth = new secretsmanager.SecretString(this, 'OauthTokenSecret', {
+    //   secretId: props.oauthSecret
+    // });
 
     const workdir = props.workdir || '.';
     const install = props.install || 'npx npm@latest ci';
@@ -77,11 +77,11 @@ export class BootstrapPipeline extends cdk.Construct {
     const stacks  = props.stacks  || [];
     const branch  = props.branch;
 
-    const sourceAction = new codepipeline.GitHubSourceAction({
+    const sourceAction = new cpactions.GitHubSourceAction({
       actionName: 'Pull',
       owner,
       repo,
-      oauthToken: new cdk.Secret(oauth.stringValue),
+      oauthToken: cdk.SecretValue.secretsManager(props.oauthSecret),
       outputArtifactName: 'Source',
       branch
     });
@@ -121,7 +121,7 @@ export class BootstrapPipeline extends cdk.Construct {
       .addAllResources()
       .addAction('*'));
 
-    const buildAction = new codebuild.PipelineBuildAction({
+    const buildAction = new cpactions.CodeBuildBuildAction({
       inputArtifact: sourceAction.outputArtifact,
       project: buildProject,
       actionName: 'Build',
@@ -133,7 +133,7 @@ export class BootstrapPipeline extends cdk.Construct {
 
     const objectKey = 'cloud-assembly.zip';
 
-    const publishAction = new s3.PipelineDeployAction({
+    const publishAction = new cpactions.S3DeployAction({
       inputArtifact: buildAction.outputArtifact,
       actionName: 'Publish',
       bucket: publishBucket,
