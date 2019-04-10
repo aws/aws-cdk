@@ -87,6 +87,28 @@ export = {
     test.done();
   },
 
+  'integration with a custom http method can be set via a property'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+
+    // WHEN
+    new apigateway.Method(stack, 'my-method', {
+      httpMethod: 'POST',
+      resource: api.root,
+      integration: new apigateway.AwsIntegration({ service: 's3', path: 'bucket/key', integrationHttpMethod: 'GET' })
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+      Integration: {
+        IntegrationHttpMethod: "GET"
+      }
+    }));
+
+    test.done();
+  },
+
   'use default integration from api'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

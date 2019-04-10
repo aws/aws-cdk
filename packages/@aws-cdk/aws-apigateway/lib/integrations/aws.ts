@@ -50,6 +50,13 @@ export interface AwsIntegrationProps {
   readonly actionParameters?: { [key: string]: string };
 
   /**
+   * The integration's HTTP method type.
+   *
+   * @default POST
+   */
+  readonly integrationHttpMethod?: string;
+
+  /**
    * Integration options, such as content handling, request/response mapping, etc.
    */
   readonly options?: IntegrationOptions
@@ -70,7 +77,7 @@ export class AwsIntegration extends Integration {
     const { apiType, apiValue } = parseAwsApiCall(props.path, props.action, props.actionParameters);
     super({
       type,
-      integrationHttpMethod: 'POST',
+      integrationHttpMethod: props.integrationHttpMethod || 'POST',
       uri: new cdk.Token(() => {
         if (!this.scope) { throw new Error('AwsIntegration must be used in API'); }
         return this.scope.node.stack.formatArn({
