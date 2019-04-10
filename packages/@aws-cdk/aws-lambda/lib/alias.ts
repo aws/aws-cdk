@@ -52,6 +52,10 @@ export interface AliasProps {
  */
 export class Alias extends FunctionBase {
   /**
+   * Name of this alias.
+   */
+  public readonly aliasName: string;
+  /**
    * ARN of this alias
    *
    * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
@@ -77,6 +81,7 @@ export class Alias extends FunctionBase {
   constructor(scope: cdk.Construct, id: string, props: AliasProps) {
     super(scope, id);
 
+    this.aliasName = props.aliasName;
     this.underlyingLambda = props.version.lambda;
 
     const alias = new CfnAlias(this, 'Resource', {
@@ -110,7 +115,7 @@ export class Alias extends FunctionBase {
     return super.metric(metricName, {
       dimensions: {
         FunctionName: this.underlyingLambda.functionName,
-        Resource: this.functionArn
+        Resource: `${this.underlyingLambda.functionArn}:${this.aliasName}`
       },
       ...props
     });
