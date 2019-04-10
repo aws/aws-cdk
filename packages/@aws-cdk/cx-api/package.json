@@ -48,7 +48,8 @@
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
-    "type": "git"
+    "type": "git",
+    "directory": "packages/@aws-cdk/cx-api"
   },
   "keywords": [
     "aws",

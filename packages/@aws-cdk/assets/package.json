@@ -29,7 +29,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/assets"
   },
   "scripts": {
     "build": "cdk-build",
@@ -43,7 +44,7 @@
   },
   "cdk-build": {
     "pre": [
-      "cd test/fs && tar -xzvf fixtures.tar.gz" 
+      "cd test/fs && tar -xzvf fixtures.tar.gz"
     ]
   },
   "keywords": [

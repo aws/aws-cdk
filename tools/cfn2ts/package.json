@@ -7,7 +7,8 @@
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "tools/cfn2ts"
   },
   "bin": {
     "cfn2ts": "bin/cfn2ts"

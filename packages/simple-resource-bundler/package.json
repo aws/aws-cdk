@@ -34,7 +34,8 @@
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
-    "type": "git"
+    "type": "git",
+    "directory": "packages/simple-resource-bundler"
   },
   "keywords": [
     "aws",
