@@ -8,7 +8,7 @@ import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
-import { DatabaseEngine, RotationSingleUser, RotationSingleUserOptions } from './rotation-single-user';
+import { SecretRotation, SecretRotationApplication, SecretRotationOptions } from './secret-rotation';
 
 /**
  * Properties for a new database cluster
@@ -218,7 +218,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
   /**
    * The database engine of this cluster
    */
-  public readonly engine: DatabaseClusterEngine;
+  private readonly secretRotationApplication: SecretRotationApplication;
 
   /**
    * The VPC where the DB subnet group is created.
@@ -263,11 +263,11 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       });
     }
 
-    this.engine = props.engine;
+    this.secretRotationApplication = props.engine.secretRotationApplication;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
-      engine: this.engine,
+      engine: props.engine.engine,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
@@ -321,7 +321,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
-        engine: props.engine,
+        engine: props.engine.engine,
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
@@ -349,13 +349,13 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
   /**
    * Adds the single user rotation of the master password to this cluster.
    */
-  public addRotationSingleUser(id: string, options: RotationSingleUserOptions = {}): RotationSingleUser {
+  public addRotationSingleUser(id: string, options: SecretRotationOptions = {}): SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
-    return new RotationSingleUser(this, id, {
+    return new SecretRotation(this, id, {
       secret: this.secret,
-      engine: toDatabaseEngine(this.engine),
+      application: this.secretRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
@@ -449,22 +449,5 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
 
   public export() {
     return this.props;
-  }
-}
-
-/**
- * Transforms a DatbaseClusterEngine to a DatabaseEngine.
- *
- * @param engine the engine to transform
- */
-function toDatabaseEngine(engine: DatabaseClusterEngine): DatabaseEngine {
-  switch (engine) {
-    case DatabaseClusterEngine.Aurora:
-    case DatabaseClusterEngine.AuroraMysql:
-      return DatabaseEngine.Mysql;
-    case DatabaseClusterEngine.AuroraPostgresql:
-      return DatabaseEngine.Postgres;
-    default:
-      throw new Error('Unknown engine');
   }
 }

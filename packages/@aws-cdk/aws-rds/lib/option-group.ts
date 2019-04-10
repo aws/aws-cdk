@@ -106,9 +106,9 @@ export class OptionGroup extends cdk.Construct implements IOptionGroup {
     super(scope, id);
 
     const optionGroup = new CfnOptionGroup(this, 'Resource', {
-      engineName: props.engineName,
+      engineName: props.engineName.engine,
       majorEngineVersion: props.majorEngineVersion,
-      optionGroupDescription: props.description || `Option group for ${props.engineName} ${props.majorEngineVersion}`,
+      optionGroupDescription: props.description || `Option group for ${props.engineName.engine} ${props.majorEngineVersion}`,
       optionConfigurations: this.renderConfigurations(props.configurations)
     });
 

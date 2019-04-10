@@ -10,8 +10,9 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup} from './option-group';
 import { IParameterGroup } from './parameter-group';
+import { DatabaseClusterEngine } from './props';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
-import { DatabaseEngine, RotationSingleUser, RotationSingleUserOptions } from './rotation-single-user';
+import { SecretRotation, SecretRotationApplication, SecretRotationOptions } from './secret-rotation';
 
 export interface IDatabaseInstance extends cdk.IConstruct, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
@@ -102,23 +103,21 @@ export abstract class DatabaseInstanceBase extends cdk.Construct implements IDat
 }
 
 /**
- * The engine for the database instance.
+ * A database instance engine. Provides mapping to DatabaseEngine used for
+ * secret rotation.
  */
-export enum DatabaseInstanceEngine {
-  Aurora = 'aurora',
-  AuroraMysql = 'aurora-mysql',
-  AuroraPostgresql = 'aurora-postgresql',
-  MariaDb = 'mariadb',
-  Mysql = 'mysql',
-  OracleEE = 'oracle-ee',
-  OracleSE2 = 'oracle-se2',
-  OracleSE1 = 'oracle-se1',
-  OracleSE = 'oracle-se',
-  Postgres = 'postgres',
-  SqlServerEE = 'sqlserver-ee',
-  SqlServerSE = 'sqlserver-se',
-  SqlServerEX = 'sqlserver-ex',
-  SqlServerWeb = 'sqlserver-web'
+export class DatabaseInstanceEngine extends DatabaseClusterEngine {
+  public static readonly MariaDb = new DatabaseInstanceEngine('mariadb', SecretRotationApplication.MariaDbRotationSingleUser);
+  public static readonly Mysql = new DatabaseInstanceEngine('mysql', SecretRotationApplication.MysqlRotationSingleUser);
+  public static readonly OracleEE = new DatabaseInstanceEngine('oracle-ee', SecretRotationApplication.OracleRotationSingleUser);
+  public static readonly OracleSE2 = new DatabaseInstanceEngine('oracle-se2', SecretRotationApplication.OracleRotationSingleUser);
+  public static readonly OracleSE1 = new DatabaseInstanceEngine('oracle-se1', SecretRotationApplication.OracleRotationSingleUser);
+  public static readonly OracleSE = new DatabaseInstanceEngine('oracle-se', SecretRotationApplication.OracleRotationSingleUser);
+  public static readonly Postgres = new DatabaseInstanceEngine('postgres', SecretRotationApplication.PostgresRotationSingleUser);
+  public static readonly SqlServerEE = new DatabaseInstanceEngine('sqlserver-ee', SecretRotationApplication.SqlServerRotationSingleUser);
+  public static readonly SqlServerSE = new DatabaseInstanceEngine('sqlserver-se', SecretRotationApplication.SqlServerRotationSingleUser);
+  public static readonly SqlServerEX = new DatabaseInstanceEngine('sqlserver-ex', SecretRotationApplication.SqlServerRotationSingleUser);
+  public static readonly SqlServerWeb = new DatabaseInstanceEngine('sqlserver-web', SecretRotationApplication.SqlServerRotationSingleUser);
 }
 
 /**
@@ -578,14 +577,14 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
 export abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDatabaseInstance {
   public abstract readonly secret?: secretsmanager.ISecret;
 
-  public readonly engine: DatabaseInstanceEngine;
-
   protected readonly sourceCfnProps: CfnDBInstanceProps;
+
+  private readonly secretRotationApplication: SecretRotationApplication;
 
   constructor(scope: cdk.Construct, id: string, props: DatabaseInstanceSourceProps) {
     super(scope, id, props);
 
-    this.engine = props.engine;
+    this.secretRotationApplication = props.engine.secretRotationApplication;
 
     this.sourceCfnProps = {
       ...this.newCfnProps,
@@ -593,7 +592,7 @@ export abstract class DatabaseInstanceSource extends DatabaseInstanceNew impleme
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
       dbParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
-      engine: props.engine,
+      engine: props.engine.engine,
       engineVersion: props.engineVersion,
       licenseModel: props.licenseModel,
       timezone: props.timezone
@@ -603,13 +602,13 @@ export abstract class DatabaseInstanceSource extends DatabaseInstanceNew impleme
   /**
    * Adds the single user rotation of the master password to this instance.
    */
-  public addRotationSingleUser(id: string, options: RotationSingleUserOptions = {}): RotationSingleUser {
+  public addRotationSingleUser(id: string, options: SecretRotationOptions = {}): SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for an instance without secret.');
     }
-    return new RotationSingleUser(this, id, {
+    return new SecretRotation(this, id, {
       secret: this.secret,
-      engine: toDatabaseEngine(this.engine),
+      application: this.secretRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
       target: this,
@@ -912,35 +911,4 @@ function renderProcessorFeatures(features: ProcessorFeatures): CfnDBInstance.Pro
   const featuresList = Object.entries(features).map(([name, value]) => ({ name, value: value.toString() }));
 
   return featuresList.length === 0 ? undefined : featuresList;
-}
-
-/**
- * Transforms a DatbaseInstanceEngine to a DatabaseEngine.
- *
- * @param engine the engine to transform
- */
-function toDatabaseEngine(engine: DatabaseInstanceEngine): DatabaseEngine {
-  switch (engine) {
-    case DatabaseInstanceEngine.Aurora:
-    case DatabaseInstanceEngine.AuroraMysql:
-    case DatabaseInstanceEngine.Mysql:
-      return DatabaseEngine.Mysql;
-    case DatabaseInstanceEngine.AuroraPostgresql:
-    case DatabaseInstanceEngine.Postgres:
-      return DatabaseEngine.Postgres;
-    case DatabaseInstanceEngine.MariaDb:
-      return DatabaseEngine.MariaDb;
-    case DatabaseInstanceEngine.OracleEE:
-    case DatabaseInstanceEngine.OracleSE2:
-    case DatabaseInstanceEngine.OracleSE1:
-    case DatabaseInstanceEngine.OracleSE:
-      return DatabaseEngine.Oracle;
-    case DatabaseInstanceEngine.SqlServerEE:
-    case DatabaseInstanceEngine.SqlServerSE:
-    case DatabaseInstanceEngine.SqlServerEX:
-    case DatabaseInstanceEngine.SqlServerWeb:
-      return DatabaseEngine.SqlServer;
-    default:
-      throw new Error('Unknown engine');
-  }
 }

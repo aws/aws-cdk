@@ -5,6 +5,7 @@ import cdk = require('@aws-cdk/cdk');
 import { SecretValue } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import rds = require('../lib');
+import { SecretRotationApplication } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -182,29 +183,6 @@ export = {
     test.done();
   },
 
-  'throws when both application location and engine are not specified'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
-    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
-      vpc,
-    });
-    const target = new ec2.Connections({
-      defaultPortRange: new ec2.TcpPort(1521),
-      securityGroups: [securityGroup]
-    });
-    const secret = new secretsmanager.Secret(stack, 'Secret');
-
-    // THEN
-    test.throws(() => new rds.RotationSingleUser(stack, 'Rotation', {
-      secret,
-      vpc,
-      target
-    }), /`serverlessApplicationLocation`.+`engine`/);
-
-    test.done();
-  },
-
   'throws when connections object has no default port range'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -220,9 +198,9 @@ export = {
     });
 
     // THEN
-    test.throws(() => new rds.RotationSingleUser(stack, 'Rotation', {
+    test.throws(() => new rds.SecretRotation(stack, 'Rotation', {
       secret,
-      engine: rds.DatabaseEngine.Mysql,
+      application: SecretRotationApplication.MysqlRotationSingleUser,
       vpc,
       target
     }), /`target`.+default port range/);
