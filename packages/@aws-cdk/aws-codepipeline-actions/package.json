@@ -43,7 +43,7 @@
     "awslint": "cdk-awslint"
   },
   "nyc": {
-    "statements": 70
+    "statements": 60
   },
   "keywords": [
     "aws",
