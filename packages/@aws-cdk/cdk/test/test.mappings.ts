@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CfnMapping, CfnResource, Stack } from '../lib';
+import { CfnMapping, CfnResource, Stack, Aws, Fn } from '../lib';
 
 export = {
   'mappings can be added as another type of entity, and mapping.findInMap can be used to get a token'(test: Test) {
@@ -43,4 +43,24 @@ export = {
 
     test.done();
   },
+
+  'allow using unresolved tokens in find-in-map'(test: Test) {
+    const stack = new Stack();
+
+    const mapping = new CfnMapping(stack, 'mapping', {
+      mapping: {
+        instanceCount: {
+          'us-east-1': 12
+        }
+      }
+    });
+
+    const v1 = mapping.findInMap('instanceCount', Aws.region);
+    const v2 = Fn.findInMap(mapping.logicalId, 'instanceCount', Aws.region);
+
+    const expected = { 'Fn::FindInMap': [ 'mapping', 'instanceCount', { Ref: 'AWS::Region' } ] };
+    test.deepEqual(stack.node.resolve(v1), expected);
+    test.deepEqual(stack.node.resolve(v2), expected);
+    test.done();
+  }
 };
