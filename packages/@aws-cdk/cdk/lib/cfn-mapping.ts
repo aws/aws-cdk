@@ -1,6 +1,7 @@
 import { CfnRefElement } from './cfn-element';
 import { Construct } from './construct';
 import { Fn } from './fn';
+import { Token } from './token';
 
 export interface CfnMappingProps {
   readonly mapping?: { [k1: string]: { [k2: string]: any } };
@@ -32,11 +33,13 @@ export class CfnMapping extends CfnRefElement {
    * @returns A reference to a value in the map based on the two keys.
    */
   public findInMap(key1: string, key2: string): string {
-    if (!(key1 in this.mapping)) {
+    // opportunistically check that the key exists (if the key does not contain tokens)
+    if (!Token.unresolved(key1) && !(key1 in this.mapping)) {
       throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
     }
 
-    if (!(key2 in this.mapping[key1])) {
+    // opportunistically check that the key exists (if the key does not contain tokens)
+    if (!Token.unresolved(key2) && !(key2 in this.mapping[key1])) {
       throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
     }
 
