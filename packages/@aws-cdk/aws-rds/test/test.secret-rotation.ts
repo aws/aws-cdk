@@ -94,7 +94,7 @@ export = {
     expect(stack).to(haveResource('AWS::Serverless::Application', {
       "Location": {
         "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser",
-        "SemanticVersion": "1.0.74"
+        "SemanticVersion": "1.0.85"
       },
       "Parameters": {
         "endpoint": {
@@ -288,7 +288,7 @@ export = {
     expect(stack).to(haveResource('AWS::Serverless::Application', {
       "Location": {
         "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMariaDBRotationSingleUser",
-        "SemanticVersion": "1.0.46"
+        "SemanticVersion": "1.0.57"
       },
       "Parameters": {
         "endpoint": {

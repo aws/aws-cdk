@@ -737,7 +737,7 @@
       "Properties": {
         "Location": {
           "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
-          "SemanticVersion": "1.0.45"
+          "SemanticVersion": "1.0.56"
         },
         "Parameters": {
           "endpoint": {
