@@ -203,7 +203,7 @@ export enum InstanceClass {
  * What size of instance to use
  */
 export enum InstanceSize {
-  None = 'nano',
+  Nano = 'nano',
   Micro = 'micro',
   Small = 'small',
   Medium = 'medium',
