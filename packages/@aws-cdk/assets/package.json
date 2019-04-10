@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/assets",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "description": "Integration of CDK apps with local assets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -41,6 +41,11 @@
     "package": "cdk-package",
     "awslint": "cdk-awslint"
   },
+  "cdk-build": {
+    "pre": [
+      "cd test/fs && tar -xzvf fixtures.tar.gz" 
+    ]
+  },
   "keywords": [
     "aws",
     "cdk",
@@ -54,25 +59,30 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.27.0",
-    "aws-cdk": "^0.27.0",
-    "cdk-build-tools": "^0.27.0",
-    "cdk-integ-tools": "^0.27.0",
-    "pkglint": "^0.27.0"
+    "@aws-cdk/assert": "^0.28.0",
+    "@types/minimatch": "^3.0.3",
+    "aws-cdk": "^0.28.0",
+    "cdk-build-tools": "^0.28.0",
+    "cdk-integ-tools": "^0.28.0",
+    "pkglint": "^0.28.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.27.0",
-    "@aws-cdk/aws-s3": "^0.27.0",
-    "@aws-cdk/cdk": "^0.27.0",
-    "@aws-cdk/cx-api": "^0.27.0"
+    "@aws-cdk/aws-iam": "^0.28.0",
+    "@aws-cdk/aws-s3": "^0.28.0",
+    "@aws-cdk/cdk": "^0.28.0",
+    "@aws-cdk/cx-api": "^0.28.0",
+    "minimatch": "^3.0.4"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.27.0",
-    "@aws-cdk/aws-s3": "^0.27.0",
-    "@aws-cdk/cdk": "^0.27.0"
+    "@aws-cdk/aws-iam": "^0.28.0",
+    "@aws-cdk/aws-s3": "^0.28.0",
+    "@aws-cdk/cdk": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "bundledDependencies": [
+    "minimatch"
+  ]
 }

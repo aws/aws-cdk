@@ -16,7 +16,7 @@ const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
-export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
+export interface IProject extends cdk.IConstruct, events.IEventRuleTarget, iam.IGrantable {
   /** The ARN of this Project. */
   readonly projectArn: string;
 
@@ -156,13 +156,15 @@ export interface ProjectImportProps {
  * use the {@link import} method.
  */
 export abstract class ProjectBase extends cdk.Construct implements IProject {
+  public abstract readonly grantPrincipal: iam.IPrincipal;
+
   /** The ARN of this Project. */
   public abstract readonly projectArn: string;
 
   /** The human-visible name of this Project. */
   public abstract readonly projectName: string;
 
-  /** The IAM service Role of this Project. Undefined for imported Projects. */
+  /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
 
   /** A role used by CloudWatch events to trigger a build */
@@ -369,6 +371,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
 }
 
 class ImportedProject extends ProjectBase {
+  public readonly grantPrincipal: iam.IPrincipal;
   public readonly projectArn: string;
   public readonly projectName: string;
   public readonly role?: iam.Role = undefined;
@@ -381,6 +384,7 @@ class ImportedProject extends ProjectBase {
       resource: 'project',
       resourceName: props.projectName,
     });
+    this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
 
     this.projectName = props.projectName;
   }
@@ -572,6 +576,8 @@ export class Project extends ProjectBase {
     return new ImportedProject(scope, id, props);
   }
 
+  public readonly grantPrincipal: iam.IPrincipal;
+
   /**
    * The IAM role for this project.
    */
@@ -603,6 +609,7 @@ export class Project extends ProjectBase {
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
+    this.grantPrincipal = this.role;
 
     let cache: CfnProject.ProjectCacheProperty | undefined;
     if (props.cacheBucket) {
@@ -872,9 +879,6 @@ export class Project extends ProjectBase {
       });
       this._securityGroups = [securityGroup];
     }
-    const subnetSelection: ec2.SubnetSelection = props.subnetSelection ? props.subnetSelection : {
-      subnetType: ec2.SubnetType.Private
-    };
     this.addToRoleInlinePolicy(new iam.PolicyStatement()
       .addAllResources()
       .addActions(
@@ -897,7 +901,7 @@ export class Project extends ProjectBase {
       .addAction('ec2:CreateNetworkInterfacePermission'));
     return {
       vpcId: props.vpc.vpcId,
-      subnets: props.vpc.subnetIds(subnetSelection).map(s => s),
+      subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
       securityGroupIds: this._securityGroups.map(s => s.securityGroupId)
     };
   }

@@ -216,7 +216,25 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
         MaxCapacity: 10,
-        MinCapacity: 1
+        MinCapacity: 1,
+        ResourceId: {
+          "Fn::Join": [
+            "",
+            [
+              "service/",
+              {
+                Ref: "EcsCluster97242B84"
+              },
+              "/",
+              {
+                "Fn::GetAtt": [
+                  "ServiceD69D759B",
+                  "Name"
+                ]
+              }
+            ]
+          ]
+        },
       }));
 
       expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
@@ -234,6 +252,71 @@ export = {
           },
           TargetValue: 1000
         }
+      }));
+
+      test.done();
+    },
+
+    'allows auto scaling by ALB with new service arn format'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromRegistry('hello'),
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const service = new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        longArnEnabled: true
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
+      const listener = lb.addListener("listener", { port: 80 });
+      const targetGroup = listener.addTargets("target", {
+        port: 80,
+        targets: [service]
+      });
+
+      // WHEN
+      const capacity = service.autoScaleTaskCount({ maxCapacity: 10, minCapacity: 1 });
+      capacity.scaleOnRequestCount("ScaleOnRequests", {
+        requestsPerTarget: 1000,
+        targetGroup
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+        MaxCapacity: 10,
+        MinCapacity: 1,
+        ResourceId: {
+          "Fn::Join": [
+            "",
+            [
+              "service/",
+              {
+                Ref: "EcsCluster97242B84"
+              },
+              "/",
+              {
+                "Fn::Select": [
+                  2,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        Ref: "ServiceD69D759B"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
       }));
 
       test.done();
@@ -297,7 +380,7 @@ export = {
          DnsConfig: {
           DnsRecords: [
             {
-              TTL: "60",
+              TTL: 60,
               Type: "A"
             }
           ],
@@ -358,7 +441,7 @@ export = {
         DnsConfig: {
           DnsRecords: [
             {
-              TTL: "60",
+              TTL: 60,
               Type: "SRV"
             }
           ],

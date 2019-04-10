@@ -86,6 +86,11 @@ export class CfnParameter extends CfnRefElement {
    */
   public stringListValue: string[];
 
+  /**
+   * Indicates if this parameter has "NoEcho" set.
+   */
+  public readonly noEcho: boolean;
+
   private properties: CfnParameterProps;
 
   /**
@@ -102,6 +107,7 @@ export class CfnParameter extends CfnRefElement {
     this.value = this.referenceToken;
     this.stringValue = this.value.toString();
     this.stringListValue = this.value.toList();
+    this.noEcho = props.noEcho || false;
   }
 
   /**

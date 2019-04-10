@@ -142,7 +142,7 @@ export = {
       expect(stack).to(countResources("AWS::EC2::Subnet", 6));
       test.done();
     },
-    "with reserved subents, any other subnets should not have cidrBlock from within reserved space"(test: Test) {
+    "with reserved subnets, any other subnets should not have cidrBlock from within reserved space"(test: Test) {
       const stack = getTestStack();
       new VpcNetwork(stack, 'TheVPC', {
         cidr: '10.0.0.0/16',
@@ -183,7 +183,7 @@ export = {
       }
       test.done();
     },
-    "with custom subents, the VPC should have the right number of subnets, an IGW, and a NAT Gateway per AZ"(test: Test) {
+    "with custom subnets, the VPC should have the right number of subnets, an IGW, and a NAT Gateway per AZ"(test: Test) {
       const stack = getTestStack();
       const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
       new VpcNetwork(stack, 'TheVPC', {
@@ -439,7 +439,11 @@ export = {
           { subnetType: SubnetType.Isolated, name: 'Isolated' },
         ],
         vpnGateway: true,
-        vpnRoutePropagation: [SubnetType.Isolated]
+        vpnRoutePropagation: [
+          {
+            subnetType: SubnetType.Isolated
+          }
+        ]
       });
 
       expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
@@ -470,8 +474,12 @@ export = {
         ],
         vpnGateway: true,
         vpnRoutePropagation: [
-          SubnetType.Private,
-          SubnetType.Isolated
+          {
+            subnetType: SubnetType.Private
+          },
+          {
+            subnetType: SubnetType.Isolated
+          }
         ]
       });
 
@@ -601,10 +609,10 @@ export = {
       const vpc = new VpcNetwork(stack, 'VPC');
 
       // WHEN
-      const nets = vpc.subnetIds();
+      const { subnetIds } = vpc.selectSubnets();
 
       // THEN
-      test.deepEqual(nets, vpc.privateSubnets.map(s => s.subnetId));
+      test.deepEqual(subnetIds, vpc.privateSubnets.map(s => s.subnetId));
       test.done();
     },
 
@@ -614,10 +622,10 @@ export = {
       const vpc = new VpcNetwork(stack, 'VPC');
 
       // WHEN
-      const nets = vpc.subnetIds({ subnetType: SubnetType.Public });
+      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.Public });
 
       // THEN
-      test.deepEqual(nets, vpc.publicSubnets.map(s => s.subnetId));
+      test.deepEqual(subnetIds, vpc.publicSubnets.map(s => s.subnetId));
 
       test.done();
     },
@@ -633,10 +641,10 @@ export = {
       });
 
       // WHEN
-      const nets = vpc.subnetIds({ subnetType: SubnetType.Isolated });
+      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.Isolated });
 
       // THEN
-      test.deepEqual(nets, vpc.isolatedSubnets.map(s => s.subnetId));
+      test.deepEqual(subnetIds, vpc.isolatedSubnets.map(s => s.subnetId));
 
       test.done();
     },
@@ -652,10 +660,10 @@ export = {
       });
 
       // WHEN
-      const nets = vpc.subnetIds({ subnetName: 'DontTalkToMe' });
+      const { subnetIds } = vpc.selectSubnets({ subnetName: 'DontTalkToMe' });
 
       // THEN
-      test.deepEqual(nets, vpc.privateSubnets.map(s => s.subnetId));
+      test.deepEqual(subnetIds, vpc.privateSubnets.map(s => s.subnetId));
       test.done();
     },
 
@@ -669,9 +677,29 @@ export = {
       });
 
       test.throws(() => {
-        vpc.subnetIds();
+        vpc.selectSubnets();
       }, /There are no 'Private' subnets in this VPC/);
 
+      test.done();
+    },
+
+    'select subnets with az restriction'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new VpcNetwork(stack, 'VpcNetwork', {
+        maxAZs: 1,
+        subnetConfiguration: [
+          {name: 'app', subnetType: SubnetType.Private },
+          {name: 'db', subnetType: SubnetType.Private },
+        ]
+      });
+
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets({ onePerAz: true });
+
+      // THEN
+      test.deepEqual(subnetIds.length, 1);
+      test.deepEqual(subnetIds[0], vpc.privateSubnets[0].subnetId);
       test.done();
     }
   },
@@ -733,11 +761,11 @@ export = {
       });
 
       // WHEN
-      const nets = importedVpc.subnetIds({ subnetType: SubnetType.Isolated });
+      const { subnetIds } = importedVpc.selectSubnets({ subnetType: SubnetType.Isolated });
 
       // THEN
       test.equal(3, importedVpc.isolatedSubnets.length);
-      test.deepEqual(nets, importedVpc.isolatedSubnets.map(s => s.subnetId));
+      test.deepEqual(subnetIds, importedVpc.isolatedSubnets.map(s => s.subnetId));
 
       test.done();
     },
@@ -756,11 +784,11 @@ export = {
         });
 
         // WHEN
-        const nets = importedVpc.subnetIds({ subnetName: isolatedName });
+        const { subnetIds } = importedVpc.selectSubnets({ subnetName: isolatedName });
 
         // THEN
         test.equal(3, importedVpc.isolatedSubnets.length);
-        test.deepEqual(nets, importedVpc.isolatedSubnets.map(s => s.subnetId));
+        test.deepEqual(subnetIds, importedVpc.isolatedSubnets.map(s => s.subnetId));
       }
 
       test.done();
