@@ -1,5 +1,6 @@
 import codebuild = require('@aws-cdk/aws-codebuild');
-import codepipeline_api = require('@aws-cdk/aws-codepipeline-api');
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import { Construct } from '@aws-cdk/cdk';
 
 export interface BuildActionProps {
@@ -33,11 +34,11 @@ export interface BuildActionProps {
   /**
    * The source artifact to build from.
    */
-  sourceArtifact: codepipeline_api.Artifact;
+  readonly sourceArtifact: codepipeline.Artifact;
 }
 
 export class BuildAction extends Construct {
-  public readonly action: codebuild.PipelineBuildAction;
+  public readonly action: cpactions.CodeBuildBuildAction;
 
   constructor(scope: Construct, id: string, props: BuildActionProps) {
     super(scope, id);
@@ -76,7 +77,7 @@ export class BuildAction extends Construct {
       buildSpec
     });
 
-    this.action = new codebuild.PipelineBuildAction({
+    this.action = new cpactions.CodeBuildBuildAction({
       inputArtifact: props.sourceArtifact,
       project: buildProject,
       actionName: 'Build',

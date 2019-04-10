@@ -4,10 +4,9 @@ import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { CfnOutput, Construct, Secret } from '@aws-cdk/cdk';
-import { BuildAction } from '../lib/build';
-import { DeployAction } from '../lib/deploy';
+import { CfnOutput, Construct } from '@aws-cdk/cdk';
+import { BuildAction } from './build';
+import { DeployStackAction } from './deploy';
 
 export interface PipelineProps {
   /**
@@ -88,7 +87,11 @@ export class Pipeline extends Construct {
     //   secretId: props.oauthSecret
     // });
 
+    const workdir = props.workdir || '.';
+    const install = props.install || 'npx npm@latest ci';
+    const build   = props.build   || 'npm run build';
     const version = props.version || 'latest';
+    const stacks  = props.stacks  || [];
     const branch  = props.branch;
 
     const sourceAction = new cpactions.GitHubSourceAction({
@@ -143,12 +146,6 @@ export class Pipeline extends Construct {
       .addAllResources()
       .addAction('*'));
 
-    const buildAction = new cpactions.CodeBuildBuildAction({
-      inputArtifact: sourceAction.outputArtifact,
-      project: buildProject,
-      actionName: 'Build',
-    });
-
     const publishBucket = new s3.Bucket(this, 'Publish', {
       versioned: true
     });
@@ -163,7 +160,7 @@ export class Pipeline extends Construct {
       extract: false
     });
 
-    const deployAction = new DeployAction({
+    const deployAction = new DeployStackAction({
       admin: true,
       assembly: buildAction.outputArtifact,
       stacks: props.stacks,

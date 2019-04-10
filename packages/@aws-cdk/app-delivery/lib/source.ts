@@ -1,3 +1,4 @@
+import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import s3 = require('@aws-cdk/aws-s3');
 import { Construct, Fn } from '@aws-cdk/cdk';
@@ -14,7 +15,7 @@ export interface SourceActionProps {
  * An AWS CodePipeline source action that is monitors the output of a boostrap pipeline
  * and triggers the pipeline when a new cloud assembly is available for deployment.
  */
-export class SourceAction extends s3.PipelineSourceAction {
+export class SourceAction extends cpactions.S3SourceAction {
   constructor(scope: Construct, id: string, props: SourceActionProps) {
     const exportPrefix = `cdk-pipeline:${props.bootstrap}`;
 
@@ -33,7 +34,7 @@ export class SourceAction extends s3.PipelineSourceAction {
     });
   }
 
-  public get assembly(): codepipeline_api.Artifact {
+  public get assembly(): codepipeline.Artifact {
     return this.outputArtifact;
   }
 }

@@ -2,8 +2,7 @@ import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
-import { Stack } from '@aws-cdk/cdk';
-import { DeploymentPipeline } from './application-pipeline';
+// import { DeploymentPipeline } from './application-pipeline';
 
 export interface DeployActionProps {
   /**
@@ -37,7 +36,7 @@ export interface DeployActionProps {
   /**
    * A CodePipeline artifact that contains the cloud assembly to deploy.
    */
-  readonly assembly: codepipeline_api.Artifact;
+  readonly assembly: codepipeline.Artifact;
 }
 
 /**
@@ -52,7 +51,7 @@ export class DeployStackAction extends codepipeline.Action {
   private _project?: codebuild.Project;
   private readonly admin: boolean;
   private readonly toolchainVersion: string;
-  private readonly assembly: codepipeline_api.Artifact;
+  private readonly assembly: codepipeline.Artifact;
   private readonly exclusively: boolean;
 
   constructor(props: DeployActionProps) {
@@ -102,7 +101,7 @@ export class DeployStackAction extends codepipeline.Action {
 
   public bind(info: codepipeline.ActionBind) {
     const exclusively = this.exclusively ? '--exclusively' : '';
-    const project = new codebuild.PipelineProject(info.scope, `${stackName}Deployment`, {
+    const project = new codebuild.PipelineProject(info.scope, `DeployStackProject`, {
       environment: {
         buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
       },

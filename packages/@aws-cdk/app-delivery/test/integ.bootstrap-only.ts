@@ -12,4 +12,3 @@ new Pipeline(stack, 'pipeline', {
   branch: 'pipeline',
   stacks: [ 'WorkshopPipeline' ]
 });
-
