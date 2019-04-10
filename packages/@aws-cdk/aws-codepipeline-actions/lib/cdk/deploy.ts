@@ -1,10 +1,8 @@
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
 import { Construct } from '@aws-cdk/cdk';
 import { CodeBuildBuildAction } from '../codebuild/pipeline-actions';
-// import { DeploymentPipeline } from './application-pipeline';
 
 export interface CdkDeployActionProps {
   /**

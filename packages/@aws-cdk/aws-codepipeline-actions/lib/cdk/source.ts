@@ -1,5 +1,4 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import s3 = require('@aws-cdk/aws-s3');
 import { CfnOutput, Construct, Fn } from '@aws-cdk/cdk';
 import { S3SourceAction } from '../s3/source-action';
