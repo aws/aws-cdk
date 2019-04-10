@@ -115,6 +115,9 @@ export class Alias extends FunctionBase {
     return super.metric(metricName, {
       dimensions: {
         FunctionName: this.underlyingLambda.functionName,
+        // construct the ARN from the underlying lambda so that alarms on an alias
+        // don't cause a circular dependency with CodeDeploy
+        // see: https://github.com/awslabs/aws-cdk/issues/2231
         Resource: `${this.underlyingLambda.functionArn}:${this.aliasName}`
       },
       ...props
