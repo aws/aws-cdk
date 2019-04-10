@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CfnMapping, CfnResource, Stack, Aws, Fn } from '../lib';
+import { Aws, CfnMapping, CfnResource, Fn, Stack } from '../lib';
 
 export = {
   'mappings can be added as another type of entity, and mapping.findInMap can be used to get a token'(test: Test) {
