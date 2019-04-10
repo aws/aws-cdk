@@ -622,7 +622,7 @@ export class Project extends ProjectBase {
       props.cacheBucket.grantReadWrite(this.role);
     }
 
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.UBUNTU_14_04_BASE;
+    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.UBUNTU_18_04_STANDARD;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -941,7 +941,7 @@ export interface BuildEnvironment {
   /**
    * The image used for the builds.
    *
-   * @default LinuxBuildImage.UBUNTU_14_04_BASE
+   * @default LinuxBuildImage.UBUNTU_18_04_STANDARD
    */
   readonly buildImage?: IBuildImage;
 
@@ -1023,11 +1023,13 @@ export interface IBuildImage {
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class LinuxBuildImage implements IBuildImage {
+  public static readonly UBUNTU_18_04_STANDARD = new LinuxBuildImage('aws/codebuild/standard:1.0');
   public static readonly UBUNTU_14_04_BASE = new LinuxBuildImage('aws/codebuild/ubuntu-base:14.04');
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = new LinuxBuildImage('aws/codebuild/android-java-8:24.4.1');
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = new LinuxBuildImage('aws/codebuild/android-java-8:26.1.1');
   public static readonly UBUNTU_14_04_DOCKER_17_09_0 = new LinuxBuildImage('aws/codebuild/docker:17.09.0');
   public static readonly UBUNTU_14_04_GOLANG_1_10 = new LinuxBuildImage('aws/codebuild/golang:1.10');
+  public static readonly UBUNTU_14_04_GOLANG_1_11 = new LinuxBuildImage('aws/codebuild/golang:1.11');
   public static readonly UBUNTU_14_04_OPEN_JDK_8 = new LinuxBuildImage('aws/codebuild/java:openjdk-8');
   public static readonly UBUNTU_14_04_OPEN_JDK_9 = new LinuxBuildImage('aws/codebuild/java:openjdk-9');
   public static readonly UBUNTU_14_04_NODEJS_10_1_0 = new LinuxBuildImage('aws/codebuild/nodejs:10.1.0');
