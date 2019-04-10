@@ -14,7 +14,7 @@ const service = namespace.createService('Service', {
   dnsTtlSec: 30
 });
 
-service.registerCnameInstance({
+service.registerCnameInstance('CnameInstance', {
   instanceCname: 'service.pizza',
 });
 

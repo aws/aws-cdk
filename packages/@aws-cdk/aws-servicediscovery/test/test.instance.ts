@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
@@ -18,7 +18,7 @@ export = {
       name: 'service',
     });
 
-    service.registerIpInstance({
+    service.registerIpInstance('IpInstance', {
       ipv4: '10.0.0.0',
       ipv6: '0:0:0:0:0:ffff:a00:0',
       port: 443
@@ -56,7 +56,7 @@ export = {
       dnsRecordType: servicediscovery.DnsRecordType.A_AAAA
     });
 
-    service.registerIpInstance({
+    service.registerIpInstance('IpInstance', {
       ipv4: '54.239.25.192',
       ipv6: '0:0:0:0:0:ffff:a00:0',
       port: 443
@@ -96,7 +96,7 @@ export = {
       dnsRecordType: servicediscovery.DnsRecordType.A_AAAA
     });
 
-    service.registerIpInstance({
+    service.registerIpInstance('IpInstance', {
       ipv4: '10.0.0.0',
       ipv6: '0:0:0:0:0:ffff:a00:0',
       port: 443
@@ -136,7 +136,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerIpInstance({
+      service.registerIpInstance('IpInstance', {
         instanceId: 'id',
       });
     }, /A `port` must be specified for a service using a `SRV` record./);
@@ -159,7 +159,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerIpInstance({
+      service.registerIpInstance('IpInstance', {
         port: 3306
       });
     }, /At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record./);
@@ -182,7 +182,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerIpInstance({
+      service.registerIpInstance('IpInstance', {
         port: 3306
       });
     }, /An `ipv4` must be specified for a service using a `A` record./);
@@ -205,7 +205,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerIpInstance({
+      service.registerIpInstance('IpInstance', {
         port: 3306
       });
     }, /An `ipv6` must be specified for a service using a `AAAA` record./);
@@ -228,7 +228,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerIpInstance({
+      service.registerIpInstance('IpInstance', {
         port: 3306
       });
     }, /Service must support `A`, `AAAA` or `SRV` records to register this instance type./);
@@ -338,7 +338,7 @@ export = {
       dnsRecordType: servicediscovery.DnsRecordType.CNAME
     });
 
-    service.registerCnameInstance({
+    service.registerCnameInstance('CnameInstance', {
       instanceCname: 'foo.com',
       customAttributes: { dogs: 'good' }
     });
@@ -375,7 +375,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerCnameInstance({
+      service.registerCnameInstance('CnameInstance', {
         instanceCname: 'foo.com',
       });
     }, /Namespace associated with Service must be a DNS Namespace/);
@@ -393,7 +393,7 @@ export = {
 
     const service = namespace.createService('MyService');
 
-    service.registerNonIpInstance({
+    service.registerNonIpInstance('NonIpInstance', {
       customAttributes: { dogs: 'good' }
     });
 
@@ -426,7 +426,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerNonIpInstance({
+      service.registerNonIpInstance('NonIpInstance', {
         instanceId: 'nonIp',
       });
     }, /This type of instance can only be registered for HTTP namespaces./);
@@ -446,7 +446,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerNonIpInstance({
+      service.registerNonIpInstance('NonIpInstance', {
         instanceId: 'nonIp',
       });
     }, /You must specify at least one custom attribute for this instance type./);
@@ -466,7 +466,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      service.registerNonIpInstance({
+      service.registerNonIpInstance('NonIpInstance', {
         instanceId: 'nonIp',
         customAttributes: {}
       });
@@ -474,4 +474,29 @@ export = {
 
     test.done();
   },
+
+  'Register multiple instances on the same service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'public',
+    });
+
+    const service = namespace.createService('MyService');
+
+    // WHEN
+    service.registerIpInstance('First', {
+      ipv4: '10.0.0.0'
+    });
+
+    service.registerIpInstance('Second', {
+      ipv4: '10.0.0.1'
+    });
+
+    // THEN
+    expect(stack).to(countResources('AWS::ServiceDiscovery::Instance', 2));
+
+    test.done();
+  }
 };
