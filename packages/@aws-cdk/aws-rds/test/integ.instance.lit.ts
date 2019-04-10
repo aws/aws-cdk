@@ -1,3 +1,4 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
@@ -16,22 +17,29 @@ class DatabaseInstanceStack extends cdk.Stack {
     // Set open cursors with parameter group
     const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
       family: 'oracle-se1-11.2',
-      description: 'Oracle parameter group',
       parameters: {
         open_cursors: '2500'
       }
     });
 
-    /// Add XMLDB with option group
+    /// Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(this, 'OptionGroup', {
       engineName: rds.DatabaseInstanceEngine.OracleSE1,
       majorEngineVersion: '11.2',
       configurations: [
         {
           name: 'XMLDB'
+        },
+        {
+          name: 'OEM',
+          port: 1158,
+          vpc
         }
       ]
     });
+
+    // Allow connections to OEM
+    optionGroup.optionConnections.OEM.connections.allowDefaultPortFromAnyIpv4();
 
     // Database instance with production values
     const instance = new rds.DatabaseInstance(this, 'Instance', {
@@ -64,6 +72,13 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     // Rotate the master user password every 30 days
     instance.addRotationSingleUser('Rotation');
+
+    // Add alarm for high CPU
+    new cloudwatch.Alarm(this, 'HighCPU', {
+      metric: instance.metricCPUUtilization(),
+      threshold: 90,
+      evaluationPeriods: 1
+    });
 
     // Trigger Lambda function on instance availability events
     const availabilityRule = instance.onEvent('Availability');

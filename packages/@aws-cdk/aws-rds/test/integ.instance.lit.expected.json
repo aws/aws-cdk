@@ -347,10 +347,35 @@
     "ParameterGroup5E32DECB": {
       "Type": "AWS::RDS::DBParameterGroup",
       "Properties": {
-        "Description": "Oracle parameter group",
+        "Description": "Parameter group for oracle-se1-11.2",
         "Family": "oracle-se1-11.2",
         "Parameters": {
           "open_cursors": "2500"
+        }
+      }
+    },
+    "OptionGroupSecurityGroupOEM7E39FD8C": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Security group for OEM option",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:1158",
+            "FromPort": 1158,
+            "IpProtocol": "tcp",
+            "ToPort": 1158
+          }
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
         }
       }
     },
@@ -362,6 +387,18 @@
         "OptionConfigurations": [
           {
             "OptionName": "XMLDB"
+          },
+          {
+            "OptionName": "OEM",
+            "Port": 1158,
+            "VpcSecurityGroupMemberships": [
+              {
+                "Fn::GetAtt": [
+                  "OptionGroupSecurityGroupOEM7E39FD8C",
+                  "GroupId"
+                ]
+              }
+            ]
           }
         ],
         "OptionGroupDescription": "Option group for oracle-se1 11.2"
@@ -616,8 +653,8 @@
           }
         ]
       },
-      "DeletionPolicy": "Retain",
-      "UpdateReplacePolicy": "Retain"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "InstanceLogRetentiontrace487771C8": {
       "Type": "Custom::LogRetention",
@@ -971,6 +1008,26 @@
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
       ]
+    },
+    "HighCPU94686517": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": 1,
+        "Threshold": 90,
+        "Dimensions": [
+          {
+            "Name": "DBInstanceIdentifier",
+            "Value": {
+              "Ref": "InstanceC1063A87"
+            }
+          }
+        ],
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/RDS",
+        "Period": 300,
+        "Statistic": "Average"
+      }
     },
     "FunctionServiceRole675BB04A": {
       "Type": "AWS::IAM::Role",
