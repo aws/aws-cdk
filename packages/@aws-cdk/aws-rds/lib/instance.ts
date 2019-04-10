@@ -291,7 +291,15 @@ export interface DatabaseInstanceNewProps {
   /**
    * The daily time range during which automated backups are performed.
    *
-   * @default an AWS RDS chosen time range
+   * Constraints:
+   * - Must be in the format `hh24:mi-hh24:mi`.
+   * - Must be in Universal Coordinated Time (UTC).
+   * - Must not conflict with the preferred maintenance window.
+   * - Must be at least 30 minutes.
+   *
+   * @default a 30-minute window selected at random from an 8-hour block of
+   * time for each AWS Region. To see the time blocks available, see
+   * https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow
    */
   readonly preferredBackupWindow?: string;
 
@@ -365,11 +373,18 @@ export interface DatabaseInstanceNewProps {
    */
   readonly autoMinorVersionUpgrade?: boolean;
 
+  // tslint:disable:max-line-length
   /**
    * The weekly time range (in UTC) during which system maintenance can occur.
    *
-   * @default an AWS RDS chosen time range
+   * Format: `ddd:hh24:mi-ddd:hh24:mi`
+   * Constraint: Minimum 30-minute window
+   *
+   * @default a 30-minute window selected at random from an 8-hour block of
+   * time for each AWS Region, occurring on a random day of the week. To see
+   * the time blocks available, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow
    */
+  // tslint:enable:max-line-length
   readonly preferredMaintenanceWindow?: string;
 
   /**
