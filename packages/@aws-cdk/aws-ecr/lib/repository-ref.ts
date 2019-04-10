@@ -241,7 +241,7 @@ class ImportedRepository extends RepositoryBase {
       this.repositoryArn = props.repositoryArn;
     } else {
       if (!props.repositoryName) {
-        throw new Error('If "repositoruyArn" is not specified, you must specify "repositoryName", ' +
+        throw new Error('If "repositoryArn" is not specified, you must specify "repositoryName", ' +
           'which also implies that the repository resides in the same region/account as this stack');
       }
 
