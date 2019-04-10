@@ -4,7 +4,13 @@ import path = require('path');
 import semver = require('semver');
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
-import { deepGet, deepSet, expectDevDependency, expectJSON, fileShouldBe, fileShouldContain, findInnerPackages, monoRepoVersion } from './util';
+import {
+  deepGet, deepSet,
+  expectDevDependency, expectJSON,
+  fileShouldBe, fileShouldContain,
+  findInnerPackages,
+  monoRepoRoot, monoRepoVersion
+} from './util';
 
 /**
  * Verify that the package name matches the directory name
@@ -45,6 +51,8 @@ export class RepositoryCorrect extends ValidationRule {
   public validate(pkg: PackageJson): void {
     expectJSON(this.name, pkg, 'repository.type', 'git');
     expectJSON(this.name, pkg, 'repository.url', 'https://github.com/awslabs/aws-cdk.git');
+    const pkgDir = path.relative(monoRepoRoot(), pkg.packageRoot);
+    expectJSON(this.name, pkg, 'repository.directory', pkgDir);
   }
 }
 

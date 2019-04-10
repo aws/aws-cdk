@@ -42,7 +42,8 @@
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
-    "type": "git"
+    "type": "git",
+    "directory": "packages/@aws-cdk/cloudformation-diff"
   },
   "keywords": [
     "aws",
