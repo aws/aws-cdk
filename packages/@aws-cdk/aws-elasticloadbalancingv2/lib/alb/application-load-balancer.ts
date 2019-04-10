@@ -88,9 +88,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       throw new Error(`Cannot enable access logging; don't know ELBv2 account for region ${region}`);
     }
 
-    bucket.grantPut(new iam.AccountPrincipal(account));
+    prefix = prefix || '';
+    bucket.grantPut(new iam.AccountPrincipal(account), prefix + '*');
 
-    // make sure the bucket is created before the ALB
+    // make sure the bucket's policy is created before the ALB (see https://github.com/awslabs/aws-cdk/issues/1633)
     this.node.addDependency(bucket);
   }
 
