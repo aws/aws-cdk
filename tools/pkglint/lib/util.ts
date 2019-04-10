@@ -146,12 +146,16 @@ export function findUpward(dir: string, pred: (x: string) => boolean): string | 
   }
 }
 
-function findLernaJSON() {
+export function monoRepoRoot() {
   const ret = findUpward(process.cwd(), d => fs.existsSync(path.join(d, 'lerna.json')));
   if (!ret) {
     throw new Error('Could not find lerna.json');
   }
-  return path.join(ret, 'lerna.json');
+  return ret;
+}
+
+function findLernaJSON() {
+  return path.join(monoRepoRoot(), 'lerna.json');
 }
 
 export function* findInnerPackages(dir: string): IterableIterator<string> {
