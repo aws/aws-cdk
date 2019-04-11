@@ -1,27 +1,21 @@
 
 # Welcome to your CDK Python project!
 
-You should explore the contents of this template. It demonstrates a CDK app with two instances of
-a stack (`HelloStack`) which also uses a user-defined construct (`HelloConstruct`).
+This is a blank project for Python development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
-This project is set up like a standard Python project.  The initialization process also creates
-a virtualenv within this project, stored under the .env directory.  To create the virtualenv 
-it assumes that there is a `python3` executable in your path with access to the `venv` package.
-If for any reason the automatic creation of the virtualenv fails, you can create the virtualenv
-manually once the init process completes.
+This project is set up like a standard Python project.  The initialization
+process also creates a virtualenv within this project, stored under the .env
+directory.  To create the virtualenv it assumes that there is a `python3`
+(or `python` for Windows) executable in your path with access to the `venv`
+package. If for any reason the automatic creation of the virtualenv fails,
+you can create the virtualenv manually.
 
 To manually create a virtualenv on MacOS and Linux:
 
 ```
-$ python3 -m venv .env
-```
-
-For Windows, use:
-
-```
-% python -m venv .env
+$ %python-executable% -m venv .env
 ```
 
 After the init process completes and the virtualenv is created, you can use the following
@@ -49,15 +43,8 @@ At this point you can now synthesize the CloudFormation template for this code.
 $ cdk synth
 ```
 
-You can now begin exploring the source code, contained in the hello directory.
-There is also a very trivial test included that can be run like this:
-
-```
-$ pytest
-```
-
-To add additional dependencies, for example other CDK libraries, just add to
-your requirements.txt file and rerun the `pip install -r requirements.txt`
+To add additional dependencies, for example other CDK libraries, just add
+them to your `setup.py` file and rerun the `pip install -r requirements.txt`
 command.
 
 # Useful commands
