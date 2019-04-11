@@ -15,13 +15,7 @@ manually once the init process completes.
 To manually create a virtualenv on MacOS and Linux:
 
 ```
-$ python3 -m venv .env
-```
-
-For Windows, use:
-
-```
-% python -m venv .env
+$ %python-executable% -m venv .env
 ```
 
 After the init process completes and the virtualenv is created, you can use the following
