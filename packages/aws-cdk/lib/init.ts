@@ -277,13 +277,13 @@ async function postInstallJava(canUseNetwork: boolean) {
 
 async function postInstallPython() {
   const python = pythonExecutable();
-  print(`Executing ${colors.green('Creating virtualenv')}`);
+  print(`Executing ${colors.green('Creating virtualenv...')}`);
   try {
     await execute(python, '-m venv', '.env');
   } catch (e) {
     print('Unable to create virtualenv automatically');
-    print(`Please run ${colors.green('python3 -m venv .env')}!`);
-    }
+    print(`Please run ${colors.green(python + ' -m venv .env')}!`);
+  }
 }
 
 /**
