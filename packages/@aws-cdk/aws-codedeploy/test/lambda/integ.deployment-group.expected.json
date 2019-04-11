@@ -430,6 +430,12 @@
           {
             "Name": "FunctionName",
             "Value": {
+              "Ref": "Handler886CB40B"
+            }
+          },
+          {
+            "Name": "Resource",
+            "Value": {
               "Fn::Join": [
                 "",
                 [

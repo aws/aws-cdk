@@ -87,8 +87,10 @@ export class AppStacks {
     }
 
     if (selectors.length === 0) {
-      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(stacks));
-      return this.applyRenames(stacks);
+      // remove non-auto deployed Stacks
+      const autoDeployedStacks = stacks.filter(s => s.autoDeploy !== false);
+      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(autoDeployedStacks));
+      return this.applyRenames(autoDeployedStacks);
     }
 
     const allStacks = new Map<string, cxapi.SynthesizedStack>();
@@ -191,15 +193,17 @@ export class AppStacks {
           }
           const resourcePresent = stack.environment.region === 'default-region'
             || regionInfo.Fact.find(stack.environment.region, regionInfo.FactName.cdkMetadataResourceAvailable) === 'YES';
-          if (!stack.template.Resources.CDKMetadata && resourcePresent) {
-            stack.template.Resources.CDKMetadata = {
-              Type: 'AWS::CDK::Metadata',
-              Properties: {
-                Modules: modules
-              }
-            };
-          } else {
-            warning(`The stack ${stack.name} already includes a CDKMetadata resource`);
+          if (resourcePresent) {
+            if (!stack.template.Resources.CDKMetadata) {
+              stack.template.Resources.CDKMetadata = {
+                Type: 'AWS::CDK::Metadata',
+                Properties: {
+                  Modules: modules
+                }
+              };
+            } else {
+              warning(`The stack ${stack.name} already includes a CDKMetadata resource`);
+            }
           }
         }
       }

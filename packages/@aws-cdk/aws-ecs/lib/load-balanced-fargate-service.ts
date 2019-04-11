@@ -22,7 +22,7 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    *
    * @default 256
    */
-  cpu?: string;
+  readonly cpu?: string;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -44,31 +44,31 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    *
    * @default 512
    */
-  memoryMiB?: string;
+  readonly memoryMiB?: string;
 
   /**
    * Determines whether your Fargate Service will be assigned a public IP address.
    *
    * @default false
    */
-  publicTasks?: boolean;
+  readonly publicTasks?: boolean;
 
   /*
    * Domain name for the service, e.g. api.example.com
    */
-  domainName?: string;
+  readonly domainName?: string;
 
   /**
    * Route53 hosted zone for the domain, e.g. "example.com."
    */
-  domainZone?: IHostedZone;
+  readonly domainZone?: IHostedZone;
 
   /**
    * Whether to create an AWS log driver
    *
    * @default true
    */
-  createLogs?: boolean;
+  readonly createLogs?: boolean;
 }
 
 /**

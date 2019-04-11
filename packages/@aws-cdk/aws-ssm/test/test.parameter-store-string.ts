@@ -49,13 +49,27 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const ref = new ssm.ParameterStoreSecureString(stack, 'Ref', {
+    const ref = new ssm.ParameterStoreSecureString({
       parameterName: '/some/key',
       version: 123
     });
 
     // THEN
-    test.equal(ref.node.resolve(ref.stringValue), '{{resolve:ssm-secure:/some/key:123}}');
+    test.equal(stack.node.resolve(ref), '{{resolve:ssm-secure:/some/key:123}}');
+
+    test.done();
+  },
+
+  'empty parameterName will throw'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    test.throws(() => {
+      new ssm.ParameterStoreString(stack, 'Ref', {
+        parameterName: '',
+      });
+    }, /parameterName cannot be empty/);
 
     test.done();
   },

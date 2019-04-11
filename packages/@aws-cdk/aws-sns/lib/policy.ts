@@ -7,7 +7,7 @@ export interface TopicPolicyProps {
   /**
    * The set of topics this policy applies to.
    */
-  topics: ITopic[];
+  readonly topics: ITopic[];
 }
 
 /**

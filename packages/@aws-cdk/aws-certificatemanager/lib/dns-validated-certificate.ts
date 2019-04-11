@@ -11,7 +11,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
      * Route 53 Hosted Zone used to perform DNS validation of the request.  The zone
      * must be authoritative for the domain name specified in the Certificate Request.
      */
-    hostedZone: route53.IHostedZone;
+    readonly hostedZone: route53.IHostedZone;
 }
 
 /**
@@ -83,7 +83,7 @@ export class DnsValidatedCertificate extends cdk.Construct implements ICertifica
     protected validate(): string[] {
         const errors: string[] = [];
         // Ensure the zone name is a parent zone of the certificate domain name
-        if (!this.domainName.endsWith('.' + this.normalizedZoneName)) {
+        if (this.domainName !== this.normalizedZoneName && !this.domainName.endsWith('.' + this.normalizedZoneName)) {
             errors.push(`DNS zone ${this.normalizedZoneName} is not authoritative for certificate domain name ${this.domainName}`);
         }
         return errors;

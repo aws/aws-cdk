@@ -13,33 +13,33 @@ export interface BaseLoadBalancerProps {
    *
    * @default Automatically generated name
    */
-  loadBalancerName?: string;
+  readonly loadBalancerName?: string;
 
   /**
    * The VPC network to place the load balancer in
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 
   /**
    * Whether the load balancer has an internet-routable address
    *
    * @default false
    */
-  internetFacing?: boolean;
+  readonly internetFacing?: boolean;
 
   /**
    * Where in the VPC to place the load balancer
    *
    * @default Public subnets if internetFacing, otherwise private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Indicates whether deletion protection is enabled.
    *
    * @default false
    */
-  deletionProtection?: boolean;
+  readonly deletionProtection?: boolean;
 }
 
 /**
@@ -98,20 +98,22 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
-    const subnets = baseProps.vpc.subnets(ifUndefined(baseProps.vpcPlacement,
-      { subnetsToUse: internetFacing ? ec2.SubnetType.Public : ec2.SubnetType.Private }));
+    const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
+      { subnetType: internetFacing ? ec2.SubnetType.Public : ec2.SubnetType.Private });
+
+    const { subnetIds, internetConnectedDependency } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: baseProps.loadBalancerName,
-      subnets: subnets.map(s => s.subnetId),
+      subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: new cdk.Token(() => renderAttributes(this.attributes)),
       ...additionalProps
     });
     if (internetFacing) {
-      resource.node.addDependency(...subnets.map(s => s.internetConnectivityEstablished));
+      resource.node.addDependency(internetConnectedDependency);
     }
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }

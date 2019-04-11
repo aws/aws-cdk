@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/region-info",
-  "version": "0.26.0",
+  "version": "0.28.0",
   "description": "AWS region information, such as service principal names",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,11 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.region-info",
+        "module": "aws_cdk.region_info"
+      }
     }
   },
   "cdk-build": {
@@ -45,9 +49,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",
-    "cdk-build-tools": "^0.26.0",
+    "cdk-build-tools": "^0.28.0",
     "fs-extra": "^7.0.1",
-    "pkglint": "^0.26.0"
+    "pkglint": "^0.28.0"
   },
   "jest": {
     "coverageReporters": [
@@ -69,7 +73,8 @@
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
-    "type": "git"
+    "type": "git",
+    "directory": "packages/@aws-cdk/region-info"
   },
   "keywords": [
     "aws",

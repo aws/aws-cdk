@@ -1,11 +1,11 @@
 import { Test } from 'nodeunit';
-import { CfnOutput, CfnResource, Ref, Stack } from '../lib';
+import { CfnOutput, CfnResource, Stack } from '../lib';
 
 export = {
   'outputs can be added to the stack'(test: Test) {
     const stack = new Stack();
     const res = new CfnResource(stack, 'MyResource', { type: 'R' });
-    const ref = new Ref(res);
+    const ref = res.ref;
 
     new CfnOutput(stack, 'MyOutput', {
       export: 'ExportName',
@@ -23,21 +23,22 @@ export = {
 
   'outputs cannot be referenced'(test: Test) {
     const stack = new Stack();
-    const output = new CfnOutput(stack, 'MyOutput', { description: 'My CfnOutput' });
+    const output = new CfnOutput(stack, 'MyOutput', { description: 'My CfnOutput', value: 'boom' });
     test.throws(() => output.ref);
     test.done();
   },
 
   'disableExport can be used to disable the auto-export behavior'(test: Test) {
     const stack = new Stack();
-    const output = new CfnOutput(stack, 'MyOutput', { disableExport: true });
+    const output = new CfnOutput(stack, 'MyOutput', { disableExport: true, value: 'boom' });
 
     test.equal(output.export, null);
 
     // cannot specify `export` and `disableExport` at the same time.
     test.throws(() => new CfnOutput(stack, 'YourOutput', {
       disableExport: true,
-      export: 'bla'
+      export: 'bla',
+      value: 'boom'
     }), /Cannot set `disableExport` and specify an export name/);
 
     test.done();
@@ -45,19 +46,20 @@ export = {
 
   'if stack name is undefined, we will only use the logical ID for the export name'(test: Test) {
     const stack = new Stack();
-    const output = new CfnOutput(stack, 'MyOutput');
+    const output = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
     test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'Stack:MyOutput' });
     test.done();
   },
 
   'makeImportValue can be used to create an Fn::ImportValue from an output'(test: Test) {
     const stack = new Stack(undefined, 'MyStack');
-    const output = new CfnOutput(stack, 'MyOutput');
+    const output = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
     test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyStack:MyOutput' });
 
     test.deepEqual(stack._toCloudFormation(), {
       Outputs: {
         MyOutput: {
+          Value: 'boom',
           Export: { Name: 'MyStack:MyOutput' }
         }
       }

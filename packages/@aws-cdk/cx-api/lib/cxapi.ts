@@ -40,8 +40,8 @@ export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
  * Represents a missing piece of context.
  */
 export interface MissingContext {
-  provider: string;
-  props: {
+  readonly provider: string;
+  readonly props: {
     account?: string;
     region?: string;
     [key: string]: any;
@@ -52,40 +52,41 @@ export interface AssemblyManifest {
   /**
    * Protocol version
    */
-  version: string;
+  readonly version: string;
 
   /**
    * The set of artifacts in this assembly.
    */
-  artifacts?: { [id: string]: Artifact };
+  readonly artifacts?: { [id: string]: Artifact };
 
   /**
    * Runtime information.
    */
-  runtime?: AppRuntime;
+  readonly runtime?: AppRuntime;
 }
 
 /**
  * @deprecated use `AssemblyManifest`
  */
 export interface SynthesizeResponse extends AssemblyManifest {
-  stacks: SynthesizedStack[];
+  readonly stacks: SynthesizedStack[];
 }
 
 /**
  * A complete synthesized stack
  */
 export interface SynthesizedStack {
-  name: string;
-  environment: Environment;
-  missing?: { [key: string]: MissingContext };
-  metadata: StackMetadata;
-  template: any;
+  readonly name: string;
+  readonly environment: Environment;
+  readonly missing?: { [key: string]: MissingContext };
+  readonly metadata: StackMetadata;
+  readonly template: any;
+  readonly autoDeploy?: boolean;
 
   /**
    * Other stacks this stack depends on
    */
-  dependsOn?: string[];
+  readonly dependsOn?: string[];
 }
 
 /**
@@ -95,17 +96,17 @@ export interface MetadataEntry {
   /**
    * The type of the metadata entry.
    */
-  type: string;
+  readonly type: string;
 
   /**
    * The data.
    */
-  data?: any;
+  readonly data?: any;
 
   /**
    * A stack trace for when the entry was created.
    */
-  trace: string[];
+  readonly trace: string[];
 }
 
 /**
@@ -120,7 +121,7 @@ export interface AppRuntime {
   /**
    * The list of libraries loaded in the application, associated with their versions.
    */
-  libraries: { [name: string]: string };
+  readonly libraries: { [name: string]: string };
 }
 
 /**
@@ -176,3 +177,9 @@ export const OUTFILE_NAME = 'cdk.out';
  * Disable the collection and reporting of version information.
  */
 export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
+
+/**
+ * If this context key is set, the CDK will stage assets under the specified
+ * directory. Otherwise, assets will not be staged.
+ */
+export const ASSET_STAGING_DIR_CONTEXT = 'aws:cdk:asset-staging-dir';

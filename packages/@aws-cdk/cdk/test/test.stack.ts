@@ -118,7 +118,7 @@ export = {
     const stack = new Stack();
 
     const p = new CfnParameter(stack, 'MyParam', { type: 'String' });
-    const o = new CfnOutput(stack, 'MyOutput');
+    const o = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
     const c = new CfnCondition(stack, 'MyCondition');
 
     test.equal(stack.node.findChild(p.node.path), p);
@@ -286,7 +286,8 @@ export = {
 
     test.throws(() => {
       app.node.prepareTree();
-    }, /Adding this dependency would create a cyclic reference/);
+      // tslint:disable-next-line:max-line-length
+    }, "'Stack2' depends on 'Stack1' (Stack2/SomeParameter -> Stack1.AWS::AccountId). Adding this dependency (Stack1/SomeParameter -> Stack2.AWS::AccountId) would create a cyclic reference.");
 
     test.done();
   },

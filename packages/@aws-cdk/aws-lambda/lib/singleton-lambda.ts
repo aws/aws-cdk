@@ -14,7 +14,7 @@ export interface SingletonFunctionProps extends FunctionProps {
    * The identifier should be unique across all custom resource providers.
    * We recommend generating a UUID per provider.
    */
-  uuid: string;
+  readonly uuid: string;
 
   /**
    * A descriptive name for the purpose of this Lambda.
@@ -25,7 +25,7 @@ export interface SingletonFunctionProps extends FunctionProps {
    *
    * @default SingletonLambda
    */
-  lambdaPurpose?: string;
+  readonly lambdaPurpose?: string;
 }
 
 /**
@@ -35,9 +35,10 @@ export interface SingletonFunctionProps extends FunctionProps {
  * for every SingletonLambda you create.
  */
 export class SingletonFunction extends FunctionBase {
+  public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;
-  public readonly role?: iam.IRole | undefined;
+  public readonly role?: iam.IRole;
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: IFunction;
 
@@ -49,6 +50,7 @@ export class SingletonFunction extends FunctionBase {
     this.functionArn = this.lambdaFunction.functionArn;
     this.functionName = this.lambdaFunction.functionName;
     this.role = this.lambdaFunction.role;
+    this.grantPrincipal = this.lambdaFunction.grantPrincipal;
 
     this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
   }

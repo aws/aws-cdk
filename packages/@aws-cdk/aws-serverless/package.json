@@ -1,7 +1,8 @@
 {
   "name": "@aws-cdk/aws-serverless",
-  "version": "0.26.0",
-  "description": "The CDK Construct Library for AWS::Serverless",
+  "version": "0.28.0",
+  "deprecated": true,
+  "description": "This module was renamed to @aws-cdk/aws-sam, use this instead!",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -29,18 +30,8 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "scripts": {
-    "build": "cdk-build",
-    "integ": "cdk-integ",
-    "lint": "cdk-lint",
-    "package": "cdk-package",
-    "pkglint": "pkglint -f",
-    "test": "cdk-test",
-    "watch": "cdk-watch",
-    "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
-  },
-  "cdk-build": {
-    "cloudformation": "AWS::Serverless"
+    "build": "jsii",
+    "package": "jsii-pacmak"
   },
   "keywords": [
     "aws",
@@ -55,16 +46,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.26.0",
-    "cdk-build-tools": "^0.26.0",
-    "cfn2ts": "^0.26.0",
-    "pkglint": "^0.26.0"
+    "jsii": "^0.8.2",
+    "jsii-pacmak": "^0.8.2"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.26.0"
+    "@aws-cdk/aws-sam": "^0.28.0",
+    "@aws-cdk/cdk": "^0.28.0"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.26.0"
+    "@aws-cdk/aws-sam": "^0.28.0",
+    "@aws-cdk/cdk": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"

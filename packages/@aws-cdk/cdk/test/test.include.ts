@@ -21,7 +21,7 @@ export = {
 
     new Include(stack, 'T1', { template: clone(template) });
     new CfnResource(stack, 'MyResource3', { type: 'ResourceType3', properties: { P3: 'Hello' } });
-    new CfnOutput(stack, 'MyOutput', { description: 'Out!', disableExport: true });
+    new CfnOutput(stack, 'MyOutput', { description: 'Out!', disableExport: true, value: 'hey' });
     new CfnParameter(stack, 'MyParam2', { type: 'Integer' });
 
     test.deepEqual(stack._toCloudFormation(), {
@@ -33,7 +33,7 @@ export = {
         MyResource2: { Type: 'ResourceType2' },
         MyResource3: { Type: 'ResourceType3', Properties: { P3: 'Hello' } } },
        Outputs: {
-         MyOutput: { Description: 'Out!' } } });
+         MyOutput: { Description: 'Out!', Value: 'hey' } } });
 
     test.done();
   },
@@ -43,7 +43,7 @@ export = {
 
     new Include(stack, 'T1', { template });
     new CfnResource(stack, 'MyResource3', { type: 'ResourceType3', properties: { P3: 'Hello' } });
-    new CfnOutput(stack, 'MyOutput', { description: 'Out!' });
+    new CfnOutput(stack, 'MyOutput', { description: 'Out!', value: 'in' });
     new CfnParameter(stack, 'MyParam', { type: 'Integer' }); // duplicate!
 
     test.throws(() => stack._toCloudFormation());

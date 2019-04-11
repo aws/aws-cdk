@@ -882,11 +882,7 @@
               }
             },
             {
-              "Action": [
-                "ecr:GetAuthorizationToken",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
+              "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -965,7 +961,8 @@
               }
             ]
           }
-        }
+        },
+        "ServiceRegistries": []
       },
       "DependsOn": [
         "FargateServiceLBPublicListenerECSGroupBE57E081",

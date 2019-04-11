@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-fsx",
-  "version": "0.26.0",
+  "version": "0.28.0",
   "description": "The CDK Construct Library for AWS::FSx",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,12 +20,17 @@
           "artifactId": "fsx"
         }
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-fsx",
+        "module": "aws_cdk.aws_fsx"
+      }
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-fsx"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "scripts": {
@@ -56,16 +61,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.26.0",
-    "cdk-build-tools": "^0.26.0",
-    "cfn2ts": "^0.26.0",
-    "pkglint": "^0.26.0"
+    "@aws-cdk/assert": "^0.28.0",
+    "cdk-build-tools": "^0.28.0",
+    "cfn2ts": "^0.28.0",
+    "pkglint": "^0.28.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.26.0"
+    "@aws-cdk/cdk": "^0.28.0"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.26.0"
+    "@aws-cdk/cdk": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"

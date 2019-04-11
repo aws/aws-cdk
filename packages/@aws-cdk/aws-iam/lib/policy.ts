@@ -1,45 +1,10 @@
 import { Construct, Token } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { CfnPolicy } from './iam.generated';
-import { PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
+import { PolicyDocument, PolicyStatement } from './policy-document';
 import { IRole } from './role';
 import { User } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
-
-/**
- * A construct that represents an IAM principal, such as a user, group or role.
- */
-export interface IPrincipal {
-  /**
-   * The IAM principal of this identity (i.e. AWS principal, service principal, etc).
-   */
-  readonly principal: PolicyPrincipal;
-
-  /**
-   * Adds an IAM statement to the default inline policy associated with this
-   * principal. If a policy doesn't exist, it is created.
-   */
-  addToPolicy(statement: PolicyStatement): void;
-
-  /**
-   * Attaches an inline policy to this principal.
-   * This is the same as calling `policy.addToXxx(principal)`.
-   * @param policy The policy resource to attach to this principal.
-   */
-  attachInlinePolicy(policy: Policy): void;
-
-  /**
-   * Attaches a managed policy to this principal.
-   * @param arn The ARN of the managed policy
-   */
-  attachManagedPolicy(arn: string): void;
-}
-
-/**
- * @deprecated Use IPrincipal
- */
-// tslint:disable-next-line:no-empty-interface
-export type IIdentityResource = IPrincipal;
 
 export interface PolicyProps {
   /**
@@ -50,31 +15,31 @@ export interface PolicyProps {
    * @default Uses the logical ID of the policy resource, which is ensured to
    *      be unique within the stack.
    */
-  policyName?: string;
+  readonly policyName?: string;
 
   /**
    * Users to attach this policy to.
    * You can also use `attachToUser(user)` to attach this policy to a user.
    */
-  users?: User[];
+  readonly users?: User[];
 
   /**
    * Roles to attach this policy to.
    * You can also use `attachToRole(role)` to attach this policy to a role.
    */
-  roles?: IRole[];
+  readonly roles?: IRole[];
 
   /**
    * Groups to attach this policy to.
    * You can also use `attachToGroup(group)` to attach this policy to a group.
    */
-  groups?: Group[];
+  readonly groups?: Group[];
 
   /**
    * Initial set of permissions to add to this policy document.
    * You can also use `addPermission(statement)` to add permissions later.
    */
-  statements?: PolicyStatement[];
+  readonly statements?: PolicyStatement[];
 }
 
 /**

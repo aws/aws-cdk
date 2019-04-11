@@ -11,12 +11,12 @@ export interface KinesisEventSourceProps {
    *
    * @default 100
    */
-  batchSize?: number;
+  readonly batchSize?: number;
 
   /**
    * Where to begin consuming the Kinesis stream.
    */
-  startingPosition: lambda.StartingPosition;
+  readonly startingPosition: lambda.StartingPosition;
 }
 
 /**
@@ -37,6 +37,6 @@ export class KinesisEventSource implements lambda.IEventSource {
       eventSourceArn: this.stream.streamArn,
     });
 
-    this.stream.grantRead(target.role);
+    this.stream.grantRead(target);
   }
 }

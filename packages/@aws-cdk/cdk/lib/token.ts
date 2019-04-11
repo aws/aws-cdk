@@ -1,5 +1,6 @@
 import { IConstruct } from "./construct";
 import { TOKEN_MAP } from "./encoding";
+import { unresolved } from './unresolved';
 
 /**
  * If objects has a function property by this name, they will be considered tokens, and this
@@ -19,12 +20,14 @@ export const RESOLVE_METHOD = 'resolve';
  */
 export class Token {
   /**
-   * Indicate whether this Token represent a "reference"
+   * Returns true if obj is a token (i.e. has the resolve() method or is a string
+   * that includes token markers), or it's a listifictaion of a Token string.
    *
-   * The Construct tree can be queried for the Reference Tokens that
-   * are used in it.
+   * @param obj The object to test.
    */
-  public readonly isReference?: boolean;
+  public static unresolved(obj: any): boolean {
+    return unresolved(obj);
+  }
 
   private tokenStringification?: string;
   private tokenListification?: string[];
@@ -128,8 +131,8 @@ export class Token {
  * Current resolution context for tokens
  */
 export interface ResolveContext {
-  scope: IConstruct;
-  prefix: string[];
+  readonly scope: IConstruct;
+  readonly prefix: string[];
 }
 
 /**

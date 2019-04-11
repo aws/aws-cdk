@@ -92,19 +92,19 @@ export interface Device {
    *
    * @default Same path as the host
    */
-  containerPath?: string,
+  readonly containerPath?: string,
 
   /**
    * Path on the host
    */
-  hostPath: string,
+  readonly hostPath: string,
 
   /**
    * Permissions
    *
    * @default Readonly
    */
-  permissions?: DevicePermission[]
+  readonly permissions?: DevicePermission[]
 }
 
 function renderDevice(device: Device): CfnTaskDefinition.DeviceProperty {
@@ -122,17 +122,17 @@ export interface Tmpfs {
   /**
    * Path in the container to mount
    */
-  containerPath: string,
+  readonly containerPath: string,
 
   /**
    * Size of the volume
    */
-  size: number,
+  readonly size: number,
 
   /**
    * Mount options
    */
-  mountOptions?: TmpfsMountOption[],
+  readonly mountOptions?: TmpfsMountOption[],
 }
 
 function renderTmpfs(tmpfs: Tmpfs): CfnTaskDefinition.TmpfsProperty {

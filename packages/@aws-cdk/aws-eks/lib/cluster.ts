@@ -14,52 +14,54 @@ export interface ClusterProps {
   /**
    * The VPC in which to create the Cluster
    */
-  vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpcNetwork;
 
   /**
    * Where to place EKS Control Plane ENIs
    *
    * If you want to create public load balancers, this must include public subnets.
    *
+   * @example
+   *
    * For example, to only select private subnets, supply the following:
    *
-   * ```
-   * vpcPlacements: [
-   *   { subnetsToUse: ec2.SubnetType.Private }
+   * ```ts
+   * vpcSubnets: [
+   *   { subnetType: ec2.SubnetType.Private }
    * ]
    * ```
    *
    * @default All public and private subnets
    */
-  vpcPlacements?: ec2.VpcPlacementStrategy[];
+  readonly vpcSubnets?: ec2.SubnetSelection[];
 
   /**
    * Role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf.
    *
    * @default A role is automatically created for you
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Name for the cluster.
    *
    * @default Automatically generated name
    */
-  clusterName?: string;
+  readonly clusterName?: string;
 
   /**
    * Security Group to use for Control Plane ENIs
    *
    * @default A security group is automatically created
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * The Kubernetes version to run in the cluster
    *
    * @default If not supplied, will use Amazon default version
    */
-  version?: string;
+  readonly version?: string;
 }
 
 /**
@@ -160,8 +162,8 @@ export class Cluster extends ClusterBase {
     });
 
     // Get subnetIds for all selected subnets
-    const placements = props.vpcPlacements || [{ subnetsToUse: ec2.SubnetType.Public }, { subnetsToUse: ec2.SubnetType.Private }];
-    const subnetIds = flatMap(placements, p => this.vpc.subnets(p)).map(s => s.subnetId);
+    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.Public }, { subnetType: ec2.SubnetType.Private }];
+    const subnetIds = [...new Set(Array().concat(...placements.map(s => props.vpc.selectSubnets(s).subnetIds)))];
 
     const resource = new CfnCluster(this, 'Resource', {
       name: props.clusterName,
@@ -264,9 +266,7 @@ export class Cluster extends ClusterBase {
    * @see https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
    */
   private tagSubnets() {
-    const privates = this.vpc.subnets({ subnetsToUse: ec2.SubnetType.Private });
-
-    for (const subnet of privates) {
+    for (const subnet of this.vpc.privateSubnets) {
       if (!isRealSubnetConstruct(subnet)) {
         // Just give up, all of them will be the same.
         this.node.addWarning('Could not auto-tag private subnets with "kubernetes.io/role/internal-elb=1", please remember to do this manually');
@@ -289,7 +289,7 @@ export interface AddWorkerNodesOptions extends autoscaling.CommonAutoScalingGrou
   /**
    * Instance type of the instances to start
    */
-  instanceType: ec2.InstanceType;
+  readonly instanceType: ec2.InstanceType;
 }
 
 /**
@@ -302,7 +302,7 @@ export interface AddAutoScalingGroupOptions {
    * Should be at most equal to the maximum number of IP addresses available to
    * the instance type less one.
    */
-  maxPods: number;
+  readonly maxPods: number;
 }
 
 /**
@@ -331,12 +331,4 @@ class ImportedCluster extends ClusterBase {
       i++;
     }
   }
-}
-
-function flatMap<T, U>(xs: T[], f: (x: T) => U[]): U[] {
-  const ret = new Array<U>();
-  for (const x of xs) {
-    ret.push(...f(x));
-  }
-  return ret;
 }

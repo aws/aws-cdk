@@ -9,6 +9,9 @@ const fixturedir = path.join(__dirname, 'fixture');
 
 // tslint:disable:no-console
 
+// JSII often does not complete in the default 5 second Jest timeout
+jest.setTimeout(10_000);
+
 let typesys: reflect.TypeSystem;
 
 beforeAll(async () => {
@@ -21,7 +24,7 @@ beforeAll(async () => {
   await typesys.load(path.dirname(require.resolve('@aws-cdk/cdk/.jsii')));
 });
 
-test('schemaForInterface: interface with primitives', () => {
+test('schemaForInterface: interface with primitives', async () => {
   // GIVEN
   const defs = { };
   const ctx = SchemaContext.root(defs);

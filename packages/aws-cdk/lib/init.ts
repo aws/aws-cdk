@@ -42,6 +42,16 @@ export async function cliInit(type?: string, language?: string, canUseNetwork?: 
   await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true);
 }
 
+/**
+ * Returns the name of the Python executable for this OS
+ */
+function pythonExecutable() {
+  let python = 'python3';
+  if (process.platform === 'win32') {
+    python = 'python';
+  }
+  return python;
+}
 const INFO_DOT_JSON = 'info.json';
 
 export class InitTemplate {
@@ -142,7 +152,9 @@ export class InitTemplate {
              .replace(/%name\.camelCased%/g, camelCase(project.name))
              .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
              .replace(/%cdk-version%/g, cdkVersion)
-             .replace(/%cdk-home%/g, CDK_HOME);
+             .replace(/%cdk-home%/g, CDK_HOME)
+             .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
+             .replace(/%python-executable%/g, pythonExecutable());
   }
 }
 
@@ -231,6 +243,8 @@ async function postInstall(language: string, canUseNetwork: boolean) {
     return await postInstallTypescript(canUseNetwork);
   case 'java':
     return await postInstallJava(canUseNetwork);
+  case 'python':
+    return await postInstallPython();
   }
 }
 
@@ -258,6 +272,17 @@ async function postInstallJava(canUseNetwork: boolean) {
 
   print(`Executing ${colors.green('mvn package')}...`);
   await execute('mvn', 'package');
+}
+
+async function postInstallPython() {
+  const python = pythonExecutable();
+  print(`Executing ${colors.green('Creating virtualenv...')}`);
+  try {
+    await execute(python, '-m venv', '.env');
+  } catch (e) {
+    print('Unable to create virtualenv automatically');
+    print(`Please run ${colors.green(python + ' -m venv .env')}!`);
+  }
 }
 
 /**

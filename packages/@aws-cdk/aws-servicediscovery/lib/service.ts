@@ -49,14 +49,14 @@ export interface BaseServiceProps {
    *
    * @default CloudFormation-generated name
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * A description of the service.
    *
    * @default none
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Settings for an optional health check.  If you specify health check settings, AWS Cloud Map associates the health
@@ -66,7 +66,7 @@ export interface BaseServiceProps {
    *
    * @default none
    */
-  healthCheck?: HealthCheckConfig;
+  readonly healthCheck?: HealthCheckConfig;
 
   /**
    * Structure containing failure threshold for a custom health checker.
@@ -75,7 +75,7 @@ export interface BaseServiceProps {
    *
    * @default none
    */
-  customHealthCheck?: HealthCheckCustomConfig;
+  readonly customHealthCheck?: HealthCheckCustomConfig;
 }
 
 /**
@@ -89,7 +89,7 @@ export interface DnsServiceProps extends BaseServiceProps {
    *
    * @default A
    */
-  dnsRecordType?: DnsRecordType;
+  readonly dnsRecordType?: DnsRecordType;
 
   /**
    * The amount of time, in seconds, that you want DNS resolvers to cache the settings for this
@@ -97,7 +97,7 @@ export interface DnsServiceProps extends BaseServiceProps {
    *
    * @default 60
    */
-  dnsTtlSec?: number;
+  readonly dnsTtlSec?: number;
 
   /**
    * The routing policy that you want to apply to all DNS records that AWS Cloud Map creates when you
@@ -105,7 +105,7 @@ export interface DnsServiceProps extends BaseServiceProps {
    *
    * @default WEIGHTED for CNAME records and when loadBalancer is true, MULTIVALUE otherwise
    */
-  routingPolicy?: RoutingPolicy;
+  readonly routingPolicy?: RoutingPolicy;
 
   /**
    * Whether or not this service will have an Elastic LoadBalancer registered to it as an AliasTargetInstance.
@@ -115,14 +115,14 @@ export interface DnsServiceProps extends BaseServiceProps {
    *
    * @default false
    */
-  loadBalancer?: boolean;
+  readonly loadBalancer?: boolean;
 }
 
 export interface ServiceProps extends DnsServiceProps {
   /**
    * The ID of the namespace that you want to use for DNS configuration.
    */
-  namespace: INamespace;
+  readonly namespace: INamespace;
 }
 
 /**
@@ -262,43 +262,36 @@ export class Service extends cdk.Construct implements IService {
   /**
    * Registers a resource that is accessible using values other than an IP address or a domain name (CNAME).
    */
-  public registerNonIpInstance(props: NonIpInstanceBaseProps): IInstance {
-    return new NonIpInstance(this, "NonIpInstance", {
+  public registerNonIpInstance(id: string, props: NonIpInstanceBaseProps): IInstance {
+    return new NonIpInstance(this, id, {
       service: this,
-      instanceId: props.instanceId,
-      customAttributes: props.customAttributes
+      ...props
     });
   }
 
   /**
    * Registers a resource that is accessible using an IP address.
    */
-  public registerIpInstance(props: IpInstanceBaseProps): IInstance {
-    return new IpInstance(this, "IpInstance", {
+  public registerIpInstance(id: string, props: IpInstanceBaseProps): IInstance {
+    return new IpInstance(this, id, {
       service: this,
-      instanceId: props.instanceId,
-      ipv4: props.ipv4,
-      ipv6: props.ipv6,
-      port: props.port,
-      customAttributes: props.customAttributes
+      ...props
     });
   }
 
   /**
    * Registers a resource that is accessible using a CNAME.
    */
-  public registerCnameInstance(props: CnameInstanceBaseProps): IInstance {
-    return new CnameInstance(this, "CnameInstance", {
+  public registerCnameInstance(id: string, props: CnameInstanceBaseProps): IInstance {
+    return new CnameInstance(this, id, {
       service: this,
-      instanceId: props.instanceId,
-      instanceCname: props.instanceCname,
-      customAttributes: props.customAttributes
+      ...props
     });
   }
 }
 
 function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtlSec?: number): CfnService.DnsRecordProperty[] {
-  const ttl = dnsTtlSec !== undefined ? dnsTtlSec.toString() : '60';
+  const ttl = dnsTtlSec !== undefined ? dnsTtlSec : 60;
 
   if (dnsRecordType === DnsRecordType.A_AAAA) {
     return [{
@@ -324,14 +317,14 @@ export interface HealthCheckConfig {
    *
    * @default HTTP
    */
-  type?: HealthCheckType;
+  readonly type?: HealthCheckType;
 
   /**
    * The path that you want Route 53 to request when performing health checks. Do not use when health check type is TCP.
    *
    * @default '/'
    */
-  resourcePath?: string;
+  readonly resourcePath?: string;
 
   /**
    * The number of consecutive health checks that an endpoint must pass or fail for Route 53 to change the current
@@ -339,7 +332,7 @@ export interface HealthCheckConfig {
    *
    * @default 1
    */
-  failureThreshold?: number;
+  readonly failureThreshold?: number;
 }
 
 /**
@@ -352,7 +345,7 @@ export interface HealthCheckCustomConfig {
    *
    * @default 1
    */
-  failureThreshold?: number;
+  readonly failureThreshold?: number;
 }
 
 export enum DnsRecordType {

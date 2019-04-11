@@ -1,6 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import assets = require('@aws-cdk/assets');
 import cdk = require('@aws-cdk/cdk');
+import { SecretValue } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import codebuild = require('../lib');
 
@@ -58,7 +59,7 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           cloneDepth: 3,
-          oauthToken: new cdk.Secret("test_oauth_token")
+          oauthToken: SecretValue.plainText("test_oauth_token"),
         })
       });
 
@@ -88,7 +89,7 @@ export = {
         source: new codebuild.GitHubSource({
           owner: 'testowner',
           repo: 'testrepo',
-          oauthToken: new cdk.Secret('test_oauth_token'),
+          oauthToken: SecretValue.plainText("test_oauth_token"),
           reportBuildStatus: false,
         })
       });
@@ -112,7 +113,7 @@ export = {
         source: new codebuild.GitHubSource({
           owner: 'testowner',
           repo: 'testrepo',
-          oauthToken: new cdk.Secret('test_oauth_token'),
+          oauthToken: SecretValue.plainText("test_oauth_token"),
           webhook: true,
         })
       });
@@ -138,7 +139,7 @@ export = {
         httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
         ignoreSslErrors: true,
         cloneDepth: 4,
-        oauthToken: new cdk.Secret("test_oauth_token")
+        oauthToken: SecretValue.plainText("test_oauth_token"),
       })
     });
 

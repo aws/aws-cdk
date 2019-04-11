@@ -11,12 +11,12 @@ export interface AliasTargetInstanceProps extends BaseInstanceProps {
   /**
    * DNS name of the target
    */
-  dnsName: string;
+  readonly dnsName: string;
 
   /**
    * The Cloudmap service this resource is registered to.
    */
-  service: IService;
+  readonly service: IService;
 }
 
 /*

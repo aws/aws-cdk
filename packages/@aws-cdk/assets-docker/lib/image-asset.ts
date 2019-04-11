@@ -1,3 +1,4 @@
+import assets = require('@aws-cdk/assets');
 import ecr = require('@aws-cdk/aws-ecr');
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
@@ -9,7 +10,7 @@ export interface DockerImageAssetProps {
   /**
    * The directory where the Dockerfile is stored
    */
-  directory: string;
+  readonly directory: string;
 
   /**
    * ECR repository name
@@ -20,7 +21,7 @@ export interface DockerImageAssetProps {
    *
    * @default automatically derived from the asset's ID.
    */
-  repositoryName?: string;
+  readonly repositoryName?: string;
 }
 
 /**
@@ -49,13 +50,19 @@ export class DockerImageAsset extends cdk.Construct {
     super(scope, id);
 
     // resolve full path
-    this.directory = path.resolve(props.directory);
-    if (!fs.existsSync(this.directory)) {
-      throw new Error(`Cannot find image directory at ${this.directory}`);
+    const dir = path.resolve(props.directory);
+    if (!fs.existsSync(dir)) {
+      throw new Error(`Cannot find image directory at ${dir}`);
     }
-    if (!fs.existsSync(path.join(this.directory, 'Dockerfile'))) {
-      throw new Error(`No 'Dockerfile' found in ${this.directory}`);
+    if (!fs.existsSync(path.join(dir, 'Dockerfile'))) {
+      throw new Error(`No 'Dockerfile' found in ${dir}`);
     }
+
+    const staging = new assets.Staging(this, 'Staging', {
+      sourcePath: dir
+    });
+
+    this.directory = staging.stagedPath;
 
     const imageNameParameter = new cdk.CfnParameter(this, 'ImageName', {
       type: 'String',

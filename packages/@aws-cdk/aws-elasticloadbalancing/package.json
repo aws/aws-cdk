@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-elasticloadbalancing",
-  "version": "0.26.0",
+  "version": "0.28.0",
   "description": "CDK Constructs for AWS ElasticLoadBalancing",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,12 +20,17 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-elasticloadbalancing",
+        "module": "aws_cdk.aws_elasticloadbalancing"
+      }
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-elasticloadbalancing"
   },
   "scripts": {
     "build": "cdk-build",
@@ -54,22 +59,22 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.26.0",
-    "cdk-build-tools": "^0.26.0",
-    "cdk-integ-tools": "^0.26.0",
-    "cfn2ts": "^0.26.0",
-    "pkglint": "^0.26.0"
+    "@aws-cdk/assert": "^0.28.0",
+    "cdk-build-tools": "^0.28.0",
+    "cdk-integ-tools": "^0.28.0",
+    "cfn2ts": "^0.28.0",
+    "pkglint": "^0.28.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-codedeploy-api": "^0.26.0",
-    "@aws-cdk/aws-ec2": "^0.26.0",
-    "@aws-cdk/cdk": "^0.26.0"
+    "@aws-cdk/aws-codedeploy-api": "^0.28.0",
+    "@aws-cdk/aws-ec2": "^0.28.0",
+    "@aws-cdk/cdk": "^0.28.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-codedeploy-api": "^0.26.0",
-    "@aws-cdk/aws-ec2": "^0.26.0",
-    "@aws-cdk/cdk": "^0.26.0"
+    "@aws-cdk/aws-codedeploy-api": "^0.28.0",
+    "@aws-cdk/aws-ec2": "^0.28.0",
+    "@aws-cdk/cdk": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"

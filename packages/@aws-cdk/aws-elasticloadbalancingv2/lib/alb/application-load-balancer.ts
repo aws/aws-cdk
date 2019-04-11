@@ -16,7 +16,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default A security group is created
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * The type of IP addresses to use
@@ -25,21 +25,21 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default IpAddressType.Ipv4
    */
-  ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType;
 
   /**
    * Indicates whether HTTP/2 is enabled.
    *
    * @default true
    */
-  http2Enabled?: boolean;
+  readonly http2Enabled?: boolean;
 
   /**
    * The load balancer idle timeout, in seconds
    *
    * @default 60
    */
-  idleTimeoutSecs?: number;
+  readonly idleTimeoutSecs?: number;
 }
 
 /**
@@ -88,11 +88,11 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       throw new Error(`Cannot enable access logging; don't know ELBv2 account for region ${region}`);
     }
 
-    // FIXME: can't use grantPut() here because that only takes IAM objects, not arbitrary principals
-    bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addPrincipal(new iam.AccountPrincipal(account))
-      .addAction('s3:PutObject')
-      .addResource(bucket.arnForObjects(prefix || '', '*')));
+    prefix = prefix || '';
+    bucket.grantPut(new iam.AccountPrincipal(account), prefix + '*');
+
+    // make sure the bucket's policy is created before the ALB (see https://github.com/awslabs/aws-cdk/issues/1633)
+    this.node.addDependency(bucket);
   }
 
   /**
@@ -503,12 +503,12 @@ export interface ApplicationLoadBalancerImportProps {
   /**
    * ARN of the load balancer
    */
-  loadBalancerArn: string;
+  readonly loadBalancerArn: string;
 
   /**
    * ID of the load balancer's security group
    */
-  securityGroupId: string;
+  readonly securityGroupId: string;
 }
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions

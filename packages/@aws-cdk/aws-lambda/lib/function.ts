@@ -1,6 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
+import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
@@ -9,6 +10,7 @@ import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
 import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
+import { LogRetention } from './log-retention';
 import { Runtime } from './runtime';
 
 /**
@@ -37,12 +39,12 @@ export interface FunctionProps {
    * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
    * code as inline text.
    */
-  code: Code;
+  readonly code: Code;
 
   /**
    * A description of the function.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * The name of the function (within your source code) that Lambda calls to
@@ -53,7 +55,7 @@ export interface FunctionProps {
    * ZipFile property within the Code property, specify index.function_name as
    * the handler.
    */
-  handler: string;
+  readonly handler: string;
 
   /**
    * The function execution time (in seconds) after which Lambda terminates
@@ -62,7 +64,7 @@ export interface FunctionProps {
    *
    * @default 3 seconds.
    */
-  timeout?: number;
+  readonly timeout?: number;
 
   /**
    * Key-value pairs that Lambda caches and makes available for your Lambda
@@ -70,21 +72,21 @@ export interface FunctionProps {
    * as test and production environment configurations, without changing your
    * Lambda function source code.
    */
-  environment?: { [key: string]: any };
+  readonly environment?: { [key: string]: any };
 
   /**
    * The runtime environment for the Lambda function that you are uploading.
    * For valid values, see the Runtime property in the AWS Lambda Developer
    * Guide.
    */
-  runtime: Runtime;
+  readonly runtime: Runtime;
 
   /**
    * A name for the function. If you don't specify a name, AWS CloudFormation
    * generates a unique physical ID and uses that ID for the function's name.
    * For more information, see Name Type.
    */
-  functionName?: string;
+  readonly functionName?: string;
 
   /**
    * The amount of memory, in MB, that is allocated to your Lambda function.
@@ -94,14 +96,14 @@ export interface FunctionProps {
    *
    * @default The default value is 128 MB
    */
-  memorySize?: number;
+  readonly memorySize?: number;
 
   /**
    * Initial policy statements to add to the created Lambda Role.
    *
    * You can call `addToRolePolicy` to the created lambda to add statements post creation.
    */
-  initialPolicy?: iam.PolicyStatement[];
+  readonly initialPolicy?: iam.PolicyStatement[];
 
   /**
    * Lambda execution role.
@@ -113,14 +115,14 @@ export interface FunctionProps {
    * @default a unique role will be generated for this lambda function.
    * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * VPC network to place Lambda network interfaces
    *
    * Specify this if the Lambda function needs to access resources in a VPC.
    */
-  vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpcNetwork;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -130,7 +132,7 @@ export interface FunctionProps {
    *
    * @default All private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * What security group to associate with the Lambda's network interfaces.
@@ -141,7 +143,7 @@ export interface FunctionProps {
    * not specified, a dedicated security group will be created for this
    * function.
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Whether to allow the Lambda to send all network traffic
@@ -151,7 +153,7 @@ export interface FunctionProps {
    *
    * @default true
    */
-  allowAllOutbound?: boolean;
+  readonly allowAllOutbound?: boolean;
 
   /**
    * Enabled DLQ. If `deadLetterQueue` is undefined,
@@ -159,21 +161,21 @@ export interface FunctionProps {
    *
    * @default false unless `deadLetterQueue` is set, which implies DLQ is enabled
    */
-  deadLetterQueueEnabled?: boolean;
+  readonly deadLetterQueueEnabled?: boolean;
 
   /**
    * The SQS queue to use if DLQ is enabled.
    *
    * @default SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
-  deadLetterQueue?: sqs.IQueue;
+  readonly deadLetterQueue?: sqs.IQueue;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
    *
    * @default undefined X-Ray tracing disabled
    */
-  tracing?: Tracing;
+  readonly tracing?: Tracing;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -182,7 +184,7 @@ export interface FunctionProps {
    *
    * @default no layers
    */
-  layers?: ILayerVersion[];
+  readonly layers?: ILayerVersion[];
 
   /**
    * The maximum of concurrent executions you want to reserve for the function.
@@ -190,14 +192,23 @@ export interface FunctionProps {
    * @default no specific limit - account limit
    * @see https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html
    */
-  reservedConcurrentExecutions?: number;
+  readonly reservedConcurrentExecutions?: number;
 
   /**
    * Event sources for this function.
    *
    * You can also add event sources using `addEventSource`.
    */
-  events?: IEventSource[];
+  readonly events?: IEventSource[];
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `Infinity`.
+   *
+   * @default logs never expire
+   */
+  readonly logRetentionDays?: logs.RetentionDays;
 }
 
 /**
@@ -322,6 +333,11 @@ export class Function extends FunctionBase {
    */
   public readonly handler: string;
 
+  /**
+   * The principal this Lambda Function is running as
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+
   protected readonly canCreatePermissions = true;
 
   private readonly layers: ILayerVersion[] = [];
@@ -350,6 +366,7 @@ export class Function extends FunctionBase {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicyArns,
     });
+    this.grantPrincipal = this.role;
 
     for (const statement of (props.initialPolicy || [])) {
       this.role.addToPolicy(statement);
@@ -394,6 +411,14 @@ export class Function extends FunctionBase {
 
     for (const event of props.events || []) {
       this.addEventSource(event);
+    }
+
+    // Log retention
+    if (props.logRetentionDays) {
+      new LogRetention(this, 'LogRetention', {
+        logGroupName: `/aws/lambda/${this.functionName}`,
+        retentionDays: props.logRetentionDays
+      });
     }
   }
 
@@ -467,6 +492,25 @@ export class Function extends FunctionBase {
     });
   }
 
+  /**
+   * Add a new version for this Lambda, always with a different name.
+   *
+   * This is similar to the {@link addVersion} method,
+   * but useful when deploying this Lambda through CodePipeline with blue/green deployments.
+   * When using {@link addVersion},
+   * your Alias will not be updated until you change the name passed to {@link addVersion} in your CDK code.
+   * When deploying through a Pipeline,
+   * that might lead to a situation where a change to your Lambda application code will never be activated,
+   * even though it traveled through the entire Pipeline,
+   * because the Alias is still pointing to an old Version.
+   * This method creates a new, unique Version every time the CDK code is executed,
+   * and so prevents that from happening.
+   */
+  public newVersion(): Version {
+    const now = new Date();
+    return this.addVersion(now.toISOString());
+  }
+
   private renderEnvironment() {
     if (!this.environment || Object.keys(this.environment).length === 0) {
       return undefined;
@@ -504,15 +548,22 @@ export class Function extends FunctionBase {
 
     // Pick subnets, make sure they're not Public. Routing through an IGW
     // won't work because the ENIs don't get a Public IP.
-    const subnets = props.vpc.subnets(props.vpcPlacement);
-    for (const subnet of subnets) {
-      if (props.vpc.isPublicSubnet(subnet)) {
+    // Why are we not simply forcing vpcSubnets? Because you might still be choosing
+    // Isolated networks or selecting among 2 sets of Private subnets by name.
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
+    for (const subnetId of subnetIds) {
+      if (publicSubnetIds.has(subnetId)) {
         throw new Error('Not possible to place Lambda Functions in a Public subnet');
       }
     }
 
+    // List can't be empty here, if we got this far you intended to put your Lambda
+    // in subnets. We're going to guarantee that we get the nice error message by
+    // making VpcNetwork do the selection again.
+
     return {
-      subnetIds: subnets.map(s => s.subnetId),
+      subnetIds,
       securityGroupIds: [securityGroup.securityGroupId]
     };
   }
@@ -555,6 +606,7 @@ export class Function extends FunctionBase {
 }
 
 export class ImportedFunction extends FunctionBase {
+  public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;
   public readonly role?: iam.IRole;
@@ -567,6 +619,7 @@ export class ImportedFunction extends FunctionBase {
     this.functionArn = props.functionArn;
     this.functionName = extractNameFromArn(props.functionArn);
     this.role = props.role;
+    this.grantPrincipal = this.role || new iam.ImportedResourcePrincipal({ resource: this } );
 
     if (props.securityGroupId) {
       this._connections = new ec2.Connections({

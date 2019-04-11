@@ -9,16 +9,16 @@
             "KeyType": "HASH"
           }
         ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
         "AttributeDefinitions": [
           {
             "AttributeName": "hashKey",
             "AttributeType": "S"
           }
-        ]
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
       }
     },
     "TableReadScalingTargetF96E9F76": {

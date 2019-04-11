@@ -19,13 +19,13 @@ export interface CreationPolicy {
    * For an Auto Scaling group replacement update, specifies how many instances must signal success for the
    * update to succeed.
    */
-  autoScalingCreationPolicy?: AutoScalingCreationPolicy;
+  readonly autoScalingCreationPolicy?: AutoScalingCreationPolicy;
 
   /**
    * When AWS CloudFormation creates the associated resource, configures the number of required success signals and
    * the length of time that AWS CloudFormation waits for those signals.
    */
-  resourceSignal?: ResourceSignal;
+  readonly resourceSignal?: ResourceSignal;
 }
 
 /**
@@ -40,7 +40,7 @@ export interface AutoScalingCreationPolicy {
    * If an instance doesn't send a signal within the time specified by the Timeout property, AWS CloudFormation assumes that the
    * instance wasn't created.
    */
-  minSuccessfulInstancesPercent?: number;
+  readonly minSuccessfulInstancesPercent?: number;
 }
 
 /**
@@ -54,14 +54,14 @@ export interface ResourceSignal {
    * If the resource receives a failure signal or doesn't receive the specified number of signals before the timeout period
    * expires, the resource creation fails and AWS CloudFormation rolls the stack back.
    */
-  count?: number;
+  readonly count?: number;
 
   /**
    * The length of time that AWS CloudFormation waits for the number of signals that was specified in the Count property.
    * The timeout period starts after AWS CloudFormation starts creating the resource, and the timeout expires no sooner
    * than the time you specify but can occur shortly thereafter. The maximum time that you can specify is 12 hours.
    */
-  timeout?: string;
+  readonly timeout?: string;
 }
 
 /**
@@ -108,33 +108,33 @@ export interface UpdatePolicy {
    * AWS CloudFormation retains the old group until it finishes creating the new one. If the update fails, AWS CloudFormation
    * can roll back to the old Auto Scaling group and delete the new Auto Scaling group.
    */
-  autoScalingReplacingUpdate?: AutoScalingReplacingUpdate;
+  readonly autoScalingReplacingUpdate?: AutoScalingReplacingUpdate;
 
   /**
    * To specify how AWS CloudFormation handles rolling updates for an Auto Scaling group, use the AutoScalingRollingUpdate
    * policy. Rolling updates enable you to specify whether AWS CloudFormation updates instances that are in an Auto Scaling
    * group in batches or all at once.
    */
-  autoScalingRollingUpdate?: AutoScalingRollingUpdate;
+  readonly autoScalingRollingUpdate?: AutoScalingRollingUpdate;
 
   /**
    * To specify how AWS CloudFormation handles updates for the MinSize, MaxSize, and DesiredCapacity properties when
    * the AWS::AutoScaling::AutoScalingGroup resource has an associated scheduled action, use the AutoScalingScheduledAction
    * policy.
    */
-  autoScalingScheduledAction?: AutoScalingScheduledAction;
+  readonly autoScalingScheduledAction?: AutoScalingScheduledAction;
 
   /**
    * To perform an AWS CodeDeploy deployment when the version changes on an AWS::Lambda::Alias resource,
    * use the CodeDeployLambdaAliasUpdate update policy.
    */
-  codeDeployLambdaAliasUpdate?: CodeDeployLambdaAliasUpdate;
+  readonly codeDeployLambdaAliasUpdate?: CodeDeployLambdaAliasUpdate;
 
   /**
    * To modify a replication group's shards by adding or removing shards, rather than replacing the entire
    * AWS::ElastiCache::ReplicationGroup resource, use the UseOnlineResharding update policy.
    */
-  useOnlineResharding?: boolean;
+  readonly useOnlineResharding?: boolean;
 
 }
 
@@ -148,13 +148,13 @@ export interface AutoScalingRollingUpdate {
   /**
    * Specifies the maximum number of instances that AWS CloudFormation updates.
    */
-  maxBatchSize?: number;
+  readonly maxBatchSize?: number;
 
   /**
    * Specifies the minimum number of instances that must be in service within the Auto Scaling group while AWS
    * CloudFormation updates old instances.
    */
-  minInstancesInService?: number;
+  readonly minInstancesInService?: number;
 
   /**
    * Specifies the percentage of instances in an Auto Scaling rolling update that must signal success for an update to succeed.
@@ -166,7 +166,7 @@ export interface AutoScalingRollingUpdate {
    *
    * If you specify this property, you must also enable the WaitOnResourceSignals and PauseTime properties.
    */
-  minSuccessfulInstancesPercent?: number;
+  readonly minSuccessfulInstancesPercent?: number;
 
   /**
    * The amount of time that AWS CloudFormation pauses after making a change to a batch of instances to give those instances
@@ -182,7 +182,7 @@ export interface AutoScalingRollingUpdate {
    * Specify PauseTime in the ISO8601 duration format (in the format PT#H#M#S, where each # is the number of hours, minutes,
    * and seconds, respectively). The maximum PauseTime is one hour (PT1H).
    */
-  pauseTime?: string;
+  readonly pauseTime?: string;
 
   /**
    * Specifies the Auto Scaling processes to suspend during a stack update. Suspending processes prevents Auto Scaling from
@@ -190,7 +190,7 @@ export interface AutoScalingRollingUpdate {
    * policies associated with an alarm. For valid values, see the ScalingProcesses.member.N parameter for the SuspendProcesses
    * action in the Auto Scaling API Reference.
    */
-  suspendProcesses?: string[];
+  readonly suspendProcesses?: string[];
 
   /**
    * Specifies whether the Auto Scaling group waits on signals from new instances during an update. Use this property to
@@ -203,7 +203,7 @@ export interface AutoScalingRollingUpdate {
    * verification by using the cfn-init helper script. For an example, see the verify_instance_health command in the Auto Scaling
    * rolling updates sample template.
    */
-  waitOnResourceSignals?: boolean;
+  readonly waitOnResourceSignals?: boolean;
 }
 
 /**
@@ -220,7 +220,7 @@ export interface AutoScalingRollingUpdate {
  * Auto Scaling group.
  */
 export interface AutoScalingReplacingUpdate {
-  willReplace?: boolean;
+  readonly willReplace?: boolean;
 }
 
 /**
@@ -240,7 +240,7 @@ export interface AutoScalingScheduledAction {
   * a stack update. If you modify any of the group size property values in your template, AWS CloudFormation uses the modified
   * values and updates your Auto Scaling group.
   */
-  ignoreUnmodifiedGroupSizeProperties?: boolean;
+ readonly ignoreUnmodifiedGroupSizeProperties?: boolean;
 }
 
 /**
@@ -251,20 +251,20 @@ export interface CodeDeployLambdaAliasUpdate {
   /**
    * The name of the AWS CodeDeploy application.
    */
-  applicationName: string;
+  readonly applicationName: string;
 
   /**
    * The name of the AWS CodeDeploy deployment group. This is where the traffic-shifting policy is set.
    */
-  deploymentGroupName: string;
+  readonly deploymentGroupName: string;
 
   /**
    * The name of the Lambda function to run before traffic routing starts.
    */
-  beforeAllowTrafficHook?: string;
+  readonly beforeAllowTrafficHook?: string;
 
   /**
    * The name of the Lambda function to run after traffic routing completes.
    */
-  afterAllowTrafficHook?: string;
+  readonly afterAllowTrafficHook?: string;
 }
