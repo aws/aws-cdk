@@ -177,3 +177,8 @@ export const OUTFILE_NAME = 'cdk.out';
  * Disable the collection and reporting of version information.
  */
 export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
+
+/**
+ * Tag metadata key.
+ */
+export const TAG_METADATA_KEY = 'aws:cdk:path';

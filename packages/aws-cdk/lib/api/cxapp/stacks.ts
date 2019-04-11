@@ -231,11 +231,10 @@ export class AppStacks {
     for (const id of Object.keys(stack.metadata)) {
       const metadata = stack.metadata[id];
       for (const entry of metadata) {
-        switch (entry.type) {
-          case "Tags":
-            for (const tag of entry.data) {
-              tags.push(new Tag(tag.key, tag.value));
-            }
+        if (entry.type === cxapi.TAG_METADATA_KEY) {
+          for (const tag of entry.data) {
+            tags.push(tag);
+          }
         }
       }
     }
@@ -392,11 +391,8 @@ export interface SelectedStack extends cxapi.SynthesizedStack {
 }
 
 export type Tags = Tag[];
-export class Tag {
-  public readonly Key: string;
-  public Value: string;
-  constructor(key: string, value: string) {
-    this.Key = key;
-    this.Value = value;
-  }
+
+interface Tag {
+  readonly key: string;
+  readonly value: string;
 }
