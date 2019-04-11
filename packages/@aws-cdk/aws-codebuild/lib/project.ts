@@ -644,8 +644,11 @@ export class Project extends ProjectBase {
     }
 
     // Render the source and add in the buildspec
-
     const renderSource = () => {
+      if (props.badge && !this.source.badgeSupported) {
+        throw new Error(`Badge is not supported for source type ${this.source.type}`);
+      }
+
       const sourceJson = this.source.toSourceJSON();
       if (typeof buildSpec === 'string') {
         return {
