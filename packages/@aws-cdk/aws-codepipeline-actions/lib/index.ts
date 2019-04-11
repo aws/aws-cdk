@@ -4,6 +4,7 @@ export * from './codebuild/pipeline-actions';
 export * from './codecommit/source-action';
 export * from './codedeploy/server-deploy-action';
 export * from './ecr/source-action';
+export * from './ecs/deploy-action';
 export * from './github/source-action';
 export * from './jenkins/jenkins-actions';
 export * from './jenkins/jenkins-provider';

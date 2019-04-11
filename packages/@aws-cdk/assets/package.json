@@ -29,7 +29,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/assets"
   },
   "scripts": {
     "build": "cdk-build",
@@ -40,6 +41,11 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint"
+  },
+  "cdk-build": {
+    "pre": [
+      "cd test/fs && tar -xzvf fixtures.tar.gz"
+    ]
   },
   "keywords": [
     "aws",
@@ -55,6 +61,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.28.0",
+    "@types/minimatch": "^3.0.3",
     "aws-cdk": "^0.28.0",
     "cdk-build-tools": "^0.28.0",
     "cdk-integ-tools": "^0.28.0",
@@ -64,7 +71,8 @@
     "@aws-cdk/aws-iam": "^0.28.0",
     "@aws-cdk/aws-s3": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0",
-    "@aws-cdk/cx-api": "^0.28.0"
+    "@aws-cdk/cx-api": "^0.28.0",
+    "minimatch": "^3.0.4"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
@@ -74,5 +82,8 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "bundledDependencies": [
+    "minimatch"
+  ]
 }

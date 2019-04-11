@@ -161,7 +161,18 @@ export = {
       }, {
         Name: "Resource",
         Value: {
-          Ref: "Alias325C5727"
+          'Fn::Join': [
+            '',
+            [
+              {
+                "Fn::GetAtt": [
+                  "MyLambdaCCE802FB",
+                  "Arn"
+                ]
+              },
+              ':prod'
+            ]
+          ]
         }
       }]
     }));
