@@ -231,7 +231,7 @@ export class AppStacks {
     for (const id of Object.keys(stack.metadata)) {
       const metadata = stack.metadata[id];
       for (const entry of metadata) {
-        if (entry.type === cxapi.TAG_METADATA_KEY) {
+        if (entry.type === cxapi.TAGS_METADATA_KEY) {
           for (const tag of entry.data) {
             tags.push(tag);
           }
