@@ -226,7 +226,7 @@ export class AppStacks {
     }
   }
 
-  public getTagsFromStackMetadata(stack: SelectedStack): Tags {
+  public getTagsFromStackMetadata(stack: SelectedStack): Tag[] {
     const tags = [];
     for (const id of Object.keys(stack.metadata)) {
       const metadata = stack.metadata[id];
@@ -390,9 +390,7 @@ export interface SelectedStack extends cxapi.SynthesizedStack {
   originalName: string;
 }
 
-export type Tags = Tag[];
-
-interface Tag {
-  readonly key: string;
-  readonly value: string;
+export interface Tag {
+  readonly Key: string;
+  readonly Value: string;
 }

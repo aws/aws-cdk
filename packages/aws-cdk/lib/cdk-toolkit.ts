@@ -1,7 +1,7 @@
 import colors = require('colors/safe');
 import fs = require('fs-extra');
 import { format, promisify } from 'util';
-import { AppStacks, ExtendedStackSelection, Tags } from "./api/cxapp/stacks";
+import { AppStacks, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
 import { IDeploymentTarget } from './api/deployment-target';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success } from './logging';
@@ -239,5 +239,5 @@ export interface DeployOptions {
   /**
    * Tags to pass to CloudFormation for deployment
    */
-  tags?: Tags;
+  tags?: Tag[];
 }
