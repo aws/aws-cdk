@@ -1,7 +1,8 @@
 
 # Welcome to your CDK Python project!
 
-This is a blank project for Python development with CDK.
+You should explore the contents of this template. It demonstrates a CDK app with two instances of
+a stack (`HelloStack`) which also uses a user-defined construct (`HelloConstruct`).
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -14,13 +15,7 @@ manually once the init process completes.
 To manually create a virtualenv on MacOS and Linux:
 
 ```
-$ python3 -m venv .env
-```
-
-For Windows, use:
-
-```
-% python -m venv .env
+$ %python-executable% -m venv .env
 ```
 
 After the init process completes and the virtualenv is created, you can use the following
@@ -46,6 +41,13 @@ At this point you can now synthesize the CloudFormation template for this code.
 
 ```
 $ cdk synth
+```
+
+You can now begin exploring the source code, contained in the hello directory.
+There is also a very trivial test included that can be run like this:
+
+```
+$ pytest
 ```
 
 To add additional dependencies, for example other CDK libraries, just add to

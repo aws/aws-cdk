@@ -42,6 +42,16 @@ export async function cliInit(type?: string, language?: string, canUseNetwork?: 
   await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true);
 }
 
+/**
+ * Returns the name of the Python executable for this OS
+ */
+function pythonExecutable() {
+  let python = 'python3';
+  if (process.platform === 'win32') {
+    python = 'python';
+  }
+  return python;
+}
 const INFO_DOT_JSON = 'info.json';
 
 export class InitTemplate {
@@ -143,7 +153,8 @@ export class InitTemplate {
              .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
              .replace(/%cdk-version%/g, cdkVersion)
              .replace(/%cdk-home%/g, CDK_HOME)
-             .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'));
+             .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
+             .replace(/%python-executable%/g, pythonExecutable());
   }
 }
 
@@ -233,7 +244,7 @@ async function postInstall(language: string, canUseNetwork: boolean) {
   case 'java':
     return await postInstallJava(canUseNetwork);
   case 'python':
-    return await postInstallPython(canUseNetwork);
+    return await postInstallPython();
   }
 }
 
@@ -263,17 +274,14 @@ async function postInstallJava(canUseNetwork: boolean) {
   await execute('mvn', 'package');
 }
 
-async function postInstallPython(canUseNetwork: boolean) {
-  if (!canUseNetwork) {
-    print(`Please run ${colors.green('python -m venv .env')}!`);
-    return;
-  }
-
-  print(`Executing ${colors.green('python -m venv .env')}`);
+async function postInstallPython() {
+  const python = pythonExecutable();
+  print(`Executing ${colors.green('Creating virtualenv...')}`);
   try {
-    await execute('python3', '-m venv', '.env');
+    await execute(python, '-m venv', '.env');
   } catch (e) {
-    throw new Error(`${colors.green('python3 -m venv .env')} failed: ` + e.message);
+    print('Unable to create virtualenv automatically');
+    print(`Please run ${colors.green(python + ' -m venv .env')}!`);
   }
 }
 
