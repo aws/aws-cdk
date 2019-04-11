@@ -43,12 +43,11 @@ export async function cliInit(type?: string, language?: string, canUseNetwork?: 
 }
 
 /**
- * 
- * @returns the name of the Python executable for this OS 
+ * Returns the name of the Python executable for this OS
  */
 function pythonExecutable() {
   let python = 'python3';
-  if (process.platform == 'win32') {
+  if (process.platform === 'win32') {
     python = 'python';
   }
   return python;
