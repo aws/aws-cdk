@@ -1679,7 +1679,7 @@ Object {
         },
         "Environment": Object {
           "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER",
         },

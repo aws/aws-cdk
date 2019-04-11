@@ -622,7 +622,7 @@ export class Project extends ProjectBase {
       props.cacheBucket.grantReadWrite(this.role);
     }
 
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.UBUNTU_14_04_BASE;
+    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.UBUNTU_18_04_STANDARD_1_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -944,7 +944,7 @@ export interface BuildEnvironment {
   /**
    * The image used for the builds.
    *
-   * @default LinuxBuildImage.UBUNTU_14_04_BASE
+   * @default LinuxBuildImage.UBUNTU_18_04_STANDARD_1_0
    */
   readonly buildImage?: IBuildImage;
 
@@ -1026,23 +1026,31 @@ export interface IBuildImage {
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class LinuxBuildImage implements IBuildImage {
+  public static readonly UBUNTU_18_04_STANDARD_1_0 = new LinuxBuildImage('aws/codebuild/standard:1.0');
   public static readonly UBUNTU_14_04_BASE = new LinuxBuildImage('aws/codebuild/ubuntu-base:14.04');
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = new LinuxBuildImage('aws/codebuild/android-java-8:24.4.1');
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = new LinuxBuildImage('aws/codebuild/android-java-8:26.1.1');
   public static readonly UBUNTU_14_04_DOCKER_17_09_0 = new LinuxBuildImage('aws/codebuild/docker:17.09.0');
+  public static readonly UBUNTU_14_04_DOCKER_18_09_0 = new LinuxBuildImage('aws/codebuild/docker:18.09.0');
   public static readonly UBUNTU_14_04_GOLANG_1_10 = new LinuxBuildImage('aws/codebuild/golang:1.10');
+  public static readonly UBUNTU_14_04_GOLANG_1_11 = new LinuxBuildImage('aws/codebuild/golang:1.11');
   public static readonly UBUNTU_14_04_OPEN_JDK_8 = new LinuxBuildImage('aws/codebuild/java:openjdk-8');
   public static readonly UBUNTU_14_04_OPEN_JDK_9 = new LinuxBuildImage('aws/codebuild/java:openjdk-9');
+  public static readonly UBUNTU_14_04_OPEN_JDK_11 = new LinuxBuildImage('aws/codebuild/java:openjdk-11');
+  public static readonly UBUNTU_14_04_NODEJS_10_14_1 = new LinuxBuildImage('aws/codebuild/nodejs:10.14.1');
   public static readonly UBUNTU_14_04_NODEJS_10_1_0 = new LinuxBuildImage('aws/codebuild/nodejs:10.1.0');
   public static readonly UBUNTU_14_04_NODEJS_8_11_0 = new LinuxBuildImage('aws/codebuild/nodejs:8.11.0');
   public static readonly UBUNTU_14_04_NODEJS_6_3_1 = new LinuxBuildImage('aws/codebuild/nodejs:6.3.1');
   public static readonly UBUNTU_14_04_PHP_5_6 = new LinuxBuildImage('aws/codebuild/php:5.6');
   public static readonly UBUNTU_14_04_PHP_7_0 = new LinuxBuildImage('aws/codebuild/php:7.0');
+  public static readonly UBUNTU_14_04_PHP_7_1 = new LinuxBuildImage('aws/codebuild/php:7.1');
+  public static readonly UBUNTU_14_04_PYTHON_3_7_1 = new LinuxBuildImage('aws/codebuild/python:3.7.1');
   public static readonly UBUNTU_14_04_PYTHON_3_6_5 = new LinuxBuildImage('aws/codebuild/python:3.6.5');
   public static readonly UBUNTU_14_04_PYTHON_3_5_2 = new LinuxBuildImage('aws/codebuild/python:3.5.2');
   public static readonly UBUNTU_14_04_PYTHON_3_4_5 = new LinuxBuildImage('aws/codebuild/python:3.4.5');
   public static readonly UBUNTU_14_04_PYTHON_3_3_6 = new LinuxBuildImage('aws/codebuild/python:3.3.6');
   public static readonly UBUNTU_14_04_PYTHON_2_7_12 = new LinuxBuildImage('aws/codebuild/python:2.7.12');
+  public static readonly UBUNTU_14_04_RUBY_2_5_3 = new LinuxBuildImage('aws/codebuild/ruby:2.5.3');
   public static readonly UBUNTU_14_04_RUBY_2_5_1 = new LinuxBuildImage('aws/codebuild/ruby:2.5.1');
   public static readonly UBUNTU_14_04_RUBY_2_3_1 = new LinuxBuildImage('aws/codebuild/ruby:2.3.1');
   public static readonly UBUNTU_14_04_RUBY_2_2_5 = new LinuxBuildImage('aws/codebuild/ruby:2.2.5');
