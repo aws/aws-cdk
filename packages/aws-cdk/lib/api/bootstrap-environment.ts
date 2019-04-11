@@ -7,7 +7,7 @@ import { SDK } from './util/sdk';
 export const BUCKET_NAME_OUTPUT = 'BucketName';
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 
-export async function bootstrapEnvironment(environment: Environment, aws: SDK, toolkitStackName: string, roleArn: string | undefined): Promise<DeployStackResult> {
+export async function bootstrapEnvironment(environment: Environment, aws: SDK, toolkitStackName: string, roleArn: string | undefined, kmsKeyId: string | undefined): Promise<DeployStackResult> {
   const synthesizedStack: SynthesizedStack = {
     environment,
     metadata: {},
@@ -18,7 +18,10 @@ export async function bootstrapEnvironment(environment: Environment, aws: SDK, t
           Type: "AWS::S3::Bucket",
           Properties: {
             AccessControl: "Private",
-            BucketEncryption: { ServerSideEncryptionConfiguration: [{ ServerSideEncryptionByDefault: { SSEAlgorithm: "aws:kms" } }] }
+            BucketEncryption: { ServerSideEncryptionConfiguration: [{ ServerSideEncryptionByDefault: {
+              SSEAlgorithm: "aws:kms",
+              KMSMasterKeyID: kmsKeyId
+            } }] }
           }
         }
       },

@@ -58,7 +58,8 @@ async function parseCommandLineArguments() {
       .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
       .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory', requiresArg: true })
       .option('numbered', { type: 'boolean', alias: 'n', desc: 'prefix filenames with numbers to indicate deployment ordering' }))
-    .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment')
+    .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
+      .option('kms-key-id', { type: 'string', alias: 'k', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: "aws:kms" }))
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
@@ -189,7 +190,7 @@ async function initCommandLine() {
         });
 
       case 'bootstrap':
-        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
+        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, args.kmsKeyId);
 
       case 'deploy':
         return await cli.deploy({
@@ -238,7 +239,7 @@ async function initCommandLine() {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined): Promise<void> {
+  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined, kmsKeyId: string | undefined): Promise<void> {
     // Two modes of operation.
     //
     // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
@@ -251,7 +252,7 @@ async function initCommandLine() {
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
-        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn);
+        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, kmsKeyId);
         const message = result.noOp ? ' ✅  Environment %s bootstrapped (no changes).'
                       : ' ✅  Environment %s bootstrapped.';
         success(message, colors.blue(environment.name));
