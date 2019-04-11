@@ -52,6 +52,10 @@ export abstract class BuildSource {
     return undefined;
   }
 
+  public isBadgeSupported(): boolean {
+    return false;
+  }
+
   protected toSourceProperty(): any {
     return {
     };
@@ -103,6 +107,10 @@ export abstract class GitBuildSource extends BuildSource {
       gitCloneDepth: this.cloneDepth
     };
   }
+
+  public isBadgeSupported(): boolean {
+    return true;
+  }
 }
 
 /**
@@ -132,6 +140,10 @@ export class CodeCommitSource extends GitBuildSource {
     project.addToRolePolicy(new iam.PolicyStatement()
       .addAction('codecommit:GitPull')
       .addResource(this.repo.repositoryArn));
+  }
+
+  public isBadgeSupported(): boolean {
+    return false;
   }
 
   protected toSourceProperty(): any {
