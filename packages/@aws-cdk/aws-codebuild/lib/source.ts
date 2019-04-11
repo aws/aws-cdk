@@ -22,7 +22,7 @@ export interface BuildSourceProps {
 export abstract class BuildSource {
   public readonly identifier?: string;
   public abstract readonly type: SourceType;
-  public readonly badgeAllowed: boolean = false;
+  public readonly badgeSupported: boolean = false;
 
   constructor(props: BuildSourceProps) {
     this.identifier = props.identifier;
@@ -90,7 +90,7 @@ export interface GitBuildSourceProps extends BuildSourceProps {
  * A common superclass of all build sources that are backed by Git.
  */
 export abstract class GitBuildSource extends BuildSource {
-  public readonly badgeAllowed: boolean = true;
+  public readonly badgeSupported: boolean = true;
   private readonly cloneDepth?: number;
 
   protected constructor(props: GitBuildSourceProps) {
@@ -119,7 +119,7 @@ export interface CodeCommitSourceProps extends GitBuildSourceProps {
  */
 export class CodeCommitSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.CodeCommit;
-  public readonly badgeAllowed: boolean = false;
+  public readonly badgeSupported: boolean = false;
   private readonly repo: codecommit.IRepository;
 
   constructor(props: CodeCommitSourceProps) {
