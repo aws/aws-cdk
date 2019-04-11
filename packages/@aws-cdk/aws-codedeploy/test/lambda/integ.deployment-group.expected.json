@@ -436,7 +436,18 @@
           {
             "Name": "Resource",
             "Value": {
-              "Ref": "Alias325C5727"
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::GetAtt": [
+                      "Handler886CB40B",
+                      "Arn"
+                    ]
+                  },
+                  ":alias"
+                ]
+              ]
             }
           }
         ],
