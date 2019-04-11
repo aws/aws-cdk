@@ -1,7 +1,7 @@
 import { dasmTypeScript } from '../lib';
 
 test('basic test', async () => {
-  expect(await dasmTypeScript({
+  expect(await dasm({
     Resources: {
       MyTopic: {
         Type: 'AWS::SNS::Topic',
@@ -14,7 +14,7 @@ test('basic test', async () => {
 });
 
 test('no props', async () => {
-  expect(await dasmTypeScript({
+  expect(await dasm({
     Resources: {
       Boom: {
         Type: 'AWS::S3::Bucket'
@@ -24,5 +24,9 @@ test('no props', async () => {
 });
 
 test('bucket-and-key', async () => {
-  expect(await dasmTypeScript(require('./bucket-key.json'))).toMatchSnapshot();
+  expect(await dasm(require('./bucket-key.json'))).toMatchSnapshot();
 });
+
+async function dasm(template: any) {
+  return dasmTypeScript(template, { timestamp: false });
+}
