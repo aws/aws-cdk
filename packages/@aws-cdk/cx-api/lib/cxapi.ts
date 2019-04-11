@@ -181,4 +181,4 @@ export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
 /**
  * Tag metadata key.
  */
-export const TAG_METADATA_KEY = 'aws:cdk:path';
+export const TAGS_METADATA_KEY = 'aws:cdk:tags';
