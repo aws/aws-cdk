@@ -49,9 +49,16 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         // group for this function should already exist at this stage because we
         // already logged the event but due to the async nature of Lambda logging
         // there could be a race condition. So we also try to create the log group
-        // of this function first.
-        await createLogGroupSafe(`/aws/lambda/${context.functionName}`);
-        await setRetentionPolicy(`/aws/lambda/${context.functionName}`, 1);
+        // of this function first. If multiple LogRetention constructs are present
+        // in the stack, they will try to act on this function's log group at the
+        // same time. This can sometime result in an OperationAbortedException. To
+        // avoid this and because this operation is not critical we catch all errors.
+        try {
+          await createLogGroupSafe(`/aws/lambda/${context.functionName}`);
+          await setRetentionPolicy(`/aws/lambda/${context.functionName}`, 1);
+        } catch (e) {
+          console.log(e);
+        }
       }
     }
 
