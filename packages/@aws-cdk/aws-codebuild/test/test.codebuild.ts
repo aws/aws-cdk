@@ -1047,5 +1047,39 @@ export = {
     }, /Windows images do not support the Small ComputeType/);
 
     test.done();
+  },
+
+  'badge support test'(test: Test) {
+    const stack = new cdk.Stack();
+
+    interface BadgeValidationTestCase {
+      source: codebuild.BuildSource,
+      shouldPassValidation: boolean
+    }
+
+    const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'hello-cdk' });
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    const cases: BadgeValidationTestCase[] = [
+      { source: new codebuild.NoSource(), shouldPassValidation: false },
+      { source: new codebuild.CodePipelineSource(), shouldPassValidation: false },
+      { source: new codebuild.CodeCommitSource({ repository: repo }), shouldPassValidation: false },
+      { source: new codebuild.S3BucketSource({ bucket, path: 'path/to/source.zip' }), shouldPassValidation: false },
+      { source: new codebuild.GitHubSource({ owner: 'awslabs', repo: 'aws-cdk', oauthToken: new cdk.SecretValue()}), shouldPassValidation: true },
+      { source: new codebuild.GitHubEnterpriseSource({ httpsCloneUrl: 'url', oauthToken: new cdk.SecretValue()}), shouldPassValidation: true },
+      { source: new codebuild.BitBucketSource({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true }
+    ];
+
+    cases.forEach(testCase => {
+      const source = testCase.source;
+      const validationBlock = () => { new codebuild.Project(stack, `MyProject-${source.type}`, { source, badge: true }); };
+      if (testCase.shouldPassValidation) {
+        test.doesNotThrow(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+      } else {
+        test.throws(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+      }
+    });
+
+    test.done();
   }
 };
