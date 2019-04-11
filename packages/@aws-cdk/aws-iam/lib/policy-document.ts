@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { Default, RegionInfo } from '@aws-cdk/region-info';
+import crypto = require('crypto');
 import { IPrincipal } from './principals';
 import { mergePrincipal } from './util';
 
@@ -11,7 +12,7 @@ export class PolicyDocument extends cdk.Token {
    * @param defaultDocument An IAM policy document to use as an initial
    * policy. All statements of this document will be copied in.
    */
-  constructor(private readonly baseDocument?: any) {
+  constructor(private readonly baseDocument: any = {}) {
     super();
   }
 
@@ -20,10 +21,20 @@ export class PolicyDocument extends cdk.Token {
       return undefined;
     }
 
-    const doc = this.baseDocument || { };
-    doc.Statement = doc.Statement || [ ];
-    doc.Version = doc.Version || '2012-10-17';
-    doc.Statement = doc.Statement.concat(this.statements);
+    const doc = {
+      ...this.baseDocument,
+      Statement: this.baseDocument.Statement || [],
+      Version: this.baseDocument.Version || '2012-10-17'
+    };
+
+    const hashes: string[] = [];
+    for (const statement of this.statements) {
+      if (!hashes.includes(statement.hash)) {
+        doc.Statement.push(statement);
+      }
+      hashes.push(statement.hash);
+    }
+
     return doc;
   }
 
@@ -516,6 +527,16 @@ export class PolicyStatement extends cdk.Token {
       }
       return result;
     }
+  }
+
+  /**
+   * The hash of this statement. Used to avoid duplicates.
+   */
+  public get hash(): string {
+    return crypto
+      .createHash('sha256')
+      .update(JSON.stringify(this.toJson()))
+      .digest('hex');
   }
 }
 

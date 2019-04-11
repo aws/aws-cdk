@@ -219,23 +219,51 @@ export = {
     test.done();
   },
 
-  'the { AWS: "*" } principal is represented as `Anyone` or `AnyPrincipal`'(test: Test) {
-    const stack = new Stack();
-    const p = new PolicyDocument();
+  '{ AWS: "*" } principal': {
+    'is represented as `Anyone`'(test: Test) {
+      const stack = new Stack();
+      const p = new PolicyDocument();
 
-    p.addStatement(new PolicyStatement().addPrincipal(new Anyone()));
-    p.addStatement(new PolicyStatement().addPrincipal(new AnyPrincipal()));
-    p.addStatement(new PolicyStatement().addAnyPrincipal());
+      p.addStatement(new PolicyStatement().addPrincipal(new Anyone()));
 
-    test.deepEqual(stack.node.resolve(p), {
-      Statement: [
-        { Effect: 'Allow', Principal: '*' },
-        { Effect: 'Allow', Principal: '*' },
-        { Effect: 'Allow', Principal: '*' }
-      ],
-      Version: '2012-10-17'
-    });
-    test.done();
+      test.deepEqual(stack.node.resolve(p), {
+        Statement: [
+          { Effect: 'Allow', Principal: '*' }
+        ],
+        Version: '2012-10-17'
+      });
+      test.done();
+    },
+
+    'is represented as `AnyPrincipal`'(test: Test) {
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      p.addStatement(new PolicyStatement().addPrincipal(new AnyPrincipal()));
+
+      test.deepEqual(stack.node.resolve(p), {
+        Statement: [
+          { Effect: 'Allow', Principal: '*' }
+        ],
+        Version: '2012-10-17'
+      });
+      test.done();
+    },
+
+    'is represented as `addAnyPrincipal`'(test: Test) {
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      p.addStatement(new PolicyStatement().addAnyPrincipal());
+
+      test.deepEqual(stack.node.resolve(p), {
+        Statement: [
+          { Effect: 'Allow', Principal: '*' }
+        ],
+        Version: '2012-10-17'
+      });
+      test.done();
+    }
   },
 
   'addAwsPrincipal/addArnPrincipal are the aliases'(test: Test) {
@@ -425,4 +453,29 @@ export = {
       test.done();
     }
   },
+
+  'duplicate statements'(test: Test) {
+    const stack = new Stack();
+    const p = new PolicyDocument();
+
+    const statement = new PolicyStatement()
+      .addResources('resource1', 'resource2')
+      .addActions('action1', 'action2')
+      .addServicePrincipal('service')
+      .addConditions({
+        a: {
+          b: 'c'
+        },
+        d: {
+          e: 'f'
+        }
+      });
+
+    p.addStatement(statement);
+    p.addStatement(statement);
+    p.addStatement(statement);
+
+    test.equal(stack.node.resolve(p).Statement.length, 1);
+    test.done();
+  }
 };
