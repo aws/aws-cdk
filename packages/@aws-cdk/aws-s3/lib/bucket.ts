@@ -787,14 +787,23 @@ export class Bucket extends BucketBase {
     if (bucketName.length < 3 || bucketName.length > 63) {
       errors.push('Bucket name must be at least 3 and no more than 63 characters');
     }
-    if (!/^[a-z0-9.-]+$/.test(bucketName)) {
-      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-)');
+    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
+    if (charsetMatch) {
+      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
+        + `(offset: ${charsetMatch.index})`);
     }
-    if (!/[a-z0-9]/.test(bucketName.charAt(0)) || !/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
-      errors.push('Bucket name must start and end with a lowercase character or number');
+    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + '(offset: 0)');
     }
-    if (/\.-|-\.|\.\./.test(bucketName)) {
-      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods');
+    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + `(offset: ${bucketName.length - 1})`);
+    }
+    const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
+    if (consecSymbolMatch) {
+      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods '
+        + `(offset: ${consecSymbolMatch.index})`);
     }
     if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
       errors.push('Bucket name must not resemble an IP address');

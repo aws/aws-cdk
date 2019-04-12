@@ -115,15 +115,15 @@ export = {
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
       bucketName: 'b@cket'
-    }), /only contain lowercase characters and the symbols/);
+    }), /offset: 1/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: 'bUcket'
-    }), /only contain lowercase characters and the symbols/);
+      bucketName: 'bucKet'
+    }), /offset: 3/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: 'bücket'
-    }), /only contain lowercase characters and the symbols/);
+      bucketName: 'bučket'
+    }), /offset: 2/);
 
     test.done();
   },
@@ -133,11 +133,11 @@ export = {
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
       bucketName: '-ucket'
-    }), /must start and end with a lowercase character or number/);
+    }), /offset: 0/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
       bucketName: 'bucke.'
-    }), /must start and end with a lowercase character or number/);
+    }), /offset: 5/);
 
     test.done();
   },
@@ -147,18 +147,18 @@ export = {
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
       bucketName: 'buc..ket'
-    }), /must not have dash next to period, or period next to dash, or consecutive periods/);
+    }), /offset: 3/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: 'buc.-ket'
-    }), /must not have dash next to period, or period next to dash, or consecutive periods/);
+      bucketName: 'buck.-et'
+    }), /offset: 4/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: 'buc-.ket'
-    }), /must not have dash next to period, or period next to dash, or consecutive periods/);
+      bucketName: 'b-.ucket'
+    }), /offset: 1/);
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket4', {
-      bucketName: 'buc--ket'
+      bucketName: 'bu--cket'
     }));
 
     test.done();
