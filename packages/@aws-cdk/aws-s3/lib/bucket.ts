@@ -670,7 +670,7 @@ export class Bucket extends BucketBase {
     super(scope, id);
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
-    if (props.bucketName) {
+    if (props.bucketName && !cdk.Token.unresolved(props.bucketName)) {
       this.validateBucketName(props.bucketName);
     }
 

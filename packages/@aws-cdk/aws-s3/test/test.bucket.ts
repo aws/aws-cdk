@@ -86,6 +86,16 @@ export = {
     test.done();
   },
 
+  'bucket validation skips tokenized values'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket', {
+      bucketName: new cdk.Token(() => '_BUCKET').toString()
+    }));
+
+    test.done();
+  },
+
   'fails if bucket name has less than 3 or more than 63 characters'(test: Test) {
     const stack = new cdk.Stack();
 
