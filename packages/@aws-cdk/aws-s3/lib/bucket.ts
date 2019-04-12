@@ -796,7 +796,7 @@ export class Bucket extends BucketBase {
     if (/\.-|-\.|\.\./.test(bucketName)) {
       errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods');
     }
-    if (/\d+\.\d+\.\d+\.\d+/.test(bucketName)) {
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
       errors.push('Bucket name must not resemble an IP address');
     }
 

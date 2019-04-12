@@ -179,6 +179,10 @@ export = {
       bucketName: '1.2.3.a'
     }));
 
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket4', {
+      bucketName: '1000.2.3.4'
+    }));
+
     test.done();
   },
 
