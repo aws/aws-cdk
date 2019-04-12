@@ -67,8 +67,7 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
   }
 
   /**
-   * Adds a statement to the policy document. Prevents adding duplicate
-   * statements.
+   * Adds a statement to the policy document.
    *
    * @param statement the statement to add.
    */
