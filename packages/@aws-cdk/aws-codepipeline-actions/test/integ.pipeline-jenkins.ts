@@ -15,10 +15,12 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
 });
 
+const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new cpactions.S3SourceAction({
   actionName: 'S3',
   bucketKey: 'some/path',
   bucket,
+  output: sourceOutput,
 });
 pipeline.addStage({
   name: 'Source',
@@ -34,23 +36,27 @@ const jenkinsProvider = new cpactions.JenkinsProvider(stack, 'JenkinsProvider', 
 pipeline.addStage({
   name: 'Build',
   actions: [
-    new cpactions.JenkinsBuildAction({
+    new cpactions.JenkinsAction({
       actionName: 'JenkinsBuild',
       jenkinsProvider,
+      type: cpactions.JenkinsActionType.BUILD,
       projectName: 'JenkinsProject1',
-      inputArtifact: sourceAction.outputArtifact,
+      inputs: [sourceOutput],
+      outputs: [new codepipeline.Artifact()],
     }),
-    new cpactions.JenkinsTestAction({
+    new cpactions.JenkinsAction({
       actionName: 'JenkinsTest',
       jenkinsProvider,
+      type: cpactions.JenkinsActionType.TEST,
       projectName: 'JenkinsProject2',
-      inputArtifact: sourceAction.outputArtifact,
+      inputs: [sourceOutput],
     }),
-    new cpactions.JenkinsTestAction({
+    new cpactions.JenkinsAction({
       actionName: 'JenkinsTest2',
       jenkinsProvider,
+      type: cpactions.JenkinsActionType.TEST,
       projectName: 'JenkinsProject3',
-      inputArtifact: sourceAction.outputArtifact,
+      inputs: [sourceOutput],
     }),
   ],
 });
