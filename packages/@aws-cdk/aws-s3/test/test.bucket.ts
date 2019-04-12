@@ -75,11 +75,11 @@ export = {
   'valid bucket names'(test: Test) {
     const stack = new cdk.Stack();
 
-    test.ok(() => new s3.Bucket(stack, 'MyBucket1', {
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket1', {
       bucketName: 'abc.xyz-34ab'
     }));
 
-    test.ok(() => new s3.Bucket(stack, 'MyBucket1', {
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket2', {
       bucketName: '124.pp--33'
     }));
 
@@ -147,7 +147,7 @@ export = {
       bucketName: 'buc-.ket'
     }), /must not have dash next to period, or period next to dash, or consecutive periods/);
 
-    test.ok(() => new s3.Bucket(stack, 'MyBucket4', {
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket4', {
       bucketName: 'buc--ket'
     }));
 
@@ -161,11 +161,11 @@ export = {
       bucketName: '1.2.3.4'
     }), /must not resemble an IP address/);
 
-    test.ok(() => new s3.Bucket(stack, 'MyBucket2', {
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket2', {
       bucketName: '1.2.3'
     }));
 
-    test.ok(() => new s3.Bucket(stack, 'MyBucket3', {
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket3', {
       bucketName: '1.2.3.a'
     }));
 
