@@ -1,11 +1,11 @@
 import cdk = require('@aws-cdk/cdk');
 import { Default, RegionInfo } from '@aws-cdk/region-info';
-import crypto = require('crypto');
 import { IPrincipal } from './principals';
 import { mergePrincipal } from './util';
 
 export class PolicyDocument extends cdk.Token {
   private statements = new Array<PolicyStatement>();
+  private jsonStatements = new Array<string>();
 
   /**
    * Creates a new IAM policy document.
@@ -23,17 +23,9 @@ export class PolicyDocument extends cdk.Token {
 
     const doc = {
       ...this.baseDocument,
-      Statement: this.baseDocument.Statement || [],
+      Statement: (this.baseDocument.Statement || []).concat(this.statements),
       Version: this.baseDocument.Version || '2012-10-17'
     };
-
-    const hashes: string[] = [];
-    for (const statement of this.statements) {
-      if (!hashes.includes(statement.hash)) {
-        doc.Statement.push(statement);
-      }
-      hashes.push(statement.hash);
-    }
 
     return doc;
   }
@@ -50,8 +42,22 @@ export class PolicyDocument extends cdk.Token {
     return this.statements.length;
   }
 
+  /**
+   * Adds a statement to the policy document. Prevents adding duplicate
+   * statements.
+   *
+   * Removal of duplicate statements containing tokens resolving to the same
+   * values but represented by different strings is currently not supported.
+   * This is suboptimal but safe.
+   *
+   * @param statement the statement to add.
+   */
   public addStatement(statement: PolicyStatement): PolicyDocument {
-    this.statements.push(statement);
+    const jsonStatement = JSON.stringify(statement.toJson());
+    if (!this.jsonStatements.includes(jsonStatement)) {
+      this.statements.push(statement);
+    }
+    this.jsonStatements.push(jsonStatement);
     return this;
   }
 }
@@ -527,16 +533,6 @@ export class PolicyStatement extends cdk.Token {
       }
       return result;
     }
-  }
-
-  /**
-   * The hash of this statement. Used to avoid duplicates.
-   */
-  public get hash(): string {
-    return crypto
-      .createHash('sha256')
-      .update(JSON.stringify(this.toJson()))
-      .digest('hex');
   }
 }
 
