@@ -72,7 +72,7 @@ export class RuntimeValue extends cdk.Construct {
 
   /**
    * Grants a principal read permissions on this runtime value.
-   * @param principal The principal (e.g. Role, User, Group)
+   * @param grantee The principal (e.g. Role, User, Group)
    */
   public grantRead(grantee: iam.IGrantable) {
     return iam.Grant.addToPrincipal({

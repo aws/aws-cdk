@@ -85,7 +85,8 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "^0.28.0",
     "@aws-cdk/aws-iam": "^0.28.0",
     "@aws-cdk/aws-sns": "^0.28.0",
-    "@aws-cdk/cdk": "^0.28.0"
+    "@aws-cdk/cdk": "^0.28.0",
+    "@aws-cdk/aws-autoscaling-common": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"
