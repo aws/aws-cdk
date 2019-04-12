@@ -46,8 +46,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "jsii": "^0.8.2",
-    "jsii-pacmak": "^0.8.2"
+    "jsii": "^0.9.0",
+    "jsii-pacmak": "^0.9.0"
   },
   "dependencies": {
     "@aws-cdk/aws-sam": "^0.28.0",
