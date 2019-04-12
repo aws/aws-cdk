@@ -115,7 +115,7 @@ resourceLinter.add({
     // verify that the interface has all attributes as readonly properties
     const resourceAttributes = new Array<reflect.Property>();
     for (const attr of e.ctx.resource.attributes) {
-      const attribute: reflect.Property | undefined = e.ctx.resourceInterface.properties.find(p => p.name === attr);
+      const attribute: reflect.Property | undefined = e.ctx.resourceInterface.ownProperties.find(p => p.name === attr);
       const scope: string = e.ctx.resourceInterface.fqn + '.' + attr;
       if (e.assert(attribute, scope)) {
         resourceAttributes.push(attribute);
@@ -145,7 +145,7 @@ resourceLinter.add({
     if (!e.ctx.resourceInterface) { return; }
     if (!e.ctx.importPropsInterface) { return; }
 
-    const importMethod = e.ctx.resourceClass.methods.find(m => m.static && m.name === 'import');
+    const importMethod = e.ctx.resourceClass.ownMethods.find(m => m.static && m.name === 'import');
     if (!e.assert(importMethod, e.ctx.resourceClass.fqn)) {
       return;
     }
@@ -167,7 +167,7 @@ resourceLinter.add({
   eval: e => {
     if (!e.ctx.resourceInterface) { return; }
 
-    const exportMethod = e.ctx.resourceInterface.methods.find(m => m.name === 'export');
+    const exportMethod = e.ctx.resourceInterface.ownMethods.find(m => m.name === 'export');
     if (!e.assert(exportMethod, e.ctx.resourceInterface.fqn)) {
       return;
     }
@@ -188,7 +188,7 @@ resourceLinter.add({
     if (!e.ctx.resourceClass) { return; }
 
     const grantResultType = e.ctx.ts.findFqn(GRANT_RESULT_FQN);
-    const grantMethods = e.ctx.resourceClass.getMethods(true).filter(m => m.name.startsWith('grant'));
+    const grantMethods = e.ctx.resourceClass.allMethods.filter(m => m.name.startsWith('grant'));
 
     for (const grantMethod of grantMethods) {
       e.assertSignature(grantMethod, {

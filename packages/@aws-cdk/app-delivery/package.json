@@ -74,7 +74,9 @@
     "@aws-cdk/aws-codepipeline": "^0.28.0",
     "@aws-cdk/aws-codepipeline-actions": "^0.28.0",
     "@aws-cdk/aws-iam": "^0.28.0",
-    "@aws-cdk/cdk": "^0.28.0"
+    "@aws-cdk/cdk": "^0.28.0",
+    "@aws-cdk/aws-codebuild": "^0.28.0",
+    "@aws-cdk/cx-api": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"
