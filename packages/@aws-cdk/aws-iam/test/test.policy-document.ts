@@ -457,6 +457,7 @@ export = {
   'duplicate statements': {
 
     'without tokens'(test: Test) {
+      // GIVEN
       const stack = new Stack();
       const p = new PolicyDocument();
 
@@ -473,15 +474,18 @@ export = {
           }
         });
 
+      // WHEN
       p.addStatement(statement);
       p.addStatement(statement);
       p.addStatement(statement);
 
+      // THEN
       test.equal(stack.node.resolve(p).Statement.length, 1);
       test.done();
     },
 
     'with tokens'(test: Test) {
+      // GIVEN
       const stack = new Stack();
       const p = new PolicyDocument();
 
@@ -492,9 +496,40 @@ export = {
         .addResource(new Token(() => 'resource').toString())
         .addAction(new Token(() => 'action').toString());
 
+      // WHEN
       p.addStatement(statement1);
       p.addStatement(statement2);
 
+      // THEN
+      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.done();
+    },
+
+    'with base document'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const p = new PolicyDocument({
+        Statement: [
+          {
+            Action: 'action',
+            Effect: 'Allow',
+            Resource: 'resource'
+          },
+          {
+            Action: 'action',
+            Effect: 'Allow',
+            Resource: 'resource'
+          }
+        ]
+      });
+
+      p.addStatement(new PolicyStatement()
+        .addAction('action')
+        .addResource('resource'));
+
+      // THEN
       test.equal(stack.node.resolve(p).Statement.length, 1);
       test.done();
     }
