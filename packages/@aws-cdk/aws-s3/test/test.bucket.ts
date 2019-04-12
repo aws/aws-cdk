@@ -72,6 +72,106 @@ export = {
     test.done();
   },
 
+  'valid bucket names'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.ok(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: 'abc.xyz-34ab'
+    }));
+
+    test.ok(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: '124.pp--33'
+    }));
+
+    test.done();
+  },
+
+  'fails if bucket name has less than 3 or more than 63 characters'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: 'a'
+    }), /at least 3/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
+      bucketName: new Array(65).join('x')
+    }), /no more than 63/);
+
+    test.done();
+  },
+
+  'fails if bucket name has invalid characters'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: 'b@cket'
+    }), /only contain lowercase characters and the symbols/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
+      bucketName: 'bUcket'
+    }), /only contain lowercase characters and the symbols/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
+      bucketName: 'bücket'
+    }), /only contain lowercase characters and the symbols/);
+
+    test.done();
+  },
+
+  'fails if bucket name does not start or end with lowercase character or number'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: '-ucket'
+    }), /must start and end with a lowercase character or number/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
+      bucketName: 'bucke.'
+    }), /must start and end with a lowercase character or number/);
+
+    test.done();
+  },
+
+  'fails only if bucket name has the consecutive symbols (..), (.-), (-.)'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: 'buc..ket'
+    }), /must not have dash next to period, or period next to dash, or consecutive periods/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
+      bucketName: 'buc.-ket'
+    }), /must not have dash next to period, or period next to dash, or consecutive periods/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
+      bucketName: 'buc-.ket'
+    }), /must not have dash next to period, or period next to dash, or consecutive periods/);
+
+    test.ok(() => new s3.Bucket(stack, 'MyBucket4', {
+      bucketName: 'buc--ket'
+    }));
+
+    test.done();
+  },
+
+  'fails only if bucket name resembles IP address'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: '1.2.3.4'
+    }), /must not resemble an IP address/);
+
+    test.ok(() => new s3.Bucket(stack, 'MyBucket2', {
+      bucketName: '1.2.3'
+    }));
+
+    test.ok(() => new s3.Bucket(stack, 'MyBucket3', {
+      bucketName: '1.2.3.a'
+    }));
+
+    test.done();
+  },
+
   'fails if encryption key is used with managed encryption'(test: Test) {
     const stack = new cdk.Stack();
     const myKey = new kms.EncryptionKey(stack, 'MyKey');
