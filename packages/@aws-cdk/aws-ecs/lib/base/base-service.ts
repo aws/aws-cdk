@@ -38,7 +38,7 @@ export interface BaseServiceProps {
    * service's DesiredCount value, that can run in a service during a
    * deployment.
    *
-   * @default 200
+   * @default 100 if daemon, otherwise 200
    */
   readonly maximumPercent?: number;
 
@@ -47,7 +47,7 @@ export interface BaseServiceProps {
    * the Amazon ECS service's DesiredCount value, that must
    * continue to run and remain healthy during a deployment.
    *
-   * @default 50
+   * @default 0 if daemon, otherwise 50
    */
   readonly minimumHealthyPercent?: number;
 
