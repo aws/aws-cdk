@@ -90,9 +90,6 @@ Example:
 const gitHubSource = new codebuild.GitHubSource({
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: new secretsmanager.SecretString(this, 'GitHubOAuthToken', {
-    secretId: 'my-github-token',
-  }).stringValue,
   webhook: true, // optional, default: false
 });
 ```
@@ -103,7 +100,7 @@ This source type can be used to build code from a BitBucket repository.
 
 ## Environment
 
-By default, projects use a small instance with an Ubuntu 14.04 image. You
+By default, projects use a small instance with an Ubuntu 18.04 image. You
 can use the `environment` property to customize the build environment:
 
 * `buildImage` defines the Docker image used. See [Images](#images) below for
