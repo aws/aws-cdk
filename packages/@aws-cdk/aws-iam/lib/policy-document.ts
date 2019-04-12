@@ -3,9 +3,8 @@ import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { IPrincipal } from './principals';
 import { mergePrincipal } from './util';
 
-export class PolicyDocument extends cdk.Token {
+export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostProcessor {
   private statements = new Array<PolicyStatement>();
-  private jsonStatements = new Array<string>();
 
   /**
    * Creates a new IAM policy document.
@@ -30,6 +29,31 @@ export class PolicyDocument extends cdk.Token {
     return doc;
   }
 
+  /**
+   * Removes duplicate statements
+   */
+  public postProcess(input: any, _context: cdk.ResolveContext): any {
+    if (!input || !input.Statement) {
+      return input;
+    }
+
+    const jsonStatements: string[] = [];
+    const uniqueStatements: PolicyStatement[] = [];
+
+    for (const statement of input.Statement) {
+      const jsonStatement = JSON.stringify(statement);
+      if (!jsonStatements.includes(jsonStatement)) {
+        uniqueStatements.push(statement);
+      }
+      jsonStatements.push(jsonStatement);
+    }
+
+    return {
+      ...input,
+      Statement: uniqueStatements
+    };
+  }
+
   get isEmpty(): boolean {
     return this.statements.length === 0;
   }
@@ -46,18 +70,10 @@ export class PolicyDocument extends cdk.Token {
    * Adds a statement to the policy document. Prevents adding duplicate
    * statements.
    *
-   * Removal of duplicate statements containing tokens resolving to the same
-   * values but represented by different strings is currently not supported.
-   * This is suboptimal but safe.
-   *
    * @param statement the statement to add.
    */
   public addStatement(statement: PolicyStatement): PolicyDocument {
-    const jsonStatement = JSON.stringify(statement.toJson());
-    if (!this.jsonStatements.includes(jsonStatement)) {
-      this.statements.push(statement);
-    }
-    this.jsonStatements.push(jsonStatement);
+    this.statements.push(statement);
     return this;
   }
 }

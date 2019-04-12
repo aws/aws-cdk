@@ -454,28 +454,49 @@ export = {
     }
   },
 
-  'duplicate statements'(test: Test) {
-    const stack = new Stack();
-    const p = new PolicyDocument();
+  'duplicate statements': {
 
-    const statement = new PolicyStatement()
-      .addResources('resource1', 'resource2')
-      .addActions('action1', 'action2')
-      .addServicePrincipal('service')
-      .addConditions({
-        a: {
-          b: 'c'
-        },
-        d: {
-          e: 'f'
-        }
-      });
+    'without tokens'(test: Test) {
+      const stack = new Stack();
+      const p = new PolicyDocument();
 
-    p.addStatement(statement);
-    p.addStatement(statement);
-    p.addStatement(statement);
+      const statement = new PolicyStatement()
+        .addResources('resource1', 'resource2')
+        .addActions('action1', 'action2')
+        .addServicePrincipal('service')
+        .addConditions({
+          a: {
+            b: 'c'
+          },
+          d: {
+            e: 'f'
+          }
+        });
 
-    test.equal(stack.node.resolve(p).Statement.length, 1);
-    test.done();
+      p.addStatement(statement);
+      p.addStatement(statement);
+      p.addStatement(statement);
+
+      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.done();
+    },
+
+    'with tokens'(test: Test) {
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      const statement1 = new PolicyStatement()
+        .addResource(new Token(() => 'resource').toString())
+        .addAction(new Token(() => 'action').toString());
+      const statement2 = new PolicyStatement()
+        .addResource(new Token(() => 'resource').toString())
+        .addAction(new Token(() => 'action').toString());
+
+      p.addStatement(statement1);
+      p.addStatement(statement2);
+
+      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.done();
+    }
   }
 };
