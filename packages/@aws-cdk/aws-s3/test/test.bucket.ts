@@ -3,6 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
+import { EOL } from 'os';
 import s3 = require('../lib');
 
 // to make it easy to copy & paste from output:
@@ -92,6 +93,28 @@ export = {
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket', {
       bucketName: new cdk.Token(() => '_BUCKET').toString()
     }));
+
+    test.done();
+  },
+
+  'fails with message on invalid bucket names'(test: Test) {
+    const stack = new cdk.Stack();
+    const bucket = `-buckEt.-${new Array(65).join('$')}`;
+    const expectedErrors = [
+      `Invalid S3 bucket name (value: ${bucket})`,
+      'Bucket name must be at least 3 and no more than 63 characters',
+      'Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) (offset: 5)',
+      'Bucket name must start and end with a lowercase character or number (offset: 0)',
+      `Bucket name must start and end with a lowercase character or number (offset: ${bucket.length - 1})`,
+      'Bucket name must not have dash next to period, or period next to dash, or consecutive periods (offset: 7)',
+    ].join(EOL);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket', {
+      bucketName: bucket
+    // tslint:disable-next-line:only-arrow-functions
+    }), function(err: Error) {
+      return expectedErrors === err.message;
+    });
 
     test.done();
   },
