@@ -133,11 +133,18 @@ export interface IMesh {
 export abstract class MeshBase extends cdk.Construct implements IMesh {
   /**
    * The name of the AppMesh mesh
+   *
+   * @abstract
+   * @type {string}
+   * @memberof MeshBase
    */
   public abstract readonly meshName: string;
-
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
+   *
+   * @abstract
+   * @type {string}
+   * @memberof MeshBase
    */
   public abstract readonly meshArn?: string;
 
@@ -203,6 +210,8 @@ export interface MeshProps {
 
 /**
  * Creates a new AppMesh mesh
+ *
+ * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/meshes.html
  */
 export class Mesh extends MeshBase {
   /**
@@ -218,10 +227,16 @@ export class Mesh extends MeshBase {
 
   /**
    * The name of the AppMesh mesh
+   *
+   * @type {string}
+   * @memberof Mesh
    */
   public readonly meshName: string;
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
+   *
+   * @type {string}
+   * @memberof Mesh
    */
   public readonly meshArn?: string;
 
@@ -273,8 +288,17 @@ export class Mesh extends MeshBase {
 export class ImportedMesh extends MeshBase {
   /**
    * The name of the AppMesh mesh
+   *
+   * @type {string}
+   * @memberof ImportedMesh
    */
   public readonly meshName: string;
+  /**
+   * The Amazon Resource Name (ARN) of the AppMesh mesh
+   *
+   * @type {string}
+   * @memberof Mesh
+   */
   public readonly meshArn?: string;
 
   constructor(scope: cdk.Construct, id: string, props: MeshImportProps) {
