@@ -5,7 +5,15 @@ import { VirtualRouter } from './virtual-router';
 
 // TODO: Add import() and eport() capabilities
 
+/**
+ * The base properties which all classes in VirtualService will inherit from
+ */
 export interface VirtualServiceBaseProps {
+  /**
+   * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
+   *
+   * @example service.domain.local
+   */
   readonly virtualServiceName?: string;
   readonly virtualRouter: VirtualRouter;
 }
