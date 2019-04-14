@@ -4,32 +4,79 @@ import { HealthCheckProps, ListenerProps, NAME_TAG, PortMappingProps, Protocol }
 
 // TODO: Add import() and eport() capabilities
 
+/**
+ * The backend props for which a node communicates within the mesh
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-virtualnode-backend.html
+ */
 export interface VirtualNodeBackendProps {
+  /**
+   * The VirtualService name for the backend service
+   */
   readonly virtualServiceName: string;
 }
 
+/**
+ * The properties used when creating a new VirtualNode
+ */
 export interface VirtualNodeProps {
+  /**
+   * The name of the AppMesh which the virtual node belongs to
+   */
   readonly meshName: string;
+  /**
+   * The name of the VirtualNode
+   */
   readonly nodeName?: string;
+  /**
+   * The hostname of the virtual node, only the host portion
+   *
+   * @example node-1
+   */
   readonly hostname: string;
+  /**
+   * The service discovery namespace name, this is used for service discovery
+   *
+   * @example domain.local
+   */
   readonly namespaceName: string;
   /**
-   * @default none
-   * if not provided must call addBackends()
+   * Array of VirtualNodeBackendProps
    */
   readonly backends?: VirtualNodeBackendProps[];
   /**
-   * @default none
-   * if not specified must call addListeners(), addPortMappings() or addPortAndHealthCheckMappings()
+   * Listener properties, such as portMappings and optional healthChecks
    */
   readonly listeners?: ListenerProps;
 }
 
+/**
+ * VritualNode represents a newly createded AppMesh VirtualNode
+ *
+ * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html
+ */
 export class VirtualNode extends cdk.Construct {
+  /**
+   * The name of the AppMesh which the virtual node belongs to
+   *
+   * @type {string}
+   * @memberof VirtualNode
+   */
   public readonly meshName: string;
+  /**
+   * The name of the VirtualNode
+   *
+   * @type {string}
+   * @memberof VirtualNode
+   */
   public readonly virtualNodeName: string;
+  /**
+   * The Amazon Resource Name belonging to the VirtualNdoe
+   *
+   * @type {string}
+   * @memberof VirtualNode
+   */
   public readonly virtualNodeArn: string;
-  public readonly virtualNodeMeshName: string;
 
   private readonly backends: CfnVirtualNode.BackendProperty[] = [];
   private readonly listeners: CfnVirtualNode.ListenerProperty[] = [];
@@ -39,7 +86,6 @@ export class VirtualNode extends cdk.Construct {
     super(scope, id);
 
     this.meshName = props.meshName;
-    this.virtualNodeMeshName = this.meshName;
     this.namespaceName = props.namespaceName;
 
     if (props.backends) {
@@ -78,6 +124,12 @@ export class VirtualNode extends cdk.Construct {
     this.virtualNodeArn = node.virtualNodeArn;
   }
 
+  /**
+   * Utility method to add backends for existing or new VritualNodes
+   *
+   * @param {VirtualNodeBackendProps[]} props
+   * @memberof VirtualNode
+   */
   public addBackends(props: VirtualNodeBackendProps[]) {
     props.forEach(s => {
       this.backends.push({
@@ -88,6 +140,12 @@ export class VirtualNode extends cdk.Construct {
     });
   }
 
+  /**
+   * Utility method to add Node Listeners for new or existing VirtualNodes
+   *
+   * @param {ListenerProps} props
+   * @memberof VirtualNode
+   */
   public addListeners(props: ListenerProps) {
     if (props.healthChecks && !props.portMappings) {
       throw new Error('Cannot provide healthchecks, without port mappings... impossible');
@@ -100,6 +158,12 @@ export class VirtualNode extends cdk.Construct {
     }
   }
 
+  /**
+   * Utility method which adds only port mappings to the listener property as healthchecks are optional
+   *
+   * @param {PortMappingProps[]} props
+   * @memberof VirtualNode
+   */
   public addPortMappings(props: PortMappingProps[]) {
     props.forEach(p => {
       this.listeners.push({
@@ -111,6 +175,13 @@ export class VirtualNode extends cdk.Construct {
     });
   }
 
+  /**
+   * Utility method to add port mappings and healthecks, preferred method would be to use addListeners()
+   *
+   * @param {PortMappingProps[]} ports
+   * @param {HealthCheckProps[]} health
+   * @memberof VirtualNode
+   */
   public addPortAndHealthCheckMappings(ports: PortMappingProps[], health: HealthCheckProps[]) {
     if (ports.length != health.length) {
       throw new Error('Must provide the same number of health checks and port mappings.');
