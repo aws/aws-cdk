@@ -67,9 +67,11 @@
     "pkglint": "^0.28.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-servicediscovery": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0"
   },
   "peerDependencies": {
+    "@aws-cdk/aws-servicediscovery": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0"
   },
   "engines": {
