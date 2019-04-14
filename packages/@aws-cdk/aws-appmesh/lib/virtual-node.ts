@@ -51,7 +51,7 @@ export class VirtualNode extends cdk.Construct {
     }
 
     this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
-    const name = props && props.nodeName ? props.nodeName : props.hostname;
+    const name = props.nodeName ? props.nodeName : props.hostname;
 
     const node = new CfnVirtualNode(this, 'VirtualNode', {
       virtualNodeName: name,
