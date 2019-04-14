@@ -151,8 +151,10 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
    *
-   * @param id the name for the virtual router
-   * @param props set of VirtualRouterBaseProps to apply to the virtual router
+   * @param {string} id
+   * @param {VirtualRouterBaseProps} props
+   * @returns {VirtualRouter}
+   * @memberof MeshBase
    */
   public addVirtualRouter(id: string, props: VirtualRouterBaseProps): VirtualRouter {
     return new VirtualRouter(this, id, {
@@ -164,8 +166,10 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
   /**
    * Adds a VirtualService with the given id
    *
-   * @param id the name for the given service
-   * @param props a set of VirtualServiceBaseProps to create the service
+   * @param {string} id
+   * @param {VirtualServiceBaseProps} props
+   * @returns {VirtualService}
+   * @memberof MeshBase
    */
   public addVirtualService(id: string, props: VirtualServiceBaseProps): VirtualService {
     return new VirtualService(this, id, {
@@ -177,8 +181,10 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
   /**
    * Adds a VirtualNode to the Mesh
    *
-   * @param id the name for the VirtualNode
-   * @param props a set of AddVirtualNodeProps
+   * @param {string} id
+   * @param {AddVirtualNodeProps} props
+   * @returns {VirtualNode}
+   * @memberof MeshBase
    */
   public addVirtualNode(id: string, props: AddVirtualNodeProps): VirtualNode {
     return new VirtualNode(this, id, {
@@ -217,9 +223,12 @@ export class Mesh extends MeshBase {
   /**
    * A static method to import a mesh an make it re-usable accross stacks
    *
-   * @param scope The construct, stack or app to use the imported mesh
-   * @param id the cloudformation id as reference for the mesh
-   * @param props a set of MeshImportProps
+   * @static
+   * @param {cdk.Construct} scope
+   * @param {string} id
+   * @param {MeshImportProps} props
+   * @returns {IMesh}
+   * @memberof Mesh
    */
   public static import(scope: cdk.Construct, id: string, props: MeshImportProps): IMesh {
     return new ImportedMesh(scope, id, props);
@@ -269,6 +278,9 @@ export class Mesh extends MeshBase {
 
   /**
    * Exports the Mesh properties to re-use in other stacks
+   *
+   * @returns {MeshImportProps}
+   * @memberof Mesh
    */
   public export(): MeshImportProps {
     return {
