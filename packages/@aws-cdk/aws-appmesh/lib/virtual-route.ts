@@ -1,11 +1,16 @@
 import * as cdk from '@aws-cdk/cdk';
 import { CfnRoute } from './appmesh.generated';
-import { VirtualRouter } from './virtual-router';
 
 // TODO: Add import() and eport() capabilities
 
+/**
+ * Base interface properties for all Routes
+ */
 export interface VirtualRouteBaseProps {
-  readonly name?: string;
+  /**
+   * The name for the route as an identifier
+   */
+  readonly virtualRouteName?: string;
   /**
    * The path prefix to match for the route
    *
@@ -18,6 +23,11 @@ export interface VirtualRouteBaseProps {
    * @requires minimum of 1
    */
   readonly routeTargets: WeightedTargetProps[];
+  /**
+   * Weather the route is HTTP based
+   *
+   * @default false
+   */
   readonly isHttpRoute?: boolean;
 }
 
@@ -37,14 +47,34 @@ export interface WeightedTargetProps {
   readonly weight?: number;
 }
 
+/**
+ * Properties to create new VirtualRoutes
+ */
 export interface VirtualRouteProps extends VirtualRouteBaseProps {
+  /**
+   * The name of the AppMesh mesh the route belongs to
+   */
   readonly meshName: string;
-  readonly router: VirtualRouter;
+  /**
+   * The name of the VirtualRouter the route belongs to
+   */
+  readonly virtualRouterName: string;
 }
 
+/**
+ * VirtualRoute represents a new or existing route attached to a VirtualRouter and Mesh
+ *
+ * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/routes.html
+ */
 export class VirtualRoute extends cdk.Construct {
+  /**
+   * The name of the AppMesh mesh the route belongs to
+   *
+   * @type {string}
+   * @memberof VirtualRoute
+   */
   public readonly meshName: string;
-  public readonly router: VirtualRouter;
+  public readonly virtualRouterName: string;
 
   private readonly weightedTargets: CfnRoute.WeightedTargetProperty[] = [];
   private readonly httpRoute?: CfnRoute.HttpRouteProperty;
@@ -54,9 +84,9 @@ export class VirtualRoute extends cdk.Construct {
     super(scope, id);
 
     this.meshName = props.meshName;
-    this.router = props.router;
+    this.virtualRouterName = props.virtualRouterName;
 
-    const name = props && props.name ? props.name : this.node.id;
+    const name = props && props.virtualRouteName ? props.virtualRouteName : this.node.id;
 
     if (props.isHttpRoute && props.routeTargets) {
       this.httpRoute = this.addHttpRoute(props);
@@ -67,7 +97,7 @@ export class VirtualRoute extends cdk.Construct {
     new CfnRoute(this, 'VirtualRoute', {
       routeName: name,
       meshName: this.meshName,
-      virtualRouterName: this.router.virtualRouterName,
+      virtualRouterName: this.virtualRouterName,
       spec: {
         tcpRoute: this.tcpRoute,
         httpRoute: this.httpRoute,

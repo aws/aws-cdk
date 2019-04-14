@@ -94,9 +94,9 @@ export class VirtualRouter extends cdk.Construct {
    */
   public addRoute(id: string, props: VirtualRouteBaseProps) {
     const route = new VirtualRoute(this, id, {
-      name: id,
+      virtualRouteName: id,
       meshName: this.meshName,
-      router: this,
+      virtualRouterName: this.virtualRouterName,
       routeTargets: props.routeTargets,
       isHttpRoute: props.isHttpRoute,
       prefix: props.prefix,
@@ -123,9 +123,9 @@ export class VirtualRouter extends cdk.Construct {
 
     for (let i = 0; i < ids.length; i++) {
       const route = new VirtualRoute(this, ids[i], {
-        name: ids[i],
+        virtualRouteName: ids[i],
         meshName: this.meshName,
-        router: this,
+        virtualRouterName: this.virtualRouterName,
         routeTargets: props[i].routeTargets,
         isHttpRoute: props[i].isHttpRoute,
         prefix: props[i].prefix,
