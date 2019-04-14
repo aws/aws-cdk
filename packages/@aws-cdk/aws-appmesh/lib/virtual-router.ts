@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/cdk';
 import { CfnVirtualRouter } from './appmesh.generated';
 import { NAME_TAG, PortMappingProps, Protocol } from './shared-interfaces';
-import { AddVirtualRouteProps, VirtualRoute } from './virtual-route';
+import { VirtualRoute, VirtualRouteBaseProps } from './virtual-route';
 
 // TODO: Add import() and eport() capabilities
 
@@ -92,7 +92,7 @@ export class VirtualRouter extends cdk.Construct {
    * @returns
    * @memberof VirtualRouter
    */
-  public addRoute(id: string, props: AddVirtualRouteProps) {
+  public addRoute(id: string, props: VirtualRouteBaseProps) {
     const route = new VirtualRoute(this, id, {
       name: id,
       meshName: this.meshName,
@@ -114,7 +114,7 @@ export class VirtualRouter extends cdk.Construct {
    * @returns
    * @memberof VirtualRouter
    */
-  public addRoutes(ids: string[], props: AddVirtualRouteProps[]) {
+  public addRoutes(ids: string[], props: VirtualRouteBaseProps[]) {
     const routes: VirtualRoute[] = [];
 
     if (ids.length != props.length) {

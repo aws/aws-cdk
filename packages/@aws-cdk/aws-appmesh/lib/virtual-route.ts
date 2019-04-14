@@ -4,36 +4,42 @@ import { VirtualRouter } from './virtual-router';
 
 // TODO: Add import() and eport() capabilities
 
-export interface RouteTargetProps {
+export interface VirtualRouteBaseProps {
+  readonly name?: string;
+  /**
+   * The path prefix to match for the route
+   *
+   * @default "/" if http otherwise none
+   */
+  readonly prefix?: string;
+  /**
+   * Array of weighted route targets
+   *
+   * @requires minimum of 1
+   */
+  readonly routeTargets: WeightedTargetProps[];
+  readonly isHttpRoute?: boolean;
+}
+
+/**
+ * Properties for the Weighted Targets in the route
+ */
+export interface WeightedTargetProps {
+  /**
+   * The name of the VirtualNode the route points to
+   */
   readonly virtualNodeName: string;
   /**
+   * The weight for the target
+   *
    * @default 1
    */
   readonly weight?: number;
-  /**
-   * @default none
-   */
 }
 
-export interface AddVirtualRouteProps {
-  /**
-   * @default none
-   */
-  readonly prefix?: string;
-  readonly routeTargets: RouteTargetProps[];
-  readonly isHttpRoute?: boolean;
-}
-
-export interface VirtualRouteProps {
-  readonly name?: string;
+export interface VirtualRouteProps extends VirtualRouteBaseProps {
   readonly meshName: string;
   readonly router: VirtualRouter;
-  /**
-   * @default none
-   */
-  readonly prefix?: string;
-  readonly routeTargets: RouteTargetProps[];
-  readonly isHttpRoute?: boolean;
 }
 
 export class VirtualRoute extends cdk.Construct {
@@ -69,7 +75,7 @@ export class VirtualRoute extends cdk.Construct {
     });
   }
 
-  public addWeightedTargets(props: RouteTargetProps[]) {
+  public addWeightedTargets(props: WeightedTargetProps[]) {
     props.map(t => {
       this.weightedTargets.push({
         virtualNode: t.virtualNodeName,
@@ -91,7 +97,7 @@ export class VirtualRoute extends cdk.Construct {
     };
   }
 
-  private addTcpRoute(props: RouteTargetProps[]) {
+  private addTcpRoute(props: WeightedTargetProps[]) {
     return {
       action: {
         weightedTargets: this.addWeightedTargets(props),
