@@ -75,6 +75,7 @@ export class VirtualRoute extends cdk.Construct {
    */
   public readonly meshName: string;
   public readonly virtualRouterName: string;
+  public readonly virtualRouteName: string;
 
   private readonly weightedTargets: CfnRoute.WeightedTargetProperty[] = [];
   private readonly httpRoute?: CfnRoute.HttpRouteProperty;
@@ -86,7 +87,7 @@ export class VirtualRoute extends cdk.Construct {
     this.meshName = props.meshName;
     this.virtualRouterName = props.virtualRouterName;
 
-    const name = props && props.virtualRouteName ? props.virtualRouteName : this.node.id;
+    this.virtualRouteName = props && props.virtualRouteName ? props.virtualRouteName : this.node.id;
 
     if (props.isHttpRoute && props.routeTargets) {
       this.httpRoute = this.addHttpRoute(props);
@@ -95,7 +96,7 @@ export class VirtualRoute extends cdk.Construct {
     }
 
     new CfnRoute(this, 'VirtualRoute', {
-      routeName: name,
+      routeName: this.virtualRouteName,
       meshName: this.meshName,
       virtualRouterName: this.virtualRouterName,
       spec: {
