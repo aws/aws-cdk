@@ -8,7 +8,7 @@ export interface VirtualNodeBackendProps {
   readonly virtualServiceName: string;
 }
 
-export interface VirtualNodeBaseProps {
+export interface VirtualNodeProps {
   readonly meshName: string;
   readonly nodeName?: string;
   readonly hostname: string;
@@ -24,7 +24,6 @@ export interface VirtualNodeBaseProps {
    */
   readonly listeners?: ListenerProps;
 }
-export interface VirtualNodeProps extends VirtualNodeBaseProps {}
 
 export class VirtualNode extends cdk.Construct {
   public readonly meshName: string;
