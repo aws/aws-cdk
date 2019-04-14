@@ -159,6 +159,7 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
   public addVirtualRouter(id: string, props: VirtualRouterBaseProps): VirtualRouter {
     return new VirtualRouter(this, id, {
       meshName: this.meshName,
+      virtualRouterName: props.virtualRouterName,
       portMappings: props.portMappings,
     });
   }
