@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/cdk');
 import { CfnRoute } from './appmesh.generated';
 
 // TODO: Add import() and eport() capabilities

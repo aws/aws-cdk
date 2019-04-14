@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/cdk');
 import { CfnMesh } from './appmesh.generated';
 import { ListenerProps, NAME_TAG } from './shared-interfaces';
 import { VirtualNode, VirtualNodeBackendProps } from './virtual-node';
