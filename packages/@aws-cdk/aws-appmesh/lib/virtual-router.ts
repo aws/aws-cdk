@@ -107,6 +107,37 @@ export class VirtualRouter extends cdk.Construct {
   }
 
   /**
+   * Utility method to add multiple routes to the router
+   *
+   * @param {string[]} ids
+   * @param {AddVirtualRouteProps[]} props
+   * @returns
+   * @memberof VirtualRouter
+   */
+  public addRoutes(ids: string[], props: AddVirtualRouteProps[]) {
+    const routes: VirtualRoute[] = [];
+
+    if (ids.length != props.length) {
+      throw new Error('Routes must have the same number of IDs and RouteProps.');
+    }
+
+    for (let i = 0; i < ids.length; i++) {
+      const route = new VirtualRoute(this, ids[i], {
+        name: ids[i],
+        meshName: this.meshName,
+        router: this,
+        routeTargets: props[i].routeTargets,
+        isHttpRoute: props[i].isHttpRoute,
+        prefix: props[i].prefix,
+      });
+      this.routes.push(route);
+      routes.push(route);
+    }
+
+    return routes;
+  }
+
+  /**
    * Add listeners to the router, such as ports and protocols
    *
    * @private
