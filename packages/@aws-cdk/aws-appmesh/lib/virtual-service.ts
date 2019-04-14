@@ -17,7 +17,8 @@ export interface VirtualServiceBaseProps {
   /**
    * The name of the VirtualRouter which this VirtualService uses as provider
    */
-  readonly virtualRouterName: string;
+  readonly virtualRouterName?: string;
+  readonly virtualNodeName?: string;
 }
 
 /**
@@ -49,7 +50,8 @@ export class VirtualService extends cdk.Construct {
    * @type {string}
    * @memberof VirtualService
    */
-  public readonly virtualRouterName: string;
+  public readonly virtualRouterName?: string;
+  public readonly virtualNodeName?: string;
   /**
    * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
    *
@@ -65,11 +67,25 @@ export class VirtualService extends cdk.Construct {
    */
   public readonly virtaulServiceArn: string;
 
+  private readonly virtualServiceProvider?: CfnVirtualService.VirtualServiceProviderProperty;
+
   constructor(scope: cdk.Construct, id: string, props: VirtualServiceProps) {
     super(scope, id);
 
+    if (props.virtualNodeName && props.virtualRouterName) {
+      throw new Error('Must provide only one of virtualNodeName or virtualRouterName for the provider');
+    }
+
     this.meshName = props.meshName;
-    this.virtualRouterName = props.virtualRouterName;
+
+    // Check which provider to use node or router
+    if (props.virtualRouterName) {
+      this.virtualRouterName = props.virtualRouterName;
+      this.virtualServiceProvider = this.addVirtualRouter(this.virtualRouterName);
+    } else if (props.virtualNodeName) {
+      this.virtualNodeName = props.virtualNodeName;
+      this.virtualServiceProvider = this.addVirtualNode(this.virtualNodeName);
+    }
 
     this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
     const name = props.virtualServiceName;
@@ -78,15 +94,27 @@ export class VirtualService extends cdk.Construct {
       meshName: this.meshName,
       virtualServiceName: name,
       spec: {
-        provider: {
-          virtualRouter: {
-            virtualRouterName: this.virtualRouterName,
-          },
-        },
+        provider: this.virtualServiceProvider,
       },
     });
 
     this.virtaulServiceArn = svc.virtualServiceArn;
     this.virtualServiceName = svc.virtualServiceName;
+  }
+
+  private addVirtualRouter(name: string): CfnVirtualService.VirtualServiceProviderProperty {
+    return {
+      virtualRouter: {
+        virtualRouterName: name,
+      },
+    };
+  }
+
+  private addVirtualNode(name: string): CfnVirtualService.VirtualServiceProviderProperty {
+    return {
+      virtualNode: {
+        virtualNodeName: name,
+      },
+    };
   }
 }
