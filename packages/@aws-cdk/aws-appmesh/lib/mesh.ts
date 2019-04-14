@@ -77,12 +77,6 @@ export interface MeshImportProps {
    * The AppMesh name to import
    */
   readonly meshName: string;
-  /**
-   * The AppMesh ARN to import
-   *
-   * @default optional
-   */
-  readonly meshArn?: string;
 }
 
 /**
@@ -208,7 +202,7 @@ export interface MeshProps {
   /**
    * The name of the Mesh being created
    */
-  readonly name?: string;
+  readonly meshName?: string;
   /**
    * The spec to be applied to the mesh, at this point, only egressFilter is available
    */
@@ -255,7 +249,7 @@ export class Mesh extends MeshBase {
 
     this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
-    const name = props && props.name ? props.name : this.node.id;
+    const name = props && props.meshName ? props.meshName : this.node.id;
 
     let filter: MeshFilterType;
     if (props && props.meshSpec && props.meshSpec.egressFilter) {
@@ -285,7 +279,6 @@ export class Mesh extends MeshBase {
    */
   public export(): MeshImportProps {
     return {
-      meshArn: this.meshArn,
       meshName: this.meshName,
     };
   }
@@ -318,7 +311,6 @@ export class ImportedMesh extends MeshBase {
     super(scope, id);
 
     this.meshName = props.meshName;
-    this.meshArn = props.meshArn;
   }
 
   /**
@@ -327,7 +319,6 @@ export class ImportedMesh extends MeshBase {
   public export(): MeshImportProps {
     return {
       meshName: this.meshName,
-      meshArn: this.meshArn,
     };
   }
 }
