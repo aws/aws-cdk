@@ -1,4 +1,3 @@
-import * as svc from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/cdk';
 import { CfnMesh } from './appmesh.generated';
 import { ListenerProps, NAME_TAG } from './shared-interfaces';
@@ -9,7 +8,7 @@ import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
 export interface AddVirtualNodeProps {
   readonly nodeName?: string;
   readonly hostname: string;
-  readonly serviceDiscoveryNamespace: svc.INamespace;
+  readonly namespaceName: string;
   /**
    * @default none
    * if not provided must call addBackends()
@@ -160,7 +159,7 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
     return new VirtualNode(this, id, {
       ...props,
       meshName: this.meshName,
-      serviceDiscoveryNamespace: props.serviceDiscoveryNamespace,
+      namespaceName: props.namespaceName,
     });
   }
 

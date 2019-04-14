@@ -1,4 +1,3 @@
-import * as svc from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/cdk';
 import { CfnVirtualNode } from './appmesh.generated';
 import { HealthCheckProps, ListenerProps, NAME_TAG, PortMappingProps, Protocol } from './shared-interfaces';
@@ -13,7 +12,7 @@ export interface VirtualNodeBaseProps {
   readonly meshName: string;
   readonly nodeName?: string;
   readonly hostname: string;
-  readonly serviceDiscoveryNamespace: svc.INamespace;
+  readonly namespaceName: string;
   /**
    * @default none
    * if not provided must call addBackends()
@@ -35,14 +34,14 @@ export class VirtualNode extends cdk.Construct {
 
   private readonly backends: CfnVirtualNode.BackendProperty[] = [];
   private readonly listeners: CfnVirtualNode.ListenerProperty[] = [];
-  private readonly namespace: svc.INamespace;
+  private readonly namespaceName: string;
 
   constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
     super(scope, id);
 
     this.meshName = props.meshName;
     this.virtualNodeMeshName = this.meshName;
-    this.namespace = props.serviceDiscoveryNamespace;
+    this.namespaceName = props.namespaceName;
 
     if (props.backends) {
       this.addBackends(props.backends);
@@ -63,7 +62,7 @@ export class VirtualNode extends cdk.Construct {
         listeners: this.listeners,
         serviceDiscovery: {
           dns: {
-            hostname: `${props.hostname}.${this.namespace.namespaceName}`,
+            hostname: `${props.hostname}.${this.namespaceName}`,
           },
         },
         logging: {
