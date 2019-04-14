@@ -5,13 +5,31 @@ import { VirtualNode, VirtualNodeBackendProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
 import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
 
+/**
+ * These properties are used when adding a VirtualNode through the Mesh type
+ */
 export interface AddVirtualNodeProps {
+  /**
+   * The name of the VirtualNode, only used as identifier
+   *
+   * @default optional if not provided, the id property will be used
+   */
   readonly nodeName?: string;
+  /**
+   * The hostname for which to identify the VirtualNode, NOT the full FQDN
+   *
+   * @example serviceb NOT serviceb.domain.local
+   */
   readonly hostname: string;
+  /**
+   * The service discovery namespace name
+   * @example domain.local
+   */
   readonly namespaceName: string;
   /**
+   * The backend services this node expects to send traffic to
+   *
    * @default none
-   * if not provided must call addBackends()
    */
   readonly backends?: VirtualNodeBackendProps[];
   /**
