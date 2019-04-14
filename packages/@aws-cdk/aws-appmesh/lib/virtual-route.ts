@@ -74,8 +74,20 @@ export class VirtualRoute extends cdk.Construct {
    * @memberof VirtualRoute
    */
   public readonly meshName: string;
-  public readonly virtualRouterName: string;
+  /**
+   * The name for the route as an identifier
+   *
+   * @type {string}
+   * @memberof VirtualRoute
+   */
   public readonly virtualRouteName: string;
+  /**
+   * The name of the VirtualRouter the route belongs to
+   *
+   * @type {string}
+   * @memberof VirtualRoute
+   */
+  public readonly virtualRouterName: string;
 
   private readonly weightedTargets: CfnRoute.WeightedTargetProperty[] = [];
   private readonly httpRoute?: CfnRoute.HttpRouteProperty;
@@ -106,6 +118,13 @@ export class VirtualRoute extends cdk.Construct {
     });
   }
 
+  /**
+   * Utility method to add weighted route targets to an existing route
+   *
+   * @param {WeightedTargetProps[]} props
+   * @returns
+   * @memberof VirtualRoute
+   */
   public addWeightedTargets(props: WeightedTargetProps[]) {
     props.map(t => {
       this.weightedTargets.push({
