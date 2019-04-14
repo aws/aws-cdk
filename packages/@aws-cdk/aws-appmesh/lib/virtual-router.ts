@@ -1,6 +1,5 @@
 import * as cdk from '@aws-cdk/cdk';
 import { CfnVirtualRouter } from './appmesh.generated';
-import { Mesh } from './mesh';
 import { NAME_TAG, PortMappingProps, Protocol } from './shared-interfaces';
 import { AddVirtualRouteProps, VirtualRoute } from './virtual-route';
 
@@ -11,7 +10,7 @@ export interface VirtualRouterBaseProps {
 }
 
 export interface VirtualRouterProps extends VirtualRouterBaseProps {
-  readonly mesh: Mesh;
+  readonly meshName: string;
   readonly name?: string;
 }
 
@@ -19,7 +18,7 @@ export class VirtualRouter extends cdk.Construct {
   public readonly virtualRouterName: string;
   public readonly virtualRouterMeshName: string;
   public readonly virtualRouterArn: string;
-  public readonly mesh: Mesh;
+  public readonly meshName: string;
   public readonly routes: VirtualRoute[] = [];
 
   private readonly listeners: CfnVirtualRouter.VirtualRouterListenerProperty[] = [];
@@ -27,7 +26,7 @@ export class VirtualRouter extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: VirtualRouterProps) {
     super(scope, id);
 
-    this.mesh = props.mesh;
+    this.meshName = props.meshName;
 
     this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
     const name = props && props.name ? props.name : this.node.id;
@@ -36,7 +35,7 @@ export class VirtualRouter extends cdk.Construct {
 
     const router = new CfnVirtualRouter(this, 'VirtualRouter', {
       virtualRouterName: name,
-      meshName: this.mesh.meshName,
+      meshName: this.meshName,
       spec: {
         listeners: this.listeners,
       },
@@ -50,7 +49,7 @@ export class VirtualRouter extends cdk.Construct {
   public addRoute(id: string, props: AddVirtualRouteProps) {
     const route = new VirtualRoute(this, id, {
       name: id,
-      mesh: this.mesh,
+      meshName: this.meshName,
       router: this,
       routeTargets: props.routeTargets,
       isHttpRoute: props.isHttpRoute,

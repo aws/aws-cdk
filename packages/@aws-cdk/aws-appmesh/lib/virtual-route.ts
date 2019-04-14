@@ -1,6 +1,5 @@
 import * as cdk from '@aws-cdk/cdk';
 import { CfnRoute } from './appmesh.generated';
-import { Mesh } from './mesh';
 import { VirtualRouter } from './virtual-router';
 
 // TODO: Add import() and eport() capabilities
@@ -27,7 +26,7 @@ export interface AddVirtualRouteProps {
 
 export interface VirtualRouteProps {
   readonly name?: string;
-  readonly mesh: Mesh;
+  readonly meshName: string;
   readonly router: VirtualRouter;
   /**
    * @default none
@@ -38,7 +37,7 @@ export interface VirtualRouteProps {
 }
 
 export class VirtualRoute extends cdk.Construct {
-  public readonly mesh: Mesh;
+  public readonly meshName: string;
   public readonly router: VirtualRouter;
 
   private readonly weightedTargets: CfnRoute.WeightedTargetProperty[] = [];
@@ -48,7 +47,7 @@ export class VirtualRoute extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: VirtualRouteProps) {
     super(scope, id);
 
-    this.mesh = props.mesh;
+    this.meshName = props.meshName;
     this.router = props.router;
 
     const name = props && props.name ? props.name : this.node.id;
@@ -61,7 +60,7 @@ export class VirtualRoute extends cdk.Construct {
 
     new CfnRoute(this, 'VirtualRoute', {
       routeName: name,
-      meshName: this.mesh.meshName,
+      meshName: this.meshName,
       virtualRouterName: this.router.virtualRouterName,
       spec: {
         tcpRoute: this.tcpRoute,

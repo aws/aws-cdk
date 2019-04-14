@@ -1,6 +1,5 @@
 import * as cdk from '@aws-cdk/cdk';
 import { CfnVirtualService } from './appmesh.generated';
-import { Mesh } from './mesh';
 import { NAME_TAG } from './shared-interfaces';
 import { VirtualRouter } from './virtual-router';
 
@@ -12,11 +11,11 @@ export interface VirtualServiceBaseProps {
 }
 
 export interface VirtualServiceProps extends VirtualServiceBaseProps {
-  readonly mesh: Mesh;
+  readonly meshName: string;
 }
 
 export class VirtualService extends cdk.Construct {
-  public readonly mesh: Mesh;
+  public readonly meshName: string;
   public readonly router: VirtualRouter;
   public readonly virtualServiceName: string;
   public readonly virtaulServiceMeshName: string;
@@ -25,14 +24,14 @@ export class VirtualService extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: VirtualServiceProps) {
     super(scope, id);
 
-    this.mesh = props.mesh;
+    this.meshName = props.meshName;
     this.router = props.virtualRouter;
 
     this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
     const name = props.virtualServiceName || id;
 
     const svc = new CfnVirtualService(this, 'VirtualService', {
-      meshName: this.mesh.meshName,
+      meshName: this.meshName,
       virtualServiceName: name,
       spec: {
         provider: {

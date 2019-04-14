@@ -7,7 +7,6 @@ import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
 import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
 
 export interface AddVirtualNodeProps {
-  readonly mesh?: Mesh;
   readonly nodeName?: string;
   readonly hostname: string;
   readonly serviceDiscoveryNamespace: svc.INamespace;
@@ -133,7 +132,7 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
    */
   public addVirtualRouter(id: string, props: VirtualRouterBaseProps): VirtualRouter {
     return new VirtualRouter(this, id, {
-      mesh: this,
+      meshName: this.meshName,
       portMappings: props.portMappings,
     });
   }
@@ -147,7 +146,7 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
   public addVirtualService(id: string, props: VirtualServiceBaseProps): VirtualService {
     return new VirtualService(this, id, {
       ...props,
-      mesh: this,
+      meshName: this.meshName,
     });
   }
 
@@ -160,7 +159,7 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
   public addVirtualNode(id: string, props: AddVirtualNodeProps): VirtualNode {
     return new VirtualNode(this, id, {
       ...props,
-      mesh: this,
+      meshName: this.meshName,
       serviceDiscoveryNamespace: props.serviceDiscoveryNamespace,
     });
   }

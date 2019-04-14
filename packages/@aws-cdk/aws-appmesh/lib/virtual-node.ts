@@ -1,7 +1,6 @@
 import * as svc from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/cdk';
 import { CfnVirtualNode } from './appmesh.generated';
-import { Mesh } from './mesh';
 import { HealthCheckProps, ListenerProps, NAME_TAG, PortMappingProps, Protocol } from './shared-interfaces';
 
 // TODO: Add import() and eport() capabilities
@@ -11,7 +10,7 @@ export interface VirtualNodeBackendProps {
 }
 
 export interface VirtualNodeBaseProps {
-  readonly mesh: Mesh;
+  readonly meshName: string;
   readonly nodeName?: string;
   readonly hostname: string;
   readonly serviceDiscoveryNamespace: svc.INamespace;
@@ -29,7 +28,7 @@ export interface VirtualNodeBaseProps {
 export interface VirtualNodeProps extends VirtualNodeBaseProps {}
 
 export class VirtualNode extends cdk.Construct {
-  public readonly mesh: Mesh;
+  public readonly meshName: string;
   public readonly virtualNodeName: string;
   public readonly virtualNodeArn: string;
   public readonly virtualNodeMeshName: string;
@@ -41,8 +40,8 @@ export class VirtualNode extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
     super(scope, id);
 
-    this.mesh = props.mesh;
-    this.virtualNodeMeshName = this.mesh.meshName;
+    this.meshName = props.meshName;
+    this.virtualNodeMeshName = this.meshName;
     this.namespace = props.serviceDiscoveryNamespace;
 
     if (props.backends) {
@@ -58,7 +57,7 @@ export class VirtualNode extends cdk.Construct {
 
     const node = new CfnVirtualNode(this, 'VirtualNode', {
       virtualNodeName: name,
-      meshName: this.mesh.meshName,
+      meshName: this.meshName,
       spec: {
         backends: this.backends,
         listeners: this.listeners,
