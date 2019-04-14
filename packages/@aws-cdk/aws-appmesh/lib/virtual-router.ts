@@ -5,20 +5,59 @@ import { AddVirtualRouteProps, VirtualRoute } from './virtual-route';
 
 // TODO: Add import() and eport() capabilities
 
+/**
+ * Interface with base properties all routers willl inherit
+ */
 export interface VirtualRouterBaseProps {
+  /**
+   * Array of PortMappingProps for the virtual router
+   */
   readonly portMappings: PortMappingProps[];
+  /**
+   * The name of the VirtualRouter
+   */
+  readonly virtualRouterName?: string;
 }
 
+/**
+ * The properties used when creating a new VritualRouter
+ */
 export interface VirtualRouterProps extends VirtualRouterBaseProps {
+  /**
+   * The name of the AppMesh mesh the VirtualRouter belongs to
+   */
   readonly meshName: string;
-  readonly name?: string;
 }
 
 export class VirtualRouter extends cdk.Construct {
+  /**
+   * The name of the VirtualRouter
+   *
+   * @default id - if not provided in props
+   * @type {string}
+   * @memberof VirtualRouter
+   */
   public readonly virtualRouterName: string;
-  public readonly virtualRouterMeshName: string;
+  /**
+   * The Amazon Resource Name (ARN) for the VirtualRouter
+   *
+   * @type {string}
+   * @memberof VirtualRouter
+   */
   public readonly virtualRouterArn: string;
+  /**
+   * The name of the AppMesh mesh for which this router belongs to
+   *
+   * @type {string}
+   * @memberof VirtualRouter
+   */
   public readonly meshName: string;
+  /**
+   * The routes that this router forwards to
+   *
+   * @type {VirtualRoute[]}
+   * @memberof VirtualRouter
+   */
   public readonly routes: VirtualRoute[] = [];
 
   private readonly listeners: CfnVirtualRouter.VirtualRouterListenerProperty[] = [];
@@ -29,7 +68,7 @@ export class VirtualRouter extends cdk.Construct {
     this.meshName = props.meshName;
 
     this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
-    const name = props && props.name ? props.name : this.node.id;
+    const name = props && props.virtualRouterName ? props.virtualRouterName : this.node.id;
 
     this.addListeners(props);
 
@@ -43,9 +82,16 @@ export class VirtualRouter extends cdk.Construct {
 
     this.virtualRouterName = router.virtualRouterName;
     this.virtualRouterArn = router.virtualRouterArn;
-    this.virtualRouterMeshName = router.virtualRouterMeshName;
   }
 
+  /**
+   * Utility method for adding a single route to the router
+   *
+   * @param {string} id
+   * @param {AddVirtualRouteProps} props
+   * @returns
+   * @memberof VirtualRouter
+   */
   public addRoute(id: string, props: AddVirtualRouteProps) {
     const route = new VirtualRoute(this, id, {
       name: id,
@@ -60,6 +106,13 @@ export class VirtualRouter extends cdk.Construct {
     return route;
   }
 
+  /**
+   * Add listeners to the router, such as ports and protocols
+   *
+   * @private
+   * @param {VirtualRouterBaseProps} props
+   * @memberof VirtualRouter
+   */
   private addListeners(props: VirtualRouterBaseProps) {
     if (props && props.portMappings) {
       this.addPortMappings(props.portMappings);
