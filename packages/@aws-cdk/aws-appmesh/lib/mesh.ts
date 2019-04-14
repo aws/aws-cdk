@@ -49,7 +49,7 @@ export enum MeshFilterType {
   /**
    * Allows all outbound traffic
    */
-  Allow_All = 'ALLOw_ALL',
+  Allow_All = 'ALLOW_ALL',
   /**
    * Allows traffic only to other resources inside the mesh, or API calls to amazon resources
    */
