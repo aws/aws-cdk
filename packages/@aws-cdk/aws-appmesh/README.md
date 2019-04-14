@@ -1,7 +1,194 @@
-## AWS::AppMesh Construct Library
+# AWS AppMesh
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
+This package contains constructs for working with **AWS AppMesh Service**.
 
-```ts
-import appmesh = require('@aws-cdk/aws-appmesh');
+AWS App Mesh is a service mesh based on the [Envoy](https://www.envoyproxy.io/) proxy that makes it easy to monitor and control microservices. App Mesh standardizes how your microservices communicate, giving you end-to-end visibility and helping to ensure high-availability for your applications.
+
+App Mesh gives you consistent visibility and network traffic controls for every microservice in an application.
+
+App Mesh supports microservice applications that use service discovery naming for their components. To use App Mesh, you must have an existing application running on AWS Fargate, Amazon ECS, Amazon EKS, Kubernetes on AWS, or Amazon EC2.
+
+For futher information on **AWS AppMesh** visit the [AWS Docs for AppMesh](https://docs.aws.amazon.com/app-mesh/index.html).
+
+## Creating the Mesh
+
+A service mesh is a logical boundary for network traffic between the services that reside within it.
+
+After you create your service mesh, you can create virtual services, virtual nodes, virtual routers, and routes to distribute traffic between the applications in your mesh.
+
+The following example creates the `AppMesh` service mesh with the default filter of `DROP_ALL`, see [docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-mesh-egressfilter.html) here for more info on egress filters.
+
+```typescript
+export const app = new cdk.App();
+
+const mesh = new Mesh(this, 'AppMesh', {
+  name: props.appMeshName,
+});
 ```
+
+The mesh can also be created with the "ALLOW_ALL" egress filter by overwritting the property.
+
+```typescript
+const mesh = new Mesh(this, 'AppMesh', {
+  name: props.appMeshName,
+  meshSpec: {
+    egressFilter: appmesh.MeshFilterType.Allow_All,
+  },
+});
+```
+
+## Exporting the Mesh
+
+The `Mesh` can also be exported to reference in other `Stacks`.
+
+```typescript
+const exportedMesh = mesh.export();
+
+const STACK_2 = new cdk.Stack(app, 'stack-2');
+const importedMesh = appmesh.Mesh.import(STACK_2, 'imported-mesh', exportedMesh);
+```
+
+## Adding VirtualRouters
+
+The `Mesh` needs `VirtualRouters` as logical units to route to `VirtualNodes`.
+
+Virtual routers handle traffic for one or more virtual services within your mesh. After you create a virtual router, you can create and associate routes for your virtual router that direct incoming requests to different virtual nodes.
+
+```typescript
+const router = mesh.addVirtualRouter('router', {
+  portMappings: [
+    {
+      port: 8081,
+      protocol: appmesh.Protocol.HTTP,
+    },
+  ],
+});
+```
+
+The listener protocol can be either `HTTP` or `TCP`.
+
+## Adding VirtualService
+
+A virtual service is an abstraction of a real service that is provided by a virtual node directly or indirectly by means of a virtual router. Dependent services call your virtual service by its virtualServiceName, and those requests are routed to the virtual node or virtual router that is specified as the provider for the virtual service.
+
+We recommend that you use the service discovery name of the real service that you're targeting (such as `my-service.default.svc.cluster.local`).
+
+For the provider property:
+
+* If you want the virtual service to spread traffic across multiple virtual nodes, select Virtual router and then choose the virtual router to use from the drop-down menu.
+* If you want the virtual service to reach a virtual node directly, without a virtual router, select Virtual node and then choose the virtual node to use from the drop-down menu.
+* If you don't want the virtual service to route traffic at this time (for example, if your virtual nodes or virtual router doesn't exist yet), leave blank. You can update the provider for this virtual service later.
+
+ * Adds a virtual router as the provider
+  
+```typescript
+mesh.addVirtualService('virtual-service', {
+  virtualRouterName: router.virtualRouterName,
+  virtualServiceName: 'my-service.default.svc.cluster.local',
+});
+```
+
+* Adds a virtual node as the provider
+
+```typescript
+mesh.addVirtualService('virtual-service', {
+  virtualNodeName: node.virtualNodeName,
+  virtualServiceName: `ratings.${infra.namespace.namespaceName}`,
+});
+```
+
+**Note** that only one must of `virtualNodeName` or `virtualRouterName` must be chosen.
+
+## Adding a VirtualNode
+
+A `virtual node` acts as a logical pointer to a particular task group, such as an Amazon ECS service or a Kubernetes deployment.
+
+![vn](https://docs.aws.amazon.com/app-mesh/latest/userguide/images/virtual_node.png)
+
+When you create a `virtual node`, you must specify the DNS service discovery hostname for your task group. Any inbound traffic that your `virtual node` expects should be specified as a listener. Any outbound traffic that your `virtual node` expects to reach should be specified as a backend.
+
+The response metadata for your new `virtual node` contains the Amazon Resource Name (ARN) that is associated with the `virtual node`. Set this value (either the full ARN or the truncated resource name) as the APPMESH_VIRTUAL_NODE_NAME environment variable for your task group's Envoy proxy container in your task definition or pod spec. For example, the value could be mesh/default/virtualNode/simpleapp. This is then mapped to the node.id and node.cluster Envoy parameters.
+
+> Note
+> If you require your Envoy stats or tracing to use a different name, you can override the node.cluster value that is set by APPMESH_VIRTUAL_NODE_NAME with the APPMESH_VIRTUAL_NODE_CLUSTER environment variable.
+
+```typescript
+const virtualNode = mesh.addVirtualNode('virtual-node', {
+  hostname: 'node-a',
+  namespaceName: 'default.svc.cluster.local',
+  listeners: {
+    portMappings: [
+      {
+        port: 8081,
+        protocol: appmesh.Protocol.HTTP,
+      },
+    ],
+    healthChecks: [
+      {
+        healthyThreshold: 3,
+        interval: 5000, // min
+        path: `/health-check-path`,
+        port: 8080,
+        protocol: appmesh.Protocol.HTTP,
+        timeout: 2000, // min
+        unhealthyThreshold: 2,
+      },
+    ],
+  },
+});
+```
+
+The listeners property can be left blank dded later with the `mesh.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
+
+## Adding a Route
+
+A `route` is associated with a virtual router, and it's used to match requests for a virtual router and distribute traffic accordingly to its associated virtual nodes.
+
+You can use the prefix parameter in your `route` specification for path-based routing of requests. For example, if your virtual service name is my-service.local and you want the `route` to match requests to my-service.local/metrics, your prefix should be /metrics.
+
+If your `route` matches a request, you can distribute traffic to one or more target virtual nodes with relative weighting.
+
+```typescript
+router.addRoute('route', {
+  routeTargets: [
+    {
+      virtualNodeName: virtualNode.virtualNodeName,
+      weight: 1,
+    },
+  ],
+  prefix: `/path-to-app`,
+  isHttpRoute: true,
+});
+```
+
+multiple routes may also be added at once.
+
+```typescript
+ratingsRouter.addRoutes(
+  ['route1', 'route2'],
+  [
+    {
+      routeTargets: [
+        {
+          virtualNodeName: virtualNode1.virtualNodeName,
+          weight: 50,
+        },
+      ],
+      prefix: `/path-to-app`,
+      isHttpRoute: true,
+    },
+    {
+      routeTargets: [
+        {
+          virtualNodeName: virtualNode2.virtualNodeName,
+          weight: 50,
+        },
+      ],
+      prefix: `/path-to-app`,
+      isHttpRoute: true,
+    },
+  ]
+);
+```
+
+The number of `route ids` and `route targets` must match as each route needs to have a unique name per router.
