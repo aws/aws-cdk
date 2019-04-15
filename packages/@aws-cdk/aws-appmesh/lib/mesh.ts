@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+
 import { CfnMesh } from './appmesh.generated';
 import { ListenerProps, NAME_TAG } from './shared-interfaces';
 import { VirtualNode, VirtualNodeBackendProps } from './virtual-node';
@@ -82,7 +83,7 @@ export interface MeshImportProps {
 /**
  * Interface wich all Mesh based classes MUST implement
  */
-export interface IMesh {
+export interface IMesh extends cdk.IConstruct {
   /**
    * The name of the AppMesh mesh
    */
