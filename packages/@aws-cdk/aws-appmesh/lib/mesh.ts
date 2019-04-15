@@ -78,6 +78,14 @@ export interface MeshImportProps {
    * The AppMesh name to import
    */
   readonly meshName: string;
+  /**
+   * The Amazon Resource Name (ARN) of the AppMesh mesh
+   */
+  readonly meshArn?: string;
+  /**
+   * The unique identifier for the mesh
+   */
+  readonly meshUid: string;
 }
 
 /**
@@ -92,6 +100,10 @@ export interface IMesh extends cdk.IConstruct {
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
   readonly meshArn?: string;
+  /**
+   * The unique identifier for the mesh
+   */
+  readonly meshUid: string;
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
    *
@@ -142,6 +154,15 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
    * @memberof MeshBase
    */
   public abstract readonly meshArn?: string;
+
+  /**
+   * The unique identifier for the mesh
+   *
+   * @abstract
+   * @type {string}
+   * @memberof MeshBase
+   */
+  public abstract readonly meshUid: string;
 
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
@@ -245,6 +266,14 @@ export class Mesh extends MeshBase {
    */
   public readonly meshArn?: string;
 
+  /**
+   * The unique identifier for the mesh
+   *
+   * @type {string}
+   * @memberof Mesh
+   */
+  public readonly meshUid: string;
+
   constructor(scope: cdk.Construct, id: string, props?: MeshProps) {
     super(scope, id);
 
@@ -270,6 +299,7 @@ export class Mesh extends MeshBase {
 
     this.meshName = mesh.meshName;
     this.meshArn = mesh.meshArn;
+    this.meshUid = mesh.meshUid;
   }
 
   /**
@@ -281,6 +311,8 @@ export class Mesh extends MeshBase {
   public export(): MeshImportProps {
     return {
       meshName: this.meshName,
+      meshArn: this.meshArn,
+      meshUid: this.meshUid,
     };
   }
 }
@@ -307,11 +339,20 @@ export class ImportedMesh extends MeshBase {
    * @memberof Mesh
    */
   public readonly meshArn?: string;
+  /**
+   * The unique identifier for the mesh
+   *
+   * @type {string}
+   * @memberof ImportedMesh
+   */
+  public readonly meshUid: string;
 
   constructor(scope: cdk.Construct, id: string, props: MeshImportProps) {
     super(scope, id);
 
     this.meshName = props.meshName;
+    this.meshArn = props.meshArn;
+    this.meshUid = props.meshUid;
   }
 
   /**
@@ -320,6 +361,8 @@ export class ImportedMesh extends MeshBase {
   public export(): MeshImportProps {
     return {
       meshName: this.meshName,
+      meshArn: this.meshArn,
+      meshUid: this.meshUid,
     };
   }
 }
