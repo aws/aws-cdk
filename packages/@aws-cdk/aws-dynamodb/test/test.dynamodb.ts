@@ -715,7 +715,7 @@ export = {
     const stack = new Stack();
     const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
     const gsiGenerator = GSI_GENERATOR();
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 5; i++) {
       table.addGlobalSecondaryIndex(gsiGenerator.next().value);
     }
 
