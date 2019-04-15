@@ -37,15 +37,15 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
       return input;
     }
 
-    const jsonStatements: string[] = [];
+    const jsonStatements = new Set<string>();
     const uniqueStatements: PolicyStatement[] = [];
 
     for (const statement of input.Statement) {
       const jsonStatement = JSON.stringify(statement);
-      if (!jsonStatements.includes(jsonStatement)) {
+      if (!jsonStatements.has(jsonStatement)) {
         uniqueStatements.push(statement);
+        jsonStatements.add(jsonStatement);
       }
-      jsonStatements.push(jsonStatement);
     }
 
     return {
