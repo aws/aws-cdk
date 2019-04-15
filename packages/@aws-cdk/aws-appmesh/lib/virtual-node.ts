@@ -125,6 +125,20 @@ export class VirtualNode extends cdk.Construct {
   }
 
   /**
+   * Utility method to add a single backend for existing or new VritualNodes
+   *
+   * @param {VirtualNodeBackendProps[]} props
+   * @memberof VirtualNode
+   */
+  public addBackend(props: VirtualNodeBackendProps) {
+    this.backends.push({
+      virtualService: {
+        virtualServiceName: props.virtualServiceName,
+      },
+    });
+  }
+
+  /**
    * Utility method to add backends for existing or new VritualNodes
    *
    * @param {VirtualNodeBackendProps[]} props
@@ -147,9 +161,7 @@ export class VirtualNode extends cdk.Construct {
    * @memberof VirtualNode
    */
   public addListeners(props: ListenerProps) {
-    if (props.healthChecks && !props.portMappings) {
-      throw new Error('Cannot provide healthchecks, without port mappings... impossible');
-    } else if (props.portMappings && props.healthChecks) {
+    if (props.portMappings && props.healthChecks) {
       this.addPortAndHealthCheckMappings(props.portMappings, props.healthChecks);
     } else if (props.portMappings) {
       this.addPortMappings(props.portMappings);
