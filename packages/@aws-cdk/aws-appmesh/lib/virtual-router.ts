@@ -120,7 +120,7 @@ export class VirtualRouter extends cdk.Construct {
     if (ids.length < 1 || props.length < 1) {
       throw new Error('When adding routes, IDs and Route Properties cannot be empty.');
     }
-    if (ids.length != props.length) {
+    if (ids.length !== props.length) {
       throw new Error('Routes must have the same number of IDs and RouteProps.');
     }
 

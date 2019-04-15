@@ -195,7 +195,7 @@ export class VirtualNode extends cdk.Construct {
    * @memberof VirtualNode
    */
   public addPortAndHealthCheckMappings(ports: PortMappingProps[], health: HealthCheckProps[]) {
-    if (ports.length != health.length) {
+    if (ports.length !== health.length) {
       throw new Error('Must provide the same number of health checks and port mappings.');
     }
 
