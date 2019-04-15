@@ -81,6 +81,7 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    *  - sqs:GetQueueUrl
    *
    * @param grantee Principal to grant send rights to
+   * @param queueActions additional queue actions to allow
    */
   grantPurge(grantee: iam.IGrantable): iam.Grant;
 
@@ -256,6 +257,7 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    *  - sqs:GetQueueUrl
    *
    * @param grantee Principal to grant send rights to
+   * @param queueActions additional queue actions to allow
    */
   public grantPurge(grantee: iam.IGrantable) {
     return this.grant(grantee,

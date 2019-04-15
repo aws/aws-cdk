@@ -229,7 +229,7 @@ export class Function extends FunctionBase {
    *
    *    Lambda.import(this, 'MyImportedFunction', { lambdaArn: new LambdaArn('arn:aws:...') });
    *
-   * @param scope The parent construct
+   * @param parent The parent construct
    * @param id The name of the lambda construct
    * @param props A reference to a Lambda function. Can be created manually (see
    * example above) or obtained through a call to `lambda.export()`.

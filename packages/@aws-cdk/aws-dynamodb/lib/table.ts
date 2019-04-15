@@ -437,7 +437,7 @@ export class Table extends Construct {
   /**
    * Permits an IAM principal all data read operations from this table:
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
-   * @param grantee The principal to grant access to
+   * @param principal The principal to grant access to
    */
   public grantReadData(grantee: iam.IGrantable) {
     return this.grant(grantee, ...READ_DATA_ACTIONS);
@@ -456,7 +456,7 @@ export class Table extends Construct {
   /**
    * Permits an IAM principal all data write operations to this table:
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
-   * @param grantee The principal to grant access to
+   * @param principal The principal to grant access to
    */
   public grantWriteData(grantee: iam.IGrantable) {
     return this.grant(grantee, ...WRITE_DATA_ACTIONS);

@@ -33,7 +33,7 @@ export class LazyRole extends cdk.Construct implements IRole {
   /**
    * Adds a permission to the role's default policy document.
    * If there is no default policy attached to this role, it will be created.
-   * @param statement The permission statement to add to the policy document
+   * @param permission The permission statement to add to the policy document
    */
   public addToPolicy(statement: PolicyStatement): boolean {
     if (this.role) {
