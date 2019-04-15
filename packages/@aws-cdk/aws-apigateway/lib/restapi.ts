@@ -157,7 +157,7 @@ export interface RestApiProps extends ResourceOptions {
 export class RestApi extends cdk.Construct implements IRestApi {
   /**
    * Imports an existing REST API resource.
-   * @param scope Parent construct
+   * @param parent Parent construct
    * @param id Construct ID
    * @param props Imported rest API properties
    */

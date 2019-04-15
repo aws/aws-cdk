@@ -567,8 +567,8 @@ export class Project extends ProjectBase {
    *   has permissions to access the S3 Bucket of that Pipeline -
    *   otherwise, builds in that Pipeline will always fail.
    *
-   * @param scope the parent Construct for this Construct
-   * @param id the logical name of this Construct
+   * @param parent the parent Construct for this Construct
+   * @param name the logical name of this Construct
    * @param props the properties of the referenced Project
    * @returns a reference to the existing Project
    */
