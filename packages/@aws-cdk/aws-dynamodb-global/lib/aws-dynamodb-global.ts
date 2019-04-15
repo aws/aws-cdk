@@ -1,6 +1,6 @@
 import dynamodb = require("@aws-cdk/aws-dynamodb");
 import cdk = require("@aws-cdk/cdk");
-import { LambdaGlobalDynamoDBMaker } from "./lambda-global-dynamodb";
+import { GlobalTableCoordinator } from "./global-table-coordinator";
 
 /**
  * Properties for the mutliple DynamoDB tables to mash together into a
@@ -28,7 +28,7 @@ export class GlobalTable extends cdk.Construct {
   /**
    * Creates the cloudformation custom resource that launches a lambda to tie it all together
    */
-  private lambdaGlobalDynamodbMaker: LambdaGlobalDynamoDBMaker;
+  private lambdaGlobalTableCoordinator: GlobalTableCoordinator;
 
   /**
    * Creates dynamoDB tables across regions that will be able to be globbed together into a global table
@@ -38,18 +38,18 @@ export class GlobalTable extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: GlobalTableProps) {
     super(scope, id);
     this._regionalTables = [];
-    
+
     if (props.streamSpecification != null && props.streamSpecification !== dynamodb.StreamViewType.NewAndOldImages) {
       throw new Error("dynamoProps.streamSpecification MUST be set to dynamodb.StreamViewType.NewAndOldImages");
     }
-    
+
     // need to set this streamSpecification, otherwise global tables don't work
     // And no way to set a default value in an interface
     const stackProps = {
       ...props,
       streamSpecification: dynamodb.StreamViewType.NewAndOldImages
     };
-    
+
     // here we loop through the configured regions.
     // in each region we'll deploy a separate stack with a DynamoDB Table with identical properties in the individual stacks
     for (const reg of props.regions) {
@@ -58,9 +58,9 @@ export class GlobalTable extends cdk.Construct {
       this._regionalTables.push(regionalTable);
     }
 
-    this.lambdaGlobalDynamodbMaker = new LambdaGlobalDynamoDBMaker(scope, id + "-CustomResource", props);
+    this.lambdaGlobalTableCoordinator = new GlobalTableCoordinator(scope, id + "-CustomResource", props);
     for (const table of this._regionalTables) {
-      this.lambdaGlobalDynamodbMaker.customResource.node.addDependency(table);
+      this.lambdaGlobalTableCoordinator.node.addDependency(table);
     }
   }
 

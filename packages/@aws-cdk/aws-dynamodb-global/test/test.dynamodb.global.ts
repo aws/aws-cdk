@@ -59,7 +59,7 @@ export = {
       }));
       expect(customResourceStack).to(haveResource('AWS::CloudFormation::CustomResource', {
         Regions: STACK_PROPS.regions,
-        ResourceType: "Custom::MakeGlobalDynamoDB",
+        ResourceType: "Custom::DynamoGlobalTableCoordinator",
         TableName: STACK_PROPS.tableName
       }));
       test.done();

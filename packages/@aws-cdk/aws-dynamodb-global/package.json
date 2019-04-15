@@ -37,9 +37,6 @@
       "sphinx": {}
     }
   },
-  "cdk-build": {
-    "cloudformation": "AWS::DynamoDB"
-  },
   "keywords": [
     "aws",
     "cdk",

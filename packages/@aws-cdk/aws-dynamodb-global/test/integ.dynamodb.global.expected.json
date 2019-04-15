@@ -230,7 +230,7 @@
             "us-east-2",
             "us-west-2"
           ],
-          "ResourceType": "Custom::MakeGlobalDynamoDB",
+          "ResourceType": "Custom::DynamoGlobalTableCoordinator",
           "TableName": "integrationtest"
         }
       }

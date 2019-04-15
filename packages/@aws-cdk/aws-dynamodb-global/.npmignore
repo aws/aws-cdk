@@ -14,4 +14,4 @@ dist
 !.jsii
 
 *.snk
-lambda-packages/aws-dynamodb-global-lambda/node_modules
+lambda-packages/aws-global-table-coordinator/node_modules
