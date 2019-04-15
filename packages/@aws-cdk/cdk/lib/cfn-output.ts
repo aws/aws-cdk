@@ -72,7 +72,7 @@ export class CfnOutput extends CfnElement {
 
   /**
    * Creates an CfnOutput value for this stack.
-   * @param scope The parent construct.
+   * @param parent The parent construct.
    * @param props CfnOutput properties.
    */
   constructor(scope: Construct, id: string, props: CfnOutputProps) {

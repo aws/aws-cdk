@@ -286,7 +286,8 @@ export class Stream extends StreamBase {
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
-   * @param props Stream import properties
+   * @param ref A `StreamAttributes` object. Can be obtained from a call to
+   * `stream.export()`.
    */
   public static import(scope: cdk.Construct, id: string, props: StreamImportProps): IStream {
     return new ImportedStream(scope, id, props);

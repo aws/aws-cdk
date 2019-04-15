@@ -93,8 +93,7 @@
       "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[0]",
       "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[1]",
       "export:@aws-cdk/aws-codepipeline.IPipeline",
-      "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps",
-      "resource-attribute:@aws-cdk/aws-codepipeline.IPipeline.pipelineVersion"
+      "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps"
     ]
   }
 }

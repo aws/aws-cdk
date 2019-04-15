@@ -21,6 +21,8 @@ export interface ClusterProps {
    *
    * If you want to create public load balancers, this must include public subnets.
    *
+   * @example
+   *
    * For example, to only select private subnets, supply the following:
    *
    * ```ts

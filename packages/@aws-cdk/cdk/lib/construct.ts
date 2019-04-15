@@ -148,7 +148,7 @@ export class ConstructNode {
    * Note that if the original ID of the construct you are looking for contained
    * a '/', then it would have been replaced by '--'.
    *
-   * @param path Relative path of a direct or indirect child
+   * @param name Relative name of a direct or indirect child
    * @returns a child by path or undefined if not found.
    */
   public tryFindChild(path: string): IConstruct | undefined {
@@ -172,7 +172,7 @@ export class ConstructNode {
    * Note that if the original ID of the construct you are looking for contained
    * a '/', then it would have been replaced by '--'.
    *
-   * @param path Relative path of a direct or indirect child
+   * @param name Relative name of a direct or indirect child
    * @returns Child with the given path.
    */
   public findChild(path: string): IConstruct {
@@ -354,7 +354,7 @@ export class ConstructNode {
   /**
    * Return the ancestors (including self) of this Construct up until and excluding the indicated component
    *
-   * @param upTo The construct to return the path components relative to, or
+   * @param to The construct to return the path components relative to, or
    * the entire list of ancestors (including root) if omitted.
    */
   public ancestors(upTo?: Construct): IConstruct[] {
@@ -398,7 +398,7 @@ export class ConstructNode {
    * Adds a child construct to this node.
    *
    * @param child The child construct
-   * @param childName The type name of the child construct.
+   * @param name The type name of the child construct.
    * @returns The resolved path part name of the child
    */
   public addChild(child: IConstruct, childName: string) {

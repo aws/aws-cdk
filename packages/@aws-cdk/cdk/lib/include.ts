@@ -22,7 +22,7 @@ export class Include extends CfnElement {
    * Creates an adopted template construct. The template will be incorporated into the stack as-is with no changes at all.
    * This means that logical IDs of entities within this template may conflict with logical IDs of entities that are part of the
    * stack.
-   * @param scope The parent construct of this template
+   * @param parent The parent construct of this template
    * @param id The ID of this construct
    * @param template The template to adopt.
    */

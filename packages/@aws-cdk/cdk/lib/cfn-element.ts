@@ -37,7 +37,7 @@ export abstract class CfnElement extends Construct {
    * Creates an entity and binds it to a tree.
    * Note that the root of the tree must be a Stack object (not just any Root).
    *
-   * @param scope The parent construct
+   * @param parent The parent construct
    * @param props Construct properties
    */
   constructor(scope: Construct, id: string) {
