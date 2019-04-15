@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+
 import { CfnVirtualService } from './appmesh.generated';
 import { NAME_TAG } from './shared-interfaces';
 
