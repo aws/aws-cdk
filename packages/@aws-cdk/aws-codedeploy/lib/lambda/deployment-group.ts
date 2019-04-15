@@ -200,7 +200,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
 
   /**
    * Associate a function to run after deployment completes.
-   * @param postHook function to run after deployment completes
+   * @param preHook function to run after deployment completes
    * @throws an error if a post-hook function is already configured
    */
   public onPostHook(postHook: lambda.IFunction): void {
@@ -215,7 +215,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
   /**
    * Grant a principal permission to codedeploy:PutLifecycleEventHookExecutionStatus
    * on this deployment group resource.
-   * @param grantee to grant permission to
+   * @param principal to grant permission to
    */
   public grantPutLifecycleEventHookExecutionStatus(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({

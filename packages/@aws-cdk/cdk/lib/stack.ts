@@ -422,8 +422,7 @@ export class Stack extends Construct {
    * 'path/to/exampleobject.png' but simply 'path'. This is a limitation
    * because there is no slicing functionality in CloudFormation templates.
    *
-   * @param arn The ARN string to parse
-   * @param sepIfToken The separator used to separate resource from resourceName
+   * @param sep The separator used to separate resource from resourceName
    * @param hasName Whether there is a name component in the ARN at all. For
    * example, SNS Topics ARNs have the 'resource' component contain the topic
    * name, and no 'resourceName' component.
