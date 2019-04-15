@@ -127,7 +127,7 @@ export class VirtualNode extends cdk.Construct {
   /**
    * Utility method to add a single backend for existing or new VritualNodes
    *
-   * @param {VirtualNodeBackendProps[]} props
+   * @param {VirtualNodeBackendProps} props
    * @memberof VirtualNode
    */
   public addBackend(props: VirtualNodeBackendProps) {
