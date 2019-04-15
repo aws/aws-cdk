@@ -1,0 +1,206 @@
+{
+  "Resources": {
+    "meshAppMeshD6FCBDD7": {
+      "Type": "AWS::AppMesh::Mesh",
+      "Properties": {
+        "MeshName": "mesh",
+        "Spec": {
+          "EgressFilter": {
+            "Type": "DROP_ALL"
+          }
+        }
+      }
+    },
+    "meshrouterVirtualRouter7C7DE72C": {
+      "Type": "AWS::AppMesh::VirtualRouter",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshAppMeshD6FCBDD7",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Listeners": [{
+            "PortMapping": {
+              "Port": 8080,
+              "Protocol": "http"
+            }
+          }]
+        },
+        "VirtualRouterName": "router"
+      }
+    },
+    "meshrouterroute1VirtualRoute2589FAF4": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshAppMeshD6FCBDD7",
+            "MeshName"
+          ]
+        },
+        "RouteName": "route-1",
+        "Spec": {
+          "HttpRoute": {
+            "Action": {
+              "WeightedTargets": [{
+                "VirtualNode": {
+                  "Fn::GetAtt": [
+                    "meshnodeVirtualNodeB1F0B8E3",
+                    "VirtualNodeName"
+                  ]
+                },
+                "Weight": 50
+              }]
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouterVirtualRouter7C7DE72C",
+            "VirtualRouterName"
+          ]
+        }
+      }
+    },
+    "meshrouterroute2VirtualRouteB30D38D6": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshAppMeshD6FCBDD7",
+            "MeshName"
+          ]
+        },
+        "RouteName": "route-2",
+        "Spec": {
+          "HttpRoute": {
+            "Action": {
+              "WeightedTargets": [{
+                "VirtualNode": "test-node2",
+                "Weight": 30
+              }]
+            },
+            "Match": {
+              "Prefix": "/path2"
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouterVirtualRouter7C7DE72C",
+            "VirtualRouterName"
+          ]
+        }
+      }
+    },
+    "meshrouterroute3VirtualRouteCE44FFB5": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshAppMeshD6FCBDD7",
+            "MeshName"
+          ]
+        },
+        "RouteName": "route-3",
+        "Spec": {
+          "TcpRoute": {
+            "Action": {
+              "WeightedTargets": [{
+                "VirtualNode": "test-node3",
+                "Weight": 20
+              }]
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouterVirtualRouter7C7DE72C",
+            "VirtualRouterName"
+          ]
+        }
+      }
+    },
+    "meshserviceVirtualServiceDD02B336": {
+      "Type": "AWS::AppMesh::VirtualService",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshAppMeshD6FCBDD7",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Provider": {
+            "VirtualRouter": {
+              "VirtualRouterName": {
+                "Fn::GetAtt": [
+                  "meshrouterVirtualRouter7C7DE72C",
+                  "VirtualRouterName"
+                ]
+              }
+            }
+          }
+        },
+        "VirtualServiceName": "service1.domain.local"
+      }
+    },
+    "meshnodeVirtualNodeB1F0B8E3": {
+      "Type": "AWS::AppMesh::VirtualNode",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshAppMeshD6FCBDD7",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Backends": [{
+              "VirtualService": {
+                "VirtualServiceName": "service2.domain.local"
+              }
+            },
+            {
+              "VirtualService": {
+                "VirtualServiceName": "service3.domain.local"
+              }
+            }
+          ],
+          "Listeners": [{
+            "HealthCheck": {
+              "HealthyThreshold": 3,
+              "IntervalMillis": 5000,
+              "Path": "/",
+              "Port": 8080,
+              "Protocol": "http",
+              "TimeoutMillis": 2000,
+              "UnhealthyThreshold": 2
+            },
+            "PortMapping": {
+              "Port": 8080,
+              "Protocol": "http"
+            }
+          }],
+          "Logging": {
+            "AccessLog": {
+              "File": {
+                "Path": "/dev/stdoout"
+              }
+            }
+          },
+          "ServiceDiscovery": {
+            "DNS": {
+              "Hostname": "node1.domain.local"
+            }
+          }
+        },
+        "VirtualNodeName": "node"
+      }
+    }
+  }
+}
