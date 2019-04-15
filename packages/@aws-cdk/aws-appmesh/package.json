@@ -68,9 +68,11 @@
     "pkglint": "^0.28.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-iam": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0"
   },
   "peerDependencies": {
+    "@aws-cdk/aws-iam": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0"
   },
   "engines": {
