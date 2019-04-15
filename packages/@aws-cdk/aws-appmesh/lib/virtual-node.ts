@@ -149,7 +149,7 @@ export class VirtualNode extends cdk.Construct {
   public addListeners(props: ListenerProps) {
     if (props.healthChecks && !props.portMappings) {
       throw new Error('Cannot provide healthchecks, without port mappings... impossible');
-    } else if (props && props.portMappings && props.healthChecks) {
+    } else if (props.portMappings && props.healthChecks) {
       this.addPortAndHealthCheckMappings(props.portMappings, props.healthChecks);
     } else if (props.portMappings) {
       this.addPortMappings(props.portMappings);

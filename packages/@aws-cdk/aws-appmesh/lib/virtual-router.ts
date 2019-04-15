@@ -145,7 +145,11 @@ export class VirtualRouter extends cdk.Construct {
    * @memberof VirtualRouter
    */
   private addListeners(props: VirtualRouterBaseProps) {
-    if (props && props.portMappings) {
+    if (props.portMappings.length <= 0) {
+      throw new Error('Portmappings cannot be empty for VirtualRouter listeners');
+    }
+
+    if (props.portMappings) {
       this.addPortMappings(props.portMappings);
     } else {
       const portMappings = [{ port: 8080, protocol: Protocol.HTTP }];
@@ -154,6 +158,10 @@ export class VirtualRouter extends cdk.Construct {
   }
 
   private addPortMappings(props: PortMappingProps[]) {
+    if (props.length <= 0) {
+      throw new Error('Portmappings cannot be empty for VirtualRouter listeners');
+    }
+
     props.forEach(p => {
       this.listeners.push({
         portMapping: {
