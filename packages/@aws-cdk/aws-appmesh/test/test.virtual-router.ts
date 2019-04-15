@@ -1,6 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import { Test } from 'nodeunit';
 import cdk = require('@aws-cdk/cdk');
+import { Test } from 'nodeunit';
+
 import appmesh = require('../lib');
 
 export = {
