@@ -39,7 +39,7 @@ export class LogRetention extends cdk.Construct {
       lambdaPurpose: 'LogRetention',
     });
 
-    provider.addToRolePolicy(
+    provider.addToRolePolicy( // Duplicate statements will be deduplicated by `PolicyDocument`
       new iam.PolicyStatement()
         .addActions('logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy')
         // We need '*' here because we will also put a retention policy on
