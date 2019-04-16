@@ -46,7 +46,7 @@ export interface Attribute {
   readonly type: AttributeType;
 }
 
-export interface TableProps {
+export interface TableOptions {
   /**
    * Partition key attribute definition.
    */
@@ -85,12 +85,6 @@ export interface TableProps {
   readonly billingMode?: BillingMode;
 
   /**
-   * Enforces a particular physical table name.
-   * @default <generated>
-   */
-  readonly tableName?: string;
-
-  /**
    * Whether point-in-time recovery is enabled.
    * @default undefined, point-in-time recovery is disabled
    */
@@ -103,17 +97,25 @@ export interface TableProps {
   readonly sseEnabled?: boolean;
 
   /**
+   * The name of TTL attribute.
+   * @default undefined, TTL is disabled
+   */
+  readonly ttlAttributeName?: string;
+
+  /**
    * When an item in the table is modified, StreamViewType determines what information
    * is written to the stream for this table. Valid values for StreamViewType are:
    * @default undefined, streams are disabled
    */
   readonly streamSpecification?: StreamViewType;
+}
 
+export interface TableProps extends TableOptions {
   /**
-   * The name of TTL attribute.
-   * @default undefined, TTL is disabled
+   * Enforces a particular physical table name.
+   * @default <generated>
    */
-  readonly ttlAttributeName?: string;
+  readonly tableName?: string;
 }
 
 export interface SecondaryIndexProps {
