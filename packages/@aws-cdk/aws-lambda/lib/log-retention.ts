@@ -39,16 +39,14 @@ export class LogRetention extends cdk.Construct {
       lambdaPurpose: 'LogRetention',
     });
 
-    if (provider.role && !provider.role.node.tryFindChild('DefaultPolicy')) { // Avoid duplicate statements
-      provider.role.addToPolicy(
-        new iam.PolicyStatement()
-          .addActions('logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy')
-          // We need '*' here because we will also put a retention policy on
-          // the log group of the provider function. Referencing it's name
-          // creates a CF circular dependency.
-          .addAllResources()
-      );
-    }
+    provider.addToRolePolicy( // Duplicate statements will be deduplicated by `PolicyDocument`
+      new iam.PolicyStatement()
+        .addActions('logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy')
+        // We need '*' here because we will also put a retention policy on
+        // the log group of the provider function. Referencing it's name
+        // creates a CF circular dependency.
+        .addAllResources()
+    );
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
     // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
