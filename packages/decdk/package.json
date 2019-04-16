@@ -54,7 +54,6 @@
     "@aws-cdk/aws-codedeploy-api": "^0.28.0",
     "@aws-cdk/aws-codepipeline": "^0.28.0",
     "@aws-cdk/aws-codepipeline-actions": "^0.28.0",
-    "@aws-cdk/aws-codepipeline-api": "^0.28.0",
     "@aws-cdk/aws-cognito": "^0.28.0",
     "@aws-cdk/aws-config": "^0.28.0",
     "@aws-cdk/aws-datapipeline": "^0.28.0",
