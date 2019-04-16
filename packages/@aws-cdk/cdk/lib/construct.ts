@@ -165,6 +165,22 @@ export class ConstructNode {
   }
 
   /**
+   * Returns a child scope with the specified id.
+   *
+   * If the scope does not exist, it is created on the fly.
+   *
+   * @param id The ID of the scope to create/get
+   */
+  public getCreateScope(id: string): Construct {
+    const exists = this.tryFindChild(id) as Construct;
+    if (exists) {
+      return exists;
+    }
+
+    return new Construct(this.host, id);
+  }
+
+  /**
    * Return a descendant by path
    *
    * Throws an exception if the descendant is not found.

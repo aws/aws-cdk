@@ -1,9 +1,12 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { App } from './app';
-import { CfnParameter } from './cfn-parameter';
 import { Construct, IConstruct, PATH_SEP } from './construct';
 import { Environment } from './environment';
+import { Fn } from './fn';
+import { CloudFormationImportContextProvider } from './import-context-provider';
+import { ExportSerializationContext, ImportDeserializationContext } from './import-export';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
+import { IDeserializationContext, ISerializable } from './serialization';
 import { ISynthesisSession } from './synthesis';
 import { makeUniqueId } from './uniqueid';
 
@@ -297,6 +300,94 @@ export class Stack extends Construct {
    */
   public dependencies(): Stack[] {
     return Array.from(this.stackDependencies.values()).map(d => d.stack);
+  }
+
+  /**
+   * Returns a deserialization context for importing an object which was exported under the
+   * specified export name.
+   *
+   * @param exportName The export name specified when the object was exported.
+   * @param options Import options
+   */
+  public importObject(exportName: string, options?: ImportOptions): IDeserializationContext | undefined {
+    const exists = this.importString(exportName);
+    if (!exists) {
+      return undefined;
+    }
+
+    return new ImportDeserializationContext(this, exportName, options);
+  }
+
+  /**
+   * Produces CloudFormation outputs for a serializable object under the specified
+   * export name.
+   *
+   * @param exportName The export name prefix for all the outputs.
+   * @param obj The object to serialize
+   */
+  public exportObject(exportName: string, obj: ISerializable, options?: ExportOptions): void {
+    this.exportString(exportName, '$exists', options); // this key is used to indicate that the object was exported
+    const ctx = new ExportSerializationContext(this, exportName);
+    obj.serialize(ctx);
+  }
+
+  /**
+   * Imports a string from another stack in the same account/region which was
+   * exported under the specified export name.
+   * @param exportName The export name under which the string was exported
+   * @param options Import options
+   */
+  public importString(exportName: string, options: ImportOptions = {}): string | undefined {
+    const weak = options.weak === undefined ? false : options.weak;
+    const value = new CloudFormationImportContextProvider(this, { exportName, optional: true }).value();
+    if (!weak) {
+      this.addStrongReference(exportName);
+    }
+    return value;
+}
+
+  /**
+   * Exports a string value under an export name.
+   *
+   * @throws if there is already an export under the same name
+   *
+   * @param exportName The export name under which to export the string. Export
+   * names must be unique within the account/region.
+   * @param value The value to export.
+   * @param options Export options, such as description.
+   */
+  public exportString(exportName: string, value: string, options: ExportOptions = { }): CfnOutput {
+    const scope = this.node.getCreateScope('StackExports27613D471EFDooo');
+    const output = scope.node.tryFindChild(exportName) as CfnOutput;
+    if (output) {
+      throw new Error(`Trying to export "${value}" under the export name ${exportName}, but "${output.value}" is already exported under this name`);
+    }
+
+    return new CfnOutput(scope, exportName, {
+      description: options.description,
+      export: exportName,
+      value
+    });
+  }
+
+  /**
+   * Adds a strong reference from this stack to a specific export name.
+   *
+   * Technically, if the stack has strong references, a WaitCondition resource
+   * will be synthesized, and a metadata entry with Fn::ImportValue will be
+   * added for each export name.
+   *
+   * @param exportName The name of the CloudFormation export to reference
+   */
+  public addStrongReference(exportName: string) {
+    const id = 'StrongReferences8A180F';
+    let strongRef = this.node.tryFindChild(id) as CfnResource;
+    if (!strongRef) {
+      strongRef = new CfnResource(this, id, { type: 'AWS::CloudFormation::WaitCondition' });
+    }
+
+    strongRef.options.metadata = strongRef.options.metadata || { };
+    strongRef.options.metadata[exportName] = Fn.importValue(exportName);
   }
 
   /**
@@ -655,16 +746,33 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
   return into;
 }
 
-// These imports have to be at the end to prevent circular imports
-import { ArnComponents, arnFromComponents, parseArn } from './arn';
-import { CfnElement } from './cfn-element';
-import { CfnReference } from './cfn-reference';
-import { CfnResource } from './cfn-resource';
-import { Aws, ScopedAws } from './pseudo';
+export interface ExportOptions {
+  /**
+   * Description of the exported value.
+   */
+  readonly description?: string;
+}
 
-/**
- * Find all resources in a set of constructs
- */
+export interface ImportOptions {
+  /**
+   * Determines whether the import creates a dependency to the producing stack.
+   *
+   * When a "strong" import is taken (`weak` is `false`), by a consuming stack,
+   * a CloudFormation dependency is added on the producing stack to ensure that
+   * the resource cannot be deleted, to ensure the integrity of the consuming
+   * stack.
+   *
+   * @default false a "strong" dependency will be taken on the producing stack
+   * to protect the integrity of the consumer.
+   */
+  readonly weak?: boolean;
+}
+
+interface StackDependency {
+  stack: Stack;
+  reason: string;
+}
+
 function findResources(roots: Iterable<IConstruct>): CfnResource[] {
   const ret = new Array<CfnResource>();
   for (const root of roots) {
@@ -673,7 +781,11 @@ function findResources(roots: Iterable<IConstruct>): CfnResource[] {
   return ret;
 }
 
-interface StackDependency {
-  stack: Stack;
-  reason: string;
-}
+// These imports have to be at the end to prevent circular imports
+import { ArnComponents, arnFromComponents, parseArn } from './arn';
+import { CfnElement } from './cfn-element';
+import { CfnOutput } from './cfn-output';
+import { CfnParameter } from './cfn-parameter';
+import { CfnReference } from './cfn-reference';
+import { CfnResource } from './cfn-resource';
+import { Aws, ScopedAws } from './pseudo';

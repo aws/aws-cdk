@@ -5,6 +5,7 @@ export * from './construct';
 export * from './token';
 export * from './unresolved';
 export * from './tag-manager';
+export * from './serialization';
 export * from './dependency';
 
 export * from './cloudformation-json';

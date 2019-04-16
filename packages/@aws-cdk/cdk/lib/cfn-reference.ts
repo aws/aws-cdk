@@ -1,6 +1,6 @@
-import { Reference } from "./reference";
+import { Reference } from './reference';
 
-const CFN_REFERENCE_SYMBOL = Symbol('@aws-cdk/cdk.CfnReference');
+const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnReference');
 
 /**
  * A Token that represents a CloudFormation reference to another resource
@@ -87,6 +87,10 @@ export class CfnReference extends Reference {
     // This mostly exists to trigger LogicalID munging, which would be
     // disabled if we parented constructs directly under Stack.
     // Also it nicely prevents likely construct name clashes
+
+    // NOTE: we could have technically used `stack.exportString` here but it requires
+    // an explicit export name and here we actually want to take advantage of the
+    // auto-generated export name, so blah!
 
     const exportsName = 'Exports';
     let stackExports = producingStack.node.tryFindChild(exportsName) as Construct;

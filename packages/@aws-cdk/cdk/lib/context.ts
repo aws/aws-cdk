@@ -41,8 +41,7 @@ export class ContextProvider {
       return defaultValue;
     }
 
-    const value = this.context.node.getContext(this.key);
-
+    const value = this.getOptionalValue();
     if (value != null) {
       return value;
     }
@@ -53,11 +52,19 @@ export class ContextProvider {
     });
     return defaultValue;
   }
+
+  /**
+   * @returns the provider value or `undefined` if there is no value available.
+   */
+  public getOptionalValue(): any | undefined {
+    return this.context.node.getContext(this.key);
+  }
+
   /**
    * Read a provider value, verifying it's a string
    * @param defaultValue The value to return if there is no value defined for this context key
    */
-  public getStringValue( defaultValue: string): string {
+  public getStringValue(defaultValue: string): string {
     // if scope is undefined, this is probably a test mode, so we just
     // return the default value
     if (!this.props.account || !this.props.region) {

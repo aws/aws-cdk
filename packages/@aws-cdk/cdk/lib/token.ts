@@ -29,6 +29,26 @@ export class Token {
     return unresolved(obj);
   }
 
+  /**
+   * Creates a new stringified token. Convenience for `new Token(x).toString()`
+   *
+   * @returns a token embeeded in a `string`
+   * @param x either a concrete value or a function, which will be resolved during synthesis.
+   */
+  public static string(x: any): string {
+    return new Token(x).toString();
+  }
+
+  /**
+   * Creates a new "string array"-fied token. Convenience for `new Token(x).toList()`
+   *
+   * @returns a token embedded in a `string[]`
+   * @param x either a concrete value or a function, which will be resolved during synthesis.
+   */
+  public static list(x: any): string[] {
+    return new Token(x).toList();
+  }
+
   private tokenStringification?: string;
   private tokenListification?: string[];
 
