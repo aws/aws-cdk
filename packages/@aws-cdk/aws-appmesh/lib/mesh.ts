@@ -81,7 +81,7 @@ export interface MeshImportProps {
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
-  readonly meshArn?: string;
+  readonly meshArn: string;
   /**
    * The unique identifier for the mesh
    */
@@ -99,7 +99,7 @@ export interface IMesh extends cdk.IConstruct {
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
-  readonly meshArn?: string;
+  readonly meshArn: string;
   /**
    * The unique identifier for the mesh
    */
@@ -153,7 +153,7 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
    * @type {string}
    * @memberof MeshBase
    */
-  public abstract readonly meshArn?: string;
+  public abstract readonly meshArn: string;
 
   /**
    * The unique identifier for the mesh
@@ -264,7 +264,7 @@ export class Mesh extends MeshBase {
    * @type {string}
    * @memberof Mesh
    */
-  public readonly meshArn?: string;
+  public readonly meshArn: string;
 
   /**
    * The unique identifier for the mesh
@@ -338,7 +338,7 @@ export class ImportedMesh extends MeshBase {
    * @type {string}
    * @memberof Mesh
    */
-  public readonly meshArn?: string;
+  public readonly meshArn: string;
   /**
    * The unique identifier for the mesh
    *
