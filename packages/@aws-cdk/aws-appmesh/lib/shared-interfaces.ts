@@ -10,9 +10,9 @@ export enum Protocol {
 }
 
 /**
- * Properties used to create healthchecks when creating virtual nodes.
+ * Properties used to define healthchecks when creating virtual nodes.
  * All values have a default if only specified as {} when creating.
- * If property not set, then no healthchecks will be created.
+ * If property not set, then no healthchecks will be defined.
  */
 export interface HealthCheckProps {
   /**
@@ -40,7 +40,7 @@ export interface HealthCheckProps {
    */
   readonly port?: number;
   /**
-   * The protocol to use for the healthcheck, for convinience a const enum has been created.
+   * The protocol to use for the healthcheck, for convinience a const enum has been defined.
    * Protocol.HTTP or Protocol.TCP
    *
    * @default HTTP
@@ -79,7 +79,7 @@ export interface PortMappingProps {
 }
 
 /**
- * Represents the properties needed too create healthy and active listeners for nodes.
+ * Represents the properties needed to define healthy and active listeners for nodes.
  */
 export interface ListenerProps {
   /**

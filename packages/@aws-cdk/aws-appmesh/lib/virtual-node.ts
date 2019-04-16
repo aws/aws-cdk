@@ -51,7 +51,7 @@ export interface VirtualNodeProps {
 }
 
 /**
- * VritualNode represents a newly createded AppMesh VirtualNode
+ * VritualNode represents a newly defined AppMesh VirtualNode
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html
  */

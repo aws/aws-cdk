@@ -26,7 +26,7 @@ export interface VirtualServiceBaseProps {
 }
 
 /**
- * The properties applied to the VirtualService being created
+ * The properties applied to the VirtualService being define
  */
 export interface VirtualServiceProps extends VirtualServiceBaseProps {
   /**

@@ -41,7 +41,7 @@ export interface AddVirtualNodeProps {
 }
 
 /**
- * A utility enum created for the egressFilter type property, the default of DROP_ALL,
+ * A utility enum defined for the egressFilter type property, the default of DROP_ALL,
  * allows traffic only to other resources inside the mesh, or API calls to amazon resources.
  *
  * @default Drop_All
@@ -115,7 +115,7 @@ export interface IMesh extends cdk.IConstruct {
    * Adds a VirtualService with the given id
    *
    * @param id the name for the given service
-   * @param props a set of VirtualServiceBaseProps to create the service
+   * @param props a set of VirtualServiceBaseProps to define the service
    */
   addVirtualService(id: string, props: VirtualServiceBaseProps): VirtualService;
   /**
@@ -222,7 +222,7 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
  */
 export interface MeshProps {
   /**
-   * The name of the Mesh being created
+   * The name of the Mesh being defined
    */
   readonly meshName?: string;
   /**
@@ -232,7 +232,7 @@ export interface MeshProps {
 }
 
 /**
- * Creates a new AppMesh mesh
+ * Defines a new AppMesh mesh
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/meshes.html
  */
