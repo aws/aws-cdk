@@ -1,7 +1,6 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import { SecretValue } from '@aws-cdk/cdk';
 import { CfnProject } from './codebuild.generated';
 import { Project } from './project';
 
@@ -212,13 +211,6 @@ export interface GitHubSourceProps extends GitBuildSourceProps {
   readonly repo: string;
 
   /**
-   * The oAuthToken used to authenticate when cloning source git repo.
-   * Note that you need to give CodeBuild permissions to your GitHub account in order for the token to work.
-   * That is a one-time operation that can be done through the AWS Console for CodeBuild.
-   */
-  readonly oauthToken: SecretValue;
-
-  /**
    * Whether to create a webhook that will trigger a build every time a commit is pushed to the GitHub repository.
    *
    * @default false
@@ -239,14 +231,12 @@ export interface GitHubSourceProps extends GitBuildSourceProps {
 export class GitHubSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.GitHub;
   private readonly httpsCloneUrl: string;
-  private readonly oauthToken: SecretValue;
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
 
   constructor(props: GitHubSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
-    this.oauthToken = props.oauthToken;
     this.webhook = props.webhook;
     this.reportBuildStatus = props.reportBuildStatus === undefined ? true : props.reportBuildStatus;
   }
@@ -261,7 +251,6 @@ export class GitHubSource extends GitBuildSource {
 
   protected toSourceProperty(): any {
     return {
-      auth: { type: 'OAUTH', resource: this.oauthToken },
       location: this.httpsCloneUrl,
       reportBuildStatus: this.reportBuildStatus,
     };
@@ -278,11 +267,6 @@ export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
   readonly httpsCloneUrl: string;
 
   /**
-   * The OAuth token used to authenticate when cloning the git repository.
-   */
-  readonly oauthToken: SecretValue;
-
-  /**
    * Whether to ignore SSL errors when connecting to the repository.
    *
    * @default false
@@ -296,19 +280,16 @@ export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
 export class GitHubEnterpriseSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.GitHubEnterprise;
   private readonly httpsCloneUrl: string;
-  private readonly oauthToken: SecretValue;
   private readonly ignoreSslErrors?: boolean;
 
   constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
     this.httpsCloneUrl = props.httpsCloneUrl;
-    this.oauthToken = props.oauthToken;
     this.ignoreSslErrors = props.ignoreSslErrors;
   }
 
   protected toSourceProperty(): any {
     return {
-      auth: { type: 'OAUTH', resource: this.oauthToken },
       location: this.httpsCloneUrl,
       insecureSsl: this.ignoreSslErrors,
     };
