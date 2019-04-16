@@ -1,0 +1,249 @@
+[
+  {
+    "Resources": {
+      "globdynamodbintegGlobalTableuseast162596384": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "KeySchema": [
+            {
+              "AttributeName": "hashKey",
+              "KeyType": "HASH"
+            }
+          ],
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "hashKey",
+              "AttributeType": "S"
+            }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          },
+          "StreamSpecification": {
+            "StreamViewType": "NEW_AND_OLD_IMAGES"
+          },
+          "TableName": "integrationtest"
+        }
+      }
+    }
+  },
+  {
+    "Resources": {
+      "globdynamodbintegGlobalTableuseast2EF897C2E": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "KeySchema": [
+            {
+              "AttributeName": "hashKey",
+              "KeyType": "HASH"
+            }
+          ],
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "hashKey",
+              "AttributeType": "S"
+            }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          },
+          "StreamSpecification": {
+            "StreamViewType": "NEW_AND_OLD_IMAGES"
+          },
+          "TableName": "integrationtest"
+        }
+      }
+    }
+  },
+  {
+    "Resources": {
+      "globdynamodbintegGlobalTableuswest27374C2EA": {
+        "Type": "AWS::DynamoDB::Table",
+        "Properties": {
+          "KeySchema": [
+            {
+              "AttributeName": "hashKey",
+              "KeyType": "HASH"
+            }
+          ],
+          "AttributeDefinitions": [
+            {
+              "AttributeName": "hashKey",
+              "AttributeType": "S"
+            }
+          ],
+          "ProvisionedThroughput": {
+            "ReadCapacityUnits": 5,
+            "WriteCapacityUnits": 5
+          },
+          "StreamSpecification": {
+            "StreamViewType": "NEW_AND_OLD_IMAGES"
+          },
+          "TableName": "integrationtest"
+        }
+      }
+    }
+  },
+  {
+    "Resources": {
+      "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12ServiceRoleD9686810": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "lambda.",
+                        {
+                          "Ref": "AWS::URLSuffix"
+                        }
+                      ]
+                    ]
+                  }
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "ManagedPolicyArns": [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12ServiceRoleDefaultPolicy6E7EDDB6": {
+        "Type": "AWS::IAM::Policy",
+        "Properties": {
+          "PolicyDocument": {
+            "Statement": [
+              {
+                "Action": [
+                  "iam:CreateServiceLinkedRole",
+                  "application-autoscaling:DeleteScalingPolicy",
+                  "application-autoscaling:DeregisterScalableTarget",
+                  "dynamodb:CreateGlobalTable",
+                  "dynamodb:DescribeLimits",
+                  "dynamodb:DeleteTable",
+                  "dynamodb:DescribeGlobalTable",
+                  "dynamodb:UpdateGlobalTable"
+                ],
+                "Effect": "Allow",
+                "Resource": "*"
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "PolicyName": "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12ServiceRoleDefaultPolicy6E7EDDB6",
+          "Roles": [
+            {
+              "Ref": "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12ServiceRoleD9686810"
+            }
+          ]
+        }
+      },
+      "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC1233FDC96A": {
+        "Type": "AWS::Lambda::Function",
+        "Properties": {
+          "Code": {
+            "S3Bucket": {
+              "Ref": "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeS3BucketF66FB543"
+            },
+            "S3Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeS3VersionKey59DB89A0"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeS3VersionKey59DB89A0"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
+          },
+          "Handler": "index.handler",
+          "Role": {
+            "Fn::GetAtt": [
+              "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12ServiceRoleD9686810",
+              "Arn"
+            ]
+          },
+          "Runtime": "nodejs8.10",
+          "Description": "Lambda to make DynamoDB a global table",
+          "Timeout": 300
+        },
+        "DependsOn": [
+          "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12ServiceRoleDefaultPolicy6E7EDDB6",
+          "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12ServiceRoleD9686810"
+        ]
+      },
+      "CfnCustomResource": {
+        "Type": "AWS::CloudFormation::CustomResource",
+        "Properties": {
+          "ServiceToken": {
+            "Fn::GetAtt": [
+              "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC1233FDC96A",
+              "Arn"
+            ]
+          },
+          "Regions": [
+            "us-east-1",
+            "us-east-2",
+            "us-west-2"
+          ],
+          "ResourceType": "Custom::DynamoGlobalTableCoordinator",
+          "TableName": "integrationtest"
+        }
+      }
+    },
+    "Parameters": {
+      "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeS3BucketF66FB543": {
+        "Type": "String",
+        "Description": "S3 bucket for asset \"globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/Code\""
+      },
+      "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeS3VersionKey59DB89A0": {
+        "Type": "String",
+        "Description": "S3 key for asset version \"globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/Code\""
+      }
+    }
+  }
+]
