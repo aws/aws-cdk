@@ -1,7 +1,8 @@
 import cdk = require('@aws-cdk/cdk');
+
 import { CfnVirtualRouter } from './appmesh.generated';
 import { NAME_TAG, PortMappingProps, Protocol } from './shared-interfaces';
-import { VirtualRoute, VirtualRouteBaseProps } from './virtual-route';
+import { Route, RouteBaseProps } from './virtual-route';
 
 // TODO: Add import() and eport() capabilities
 
@@ -55,10 +56,10 @@ export class VirtualRouter extends cdk.Construct {
   /**
    * The routes that this router forwards to
    *
-   * @type {VirtualRoute[]}
+   * @type {Route[]}
    * @memberof VirtualRouter
    */
-  public readonly routes: VirtualRoute[] = [];
+  public readonly routes: Route[] = [];
 
   private readonly listeners: CfnVirtualRouter.VirtualRouterListenerProperty[] = [];
 
@@ -92,9 +93,9 @@ export class VirtualRouter extends cdk.Construct {
    * @returns
    * @memberof VirtualRouter
    */
-  public addRoute(id: string, props: VirtualRouteBaseProps) {
-    const route = new VirtualRoute(this, id, {
-      virtualRouteName: id,
+  public addRoute(id: string, props: RouteBaseProps) {
+    const route = new Route(this, id, {
+      routeName: id,
       meshName: this.meshName,
       virtualRouterName: this.virtualRouterName,
       routeTargets: props.routeTargets,
@@ -114,8 +115,8 @@ export class VirtualRouter extends cdk.Construct {
    * @returns
    * @memberof VirtualRouter
    */
-  public addRoutes(ids: string[], props: VirtualRouteBaseProps[]) {
-    const routes: VirtualRoute[] = [];
+  public addRoutes(ids: string[], props: RouteBaseProps[]) {
+    const routes: Route[] = [];
 
     if (ids.length < 1 || props.length < 1) {
       throw new Error('When adding routes, IDs and Route Properties cannot be empty.');
@@ -125,8 +126,8 @@ export class VirtualRouter extends cdk.Construct {
     }
 
     for (let i = 0; i < ids.length; i++) {
-      const route = new VirtualRoute(this, ids[i], {
-        virtualRouteName: ids[i],
+      const route = new Route(this, ids[i], {
+        routeName: ids[i],
         meshName: this.meshName,
         virtualRouterName: this.virtualRouterName,
         routeTargets: props[i].routeTargets,

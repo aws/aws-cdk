@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+
 import { CfnRoute } from './appmesh.generated';
 
 // TODO: Add import() and eport() capabilities
@@ -6,11 +7,11 @@ import { CfnRoute } from './appmesh.generated';
 /**
  * Base interface properties for all Routes
  */
-export interface VirtualRouteBaseProps {
+export interface RouteBaseProps {
   /**
    * The name for the route as an identifier
    */
-  readonly virtualRouteName?: string;
+  readonly routeName?: string;
   /**
    * The path prefix to match for the route
    *
@@ -48,9 +49,9 @@ export interface WeightedTargetProps {
 }
 
 /**
- * Properties to create new VirtualRoutes
+ * Properties to create new Routes
  */
-export interface VirtualRouteProps extends VirtualRouteBaseProps {
+export interface RouteProps extends RouteBaseProps {
   /**
    * The name of the AppMesh mesh the route belongs to
    */
@@ -62,30 +63,31 @@ export interface VirtualRouteProps extends VirtualRouteBaseProps {
 }
 
 /**
- * VirtualRoute represents a new or existing route attached to a VirtualRouter and Mesh
+ * Route represents a new or existing route attached to a VirtualRouter and Mesh
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/routes.html
  */
-export class VirtualRoute extends cdk.Construct {
+export class Route extends cdk.Construct {
   /**
    * The name of the AppMesh mesh the route belongs to
    *
    * @type {string}
-   * @memberof VirtualRoute
+   * @memberof Route
    */
   public readonly meshName: string;
   /**
    * The name for the route as an identifier
    *
    * @type {string}
-   * @memberof VirtualRoute
+   * @memberof Route
    */
-  public readonly virtualRouteName: string;
+  public readonly routeName: string;
+  public readonly routeArn?: string;
   /**
    * The name of the VirtualRouter the route belongs to
    *
    * @type {string}
-   * @memberof VirtualRoute
+   * @memberof Route
    */
   public readonly virtualRouterName: string;
 
@@ -93,13 +95,13 @@ export class VirtualRoute extends cdk.Construct {
   private readonly httpRoute?: CfnRoute.HttpRouteProperty;
   private readonly tcpRoute?: CfnRoute.TcpRouteProperty;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualRouteProps) {
+  constructor(scope: cdk.Construct, id: string, props: RouteProps) {
     super(scope, id);
 
     this.meshName = props.meshName;
     this.virtualRouterName = props.virtualRouterName;
 
-    this.virtualRouteName = props && props.virtualRouteName ? props.virtualRouteName : this.node.id;
+    this.routeName = props && props.routeName ? props.routeName : this.node.id;
 
     if (props.isHttpRoute && props.routeTargets) {
       this.httpRoute = this.addHttpRoute(props);
@@ -108,7 +110,7 @@ export class VirtualRoute extends cdk.Construct {
     }
 
     new CfnRoute(this, 'VirtualRoute', {
-      routeName: this.virtualRouteName,
+      routeName: this.routeName,
       meshName: this.meshName,
       virtualRouterName: this.virtualRouterName,
       spec: {
@@ -123,7 +125,7 @@ export class VirtualRoute extends cdk.Construct {
    *
    * @param {WeightedTargetProps[]} props
    * @returns
-   * @memberof VirtualRoute
+   * @memberof Route
    */
   public addWeightedTargets(props: WeightedTargetProps[]) {
     props.map(t => {
@@ -136,7 +138,7 @@ export class VirtualRoute extends cdk.Construct {
     return this.weightedTargets;
   }
 
-  private addHttpRoute(props: VirtualRouteProps) {
+  private addHttpRoute(props: RouteProps) {
     return {
       match: {
         prefix: props.prefix || '/',
