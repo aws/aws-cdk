@@ -291,20 +291,6 @@
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": [
-                "codebuild:BatchGetBuilds",
-                "codebuild:StartBuild",
-                "codebuild:StopBuild"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyBuildProject30DB9D6E",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
