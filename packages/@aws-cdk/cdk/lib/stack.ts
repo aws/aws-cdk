@@ -42,7 +42,7 @@ export interface StackProps {
   readonly autoDeploy?: boolean;
 }
 
-const STACK_SYMBOL = Symbol('@aws-cdk/cdk.Stack');
+const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
 
 /**
  * A root construct which represents a single CloudFormation stack.
