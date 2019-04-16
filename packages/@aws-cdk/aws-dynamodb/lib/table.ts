@@ -9,6 +9,9 @@ import { ScalableTableAttribute } from './scalable-table-attribute';
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
 
+// https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
+const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
+
 const READ_DATA_ACTIONS = [
   'dynamodb:BatchGetItem',
   'dynamodb:GetRecords',
@@ -254,11 +257,6 @@ export class Table extends Construct {
    * @param props the property of global secondary index
    */
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexProps) {
-    if (this.globalSecondaryIndexes.length === 5) {
-      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-      throw new RangeError('a maximum number of global secondary index per table is 5');
-    }
-
     this.validateProvisioning(props);
     this.validateIndexName(props.indexName);
 
@@ -286,9 +284,9 @@ export class Table extends Construct {
    * @param props the property of local secondary index
    */
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
-    if (this.localSecondaryIndexes.length === 5) {
-      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-      throw new RangeError('a maximum number of local secondary index per table is 5');
+    // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
+    if (this.localSecondaryIndexes.length >= MAX_LOCAL_SECONDARY_INDEX_COUNT) {
+      throw new RangeError(`a maximum number of local secondary index per table is ${MAX_LOCAL_SECONDARY_INDEX_COUNT}`);
     }
 
     this.validateIndexName(props.indexName);
