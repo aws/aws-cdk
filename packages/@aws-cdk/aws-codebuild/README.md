@@ -94,6 +94,14 @@ const gitHubSource = new codebuild.GitHubSource({
 });
 ```
 
+To provide GitHub credentials, please either go to AWS CodeBuild Console to connect
+or call `ImportSourceCredentials` to persist your personal access token.
+Example:
+
+```
+aws codebuild import-source-credentials --server-type GITHUB --auth-type PERSONAL_ACCESS_TOKEN --token <token_value>
+```
+
 ### `BitBucketSource`
 
 This source type can be used to build code from a BitBucket repository.
