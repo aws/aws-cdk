@@ -9,7 +9,7 @@ import { CfnRoute } from './appmesh.generated';
  */
 export interface RouteBaseProps {
   /**
-   * The name for the route as an identifier
+   * The name of the route
    */
   readonly routeName?: string;
   /**
@@ -49,15 +49,15 @@ export interface WeightedTargetProps {
 }
 
 /**
- * Properties to create new Routes
+ * Properties to define new Routes
  */
 export interface RouteProps extends RouteBaseProps {
   /**
-   * The name of the AppMesh mesh the route belongs to
+   * The name of the service mesh to define the route in
    */
   readonly meshName: string;
   /**
-   * The name of the VirtualRouter the route belongs to
+   * The name of the virtual router in which to define the route
    */
   readonly virtualRouterName: string;
 }
@@ -69,27 +69,40 @@ export interface RouteProps extends RouteBaseProps {
  */
 export class Route extends cdk.Construct {
   /**
-   * The name of the AppMesh mesh the route belongs to
+   * The name of the service mesh that the route resides in
    *
    * @type {string}
    * @memberof Route
    */
-  public readonly meshName: string;
+  public readonly routeMeshName: string;
   /**
-   * The name for the route as an identifier
+   * The name of the route
    *
    * @type {string}
    * @memberof Route
    */
   public readonly routeName: string;
-  public readonly routeArn?: string;
   /**
-   * The name of the VirtualRouter the route belongs to
+   * The Amazon Resource Name (ARN) for the route
    *
    * @type {string}
    * @memberof Route
    */
-  public readonly virtualRouterName: string;
+  public readonly routeArn: string;
+  /**
+   * The unique identifier for the route
+   *
+   * @type {string}
+   * @memberof Route
+   */
+  public readonly routeUid: string;
+  /**
+   * The name of the VirtualRouter the route is associated with
+   *
+   * @type {string}
+   * @memberof Route
+   */
+  public readonly routeVirtualRouterName: string;
 
   private readonly weightedTargets: CfnRoute.WeightedTargetProperty[] = [];
   private readonly httpRoute?: CfnRoute.HttpRouteProperty;
@@ -98,8 +111,8 @@ export class Route extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: RouteProps) {
     super(scope, id);
 
-    this.meshName = props.meshName;
-    this.virtualRouterName = props.virtualRouterName;
+    this.routeMeshName = props.meshName;
+    this.routeVirtualRouterName = props.virtualRouterName;
 
     this.routeName = props && props.routeName ? props.routeName : this.node.id;
 
@@ -109,15 +122,18 @@ export class Route extends cdk.Construct {
       this.tcpRoute = this.addTcpRoute(props.routeTargets);
     }
 
-    new CfnRoute(this, 'VirtualRoute', {
+    const route = new CfnRoute(this, 'VirtualRoute', {
       routeName: this.routeName,
-      meshName: this.meshName,
-      virtualRouterName: this.virtualRouterName,
+      meshName: this.routeMeshName,
+      virtualRouterName: this.routeVirtualRouterName,
       spec: {
         tcpRoute: this.tcpRoute,
         httpRoute: this.httpRoute,
       },
     });
+
+    this.routeArn = route.routeArn;
+    this.routeUid = route.routeUid;
   }
 
   /**
