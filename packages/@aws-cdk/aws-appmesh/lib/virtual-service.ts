@@ -19,6 +19,9 @@ export interface VirtualServiceBaseProps {
    * The name of the VirtualRouter which this VirtualService uses as provider
    */
   readonly virtualRouterName?: string;
+  /**
+   * The name of the VirtualNode attached to the virtual service
+   */
   readonly virtualNodeName?: string;
 }
 
@@ -52,6 +55,12 @@ export class VirtualService extends cdk.Construct {
    * @memberof VirtualService
    */
   public readonly virtualRouterName?: string;
+  /**
+   * The name of the VirtualNode attached to the virtual service
+   *
+   * @type {string}
+   * @memberof VirtualService
+   */
   public readonly virtualNodeName?: string;
   /**
    * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
