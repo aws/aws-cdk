@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-amazonmq",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "description": "The CDK Construct Library for AWS::AmazonMQ",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -29,7 +29,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-amazonmq"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "scripts": {
@@ -59,16 +60,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.27.0",
-    "cdk-build-tools": "^0.27.0",
-    "cfn2ts": "^0.27.0",
-    "pkglint": "^0.27.0"
+    "@aws-cdk/assert": "^0.28.0",
+    "cdk-build-tools": "^0.28.0",
+    "cfn2ts": "^0.28.0",
+    "pkglint": "^0.28.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.27.0"
+    "@aws-cdk/cdk": "^0.28.0"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.27.0"
+    "@aws-cdk/cdk": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"

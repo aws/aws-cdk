@@ -37,7 +37,7 @@ export class DynamoEventSource implements lambda.IEventSource {
       startingPosition: this.props.startingPosition
     });
 
-    this.table.grantStreamRead(target.role);
-    dynamodb.Table.grantListStreams(target.role);
+    this.table.grantStreamRead(target);
+    dynamodb.Table.grantListStreams(target);
   }
 }

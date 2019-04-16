@@ -3,8 +3,10 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
+import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -12,6 +14,11 @@ import { ScalableTaskCount } from './scalable-task-count';
  * Basic service properties
  */
 export interface BaseServiceProps {
+  /**
+   * Cluster where service will be deployed
+   */
+  readonly cluster: ICluster;
+
   /**
    * Number of desired copies of running tasks
    *
@@ -31,7 +38,7 @@ export interface BaseServiceProps {
    * service's DesiredCount value, that can run in a service during a
    * deployment.
    *
-   * @default 200
+   * @default 100 if daemon, otherwise 200
    */
   readonly maximumPercent?: number;
 
@@ -40,7 +47,7 @@ export interface BaseServiceProps {
    * the Amazon ECS service's DesiredCount value, that must
    * continue to run and remain healthy during a deployment.
    *
-   * @default 50
+   * @default 0 if daemon, otherwise 50
    */
   readonly minimumHealthyPercent?: number;
 
@@ -50,6 +57,26 @@ export interface BaseServiceProps {
    * @default ??? FIXME
    */
   readonly healthCheckGracePeriodSeconds?: number;
+
+  /**
+   * Options for enabling AWS Cloud Map service discovery for the service
+   */
+  readonly serviceDiscoveryOptions?: ServiceDiscoveryOptions;
+
+  /**
+   * Whether the new long ARN format has been enabled on ECS services.
+   * NOTE: This assumes customer has opted into the new format for the IAM role used for the service, and is a
+   * workaround for a current bug in Cloudformation in which the service name is not correctly returned when long ARN is
+   * enabled.
+   *
+   * Old ARN format: arn:aws:ecs:region:aws_account_id:service/service-name
+   * New ARN format: arn:aws:ecs:region:aws_account_id:service/cluster-name/service-name
+   *
+   * See: https://docs.aws.amazon.com/AmazonECS/latest/userguide/ecs-resource-ids.html
+   *
+   * @default false
+   */
+  readonly longArnEnabled?: boolean;
 }
 
 /**
@@ -83,8 +110,12 @@ export abstract class BaseService extends cdk.Construct
    */
   public readonly taskDefinition: TaskDefinition;
 
+  protected cloudmapService?: cloudmap.Service;
+  protected cluster: ICluster;
   protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
+  protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
+
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
 
@@ -109,11 +140,25 @@ export abstract class BaseService extends cdk.Construct
       healthCheckGracePeriodSeconds: props.healthCheckGracePeriodSeconds,
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: new cdk.Token(() => this.networkConfiguration),
+      serviceRegistries: new cdk.Token(() => this.serviceRegistries),
       ...additionalProps
     });
+
     this.serviceArn = this.resource.serviceArn;
-    this.serviceName = this.resource.serviceName;
+
+    // This is a workaround for CFN bug that returns the cluster name instead of the service name when long ARN formats
+    // are enabled for the principal in a given region.
+    const longArnEnabled = props.longArnEnabled !== undefined ? props.longArnEnabled : false;
+    this.serviceName = longArnEnabled
+      ? cdk.Fn.select(2, cdk.Fn.split('/', this.serviceArn))
+      : this.resource.serviceName;
+
     this.clusterName = clusterName;
+    this.cluster = props.cluster;
+
+    if (props.serviceDiscoveryOptions) {
+      this.enableServiceDiscovery(props.serviceDiscoveryOptions);
+    }
   }
 
   /**
@@ -154,7 +199,7 @@ export abstract class BaseService extends cdk.Construct
 
     return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
       serviceNamespace: appscaling.ServiceNamespace.Ecs,
-      resourceId: `service/${this.clusterName}/${this.resource.serviceName}`,
+      resourceId: `service/${this.clusterName}/${this.serviceName}`,
       dimension: 'ecs:service:DesiredCount',
       role: this.makeAutoScalingRole(),
       ...props
@@ -189,9 +234,17 @@ export abstract class BaseService extends cdk.Construct
     this.networkConfiguration = {
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
-        subnets: vpc.subnetIds(vpcSubnets),
+        subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
         securityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]).toList(),
       }
+    };
+  }
+
+  private renderServiceRegistry(registry: ServiceRegistry): CfnService.ServiceRegistryProperty {
+    return {
+      registryArn: registry.arn,
+      containerName: registry.containerName,
+      containerPort: registry.containerPort,
     };
   }
 
@@ -230,9 +283,138 @@ export abstract class BaseService extends cdk.Construct
       })
     });
   }
+
+  /**
+   * Associate Service Discovery (Cloud Map) service
+   */
+  private addServiceRegistry(registry: ServiceRegistry) {
+    const sr = this.renderServiceRegistry(registry);
+    this.serviceRegistries.push(sr);
+  }
+
+  /**
+   * Enable CloudMap service discovery for the service
+   */
+  private enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
+    const sdNamespace = this.cluster.defaultNamespace;
+    if (sdNamespace === undefined) {
+      throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
+    }
+
+    // Determine DNS type based on network mode
+    const networkMode = this.taskDefinition.networkMode;
+    if (networkMode === NetworkMode.None) {
+      throw new Error("Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
+    }
+
+    // Bridge or host network mode requires SRV records
+    let dnsRecordType = options.dnsRecordType;
+
+    if (networkMode === NetworkMode.Bridge || networkMode === NetworkMode.Host) {
+      if (dnsRecordType ===  undefined) {
+        dnsRecordType = cloudmap.DnsRecordType.SRV;
+      }
+      if (dnsRecordType !== cloudmap.DnsRecordType.SRV) {
+        throw new Error("SRV records must be used when network mode is Bridge or Host.");
+      }
+    }
+
+    // Default DNS record type for AwsVpc network mode is A Records
+    if (networkMode === NetworkMode.AwsVpc) {
+      if (dnsRecordType ===  undefined) {
+        dnsRecordType = cloudmap.DnsRecordType.A;
+      }
+    }
+
+    // If the task definition that your service task specifies uses the AWSVPC network mode and a type SRV DNS record is
+    // used, you must specify a containerName and containerPort combination
+    const containerName = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.node.id : undefined;
+    const containerPort = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.containerPort : undefined;
+
+    const cloudmapService = new cloudmap.Service(this, 'CloudmapService', {
+      namespace: sdNamespace,
+      name: options.name,
+      dnsRecordType: dnsRecordType!,
+      customHealthCheck: { failureThreshold: options.failureThreshold || 1 }
+    });
+
+    const serviceArn = cloudmapService.serviceArn;
+
+    // add Cloudmap service to the ECS Service's serviceRegistry
+    this.addServiceRegistry({
+      arn: serviceArn,
+      containerName,
+      containerPort
+    });
+
+    this.cloudmapService = cloudmapService;
+
+    return cloudmapService;
+  }
 }
 
 /**
  * The port range to open up for dynamic port mapping
  */
 const EPHEMERAL_PORT_RANGE = new ec2.TcpPortRange(32768, 65535);
+
+/**
+ * Options for enabling service discovery on an ECS service
+ */
+export interface ServiceDiscoveryOptions {
+  /**
+   * Name of the cloudmap service to attach to the ECS Service
+   *
+   * @default CloudFormation-generated name
+   */
+  readonly name?: string,
+
+  /**
+   * The DNS type of the record that you want AWS Cloud Map to create. Supported record types include A or SRV.
+   *
+   * @default: A
+   */
+  readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
+
+  /**
+   * The amount of time, in seconds, that you want DNS resolvers to cache the settings for this record.
+   *
+   * @default 60
+   */
+  readonly dnsTtlSec?: number;
+
+  /**
+   * The number of 30-second intervals that you want Cloud Map to wait after receiving an
+   * UpdateInstanceCustomHealthStatus request before it changes the health status of a service instance.
+   * NOTE: This is used for HealthCheckCustomConfig
+   */
+  readonly failureThreshold?: number,
+}
+
+/**
+ * Service Registry for ECS service
+ */
+export interface ServiceRegistry {
+  /**
+   * Arn of the Cloud Map Service that will register a Cloud Map Instance for your ECS Service
+   */
+  readonly arn: string;
+
+  /**
+   * The container name value, already specified in the task definition, to be used for your service discovery service.
+   * If the task definition that your service task specifies uses the bridge or host network mode,
+   * you must specify a containerName and containerPort combination from the task definition.
+   * If the task definition that your service task specifies uses the awsvpc network mode and a type SRV DNS record is
+   * used, you must specify either a containerName and containerPort combination or a port value, but not both.
+   */
+  readonly containerName?: string;
+
+  /**
+   * The container port value, already specified in the task definition, to be used for your service discovery service.
+   * If the task definition that your service task specifies uses the bridge or host network mode,
+   * you must specify a containerName and containerPort combination from the task definition.
+   * If the task definition that your service task specifies uses the awsvpc network mode and a type SRV DNS record is
+   * used, you must specify either a containerName and containerPort combination or a port value, but not both.
+   */
+  readonly containerPort?: number;
+}

@@ -41,17 +41,17 @@ export interface IRepository extends cdk.IConstruct {
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
-  grant(identity?: iam.IPrincipal, ...actions: string[]): void;
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull images in this repository.
    */
-  grantPull(identity?: iam.IPrincipal): void;
+  grantPull(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
    */
-  grantPullPush(identity?: iam.IPrincipal): void;
+  grantPullPush(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -189,38 +189,41 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
-  public grant(identity?: iam.IPrincipal, ...actions: string[]) {
-    if (!identity) {
-      return;
-    }
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.repositoryArn)
-      .addActions(...actions));
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions,
+      resourceArns: [this.repositoryArn],
+      resource: this,
+    });
   }
 
   /**
    * Grant the given identity permissions to use the images in this repository
    */
-  public grantPull(identity?: iam.IPrincipal) {
-    this.grant(identity, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
+  public grantPull(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
 
-    if (identity) {
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addActions("ecr:GetAuthorizationToken", "logs:CreateLogStream", "logs:PutLogEvents")
-        .addAllResources());
-    }
+    iam.Grant.addToPrincipal({
+      grantee,
+      actions: ["ecr:GetAuthorizationToken"],
+      resourceArns: ['*'],
+      scope: this,
+    });
+
+    return ret;
   }
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
    */
-  public grantPullPush(identity?: iam.IPrincipal) {
-      this.grantPull(identity);
-      this.grant(identity,
-        "ecr:PutImage",
-        "ecr:InitiateLayerUpload",
-        "ecr:UploadLayerPart",
-        "ecr:CompleteLayerUpload");
+  public grantPullPush(grantee: iam.IGrantable) {
+    this.grantPull(grantee);
+    return this.grant(grantee,
+      "ecr:PutImage",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload");
   }
 }
 
@@ -238,7 +241,7 @@ class ImportedRepository extends RepositoryBase {
       this.repositoryArn = props.repositoryArn;
     } else {
       if (!props.repositoryName) {
-        throw new Error('If "repositoruyArn" is not specified, you must specify "repositoryName", ' +
+        throw new Error('If "repositoryArn" is not specified, you must specify "repositoryName", ' +
           'which also implies that the repository resides in the same region/account as this stack');
       }
 

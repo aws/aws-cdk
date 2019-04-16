@@ -1,7 +1,7 @@
 package com.myorg;
 
 import software.amazon.awscdk.Construct;
-import software.amazon.awscdk.services.iam.IPrincipal;
+import software.amazon.awscdk.services.iam.IGrantable;
 import software.amazon.awscdk.services.s3.Bucket;
 import software.amazon.awscdk.services.s3.BucketProps;
 
@@ -24,9 +24,9 @@ public class HelloConstruct extends Construct {
 
     /**
      * Given an principal, grants it READ access on all buckets.
-     * @param principal The principal (User, Group, Role)
+     * @param grantee The principal (User, Group, Role)
      */
-    public void grantRead(final IPrincipal principal) {
-        buckets.forEach(b -> b.grantRead(principal, "*"));
+    public void grantRead(final IGrantable grantee) {
+        buckets.forEach(b -> b.grantRead(grantee, "*"));
     }
 }

@@ -5,7 +5,7 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import { App, CfnParameter, SecretValue, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import cpactions = require('../lib');
 
@@ -13,7 +13,7 @@ import cpactions = require('../lib');
 
 export = {
   'basic pipeline'(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     const repository = new codecommit.Repository(stack, 'MyRepo', {
        repositoryName: 'my-repo',
@@ -50,7 +50,7 @@ export = {
   },
 
   'Tokens can be used as physical names of the Pipeline'(test: Test) {
-    const stack = new cdk.Stack(undefined, 'StackName');
+    const stack = new Stack(undefined, 'StackName');
 
     new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineName: stack.stackName,
@@ -66,9 +66,9 @@ export = {
   },
 
   'github action uses ThirdParty owner'(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
-    const secret = new cdk.SecretParameter(stack, 'GitHubToken', { ssmParameter: 'my-token' });
+    const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
 
     const p = new codepipeline.Pipeline(stack, 'P');
 
@@ -80,7 +80,7 @@ export = {
           runOrder: 8,
           outputArtifactName: 'A',
           branch: 'branch',
-          oauthToken: secret.value,
+          oauthToken: SecretValue.plainText(secret.stringValue),
           owner: 'foo',
           repo: 'bar'
         }),
@@ -122,7 +122,7 @@ export = {
           "Repo": "bar",
           "Branch": "branch",
           "OAuthToken": {
-            "Ref": "GitHubTokenParameterBB166B9D"
+            "Ref": "GitHubToken"
           },
           "PollForSourceChanges": false
           },
@@ -163,7 +163,7 @@ export = {
   },
 
   'onStateChange'(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     const topic = new sns.Topic(stack, 'Topic');
 
@@ -256,7 +256,7 @@ export = {
 
   'manual approval Action': {
     'allows passing an SNS Topic when constructing it'(test: Test) {
-      const stack = new cdk.Stack();
+      const stack = new Stack();
       const topic = new sns.Topic(stack, 'Topic');
       const manualApprovalAction = new cpactions.ManualApprovalAction({
         actionName: 'Approve',
@@ -273,7 +273,7 @@ export = {
   'PipelineProject': {
     'with a custom Project Name': {
       'sets the source and artifacts to CodePipeline'(test: Test) {
-        const stack = new cdk.Stack();
+        const stack = new Stack();
 
         new codebuild.PipelineProject(stack, 'MyProject', {
           projectName: 'MyProject',
@@ -296,7 +296,7 @@ export = {
           "Environment": {
           "Type": "LINUX_CONTAINER",
           "PrivilegedMode": false,
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "ComputeType": "BUILD_GENERAL1_SMALL"
           }
         }));
@@ -307,7 +307,7 @@ export = {
   },
 
   'Lambda PipelineInvokeAction can be used to invoke Lambda functions from a CodePipeline'(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
@@ -437,7 +437,7 @@ export = {
 
   'CodeCommit Action': {
     'does not poll for changes by default'(test: Test) {
-      const stack = new cdk.Stack();
+      const stack = new Stack();
       const sourceAction = new cpactions.CodeCommitSourceAction({
         actionName: 'stage',
         outputArtifactName: 'SomeArtifact',
@@ -450,7 +450,7 @@ export = {
     },
 
     'does not poll for source changes when explicitly set to false'(test: Test) {
-      const stack = new cdk.Stack();
+      const stack = new Stack();
       const sourceAction = new cpactions.CodeCommitSourceAction({
         actionName: 'stage',
         outputArtifactName: 'SomeArtifact',
@@ -469,9 +469,9 @@ export = {
       const pipelineRegion = 'us-west-2';
       const pipelineAccount = '123';
 
-      const app = new cdk.App();
+      const app = new App();
 
-      const stack = new cdk.Stack(app, 'TestStack', {
+      const stack = new Stack(app, 'TestStack', {
         env: {
           region: pipelineRegion,
           account: pipelineAccount,
@@ -582,12 +582,12 @@ export = {
   },
 };
 
-function stageForTesting(stack: cdk.Stack): codepipeline.IStage {
+function stageForTesting(stack: Stack): codepipeline.IStage {
   const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
   return pipeline.addStage({ name: 'stage' });
 }
 
-function repositoryForTesting(stack: cdk.Stack): codecommit.Repository {
+function repositoryForTesting(stack: Stack): codecommit.Repository {
   return new codecommit.Repository(stack, 'Repository', {
     repositoryName: 'Repository'
   });

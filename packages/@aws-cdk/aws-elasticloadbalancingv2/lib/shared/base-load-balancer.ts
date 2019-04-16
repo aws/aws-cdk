@@ -101,19 +101,19 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
     const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
       { subnetType: internetFacing ? ec2.SubnetType.Public : ec2.SubnetType.Private });
 
-    const subnets = baseProps.vpc.subnetIds(vpcSubnets);
+    const { subnetIds, internetConnectedDependency } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: baseProps.loadBalancerName,
-      subnets,
+      subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: new cdk.Token(() => renderAttributes(this.attributes)),
       ...additionalProps
     });
     if (internetFacing) {
-      resource.node.addDependency(baseProps.vpc.subnetInternetDependencies(vpcSubnets));
+      resource.node.addDependency(internetConnectedDependency);
     }
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }

@@ -1,6 +1,6 @@
 import { Stack, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Anyone, AnyPrincipal, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from '../lib';
+import { Anyone, AnyPrincipal, CanonicalUserPrincipal, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
 
 export = {
@@ -212,30 +212,58 @@ export = {
   'statementCount returns the number of statement in the policy document'(test: Test) {
     const p = new PolicyDocument();
     test.equal(p.statementCount, 0);
-    p.addStatement(new PolicyStatement());
+    p.addStatement(new PolicyStatement().addAction('action1'));
     test.equal(p.statementCount, 1);
-    p.addStatement(new PolicyStatement());
+    p.addStatement(new PolicyStatement().addAction('action2'));
     test.equal(p.statementCount, 2);
     test.done();
   },
 
-  'the { AWS: "*" } principal is represented as `Anyone` or `AnyPrincipal`'(test: Test) {
-    const stack = new Stack();
-    const p = new PolicyDocument();
+  '{ AWS: "*" } principal': {
+    'is represented as `Anyone`'(test: Test) {
+      const stack = new Stack();
+      const p = new PolicyDocument();
 
-    p.addStatement(new PolicyStatement().addPrincipal(new Anyone()));
-    p.addStatement(new PolicyStatement().addPrincipal(new AnyPrincipal()));
-    p.addStatement(new PolicyStatement().addAnyPrincipal());
+      p.addStatement(new PolicyStatement().addPrincipal(new Anyone()));
 
-    test.deepEqual(stack.node.resolve(p), {
-      Statement: [
-        { Effect: 'Allow', Principal: '*' },
-        { Effect: 'Allow', Principal: '*' },
-        { Effect: 'Allow', Principal: '*' }
-      ],
-      Version: '2012-10-17'
-    });
-    test.done();
+      test.deepEqual(stack.node.resolve(p), {
+        Statement: [
+          { Effect: 'Allow', Principal: '*' }
+        ],
+        Version: '2012-10-17'
+      });
+      test.done();
+    },
+
+    'is represented as `AnyPrincipal`'(test: Test) {
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      p.addStatement(new PolicyStatement().addPrincipal(new AnyPrincipal()));
+
+      test.deepEqual(stack.node.resolve(p), {
+        Statement: [
+          { Effect: 'Allow', Principal: '*' }
+        ],
+        Version: '2012-10-17'
+      });
+      test.done();
+    },
+
+    'is represented as `addAnyPrincipal`'(test: Test) {
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      p.addStatement(new PolicyStatement().addAnyPrincipal());
+
+      test.deepEqual(stack.node.resolve(p), {
+        Statement: [
+          { Effect: 'Allow', Principal: '*' }
+        ],
+        Version: '2012-10-17'
+      });
+      test.done();
+    }
   },
 
   'addAwsPrincipal/addArnPrincipal are the aliases'(test: Test) {
@@ -278,9 +306,11 @@ export = {
 
   'addPrincipal correctly merges array in'(test: Test) {
     const stack = new Stack();
-    const arrayPrincipal: PolicyPrincipal = {
+    const arrayPrincipal: IPrincipal = {
+      get grantPrincipal() { return this; },
       assumeRoleAction: 'sts:AssumeRole',
-      policyFragment: () => new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
+      policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
+      addToPolicy() { return false; }
     };
     const s = new PolicyStatement().addAccountRootPrincipal()
                                    .addPrincipal(arrayPrincipal);
@@ -423,4 +453,85 @@ export = {
       test.done();
     }
   },
+
+  'duplicate statements': {
+
+    'without tokens'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      const statement = new PolicyStatement()
+        .addResources('resource1', 'resource2')
+        .addActions('action1', 'action2')
+        .addServicePrincipal('service')
+        .addConditions({
+          a: {
+            b: 'c'
+          },
+          d: {
+            e: 'f'
+          }
+        });
+
+      // WHEN
+      p.addStatement(statement);
+      p.addStatement(statement);
+      p.addStatement(statement);
+
+      // THEN
+      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.done();
+    },
+
+    'with tokens'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      const statement1 = new PolicyStatement()
+        .addResource(new Token(() => 'resource').toString())
+        .addAction(new Token(() => 'action').toString());
+      const statement2 = new PolicyStatement()
+        .addResource(new Token(() => 'resource').toString())
+        .addAction(new Token(() => 'action').toString());
+
+      // WHEN
+      p.addStatement(statement1);
+      p.addStatement(statement2);
+
+      // THEN
+      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.done();
+    },
+
+    'with base document'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const p = new PolicyDocument({
+        Statement: [
+          {
+            Action: 'action',
+            Effect: 'Allow',
+            Resource: 'resource'
+          },
+          {
+            Action: 'action',
+            Effect: 'Allow',
+            Resource: 'resource'
+          }
+        ]
+      });
+
+      p.addStatement(new PolicyStatement()
+        .addAction('action')
+        .addResource('resource'));
+
+      // THEN
+      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.done();
+    }
+  }
 };

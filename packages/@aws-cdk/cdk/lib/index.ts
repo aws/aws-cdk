@@ -23,16 +23,15 @@ export * from './resource-policy';
 export * from './cfn-rule';
 export * from './stack';
 export * from './cfn-element';
-export * from './dynamic-reference';
+export * from './cfn-dynamic-reference';
 export * from './tag';
 export * from './removal-policy';
 export * from './arn';
-export * from './secret';
 
 export * from './app';
 export * from './context';
 export * from './environment';
 
 export * from './runtime';
-
+export * from './secret-value';
 export * from './synthesis';

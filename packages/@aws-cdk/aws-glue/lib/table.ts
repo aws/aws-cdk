@@ -264,56 +264,45 @@ export class Table extends cdk.Construct implements ITable {
   /**
    * Grant read permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
-   * @param identity the principal
+   * @param grantee the principal
    */
-  public grantRead(identity: iam.IPrincipal): void {
-    this.grant(identity, {
-      permissions: readPermissions,
-      kmsActions: ['kms:Decrypt']
-    });
-    this.bucket.grantRead(identity, this.s3Prefix);
+  public grantRead(grantee: iam.IGrantable): iam.Grant {
+    const ret = this.grant(grantee, readPermissions);
+    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantDecrypt(grantee); }
+    this.bucket.grantRead(grantee, this.s3Prefix);
+    return ret;
   }
 
   /**
    * Grant write permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
-   * @param identity the principal
+   * @param grantee the principal
    */
-  public grantWrite(identity: iam.IPrincipal): void {
-    this.grant(identity, {
-      permissions: writePermissions,
-      kmsActions: ['kms:Encrypt', 'kms:GenerateDataKey']
-    });
-    this.bucket.grantWrite(identity, this.s3Prefix);
+  public grantWrite(grantee: iam.IGrantable): iam.Grant {
+    const ret = this.grant(grantee, writePermissions);
+    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantEncrypt(grantee); }
+    this.bucket.grantWrite(grantee, this.s3Prefix);
+    return ret;
   }
 
   /**
    * Grant read and write permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
-   * @param identity the principal
+   * @param grantee the principal
    */
-  public grantReadWrite(identity: iam.IPrincipal): void {
-    this.grant(identity, {
-      permissions: readPermissions.concat(writePermissions),
-      kmsActions: ['kms:Decrypt', 'kms:Encrypt', 'kms:GenerateDataKey']
-    });
-    this.bucket.grantReadWrite(identity, this.s3Prefix);
+  public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
+    const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
+    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantEncryptDecrypt(grantee); }
+    this.bucket.grantReadWrite(grantee, this.s3Prefix);
+    return ret;
   }
 
-  private grant(identity: iam.IPrincipal, props: {
-    permissions: string[];
-    // CSE-KMS needs to grant its own KMS policies because the bucket is unaware of the key.
-    // TODO: we wouldn't need this if kms.EncryptionKey exposed grant methods.
-    kmsActions?: string[];
-  }) {
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.tableArn)
-      .addActions(...props.permissions));
-    if (this.encryption === TableEncryption.ClientSideKms) {
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.encryptionKey!.keyArn)
-        .addActions(...props.kmsActions!));
-    }
+  private grant(grantee: iam.IGrantable, actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      resourceArns: [this.tableArn],
+      actions,
+    });
   }
 }
 

@@ -17,7 +17,7 @@ const source = new cpactions.GitHubSourceAction({
   actionName: 'GitHub',
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: new cdk.Secret('DummyToken'),
+  oauthToken: cdk.SecretValue.plainText('DummyToken'),
   pollForSourceChanges: true,
   outputArtifactName: 'Artifact_CICDGitHubF8BA7ADD',
 });

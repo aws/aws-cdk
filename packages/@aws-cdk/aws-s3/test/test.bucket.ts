@@ -3,6 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
+import { EOL } from 'os';
 import s3 = require('../lib');
 
 // to make it easy to copy & paste from output:
@@ -69,6 +70,142 @@ export = {
         }
       }
     });
+    test.done();
+  },
+
+  'valid bucket names'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: 'abc.xyz-34ab'
+    }));
+
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket2', {
+      bucketName: '124.pp--33'
+    }));
+
+    test.done();
+  },
+
+  'bucket validation skips tokenized values'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket', {
+      bucketName: new cdk.Token(() => '_BUCKET').toString()
+    }));
+
+    test.done();
+  },
+
+  'fails with message on invalid bucket names'(test: Test) {
+    const stack = new cdk.Stack();
+    const bucket = `-buckEt.-${new Array(65).join('$')}`;
+    const expectedErrors = [
+      `Invalid S3 bucket name (value: ${bucket})`,
+      'Bucket name must be at least 3 and no more than 63 characters',
+      'Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) (offset: 5)',
+      'Bucket name must start and end with a lowercase character or number (offset: 0)',
+      `Bucket name must start and end with a lowercase character or number (offset: ${bucket.length - 1})`,
+      'Bucket name must not have dash next to period, or period next to dash, or consecutive periods (offset: 7)',
+    ].join(EOL);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket', {
+      bucketName: bucket
+    // tslint:disable-next-line:only-arrow-functions
+    }), function(err: Error) {
+      return expectedErrors === err.message;
+    });
+
+    test.done();
+  },
+
+  'fails if bucket name has less than 3 or more than 63 characters'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: 'a'
+    }), /at least 3/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
+      bucketName: new Array(65).join('x')
+    }), /no more than 63/);
+
+    test.done();
+  },
+
+  'fails if bucket name has invalid characters'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: 'b@cket'
+    }), /offset: 1/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
+      bucketName: 'bucKet'
+    }), /offset: 3/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
+      bucketName: 'bučket'
+    }), /offset: 2/);
+
+    test.done();
+  },
+
+  'fails if bucket name does not start or end with lowercase character or number'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: '-ucket'
+    }), /offset: 0/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
+      bucketName: 'bucke.'
+    }), /offset: 5/);
+
+    test.done();
+  },
+
+  'fails only if bucket name has the consecutive symbols (..), (.-), (-.)'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: 'buc..ket'
+    }), /offset: 3/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
+      bucketName: 'buck.-et'
+    }), /offset: 4/);
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
+      bucketName: 'b-.ucket'
+    }), /offset: 1/);
+
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket4', {
+      bucketName: 'bu--cket'
+    }));
+
+    test.done();
+  },
+
+  'fails only if bucket name resembles IP address'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
+      bucketName: '1.2.3.4'
+    }), /must not resemble an IP address/);
+
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket2', {
+      bucketName: '1.2.3'
+    }));
+
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket3', {
+      bucketName: '1.2.3.a'
+    }));
+
+    test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket4', {
+      bucketName: '1000.2.3.4'
+    }));
+
     test.done();
   },
 
@@ -743,6 +880,65 @@ export = {
       test.done();
     },
 
+    'grant permissions to non-identity principal'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
+
+      // WHEN
+      bucket.grantRead(new iam.OrganizationPrincipal('o-1234'));
+
+      // THEN
+      expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [ "s3:GetObject*", "s3:GetBucket*", "s3:List*" ],
+              "Condition": { "StringEquals": { "aws:PrincipalOrgID": "o-1234" } },
+              "Effect": "Allow",
+              "Principal": "*",
+              "Resource": [
+                { "Fn::GetAtt": [ "MyBucketF68F3FF0", "Arn" ] },
+                { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "MyBucketF68F3FF0", "Arn" ] }, "/*" ] ] }
+              ]
+            }
+          ]
+        }
+      }));
+
+      expect(stack).to(haveResource('AWS::KMS::Key', {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [ "kms:Create*", "kms:Describe*", "kms:Enable*", "kms:List*", "kms:Put*", "kms:Update*",
+                  "kms:Revoke*", "kms:Disable*", "kms:Get*", "kms:Delete*", "kms:ScheduleKeyDeletion", "kms:CancelKeyDeletion" ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [ "", [
+                      "arn:", { "Ref": "AWS::Partition" }, ":iam::", { "Ref": "AWS::AccountId" }, ":root"
+                  ]]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [ "kms:Decrypt", "kms:DescribeKey" ],
+              "Effect": "Allow",
+              "Resource": "*",
+              "Principal": "*",
+              "Condition": { "StringEquals": { "aws:PrincipalOrgID": "o-1234" } },
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+
+      }));
+
+      test.done();
+    },
+
     'if an encryption key is included, encrypt/decrypt permissions are also added both ways'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
@@ -1214,8 +1410,8 @@ export = {
       const bucket = new s3.Bucket(stack, 'b');
 
       // WHEN
-      const statement = bucket.grantPublicAccess();
-      statement.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+      const result = bucket.grantPublicAccess();
+      result.resourceStatement!.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
 
       // THEN
       expect(stack).to(haveResource('AWS::S3::BucketPolicy', {

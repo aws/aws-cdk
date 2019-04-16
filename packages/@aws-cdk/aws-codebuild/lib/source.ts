@@ -1,7 +1,7 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { SecretValue } from '@aws-cdk/cdk';
 import { CfnProject } from './codebuild.generated';
 import { Project } from './project';
 
@@ -22,6 +22,7 @@ export interface BuildSourceProps {
 export abstract class BuildSource {
   public readonly identifier?: string;
   public abstract readonly type: SourceType;
+  public readonly badgeSupported: boolean = false;
 
   constructor(props: BuildSourceProps) {
     this.identifier = props.identifier;
@@ -89,6 +90,7 @@ export interface GitBuildSourceProps extends BuildSourceProps {
  * A common superclass of all build sources that are backed by Git.
  */
 export abstract class GitBuildSource extends BuildSource {
+  public readonly badgeSupported: boolean = true;
   private readonly cloneDepth?: number;
 
   protected constructor(props: GitBuildSourceProps) {
@@ -117,6 +119,7 @@ export interface CodeCommitSourceProps extends GitBuildSourceProps {
  */
 export class CodeCommitSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.CodeCommit;
+  public readonly badgeSupported: boolean = false;
   private readonly repo: codecommit.IRepository;
 
   constructor(props: CodeCommitSourceProps) {
@@ -167,7 +170,7 @@ export class S3BucketSource extends BuildSource {
    * @internal
    */
   public _bind(project: Project) {
-    this.bucket.grantRead(project.role);
+    this.bucket.grantRead(project);
   }
 
   protected toSourceProperty(): any {
@@ -213,7 +216,7 @@ export interface GitHubSourceProps extends GitBuildSourceProps {
    * Note that you need to give CodeBuild permissions to your GitHub account in order for the token to work.
    * That is a one-time operation that can be done through the AWS Console for CodeBuild.
    */
-  readonly oauthToken: cdk.Secret;
+  readonly oauthToken: SecretValue;
 
   /**
    * Whether to create a webhook that will trigger a build every time a commit is pushed to the GitHub repository.
@@ -236,7 +239,7 @@ export interface GitHubSourceProps extends GitBuildSourceProps {
 export class GitHubSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.GitHub;
   private readonly httpsCloneUrl: string;
-  private readonly oauthToken: cdk.Secret;
+  private readonly oauthToken: SecretValue;
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
 
@@ -277,7 +280,7 @@ export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
   /**
    * The OAuth token used to authenticate when cloning the git repository.
    */
-  readonly oauthToken: cdk.Secret;
+  readonly oauthToken: SecretValue;
 
   /**
    * Whether to ignore SSL errors when connecting to the repository.
@@ -293,7 +296,7 @@ export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
 export class GitHubEnterpriseSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.GitHubEnterprise;
   private readonly httpsCloneUrl: string;
-  private readonly oauthToken: cdk.Secret;
+  private readonly oauthToken: SecretValue;
   private readonly ignoreSslErrors?: boolean;
 
   constructor(props: GitHubEnterpriseSourceProps) {

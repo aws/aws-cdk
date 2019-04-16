@@ -1,3 +1,72 @@
+# CloudFormation Resource Specification v2.30.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Batch::JobDefinition.ResourceRequirement (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties ResourceRequirements (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+* Tag Key.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v2.29.0
+
+## New Resource Types
+
+* AWS::AppMesh::Mesh
+* AWS::AppMesh::Route
+* AWS::AppMesh::VirtualNode
+* AWS::AppMesh::VirtualRouter
+* AWS::AppMesh::VirtualService
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EKS::Cluster Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::ServiceDiscovery::Service.DnsRecord TTL.PrimitiveType (__changed__)
+  * Old: String
+  * New: Double
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+* Tag Key.Required (__changed__)
+  * Old: false
+  * New: true
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+
+
 
 
 # Serverless Application Model (SAM) Resource Specification v2016-10-31

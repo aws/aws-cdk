@@ -11,7 +11,7 @@ import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
 export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
-  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource {
+  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource, iam.IGrantable {
 
   /**
    * Logical ID of this Function.
@@ -51,7 +51,7 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  grantInvoke(identity?: iam.IPrincipal): void;
+  grantInvoke(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Return the given named metric for this Lambda
@@ -115,6 +115,10 @@ export interface FunctionImportProps {
 }
 
 export abstract class FunctionBase extends cdk.Construct implements IFunction  {
+  /**
+   * The principal this Lambda Function is running as
+   */
+  public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * The name of the function.
@@ -128,6 +132,8 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
 
   /**
    * The IAM role associated with this function.
+   *
+   * Undefined if the function was imported without a role.
    */
   public abstract readonly role?: iam.IRole;
 
@@ -231,12 +237,27 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  public grantInvoke(identity?: iam.IPrincipal) {
-    if (identity) {
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addAction('lambda:InvokeFunction')
-        .addResource(this.functionArn));
-    }
+  public grantInvoke(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: ['lambda:InvokeFunction'],
+      resourceArns: [this.functionArn],
+
+      // Fake resource-like object on which to call addToResourcePolicy(), which actually
+      // calls addPermission()
+      resource: {
+        addToResourcePolicy: (_statement) => {
+          // Couldn't add permissions to the principal, so add them locally.
+          const identifier = 'Invoke' + JSON.stringify(grantee!.grantPrincipal.policyFragment.principalJson);
+          this.addPermission(identifier, {
+            principal: grantee.grantPrincipal!,
+            action: 'lambda:InvokeFunction',
+          });
+        },
+        dependencyRoots: [],
+        node: this.node,
+      },
+    });
   }
 
   public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
@@ -315,11 +336,10 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     source.bind(this);
   }
 
-  private parsePermissionPrincipal(principal?: iam.PolicyPrincipal) {
+  private parsePermissionPrincipal(principal?: iam.IPrincipal) {
     if (!principal) {
       return undefined;
     }
-
     // use duck-typing, not instance of
 
     if ('accountId' in principal) {
@@ -330,7 +350,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(this.node.resolve(principal))}. ` +
+    throw new Error(`Invalid principal type for Lambda permission statement: ${this.node.resolve(principal.toString())}. ` +
       'Supported: AccountPrincipal, ServicePrincipal');
   }
 }

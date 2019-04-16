@@ -333,6 +333,11 @@ export class Function extends FunctionBase {
    */
   public readonly handler: string;
 
+  /**
+   * The principal this Lambda Function is running as
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+
   protected readonly canCreatePermissions = true;
 
   private readonly layers: ILayerVersion[] = [];
@@ -361,6 +366,7 @@ export class Function extends FunctionBase {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicyArns,
     });
+    this.grantPrincipal = this.role;
 
     for (const statement of (props.initialPolicy || [])) {
       this.role.addToPolicy(statement);
@@ -544,7 +550,7 @@ export class Function extends FunctionBase {
     // won't work because the ENIs don't get a Public IP.
     // Why are we not simply forcing vpcSubnets? Because you might still be choosing
     // Isolated networks or selecting among 2 sets of Private subnets by name.
-    const subnetIds = props.vpc.subnetIds(props.vpcSubnets);
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
     for (const subnetId of subnetIds) {
       if (publicSubnetIds.has(subnetId)) {
@@ -600,6 +606,7 @@ export class Function extends FunctionBase {
 }
 
 export class ImportedFunction extends FunctionBase {
+  public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;
   public readonly role?: iam.IRole;
@@ -612,6 +619,7 @@ export class ImportedFunction extends FunctionBase {
     this.functionArn = props.functionArn;
     this.functionName = extractNameFromArn(props.functionArn);
     this.role = props.role;
+    this.grantPrincipal = this.role || new iam.ImportedResourcePrincipal({ resource: this } );
 
     if (props.securityGroupId) {
       this._connections = new ec2.Connections({

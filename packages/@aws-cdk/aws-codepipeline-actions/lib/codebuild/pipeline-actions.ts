@@ -186,9 +186,9 @@ function setCodeBuildNeededPermissions(info: codepipeline.ActionBind, project: c
 
   // allow the Project access to the Pipline's artifact Bucket
   if (needsPipelineBucketWrite) {
-    info.pipeline.grantBucketReadWrite(project.role);
+    info.pipeline.grantBucketReadWrite(project);
   } else {
-    info.pipeline.grantBucketRead(project.role);
+    info.pipeline.grantBucketRead(project);
   }
 }
 

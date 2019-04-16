@@ -850,7 +850,8 @@
         ],
         "PlacementConstraints": [],
         "PlacementStrategies": [],
-        "SchedulingStrategy": "REPLICA"
+        "SchedulingStrategy": "REPLICA",
+        "ServiceRegistries": []
       },
       "DependsOn": [
         "LBPublicListenerECSGroupD6A32205",

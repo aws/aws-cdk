@@ -52,6 +52,10 @@ export interface AliasProps {
  */
 export class Alias extends FunctionBase {
   /**
+   * Name of this alias.
+   */
+  public readonly aliasName: string;
+  /**
    * ARN of this alias
    *
    * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
@@ -77,6 +81,7 @@ export class Alias extends FunctionBase {
   constructor(scope: cdk.Construct, id: string, props: AliasProps) {
     super(scope, id);
 
+    this.aliasName = props.aliasName;
     this.underlyingLambda = props.version.lambda;
 
     const alias = new CfnAlias(this, 'Resource', {
@@ -101,12 +106,19 @@ export class Alias extends FunctionBase {
     return this.underlyingLambda.role;
   }
 
+  public get grantPrincipal() {
+    return this.underlyingLambda.grantPrincipal;
+  }
+
   public metric(metricName: string, props: cloudwatch.MetricCustomization = {}): cloudwatch.Metric {
     // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differes from the base behavior.
     return super.metric(metricName, {
       dimensions: {
         FunctionName: this.underlyingLambda.functionName,
-        Resource: this.functionArn
+        // construct the ARN from the underlying lambda so that alarms on an alias
+        // don't cause a circular dependency with CodeDeploy
+        // see: https://github.com/awslabs/aws-cdk/issues/2231
+        Resource: `${this.underlyingLambda.functionArn}:${this.aliasName}`
       },
       ...props
     });

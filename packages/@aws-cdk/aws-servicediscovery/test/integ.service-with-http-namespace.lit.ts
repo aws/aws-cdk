@@ -12,7 +12,7 @@ const service1 = namespace.createService('NonIpService', {
   description: 'service registering non-ip instances',
 });
 
-service1.registerNonIpInstance({
+service1.registerNonIpInstance('NonIpInstance', {
   customAttributes: { arn: 'arn:aws:s3:::mybucket' }
 });
 
@@ -24,7 +24,7 @@ const service2 = namespace.createService('IpService', {
   }
 });
 
-service2.registerIpInstance({
+service2.registerIpInstance('IpInstance', {
   ipv4: '54.239.25.192',
 });
 
