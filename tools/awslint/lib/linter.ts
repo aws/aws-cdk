@@ -122,10 +122,10 @@ export class Evaluation<T> {
     return this.assert(a.toString() === e.toString(), scope, ` (expected="${e}",actual="${a}")`);
   }
 
-  public assertSignature(method: reflect.Method, expectations: MethodSignatureExpectations) {
+  public assertSignature(method: reflect.Callable, expectations: MethodSignatureExpectations) {
     const scope = method.parentType.fqn + '.' + method.name;
-    if (expectations.returns) {
-      this.assertTypesEqual(method.system, method.returns, expectations.returns, scope);
+    if (expectations.returns && reflect.Method.isMethod(method)) {
+      this.assertTypesEqual(method.system, method.returns.type, expectations.returns, scope);
     }
 
     if (expectations.parameters) {
