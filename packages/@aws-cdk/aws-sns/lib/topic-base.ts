@@ -6,11 +6,12 @@ import lambda = require('@aws-cdk/aws-lambda');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import { TopicPolicy } from './policy';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
 export interface ITopic extends
-  cdk.IConstruct,
+  IResource,
   events.IEventRuleTarget,
   cloudwatch.IAlarmAction,
   s3n.IBucketNotificationDestination,
@@ -87,7 +88,7 @@ export interface ITopic extends
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicBase extends cdk.Construct implements ITopic {
+export abstract class TopicBase extends Resource implements ITopic {
   public abstract readonly topicArn: string;
 
   public abstract readonly topicName: string;

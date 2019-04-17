@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct } from '@aws-cdk/cdk';
 import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPublicDnsNamespace} from './servicediscovery.generated';
@@ -30,7 +30,7 @@ export class PublicDnsNamespace extends NamespaceBase {
    */
   public readonly type: NamespaceType;
 
-  constructor(scope: cdk.Construct, id: string, props: PublicDnsNamespaceProps) {
+  constructor(scope: Construct, id: string, props: PublicDnsNamespaceProps) {
     super(scope, id);
 
     const ns = new CfnPublicDnsNamespace(this, 'Resource', {

@@ -1,4 +1,4 @@
-import { CfnOutput, Construct } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, Resource } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -93,7 +93,7 @@ export interface RoleProps {
  * Defines an IAM role. The role is created with an assume policy document associated with
  * the specified AWS service principal defined in `serviceAssumeRole`.
  */
-export class Role extends Construct implements IRole {
+export class Role extends Resource implements IRole {
   /**
    * Import a role that already exists
    */

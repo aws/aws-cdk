@@ -525,27 +525,11 @@ export function isEnumLikeClass(cls: jsiiReflect.Type | undefined): cls is jsiiR
 }
 
 export function enumLikeClassMethods(cls: jsiiReflect.ClassType) {
-  return cls.allMethods.filter(m => m.static && m.returns && m.returns.type.type && extendsType(m.returns.type.type, cls));
+  return cls.allMethods.filter(m => m.static && m.returns && m.returns.type.type && m.returns.type.type.extends(cls));
 }
 
 export function enumLikeClassProperties(cls: jsiiReflect.ClassType) {
-  return cls.allProperties.filter(p => p.static && p.type.type && extendsType(p.type.type, cls));
-}
-
-export function extendsType(derived: jsiiReflect.Type, base: jsiiReflect.Type) {
-  if (derived === base) {
-    return true;
-  }
-
-  if (derived instanceof jsiiReflect.InterfaceType && base instanceof jsiiReflect.InterfaceType) {
-    return derived.interfaces.some(x => x === base);
-  }
-
-  if (derived instanceof jsiiReflect.ClassType && base instanceof jsiiReflect.ClassType) {
-    return derived.getAncestors().some(x => x === base);
-  }
-
-  return false;
+  return cls.allProperties.filter(p => p.static && p.type.type && p.type.type.extends(cls));
 }
 
 export function isConstruct(typeOrTypeRef: jsiiReflect.TypeReference | jsiiReflect.Type): boolean {
@@ -575,12 +559,14 @@ export function isConstruct(typeOrTypeRef: jsiiReflect.TypeReference | jsiiRefle
 
   // if it is an interface, it should extend cdk.IConstruct
   if (type instanceof jsiiReflect.InterfaceType) {
-    return extendsType(type, type.system.findFqn('@aws-cdk/cdk.IConstruct'));
+    const constructIface = type.system.findFqn('@aws-cdk/cdk.IConstruct');
+    return type.extends(constructIface);
   }
 
   // if it is a class, it should extend cdk.Construct
   if (type instanceof jsiiReflect.ClassType) {
-    return extendsType(type, type.system.findFqn('@aws-cdk/cdk.Construct'));
+    const constructClass = type.system.findFqn('@aws-cdk/cdk.Construct');
+    return type.extends(constructClass);
   }
 
   return false;
@@ -599,9 +585,9 @@ function allImplementationsOfType(type: jsiiReflect.Type) {
 }
 
 function allSubclasses(base: jsiiReflect.ClassType) {
-  return base.system.classes.filter(x => extendsType(x, base));
+  return base.system.classes.filter(x => x.extends(base));
 }
 
 function allImplementations(base: jsiiReflect.InterfaceType) {
-  return base.system.classes.filter(x => x.getInterfaces().some(i => extendsType(i, base)));
+  return base.system.classes.filter(x => x.getInterfaces().some(i => i.extends(base)));
 }

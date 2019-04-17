@@ -1,10 +1,10 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, IResource, Resource } from '@aws-cdk/cdk';
 
 /**
  * An EKS cluster
  */
-export interface ICluster extends cdk.IConstruct, ec2.IConnectable {
+export interface ICluster extends IResource, ec2.IConnectable {
   /**
    * The VPC in which this Cluster was created
    */
@@ -40,7 +40,7 @@ export interface ICluster extends cdk.IConstruct, ec2.IConnectable {
 /**
  * A SecurityGroup Reference, object not created with this template.
  */
-export abstract class ClusterBase extends cdk.Construct implements ICluster {
+export abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly connections: ec2.Connections;
   public abstract readonly vpc: ec2.IVpcNetwork;
   public abstract readonly clusterName: string;
@@ -63,7 +63,7 @@ export abstract class ClusterBase extends cdk.Construct implements ICluster {
   }
 
   private makeOutput(name: string, value: any): string {
-    return new cdk.CfnOutput(this, name, { value }).makeImportValue().toString();
+    return new CfnOutput(this, name, { value }).makeImportValue().toString();
   }
 }
 

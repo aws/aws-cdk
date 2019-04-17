@@ -6,11 +6,12 @@ import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import { IEventSource } from './event-source';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
-export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
+export interface IFunction extends IResource, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
   s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource, iam.IGrantable {
 
   /**
@@ -114,7 +115,7 @@ export interface FunctionImportProps {
   readonly securityGroupId?: string;
 }
 
-export abstract class FunctionBase extends cdk.Construct implements IFunction  {
+export abstract class FunctionBase extends Resource implements IFunction  {
   /**
    * The principal this Lambda Function is running as
    */
