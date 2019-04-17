@@ -5,6 +5,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 
 import appmesh = require('../lib');
+import { Protocol } from '../lib';
 
 export = {
   'When an existing VirtualNode': {
@@ -30,7 +31,7 @@ export = {
         const node = mesh.addVirtualNode('test-node', {
           hostname: 'test',
           namespace,
-          listeners: {
+          listener: {
             portMappings: [
               {
                 port: 8080,
@@ -62,6 +63,68 @@ export = {
                 {
                   VirtualService: {
                     VirtualServiceName: 'test2.service.backend',
+                  },
+                },
+              ],
+            },
+          })
+        );
+
+        test.done();
+      },
+    },
+    'when a single portmapping is added': {
+      'should add the portmapping to the resoource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const vpc = ec2.VpcNetwork.import(stack, 'vpc', {
+          vpcId: '123456',
+          availabilityZones: ['us-east-1'],
+        });
+        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+          vpc,
+          name: 'domain.local',
+        });
+
+        const node = mesh.addVirtualNode('test-node', {
+          hostname: 'test',
+          namespace,
+          listener: {
+            portMappings: [
+              {
+                port: 8080,
+                protocol: appmesh.Protocol.HTTP,
+              },
+            ],
+          },
+        });
+
+        node.addPortMapping({
+          port: 8081,
+          protocol: Protocol.TCP,
+        });
+
+        // THEN
+        expect(stack).to(
+          haveResourceLike('AWS::AppMesh::VirtualNode', {
+            Spec: {
+              Listeners: [
+                {
+                  PortMapping: {
+                    Port: 8080,
+                    Protocol: 'http',
+                  },
+                },
+                {
+                  PortMapping: {
+                    Port: 8081,
+                    Protocol: 'tcp',
                   },
                 },
               ],
