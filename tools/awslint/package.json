@@ -16,7 +16,8 @@
   "dependencies": {
     "colors": "^1.3.3",
     "fs-extra": "^7.0.1",
-    "jsii-reflect": "^0.7.15",
+    "jsii-reflect": "^0.10.0",
+    "jsii-spec": "^0.10.0",
     "yargs": "^13.2.1"
   },
   "devDependencies": {

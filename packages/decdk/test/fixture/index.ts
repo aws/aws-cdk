@@ -5,27 +5,27 @@ export interface InterfaceWithPrimitives {
   /**
    * A property of type number.
    */
-  numberProperty: number;
+  readonly numberProperty: number;
 
   /**
    * A property of type string.
    */
-  stringProperty: string;
+  readonly stringProperty: string;
 
   /**
    * Array of strings.
    */
-  arrayOfStrings: string[];
+  readonly arrayOfStrings: string[];
 
   /**
    * Optional boolean
    */
-  optionalBoolean?: boolean;
+  readonly optionalBoolean?: boolean;
 
   //
   // intentionally left blank (to check that description is omitted)
   //
-  mapOfNumbers: { [key: string]: number }
+  readonly mapOfNumbers: { [key: string]: number }
 }
 
 export enum MyNormalEnum {

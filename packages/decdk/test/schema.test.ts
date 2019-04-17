@@ -1,10 +1,8 @@
-import { exec as execAsync } from 'child_process';
+import { spawn as spawnAsync, SpawnOptions } from 'child_process';
 import reflect = require('jsii-reflect');
 import path = require('path');
-import { promisify } from 'util';
 import { SchemaContext, schemaForInterface } from '../lib/jsii2schema';
 
-const exec = promisify(execAsync);
 const fixturedir = path.join(__dirname, 'fixture');
 
 // tslint:disable:no-console
@@ -15,11 +13,12 @@ jest.setTimeout(10_000);
 let typesys: reflect.TypeSystem;
 
 beforeAll(async () => {
+  typesys = new reflect.TypeSystem();
+
   // jsii-compile the fixtures module
-  await exec(require.resolve('jsii/bin/jsii'), { cwd: fixturedir });
+  await spawn(require.resolve('jsii/bin/jsii'), { cwd: fixturedir,  });
 
   // load the resulting file system
-  typesys = new reflect.TypeSystem();
   await typesys.loadFile(path.join(fixturedir, '.jsii'));
   await typesys.load(path.dirname(require.resolve('@aws-cdk/cdk/.jsii')));
 });
@@ -59,7 +58,7 @@ test('schemaForInterface: interface with primitives', async () => {
         },
         optionalBoolean: {
           type: 'boolean',
-          description: 'Optional boolean'
+          description: 'Optional boolean.'
         }
       },
       required: [
@@ -72,3 +71,21 @@ test('schemaForInterface: interface with primitives', async () => {
     }
   });
 });
+
+/**
+ * Version of spawn() that returns a promise
+ *
+ * Need spawn() so that we can set stdio to inherit so that any jsii errors
+ * are propagated outwards.
+ */
+function spawn(command: string, options: SpawnOptions | undefined) {
+  return new Promise((resolve, reject) => {
+    const cp = spawnAsync(command, { stdio: 'inherit', ...options });
+
+    cp.on('error', reject);
+    cp.on('exit', (code) => {
+      if (code === 0) { resolve(); }
+      reject(new Error(`Subprocess exited with ${code}`));
+    });
+  });
+}

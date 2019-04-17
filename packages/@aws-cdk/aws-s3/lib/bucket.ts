@@ -644,7 +644,7 @@ export class Bucket extends BucketBase {
   /**
    * Creates a Bucket construct that represents an external bucket.
    *
-   * @param parent The parent creating construct (usually `this`).
+   * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param props A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.

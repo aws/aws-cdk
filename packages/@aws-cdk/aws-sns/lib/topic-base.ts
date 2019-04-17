@@ -36,7 +36,6 @@ export interface ITopic extends
    * The queue resource policy will be updated to allow this SNS topic to send
    * messages to the queue.
    *
-   * @param name The subscription name
    * @param queue The target queue
    * @param rawMessageDelivery Enable raw message delivery
    */
@@ -48,7 +47,6 @@ export interface ITopic extends
    * The Lambda's resource policy will be updated to allow this topic to
    * invoke the function.
    *
-   * @param name A name for the subscription
    * @param lambdaFunction The Lambda function to invoke
    */
   subscribeLambda(lambdaFunction: lambda.IFunction): Subscription;
@@ -58,7 +56,7 @@ export interface ITopic extends
    *
    * @param name A name for the subscription
    * @param emailAddress The email address to use.
-   * @param jsonFormat True if the email content should be in JSON format (default is false).
+   * @param options Options to use for email subscription
    */
   subscribeEmail(name: string, emailAddress: string, options?: EmailSubscriptionOptions): Subscription;
 
@@ -135,7 +133,6 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    * The queue resource policy will be updated to allow this SNS topic to send
    * messages to the queue.
    *
-   * @param name The subscription name
    * @param queue The target queue
    * @param rawMessageDelivery Enable raw message delivery
    */
@@ -176,7 +173,6 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    * The Lambda's resource policy will be updated to allow this topic to
    * invoke the function.
    *
-   * @param name A name for the subscription
    * @param lambdaFunction The Lambda function to invoke
    */
   public subscribeLambda(lambdaFunction: lambda.IFunction): Subscription {

@@ -2,7 +2,7 @@ import cdk = require('@aws-cdk/cdk');
 import reflect = require('jsii-reflect');
 import jsonschema = require('jsonschema');
 import { renderFullSchema } from './cdk-schema';
-import { isConstruct, isEnumLikeClass, isSerializableInterface, SchemaContext, schemaForPolymorphic, isDataType } from './jsii2schema';
+import { isConstruct, isDataType, isEnumLikeClass, isSerializableInterface, SchemaContext, schemaForPolymorphic } from './jsii2schema';
 
 export interface DeclarativeStackProps extends cdk.StackProps {
   typeSystem: reflect.TypeSystem;
@@ -37,7 +37,7 @@ export class DeclarativeStack extends cdk.Stack {
       const typeInfo = typeSystem.findFqn(rprops.Type + 'Props');
       const typeRef = new reflect.TypeReference(typeSystem, typeInfo);
       const Ctor = resolveType(rprops.Type);
-      new Ctor(this, logicalId, deserializeValue(this, typeRef, 'Properties', rprops.Properties || { }));
+      new Ctor(this, logicalId, deserializeValue(this, typeRef, true, 'Properties', rprops.Properties));
       delete template.Resources[logicalId];
     }
 
@@ -90,14 +90,14 @@ function tryResolveGetAtt(value: any) {
   return fn.val;
 }
 
-function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key: string, value: any): any {
+function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, optional: boolean, key: string, value: any): any {
   // console.error('====== deserializer ===================');
   // console.error(`type: ${typeRef}`);
   // console.error(`value: ${JSON.stringify(value, undefined, 2)}`);
   // console.error('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`');
 
   if (value === undefined) {
-    if (typeRef.optional) {
+    if (optional) {
       return undefined;
     }
 
@@ -110,7 +110,7 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key:
       throw new Error(`Expecting array for ${key} in ${typeRef}`);
     }
 
-    return value.map((x, i) => deserializeValue(stack, typeRef.arrayOfType!, `${key}[${i}]`, x));
+    return value.map((x, i) => deserializeValue(stack, typeRef.arrayOfType!, false, `${key}[${i}]`, x));
   }
 
   const asRef = tryResolveRef(value);
@@ -150,7 +150,7 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key:
 
     const out: any = { };
     for (const [ k, v ] of Object.entries(value)) {
-      out[k] = deserializeValue(stack, typeRef.mapOfType, `${key}.${k}`, v);
+      out[k] = deserializeValue(stack, typeRef.mapOfType, false, `${key}.${k}`, v);
     }
 
     return out;
@@ -160,7 +160,7 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key:
     const errors = new Array<any>();
     for (const x of typeRef.unionOfTypes) {
       try {
-        return deserializeValue(stack, x, key, value);
+        return deserializeValue(stack, x, optional, key, value);
       } catch (e) {
         if (!(e instanceof ValidationError)) {
           throw e;
@@ -185,8 +185,8 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key:
   }
 
   // if this is an enum type, use the name to dereference
-  if (typeRef.fqn instanceof reflect.EnumType) {
-    const enumType = resolveType(typeRef.fqn.fqn);
+  if (typeRef.type instanceof reflect.EnumType) {
+    const enumType = resolveType(typeRef.type.fqn);
     return enumType[value];
   }
 
@@ -208,48 +208,48 @@ function deserializeValue(stack: cdk.Stack, typeRef: reflect.TypeReference, key:
 }
 
 function deconstructEnum(_stack: cdk.Stack, typeRef: reflect.TypeReference, _key: string, value: any) {
-  if (!(typeRef.fqn instanceof reflect.EnumType)) {
+  if (!(typeRef.type instanceof reflect.EnumType)) {
     return undefined;
   }
 
-  const enumType = resolveType(typeRef.fqn.fqn);
+  const enumType = resolveType(typeRef.type.fqn);
   return enumType[value];
 }
 
 function deconstructInterface(stack: cdk.Stack, typeRef: reflect.TypeReference, key: string, value: any) {
-  if (!isSerializableInterface(typeRef.fqn)) {
+  if (!isSerializableInterface(typeRef.type)) {
     return undefined;
   }
 
   const out: any = { };
-  for (const prop of typeRef.fqn.getProperties(true)) {
+  for (const prop of typeRef.type.allProperties) {
     const propValue = value[prop.name];
     if (!propValue) {
-      if (!prop.type.optional) {
+      if (!prop.optional) {
         throw new ValidationError(`Missing required property ${key}.${prop.name} in ${typeRef}`);
       }
       continue;
     }
 
-    out[prop.name] = deserializeValue(stack, prop.type, `${key}.${prop.name}`, propValue);
+    out[prop.name] = deserializeValue(stack, prop.type, prop.optional, `${key}.${prop.name}`, propValue);
   }
 
   return out;
 }
 
 function deconstructEnumLike(stack: cdk.Stack, typeRef: reflect.TypeReference, value: any) {
-  if (!isEnumLikeClass(typeRef.fqn)) {
+  if (!isEnumLikeClass(typeRef.type)) {
     return undefined;
   }
 
   // if the value is a string, we deconstruct it as a static property
   if (typeof(value) === 'string') {
-    return deconstructStaticProperty(typeRef.fqn, value);
+    return deconstructStaticProperty(typeRef.type, value);
   }
 
   // if the value is an object, we deconstruct it as a static method
   if (typeof(value) === 'object' && !Array.isArray(value)) {
-    return deconstructStaticMethod(stack, typeRef.fqn, value);
+    return deconstructStaticMethod(stack, typeRef.type, value);
   }
 
   throw new Error(`Invalid value for enum-like class ${typeRef.fqn}: ${JSON.stringify(value)}`);
@@ -258,7 +258,7 @@ function deconstructEnumLike(stack: cdk.Stack, typeRef: reflect.TypeReference, v
 function deconstructType(stack: cdk.Stack, typeRef: reflect.TypeReference, value: any) {
   const schemaDefs: any = {};
   const ctx = SchemaContext.root(schemaDefs);
-  const schemaRef = schemaForPolymorphic(typeRef.fqn, ctx);
+  const schemaRef = schemaForPolymorphic(typeRef.type, ctx);
   if (!schemaRef) {
     return undefined;
   }
@@ -307,7 +307,7 @@ function deconstructStaticProperty(typeRef: reflect.ClassType, value: string) {
 }
 
 function deconstructStaticMethod(stack: cdk.Stack, typeRef: reflect.ClassType, value: any) {
-  const methods = typeRef.getMethods(true).filter(m => m.static);
+  const methods = typeRef.allMethods.filter(m => m.static);
   const members = methods.map(x => x.name);
 
   if (typeof(value) === 'object') {
@@ -330,7 +330,7 @@ function deconstructStaticMethod(stack: cdk.Stack, typeRef: reflect.ClassType, v
   }
 }
 
-function invokeMethod(stack: cdk.Stack, method: reflect.Method, parameters: any) {
+function invokeMethod(stack: cdk.Stack, method: reflect.Callable, parameters: any) {
   const typeClass = resolveType(method.parentType.fqn);
   const args = new Array<any>();
 
@@ -338,24 +338,24 @@ function invokeMethod(stack: cdk.Stack, method: reflect.Method, parameters: any)
     const p = method.parameters[i];
 
     // kwargs: if this is the last argument and a data type, flatten (treat as keyword args)
-    if (i === method.parameters.length - 1 && isDataType(p.type.fqn)) {
+    if (i === method.parameters.length - 1 && isDataType(p.type.type)) {
       // we pass in all parameters are the value, and the positional arguments will be ignored since
       // we are promised there are no conflicts
-      const kwargs = deserializeValue(stack, p.type, p.name, parameters);
+      const kwargs = deserializeValue(stack, p.type, p.optional, p.name, parameters);
       args.push(kwargs);
     } else {
       const val = parameters[p.name];
-      if (val === undefined && !p.type.optional) {
+      if (val === undefined && !p.optional) {
         throw new Error(`Missing required parameter '${p.name}' for ${method.parentType.fqn}.${method.name}`);
       }
 
       if (val !== undefined) {
-        args.push(deserializeValue(stack, p.type, p.name, val));
+        args.push(deserializeValue(stack, p.type, p.optional, p.name, val));
       }
     }
   }
 
-  if (method.initializer) {
+  if (reflect.Initializer.isInitializer(method)) {
     return new typeClass(...args);
   }
 

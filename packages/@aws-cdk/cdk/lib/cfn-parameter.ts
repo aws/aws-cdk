@@ -98,7 +98,7 @@ export class CfnParameter extends CfnRefElement {
    * Note that the name (logical ID) of the parameter will derive from it's `coname` and location
    * within the stack. Therefore, it is recommended that parameters are defined at the stack level.
    *
-   * @param parent The parent construct.
+   * @param scope The parent construct.
    * @param props The parameter properties.
    */
   constructor(scope: Construct, id: string, props: CfnParameterProps) {
