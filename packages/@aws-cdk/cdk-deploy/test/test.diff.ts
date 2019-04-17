@@ -2,12 +2,9 @@ import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { Writable } from 'stream';
 import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
-import { DeployStackOptions, DeployStackResult } from '../lib';
-import { AppStacks } from '../lib/api/cxapp/stacks';
+import { DeployStackOptions, DeployStackResult } from '../lib/api';
 import { IDeploymentTarget, Template } from '../lib/api/deployment-target';
-import { SDK } from '../lib/api/util/sdk';
-import { CdkToolkit } from '../lib/cdk-toolkit';
-import { Configuration } from '../lib/settings';
+import { CDKToolkit } from '../lib/cdk-toolkit';
 
 const FIXED_RESULT: cxapi.SynthesizeResponse = {
   version: '1',
@@ -28,11 +25,7 @@ const FIXED_RESULT: cxapi.SynthesizeResponse = {
   ]
 };
 
-const appStacks = new AppStacks({
-  configuration: new Configuration(),
-  aws: new SDK(),
-  synthesizer: async () => FIXED_RESULT,
-});
+const stacks = FIXED_RESULT.stacks;
 
 export = {
   async 'diff can diff multiple stacks'(test: Test) {
@@ -45,7 +38,7 @@ export = {
         return { noOp: true, outputs: {}, stackArn: ''};
       }
     };
-    const toolkit = new CdkToolkit({ appStacks, provisioner });
+    const toolkit = new CDKToolkit({ stacks, provisioner });
     const buffer = new StringWritable();
 
     // WHEN

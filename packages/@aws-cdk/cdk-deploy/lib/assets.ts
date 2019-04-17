@@ -6,7 +6,7 @@ import colors = require('colors');
 import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
-import { zipDirectory } from '../../../aws-cdk/lib/archive';
+import { zipDirectory } from '../lib/archive';
 import { ToolkitInfo } from './api/toolkit-info';
 import { prepareContainerAsset } from './docker';
 

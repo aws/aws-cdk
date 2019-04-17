@@ -1,6 +1,6 @@
+import { SDK } from '@aws-cdk/cdk-common';
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { SDK } from '../../lib';
 import { AppStacks, ExtendedStackSelection } from '../../lib/api/cxapp/stacks';
 import { Renames } from '../../lib/renames';
 import { Configuration } from '../../lib/settings';

@@ -1,9 +1,8 @@
+import { data, deserializeStructure, error, highlight, print, success } from '@aws-cdk/cdk-common';
+import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
 import { format, promisify } from 'util';
-// import { AppStacks, ExtendedStackSelection } from "../../../aws-cdk/lib/api/cxapp/stacks";
-import { data, error, highlight, print, success } from '../../../aws-cdk/lib/logging';
-import { deserializeStructure } from '../../../aws-cdk/lib/serialize';
 import { IDeploymentTarget } from './api/deployment-target';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 
@@ -15,7 +14,7 @@ export interface CdkToolkitProps {
   /**
    * The (stacks of the) CDK application
    */
-  appStacks: AppStacks;
+  stacks: cxapi.SynthesizedStack[];
 
   /**
    * The provisioning engine used to apply changes to the cloud
@@ -24,25 +23,20 @@ export interface CdkToolkitProps {
 }
 
 /**
- * Toolkit logic
+ * Diffs and deploys an application's stacks.
  *
- * The toolkit takes CDK app models from the `appStacks`
- * object and applies them to the `provisioner`.
+ * // TODO: rename?
  */
-export class CdkToolkit {
-  private readonly appStacks: AppStacks;
+export class CDKToolkit {
+  private readonly stacks: cxapi.SynthesizedStack[];
   private readonly provisioner: IDeploymentTarget;
 
   constructor(props: CdkToolkitProps) {
-    this.appStacks = props.appStacks;
+    this.stacks = props.stacks;
     this.provisioner = props.provisioner;
   }
 
   public async diff(options: DiffOptions): Promise<number> {
-    const stacks = await this.appStacks.selectStacks(
-      options.stackNames,
-      options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
-
     const strict = !!options.strict;
     const contextLines = options.contextLines || 3;
     const stream = options.stream || process.stderr;
@@ -50,7 +44,7 @@ export class CdkToolkit {
     let ret = 0;
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
-      if (stacks.length !== 1) {
+      if (this.stacks.length !== 1) {
         throw new Error('Can only select one stack when comparing to fixed template. Use --excusively to avoid selecting multiple stacks.');
       }
 
@@ -58,10 +52,10 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
-      ret = printStackDiff(template, stacks[0], strict, contextLines, options.stream);
+      ret = printStackDiff(template, this.stacks[0], strict, contextLines, options.stream);
     } else {
       // Compare N stacks against deployed templates
-      for (const stack of stacks) {
+      for (const stack of this.stacks) {
         stream.write(format('Stack %s\n', colors.bold(stack.name)));
         const currentTemplate = await this.provisioner.readCurrentTemplate(stack);
         if (printStackDiff(currentTemplate, stack, !!options.strict, options.contextLines || 3, stream) !== 0) {
@@ -76,12 +70,8 @@ export class CdkToolkit {
   public async deploy(options: DeployOptions) {
     const requireApproval = options.requireApproval !== undefined ? options.requireApproval : RequireApproval.Broadening;
 
-    const stacks = await this.appStacks.selectStacks(
-      options.stackNames,
-      options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
-
-    for (const stack of stacks) {
-      if (stacks.length !== 1) { highlight(stack.name); }
+    for (const stack of this.stacks) {
+      if (this.stacks.length !== 1) { highlight(stack.name); }
       if (!stack.environment) {
         // tslint:disable-next-line:max-line-length
         throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
@@ -103,11 +93,7 @@ export class CdkToolkit {
         }
       }
 
-      if (stack.name !== stack.originalName) {
-        print('%s: deploying... (was %s)', colors.bold(stack.name), colors.bold(stack.originalName));
-      } else {
-        print('%s: deploying...', colors.bold(stack.name));
-      }
+      print('%s: deploying...', colors.bold(stack.name));
 
       try {
         const result = await this.provisioner.deployStack({

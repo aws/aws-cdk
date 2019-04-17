@@ -1,6 +1,6 @@
+import { MockSDK } from '@aws-cdk/cdk-common/test/util/mock-sdk';
 import { Test } from 'nodeunit';
-import { deployStack } from '../../lib';
-import { MockSDK } from '../util/mock-sdk';
+import { deployStack } from '../../lib/api/deploy-stack';
 
 const FAKE_STACK = {
   name: 'withouterrors',

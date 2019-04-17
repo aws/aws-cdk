@@ -1,6 +1,6 @@
 import { AssetMetadataEntry, ContainerImageAssetMetadataEntry, SynthesizedStack } from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { Uploaded, UploadProps } from '../lib';
+import { Uploaded, UploadProps } from '../lib/api/toolkit-info';
 import { prepareAssets } from '../lib/assets';
 
 export = {
