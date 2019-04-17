@@ -3,6 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
 import cdk = require('@aws-cdk/cdk');
+import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
@@ -669,6 +670,9 @@ export class Bucket extends BucketBase {
     super(scope, id);
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
+    if (props.bucketName && !cdk.Token.unresolved(props.bucketName)) {
+      this.validateBucketName(props.bucketName);
+    }
 
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: props && props.bucketName,
@@ -774,6 +778,40 @@ export class Bucket extends BucketBase {
    */
   public onObjectRemoved(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     return this.onEvent(EventType.ObjectRemoved, dest, ...filters);
+  }
+
+  private validateBucketName(bucketName: string) {
+    const errors: string[] = [];
+
+    // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
+    if (bucketName.length < 3 || bucketName.length > 63) {
+      errors.push('Bucket name must be at least 3 and no more than 63 characters');
+    }
+    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
+    if (charsetMatch) {
+      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
+        + `(offset: ${charsetMatch.index})`);
+    }
+    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + '(offset: 0)');
+    }
+    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + `(offset: ${bucketName.length - 1})`);
+    }
+    const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
+    if (consecSymbolMatch) {
+      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods '
+        + `(offset: ${consecSymbolMatch.index})`);
+    }
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
+      errors.push('Bucket name must not resemble an IP address');
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
+    }
   }
 
   /**

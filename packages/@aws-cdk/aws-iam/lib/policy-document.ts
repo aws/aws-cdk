@@ -3,7 +3,7 @@ import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { IPrincipal } from './principals';
 import { mergePrincipal } from './util';
 
-export class PolicyDocument extends cdk.Token {
+export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostProcessor {
   private statements = new Array<PolicyStatement>();
 
   /**
@@ -11,7 +11,7 @@ export class PolicyDocument extends cdk.Token {
    * @param defaultDocument An IAM policy document to use as an initial
    * policy. All statements of this document will be copied in.
    */
-  constructor(private readonly baseDocument?: any) {
+  constructor(private readonly baseDocument: any = {}) {
     super();
   }
 
@@ -20,11 +20,38 @@ export class PolicyDocument extends cdk.Token {
       return undefined;
     }
 
-    const doc = this.baseDocument || { };
-    doc.Statement = doc.Statement || [ ];
-    doc.Version = doc.Version || '2012-10-17';
-    doc.Statement = doc.Statement.concat(this.statements);
+    const doc = {
+      ...this.baseDocument,
+      Statement: (this.baseDocument.Statement || []).concat(this.statements),
+      Version: this.baseDocument.Version || '2012-10-17'
+    };
+
     return doc;
+  }
+
+  /**
+   * Removes duplicate statements
+   */
+  public postProcess(input: any, _context: cdk.ResolveContext): any {
+    if (!input || !input.Statement) {
+      return input;
+    }
+
+    const jsonStatements = new Set<string>();
+    const uniqueStatements: PolicyStatement[] = [];
+
+    for (const statement of input.Statement) {
+      const jsonStatement = JSON.stringify(statement);
+      if (!jsonStatements.has(jsonStatement)) {
+        uniqueStatements.push(statement);
+        jsonStatements.add(jsonStatement);
+      }
+    }
+
+    return {
+      ...input,
+      Statement: uniqueStatements
+    };
   }
 
   get isEmpty(): boolean {
@@ -39,6 +66,11 @@ export class PolicyDocument extends cdk.Token {
     return this.statements.length;
   }
 
+  /**
+   * Adds a statement to the policy document.
+   *
+   * @param statement the statement to add.
+   */
   public addStatement(statement: PolicyStatement): PolicyDocument {
     this.statements.push(statement);
     return this;
