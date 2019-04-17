@@ -17,28 +17,32 @@ export interface AddVirtualNodeProps {
    * @default optional if not provided, the id property will be used
    */
   readonly nodeName?: string;
+
   /**
    * The hostname for which to identify the VirtualNode, NOT the full FQDN
    *
    * @example serviceb NOT serviceb.domain.local
    */
   readonly hostname: string;
+
   /**
    * The service discovery namespace name
    * @example domain.local
    */
   readonly namespace: INamespace;
+
   /**
    * The backend services this node expects to send traffic to
    *
    * @default none
    */
   readonly backends?: VirtualNodeBackendProps[];
+
   /**
    * @default none
-   * if not specified must call addListeners(), addPortMappings() or addPortAndHealthCheckMappings()
+   * if not specified must call addListener(), addPortMappings() or addPortAndHealthCheckMappings()
    */
-  readonly listeners?: ListenerProps;
+  readonly listener?: ListenerProps;
 }
 
 /**
@@ -79,10 +83,12 @@ export interface MeshImportProps {
    * The AppMesh name to import
    */
   readonly meshName: string;
+
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
   readonly meshArn: string;
+
   /**
    * The unique identifier for the mesh
    */
@@ -97,26 +103,32 @@ export interface IMesh extends cdk.IConstruct {
    * The name of the AppMesh mesh
    */
   readonly meshName: string;
+
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
   readonly meshArn: string;
+
   /**
    * The unique identifier for the mesh
    */
   readonly meshUid: string;
+
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
    */
   addVirtualRouter(id: string, props: VirtualRouterBaseProps): VirtualRouter;
+
   /**
    * Adds a VirtualService with the given id
    */
   addVirtualService(id: string, props: VirtualServiceBaseProps): VirtualService;
+
   /**
    * Adds a VirtualNode to the Mesh
    */
   addVirtualNode(id: string, props: AddVirtualNodeProps): VirtualNode;
+
   /**
    * Exports the Mesh properties to re-use in other stacks
    */
@@ -131,6 +143,7 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
    * The name of the AppMesh mesh
    */
   public abstract readonly meshName: string;
+
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
@@ -146,7 +159,7 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
    */
   public addVirtualRouter(id: string, props: VirtualRouterBaseProps): VirtualRouter {
     return new VirtualRouter(this, id, {
-      meshName: this.meshName,
+      mesh: this,
       virtualRouterName: props.virtualRouterName,
       portMappings: props.portMappings,
     });
@@ -187,6 +200,7 @@ export interface MeshProps {
    * The name of the Mesh being defined
    */
   readonly meshName?: string;
+
   /**
    * The spec to be applied to the mesh, at this point, only egressFilter is available
    */
@@ -210,6 +224,7 @@ export class Mesh extends MeshBase {
    * The name of the AppMesh mesh
    */
   public readonly meshName: string;
+
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
@@ -220,19 +235,14 @@ export class Mesh extends MeshBase {
    */
   public readonly meshUid: string;
 
-  constructor(scope: cdk.Construct, id: string, props?: MeshProps) {
+  constructor(scope: cdk.Construct, id: string, props: MeshProps = {}) {
     super(scope, id);
 
     this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
-    const name = props && props.meshName ? props.meshName : this.node.id;
+    const name = props.meshName || this.node.id;
 
-    let filter: MeshFilterType;
-    if (props && props.meshSpec && props.meshSpec.egressFilter) {
-      filter = props.meshSpec.egressFilter;
-    } else {
-      filter = MeshFilterType.DROP_ALL;
-    }
+    const filter = (props.meshSpec && props.meshSpec.egressFilter) || MeshFilterType.DROP_ALL;
 
     const mesh = new CfnMesh(this, 'AppMesh', {
       meshName: name,
@@ -269,10 +279,12 @@ export class ImportedMesh extends MeshBase {
    * The name of the AppMesh mesh
    */
   public readonly meshName: string;
+
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
   public readonly meshArn: string;
+
   /**
    * The unique identifier for the mesh
    */
