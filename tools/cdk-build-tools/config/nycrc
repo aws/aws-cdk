@@ -9,6 +9,7 @@
         "lcov",
         "text-summary"
     ],
+    "extension": [".js", ".ts"],
     "cache": true,
     "exclude": [
         "coverage/**",
