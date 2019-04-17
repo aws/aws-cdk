@@ -8,23 +8,14 @@ import { HealthCheckProps, ListenerProps, NAME_TAG, PortMappingProps, Protocol }
 export interface IVirtualNode {
   /**
    * The name of the AppMesh which the virtual node belongs to
-   *
-   * @type {string}
-   * @memberof VirtualNode
    */
   readonly meshName: string;
   /**
    * The name of the VirtualNode
-   *
-   * @type {string}
-   * @memberof VirtualNode
    */
   readonly virtualNodeName: string;
   /**
    * The Amazon Resource Name belonging to the VirtualNdoe
-   *
-   * @type {string}
-   * @memberof VirtualNode
    */
   readonly virtualNodeArn: string;
 }
@@ -82,23 +73,14 @@ export interface VirtualNodeProps {
 export class VirtualNode extends cdk.Construct implements IVirtualNode {
   /**
    * The name of the AppMesh which the virtual node belongs to
-   *
-   * @type {string}
-   * @memberof VirtualNode
    */
   public readonly meshName: string;
   /**
    * The name of the VirtualNode
-   *
-   * @type {string}
-   * @memberof VirtualNode
    */
   public readonly virtualNodeName: string;
   /**
    * The Amazon Resource Name belonging to the VirtualNdoe
-   *
-   * @type {string}
-   * @memberof VirtualNode
    */
   public readonly virtualNodeArn: string;
 
@@ -150,9 +132,6 @@ export class VirtualNode extends cdk.Construct implements IVirtualNode {
 
   /**
    * Utility method to add a single backend for existing or new VritualNodes
-   *
-   * @param {VirtualNodeBackendProps} props
-   * @memberof VirtualNode
    */
   public addBackend(props: VirtualNodeBackendProps) {
     this.backends.push({
@@ -164,9 +143,6 @@ export class VirtualNode extends cdk.Construct implements IVirtualNode {
 
   /**
    * Utility method to add backends for existing or new VritualNodes
-   *
-   * @param {VirtualNodeBackendProps[]} props
-   * @memberof VirtualNode
    */
   public addBackends(props: VirtualNodeBackendProps[]) {
     props.forEach(s => {
@@ -180,9 +156,6 @@ export class VirtualNode extends cdk.Construct implements IVirtualNode {
 
   /**
    * Utility method to add Node Listeners for new or existing VirtualNodes
-   *
-   * @param {ListenerProps} props
-   * @memberof VirtualNode
    */
   public addListeners(props: ListenerProps) {
     if (props.portMappings && props.healthChecks) {
@@ -196,9 +169,6 @@ export class VirtualNode extends cdk.Construct implements IVirtualNode {
 
   /**
    * Utility method which adds only port mappings to the listener property as healthchecks are optional
-   *
-   * @param {PortMappingProps[]} props
-   * @memberof VirtualNode
    */
   public addPortMappings(props: PortMappingProps[]) {
     props.forEach(p => {
@@ -213,10 +183,6 @@ export class VirtualNode extends cdk.Construct implements IVirtualNode {
 
   /**
    * Utility method to add port mappings and healthecks, preferred method would be to use addListeners()
-   *
-   * @param {PortMappingProps[]} ports
-   * @param {HealthCheckProps[]} health
-   * @memberof VirtualNode
    */
   public addPortAndHealthCheckMappings(ports: PortMappingProps[], health: HealthCheckProps[]) {
     if (ports.length !== health.length) {

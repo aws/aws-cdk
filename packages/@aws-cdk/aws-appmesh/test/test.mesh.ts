@@ -40,7 +40,7 @@ export = {
         new appmesh.Mesh(stack, 'mesh', {
           meshName: 'test-mesh',
           meshSpec: {
-            egressFilter: appmesh.MeshFilterType.Allow_All,
+            egressFilter: appmesh.MeshFilterType.ALLOW_ALL,
           },
         });
 

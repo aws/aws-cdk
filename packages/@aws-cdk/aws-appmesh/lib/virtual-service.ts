@@ -6,11 +6,14 @@ import { NAME_TAG } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
 
+/**
+ * Represents the interface which all VirtualService based classes MUST implement
+ */
 export interface IVirtualService extends cdk.IConstruct {
   /**
    * The AppMesh mesh name for whiich the VirtualService belongs to
    */
-  readonly meshName: string;
+  readonly virtualServiceMeshName: string;
   /**
    * The name of the VirtualRouter which this VirtualService uses as provider
    */
@@ -44,7 +47,7 @@ export interface VirtualServiceBaseProps {
    */
   readonly virtualServiceName: string;
   /**
-   * The VirtualRouter which this VirtualService uses as provider
+   * The VirtualRouter which the VirtualService uses as provider
    */
   readonly virtualRouter?: IVirtualRouter;
   /**
@@ -71,44 +74,26 @@ export interface VirtualServiceProps extends VirtualServiceBaseProps {
 export class VirtualService extends cdk.Construct implements IVirtualService {
   /**
    * The AppMesh mesh name for whiich the VirtualService belongs to
-   *
-   * @type {string}
-   * @memberof VirtualService
    */
-  public readonly meshName: string;
+  public readonly virtualServiceMeshName: string;
   /**
-   * The name of the VirtualRouter which this VirtualService uses as provider
-   *
-   * @type {string}
-   * @memberof VirtualService
+   * The name of the VirtualRouter which the VirtualService uses as provider
    */
   public readonly virtualRouterName?: string;
   /**
    * The name of the VirtualNode attached to the virtual service
-   *
-   * @type {string}
-   * @memberof VirtualService
    */
   public readonly virtualNodeName?: string;
   /**
    * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
-   *
-   * @type {string}
-   * @memberof VirtualService
    */
   public readonly virtualServiceName: string;
   /**
    * The Amazon Resource Name (ARN) for the virtual service
-   *
-   * @type {string}
-   * @memberof VirtualService
    */
   public readonly virtaulServiceArn: string;
   /**
    * The unique identifier for the virtual service
-   *
-   * @type {string}
-   * @memberof VirtualService
    */
   readonly virtualServiceUid: string;
 
@@ -121,7 +106,7 @@ export class VirtualService extends cdk.Construct implements IVirtualService {
       throw new Error('Must provide only one of virtualNode or virtualRouter for the provider');
     }
 
-    this.meshName = props.mesh.meshName;
+    this.virtualServiceMeshName = props.mesh.meshName;
 
     // Check which provider to use node or router
     if (props.virtualRouter) {
@@ -136,7 +121,7 @@ export class VirtualService extends cdk.Construct implements IVirtualService {
     const name = props.virtualServiceName;
 
     const svc = new CfnVirtualService(this, 'VirtualService', {
-      meshName: this.meshName,
+      meshName: this.virtualServiceMeshName,
       virtualServiceName: name,
       spec: {
         provider: this.virtualServiceProvider,
@@ -145,6 +130,7 @@ export class VirtualService extends cdk.Construct implements IVirtualService {
 
     this.virtaulServiceArn = svc.virtualServiceArn;
     this.virtualServiceName = svc.virtualServiceName;
+    this.virtualServiceUid = svc.virtualServiceUid;
   }
 
   private addVirtualRouter(name: string): CfnVirtualService.VirtualServiceProviderProperty {

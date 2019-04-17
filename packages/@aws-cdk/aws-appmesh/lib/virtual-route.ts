@@ -5,37 +5,22 @@ import { CfnRoute } from './appmesh.generated';
 export interface IRoute {
   /**
    * The name of the service mesh that the route resides in
-   *
-   * @type {string}
-   * @memberof Route
    */
   readonly routeMeshName: string;
   /**
    * The name of the route
-   *
-   * @type {string}
-   * @memberof Route
    */
   readonly routeName: string;
   /**
    * The Amazon Resource Name (ARN) for the route
-   *
-   * @type {string}
-   * @memberof Route
    */
   readonly routeArn: string;
   /**
    * The unique identifier for the route
-   *
-   * @type {string}
-   * @memberof Route
    */
   readonly routeUid: string;
   /**
    * The name of the VirtualRouter the route is associated with
-   *
-   * @type {string}
-   * @memberof Route
    */
   readonly routeVirtualRouterName: string;
 }
@@ -106,37 +91,22 @@ export interface RouteProps extends RouteBaseProps {
 export class Route extends cdk.Construct implements IRoute {
   /**
    * The name of the service mesh that the route resides in
-   *
-   * @type {string}
-   * @memberof Route
    */
   public readonly routeMeshName: string;
   /**
    * The name of the route
-   *
-   * @type {string}
-   * @memberof Route
    */
   public readonly routeName: string;
   /**
    * The Amazon Resource Name (ARN) for the route
-   *
-   * @type {string}
-   * @memberof Route
    */
   public readonly routeArn: string;
   /**
    * The unique identifier for the route
-   *
-   * @type {string}
-   * @memberof Route
    */
   public readonly routeUid: string;
   /**
    * The name of the VirtualRouter the route is associated with
-   *
-   * @type {string}
-   * @memberof Route
    */
   public readonly routeVirtualRouterName: string;
 
@@ -174,10 +144,6 @@ export class Route extends cdk.Construct implements IRoute {
 
   /**
    * Utility method to add weighted route targets to an existing route
-   *
-   * @param {WeightedTargetProps[]} props
-   * @returns
-   * @memberof Route
    */
   public addWeightedTargets(props: WeightedTargetProps[]) {
     props.map(t => {

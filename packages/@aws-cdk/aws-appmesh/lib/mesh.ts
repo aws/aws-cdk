@@ -45,17 +45,17 @@ export interface AddVirtualNodeProps {
  * A utility enum defined for the egressFilter type property, the default of DROP_ALL,
  * allows traffic only to other resources inside the mesh, or API calls to amazon resources.
  *
- * @default Drop_All
+ * @default DROP_ALL
  */
 export enum MeshFilterType {
   /**
    * Allows all outbound traffic
    */
-  Allow_All = 'ALLOW_ALL',
+  ALLOW_ALL = 'ALLOW_ALL',
   /**
    * Allows traffic only to other resources inside the mesh, or API calls to amazon resources
    */
-  Drop_All = 'DROP_ALL',
+  DROP_ALL = 'DROP_ALL',
 }
 
 /**
@@ -107,23 +107,14 @@ export interface IMesh extends cdk.IConstruct {
   readonly meshUid: string;
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
-   *
-   * @param id the name for the virtual router
-   * @param props set of VirtualRouterBaseProps to apply to the virtual router
    */
   addVirtualRouter(id: string, props: VirtualRouterBaseProps): VirtualRouter;
   /**
    * Adds a VirtualService with the given id
-   *
-   * @param id the name for the given service
-   * @param props a set of VirtualServiceBaseProps to define the service
    */
   addVirtualService(id: string, props: VirtualServiceBaseProps): VirtualService;
   /**
    * Adds a VirtualNode to the Mesh
-   *
-   * @param id the name for the VirtualNode
-   * @param props a set of AddVirtualNodeProps
    */
   addVirtualNode(id: string, props: AddVirtualNodeProps): VirtualNode;
   /**
@@ -134,44 +125,24 @@ export interface IMesh extends cdk.IConstruct {
 
 /**
  * Represents a new or imported AppMesh mesh
- *
- * @example cdk.Construct
- * @implements IMesh
  */
 export abstract class MeshBase extends cdk.Construct implements IMesh {
   /**
    * The name of the AppMesh mesh
-   *
-   * @abstract
-   * @type {string}
-   * @memberof MeshBase
    */
   public abstract readonly meshName: string;
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
-   *
-   * @abstract
-   * @type {string}
-   * @memberof MeshBase
    */
   public abstract readonly meshArn: string;
 
   /**
    * The unique identifier for the mesh
-   *
-   * @abstract
-   * @type {string}
-   * @memberof MeshBase
    */
   public abstract readonly meshUid: string;
 
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
-   *
-   * @param {string} id
-   * @param {VirtualRouterBaseProps} props
-   * @returns {VirtualRouter}
-   * @memberof MeshBase
    */
   public addVirtualRouter(id: string, props: VirtualRouterBaseProps): VirtualRouter {
     return new VirtualRouter(this, id, {
@@ -183,11 +154,6 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
 
   /**
    * Adds a VirtualService with the given id
-   *
-   * @param {string} id
-   * @param {VirtualServiceBaseProps} props
-   * @returns {VirtualService}
-   * @memberof MeshBase
    */
   public addVirtualService(id: string, props: VirtualServiceBaseProps): VirtualService {
     return new VirtualService(this, id, {
@@ -198,11 +164,6 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
 
   /**
    * Adds a VirtualNode to the Mesh
-   *
-   * @param {string} id
-   * @param {AddVirtualNodeProps} props
-   * @returns {VirtualNode}
-   * @memberof MeshBase
    */
   public addVirtualNode(id: string, props: AddVirtualNodeProps): VirtualNode {
     return new VirtualNode(this, id, {
@@ -240,13 +201,6 @@ export interface MeshProps {
 export class Mesh extends MeshBase {
   /**
    * A static method to import a mesh an make it re-usable accross stacks
-   *
-   * @static
-   * @param {cdk.Construct} scope
-   * @param {string} id
-   * @param {MeshImportProps} props
-   * @returns {IMesh}
-   * @memberof Mesh
    */
   public static import(scope: cdk.Construct, id: string, props: MeshImportProps): IMesh {
     return new ImportedMesh(scope, id, props);
@@ -254,24 +208,15 @@ export class Mesh extends MeshBase {
 
   /**
    * The name of the AppMesh mesh
-   *
-   * @type {string}
-   * @memberof Mesh
    */
   public readonly meshName: string;
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
-   *
-   * @type {string}
-   * @memberof Mesh
    */
   public readonly meshArn: string;
 
   /**
    * The unique identifier for the mesh
-   *
-   * @type {string}
-   * @memberof Mesh
    */
   public readonly meshUid: string;
 
@@ -286,7 +231,7 @@ export class Mesh extends MeshBase {
     if (props && props.meshSpec && props.meshSpec.egressFilter) {
       filter = props.meshSpec.egressFilter;
     } else {
-      filter = MeshFilterType.Drop_All;
+      filter = MeshFilterType.DROP_ALL;
     }
 
     const mesh = new CfnMesh(this, 'AppMesh', {
@@ -305,9 +250,6 @@ export class Mesh extends MeshBase {
 
   /**
    * Exports the Mesh properties to re-use in other stacks
-   *
-   * @returns {MeshImportProps}
-   * @memberof Mesh
    */
   public export(): MeshImportProps {
     return {
@@ -321,30 +263,18 @@ export class Mesh extends MeshBase {
 /**
  * Use when import is called on Mesh.import(), returns properties that allows the mesh to be used
  * accross stacks.
- *
- * @extends MeshBase
- * @implements IMesh
  */
 export class ImportedMesh extends MeshBase {
   /**
    * The name of the AppMesh mesh
-   *
-   * @type {string}
-   * @memberof ImportedMesh
    */
   public readonly meshName: string;
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
-   *
-   * @type {string}
-   * @memberof Mesh
    */
   public readonly meshArn: string;
   /**
    * The unique identifier for the mesh
-   *
-   * @type {string}
-   * @memberof ImportedMesh
    */
   public readonly meshUid: string;
 

@@ -7,31 +7,18 @@ import { Route, RouteBaseProps } from './virtual-route';
 export interface IVirtualRouter {
   /**
    * The name of the VirtualRouter
-   *
-   * @default id - if not provided in props
-   * @type {string}
-   * @memberof VirtualRouter
    */
   readonly virtualRouterName: string;
   /**
    * The Amazon Resource Name (ARN) for the VirtualRouter
-   *
-   * @type {string}
-   * @memberof VirtualRouter
    */
   readonly virtualRouterArn: string;
   /**
    * The name of the AppMesh mesh for which this router belongs to
-   *
-   * @type {string}
-   * @memberof VirtualRouter
    */
   readonly meshName: string;
   /**
    * The routes that this router forwards to
-   *
-   * @type {Route[]}
-   * @memberof VirtualRouter
    */
   readonly routes: Route[];
 }
@@ -63,31 +50,18 @@ export interface VirtualRouterProps extends VirtualRouterBaseProps {
 export class VirtualRouter extends cdk.Construct implements IVirtualRouter {
   /**
    * The name of the VirtualRouter
-   *
-   * @default id - if not provided in props
-   * @type {string}
-   * @memberof VirtualRouter
    */
   public readonly virtualRouterName: string;
   /**
    * The Amazon Resource Name (ARN) for the VirtualRouter
-   *
-   * @type {string}
-   * @memberof VirtualRouter
    */
   public readonly virtualRouterArn: string;
   /**
    * The name of the AppMesh mesh for which this router belongs to
-   *
-   * @type {string}
-   * @memberof VirtualRouter
    */
   public readonly meshName: string;
   /**
    * The routes that this router forwards to
-   *
-   * @type {Route[]}
-   * @memberof VirtualRouter
    */
   public readonly routes: Route[] = [];
 
@@ -117,11 +91,6 @@ export class VirtualRouter extends cdk.Construct implements IVirtualRouter {
 
   /**
    * Utility method for adding a single route to the router
-   *
-   * @param {string} id
-   * @param {AddVirtualRouteProps} props
-   * @returns
-   * @memberof VirtualRouter
    */
   public addRoute(id: string, props: RouteBaseProps) {
     const route = new Route(this, id, {
@@ -139,11 +108,6 @@ export class VirtualRouter extends cdk.Construct implements IVirtualRouter {
 
   /**
    * Utility method to add multiple routes to the router
-   *
-   * @param {string[]} ids
-   * @param {AddVirtualRouteProps[]} props
-   * @returns
-   * @memberof VirtualRouter
    */
   public addRoutes(ids: string[], props: RouteBaseProps[]) {
     const routes: Route[] = [];
@@ -173,10 +137,6 @@ export class VirtualRouter extends cdk.Construct implements IVirtualRouter {
 
   /**
    * Add listeners to the router, such as ports and protocols
-   *
-   * @private
-   * @param {VirtualRouterBaseProps} props
-   * @memberof VirtualRouter
    */
   private addListeners(props: VirtualRouterBaseProps) {
     if (props.portMappings.length <= 0) {
