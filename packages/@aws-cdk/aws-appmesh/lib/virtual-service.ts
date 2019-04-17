@@ -2,7 +2,6 @@ import cdk = require('@aws-cdk/cdk');
 
 import { CfnVirtualService } from './appmesh.generated';
 import { IMesh } from './mesh';
-import { NAME_TAG } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
 
@@ -171,7 +170,6 @@ export class VirtualService extends VirtualServiceBase {
       this.virtualServiceProvider = this.addVirtualNode(this.virtualNodeName);
     }
 
-    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
     const name = props.virtualServiceName;
 
     const svc = new CfnVirtualService(this, 'VirtualService', {

@@ -2,7 +2,7 @@ import { INamespace } from '@aws-cdk/aws-servicediscovery';
 import cdk = require('@aws-cdk/cdk');
 
 import { CfnMesh } from './appmesh.generated';
-import { ListenerProps, NAME_TAG } from './shared-interfaces';
+import { ListenerProps } from './shared-interfaces';
 import { VirtualNode, VirtualNodeBackendProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
 import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
@@ -237,8 +237,6 @@ export class Mesh extends MeshBase {
 
   constructor(scope: cdk.Construct, id: string, props: MeshProps = {}) {
     super(scope, id);
-
-    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
     const name = props.meshName || this.node.id;
 

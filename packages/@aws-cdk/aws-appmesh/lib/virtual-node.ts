@@ -3,7 +3,7 @@ import cdk = require('@aws-cdk/cdk');
 
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
-import { HealthCheckProps, ListenerProps, NAME_TAG, PortMappingProps, Protocol } from './shared-interfaces';
+import { HealthCheckProps, ListenerProps, PortMappingProps, Protocol } from './shared-interfaces';
 
 /**
  * Interface with properties ncecessary to import a reusable VirtualNode
@@ -297,7 +297,6 @@ export class VirtualNode extends VirtualNodeBase {
       this.addListener(props.listener);
     }
 
-    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
     const name = props.nodeName || id;
 
     const node = new CfnVirtualNode(this, 'VirtualNode', {

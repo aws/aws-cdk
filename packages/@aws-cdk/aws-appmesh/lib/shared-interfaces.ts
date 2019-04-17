@@ -1,6 +1,3 @@
-// Global constant to use for name tag
-export const NAME_TAG = 'Name';
-
 /**
  * Enum of supported AppMesh protocols
  */

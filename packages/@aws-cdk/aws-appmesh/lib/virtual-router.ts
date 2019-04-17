@@ -2,7 +2,7 @@ import cdk = require('@aws-cdk/cdk');
 
 import { CfnVirtualRouter } from './appmesh.generated';
 import { IMesh } from './mesh';
-import { NAME_TAG, PortMappingProps, Protocol } from './shared-interfaces';
+import { PortMappingProps, Protocol } from './shared-interfaces';
 import { Route, RouteBaseProps } from './virtual-route';
 
 /**
@@ -201,7 +201,6 @@ export class VirtualRouter extends VirtualRouterBase {
     this.mesh = props.mesh;
     this.virtualNodeMeshName = this.mesh.meshName;
 
-    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
     const name = props && props.virtualRouterName ? props.virtualRouterName : this.node.id;
 
     this.addListeners(props);
