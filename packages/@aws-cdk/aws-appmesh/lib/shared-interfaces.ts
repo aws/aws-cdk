@@ -26,7 +26,7 @@ export interface HealthCheckProps {
    *
    * @default 5000
    */
-  readonly interval?: number;
+  readonly intervalMillis?: number;
   /**
    * The path where the application expects any health-checks, this can also be the application path.
    *
@@ -51,7 +51,7 @@ export interface HealthCheckProps {
    *
    * @default 2000
    */
-  readonly timeout?: number;
+  readonly timeoutMillis?: number;
   /**
    * Number of failed attempts before considering the node DOWN.
    *
