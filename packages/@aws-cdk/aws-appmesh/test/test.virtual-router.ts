@@ -1,4 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import ec2 = require('@aws-cdk/aws-ec2');
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 
@@ -24,10 +26,34 @@ export = {
         ],
       });
 
+      const vpc = new ec2.VpcNetwork(stack, 'vpc');
+      const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+        vpc,
+        name: 'domain.local',
+      });
+
+      const node = mesh.addVirtualNode('test-node', {
+        hostname: 'test',
+        namespace,
+        listener: {
+          portMappings: [
+            {
+              port: 8080,
+              protocol: appmesh.Protocol.HTTP,
+            },
+          ],
+        },
+        backends: [
+          {
+            virtualServiceName: `test.service.backend`,
+          },
+        ],
+      });
+
       router.addRoute('route-1', {
         routeTargets: [
           {
-            virtualNodeName: 'test-node',
+            virtualNode: node,
             weight: 50,
           },
         ],
@@ -44,7 +70,9 @@ export = {
               Action: {
                 WeightedTargets: [
                   {
-                    VirtualNode: 'test-node',
+                    VirtualNode: {
+                      'Fn::GetAtt': ['meshtestnodeVirtualNodeDC4F77E5', 'VirtualNodeName'],
+                    },
                     Weight: 50,
                   },
                 ],
@@ -53,6 +81,9 @@ export = {
                 Prefix: '/',
               },
             },
+          },
+          VirtualRouterName: {
+            'Fn::GetAtt': ['meshrouterVirtualRouter7C7DE72C', 'VirtualRouterName'],
           },
         })
       );
@@ -79,10 +110,68 @@ export = {
         ],
       });
 
+      const vpc = new ec2.VpcNetwork(stack, 'vpc');
+      const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+        vpc,
+        name: 'domain.local',
+      });
+
+      const node = mesh.addVirtualNode('test-node', {
+        hostname: 'test',
+        namespace,
+        listener: {
+          portMappings: [
+            {
+              port: 8080,
+              protocol: appmesh.Protocol.HTTP,
+            },
+          ],
+        },
+        backends: [
+          {
+            virtualServiceName: `test.service.backend`,
+          },
+        ],
+      });
+      const node2 = mesh.addVirtualNode('test-node2', {
+        hostname: 'test',
+        namespace,
+        listener: {
+          portMappings: [
+            {
+              port: 8080,
+              protocol: appmesh.Protocol.HTTP,
+            },
+          ],
+        },
+        backends: [
+          {
+            virtualServiceName: `test.service.backend`,
+          },
+        ],
+      });
+      const node3 = mesh.addVirtualNode('test-node3', {
+        hostname: 'test',
+        namespace,
+        listener: {
+          portMappings: [
+            {
+              port: 8080,
+              protocol: appmesh.Protocol.HTTP,
+            },
+          ],
+        },
+        backends: [
+          {
+            virtualServiceName: `test.service.backend`,
+          },
+        ],
+      });
+
       router.addRoute('route-1', {
         routeTargets: [
           {
-            virtualNodeName: 'test-node',
+            virtualNode: node,
             weight: 50,
           },
         ],
@@ -96,7 +185,7 @@ export = {
           {
             routeTargets: [
               {
-                virtualNodeName: 'test-node2',
+                virtualNode: node2,
                 weight: 30,
               },
             ],
@@ -106,7 +195,7 @@ export = {
           {
             routeTargets: [
               {
-                virtualNodeName: 'test-node3',
+                virtualNode: node3,
                 weight: 20,
               },
             ],
@@ -125,7 +214,9 @@ export = {
               Action: {
                 WeightedTargets: [
                   {
-                    VirtualNode: 'test-node',
+                    VirtualNode: {
+                      'Fn::GetAtt': ['meshtestnodeVirtualNodeDC4F77E5', 'VirtualNodeName'],
+                    },
                     Weight: 50,
                   },
                 ],
@@ -145,7 +236,9 @@ export = {
               Action: {
                 WeightedTargets: [
                   {
-                    VirtualNode: 'test-node2',
+                    VirtualNode: {
+                      'Fn::GetAtt': ['meshtestnode2VirtualNodeB854548C', 'VirtualNodeName'],
+                    },
                     Weight: 30,
                   },
                 ],
@@ -165,7 +258,9 @@ export = {
               Action: {
                 WeightedTargets: [
                   {
-                    VirtualNode: 'test-node3',
+                    VirtualNode: {
+                      'Fn::GetAtt': ['meshtestnode3VirtualNode74A3FFF9', 'VirtualNodeName'],
+                    },
                     Weight: 20,
                   },
                 ],
@@ -200,10 +295,34 @@ export = {
         ],
       });
 
+      const vpc = new ec2.VpcNetwork(stack, 'vpc');
+      const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+        vpc,
+        name: 'domain.local',
+      });
+
+      const node = mesh.addVirtualNode('test-node', {
+        hostname: 'test',
+        namespace,
+        listener: {
+          portMappings: [
+            {
+              port: 8080,
+              protocol: appmesh.Protocol.HTTP,
+            },
+          ],
+        },
+        backends: [
+          {
+            virtualServiceName: `test.service.backend`,
+          },
+        ],
+      });
+
       router.addRoute('route-tcp-1', {
         routeTargets: [
           {
-            virtualNodeName: 'test-node',
+            virtualNode: node,
             weight: 50,
           },
         ],
@@ -218,12 +337,17 @@ export = {
               Action: {
                 WeightedTargets: [
                   {
-                    VirtualNode: 'test-node',
+                    VirtualNode: {
+                      'Fn::GetAtt': ['meshtestnodeVirtualNodeDC4F77E5', 'VirtualNodeName'],
+                    },
                     Weight: 50,
                   },
                 ],
               },
             },
+          },
+          VirtualRouterName: {
+            'Fn::GetAtt': ['meshrouterVirtualRouter7C7DE72C', 'VirtualRouterName'],
           },
         })
       );
@@ -250,6 +374,48 @@ export = {
         ],
       });
 
+      const vpc = new ec2.VpcNetwork(stack, 'vpc');
+      const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+        vpc,
+        name: 'domain.local',
+      });
+
+      const node = mesh.addVirtualNode('test-node', {
+        hostname: 'test',
+        namespace,
+        listener: {
+          portMappings: [
+            {
+              port: 8080,
+              protocol: appmesh.Protocol.HTTP,
+            },
+          ],
+        },
+        backends: [
+          {
+            virtualServiceName: `test.service.backend`,
+          },
+        ],
+      });
+
+      const node2 = mesh.addVirtualNode('test-node2', {
+        hostname: 'test2',
+        namespace,
+        listener: {
+          portMappings: [
+            {
+              port: 8080,
+              protocol: appmesh.Protocol.HTTP,
+            },
+          ],
+        },
+        backends: [
+          {
+            virtualServiceName: `test.service.backend`,
+          },
+        ],
+      });
+
       // THEN
       test.throws(() => {
         router.addRoutes(
@@ -258,7 +424,7 @@ export = {
             {
               routeTargets: [
                 {
-                  virtualNodeName: 'test-node2',
+                  virtualNode: node,
                   weight: 30,
                 },
               ],
@@ -268,7 +434,7 @@ export = {
             {
               routeTargets: [
                 {
-                  virtualNodeName: 'test-node3',
+                  virtualNode: node2,
                   weight: 20,
                 },
               ],
@@ -328,6 +494,48 @@ export = {
         ],
       });
 
+      const vpc = new ec2.VpcNetwork(stack, 'vpc');
+      const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+        vpc,
+        name: 'domain.local',
+      });
+
+      const node = mesh.addVirtualNode('test-node', {
+        hostname: 'test',
+        namespace,
+        listener: {
+          portMappings: [
+            {
+              port: 8080,
+              protocol: appmesh.Protocol.HTTP,
+            },
+          ],
+        },
+        backends: [
+          {
+            virtualServiceName: `test.service.backend`,
+          },
+        ],
+      });
+
+      const node2 = mesh.addVirtualNode('test-node2', {
+        hostname: 'test2',
+        namespace,
+        listener: {
+          portMappings: [
+            {
+              port: 8080,
+              protocol: appmesh.Protocol.HTTP,
+            },
+          ],
+        },
+        backends: [
+          {
+            virtualServiceName: `test.service.backend`,
+          },
+        ],
+      });
+
       // THEN
       test.throws(() => {
         router.addRoutes(
@@ -336,7 +544,7 @@ export = {
             {
               routeTargets: [
                 {
-                  virtualNodeName: 'test-node2',
+                  virtualNode: node,
                   weight: 30,
                 },
               ],
@@ -346,7 +554,7 @@ export = {
             {
               routeTargets: [
                 {
-                  virtualNodeName: 'test-node3',
+                  virtualNode: node2,
                   weight: 20,
                 },
               ],
@@ -363,7 +571,7 @@ export = {
             {
               routeTargets: [
                 {
-                  virtualNodeName: 'test-node2',
+                  virtualNode: node2,
                   weight: 30,
                 },
               ],

@@ -1,17 +1,17 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import ec2 = require('@aws-cdk/aws-ec2');
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 
 import * as appmesh from '../lib/';
 
 export const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'mesh-stack');
+const stack = new cdk.Stack(app, 'mesh-stack', {});
 
-const vpc = ec2.VpcNetwork.import(stack, 'vpc', {
-  vpcId: '123456',
-  availabilityZones: ['us-east-1'],
+const vpc = new ec2.VpcNetwork(stack, 'vpc', {
+  natGateways: 1,
 });
+
 const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
   vpc,
   name: 'domain.local',
@@ -34,8 +34,8 @@ mesh.addVirtualService('service', {
 
 const node = mesh.addVirtualNode('node', {
   hostname: 'node1',
-  namespace: namespace,
-  listeners: {
+  namespace,
+  listener: {
     portMappings: [
       {
         port: 8080,
@@ -45,11 +45,11 @@ const node = mesh.addVirtualNode('node', {
     healthChecks: [
       {
         healthyThreshold: 3,
-        interval: 5000,
+        intervalMillis: 5000,
         path: '/check-path',
         port: 8080,
         protocol: appmesh.Protocol.HTTP,
-        timeout: 2000,
+        timeoutMillis: 2000,
         unhealthyThreshold: 2,
       },
     ],
@@ -68,12 +68,65 @@ node.addBackend({
 router.addRoute('route-1', {
   routeTargets: [
     {
-      virtualNodeName: node.virtualNodeName,
+      virtualNode: node,
       weight: 50,
     },
   ],
   prefix: '/',
   isHttpRoute: true,
+});
+
+const node2 = mesh.addVirtualNode('node2', {
+  hostname: 'node2',
+  namespace,
+  listener: {
+    portMappings: [
+      {
+        port: 8080,
+        protocol: appmesh.Protocol.HTTP,
+      },
+    ],
+    healthChecks: [
+      {
+        healthyThreshold: 3,
+        intervalMillis: 5000,
+        path: '/check-path2',
+        port: 8080,
+        protocol: appmesh.Protocol.HTTP,
+        timeoutMillis: 2000,
+        unhealthyThreshold: 2,
+      },
+    ],
+  },
+  backends: [
+    {
+      virtualServiceName: `service2.domain.local`,
+    },
+  ],
+});
+
+const node3 = mesh.addVirtualNode('node3', {
+  hostname: 'node3',
+  namespace,
+  listener: {
+    portMappings: [
+      {
+        port: 8080,
+        protocol: appmesh.Protocol.HTTP,
+      },
+    ],
+    healthChecks: [
+      {
+        healthyThreshold: 3,
+        intervalMillis: 5000,
+        path: '/check-path3',
+        port: 8080,
+        protocol: appmesh.Protocol.HTTP,
+        timeoutMillis: 2000,
+        unhealthyThreshold: 2,
+      },
+    ],
+  },
 });
 
 router.addRoutes(
@@ -82,7 +135,7 @@ router.addRoutes(
     {
       routeTargets: [
         {
-          virtualNodeName: 'test-node2',
+          virtualNode: node2,
           weight: 30,
         },
       ],
@@ -92,7 +145,7 @@ router.addRoutes(
     {
       routeTargets: [
         {
-          virtualNodeName: 'test-node3',
+          virtualNode: node3,
           weight: 20,
         },
       ],
