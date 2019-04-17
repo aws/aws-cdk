@@ -66,7 +66,7 @@ export class CfnRule extends CfnRefElement {
 
   /**
    * Creates and adds a rule.
-   * @param parent The parent construct.
+   * @param scope The parent construct.
    * @param props The rule props.
    */
   constructor(scope: Construct, id: string, props?: CfnRuleProps) {

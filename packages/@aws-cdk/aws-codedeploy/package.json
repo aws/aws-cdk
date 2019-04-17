@@ -29,7 +29,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-codedeploy"
   },
   "scripts": {
     "build": "cdk-build",
@@ -86,7 +87,8 @@
     "@aws-cdk/aws-codedeploy-api": "^0.28.0",
     "@aws-cdk/aws-iam": "^0.28.0",
     "@aws-cdk/aws-lambda": "^0.28.0",
-    "@aws-cdk/cdk": "^0.28.0"
+    "@aws-cdk/cdk": "^0.28.0",
+    "@aws-cdk/aws-s3": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"

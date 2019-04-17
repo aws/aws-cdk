@@ -1,4 +1,4 @@
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { Dimension, Metric, MetricAlarmProps, Statistic, Unit } from './metric';
@@ -62,7 +62,7 @@ export enum TreatMissingData {
 /**
  * An alarm on a CloudWatch metric
  */
-export class Alarm extends Construct {
+export class Alarm extends Resource {
   /**
    * ARN of this alarm
    */

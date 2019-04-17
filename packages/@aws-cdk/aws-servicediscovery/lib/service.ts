@@ -1,5 +1,5 @@
 import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { AliasTargetInstance } from './alias-target-instance';
 import { CnameInstance, CnameInstanceBaseProps  } from './cname-instance';
 import { IInstance } from './instance';
@@ -8,7 +8,7 @@ import { INamespace, NamespaceType } from './namespace';
 import { NonIpInstance, NonIpInstanceBaseProps } from './non-ip-instance';
 import { CfnService } from './servicediscovery.generated';
 
-export interface IService extends cdk.IConstruct {
+export interface IService extends IResource {
   /**
    * A name for the Cloudmap Service.
    */
@@ -128,7 +128,7 @@ export interface ServiceProps extends DnsServiceProps {
 /**
  * Define a CloudMap Service
  */
-export class Service extends cdk.Construct implements IService {
+export class Service extends Resource implements IService {
   /**
    * A name for the Cloudmap Service.
    */
@@ -159,7 +159,7 @@ export class Service extends cdk.Construct implements IService {
    */
   public readonly routingPolicy: RoutingPolicy;
 
-  constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
+  constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
     const namespaceType = props.namespace.type;
@@ -262,37 +262,30 @@ export class Service extends cdk.Construct implements IService {
   /**
    * Registers a resource that is accessible using values other than an IP address or a domain name (CNAME).
    */
-  public registerNonIpInstance(props: NonIpInstanceBaseProps): IInstance {
-    return new NonIpInstance(this, "NonIpInstance", {
+  public registerNonIpInstance(id: string, props: NonIpInstanceBaseProps): IInstance {
+    return new NonIpInstance(this, id, {
       service: this,
-      instanceId: props.instanceId,
-      customAttributes: props.customAttributes
+      ...props
     });
   }
 
   /**
    * Registers a resource that is accessible using an IP address.
    */
-  public registerIpInstance(props: IpInstanceBaseProps): IInstance {
-    return new IpInstance(this, "IpInstance", {
+  public registerIpInstance(id: string, props: IpInstanceBaseProps): IInstance {
+    return new IpInstance(this, id, {
       service: this,
-      instanceId: props.instanceId,
-      ipv4: props.ipv4,
-      ipv6: props.ipv6,
-      port: props.port,
-      customAttributes: props.customAttributes
+      ...props
     });
   }
 
   /**
    * Registers a resource that is accessible using a CNAME.
    */
-  public registerCnameInstance(props: CnameInstanceBaseProps): IInstance {
-    return new CnameInstance(this, "CnameInstance", {
+  public registerCnameInstance(id: string, props: CnameInstanceBaseProps): IInstance {
+    return new CnameInstance(this, id, {
       service: this,
-      instanceId: props.instanceId,
-      instanceCname: props.instanceCname,
-      customAttributes: props.customAttributes
+      ...props
     });
   }
 }

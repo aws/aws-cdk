@@ -118,7 +118,7 @@ export = {
     const stack = new Stack();
 
     const p = new CfnParameter(stack, 'MyParam', { type: 'String' });
-    const o = new CfnOutput(stack, 'MyOutput');
+    const o = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
     const c = new CfnCondition(stack, 'MyCondition');
 
     test.equal(stack.node.findChild(p.node.path), p);

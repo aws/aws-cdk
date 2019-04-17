@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';
@@ -116,7 +116,7 @@ export interface PipelineProps {
  *
  * // ... add more stages
  */
-export class Pipeline extends cdk.Construct implements IPipeline {
+export class Pipeline extends Resource implements IPipeline {
   /**
    * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
    * a more specific IAM role.
@@ -150,7 +150,7 @@ export class Pipeline extends cdk.Construct implements IPipeline {
   private readonly artifactStores: { [region: string]: any };
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
 
-  constructor(scope: cdk.Construct, id: string, props?: PipelineProps) {
+  constructor(scope: Construct, id: string, props?: PipelineProps) {
     super(scope, id);
     props = props || {};
 
@@ -160,7 +160,7 @@ export class Pipeline extends cdk.Construct implements IPipeline {
     let propsBucket = props.artifactBucket;
     if (!propsBucket) {
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
-        removalPolicy: cdk.RemovalPolicy.Orphan
+        removalPolicy: RemovalPolicy.Orphan
       });
     }
     this.artifactBucket = propsBucket;
@@ -170,8 +170,8 @@ export class Pipeline extends cdk.Construct implements IPipeline {
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: new cdk.Token(() => this.renderArtifactStore()) as any,
-      stages: new cdk.Token(() => this.renderStages()) as any,
+      artifactStore: new Token(() => this.renderArtifactStore()) as any,
+      stages: new Token(() => this.renderStages()) as any,
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: props && props.pipelineName,

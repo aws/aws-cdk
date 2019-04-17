@@ -296,7 +296,7 @@ export = {
           "Environment": {
           "Type": "LINUX_CONTAINER",
           "PrivilegedMode": false,
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "ComputeType": "BUILD_GENERAL1_SMALL"
           }
         }));

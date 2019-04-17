@@ -7,7 +7,8 @@
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "tools/cfn2ts"
   },
   "bin": {
     "cfn2ts": "bin/cfn2ts"
@@ -32,14 +33,14 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@aws-cdk/cfnspec": "^0.28.0",
-    "codemaker": "^0.6.4",
-    "fast-json-patch": "^2.0.6",
-    "fs-extra": "^7.0.0",
-    "yargs": "^9.0.1"
+    "codemaker": "^0.10.0",
+    "fast-json-patch": "^2.1.0",
+    "fs-extra": "^7.0.1",
+    "yargs": "^13.2.2"
   },
   "devDependencies": {
-    "@types/fs-extra": "^5.0.4",
-    "@types/yargs": "^8.0.3",
+    "@types/fs-extra": "^5.0.5",
+    "@types/yargs": "^13.0.0",
     "cdk-build-tools": "^0.28.0",
     "pkglint": "^0.28.0"
   },

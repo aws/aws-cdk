@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -40,11 +40,11 @@ export interface StateMachineProps {
 /**
  * Define a StepFunctions State Machine
  */
-export class StateMachine extends cdk.Construct implements IStateMachine, events.IEventRuleTarget {
+export class StateMachine extends Resource implements IStateMachine, events.IEventRuleTarget {
     /**
      * Import a state machine
      */
-    public static import(scope: cdk.Construct, id: string, props: StateMachineImportProps): IStateMachine {
+    public static import(scope: Construct, id: string, props: StateMachineImportProps): IStateMachine {
         return new ImportedStateMachine(scope, id, props);
     }
 
@@ -68,7 +68,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine, events
      */
     private eventsRole?: iam.Role;
 
-    constructor(scope: cdk.Construct, id: string, props: StateMachineProps) {
+    constructor(scope: Construct, id: string, props: StateMachineProps) {
         super(scope, id);
 
         this.role = props.role || new iam.Role(this, 'Role', {
@@ -194,7 +194,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine, events
      */
     public export(): StateMachineImportProps {
         return {
-            stateMachineArn: new cdk.CfnOutput(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
+            stateMachineArn: new CfnOutput(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
         };
     }
 }
@@ -202,7 +202,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine, events
 /**
  * A State Machine
  */
-export interface IStateMachine extends cdk.IConstruct {
+export interface IStateMachine extends IResource {
     /**
      * The ARN of the state machine
      */
@@ -224,9 +224,9 @@ export interface StateMachineImportProps {
     readonly stateMachineArn: string;
 }
 
-class ImportedStateMachine extends cdk.Construct implements IStateMachine {
+class ImportedStateMachine extends Resource implements IStateMachine {
     public readonly stateMachineArn: string;
-    constructor(scope: cdk.Construct, id: string, private readonly props: StateMachineImportProps) {
+    constructor(scope: Construct, id: string, private readonly props: StateMachineImportProps) {
         super(scope, id);
         this.stateMachineArn = props.stateMachineArn;
     }
