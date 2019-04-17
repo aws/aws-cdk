@@ -1,6 +1,6 @@
 import { debug, deserializeStructure, Mode, SDK } from '@aws-cdk/cdk-common';
 import cxapi = require('@aws-cdk/cx-api');
-import { deployStack, DeployStackResult } from './deploy-stack';
+import { deployStack, DeployStackOptions, DeployStackResult } from './deploy-stack';
 import { loadToolkitInfo } from './toolkit-info';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
@@ -17,18 +17,19 @@ export interface IDeploymentTarget {
   deployStack(options: DeployStackOptions): Promise<DeployStackResult>;
 }
 
-export interface DeployStackOptions {
-  stack: cxapi.SynthesizedStack;
-  roleArn?: string;
-  deployName?: string;
-  quiet?: boolean;
-  ci?: boolean;
-  toolkitStackName?: string;
-  reuseAssets?: string[];
-}
+// export interface DeployStackOptions {
+//   stack: cxapi.SynthesizedStack;
+//   roleArn?: string;
+//   deployName?: string;
+//   quiet?: boolean;
+//   ci?: boolean;
+//   toolkitStackName?: string;
+//   reuseAssets?: string[];
+// }
 
 export interface ProvisionerProps {
   aws: SDK;
+  toolkitStackName: string;
 }
 
 /**
@@ -36,9 +37,11 @@ export interface ProvisionerProps {
  */
 export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   private readonly aws: SDK;
+  private readonly toolkitStackName: string;
 
   constructor(props: ProvisionerProps) {
     this.aws = props.aws;
+    this.toolkitStackName = props.toolkitStackName;
   }
 
   public async readCurrentTemplate(stack: cxapi.SynthesizedStack): Promise<Template> {
@@ -58,13 +61,12 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-    const toolkitInfo = await loadToolkitInfo(options.stack.environment, this.aws, options.toolkitStackName || DEFAULT_TOOLKIT_STACK_NAME);
-    return deployStack({
+    const toolkitInfo = await loadToolkitInfo(options.stack.environment, this.aws, this.toolkitStackName || DEFAULT_TOOLKIT_STACK_NAME);
+    return deployStack(this.aws, {
       stack: options.stack,
       deployName: options.deployName,
       roleArn: options.roleArn,
       quiet: options.quiet,
-      sdk: this.aws,
       ci: options.ci,
       reuseAssets: options.reuseAssets,
       toolkitInfo,

@@ -51,6 +51,7 @@
   "dependencies": {
     "@aws-cdk/applet-js": "^0.28.0",
     "@aws-cdk/cdk-common": "^0.28.0",
+    "@aws-cdk/cdk-deploy": "^0.28.0",
     "@aws-cdk/cloudformation-diff": "^0.28.0",
     "@aws-cdk/cx-api": "^0.28.0",
     "@aws-cdk/region-info": "^0.28.0",

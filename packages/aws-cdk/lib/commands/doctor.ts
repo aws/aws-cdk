@@ -1,8 +1,8 @@
+import { print } from '@aws-cdk/cdk-common';
 import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import process = require('process');
 import yargs = require('yargs');
-import { print } from '../../lib/logging';
 import { VERSION } from '../../lib/version';
 import { CommandOptions } from '../command-api';
 

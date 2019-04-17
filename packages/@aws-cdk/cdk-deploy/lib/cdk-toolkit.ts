@@ -101,7 +101,6 @@ export class CDKToolkit {
           deployName: stack.name,
           roleArn: options.roleArn,
           ci: options.ci,
-          toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
         });
 

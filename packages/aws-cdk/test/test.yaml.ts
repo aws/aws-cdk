@@ -1,5 +1,5 @@
+import { fromYAML, toYAML } from '@aws-cdk/cdk-common';
 import { Test } from 'nodeunit';
-import { fromYAML, toYAML } from '../lib/serialize';
 
 // Preferred quote of the YAML library
 const q = '"';

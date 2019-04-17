@@ -35,5 +35,5 @@ export async function bootstrapEnvironment(environment: Environment, aws: SDK, t
     },
     name: toolkitStackName,
   };
-  return await deployStack({ stack: synthesizedStack, sdk: aws, roleArn });
+  return await deployStack(aws, { stack: synthesizedStack, roleArn });
 }

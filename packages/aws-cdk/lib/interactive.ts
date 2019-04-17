@@ -1,5 +1,5 @@
+import { data } from '@aws-cdk/cdk-common';
 import colors = require('colors/safe');
-import { data } from './logging';
 
 let previousTemplate: any = { };
 

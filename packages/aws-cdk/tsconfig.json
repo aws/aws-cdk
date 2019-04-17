@@ -19,8 +19,7 @@
         "strictPropertyInitialization":false
     },
     "include": [
-        "**/*.ts",
-        "**/*.d.ts", "../@aws-cdk/cdk-deploy/lib/assets.ts", "../@aws-cdk/cdk-deploy/lib/archive.ts", "../@aws-cdk/cdk-deploy/lib/Deployer.ts", "../@aws-cdk/cd, "../@aws-cdk/cdk-deploy/lib/diff.ts"k-deploy/lib/docker.ts", "../@aws-cdk/cdk-common/lib/logging.ts", "../@aws-cdk/cdk-common/lib/serialize.ts", "../@aws-cdk/cdk-common/lib/os.ts", "../@aws-cdk/cdk-common/test/test.account-cache.ts", "../@aws-cdk/cdk-common/test/test.objects.ts", "../@aws-cdk/cdk-common/test/test.arrays.ts", "../@aws-cdk/cdk-common/test/test.applydefaults.ts"
+        "**/*.ts"
     ],
     "exclude": [
         "lib/init-templates/**/*"

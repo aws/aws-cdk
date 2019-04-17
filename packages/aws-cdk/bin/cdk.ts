@@ -1,25 +1,22 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
+import { leftPad, SDK } from '@aws-cdk/cdk-common';
 import colors = require('colors/safe');
 import fs = require('fs-extra');
 import util = require('util');
 import yargs = require('yargs');
 
-import { bootstrapEnvironment, destroyStack, SDK } from '../lib';
+import { bootstrapEnvironment, CDKToolkit, destroyStack, RequireApproval } from '@aws-cdk/cdk-deploy';
+import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from '@aws-cdk/cdk-deploy/lib/api/deployment-target';
+
+import { data, debug, error, highlight, PluginHost, print, serializeStructure, setVerbose, success } from '@aws-cdk/cdk-common';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';
-import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from '../lib/api/deployment-target';
-import { leftPad } from '../lib/api/util/string-manipulation';
-import { CdkToolkit } from '../lib/cdk-toolkit';
-import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
-import { data, debug, error, highlight, print, setVerbose, success } from '../lib/logging';
-import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
-import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
 import { VERSION } from '../lib/version';
 
@@ -110,8 +107,6 @@ async function initCommandLine() {
   const configuration = new Configuration(argv);
   await configuration.load();
 
-  const provisioner = new CloudFormationDeploymentTarget({ aws });
-
   const appStacks = new AppStacks({
     verbose: argv.trace || argv.verbose,
     ignoreErrors: argv.ignoreErrors,
@@ -169,10 +164,18 @@ async function initCommandLine() {
       print(`Toolkit stack: ${colors.bold(toolkitStackName)}`);
     }
 
+    const provisioner = new CloudFormationDeploymentTarget({ aws, toolkitStackName });
+
     args.STACKS = args.STACKS || [];
     args.ENVIRONMENTS = args.ENVIRONMENTS || [];
+    const stackNames = args.STACKS;
 
-    const cli = new CdkToolkit({ appStacks, provisioner });
+    async function cli() {
+      const stacks = await appStacks.selectStacks(
+        stackNames,
+        args.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
+      return new CDKToolkit({ stacks, provisioner });
+    }
 
     switch (command) {
       case 'ls':
@@ -180,8 +183,8 @@ async function initCommandLine() {
         return await cliList({ long: args.long });
 
       case 'diff':
-        return await cli.diff({
-          stackNames: args.STACKS,
+        return (await cli()).diff({
+          stackNames,
           exclusively: args.exclusively,
           templatePath: args.template,
           strict: args.strict,
@@ -192,8 +195,8 @@ async function initCommandLine() {
         return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
 
       case 'deploy':
-        return await cli.deploy({
-          stackNames: args.STACKS,
+        return (await cli()).deploy({
+          stackNames,
           exclusively: args.exclusively,
           toolkitStackName,
           roleArn: args.roleArn,

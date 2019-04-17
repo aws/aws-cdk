@@ -41,9 +41,8 @@ export = {
     });
 
     // WHEN
-    const ret = await deployStack({
-      stack: FAKE_STACK,
-      sdk,
+    const ret = await deployStack(sdk, {
+      stack: FAKE_STACK
     });
 
     // THEN

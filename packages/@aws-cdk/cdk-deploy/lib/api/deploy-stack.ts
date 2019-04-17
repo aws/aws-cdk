@@ -22,7 +22,6 @@ export interface DeployStackResult {
 
 export interface DeployStackOptions {
   stack: cxapi.SynthesizedStack;
-  sdk: SDK;
   toolkitInfo?: ToolkitInfo;
   roleArn?: string;
   deployName?: string;
@@ -33,7 +32,7 @@ export interface DeployStackOptions {
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
 
-export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
+export async function deployStack(sdk: SDK, options: DeployStackOptions): Promise<DeployStackResult> {
   if (!options.stack.environment) {
     throw new Error(`The stack ${options.stack.name} does not have an environment`);
   }
@@ -44,7 +43,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const executionId = uuid.v4();
 
-  const cfn = await options.sdk.cloudFormation(options.stack.environment, Mode.ForWriting);
+  const cfn = await sdk.cloudFormation(options.stack.environment, Mode.ForWriting);
   const bodyParameter = await makeBodyParameter(options.stack, options.toolkitInfo);
 
   if (await stackFailedCreating(cfn, deployName)) {

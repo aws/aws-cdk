@@ -1,8 +1,8 @@
+import { debug,  print, warning } from '@aws-cdk/cdk-common';
 import childProcess = require('child_process');
 import colors = require('colors/safe');
 import process = require('process');
 import yargs = require('yargs');
-import { debug,  print, warning } from '../../lib/logging';
 import { CommandOptions } from '../command-api';
 
 export const command = 'docs';

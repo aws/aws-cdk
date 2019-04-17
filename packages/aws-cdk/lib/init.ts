@@ -1,9 +1,9 @@
+import { error, print, warning } from '@aws-cdk/cdk-common';
 import childProcess = require('child_process');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
-import { error, print, warning } from './logging';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
