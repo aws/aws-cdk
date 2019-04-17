@@ -25,7 +25,10 @@ const FIXED_RESULT: cxapi.SynthesizeResponse = {
   ]
 };
 
-const stacks = FIXED_RESULT.stacks;
+const stacks = FIXED_RESULT.stacks.map(s => ({
+  ...s,
+  originalName: s.name
+}));
 
 export = {
   async 'diff can diff multiple stacks'(test: Test) {

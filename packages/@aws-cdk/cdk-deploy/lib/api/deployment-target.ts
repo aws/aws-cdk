@@ -17,16 +17,6 @@ export interface IDeploymentTarget {
   deployStack(options: DeployStackOptions): Promise<DeployStackResult>;
 }
 
-// export interface DeployStackOptions {
-//   stack: cxapi.SynthesizedStack;
-//   roleArn?: string;
-//   deployName?: string;
-//   quiet?: boolean;
-//   ci?: boolean;
-//   toolkitStackName?: string;
-//   reuseAssets?: string[];
-// }
-
 export interface ProvisionerProps {
   aws: SDK;
   toolkitStackName: string;

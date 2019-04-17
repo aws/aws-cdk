@@ -1,6 +1,7 @@
 import { debug, error, print, SDK, warning } from '@aws-cdk/cdk-common';
 import cdkUtil = require('@aws-cdk/cdk-common/lib/util');
 import { topologicalSort } from '@aws-cdk/cdk-common/lib/util/toposort';
+import { SelectedStack } from '@aws-cdk/cdk-deploy';
 import cxapi = require('@aws-cdk/cx-api');
 import regionInfo = require('@aws-cdk/region-info');
 import colors = require('colors/safe');
@@ -366,11 +367,4 @@ function includeUpstreamStacks(selectedStacks: Map<string, cxapi.SynthesizedStac
   if (added.length > 0) {
     print('Including dependency stacks: %s', colors.bold(added.join(', ')));
   }
-}
-
-export interface SelectedStack extends cxapi.SynthesizedStack {
-  /**
-   * The original name of the stack before renaming
-   */
-  originalName: string;
 }

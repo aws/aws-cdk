@@ -14,7 +14,7 @@ export interface CdkToolkitProps {
   /**
    * The (stacks of the) CDK application
    */
-  stacks: cxapi.SynthesizedStack[];
+  stacks: SelectedStack[];
 
   /**
    * The provisioning engine used to apply changes to the cloud
@@ -28,7 +28,7 @@ export interface CdkToolkitProps {
  * // TODO: rename?
  */
 export class CDKToolkit {
-  private readonly stacks: cxapi.SynthesizedStack[];
+  private readonly stacks: SelectedStack[];
   private readonly provisioner: IDeploymentTarget;
 
   constructor(props: CdkToolkitProps) {
@@ -93,7 +93,11 @@ export class CDKToolkit {
         }
       }
 
-      print('%s: deploying...', colors.bold(stack.name));
+      if (stack.name !== stack.originalName) {
+        print('%s: deploying... (was %s)', colors.bold(stack.name), colors.bold(stack.originalName));
+      } else {
+        print('%s: deploying...', colors.bold(stack.name));
+      }
 
       try {
         const result = await this.provisioner.deployStack({
@@ -215,4 +219,11 @@ export interface DeployOptions {
    * Reuse the assets with the given asset IDs
    */
   reuseAssets?: string[];
+}
+
+export interface SelectedStack extends cxapi.SynthesizedStack {
+  /**
+   * The original name of the stack before renaming
+   */
+  originalName: string;
 }
