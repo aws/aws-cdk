@@ -91,6 +91,7 @@ async function prepareFileAsset(
     return [
       { ParameterKey: asset.s3BucketParameter, UsePreviousValue: true },
       { ParameterKey: asset.s3KeyParameter, UsePreviousValue: true },
+      { ParameterKey: asset.bundleHashParameter, UsePreviousValue: true },
     ];
   }
 
@@ -101,7 +102,7 @@ async function prepareFileAsset(
 
   const s3KeyPrefix = `assets/${asset.id}/`;
 
-  const { filename, key, changed } = await toolkitInfo.uploadIfChanged(data, {
+  const { filename, key, changed, hash } = await toolkitInfo.uploadIfChanged(data, {
     s3KeyPrefix,
     s3KeySuffix: path.extname(filePath),
     contentType
@@ -120,6 +121,7 @@ async function prepareFileAsset(
   return [
     { ParameterKey: asset.s3BucketParameter, ParameterValue: toolkitInfo.bucketName },
     { ParameterKey: asset.s3KeyParameter, ParameterValue: `${s3KeyPrefix}${ASSET_PREFIX_SEPARATOR}${filename}` },
+    { ParameterKey: asset.bundleHashParameter, ParameterValue: hash },
   ];
 }
 

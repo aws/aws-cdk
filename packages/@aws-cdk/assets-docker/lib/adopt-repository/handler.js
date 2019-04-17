@@ -26,10 +26,16 @@ exports.handler = async function(event, context, _callback, respond) {
       }
     }
 
-    const repo = event.ResourceProperties.RepositoryName;
+    let repo = event.ResourceProperties.RepositoryName;
     if (!repo) {
       throw new Error('Missing required property "RepositoryName"');
     }
+    const isRepoUri = repo.match(/^(\d+\.dkr\.ecr\.[^.]+\.[^/]+\/)(.+)$/i);
+    if (isRepoUri) {
+      console.log(`"${repo}" like a repository URI: dropping "${isRepoUri[1]}"`);
+      repo = isRepoUri[2];
+    }
+    console.log('RepositoryName', repo);
 
     const adopter = await getAdopter(repo);
     if (event.RequestType === 'Delete') {

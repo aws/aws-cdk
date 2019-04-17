@@ -31,6 +31,10 @@ Object {
     },
   },
   "Parameters": Object {
+    "HelloLambdaCodeBundleHashA687E414": Object {
+      "Description": "Bundle hash for asset \\"apigw/HelloLambda/Code\\"",
+      "Type": "String",
+    },
     "HelloLambdaCodeS3BucketB83F7900": Object {
       "Description": "S3 bucket for asset \\"apigw/HelloLambda/Code\\"",
       "Type": "String",
@@ -955,6 +959,10 @@ Object {
     },
   },
   "Parameters": Object {
+    "HelloWorldFunctionCodeBundleHash7370A7F0": Object {
+      "Description": "Bundle hash for asset \\"lambda-events/HelloWorldFunction/Code\\"",
+      "Type": "String",
+    },
     "HelloWorldFunctionCodeS3BucketF87BE172": Object {
       "Description": "S3 bucket for asset \\"lambda-events/HelloWorldFunction/Code\\"",
       "Type": "String",
@@ -1520,6 +1528,10 @@ Object {
 exports[`lambda-topic.json: lambda-topic 1`] = `
 Object {
   "Parameters": Object {
+    "LambdaCodeBundleHash5905F329": Object {
+      "Description": "Bundle hash for asset \\"lambda-topic/Lambda/Code\\"",
+      "Type": "String",
+    },
     "LambdaCodeS3Bucket65766E44": Object {
       "Description": "S3 bucket for asset \\"lambda-topic/Lambda/Code\\"",
       "Type": "String",

@@ -42,6 +42,11 @@ export class Staging extends Construct {
   public readonly sourcePath: string;
 
   /**
+   * A cryptographic hash of the source document(s).
+   */
+  public readonly sourceHash: string;
+
+  /**
    * The asset path after "prepare" is called.
    *
    * If staging is disabled, this will just be the original path.
@@ -53,6 +58,7 @@ export class Staging extends Construct {
     super(scope, id);
 
     this.sourcePath = props.sourcePath;
+    this.sourceHash = fingerprint(this.sourcePath);
     this.stagedPath = new Token(() => this._preparedAssetPath).toString();
   }
 
@@ -67,8 +73,7 @@ export class Staging extends Construct {
       fs.mkdirSync(stagingDir);
     }
 
-    const hash = fingerprint(this.sourcePath);
-    const targetPath = path.join(stagingDir, hash + path.extname(this.sourcePath));
+    const targetPath = path.join(stagingDir, this.sourceHash + path.extname(this.sourcePath));
 
     this._preparedAssetPath = targetPath;
 

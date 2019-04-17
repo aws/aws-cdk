@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
 import { promisify } from 'util';
-import { md5hash, zipDirectory } from '../lib/archive';
+import { contentHash, zipDirectory } from '../lib/archive';
 const exec = promisify(_exec);
 
 export = {
@@ -38,8 +38,8 @@ export = {
     await new Promise(ok => setTimeout(ok, 2000)); // wait 2s
     await zipDirectory(originalDir, zipFile2);
 
-    const hash1 = md5hash(await fs.readFile(zipFile1));
-    const hash2 = md5hash(await fs.readFile(zipFile2));
+    const hash1 = contentHash(await fs.readFile(zipFile1));
+    const hash2 = contentHash(await fs.readFile(zipFile2));
 
     test.deepEqual(hash1, hash2, 'md5 hash of two zips of the same content are not the same');
     test.done();

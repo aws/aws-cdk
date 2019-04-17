@@ -1,4 +1,9 @@
 {
+  "Resources": {
+    "DummyResourceF3AB250A": {
+      "Type": "AWS::IAM::User"
+    }
+  },
   "Parameters": {
     "SampleAsset1S3Bucket469E18FF": {
       "Type": "String",
@@ -8,6 +13,10 @@
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-multi-assets/SampleAsset1\""
     },
+    "SampleAsset1BundleHashD0F1B38D": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"aws-cdk-multi-assets/SampleAsset1\""
+    },
     "SampleAsset2S3BucketC94C651A": {
       "Type": "String",
       "Description": "S3 bucket for asset \"aws-cdk-multi-assets/SampleAsset2\""
@@ -15,6 +24,10 @@
     "SampleAsset2S3VersionKey3A7E2CC4": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-multi-assets/SampleAsset2\""
+    },
+    "SampleAsset2BundleHashD956324F": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"aws-cdk-multi-assets/SampleAsset2\""
     }
   }
 }

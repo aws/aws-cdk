@@ -243,6 +243,10 @@
       "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeS3VersionKey59DB89A0": {
         "Type": "String",
         "Description": "S3 key for asset version \"globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/Code\""
+      },
+      "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeBundleHash58EC487E": {
+        "Type": "String",
+        "Description": "Bundle hash for asset \"globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/Code\""
       }
     }
   }

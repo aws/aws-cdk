@@ -38,6 +38,7 @@ export = {
       packaging: 'container-image',
       path: '/foo',
       repositoryName: 'some-name',
+      sourceHash: '0123456789abcdef',
     };
 
     try {

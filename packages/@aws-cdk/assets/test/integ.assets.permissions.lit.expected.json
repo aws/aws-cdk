@@ -7,6 +7,10 @@
     "MyFileS3VersionKey568C3C9F": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-asset-refs/MyFile\""
+    },
+    "MyFileBundleHashFD0DD32E": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"aws-cdk-asset-refs/MyFile\""
     }
   },
   "Resources": {

@@ -1,7 +1,7 @@
 import fs = require('fs');
-import minimatch = require('minimatch');
 import path = require('path');
 import { FollowMode } from './follow-mode';
+import { shouldExclude, shouldFollow } from './utils';
 
 export interface CopyOptions {
   /**
@@ -29,7 +29,7 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
   for (const file of files) {
     const sourceFilePath = path.join(srcDir, file);
 
-    if (shouldExclude(path.relative(rootDir, sourceFilePath))) {
+    if (shouldExclude(exclude, path.relative(rootDir, sourceFilePath))) {
       continue;
     }
 
@@ -45,10 +45,8 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       // determine if this is an external link (i.e. the target's absolute path
       // is outside of the root directory).
       const targetPath = path.normalize(path.resolve(srcDir, target));
-      const rootPath = path.normalize(rootDir);
-      const external = !targetPath.startsWith(rootPath);
 
-      if (follow === FollowMode.External && external) {
+      if (shouldFollow(follow, rootDir, targetPath)) {
         stat = fs.statSync(sourceFilePath);
       } else {
         fs.symlinkSync(target, destFilePath);
@@ -66,24 +64,5 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
       fs.copyFileSync(sourceFilePath, destFilePath);
       stat = undefined;
     }
-  }
-
-  function shouldExclude(filePath: string): boolean {
-    let excludeOutput = false;
-
-    for (const pattern of exclude) {
-      const negate = pattern.startsWith('!');
-      const match = minimatch(filePath, pattern, { matchBase: true, flipNegate: true });
-
-      if (!negate && match) {
-        excludeOutput = true;
-      }
-
-      if (negate && match) {
-        excludeOutput = false;
-      }
-    }
-
-    return excludeOutput;
   }
 }

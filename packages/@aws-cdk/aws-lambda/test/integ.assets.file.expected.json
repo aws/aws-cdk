@@ -104,6 +104,10 @@
     "MyLambdaCodeS3VersionKey47762537": {
       "Type": "String",
       "Description": "S3 key for asset version \"lambda-test-assets-file/MyLambda/Code\""
+    },
+    "MyLambdaCodeBundleHashF377263A": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"lambda-test-assets-file/MyLambda/Code\""
     }
   }
 }

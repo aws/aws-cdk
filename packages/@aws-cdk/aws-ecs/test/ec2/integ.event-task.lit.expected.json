@@ -1157,6 +1157,10 @@
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-ecs-integ-ecs/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
+    },
+    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeBundleHash7C06FC82": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"aws-ecs-integ-ecs/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
     }
   }
 }

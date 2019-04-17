@@ -29,7 +29,7 @@ export interface DockerImageAssetProps {
  *
  * The image will be created in build time and uploaded to an ECR repository.
  */
-export class DockerImageAsset extends cdk.Construct {
+export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
   /**
    * The full URI of the image (including a tag). Use this reference to pull
    * the asset.
@@ -40,6 +40,9 @@ export class DockerImageAsset extends cdk.Construct {
    * Repository where the image is stored
    */
   public repository: ecr.IRepository;
+
+  public readonly sourceHash: string;
+  public readonly bundleHash: string;
 
   /**
    * Directory where the source files are stored
@@ -63,6 +66,7 @@ export class DockerImageAsset extends cdk.Construct {
     });
 
     this.directory = staging.stagedPath;
+    this.sourceHash = staging.sourceHash;
 
     const imageNameParameter = new cdk.CfnParameter(this, 'ImageName', {
       type: 'String',
@@ -70,9 +74,10 @@ export class DockerImageAsset extends cdk.Construct {
     });
 
     const asset: cxapi.ContainerImageAssetMetadataEntry = {
+      id: this.node.uniqueId,
       packaging: 'container-image',
       path: this.directory,
-      id: this.node.uniqueId,
+      sourceHash: this.sourceHash,
       imageNameParameter: imageNameParameter.logicalId,
       repositoryName: props.repositoryName,
     };
@@ -92,5 +97,6 @@ export class DockerImageAsset extends cdk.Construct {
     // haven't already started using the image.
     this.repository = new AdoptedRepository(this, 'AdoptRepository', { repositoryName });
     this.imageUri = this.repository.repositoryUriForTag(imageTag);
+    this.bundleHash = imageTag;
   }
 }

@@ -7,6 +7,10 @@
     "SampleAssetS3VersionKey3E106D34": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-asset-refs/SampleAsset\""
+    },
+    "SampleAssetBundleHashDC778178": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"aws-cdk-asset-refs/SampleAsset\""
     }
   },
   "Outputs": {

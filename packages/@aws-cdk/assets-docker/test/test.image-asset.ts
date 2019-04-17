@@ -164,8 +164,8 @@ export = {
 
     app.run();
 
-    test.ok(fs.existsSync('.stage-me/96e3ffe92a19cbaa6c558942f7a60246/Dockerfile'));
-    test.ok(fs.existsSync('.stage-me/96e3ffe92a19cbaa6c558942f7a60246/index.py'));
+    test.ok(fs.existsSync('.stage-me/1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile'));
+    test.ok(fs.existsSync('.stage-me/1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py'));
     test.done();
   }
 };

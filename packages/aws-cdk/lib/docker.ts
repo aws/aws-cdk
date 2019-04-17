@@ -31,7 +31,7 @@ import { PleaseHold } from './util/please-hold';
 export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEntry,
                                             toolkitInfo: ToolkitInfo,
                                             reuse: boolean,
-                                            ci?: boolean): Promise<CloudFormation.Parameter[]> {
+                                            ci?: boolean): Promise<[CloudFormation.Parameter]> {
 
   if (reuse) {
     return [
@@ -62,18 +62,17 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
 
     buildHold.start();
 
-    const baseCommand = ['docker',
-      'build',
-      '--quiet',
-      asset.path];
+    const imageId = `${ecr.repositoryName}:${asset.sourceHash}`;
+    const baseCommand = ['docker', 'build', '--tag', imageId, asset.path];
     const command = ci
       ? [...baseCommand, '--cache-from', latest] // This does not fail if latest is not available
       : baseCommand;
-    const imageId = (await shell(command, { quiet: true })).trim();
+    await shell(command);
 
     buildHold.stop();
 
     const tag = await calculateImageFingerprint(imageId);
+    const qualifiedImageName = `${ecr.repositoryUri}:${tag}`;
 
     debug(` ⌛  Image has tag ${tag}, checking ECR repository`);
     const imageExists = await toolkitInfo.checkEcrImage(ecr.repositoryName, tag);
@@ -88,8 +87,6 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
         await dockerLogin(toolkitInfo);
         loggedIn = true;
       }
-
-      const qualifiedImageName = `${ecr.repositoryUri}:${tag}`;
 
       await shell(['docker', 'tag', imageId, qualifiedImageName]);
 
@@ -145,35 +142,22 @@ async function calculateImageFingerprint(imageId: string) {
   const manifestString = await shell(['docker', 'inspect', imageId], { quiet: true });
   const manifest = JSON.parse(manifestString)[0];
 
-  // Id can change
-  delete manifest.Id;
-
-  // Repository-based identifiers are out
-  delete manifest.RepoTags;
-  delete manifest.RepoDigests;
-
-  // Metadata that has no bearing on the image contents
-  delete manifest.Created;
-
-  // We're interested in the image itself, not any running instaces of it
-  delete manifest.Container;
-  delete manifest.ContainerConfig;
-
-  // We're not interested in the Docker version used to create this image
-  delete manifest.DockerVersion;
-
-  // On some Docker versions Metadata contains a LastTagTime which updates
-  // on every push, causing us to miss all cache hits.
-  delete manifest.Metadata;
-
-  // GraphDriver is about running the image, not about the image itself.
-  delete manifest.GraphDriver;
+  // It's quite likely the only "actually" relevant field is "RootFS" (hashes of the layers), but
+  // we're still looking at a couple of other fields in an abundance of precaution.
+  const retainedKeys = new Set(['Architecture', 'Config', 'Os', 'Size', 'VirtualSize', 'RootFS']);
+  for (const key of Object.keys(manifest)) {
+    if (!retainedKeys.has(key)) {
+      delete manifest[key];
+    }
+  }
 
   return crypto.createHash('sha256').update(JSON.stringify(manifest)).digest('hex');
 }
 
 /**
- * Example of a Docker manifest
+ * Example of a Docker manifest:
+ * - The "Id" is a SHA of the full JSON object (meaning it changes each time you tag the image >_<)
+ * - Docker's design document is at https://gist.github.com/aaronlehmann/b42a2eaf633fc949f93b
  *
  * [
  *     {

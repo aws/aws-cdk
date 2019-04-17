@@ -2,6 +2,7 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import assets = require('@aws-cdk/assets');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
+import path = require('path');
 import codebuild = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
@@ -127,8 +128,8 @@ export = {
 
     // WHEN
     new codebuild.Project(stack, 'Project', {
-      buildScriptAsset: new assets.ZipDirectoryAsset(stack, 'Asset', { path: '.' }),
-      buildScriptAssetEntrypoint: 'hello.sh',
+      buildScriptAsset: new assets.ZipDirectoryAsset(stack, 'Asset', { path: path.join(__dirname, 'script_bundle') }),
+      buildScriptAssetEntrypoint: 'build.sh',
     });
 
     // THEN

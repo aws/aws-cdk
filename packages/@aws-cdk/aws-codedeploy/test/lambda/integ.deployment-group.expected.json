@@ -579,6 +579,10 @@
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-codedeploy-lambda/Handler/Code\""
     },
+    "HandlerCodeBundleHash55E3B3A8": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"aws-cdk-codedeploy-lambda/Handler/Code\""
+    },
     "PreHookCodeS3BucketE2616D65": {
       "Type": "String",
       "Description": "S3 bucket for asset \"aws-cdk-codedeploy-lambda/PreHook/Code\""
@@ -587,6 +591,10 @@
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-codedeploy-lambda/PreHook/Code\""
     },
+    "PreHookCodeBundleHash01CAAA87": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"aws-cdk-codedeploy-lambda/PreHook/Code\""
+    },
     "PostHookCodeS3BucketECF09EB8": {
       "Type": "String",
       "Description": "S3 bucket for asset \"aws-cdk-codedeploy-lambda/PostHook/Code\""
@@ -594,6 +602,10 @@
     "PostHookCodeS3VersionKey53451C7E": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-codedeploy-lambda/PostHook/Code\""
+    },
+    "PostHookCodeBundleHashC4F3E945": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"aws-cdk-codedeploy-lambda/PostHook/Code\""
     }
   }
 }

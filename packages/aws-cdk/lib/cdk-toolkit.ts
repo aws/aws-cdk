@@ -1,6 +1,6 @@
 import colors = require('colors/safe');
 import fs = require('fs-extra');
-import { format, promisify } from 'util';
+import { format } from 'util';
 import { AppStacks, ExtendedStackSelection } from "./api/cxapp/stacks";
 import { IDeploymentTarget } from './api/deployment-target';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
@@ -9,7 +9,6 @@ import { deserializeStructure } from './serialize';
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
-const confirm = promisify(promptly.confirm);
 
 export interface CdkToolkitProps {
   /**
@@ -81,7 +80,7 @@ export class CdkToolkit {
       options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
 
     for (const stack of stacks) {
-      if (stacks.length !== 1) { highlight(stack.name); }
+      if (stacks.length !== 1) { highlight(stack.name); }
       if (!stack.environment) {
         // tslint:disable-next-line:max-line-length
         throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
@@ -98,7 +97,7 @@ export class CdkToolkit {
               'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
           }
 
-          const confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
+          const confirmed = await promptly.confirm(`Do you wish to deploy these changes (y/n)?`);
           if (!confirmed) { throw new Error('Aborted by user'); }
         }
       }

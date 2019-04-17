@@ -418,6 +418,10 @@
       "Type": "String",
       "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployMe/Asset\""
     },
+    "DeployMeAssetBundleHash797748D0": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"test-bucket-deployments-1/DeployMe/Asset\""
+    },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3Bucket6E5FB2B7": {
       "Type": "String",
       "Description": "S3 bucket for asset \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
@@ -426,6 +430,10 @@
       "Type": "String",
       "Description": "S3 key for asset version \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
     },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeBundleHash9A731D87": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
+    },
     "DeployWithPrefixAssetS3Bucket8B33F071": {
       "Type": "String",
       "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset\""
@@ -433,6 +441,10 @@
     "DeployWithPrefixAssetS3VersionKey45049418": {
       "Type": "String",
       "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithPrefix/Asset\""
+    },
+    "DeployWithPrefixAssetBundleHashE0FE32DF": {
+      "Type": "String",
+      "Description": "Bundle hash for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset\""
     }
   }
 }
