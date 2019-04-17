@@ -2,7 +2,43 @@ import cdk = require('@aws-cdk/cdk');
 
 import { CfnRoute } from './appmesh.generated';
 
-// TODO: Add import() and eport() capabilities
+export interface IRoute {
+  /**
+   * The name of the service mesh that the route resides in
+   *
+   * @type {string}
+   * @memberof Route
+   */
+  readonly routeMeshName: string;
+  /**
+   * The name of the route
+   *
+   * @type {string}
+   * @memberof Route
+   */
+  readonly routeName: string;
+  /**
+   * The Amazon Resource Name (ARN) for the route
+   *
+   * @type {string}
+   * @memberof Route
+   */
+  readonly routeArn: string;
+  /**
+   * The unique identifier for the route
+   *
+   * @type {string}
+   * @memberof Route
+   */
+  readonly routeUid: string;
+  /**
+   * The name of the VirtualRouter the route is associated with
+   *
+   * @type {string}
+   * @memberof Route
+   */
+  readonly routeVirtualRouterName: string;
+}
 
 /**
  * Base interface properties for all Routes
@@ -67,7 +103,7 @@ export interface RouteProps extends RouteBaseProps {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/routes.html
  */
-export class Route extends cdk.Construct {
+export class Route extends cdk.Construct implements IRoute {
   /**
    * The name of the service mesh that the route resides in
    *

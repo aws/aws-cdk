@@ -4,7 +4,37 @@ import { CfnVirtualRouter } from './appmesh.generated';
 import { NAME_TAG, PortMappingProps, Protocol } from './shared-interfaces';
 import { Route, RouteBaseProps } from './virtual-route';
 
-// TODO: Add import() and eport() capabilities
+export interface IVirtualRouter {
+  /**
+   * The name of the VirtualRouter
+   *
+   * @default id - if not provided in props
+   * @type {string}
+   * @memberof VirtualRouter
+   */
+  readonly virtualRouterName: string;
+  /**
+   * The Amazon Resource Name (ARN) for the VirtualRouter
+   *
+   * @type {string}
+   * @memberof VirtualRouter
+   */
+  readonly virtualRouterArn: string;
+  /**
+   * The name of the AppMesh mesh for which this router belongs to
+   *
+   * @type {string}
+   * @memberof VirtualRouter
+   */
+  readonly meshName: string;
+  /**
+   * The routes that this router forwards to
+   *
+   * @type {Route[]}
+   * @memberof VirtualRouter
+   */
+  readonly routes: Route[];
+}
 
 /**
  * Interface with base properties all routers willl inherit
@@ -30,7 +60,7 @@ export interface VirtualRouterProps extends VirtualRouterBaseProps {
   readonly meshName: string;
 }
 
-export class VirtualRouter extends cdk.Construct {
+export class VirtualRouter extends cdk.Construct implements IVirtualRouter {
   /**
    * The name of the VirtualRouter
    *

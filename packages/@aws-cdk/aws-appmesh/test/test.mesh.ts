@@ -1,4 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 
@@ -128,12 +130,36 @@ export = {
           meshName: 'test-mesh',
         });
 
+        const vpc = ec2.VpcNetwork.import(stack, 'vpc', {
+          vpcId: '123456',
+          availabilityZones: ['us-east-1'],
+        });
+        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+          vpc,
+          name: 'domain.local',
+        });
+
+        const testNode = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          hostname: 'test-node',
+          namespace,
+        });
+
+        const testRouter = mesh.addVirtualRouter('router', {
+          portMappings: [
+            {
+              port: 8080,
+              protocol: appmesh.Protocol.HTTP,
+            },
+          ],
+        });
+
         // THEN
         test.throws(() => {
           mesh.addVirtualService('service', {
             virtualServiceName: 'test-service.domain.local',
-            virtualNodeName: 'test-node',
-            virtualRouterName: 'test-router',
+            virtualNode: testNode,
+            virtualRouter: testRouter,
           });
         });
 
@@ -150,9 +176,18 @@ export = {
           meshName: 'test-mesh',
         });
 
+        const testRouter = mesh.addVirtualRouter('test-router', {
+          portMappings: [
+            {
+              port: 8080,
+              protocol: appmesh.Protocol.HTTP,
+            },
+          ],
+        });
+
         mesh.addVirtualService('service', {
           virtualServiceName: 'test-service.domain.local',
-          virtualRouterName: 'test-router',
+          virtualRouter: testRouter,
         });
 
         // THEN
@@ -161,7 +196,9 @@ export = {
             Spec: {
               Provider: {
                 VirtualRouter: {
-                  VirtualRouterName: 'test-router',
+                  VirtualRouterName: {
+                    'Fn::GetAtt': ['meshtestrouterVirtualRouter43ECF978', 'VirtualRouterName'],
+                  },
                 },
               },
             },
@@ -183,9 +220,18 @@ export = {
           meshName: 'test-mesh',
         });
 
+        const vpc = ec2.VpcNetwork.import(stack, 'vpc', {
+          vpcId: '123456',
+          availabilityZones: ['us-east-1'],
+        });
+        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+          vpc,
+          name: 'domain.local',
+        });
+
         mesh.addVirtualNode('test-node', {
           hostname: 'test',
-          namespaceName: 'domain.local',
+          namespace,
         });
 
         // THEN
@@ -214,9 +260,18 @@ export = {
           meshName: 'test-mesh',
         });
 
+        const vpc = ec2.VpcNetwork.import(stack, 'vpc', {
+          vpcId: '123456',
+          availabilityZones: ['us-east-1'],
+        });
+        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+          vpc,
+          name: 'domain.local',
+        });
+
         mesh.addVirtualNode('test-node', {
           hostname: 'test',
-          namespaceName: 'domain.local',
+          namespace,
           listeners: {
             portMappings: [
               {
@@ -259,9 +314,18 @@ export = {
           meshName: 'test-mesh',
         });
 
+        const vpc = ec2.VpcNetwork.import(stack, 'vpc', {
+          vpcId: '123456',
+          availabilityZones: ['us-east-1'],
+        });
+        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+          vpc,
+          name: 'domain.local',
+        });
+
         mesh.addVirtualNode('test-node', {
           hostname: 'test',
-          namespaceName: 'domain.local',
+          namespace,
           listeners: {
             portMappings: [
               {
@@ -320,11 +384,20 @@ export = {
           meshName: 'test-mesh',
         });
 
+        const vpc = ec2.VpcNetwork.import(stack, 'vpc', {
+          vpcId: '123456',
+          availabilityZones: ['us-east-1'],
+        });
+        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+          vpc,
+          name: 'domain.local',
+        });
+
         // THEN
         test.throws(() => {
           mesh.addVirtualNode('test-node', {
             hostname: 'test',
-            namespaceName: 'domain.local',
+            namespace,
             listeners: {
               portMappings: [
                 {
@@ -353,7 +426,7 @@ export = {
         test.throws(() => {
           mesh.addVirtualNode('test-node', {
             hostname: 'test',
-            namespaceName: 'domain.local',
+            namespace,
             listeners: {
               portMappings: [
                 {
@@ -398,9 +471,18 @@ export = {
           meshName: 'test-mesh',
         });
 
+        const vpc = ec2.VpcNetwork.import(stack, 'vpc', {
+          vpcId: '123456',
+          availabilityZones: ['us-east-1'],
+        });
+        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+          vpc,
+          name: 'domain.local',
+        });
+
         mesh.addVirtualNode('test-node', {
           hostname: 'test',
-          namespaceName: 'domain.local',
+          namespace,
           listeners: {
             portMappings: [
               {

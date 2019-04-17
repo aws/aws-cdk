@@ -1,9 +1,33 @@
+import { INamespace } from '@aws-cdk/aws-servicediscovery';
 import cdk = require('@aws-cdk/cdk');
+
 import { CfnVirtualNode } from './appmesh.generated';
+import { IMesh } from './mesh';
 import { HealthCheckProps, ListenerProps, NAME_TAG, PortMappingProps, Protocol } from './shared-interfaces';
 
-// TODO: Add import() and eport() capabilities
-
+export interface IVirtualNode {
+  /**
+   * The name of the AppMesh which the virtual node belongs to
+   *
+   * @type {string}
+   * @memberof VirtualNode
+   */
+  readonly meshName: string;
+  /**
+   * The name of the VirtualNode
+   *
+   * @type {string}
+   * @memberof VirtualNode
+   */
+  readonly virtualNodeName: string;
+  /**
+   * The Amazon Resource Name belonging to the VirtualNdoe
+   *
+   * @type {string}
+   * @memberof VirtualNode
+   */
+  readonly virtualNodeArn: string;
+}
 /**
  * The backend props for which a node communicates within the mesh
  *
@@ -23,7 +47,7 @@ export interface VirtualNodeProps {
   /**
    * The name of the AppMesh which the virtual node belongs to
    */
-  readonly meshName: string;
+  readonly mesh: IMesh;
   /**
    * The name of the VirtualNode
    */
@@ -39,7 +63,7 @@ export interface VirtualNodeProps {
    *
    * @example domain.local
    */
-  readonly namespaceName: string;
+  readonly namespace: INamespace;
   /**
    * Array of VirtualNodeBackendProps
    */
@@ -55,7 +79,7 @@ export interface VirtualNodeProps {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html
  */
-export class VirtualNode extends cdk.Construct {
+export class VirtualNode extends cdk.Construct implements IVirtualNode {
   /**
    * The name of the AppMesh which the virtual node belongs to
    *
@@ -78,15 +102,15 @@ export class VirtualNode extends cdk.Construct {
    */
   public readonly virtualNodeArn: string;
 
-  private readonly backends: CfnVirtualNode.BackendProperty[] = [];
-  private readonly listeners: CfnVirtualNode.ListenerProperty[] = [];
+  private readonly backends = new Array<CfnVirtualNode.BackendProperty>();
+  private readonly listeners = new Array<CfnVirtualNode.ListenerProperty>();
   private readonly namespaceName: string;
 
   constructor(scope: cdk.Construct, id: string, props: VirtualNodeProps) {
     super(scope, id);
 
-    this.meshName = props.meshName;
-    this.namespaceName = props.namespaceName;
+    this.meshName = props.mesh.meshName;
+    this.namespaceName = props.namespace.namespaceName;
 
     if (props.backends) {
       this.addBackends(props.backends);

@@ -1,3 +1,4 @@
+import { INamespace } from '@aws-cdk/aws-servicediscovery';
 import cdk = require('@aws-cdk/cdk');
 
 import { CfnMesh } from './appmesh.generated';
@@ -26,7 +27,7 @@ export interface AddVirtualNodeProps {
    * The service discovery namespace name
    * @example domain.local
    */
-  readonly namespaceName: string;
+  readonly namespace: INamespace;
   /**
    * The backend services this node expects to send traffic to
    *
@@ -191,7 +192,7 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
   public addVirtualService(id: string, props: VirtualServiceBaseProps): VirtualService {
     return new VirtualService(this, id, {
       ...props,
-      meshName: this.meshName,
+      mesh: this,
     });
   }
 
@@ -206,8 +207,8 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
   public addVirtualNode(id: string, props: AddVirtualNodeProps): VirtualNode {
     return new VirtualNode(this, id, {
       ...props,
-      meshName: this.meshName,
-      namespaceName: props.namespaceName,
+      mesh: this,
+      namespace: props.namespace,
     });
   }
 

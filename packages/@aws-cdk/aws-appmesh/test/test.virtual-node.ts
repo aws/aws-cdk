@@ -1,4 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 
@@ -16,9 +18,18 @@ export = {
           meshName: 'test-mesh',
         });
 
+        const vpc = ec2.VpcNetwork.import(stack, 'vpc', {
+          vpcId: '123456',
+          availabilityZones: ['us-east-1'],
+        });
+        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+          vpc,
+          name: 'domain.local',
+        });
+
         const node = mesh.addVirtualNode('test-node', {
           hostname: 'test',
-          namespaceName: 'domain.local',
+          namespace,
           listeners: {
             portMappings: [
               {
