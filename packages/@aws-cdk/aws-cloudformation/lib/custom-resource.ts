@@ -86,10 +86,6 @@ export class CustomResource extends Resource {
   public getAtt(attributeName: string) {
     return this.resource.getAtt(attributeName);
   }
-
-  public get ref() {
-    return this.resource.ref;
-  }
 }
 
 /**
