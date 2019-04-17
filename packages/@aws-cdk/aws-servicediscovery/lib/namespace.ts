@@ -1,6 +1,6 @@
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 
-export interface INamespace extends cdk.IConstruct {
+export interface INamespace extends IResource {
   /**
    * A name for the Namespace.
    */
@@ -82,7 +82,7 @@ export enum NamespaceType {
   DnsPublic = "DNS_PUBLIC",
 }
 
-export abstract class NamespaceBase extends cdk.Construct implements INamespace {
+export abstract class NamespaceBase extends Resource implements INamespace {
   public abstract readonly namespaceId: string;
   public abstract readonly namespaceArn: string;
   public abstract readonly namespaceName: string;
@@ -90,9 +90,9 @@ export abstract class NamespaceBase extends cdk.Construct implements INamespace 
 
   public export(): NamespaceImportProps {
     return {
-      namespaceName: new cdk.CfnOutput(this, 'NamespaceName', { value: this.namespaceArn }).makeImportValue().toString(),
-      namespaceArn: new cdk.CfnOutput(this, 'NamespaceArn', { value: this.namespaceArn }).makeImportValue().toString(),
-      namespaceId: new cdk.CfnOutput(this, 'NamespaceId', { value: this.namespaceId }).makeImportValue().toString(),
+      namespaceName: new CfnOutput(this, 'NamespaceName', { value: this.namespaceArn }).makeImportValue().toString(),
+      namespaceArn: new CfnOutput(this, 'NamespaceArn', { value: this.namespaceArn }).makeImportValue().toString(),
+      namespaceId: new CfnOutput(this, 'NamespaceId', { value: this.namespaceId }).makeImportValue().toString(),
       type: this.type,
     };
   }
@@ -110,7 +110,7 @@ export class Namespace {
   /**
    * Import a namespace
    */
-  public static import(scope: cdk.Construct, id: string, props: NamespaceImportProps): INamespace {
+  public static import(scope: Construct, id: string, props: NamespaceImportProps): INamespace {
     return new ImportedNamespace(scope, id, props);
   }
 
@@ -124,7 +124,7 @@ class ImportedNamespace extends NamespaceBase {
   public namespaceName: string;
   public type: NamespaceType;
 
-  constructor(scope: cdk.Construct, id: string, props: NamespaceImportProps) {
+  constructor(scope: Construct, id: string, props: NamespaceImportProps) {
     super(scope, id);
     this.namespaceId = props.namespaceId;
     this.namespaceArn = props.namespaceArn;

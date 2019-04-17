@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
@@ -84,13 +84,13 @@ export interface MethodProps {
   readonly options?: MethodOptions;
 }
 
-export class Method extends cdk.Construct {
+export class Method extends Resource {
   public readonly methodId: string;
   public readonly httpMethod: string;
   public readonly resource: IRestApiResource;
   public readonly restApi: RestApi;
 
-  constructor(scope: cdk.Construct, id: string, props: MethodProps) {
+  constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
 
     this.resource = props.resource;

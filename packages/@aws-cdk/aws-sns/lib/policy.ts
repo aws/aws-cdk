@@ -1,5 +1,5 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnTopicPolicy } from './sns.generated';
 import { ITopic } from './topic-base';
 
@@ -13,7 +13,7 @@ export interface TopicPolicyProps {
 /**
  * Applies a policy to SNS topics.
  */
-export class TopicPolicy extends Construct {
+export class TopicPolicy extends Resource {
   /**
    * The IAM policy document for this policy.
    */
