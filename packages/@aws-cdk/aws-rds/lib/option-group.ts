@@ -1,12 +1,12 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { DatabaseInstanceEngine } from './instance';
 import { CfnOptionGroup } from './rds.generated';
 
 /**
  * An option group
  */
-export interface IOptionGroup extends cdk.IConstruct {
+export interface IOptionGroup extends IResource {
   /**
    * The name of the option group.
    */
@@ -84,11 +84,11 @@ export interface OptionGroupProps {
   readonly configurations: OptionConfiguration[];
 }
 
-export class OptionGroup extends cdk.Construct implements IOptionGroup {
+export class OptionGroup extends Resource implements IOptionGroup {
   /**
    * Import an existing option group.
    */
-  public static import(scope: cdk.Construct, id: string, props: OptionGroupImportProps): IOptionGroup {
+  public static import(scope: Construct, id: string, props: OptionGroupImportProps): IOptionGroup {
     return new ImportedOptionGroup(scope, id, props);
   }
 
@@ -102,7 +102,7 @@ export class OptionGroup extends cdk.Construct implements IOptionGroup {
    */
   public readonly optionConnections: { [key: string]: ec2.Connections } = {};
 
-  constructor(scope: cdk.Construct, id: string, props: OptionGroupProps) {
+  constructor(scope: Construct, id: string, props: OptionGroupProps) {
     super(scope, id);
 
     const optionGroup = new CfnOptionGroup(this, 'Resource', {
@@ -117,7 +117,7 @@ export class OptionGroup extends cdk.Construct implements IOptionGroup {
 
   public export(): OptionGroupImportProps {
     return {
-      optionGroupName: new cdk.CfnOutput(this, 'OptionGroupName', { value: this.optionGroupName }).makeImportValue().toString(),
+      optionGroupName: new CfnOutput(this, 'OptionGroupName', { value: this.optionGroupName }).makeImportValue().toString(),
     };
   }
 
@@ -169,10 +169,10 @@ export interface OptionGroupImportProps {
   readonly optionGroupName: string;
 }
 
-class ImportedOptionGroup extends cdk.Construct implements IOptionGroup {
+class ImportedOptionGroup extends Construct implements IOptionGroup {
   public readonly optionGroupName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: OptionGroupImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: OptionGroupImportProps) {
     super(scope, id);
 
     this.optionGroupName = props.optionGroupName;

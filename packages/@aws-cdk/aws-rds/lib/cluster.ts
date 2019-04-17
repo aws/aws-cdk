@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, DeletionPolicy, Resource, StringListCfnOutput } from '@aws-cdk/cdk';
 import { DatabaseClusterImportProps, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -110,17 +110,17 @@ export interface DatabaseClusterProps {
    *
    * @default Retain
    */
-  readonly deleteReplacePolicy?: cdk.DeletionPolicy
+  readonly deleteReplacePolicy?: DeletionPolicy
 }
 
 /**
  * A new or imported clustered database.
  */
-export abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseCluster {
+export abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
   /**
    * Import an existing DatabaseCluster from properties
    */
-  public static import(scope: cdk.Construct, id: string, props: DatabaseClusterImportProps): IDatabaseCluster {
+  public static import(scope: Construct, id: string, props: DatabaseClusterImportProps): IDatabaseCluster {
     return new ImportedDatabaseCluster(scope, id, props);
   }
 
@@ -230,7 +230,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
    */
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseClusterProps) {
+  constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
 
     this.vpc = props.instanceProps.vpc;
@@ -289,7 +289,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || cdk.DeletionPolicy.Retain;
+    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
     cluster.options.deletionPolicy = deleteReplacePolicy;
     cluster.options.updateReplacePolicy = deleteReplacePolicy;
 
@@ -369,13 +369,13 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
   public export(): DatabaseClusterImportProps {
     // tslint:disable:max-line-length
     return {
-      port: new cdk.CfnOutput(this, 'Port', { value: this.clusterEndpoint.port, }).makeImportValue().toString(),
-      securityGroupId: new cdk.CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue().toString(),
-      clusterIdentifier: new cdk.CfnOutput(this, 'ClusterIdentifier', { value: this.clusterIdentifier, }).makeImportValue().toString(),
-      instanceIdentifiers: new cdk.StringListCfnOutput(this, 'InstanceIdentifiers', { values: this.instanceIdentifiers }).makeImportValues().map(x => x.toString()),
-      clusterEndpointAddress: new cdk.CfnOutput(this, 'ClusterEndpointAddress', { value: this.clusterEndpoint.hostname, }).makeImportValue().toString(),
-      readerEndpointAddress: new cdk.CfnOutput(this, 'ReaderEndpointAddress', { value: this.readerEndpoint.hostname, }).makeImportValue().toString(),
-      instanceEndpointAddresses: new cdk.StringListCfnOutput(this, 'InstanceEndpointAddresses', { values: this.instanceEndpoints.map(e => e.hostname) }).makeImportValues().map(x => x.toString()),
+      port: new CfnOutput(this, 'Port', { value: this.clusterEndpoint.port, }).makeImportValue().toString(),
+      securityGroupId: new CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue().toString(),
+      clusterIdentifier: new CfnOutput(this, 'ClusterIdentifier', { value: this.clusterIdentifier, }).makeImportValue().toString(),
+      instanceIdentifiers: new StringListCfnOutput(this, 'InstanceIdentifiers', { values: this.instanceIdentifiers }).makeImportValues().map(x => x.toString()),
+      clusterEndpointAddress: new CfnOutput(this, 'ClusterEndpointAddress', { value: this.clusterEndpoint.hostname, }).makeImportValue().toString(),
+      readerEndpointAddress: new CfnOutput(this, 'ReaderEndpointAddress', { value: this.readerEndpoint.hostname, }).makeImportValue().toString(),
+      instanceEndpointAddresses: new StringListCfnOutput(this, 'InstanceEndpointAddresses', { values: this.instanceEndpoints.map(e => e.hostname) }).makeImportValues().map(x => x.toString()),
     };
     // tslint:enable:max-line-length
   }
@@ -432,7 +432,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
    */
   public readonly securityGroupId: string;
 
-  constructor(scope: cdk.Construct, name: string, private readonly props: DatabaseClusterImportProps) {
+  constructor(scope: Construct, name: string, private readonly props: DatabaseClusterImportProps) {
     super(scope, name);
 
     this.securityGroupId = props.securityGroupId;

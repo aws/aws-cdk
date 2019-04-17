@@ -1,10 +1,10 @@
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 
 /**
  * A parameter group
  */
-export interface IParameterGroup extends cdk.IConstruct {
+export interface IParameterGroup extends IResource {
   /**
    * The name of this parameter group
    */
@@ -41,11 +41,11 @@ export interface ParameterGroupProps {
 /**
  * A new cluster or instance parameter group
  */
-export abstract class ParameterGroupBase extends cdk.Construct implements IParameterGroup {
+export abstract class ParameterGroupBase extends Resource implements IParameterGroup {
   /**
    * Imports a parameter group
    */
-  public static import(scope: cdk.Construct, id: string, props: ParameterGroupImportProps): IParameterGroup {
+  public static import(scope: Construct, id: string, props: ParameterGroupImportProps): IParameterGroup {
     return new ImportedParameterGroup(scope, id, props);
   }
 
@@ -59,7 +59,7 @@ export abstract class ParameterGroupBase extends cdk.Construct implements IParam
    */
   public export(): ParameterGroupImportProps {
     return {
-      parameterGroupName: new cdk.CfnOutput(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
+      parameterGroupName: new CfnOutput(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
     };
   }
 }
@@ -73,7 +73,7 @@ export class ParameterGroup extends ParameterGroupBase {
    */
   public readonly parameterGroupName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: ParameterGroupProps) {
+  constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
 
     const resource = new CfnDBParameterGroup(this, 'Resource', {
@@ -95,7 +95,7 @@ export class ClusterParameterGroup extends ParameterGroupBase {
    */
   public readonly parameterGroupName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: ParameterGroupProps) {
+  constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
@@ -121,13 +121,13 @@ export interface ParameterGroupImportProps {
 /**
  * An imported cluster or instance parameter group
  */
-class ImportedParameterGroup extends cdk.Construct implements IParameterGroup {
+class ImportedParameterGroup extends Construct implements IParameterGroup {
   /**
    * The name of the parameter group
    */
   public readonly parameterGroupName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ParameterGroupImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: ParameterGroupImportProps) {
     super(scope, id);
 
     this.parameterGroupName = props.parameterGroupName;

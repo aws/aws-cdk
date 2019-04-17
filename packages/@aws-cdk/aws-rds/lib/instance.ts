@@ -5,7 +5,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, DeletionPolicy, IResource, Resource, SecretValue } from '@aws-cdk/cdk';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup} from './option-group';
@@ -14,7 +14,7 @@ import { DatabaseClusterEngine } from './props';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
 import { SecretRotation, SecretRotationApplication, SecretRotationOptions } from './secret-rotation';
 
-export interface IDatabaseInstance extends cdk.IConstruct, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * The instance identifier.
    */
@@ -50,11 +50,11 @@ export interface IDatabaseInstance extends cdk.IConstruct, ec2.IConnectable, sec
 /**
  * A new or imported database instance.
  */
-export abstract class DatabaseInstanceBase extends cdk.Construct implements IDatabaseInstance {
+export abstract class DatabaseInstanceBase extends Resource implements IDatabaseInstance {
   /**
    * Import an existing database instance.
    */
-  public static import(scope: cdk.Construct, id: string, props: DatabaseInstanceImportProps): IDatabaseInstance {
+  public static import(scope: Construct, id: string, props: DatabaseInstanceImportProps): IDatabaseInstance {
     return new ImportedDatabaseInstance(scope, id, props);
   }
 
@@ -400,7 +400,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default Retain
    */
-  readonly deleteReplacePolicy?: cdk.DeletionPolicy
+  readonly deleteReplacePolicy?: DeletionPolicy
 }
 
 /**
@@ -417,7 +417,7 @@ export abstract class DatabaseInstanceNew extends DatabaseInstanceBase implement
   private readonly cloudwatchLogsExports?: string[];
   private readonly cloudwatchLogsRetention?: logs.RetentionDays;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseInstanceNewProps) {
+  constructor(scope: Construct, id: string, props: DatabaseInstanceNewProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
@@ -493,10 +493,10 @@ export abstract class DatabaseInstanceNew extends DatabaseInstanceBase implement
 
   public export(): DatabaseInstanceImportProps {
     return {
-      instanceIdentifier: new cdk.CfnOutput(this, 'InstanceId', { value: this.instanceIdentifier }).makeImportValue().toString(),
-      endpointAddress: new cdk.CfnOutput(this, 'EndpointAddress', { value: this.instanceEndpoint.hostname }).makeImportValue().toString(),
-      port: new cdk.CfnOutput(this, 'Port', { value: this.instanceEndpoint.port }).makeImportValue().toString(),
-      securityGroupId: new cdk.CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue().toString()
+      instanceIdentifier: new CfnOutput(this, 'InstanceId', { value: this.instanceIdentifier }).makeImportValue().toString(),
+      endpointAddress: new CfnOutput(this, 'EndpointAddress', { value: this.instanceEndpoint.hostname }).makeImportValue().toString(),
+      port: new CfnOutput(this, 'Port', { value: this.instanceEndpoint.port }).makeImportValue().toString(),
+      securityGroupId: new CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue().toString()
     };
   }
 
@@ -562,7 +562,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    *
    * @default a Secrets Manager generated password
    */
-  readonly masterUserPassword?: cdk.SecretValue;
+  readonly masterUserPassword?: SecretValue;
 
   /**
    * The KMS key to use to encrypt the secret for the master user password.
@@ -596,7 +596,7 @@ export abstract class DatabaseInstanceSource extends DatabaseInstanceNew impleme
 
   private readonly secretRotationApplication: SecretRotationApplication;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseInstanceSourceProps) {
+  constructor(scope: Construct, id: string, props: DatabaseInstanceSourceProps) {
     super(scope, id, props);
 
     this.secretRotationApplication = props.engine.secretRotationApplication;
@@ -673,7 +673,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   public readonly connections: ec2.Connections;
   public readonly secret?: secretsmanager.ISecret;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseInstanceProps) {
+  constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
     let secret;
@@ -700,7 +700,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     this.instanceIdentifier = instance.dbInstanceId;
     this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort);
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || cdk.DeletionPolicy.Retain;
+    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
     instance.options.deletionPolicy = deleteReplacePolicy;
     instance.options.updateReplacePolicy = deleteReplacePolicy;
 
@@ -756,7 +756,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   public readonly connections: ec2.Connections;
   public readonly secret?: secretsmanager.ISecret;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
+  constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
 
     if (props.generateMasterUserPassword && !props.masterUsername) {
@@ -785,7 +785,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     this.instanceIdentifier = instance.dbInstanceId;
     this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort);
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || cdk.DeletionPolicy.Retain;
+    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
     instance.options.deletionPolicy = deleteReplacePolicy;
     instance.options.updateReplacePolicy = deleteReplacePolicy;
 
@@ -840,7 +840,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly instanceEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
+  constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
 
     const instance = new CfnDBInstance(this, 'Resource', {
@@ -853,7 +853,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     this.instanceIdentifier = instance.dbInstanceId;
     this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort);
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || cdk.DeletionPolicy.Retain;
+    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
     instance.options.deletionPolicy = deleteReplacePolicy;
     instance.options.updateReplacePolicy = deleteReplacePolicy;
 
@@ -900,7 +900,7 @@ class ImportedDatabaseInstance extends DatabaseInstanceBase implements IDatabase
   public readonly securityGroupId: string;
   public readonly connections: ec2.Connections;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: DatabaseInstanceImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: DatabaseInstanceImportProps) {
     super(scope, id);
 
     this.instanceIdentifier = props.instanceIdentifier;

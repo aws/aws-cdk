@@ -2,7 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import lambda = require('@aws-cdk/aws-lambda');
 import serverless = require('@aws-cdk/aws-sam');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/cdk');
+import { Construct } from '@aws-cdk/cdk';
 
 /**
  * A secret rotation serverless application.
@@ -92,8 +92,8 @@ export interface SecretRotationProps extends SecretRotationOptions {
 /**
  * Secret rotation for a database instance or cluster.
  */
-export class SecretRotation extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: SecretRotationProps) {
+export class SecretRotation extends Construct {
+  constructor(scope: Construct, id: string, props: SecretRotationProps) {
     super(scope, id);
 
     if (!props.target.connections.defaultPortRange) {
