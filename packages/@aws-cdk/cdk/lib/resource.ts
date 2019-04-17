@@ -11,6 +11,6 @@ export interface IResource extends IConstruct {
 /**
  * A construct which represents an AWS resource.
  */
-export class Resource extends Construct implements IResource {
+export abstract class Resource extends Construct implements IResource {
 
 }
