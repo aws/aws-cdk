@@ -1,8 +1,8 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
+import cdk = require('@aws-cdk/cdk');
 
 import appmesh = require('../lib');
 
@@ -272,7 +272,7 @@ export = {
         mesh.addVirtualNode('test-node', {
           hostname: 'test',
           namespace,
-          listeners: {
+          listener: {
             portMappings: [
               {
                 port: 8080,
@@ -326,7 +326,7 @@ export = {
         mesh.addVirtualNode('test-node', {
           hostname: 'test',
           namespace,
-          listeners: {
+          listener: {
             portMappings: [
               {
                 port: 8080,
@@ -336,11 +336,11 @@ export = {
             healthChecks: [
               {
                 healthyThreshold: 3,
-                interval: 5000, // min
+                intervalMillis: 5000, // min
                 path: '/',
                 port: 8080,
                 protocol: appmesh.Protocol.HTTP,
-                timeout: 2000, // min
+                timeoutMillis: 2000, // min
                 unhealthyThreshold: 2,
               },
             ],
@@ -398,7 +398,7 @@ export = {
           mesh.addVirtualNode('test-node', {
             hostname: 'test',
             namespace,
-            listeners: {
+            listener: {
               portMappings: [
                 {
                   port: 8080,
@@ -412,11 +412,11 @@ export = {
               healthChecks: [
                 {
                   healthyThreshold: 3,
-                  interval: 5000, // min
+                  intervalMillis: 5000, // min
                   path: '/',
                   port: 8080,
                   protocol: appmesh.Protocol.HTTP,
-                  timeout: 2000, // min
+                  timeoutMillis: 2000, // min
                   unhealthyThreshold: 2,
                 },
               ],
@@ -427,7 +427,7 @@ export = {
           mesh.addVirtualNode('test-node', {
             hostname: 'test',
             namespace,
-            listeners: {
+            listener: {
               portMappings: [
                 {
                   port: 8080,
@@ -437,20 +437,20 @@ export = {
               healthChecks: [
                 {
                   healthyThreshold: 3,
-                  interval: 5000, // min
+                  intervalMillis: 5000, // min
                   path: '/',
                   port: 8080,
                   protocol: appmesh.Protocol.HTTP,
-                  timeout: 2000, // min
+                  timeoutMillis: 2000, // min
                   unhealthyThreshold: 2,
                 },
                 {
                   healthyThreshold: 5,
-                  interval: 5000, // min
+                  intervalMillis: 5000, // min
                   path: '/path2',
                   port: 8081,
                   protocol: appmesh.Protocol.TCP,
-                  timeout: 3000, // min
+                  timeoutMillis: 3000, // min
                   unhealthyThreshold: 5,
                 },
               ],
@@ -483,7 +483,7 @@ export = {
         mesh.addVirtualNode('test-node', {
           hostname: 'test',
           namespace,
-          listeners: {
+          listener: {
             portMappings: [
               {
                 port: 8080,
