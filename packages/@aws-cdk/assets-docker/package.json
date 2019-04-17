@@ -85,6 +85,9 @@
     "@aws-cdk/aws-lambda": "^0.28.0",
     "@aws-cdk/cx-api": "^0.28.0"
   },
+  "nyc": {
+    "statements": 70
+  },
   "engines": {
     "node": ">= 8.10.0"
   }

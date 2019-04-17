@@ -66,10 +66,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/lodash": "^4.14.118",
+    "@types/lodash": "^4.14.123",
     "cdk-build-tools": "^0.28.0",
     "cfn2ts": "^0.28.0",
-    "fast-check": "^1.7.0",
+    "fast-check": "^1.14.0",
     "lodash": "^4.17.11",
     "pkglint": "^0.28.0"
   },

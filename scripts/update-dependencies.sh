@@ -25,7 +25,7 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
-if [[ $mode != semver && $mode != full ]]; then
+if [[ $mode != 'semver' && $mode != 'full' ]]; then
     echo "--mode should be 'semver' or 'full'" >&2
     exit 1
 fi
@@ -54,19 +54,17 @@ case $mode in
     semver)
         # NPM update respects semver
         npm update --dev
-        node_modules/.bin/lerna --concurrency 1 exec -- npm update --dev
+        npx lerna exec -- npm update --dev
         ;;
 
     full)
-        # Use npm-check-update
-        which ncu>/dev/null || {
-            echo "Please install 'npm install -g npm-check-update'. Not included because the dependencies contain security bugs." >&2
-            exit 1
-        }
         # Sometimes package-lock.json and node_modules contains detritus that causes problems.
         # Get rid of it them completely.
-        ncu -u && rm -rf package-lock.json node_modules && npm install
-        node_modules/.bin/lerna --concurrency 1 exec -- bash -c 'ncu -u && rm -rf package-lock.json node_modules && npm install'
+        npx ncu -x @types/node -u && rm -Rf package-lock.json node_modules && npm install && npm install --save-dev @types/node@8 && npm audit fix
+        npx lerna exec -- npx ncu -u
+        npx lerna exec -- rm -Rf package-lock.json node_modules
+        npx lerna exec -- npm install
+        npx lerna exec -- npm audit fix
         ;;
 esac
 
@@ -74,11 +72,13 @@ esac
 # symlinks using lerna.
 restore_package_jsons
 trap '' EXIT
-node_modules/.bin/lerna link
+npx lerna link
 
-echo "DONE. Doing a validating build.."
+echo "DONE. Doing a validating build..."
+npx lerna run --stream build
 
 # Doing a full test. Must do it here instead of per-package since our tooling
 # makes a number of assumptions on the format of package.json which does not
 # include supporting "file:..." references.
-node_modules/.bin/lerna run --stream test
+echo "DONE. Doing a validation test run..."
+npx lerna run --stream test
