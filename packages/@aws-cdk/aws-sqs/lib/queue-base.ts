@@ -2,10 +2,10 @@ import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3n = require('@aws-cdk/aws-s3-notifications');
-import cdk = require('@aws-cdk/cdk');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import { QueuePolicy } from './policy';
 
-export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
+export interface IQueue extends IResource, s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
   /**
    * The ARN of this queue
    */
@@ -98,7 +98,7 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
 /**
  * Reference to a new or existing Amazon SQS queue
  */
-export abstract class QueueBase extends cdk.Construct implements IQueue {
+export abstract class QueueBase extends Resource implements IQueue {
 
   /**
    * The ARN of this queue

@@ -1,7 +1,7 @@
 import reflect = require('jsii-reflect');
 import { CfnResourceSpec, findCfnResources } from '../cfn-resources';
 import { Linter } from '../linter';
-import { CONSTRUCT_FQN, CONSTRUCT_INTERFACE_FQN, isConstruct } from '../util';
+import { CONSTRUCT_FQN, CONSTRUCT_INTERFACE_FQN } from '../util';
 
 export const resourceLinter = new Linter<ResourceLinterContext>(assembly => {
   return findCfnResources(assembly).map(cfn => ({
@@ -40,11 +40,12 @@ resourceLinter.add({
 });
 
 resourceLinter.add({
-  code: 'resource-class-is-construct',
-  message: `resource classes must extend "cdk.Construct" directly or indirectly`,
+  code: 'resource-class-extends-resource',
+  message: `resource classes must extend "cdk.Resource" directly or indirectly`,
   eval: e => {
     if (!e.ctx.resourceClass) { return; }
-    e.assert(isConstruct(e.ctx.resourceClass), e.ctx.resourceClass.fqn);
+    const resourceBase = e.ctx.ts.findClass('@aws-cdk/cdk.Resource');
+    e.assert(e.ctx.resourceClass.extends(resourceBase), e.ctx.resourceClass.fqn);
   }
 });
 
@@ -78,6 +79,16 @@ resourceLinter.add({
     }
 
     e.ctx.resourceInterface = resourceInterface;
+  }
+});
+
+resourceLinter.add({
+  code: 'resource-interface-extends-resource',
+  message: 'construct interfaces of AWS resources must extend cdk.IResource',
+  eval: e => {
+    if (!e.ctx.resourceInterface) { return; }
+    const interfaceBase = e.ctx.ts.findInterface('@aws-cdk/cdk.IResource');
+    e.assert(e.ctx.resourceInterface.extends(interfaceBase), e.ctx.resourceInterface.fqn);
   }
 });
 

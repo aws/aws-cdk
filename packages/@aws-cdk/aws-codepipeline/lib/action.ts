@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IResource } from '@aws-cdk/cdk';
 import { Artifact } from './artifact';
 import validation = require('./validation');
 
@@ -54,7 +54,7 @@ export interface ActionBind {
    * The scope construct for this action.
    * Can be used by the action implementation to create any resources it needs to work correctly.
    */
-  readonly scope: cdk.Construct;
+  readonly scope: Construct;
 
   /**
    * The IAM Role to add the necessary permissions to.
@@ -67,7 +67,7 @@ export interface ActionBind {
  * It extends {@link events.IEventRuleTarget},
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends cdk.IConstruct, events.IEventRuleTarget {
+export interface IPipeline extends IResource, events.IEventRuleTarget {
   /**
    * The name of the Pipeline.
    */
@@ -220,7 +220,7 @@ export abstract class Action {
 
   private _pipeline?: IPipeline;
   private _stage?: IStage;
-  private _scope?: cdk.Construct;
+  private _scope?: Construct;
 
   constructor(props: ActionProps) {
     validation.validateName('Action', props.actionName);
@@ -302,7 +302,7 @@ export abstract class Action {
    * Only available after the Action has been added to a Stage,
    * and that Stage to a Pipeline.
    */
-  protected get scope(): cdk.Construct {
+  protected get scope(): Construct {
     if (this._scope) {
       return this._scope;
     } else {
