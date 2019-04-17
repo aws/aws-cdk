@@ -9,6 +9,7 @@
         "lcov",
         "text-summary"
     ],
+    "excludeAfterRemap": false,
     "cache": true,
     "exclude": [
         "coverage/**",
