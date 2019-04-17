@@ -19,15 +19,7 @@
         "strictPropertyInitialization":false
     },
     "include": [
-        "**/*.ts",
-        "**/*.d.ts", "../@aws-cdk/cdk-deploy/lib/assets.ts", "../@aws-cdk/cdk-deploy/lib/archive.ts", "../@aws-cdk/cdk-deploy/lib/cdk-toolkit.ts", "../@aws-cdk/cd, "../@aws-cdk/cdk-deploy/lib/diff.ts"k-deploy/lib/docker.ts", "../@aws-cdk/cdk-common/lib/logging.ts", "../@aws-cdk/cdk-common/lib/serialize.ts", "../@aws-cdk/cdk-common/lib/os.ts"
-    ],
-    "exclude": [
-        "lib/init-templates/**/*"
-    ],
-    "files": [
-        "lib/init-templates/app/csharp/add-project.hook.ts",
-        "lib/init-templates/app/fsharp/add-project.hook.ts"
+        "**/*.ts"
     ]
 }
 

@@ -1,11 +1,11 @@
 {
-  "name": "aws-cdk",
-  "description": "CDK Toolkit, the command line tool for CDK apps",
+  "name": "@aws-cdk/cdk-deploy",
+  "description": "Command-line utility for deploying CDK applications",
   "version": "0.28.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
-    "cdk": "bin/cdk"
+    "cdk-deploy": "bin/cdk-deploy"
   },
   "scripts": {
     "build": "cdk-build",
@@ -14,11 +14,6 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "package": "cdk-package"
-  },
-  "cdk-build": {
-    "pre": [
-      "./generate.sh"
-    ]
   },
   "nyc": {
     "statements": 8,
@@ -74,7 +69,7 @@
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
     "type": "git",
-    "directory": "packages/aws-cdk"
+    "directory": "packages/@aws-cdk/cdk-deploy"
   },
   "keywords": [
     "aws",

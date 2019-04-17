@@ -1,11 +1,11 @@
 import colors = require('colors/safe');
 import fs = require('fs-extra');
 import { format, promisify } from 'util';
-import { AppStacks, ExtendedStackSelection } from "./api/cxapp/stacks";
+// import { AppStacks, ExtendedStackSelection } from "../../../aws-cdk/lib/api/cxapp/stacks";
+import { data, error, highlight, print, success } from '../../../aws-cdk/lib/logging';
+import { deserializeStructure } from '../../../aws-cdk/lib/serialize';
 import { IDeploymentTarget } from './api/deployment-target';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { data, error, highlight, print, success } from './logging';
-import { deserializeStructure } from './serialize';
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');

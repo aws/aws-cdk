@@ -1,8 +1,8 @@
+import { error } from '@aws-cdk/cdk-common/lib/logging';
 import cxapi = require('@aws-cdk/cx-api');
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
 import util = require('util');
-import { error } from '../../../logging';
 
 interface StackActivity {
   readonly event: aws.CloudFormation.StackEvent;

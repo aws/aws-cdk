@@ -1,14 +1,14 @@
 // tslint:disable-next-line:max-line-length
+import { debug, success } from '@aws-cdk/cdk-common';
 import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, FileAssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import colors = require('colors');
 import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
+import { zipDirectory } from '../../../aws-cdk/lib/archive';
 import { ToolkitInfo } from './api/toolkit-info';
-import { zipDirectory } from './archive';
 import { prepareContainerAsset } from './docker';
-import { debug, success } from './logging';
 
 // tslint:disable-next-line:max-line-length
 export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo, ci?: boolean, reuse?: string[]): Promise<CloudFormation.Parameter[]> {

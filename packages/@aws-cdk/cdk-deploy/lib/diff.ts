@@ -1,8 +1,8 @@
+import { print, warning } from '@aws-cdk/cdk-common';
 import cfnDiff = require('@aws-cdk/cloudformation-diff');
 import { FormatStream } from '@aws-cdk/cloudformation-diff';
 import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
-import { print, warning } from './logging';
 
 /**
  * Pretty-prints the differences between two template states to the console.

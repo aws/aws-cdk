@@ -1,10 +1,7 @@
+import { debug, deserializeStructure, Mode, SDK } from '@aws-cdk/cdk-common';
 import cxapi = require('@aws-cdk/cx-api');
-import { debug } from '../logging';
-import { deserializeStructure } from '../serialize';
-import { Mode } from './aws-auth/credentials';
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { loadToolkitInfo } from './toolkit-info';
-import { SDK } from './util/sdk';
 
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 

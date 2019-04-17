@@ -1,12 +1,10 @@
+import { debug, Mode, SDK } from '@aws-cdk/cdk-common';
 import cxapi = require('@aws-cdk/cx-api');
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
 import { md5hash } from '../archive';
-import { debug } from '../logging';
-import { Mode } from './aws-auth/credentials';
 import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-environment';
 import { waitForStack } from './util/cloudformation';
-import { SDK } from './util/sdk';
 
 export interface UploadProps {
   s3KeyPrefix?: string,

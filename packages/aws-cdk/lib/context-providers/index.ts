@@ -1,6 +1,5 @@
+import { debug, SDK } from '@aws-cdk/cdk-common';
 import cxapi = require('@aws-cdk/cx-api');
-import { SDK } from '../api/util/sdk';
-import { debug } from '../logging';
 import { Context } from '../settings';
 import { AZContextProviderPlugin } from './availability-zones';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';

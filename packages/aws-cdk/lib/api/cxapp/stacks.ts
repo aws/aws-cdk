@@ -1,14 +1,13 @@
+import { debug, error, print, SDK, warning } from '@aws-cdk/cdk-common';
+import cdkUtil = require('@aws-cdk/cdk-common/lib/util');
+import { topologicalSort } from '@aws-cdk/cdk-common/lib/util/toposort';
 import cxapi = require('@aws-cdk/cx-api');
 import regionInfo = require('@aws-cdk/region-info');
 import colors = require('colors/safe');
 import minimatch = require('minimatch');
 import contextproviders = require('../../context-providers');
-import { debug, error, print, warning } from '../../logging';
 import { Renames } from '../../renames';
 import { Configuration } from '../../settings';
-import cdkUtil = require('../../util');
-import { SDK } from '../util/sdk';
-import { topologicalSort } from '../util/toposort';
 
 type Synthesizer = (aws: SDK, config: Configuration) => Promise<cxapi.SynthesizeResponse>;
 

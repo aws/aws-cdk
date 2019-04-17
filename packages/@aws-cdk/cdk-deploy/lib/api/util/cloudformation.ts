@@ -1,5 +1,5 @@
+import { debug } from '@aws-cdk/cdk-common';
 import { CloudFormation } from 'aws-sdk';
-import { debug } from '../../logging';
 import { StackStatus } from './cloudformation/stack-status';
 
 /**

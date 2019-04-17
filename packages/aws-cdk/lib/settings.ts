@@ -1,9 +1,8 @@
+import { debug, deepClone, deepGet, deepMerge, deepSet, warning } from '@aws-cdk/cdk-common';
 import fs = require('fs-extra');
 import os = require('os');
 import fs_path = require('path');
 import yargs = require('yargs');
-import { debug, warning } from './logging';
-import util = require('./util');
 
 export type SettingsMap = {[key: string]: any};
 
@@ -255,7 +254,7 @@ export class Settings {
   }
 
   public merge(other: Settings): Settings {
-    return new Settings(util.deepMerge(this.settings, other.settings));
+    return new Settings(deepMerge(this.settings, other.settings));
   }
 
   public subSettings(keyPrefix: string[]) {
@@ -278,7 +277,7 @@ export class Settings {
   }
 
   public get(path: string[]): any {
-    return util.deepClone(util.deepGet(this.settings, path));
+    return deepClone(deepGet(this.settings, path));
   }
 
   public set(path: string[], value: any): Settings {
@@ -289,7 +288,7 @@ export class Settings {
       // deepSet can't handle this case
       this.settings = value;
     } else {
-      util.deepSet(this.settings, path, value);
+      deepSet(this.settings, path, value);
     }
     return this;
   }
