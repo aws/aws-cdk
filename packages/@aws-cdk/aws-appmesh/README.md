@@ -22,7 +22,7 @@ The following example creates the `AppMesh` service mesh with the default filter
 export const app = new cdk.App();
 
 const mesh = new Mesh(this, 'AppMesh', {
-  name: props.appMeshName,
+  name: 'myAwsmMesh',
 });
 ```
 
@@ -30,7 +30,7 @@ The mesh can also be created with the "ALLOW_ALL" egress filter by overwritting 
 
 ```typescript
 const mesh = new Mesh(this, 'AppMesh', {
-  name: props.appMeshName,
+  name: 'myAwsmMesh',
   meshSpec: {
     egressFilter: appmesh.MeshFilterType.Allow_All,
   },
@@ -72,7 +72,7 @@ For the provider property:
   
 ```typescript
 mesh.addVirtualService('virtual-service', {
-  virtualRouterName: router.virtualRouterName,
+  virtualRouter: router,
   virtualServiceName: 'my-service.default.svc.cluster.local',
 });
 ```
@@ -81,8 +81,8 @@ mesh.addVirtualService('virtual-service', {
 
 ```typescript
 mesh.addVirtualService('virtual-service', {
-  virtualNodeName: node.virtualNodeName,
-  virtualServiceName: `ratings.${infra.namespace.namespaceName}`,
+  virtualNode: node,
+  virtualServiceName: `my-service.default.svc.cluster.local`,
 });
 ```
 
@@ -102,9 +102,15 @@ The response metadata for your new `virtual node` contains the Amazon Resource N
 > If you require your Envoy stats or tracing to use a different name, you can override the node.cluster value that is set by APPMESH_VIRTUAL_NODE_NAME with the APPMESH_VIRTUAL_NODE_CLUSTER environment variable.
 
 ```typescript
+const vpc = new ec2.VpcNetwork(stack, 'vpc');
+const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+  vpc,
+  name: 'domain.local',
+});
+
 const virtualNode = mesh.addVirtualNode('virtual-node', {
   hostname: 'node-a',
-  namespaceName: 'default.svc.cluster.local',
+  namespace,
   listeners: {
     portMappings: [
       {
@@ -141,7 +147,7 @@ If your `route` matches a request, you can distribute traffic to one or more tar
 router.addRoute('route', {
   routeTargets: [
     {
-      virtualNodeName: virtualNode.virtualNodeName,
+      virtualNode,
       weight: 1,
     },
   ],
@@ -159,7 +165,7 @@ ratingsRouter.addRoutes(
     {
       routeTargets: [
         {
-          virtualNodeName: virtualNode1.virtualNodeName,
+          virtualNode,
           weight: 50,
         },
       ],
@@ -169,7 +175,7 @@ ratingsRouter.addRoutes(
     {
       routeTargets: [
         {
-          virtualNodeName: virtualNode2.virtualNodeName,
+          virtualNode: virtualNode2,
           weight: 50,
         },
       ],
