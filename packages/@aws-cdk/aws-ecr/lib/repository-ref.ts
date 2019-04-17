@@ -1,11 +1,11 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IConstruct, IResource, Resource, Token } from '@aws-cdk/cdk';
 
 /**
  * Represents an ECR repository.
  */
-export interface IRepository extends cdk.IConstruct {
+export interface IRepository extends IResource {
   /**
    * The name of the repository
    */
@@ -96,11 +96,11 @@ export interface RepositoryImportProps {
 /**
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
-export abstract class RepositoryBase extends cdk.Construct implements IRepository {
+export abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Import a repository
    */
-  public static import(scope: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
+  public static import(scope: Construct, id: string, props: RepositoryImportProps): IRepository {
     return new ImportedRepository(scope, id, props);
   }
 
@@ -108,7 +108,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Returns an ECR ARN for a repository that resides in the same account/region
    * as the current stack.
    */
-  public static arnForLocalRepository(repositoryName: string, scope: cdk.IConstruct): string {
+  public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
     return scope.node.stack.formatArn({
       service: 'ecr',
       resource: 'repository',
@@ -234,7 +234,7 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: RepositoryImportProps) {
     super(scope, id);
 
     if (props.repositoryArn) {
@@ -254,7 +254,7 @@ class ImportedRepository extends RepositoryBase {
       // if repositoryArn is a token, the repository name is also required. this is because
       // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
       // parse the name from an ARN using CloudFormation's split/select.
-      if (cdk.unresolved(this.repositoryArn)) {
+      if (Token.unresolved(this.repositoryArn)) {
         throw new Error('repositoryArn is a late-bound value, and therefore repositoryName is required');
       }
 

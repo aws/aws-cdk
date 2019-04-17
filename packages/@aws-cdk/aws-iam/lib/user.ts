@@ -1,4 +1,4 @@
-import { Construct, SecretValue } from '@aws-cdk/cdk';
+import { Construct, Resource, SecretValue } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -68,7 +68,7 @@ export interface UserProps {
   readonly passwordResetRequired?: boolean;
 }
 
-export class User extends Construct implements IIdentity {
+export class User extends Resource implements IIdentity {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { CfnUserPool } from './cognito.generated';
 
 /**
@@ -256,7 +256,7 @@ export interface UserPoolImportProps {
   readonly userPoolProviderUrl: string;
 }
 
-export interface IUserPool extends cdk.IConstruct {
+export interface IUserPool extends IResource {
   /**
    * The physical ID of this user pool resource
    */
@@ -287,14 +287,14 @@ export interface IUserPool extends cdk.IConstruct {
 /**
  * Define a Cognito User Pool
  */
-export class UserPool extends cdk.Construct implements IUserPool {
+export class UserPool extends Resource implements IUserPool {
   /**
    * Import an existing user pool resource
    * @param scope Parent construct
    * @param id Construct ID
    * @param props Imported user pool properties
    */
-  public static import(scope: cdk.Construct, id: string, props: UserPoolImportProps): IUserPool {
+  public static import(scope: Construct, id: string, props: UserPoolImportProps): IUserPool {
     return new ImportedUserPool(scope, id, props);
   }
 
@@ -320,7 +320,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
 
   private triggers: CfnUserPool.LambdaConfigProperty = { };
 
-  constructor(scope: cdk.Construct, id: string, props: UserPoolProps) {
+  constructor(scope: Construct, id: string, props: UserPoolProps) {
     super(scope, id);
 
     let aliasAttributes: UserPoolAttribute[] | undefined;
@@ -379,7 +379,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
       usernameAttributes,
       aliasAttributes,
       autoVerifiedAttributes: props.autoVerifiedAttributes,
-      lambdaConfig: new cdk.Token(() => this.triggers)
+      lambdaConfig: new Token(() => this.triggers)
     });
     this.userPoolId = userPool.userPoolId;
     this.userPoolArn = userPool.userPoolArn;
@@ -477,10 +477,10 @@ export class UserPool extends cdk.Construct implements IUserPool {
 
   public export(): UserPoolImportProps {
     return {
-      userPoolId: new cdk.CfnOutput(this, 'UserPoolId', { value: this.userPoolId }).makeImportValue().toString(),
-      userPoolArn: new cdk.CfnOutput(this, 'UserPoolArn', { value: this.userPoolArn }).makeImportValue().toString(),
-      userPoolProviderName: new cdk.CfnOutput(this, 'UserPoolProviderName', { value: this.userPoolProviderName }).makeImportValue().toString(),
-      userPoolProviderUrl: new cdk.CfnOutput(this, 'UserPoolProviderUrl', { value: this.userPoolProviderUrl }).makeImportValue().toString()
+      userPoolId: new CfnOutput(this, 'UserPoolId', { value: this.userPoolId }).makeImportValue().toString(),
+      userPoolArn: new CfnOutput(this, 'UserPoolArn', { value: this.userPoolArn }).makeImportValue().toString(),
+      userPoolProviderName: new CfnOutput(this, 'UserPoolProviderName', { value: this.userPoolProviderName }).makeImportValue().toString(),
+      userPoolProviderUrl: new CfnOutput(this, 'UserPoolProviderUrl', { value: this.userPoolProviderUrl }).makeImportValue().toString()
     };
   }
 
@@ -496,7 +496,7 @@ export class UserPool extends cdk.Construct implements IUserPool {
 /**
  * Define a user pool which has been declared in another stack
  */
-class ImportedUserPool extends cdk.Construct implements IUserPool {
+class ImportedUserPool extends Construct implements IUserPool {
   /**
    * The ID of an existing user pool
    */
@@ -517,7 +517,7 @@ class ImportedUserPool extends cdk.Construct implements IUserPool {
    */
   public readonly userPoolProviderUrl: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: UserPoolImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: UserPoolImportProps) {
     super(scope, id);
 
     this.userPoolId = props.userPoolId;

@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, IConstruct, Token } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
@@ -6,7 +6,7 @@ import { IVpcNetwork } from './vpc-ref';
 
 const isSecurityGroupSymbol = Symbol.for('aws-cdk:isSecurityGroup');
 
-export interface ISecurityGroup extends IConstruct, ISecurityGroupRule, IConnectable {
+export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnectable {
   /**
    * ID for the current security group
    */
@@ -50,7 +50,7 @@ export interface SecurityGroupImportProps {
 /**
  * A SecurityGroup that is not created in this template
  */
-export abstract class SecurityGroupBase extends Construct implements ISecurityGroup {
+export abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   /**
    * Return whether the indicated object is a security group
    */

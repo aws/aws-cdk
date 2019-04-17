@@ -1,8 +1,8 @@
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, DeletionPolicy, IResource, Resource } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 
-export interface ILogStream extends cdk.IConstruct {
+export interface ILogStream extends IResource {
   /**
    * The name of this log stream
    */
@@ -56,11 +56,11 @@ export interface LogStreamProps {
 /**
  * Define a Log Stream in a Log Group
  */
-export class LogStream extends cdk.Construct implements ILogStream {
+export class LogStream extends Resource implements ILogStream {
   /**
    * Import an existing LogGroup
    */
-  public static import(scope: cdk.Construct, id: string, props: LogStreamImportProps): ILogStream {
+  public static import(scope: Construct, id: string, props: LogStreamImportProps): ILogStream {
     return new ImportedLogStream(scope, id, props);
   }
 
@@ -69,7 +69,7 @@ export class LogStream extends cdk.Construct implements ILogStream {
    */
   public readonly logStreamName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: LogStreamProps) {
+  constructor(scope: Construct, id: string, props: LogStreamProps) {
     super(scope, id);
 
     const resource = new CfnLogStream(this, 'Resource', {
@@ -78,7 +78,7 @@ export class LogStream extends cdk.Construct implements ILogStream {
     });
 
     if (props.retainLogStream !== false) {
-      resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
+      resource.options.deletionPolicy = DeletionPolicy.Retain;
     }
 
     this.logStreamName = resource.logStreamName;
@@ -89,7 +89,7 @@ export class LogStream extends cdk.Construct implements ILogStream {
    */
   public export(): LogStreamImportProps {
     return {
-      logStreamName: new cdk.CfnOutput(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue().toString()
+      logStreamName: new CfnOutput(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue().toString()
     };
   }
 }
@@ -97,13 +97,13 @@ export class LogStream extends cdk.Construct implements ILogStream {
 /**
  * An imported LogStream
  */
-class ImportedLogStream extends cdk.Construct implements ILogStream {
+class ImportedLogStream extends Construct implements ILogStream {
   /**
    * The name of this log stream
    */
   public readonly logStreamName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: LogStreamImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: LogStreamImportProps) {
     super(scope, id);
 
     this.logStreamName = props.logStreamName;

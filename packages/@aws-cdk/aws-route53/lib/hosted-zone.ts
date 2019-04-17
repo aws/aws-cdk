@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, Resource, Token } from '@aws-cdk/cdk';
 import { HostedZoneImportProps, IHostedZone } from './hosted-zone-ref';
 import { ZoneDelegationRecord } from './records';
 import { CfnHostedZone } from './route53.generated';
@@ -42,11 +42,11 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
   readonly vpcs?: ec2.IVpcNetwork[];
 }
 
-export class HostedZone extends cdk.Construct implements IHostedZone {
+export class HostedZone extends Resource implements IHostedZone {
   /**
    * Imports a hosted zone from another stack.
    */
-  public static import(scope: cdk.Construct, id: string, props: HostedZoneImportProps): IHostedZone {
+  public static import(scope: Construct, id: string, props: HostedZoneImportProps): IHostedZone {
     return new ImportedHostedZone(scope, id, props);
   }
 
@@ -59,7 +59,7 @@ export class HostedZone extends cdk.Construct implements IHostedZone {
    */
   protected readonly vpcs = new Array<CfnHostedZone.VPCProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: HostedZoneProps) {
+  constructor(scope: Construct, id: string, props: HostedZoneProps) {
     super(scope, id);
 
     validateZoneName(props.zoneName);
@@ -68,7 +68,7 @@ export class HostedZone extends cdk.Construct implements IHostedZone {
       name: props.zoneName + '.',
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
-      vpcs: new cdk.Token(() => this.vpcs.length === 0 ? undefined : this.vpcs)
+      vpcs: new Token(() => this.vpcs.length === 0 ? undefined : this.vpcs)
     });
 
     this.hostedZoneId = hostedZone.ref;
@@ -82,7 +82,7 @@ export class HostedZone extends cdk.Construct implements IHostedZone {
 
   public export(): HostedZoneImportProps {
     return {
-      hostedZoneId: new cdk.CfnOutput(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
+      hostedZoneId: new CfnOutput(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
       zoneName: this.zoneName,
     };
   }
@@ -106,7 +106,7 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
  * Create a Route53 public hosted zone.
  */
 export class PublicHostedZone extends HostedZone {
-  constructor(scope: cdk.Construct, id: string, props: PublicHostedZoneProps) {
+  constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
   }
 
@@ -167,7 +167,7 @@ export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
  * for the VPC you're configuring for private hosted zones.
  */
 export class PrivateHostedZone extends HostedZone {
-  constructor(scope: cdk.Construct, id: string, props: PrivateHostedZoneProps) {
+  constructor(scope: Construct, id: string, props: PrivateHostedZoneProps) {
     super(scope, id, props);
 
     this.addVpc(props.vpc);
@@ -177,11 +177,11 @@ export class PrivateHostedZone extends HostedZone {
 /**
  * Imported hosted zone
  */
-class ImportedHostedZone extends cdk.Construct implements IHostedZone {
+class ImportedHostedZone extends Construct implements IHostedZone {
   public readonly hostedZoneId: string;
   public readonly zoneName: string;
 
-  constructor(scope: cdk.Construct, name: string, private readonly props: HostedZoneImportProps) {
+  constructor(scope: Construct, name: string, private readonly props: HostedZoneImportProps) {
     super(scope, name);
 
     this.hostedZoneId = props.hostedZoneId;

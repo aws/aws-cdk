@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, DeletionPolicy, Resource, Token } from '@aws-cdk/cdk';
 import crypto = require('crypto');
 import { CfnDeployment, CfnDeploymentProps } from './apigateway.generated';
 import { IRestApi } from './restapi';
@@ -54,13 +54,13 @@ export interface DeploymentProps  {
  * model. Use the `node.addDependency(dep)` method to circumvent that. This is done
  * automatically for the `restApi.latestDeployment` deployment.
  */
-export class Deployment extends cdk.Construct {
+export class Deployment extends Resource {
   public readonly deploymentId: string;
   public readonly api: IRestApi;
 
   private readonly resource: LatestDeploymentResource;
 
-  constructor(scope: cdk.Construct, id: string, props: DeploymentProps) {
+  constructor(scope: Construct, id: string, props: DeploymentProps) {
     super(scope, id);
 
     this.resource = new LatestDeploymentResource(this, 'Resource', {
@@ -69,11 +69,11 @@ export class Deployment extends cdk.Construct {
     });
 
     if (props.retainDeployments) {
-      this.resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
+      this.resource.options.deletionPolicy = DeletionPolicy.Retain;
     }
 
     this.api = props.api;
-    this.deploymentId = new cdk.Token(() => this.resource.deploymentId).toString();
+    this.deploymentId = new Token(() => this.resource.deploymentId).toString();
   }
 
   /**
@@ -93,16 +93,16 @@ class LatestDeploymentResource extends CfnDeployment {
   private originalLogicalId?: string;
   private lazyLogicalIdRequired: boolean;
   private lazyLogicalId?: string;
-  private logicalIdToken: cdk.Token;
+  private logicalIdToken: Token;
   private hashComponents = new Array<any>();
 
-  constructor(scope: cdk.Construct, id: string, props: CfnDeploymentProps) {
+  constructor(scope: Construct, id: string, props: CfnDeploymentProps) {
     super(scope, id, props);
 
     // from this point, don't allow accessing logical ID before synthesis
     this.lazyLogicalIdRequired = true;
 
-    this.logicalIdToken = new cdk.Token(() => this.lazyLogicalId);
+    this.logicalIdToken = new Token(() => this.lazyLogicalId);
   }
 
   /**
@@ -127,7 +127,7 @@ class LatestDeploymentResource extends CfnDeployment {
    * Returns a lazy reference to this resource (evaluated only upon synthesis).
    */
   public get ref() {
-    return new cdk.Token(() => ({ Ref: this.lazyLogicalId })).toString();
+    return new Token(() => ({ Ref: this.lazyLogicalId })).toString();
   }
 
   /**

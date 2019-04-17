@@ -1,13 +1,13 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
 import { Column } from './schema';
 
-export interface ITable extends cdk.IConstruct {
+export interface ITable extends IResource {
   readonly tableArn: string;
   readonly tableName: string;
 
@@ -142,7 +142,7 @@ export interface TableProps {
 /**
  * A Glue table.
  */
-export class Table extends cdk.Construct implements ITable {
+export class Table extends Resource implements ITable {
   /**
    * Creates a Table construct that represents an external table.
    *
@@ -150,7 +150,7 @@ export class Table extends cdk.Construct implements ITable {
    * @param id The construct's id.
    * @param props A `TableImportProps` object. Can be obtained from a call to `table.export()` or manually created.
    */
-  public static import(scope: cdk.Construct, id: string, props: TableImportProps): ITable {
+  public static import(scope: Construct, id: string, props: TableImportProps): ITable {
     return new ImportedTable(scope, id, props);
   }
 
@@ -204,7 +204,7 @@ export class Table extends cdk.Construct implements ITable {
    */
   public readonly partitionKeys?: Column[];
 
-  constructor(scope: cdk.Construct, id: string, props: TableProps) {
+  constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
     this.database = props.database;
@@ -256,8 +256,8 @@ export class Table extends cdk.Construct implements ITable {
 
   public export(): TableImportProps {
     return {
-      tableName: new cdk.CfnOutput(this, 'TableName', { value: this.tableName }).makeImportValue().toString(),
-      tableArn: new cdk.CfnOutput(this, 'TableArn', { value: this.tableArn }).makeImportValue().toString(),
+      tableName: new CfnOutput(this, 'TableName', { value: this.tableName }).makeImportValue().toString(),
+      tableArn: new CfnOutput(this, 'TableArn', { value: this.tableArn }).makeImportValue().toString(),
     };
   }
 
@@ -398,11 +398,11 @@ function renderColumns(columns?: Array<Column | Column>) {
   });
 }
 
-class ImportedTable extends cdk.Construct implements ITable {
+class ImportedTable extends Construct implements ITable {
   public readonly tableArn: string;
   public readonly tableName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: TableImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: TableImportProps) {
     super(scope, id);
     this.tableArn = props.tableArn;
     this.tableName = props.tableName;

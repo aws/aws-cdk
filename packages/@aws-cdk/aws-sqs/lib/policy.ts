@@ -1,5 +1,5 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { IQueue } from './queue-base';
 import { CfnQueuePolicy } from './sqs.generated';
 
@@ -13,7 +13,7 @@ export interface QueuePolicyProps {
 /**
  * Applies a policy to SQS queues.
  */
-export class QueuePolicy extends Construct {
+export class QueuePolicy extends Resource {
   /**
    * The IAM policy document for this policy.
    */

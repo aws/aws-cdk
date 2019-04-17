@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import { Construct } from '@aws-cdk/cdk';
 import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPrivateDnsNamespace} from './servicediscovery.generated';
@@ -35,7 +35,7 @@ export class PrivateDnsNamespace extends NamespaceBase {
    */
   public readonly type: NamespaceType;
 
-  constructor(scope: cdk.Construct, id: string, props: PrivateDnsNamespaceProps) {
+  constructor(scope: Construct, id: string, props: PrivateDnsNamespaceProps) {
     super(scope, id);
     if (props.vpc === undefined) {
       throw new Error(`VPC must be specified for PrivateDNSNamespaces`);

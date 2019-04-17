@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct } from '@aws-cdk/cdk';
 import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
 import { Version } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
@@ -78,7 +78,7 @@ export class Alias extends FunctionBase {
    */
   private readonly underlyingLambda: IFunction;
 
-  constructor(scope: cdk.Construct, id: string, props: AliasProps) {
+  constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id);
 
     this.aliasName = props.aliasName;
@@ -126,7 +126,7 @@ export class Alias extends FunctionBase {
 
   public export(): FunctionImportProps {
     return {
-      functionArn: new cdk.CfnOutput(this, 'AliasArn', { value: this.functionArn }).makeImportValue().toString()
+      functionArn: new CfnOutput(this, 'AliasArn', { value: this.functionArn }).makeImportValue().toString()
     };
   }
 

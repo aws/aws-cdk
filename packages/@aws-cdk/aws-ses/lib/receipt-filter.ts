@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnReceiptFilter } from './ses.generated';
 
 /**
@@ -46,8 +46,8 @@ export interface ReceiptFilterProps {
  * A receipt filter. When instantiated without props, it creates a
  * block all receipt filter.
  */
-export class ReceiptFilter extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props?: ReceiptFilterProps) {
+export class ReceiptFilter extends Resource {
+  constructor(scope: Construct, id: string, props?: ReceiptFilterProps) {
     super(scope, id);
 
     new CfnReceiptFilter(this, 'Resource', {
@@ -75,8 +75,8 @@ export interface WhiteListReceiptFilterProps {
 /**
  * A white list receipt filter.
  */
-export class WhiteListReceiptFilter extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: WhiteListReceiptFilterProps) {
+export class WhiteListReceiptFilter extends Resource {
+  constructor(scope: Construct, id: string, props: WhiteListReceiptFilterProps) {
     super(scope, id);
 
     new ReceiptFilter(this, 'BlockAll');

@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
 import { IFilterPattern } from './pattern';
@@ -55,8 +55,8 @@ export interface MetricFilterProps {
 /**
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
-export class MetricFilter extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: MetricFilterProps) {
+export class MetricFilter extends Resource {
+  constructor(scope: Construct, id: string, props: MetricFilterProps) {
     super(scope, id);
 
     // It looks odd to map this object to a singleton list, but that's how

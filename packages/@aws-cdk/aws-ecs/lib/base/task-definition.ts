@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { isEc2Compatible, isFargateCompatible } from '../util';
@@ -98,7 +98,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
 /**
  * Base class for Ecs and Fargate task definitions
  */
-export class TaskDefinition extends cdk.Construct {
+export class TaskDefinition extends Resource {
   /**
    * The family name of this task definition
    */
@@ -155,7 +155,7 @@ export class TaskDefinition extends cdk.Construct {
    */
   private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: TaskDefinitionProps) {
+  constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
 
     this.family = props.family || this.node.uniqueId;
@@ -186,9 +186,9 @@ export class TaskDefinition extends cdk.Construct {
     });
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
-      containerDefinitions: new cdk.Token(() => this.containers.map(x => x.renderContainerDefinition())),
-      volumes: new cdk.Token(() => this.volumes),
-      executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn).toString(),
+      containerDefinitions: new Token(() => this.containers.map(x => x.renderContainerDefinition())),
+      volumes: new Token(() => this.volumes),
+      executionRoleArn: new Token(() => this.executionRole && this.executionRole.roleArn).toString(),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
       requiresCompatibilities: [
@@ -196,7 +196,7 @@ export class TaskDefinition extends cdk.Construct {
         ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
       ],
       networkMode: this.networkMode,
-      placementConstraints: !isFargateCompatible(this.compatibility) ? new cdk.Token(this.placementConstraints) : undefined,
+      placementConstraints: !isFargateCompatible(this.compatibility) ? new Token(this.placementConstraints) : undefined,
       cpu: props.cpu,
       memory: props.memoryMiB,
     });

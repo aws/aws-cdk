@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { IFunction } from './function-base';
 import { CfnVersion } from './lambda.generated';
 
@@ -44,7 +44,7 @@ export interface VersionProps {
  * the right deployment, specify the `codeSha256` property while
  * creating the `Version.
  */
-export class Version extends Construct {
+export class Version extends Resource {
   /**
    * The most recently deployed version of this function.
    */

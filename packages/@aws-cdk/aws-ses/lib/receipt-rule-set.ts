@@ -1,11 +1,11 @@
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
 import { CfnReceiptRuleSet } from './ses.generated';
 
 /**
  * A receipt rule set.
  */
-export interface IReceiptRuleSet extends cdk.IConstruct {
+export interface IReceiptRuleSet extends IResource {
   /**
    * The receipt rule set name.
    */
@@ -52,7 +52,7 @@ export interface ReceiptRuleSetProps {
 /**
  * A new or imported receipt rule set.
  */
-export abstract class ReceiptRuleSetBase extends cdk.Construct implements IReceiptRuleSet {
+export abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
   public abstract readonly name: string;
 
   private lastAddedRule?: ReceiptRule;
@@ -91,13 +91,13 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSe
   /**
    * Import an exported receipt rule set.
    */
-  public static import(scope: cdk.Construct, id: string, props: ReceiptRuleSetImportProps): IReceiptRuleSet {
+  public static import(scope: Construct, id: string, props: ReceiptRuleSetImportProps): IReceiptRuleSet {
     return new ImportedReceiptRuleSet(scope, id, props);
   }
 
   public readonly name: string;
 
-  constructor(scope: cdk.Construct, id: string, props?: ReceiptRuleSetProps) {
+  constructor(scope: Construct, id: string, props?: ReceiptRuleSetProps) {
     super(scope, id);
 
     const resource = new CfnReceiptRuleSet(this, 'Resource', {
@@ -121,7 +121,7 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSe
    */
   public export(): ReceiptRuleSetImportProps {
     return {
-      name: new cdk.CfnOutput(this, 'ReceiptRuleSetName', { value: this.name }).makeImportValue().toString()
+      name: new CfnOutput(this, 'ReceiptRuleSetName', { value: this.name }).makeImportValue().toString()
     };
   }
 }
@@ -142,7 +142,7 @@ export interface ReceiptRuleSetImportProps {
 class ImportedReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSet {
   public readonly name: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ReceiptRuleSetImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: ReceiptRuleSetImportProps) {
     super(scope, id);
 
     this.name = props.name;

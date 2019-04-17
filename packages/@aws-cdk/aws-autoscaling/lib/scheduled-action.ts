@@ -1,6 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { IAutoScalingGroup } from './auto-scaling-group';
-
 import { CfnScheduledAction } from './autoscaling.generated';
 
 /**
@@ -81,8 +80,8 @@ const CRON_EXPRESSION = new RegExp('^' + [CRON_PART, CRON_PART, CRON_PART, CRON_
 /**
  * Define a scheduled scaling action
  */
-export class ScheduledAction extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: ScheduledActionProps) {
+export class ScheduledAction extends Resource {
+  constructor(scope: Construct, id: string, props: ScheduledActionProps) {
     super(scope, id);
 
     if (!CRON_EXPRESSION.exec(props.schedule)) {

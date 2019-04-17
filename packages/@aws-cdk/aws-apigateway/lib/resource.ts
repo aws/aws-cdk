@@ -1,10 +1,10 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IResource, Resource as ResourceConstruct } from '@aws-cdk/cdk';
 import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { RestApi } from './restapi';
 
-export interface IRestApiResource extends cdk.IConstruct {
+export interface IRestApiResource extends IResource {
   /**
    * The parent of this resource or undefined for the root resource.
    */
@@ -113,7 +113,7 @@ export interface ResourceProps extends ResourceOptions {
   readonly pathPart: string;
 }
 
-export abstract class ResourceBase extends cdk.Construct implements IRestApiResource {
+export abstract class ResourceBase extends ResourceConstruct implements IRestApiResource {
   public abstract readonly parentResource?: IRestApiResource;
   public abstract readonly resourceApi: RestApi;
   public abstract readonly resourceId: string;
@@ -123,7 +123,7 @@ export abstract class ResourceBase extends cdk.Construct implements IRestApiReso
 
   private readonly children: { [pathPart: string]: Resource } = { };
 
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
   }
 
@@ -184,7 +184,7 @@ export class Resource extends ResourceBase {
   public readonly defaultIntegration?: Integration;
   public readonly defaultMethodOptions?: MethodOptions;
 
-  constructor(scope: cdk.Construct, id: string, props: ResourceProps) {
+  constructor(scope: Construct, id: string, props: ResourceProps) {
     super(scope, id);
 
     validateResourcePathPart(props.pathPart);
@@ -253,7 +253,7 @@ export class ProxyResource extends Resource {
    */
   public readonly anyMethod?: Method;
 
-  constructor(scope: cdk.Construct, id: string, props: ProxyResourceProps) {
+  constructor(scope: Construct, id: string, props: ProxyResourceProps) {
     super(scope, id, {
       parent: props.parent,
       pathPart: '{proxy+}',

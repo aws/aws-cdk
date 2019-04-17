@@ -1,7 +1,6 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Aws, Construct, Resource, Token } from '@aws-cdk/cdk';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -178,7 +177,7 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
 /**
  * Provides a DynamoDB table.
  */
-export class Table extends Construct {
+export class Table extends Resource {
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @param grantee The principal (no-op if undefined)
@@ -413,7 +412,7 @@ export class Table extends Construct {
       actions,
       resourceArns: [
         this.tableArn,
-        new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : cdk.Aws.noValue).toString()
+        new Token(() => this.hasIndex ? `${this.tableArn}/index/*` : Aws.noValue).toString()
       ],
       scope: this,
     });

@@ -1,5 +1,5 @@
 import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { AliasTargetInstance } from './alias-target-instance';
 import { CnameInstance, CnameInstanceBaseProps  } from './cname-instance';
 import { IInstance } from './instance';
@@ -8,7 +8,7 @@ import { INamespace, NamespaceType } from './namespace';
 import { NonIpInstance, NonIpInstanceBaseProps } from './non-ip-instance';
 import { CfnService } from './servicediscovery.generated';
 
-export interface IService extends cdk.IConstruct {
+export interface IService extends IResource {
   /**
    * A name for the Cloudmap Service.
    */
@@ -128,7 +128,7 @@ export interface ServiceProps extends DnsServiceProps {
 /**
  * Define a CloudMap Service
  */
-export class Service extends cdk.Construct implements IService {
+export class Service extends Resource implements IService {
   /**
    * A name for the Cloudmap Service.
    */
@@ -159,7 +159,7 @@ export class Service extends cdk.Construct implements IService {
    */
   public readonly routingPolicy: RoutingPolicy;
 
-  constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
+  constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
     const namespaceType = props.namespace.type;

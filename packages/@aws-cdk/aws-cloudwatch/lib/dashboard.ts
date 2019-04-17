@@ -1,4 +1,4 @@
-import { Construct, Token } from "@aws-cdk/cdk";
+import { Construct, Resource, Token } from "@aws-cdk/cdk";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -50,7 +50,7 @@ export interface DashboardProps {
 /**
  * A CloudWatch dashboard
  */
-export class Dashboard extends Construct {
+export class Dashboard extends Resource {
   private readonly rows: IWidget[] = [];
   private readonly dashboard: CfnDashboard;
 

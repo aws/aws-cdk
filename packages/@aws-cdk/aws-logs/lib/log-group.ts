@@ -1,13 +1,13 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { applyRemovalPolicy, CfnOutput, Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/cdk';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
 
-export interface ILogGroup extends cdk.IConstruct {
+export interface ILogGroup extends IResource {
   /**
    * The ARN of this log group
    */
@@ -25,7 +25,7 @@ export interface ILogGroup extends cdk.IConstruct {
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the LogStream
    */
-  newStream(scope: cdk.Construct, id: string, props?: NewLogStreamProps): LogStream;
+  newStream(scope: Construct, id: string, props?: NewLogStreamProps): LogStream;
 
   /**
    * Create a new Subscription Filter on this Log Group
@@ -34,7 +34,7 @@ export interface ILogGroup extends cdk.IConstruct {
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the SubscriptionFilter
    */
-  newSubscriptionFilter(scope: cdk.Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter;
+  newSubscriptionFilter(scope: Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter;
 
   /**
    * Create a new Metric Filter on this Log Group
@@ -43,7 +43,7 @@ export interface ILogGroup extends cdk.IConstruct {
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the MetricFilter
    */
-  newMetricFilter(scope: cdk.Construct, id: string, props: NewMetricFilterProps): MetricFilter;
+  newMetricFilter(scope: Construct, id: string, props: NewMetricFilterProps): MetricFilter;
 
   /**
    * Export this LogGroup
@@ -87,7 +87,7 @@ export interface LogGroupImportProps {
 /**
  * An CloudWatch Log Group
  */
-export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
+export abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * The ARN of this log group
    */
@@ -105,7 +105,7 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the LogStream
    */
-  public newStream(scope: cdk.Construct, id: string, props: NewLogStreamProps = {}): LogStream {
+  public newStream(scope: Construct, id: string, props: NewLogStreamProps = {}): LogStream {
     return new LogStream(scope, id, {
       logGroup: this,
       ...props
@@ -119,7 +119,7 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the SubscriptionFilter
    */
-  public newSubscriptionFilter(scope: cdk.Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter {
+  public newSubscriptionFilter(scope: Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter {
     return new SubscriptionFilter(scope, id, {
       logGroup: this,
       ...props
@@ -133,7 +133,7 @@ export abstract class LogGroupBase extends cdk.Construct implements ILogGroup {
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the MetricFilter
    */
-  public newMetricFilter(scope: cdk.Construct, id: string, props: NewMetricFilterProps): MetricFilter {
+  public newMetricFilter(scope: Construct, id: string, props: NewMetricFilterProps): MetricFilter {
     return new MetricFilter(scope, id, {
       logGroup: this,
       ...props
@@ -320,7 +320,7 @@ export class LogGroup extends LogGroupBase {
   /**
    * Import an existing LogGroup
    */
-  public static import(scope: cdk.Construct, id: string, props: LogGroupImportProps): ILogGroup {
+  public static import(scope: Construct, id: string, props: LogGroupImportProps): ILogGroup {
     return new ImportedLogGroup(scope, id, props);
   }
 
@@ -334,7 +334,7 @@ export class LogGroup extends LogGroupBase {
    */
   public readonly logGroupName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: LogGroupProps = {}) {
+  constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
     super(scope, id);
 
     let retentionInDays = props.retentionDays;
@@ -351,7 +351,7 @@ export class LogGroup extends LogGroupBase {
     });
 
     if (props.retainLogGroup !== false) {
-      cdk.applyRemovalPolicy(resource, cdk.RemovalPolicy.Orphan);
+      applyRemovalPolicy(resource, RemovalPolicy.Orphan);
     }
 
     this.logGroupArn = resource.logGroupArn;
@@ -363,7 +363,7 @@ export class LogGroup extends LogGroupBase {
    */
   public export(): LogGroupImportProps {
     return {
-      logGroupArn: new cdk.CfnOutput(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue().toString()
+      logGroupArn: new CfnOutput(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue().toString()
     };
   }
 }
@@ -382,7 +382,7 @@ class ImportedLogGroup extends LogGroupBase {
    */
   public readonly logGroupName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: LogGroupImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: LogGroupImportProps) {
     super(scope, id);
 
     this.logGroupArn = props.logGroupArn;

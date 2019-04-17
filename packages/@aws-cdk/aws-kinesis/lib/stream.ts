@@ -1,10 +1,10 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, HashedAddressingScheme, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnStream } from './kinesis.generated';
 
-export interface IStream extends cdk.IConstruct, logs.ILogSubscriptionDestination {
+export interface IStream extends IResource, logs.ILogSubscriptionDestination {
   /**
    * The ARN of the stream.
    */
@@ -87,7 +87,7 @@ export interface StreamImportProps {
  *   Stream.import(this, 'MyImportedStream', ref);
  *
  */
-export abstract class StreamBase extends cdk.Construct implements IStream {
+export abstract class StreamBase extends Resource implements IStream {
   /**
    * The ARN of the stream.
    */
@@ -198,7 +198,7 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
    * Generate a CloudWatch Logs Destination and return the properties in the form o a subscription destination
    */
   private crossAccountLogSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
-    const sourceLogGroupConstruct: cdk.Construct = sourceLogGroup as any;
+    const sourceLogGroupConstruct: Construct = sourceLogGroup as any;
     const sourceStack = sourceLogGroupConstruct.node.stack;
     const thisStack = this.node.stack;
 
@@ -208,7 +208,7 @@ export abstract class StreamBase extends cdk.Construct implements IStream {
 
     // Take some effort to construct a unique ID for the destination that is unique to the
     // combination of (stream, loggroup).
-    const uniqueId =  new cdk.HashedAddressingScheme().allocateAddress([
+    const uniqueId =  new HashedAddressingScheme().allocateAddress([
       sourceLogGroupConstruct.node.path.replace('/', ''),
       sourceStack.env.account!
     ]);
@@ -288,7 +288,7 @@ export class Stream extends StreamBase {
    * @param id The construct's name.
    * @param props Stream import properties
    */
-  public static import(scope: cdk.Construct, id: string, props: StreamImportProps): IStream {
+  public static import(scope: Construct, id: string, props: StreamImportProps): IStream {
     return new ImportedStream(scope, id, props);
   }
 
@@ -298,7 +298,7 @@ export class Stream extends StreamBase {
 
   private readonly stream: CfnStream;
 
-  constructor(scope: cdk.Construct, id: string, props: StreamProps = {}) {
+  constructor(scope: Construct, id: string, props: StreamProps = {}) {
     super(scope, id);
 
     const shardCount = props.shardCount || 1;
@@ -327,7 +327,7 @@ export class Stream extends StreamBase {
    */
   public export(): StreamImportProps {
     return {
-      streamArn: new cdk.CfnOutput(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
+      streamArn: new CfnOutput(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
       encryptionKey: this.encryptionKey ? this.encryptionKey.export() : undefined,
     };
   }
@@ -390,7 +390,7 @@ class ImportedStream extends StreamBase {
   public readonly streamName: string;
   public readonly encryptionKey?: kms.IEncryptionKey;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: StreamImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: StreamImportProps) {
     super(scope, id);
 
     this.streamArn = props.streamArn;

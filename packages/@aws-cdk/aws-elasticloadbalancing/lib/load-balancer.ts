@@ -2,7 +2,7 @@ import codedeploy = require('@aws-cdk/aws-codedeploy-api');
 import {
   AnyIPv4, Connections, IConnectable, IPortRange, ISecurityGroup,
   IVpcNetwork, IVpcSubnet, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**
@@ -187,7 +187,7 @@ export enum LoadBalancingProtocol {
  *
  * Routes to a fleet of of instances in a VPC.
  */
-export class LoadBalancer extends cdk.Construct implements IConnectable, codedeploy.ILoadBalancer {
+export class LoadBalancer extends Resource implements IConnectable, codedeploy.ILoadBalancer {
   /**
    * Control all connections from and to this load balancer
    */
@@ -205,7 +205,7 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
 
-  constructor(scope: cdk.Construct, id: string, props: LoadBalancerProps) {
+  constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
 
     this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
@@ -217,7 +217,7 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
     this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],
       subnets: subnets.map(s => s.subnetId),
-      listeners: new cdk.Token(() => this.listeners),
+      listeners: new Token(() => this.listeners),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
     });

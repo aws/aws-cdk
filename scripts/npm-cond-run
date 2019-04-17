@@ -1,0 +1,11 @@
+#!/bin/bash
+set -euo pipefail
+command=$1
+script="$(node -e "console.log(require('./package.json').scripts.$command || '')")"
+
+if [ -z $script ]; then
+  echo "skipped $PWD"
+  exit 0
+fi
+
+npm run $@

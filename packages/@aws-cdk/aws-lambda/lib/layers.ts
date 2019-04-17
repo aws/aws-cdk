@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -35,7 +35,7 @@ export interface LayerVersionProps {
   readonly name?: string;
 }
 
-export interface ILayerVersion extends cdk.IConstruct {
+export interface ILayerVersion extends IResource {
   /**
    * The ARN of the Lambda Layer version that this Layer defines.
    */
@@ -67,7 +67,7 @@ export interface ILayerVersion extends cdk.IConstruct {
 /**
  * A reference to a Lambda Layer version.
  */
-export abstract class LayerVersionBase extends cdk.Construct implements ILayerVersion {
+export abstract class LayerVersionBase extends Resource implements ILayerVersion {
   public abstract readonly layerVersionArn: string;
   public abstract readonly compatibleRuntimes?: Runtime[];
 
@@ -87,7 +87,7 @@ export abstract class LayerVersionBase extends cdk.Construct implements ILayerVe
 
   public export(): LayerVersionImportProps {
     return {
-      layerVersionArn: new cdk.CfnOutput(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
+      layerVersionArn: new CfnOutput(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
       compatibleRuntimes: this.compatibleRuntimes,
     };
   }
@@ -137,14 +137,14 @@ export class LayerVersion extends LayerVersionBase {
    * @param id    the id of the imported layer in the construct tree.
    * @param props the properties of the imported layer.
    */
-  public static import(scope: cdk.Construct, id: string, props: LayerVersionImportProps): ILayerVersion {
+  public static import(scope: Construct, id: string, props: LayerVersionImportProps): ILayerVersion {
     return new ImportedLayerVersion(scope, id, props);
   }
 
   public readonly layerVersionArn: string;
   public readonly compatibleRuntimes?: Runtime[];
 
-  constructor(scope: cdk.Construct, id: string, props: LayerVersionProps) {
+  constructor(scope: Construct, id: string, props: LayerVersionProps) {
     super(scope, id);
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
       throw new Error('Attempted to define a Lambda layer that supports no runtime!');
@@ -157,7 +157,7 @@ export class LayerVersion extends LayerVersionBase {
 
     const resource = new CfnLayerVersion(this, 'Resource', {
       compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
-      content: new cdk.Token(() => props.code._toJSON(resource)),
+      content: new Token(() => props.code._toJSON(resource)),
       description: props.description,
       layerName: props.name,
       licenseInfo: props.license,
@@ -172,7 +172,7 @@ class ImportedLayerVersion extends LayerVersionBase {
   public readonly layerVersionArn: string;
   public readonly compatibleRuntimes?: Runtime[];
 
-  public constructor(parent: cdk.Construct, id: string, props: LayerVersionImportProps) {
+  public constructor(parent: Construct, id: string, props: LayerVersionImportProps) {
     super(parent, id);
 
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
@@ -202,10 +202,10 @@ export interface SingletonLayerVersionProps extends LayerVersionProps {
  * for the provided ``uuid``. It is recommended to use ``uuidgen`` to create a new ``uuid`` each time a new singleton
  * layer is created.
  */
-export class SingletonLayerVersion extends cdk.Construct implements ILayerVersion {
+export class SingletonLayerVersion extends Construct implements ILayerVersion {
   private readonly layerVersion: ILayerVersion;
 
-  constructor(scope: cdk.Construct, id: string, props: SingletonLayerVersionProps) {
+  constructor(scope: Construct, id: string, props: SingletonLayerVersionProps) {
     super(scope, id);
 
     this.layerVersion = this.ensureLayerVersion(props);

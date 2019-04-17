@@ -1,5 +1,5 @@
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct } from '@aws-cdk/cdk';
 import { IQueue, QueueBase, QueueImportProps } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -183,7 +183,7 @@ export class Queue extends QueueBase {
   /**
    * Import an existing queue
    */
-  public static import(scope: cdk.Construct, id: string, props: QueueImportProps): IQueue {
+  public static import(scope: Construct, id: string, props: QueueImportProps): IQueue {
     return new ImportedQueue(scope, id, props);
   }
 
@@ -209,7 +209,7 @@ export class Queue extends QueueBase {
 
   protected readonly autoCreatePolicy = true;
 
-  constructor(scope: cdk.Construct, id: string, props: QueueProps = {}) {
+  constructor(scope: Construct, id: string, props: QueueProps = {}) {
     super(scope, id);
 
     validateProps(props);
@@ -287,10 +287,10 @@ export class Queue extends QueueBase {
    */
   public export(): QueueImportProps {
     return {
-      queueArn: new cdk.CfnOutput(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
-      queueUrl: new cdk.CfnOutput(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
+      queueArn: new CfnOutput(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
+      queueUrl: new CfnOutput(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
       keyArn: this.encryptionMasterKey
-        ? new cdk.CfnOutput(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue().toString()
+        ? new CfnOutput(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue().toString()
         : undefined
     };
   }
@@ -346,7 +346,7 @@ class ImportedQueue extends QueueBase {
 
   protected readonly autoCreatePolicy = false;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: QueueImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: QueueImportProps) {
     super(scope, id);
     this.queueArn = props.queueArn;
     this.queueUrl = props.queueUrl;

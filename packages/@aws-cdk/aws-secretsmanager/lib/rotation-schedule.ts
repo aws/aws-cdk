@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { ISecret } from './secret';
 import { CfnRotationSchedule } from './secretsmanager.generated';
 
@@ -34,8 +34,8 @@ export interface RotationScheduleProps extends RotationScheduleOptions {
 /**
  * A rotation schedule.
  */
-export class RotationSchedule extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: RotationScheduleProps) {
+export class RotationSchedule extends Resource {
+  constructor(scope: Construct, id: string, props: RotationScheduleProps) {
     super(scope, id);
 
     new CfnRotationSchedule(this, 'Resource', {
