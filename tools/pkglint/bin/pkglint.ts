@@ -10,15 +10,15 @@ const argv = yargs
   .argv;
 
 // Our version of yargs doesn't support positional arguments yet
-argv.directory = argv._[0];
+const directory = argv._[0] || '.';
 
-argv.directory = path.resolve(argv.directory || '.', process.cwd());
+argv.directory = path.resolve(directory, process.cwd());
 
 async function main(): Promise<void> {
   const ruleClasses = require('../lib/rules');
   const rules: ValidationRule[] = Object.keys(ruleClasses).map(key => new ruleClasses[key]()).filter(obj => obj instanceof ValidationRule);
 
-  const pkgs = findPackageJsons(argv.directory);
+  const pkgs = findPackageJsons(directory);
 
   rules.forEach(rule => pkgs.filter(pkg => pkg.shouldApply(rule)).forEach(pkg => rule.prepare(pkg)));
   rules.forEach(rule => pkgs.filter(pkg => pkg.shouldApply(rule)).forEach(pkg => rule.validate(pkg)));
@@ -27,7 +27,7 @@ async function main(): Promise<void> {
     pkgs.forEach(pkg => pkg.applyFixes());
   }
 
-  pkgs.forEach(pkg => pkg.displayReports(argv.directory));
+  pkgs.forEach(pkg => pkg.displayReports(directory));
 
   if (pkgs.some(p => p.hasReports)) {
     throw new Error('Some package.json files had errors');
