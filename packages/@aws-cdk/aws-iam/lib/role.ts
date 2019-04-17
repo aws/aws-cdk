@@ -180,7 +180,7 @@ export class Role extends Resource implements IRole {
   /**
    * Adds a permission to the role's default policy document.
    * If there is no default policy attached to this role, it will be created.
-   * @param permission The permission statement to add to the policy document
+   * @param statement The permission statement to add to the policy document
    */
   public addToPolicy(statement: PolicyStatement): boolean {
     if (!this.defaultPolicy) {

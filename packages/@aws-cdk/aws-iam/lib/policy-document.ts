@@ -377,7 +377,7 @@ export class PolicyStatement extends cdk.Token {
    * Adds a service principal to this policy statement.
    *
    * @param service the service name for which a service principal is requested (e.g: `s3.amazonaws.com`).
-   * @param region  the region in which the service principal lives (defaults to the current stack's region).
+   * @param opts    options for adding the service principal (such as specifying a principal in a different region)
    */
   public addServicePrincipal(service: string, opts?: ServicePrincipalOpts): this {
     return this.addPrincipal(new ServicePrincipal(service, opts));

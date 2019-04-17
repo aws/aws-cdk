@@ -81,7 +81,6 @@ export interface IQueue extends IResource, s3n.IBucketNotificationDestination, a
    *  - sqs:GetQueueUrl
    *
    * @param grantee Principal to grant send rights to
-   * @param queueActions additional queue actions to allow
    */
   grantPurge(grantee: iam.IGrantable): iam.Grant;
 
@@ -257,7 +256,6 @@ export abstract class QueueBase extends Resource implements IQueue {
    *  - sqs:GetQueueUrl
    *
    * @param grantee Principal to grant send rights to
-   * @param queueActions additional queue actions to allow
    */
   public grantPurge(grantee: iam.IGrantable) {
     return this.grant(grantee,

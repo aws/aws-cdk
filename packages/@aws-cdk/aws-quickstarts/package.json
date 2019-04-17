@@ -67,7 +67,10 @@
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-ec2": "^0.28.0",
-    "@aws-cdk/cdk": "^0.28.0"
+    "@aws-cdk/cdk": "^0.28.0",
+    "@aws-cdk/aws-cloudformation": "^0.28.0",
+    "@aws-cdk/aws-iam": "^0.28.0",
+    "@aws-cdk/aws-rds": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"
