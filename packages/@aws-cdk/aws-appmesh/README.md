@@ -37,17 +37,6 @@ const mesh = new Mesh(this, 'AppMesh', {
 });
 ```
 
-## Exporting the Mesh
-
-The `Mesh` can also be exported to reference in other `Stacks`.
-
-```typescript
-const exportedMesh = mesh.export();
-
-const STACK_2 = new cdk.Stack(app, 'stack-2');
-const importedMesh = appmesh.Mesh.import(STACK_2, 'imported-mesh', exportedMesh);
-```
-
 ## Adding VirtualRouters
 
 The `Mesh` needs `VirtualRouters` as logical units to route to `VirtualNodes`.
@@ -103,7 +92,7 @@ mesh.addVirtualService('virtual-service', {
 
 A `virtual node` acts as a logical pointer to a particular task group, such as an Amazon ECS service or a Kubernetes deployment.
 
-![vn](https://docs.aws.amazon.com/app-mesh/latest/userguide/images/virtual_node.png)
+![Virtual node logical diagram](https://docs.aws.amazon.com/app-mesh/latest/userguide/images/virtual_node.png)
 
 When you create a `virtual node`, you must specify the DNS service discovery hostname for your task group. Any inbound traffic that your `virtual node` expects should be specified as a listener. Any outbound traffic that your `virtual node` expects to reach should be specified as a backend.
 
@@ -126,11 +115,11 @@ const virtualNode = mesh.addVirtualNode('virtual-node', {
     healthChecks: [
       {
         healthyThreshold: 3,
-        interval: 5000, // min
+        intervalMillis: 5000, // minimum
         path: `/health-check-path`,
         port: 8080,
         protocol: appmesh.Protocol.HTTP,
-        timeout: 2000, // min
+        timeoutMillis: 2000, // minimum
         unhealthyThreshold: 2,
       },
     ],
