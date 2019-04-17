@@ -189,6 +189,11 @@ class ImportedReceiptRule extends Construct implements IReceiptRule {
   }
 }
 
+// tslint:disable-next-line:no-empty-interface
+export interface DropSpamReceiptRuleProps extends ReceiptRuleProps {
+
+}
+
 /**
  * A rule added at the top of the rule set to drop spam/virus.
  *
@@ -197,7 +202,7 @@ class ImportedReceiptRule extends Construct implements IReceiptRule {
 export class DropSpamReceiptRule extends Construct {
   public readonly rule: ReceiptRule;
 
-  constructor(scope: Construct, id: string, props: ReceiptRuleProps) {
+  constructor(scope: Construct, id: string, props: DropSpamReceiptRuleProps) {
     super(scope, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {

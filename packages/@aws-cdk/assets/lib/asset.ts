@@ -22,7 +22,7 @@ export enum AssetPackaging {
   File = 'file',
 }
 
-export interface GenericAssetProps {
+export interface AssetProps {
   /**
    * The disk location of the asset.
    */
@@ -85,7 +85,7 @@ export class Asset extends cdk.Construct {
    */
   private readonly s3Prefix: string;
 
-  constructor(scope: cdk.Construct, id: string, props: GenericAssetProps) {
+  constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
 
     // stage the asset source (conditionally).
