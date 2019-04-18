@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { debug, error, Mode, print, SDK, toYAML } from '@aws-cdk/toolchain-common';
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
-import { debug, error, Mode, print, SDK, toYAML } from 'toolchain-common';
 import uuid = require('uuid');
 import { prepareAssets } from '../assets';
 import { ToolkitInfo } from './toolkit-info';

@@ -1,5 +1,5 @@
+import { data } from '@aws-cdk/toolchain-common';
 import colors = require('colors/safe');
-import { data } from 'toolchain-common';
 
 let previousTemplate: any = { };
 

@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { error } from '@aws-cdk/toolchain-common';
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
-import { error } from 'toolchain-common';
 import util = require('util');
 
 interface StackActivity {

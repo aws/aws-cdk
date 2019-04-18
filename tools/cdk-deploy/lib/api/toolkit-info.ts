@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { debug, Mode, SDK } from '@aws-cdk/toolchain-common';
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
-import { debug, Mode, SDK } from 'toolchain-common';
 import { md5hash } from '../archive';
 import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-environment';
 import { waitForStack } from './util/cloudformation';

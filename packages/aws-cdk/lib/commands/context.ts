@@ -1,5 +1,5 @@
+import { print, renderTable } from '@aws-cdk/toolchain-common';
 import colors = require('colors/safe');
-import { print, renderTable } from 'toolchain-common';
 import yargs = require('yargs');
 import { CommandOptions } from '../command-api';
 import { Context, PROJECT_CONFIG } from '../settings';

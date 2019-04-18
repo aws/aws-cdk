@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { debug, deserializeStructure, Mode, SDK } from 'toolchain-common';
+import { debug, deserializeStructure, Mode, SDK } from '@aws-cdk/toolchain-common';
 import { deployStack, DeployStackOptions, DeployStackResult } from './deploy-stack';
 import { loadToolkitInfo } from './toolkit-info';
 

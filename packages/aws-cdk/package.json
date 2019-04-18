@@ -54,6 +54,7 @@
     "@aws-cdk/cloudformation-diff": "^0.28.0",
     "@aws-cdk/cx-api": "^0.28.0",
     "@aws-cdk/region-info": "^0.28.0",
+    "@aws-cdk/toolchain-common": "^0.28.0",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.259.1",
     "camelcase": "^5.0.0",
@@ -68,7 +69,6 @@
     "semver": "^5.5.0",
     "source-map-support": "^0.5.6",
     "table": "^5.2.1",
-    "toolchain-common": "^0.28.0",
     "yaml": "^1.1.0",
     "yargs": "^9.0.1"
   },

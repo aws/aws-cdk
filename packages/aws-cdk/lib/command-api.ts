@@ -1,4 +1,4 @@
-import { SDK } from 'toolchain-common';
+import { SDK } from '@aws-cdk/toolchain-common';
 import yargs = require('yargs');
 import { AppStacks } from './api/cxapp/stacks';
 import { Configuration } from './settings';

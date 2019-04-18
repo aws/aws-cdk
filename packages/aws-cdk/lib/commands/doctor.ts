@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { print } from '@aws-cdk/toolchain-common';
 import colors = require('colors/safe');
 import process = require('process');
-import { print } from 'toolchain-common';
 import yargs = require('yargs');
 import { VERSION } from '../../lib/version';
 import { CommandOptions } from '../command-api';
