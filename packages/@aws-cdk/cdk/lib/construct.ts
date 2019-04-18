@@ -634,17 +634,6 @@ export class Construct implements IConstruct {
 }
 
 /**
- * Represents the root of a construct tree.
- * No scope and no name.
- */
-export class Root extends Construct {
-  constructor() {
-    // Bypass type checks
-    super(undefined as any, '');
-  }
-}
-
-/**
  * An metadata entry in the construct.
  */
 export interface MetadataEntry {

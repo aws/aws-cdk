@@ -60,7 +60,7 @@ export class DnsValidatedCertificate extends cdk.Construct implements ICertifica
         );
 
         const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {
-            lambdaProvider: requestorFunction,
+            provider: cfn.CustomResourceProvider.lambda(requestorFunction),
             properties: {
                 DomainName: props.domainName,
                 SubjectAlternativeNames: props.subjectAlternativeNames,

@@ -13,7 +13,7 @@ const application = new codedeploy.ServerApplication(stack, 'CodeDeployApplicati
 });
 
 const deploymentConfig = new codedeploy.ServerDeploymentConfig(stack, 'CustomDeployConfig', {
-  minHealthyHostCount: 0,
+  minimumHealthyHosts: codedeploy.MinimumHealthyHosts.count(0),
 });
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {

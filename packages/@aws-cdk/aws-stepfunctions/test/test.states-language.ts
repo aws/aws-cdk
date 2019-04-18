@@ -101,7 +101,7 @@ export = {
 
             const task1 = new stepfunctions.Pass(stack, 'State One');
             const task2 = new stepfunctions.Pass(stack, 'State Two');
-            const task3 = new stepfunctions.Wait(stack, 'State Three', { seconds: 10 });
+            const task3 = new stepfunctions.Wait(stack, 'State Three', { duration: stepfunctions.WaitDuration.seconds(10) });
 
             // WHEN
             const chain = stepfunctions.Chain

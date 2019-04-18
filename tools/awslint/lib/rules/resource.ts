@@ -50,21 +50,6 @@ resourceLinter.add({
 });
 
 resourceLinter.add({
-  code: 'resource-props',
-  message: 'an interface for resource props must be defined',
-  eval: e => {
-    if (!e.ctx.resourceClass) { return; }
-    const fqn = `${e.ctx.assembly.name}.${e.ctx.resource.basename}Props`;
-    const resourcePropsInterface = e.ctx.ts.interfaces.find(i => i.fqn === fqn);
-    if (!e.assert(resourcePropsInterface, fqn)) {
-      return;
-    }
-
-    e.ctx.resourcePropsInterface = resourcePropsInterface;
-  }
-});
-
-resourceLinter.add({
   code: 'resource-interface',
   message: 'every resource must have a resource interface',
   warning: true,

@@ -12,7 +12,7 @@ class JobPollerStack extends cdk.Stack {
             resource: submitJobActivity,
             resultPath: '$.guid',
         });
-        const waitX = new stepfunctions.Wait(this, 'Wait X Seconds', { secondsPath: '$.wait_time' });
+        const waitX = new stepfunctions.Wait(this, 'Wait X Seconds', { duration: stepfunctions.WaitDuration.secondsPath('$.wait_time') });
         const getStatus = new stepfunctions.Task(this, 'Get Job Status', {
             resource: checkJobActivity,
             inputPath: '$.guid',

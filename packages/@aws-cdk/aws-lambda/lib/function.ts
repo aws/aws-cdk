@@ -605,7 +605,7 @@ export class Function extends FunctionBase {
   }
 }
 
-export class ImportedFunction extends FunctionBase {
+class ImportedFunction extends FunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;

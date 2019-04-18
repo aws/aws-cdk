@@ -10,26 +10,6 @@ import { GlobalTableProps } from "./aws-dynamodb-global";
  * together all the DynamoDB tables into a global table
  */
 export class GlobalTableCoordinator extends cdk.Stack {
-  /**
-   * Permits an IAM Principal to create a global dynamodb table.
-   * @param principal The principal (no-op if undefined)
-   */
-  private static grantCreateGlobalTableLambda(principal?: iam.IPrincipal): void {
-    if (principal) {
-      principal.addToPolicy(new iam.PolicyStatement()
-        .allow()
-        .addAllResources()
-        .addAction("iam:CreateServiceLinkedRole")
-        .addAction("application-autoscaling:DeleteScalingPolicy")
-        .addAction("application-autoscaling:DeregisterScalableTarget")
-        .addAction("dynamodb:CreateGlobalTable")
-        .addAction("dynamodb:DescribeLimits")
-        .addAction("dynamodb:DeleteTable")
-        .addAction("dynamodb:DescribeGlobalTable")
-        .addAction("dynamodb:UpdateGlobalTable"));
-    }
-  }
-
   constructor(scope: cdk.Construct, id: string, props: GlobalTableProps) {
     super(scope, id, props);
     const lambdaFunction = new lambda.SingletonFunction(this, "SingletonLambda", {
@@ -40,14 +20,36 @@ export class GlobalTableCoordinator extends cdk.Stack {
       timeout: 300,
       uuid: "D38B65A6-6B54-4FB6-9BAD-9CD40A6DAC12",
     });
-    GlobalTableCoordinator.grantCreateGlobalTableLambda(lambdaFunction.role);
+
+    grantCreateGlobalTableLambda(lambdaFunction.role);
+
     new cfn.CustomResource(this, "CfnCustomResource", {
-      lambdaProvider: lambdaFunction,
+      provider: cfn.CustomResourceProvider.lambda(lambdaFunction),
       properties: {
         regions: props.regions,
         resourceType: "Custom::DynamoGlobalTableCoordinator",
         tableName: props.tableName,
       },
     });
+  }
+}
+
+/**
+ * Permits an IAM Principal to create a global dynamodb table.
+ * @param principal The principal (no-op if undefined)
+ */
+function grantCreateGlobalTableLambda(principal?: iam.IPrincipal): void {
+  if (principal) {
+    principal.addToPolicy(new iam.PolicyStatement()
+      .allow()
+      .addAllResources()
+      .addAction("iam:CreateServiceLinkedRole")
+      .addAction("application-autoscaling:DeleteScalingPolicy")
+      .addAction("application-autoscaling:DeregisterScalableTarget")
+      .addAction("dynamodb:CreateGlobalTable")
+      .addAction("dynamodb:DescribeLimits")
+      .addAction("dynamodb:DeleteTable")
+      .addAction("dynamodb:DescribeGlobalTable")
+      .addAction("dynamodb:UpdateGlobalTable"));
   }
 }

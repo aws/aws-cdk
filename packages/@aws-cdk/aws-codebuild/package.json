@@ -101,5 +101,10 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor-props-optional:@aws-cdk/aws-codebuild.Project"
+    ]
   }
 }

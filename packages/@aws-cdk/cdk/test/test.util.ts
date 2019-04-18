@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Root } from '../lib';
+import { App as Root } from '../lib';
 import { capitalizePropertyNames, ignoreEmpty } from '../lib/util';
 
 export = {

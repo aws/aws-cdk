@@ -4,7 +4,7 @@ import fs = require('fs');
 import path = require('path');
 import { copyDirectory, fingerprint } from './fs';
 
-export interface StageProps {
+export interface StagingProps {
   readonly sourcePath: string;
 }
 
@@ -49,7 +49,7 @@ export class Staging extends Construct {
    */
   private _preparedAssetPath?: string;
 
-  constructor(scope: Construct, id: string, props: StageProps) {
+  constructor(scope: Construct, id: string, props: StagingProps) {
     super(scope, id);
 
     this.sourcePath = props.sourcePath;

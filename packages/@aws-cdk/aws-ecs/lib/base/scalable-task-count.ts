@@ -1,11 +1,22 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import { Construct } from '@aws-cdk/cdk';
+
+// tslint:disable-next-line:no-empty-interface
+export interface ScalableTaskCountProps extends appscaling.BaseScalableAttributeProps {
+
+}
 
 /**
  * Scalable attribute representing task count
  */
 export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
+
+  constructor(scope: Construct, id: string, props: ScalableTaskCountProps) {
+    super(scope, id, props);
+  }
+
   /**
    * Scale out or in based on time
    */

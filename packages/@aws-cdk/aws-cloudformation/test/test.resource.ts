@@ -3,7 +3,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { CustomResource } from '../lib';
+import { CustomResource, CustomResourceProvider } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -91,7 +91,7 @@ export = {
     const stack = new cdk.Stack();
     new CustomResource(stack, 'MyCustomResource', {
       resourceType: 'Custom::MyCustomResourceType',
-      topicProvider: new sns.Topic(stack, 'Provider')
+      provider: CustomResourceProvider.topic(new sns.Topic(stack, 'Provider'))
     });
     expect(stack).to(haveResource('Custom::MyCustomResourceType'));
     test.done();
@@ -104,7 +104,7 @@ export = {
       test.throws(() => {
         new CustomResource(stack, 'MyCustomResource', {
           resourceType: 'NoCustom::MyCustomResourceType',
-          topicProvider: new sns.Topic(stack, 'Provider')
+          provider: CustomResourceProvider.topic(new sns.Topic(stack, 'Provider'))
         });
       }, /Custom resource type must begin with "Custom::"/);
 
@@ -117,7 +117,7 @@ export = {
       test.throws(() => {
         new CustomResource(stack, 'MyCustomResource', {
           resourceType: 'Custom::My Custom?ResourceType',
-          topicProvider: new sns.Topic(stack, 'Provider')
+          provider: CustomResourceProvider.topic(new sns.Topic(stack, 'Provider'))
         });
       }, /Custom resource type name can only include alphanumeric characters and/);
 
@@ -130,7 +130,7 @@ export = {
       test.throws(() => {
         new CustomResource(stack, 'MyCustomResource', {
           resourceType: 'Custom::0123456789012345678901234567890123456789012345678901234567891',
-          topicProvider: new sns.Topic(stack, 'Provider')
+          provider: CustomResourceProvider.topic(new sns.Topic(stack, 'Provider'))
         });
       }, /Custom resource type length > 60/);
 
@@ -153,7 +153,7 @@ class TestCustomResource extends cdk.Construct {
     });
 
     new CustomResource(this, 'Resource', {
-      lambdaProvider: singletonLambda
+      provider: CustomResourceProvider.lambda(singletonLambda)
     });
   }
 }

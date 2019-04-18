@@ -1,8 +1,9 @@
 import { Test } from 'nodeunit';
+import { App } from '../lib';
 import { IAspect } from '../lib/aspect';
-import { IConstruct, Root } from '../lib/construct';
+import { Construct, IConstruct } from '../lib/construct';
 
-class MyConstruct extends Root {
+class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {
     return x.visitCounter !== undefined;
   }
@@ -18,7 +19,8 @@ class VisitOnce implements IAspect {
 }
 export = {
   'Aspects are invoked only once'(test: Test) {
-    const root = new MyConstruct();
+    const app = new App();
+    const root = new MyConstruct(app, 'MyConstruct');
     root.node.apply(new VisitOnce());
     root.node.prepareTree();
     test.deepEqual(root.visitCounter, 1);
