@@ -27,7 +27,7 @@ const router = mesh.addVirtualRouter('router', {
   ],
 });
 
-mesh.addVirtualService('service', {
+const virtualService = mesh.addVirtualService('service', {
   virtualRouter: router,
   virtualServiceName: `service1.domain.local`,
 });
@@ -56,13 +56,16 @@ const node = mesh.addVirtualNode('node', {
   },
   backends: [
     {
-      virtualServiceName: `service2.domain.local`,
+      virtualService,
     },
   ],
 });
 
 node.addBackend({
-  virtualServiceName: `service3.domain.local`,
+  virtualService: new appmesh.VirtualService(stack, 'service-2', {
+    virtualServiceName: 'service2.domain.local',
+    mesh,
+  }),
 });
 
 router.addRoute('route-1', {
@@ -100,7 +103,10 @@ const node2 = mesh.addVirtualNode('node2', {
   },
   backends: [
     {
-      virtualServiceName: `service2.domain.local`,
+      virtualService: new appmesh.VirtualService(stack, 'service-3', {
+        virtualServiceName: 'service3.domain.local',
+        mesh,
+      }),
     },
   ],
 });

@@ -25,6 +25,15 @@ export = {
           name: 'domain.local',
         });
 
+        const service1 = new appmesh.VirtualService(stack, 'service-1', {
+          virtualServiceName: 'service1.domain.local',
+          mesh,
+        });
+        const service2 = new appmesh.VirtualService(stack, 'service-2', {
+          virtualServiceName: 'service2.domain.local',
+          mesh,
+        });
+
         const node = mesh.addVirtualNode('test-node', {
           hostname: 'test',
           namespace,
@@ -38,13 +47,13 @@ export = {
           },
           backends: [
             {
-              virtualServiceName: `test.service.backend`,
+              virtualService: service1,
             },
           ],
         });
 
         node.addBackend({
-          virtualServiceName: `test2.service.backend`,
+          virtualService: service2,
         });
 
         // THEN
@@ -54,12 +63,16 @@ export = {
               Backends: [
                 {
                   VirtualService: {
-                    VirtualServiceName: 'test.service.backend',
+                    VirtualServiceName: {
+                      'Fn::GetAtt': ['service1VirtualService34F32322', 'VirtualServiceName'],
+                    },
                   },
                 },
                 {
                   VirtualService: {
-                    VirtualServiceName: 'test2.service.backend',
+                    VirtualServiceName: {
+                      'Fn::GetAtt': ['service2VirtualService95387A49', 'VirtualServiceName'],
+                    },
                   },
                 },
               ],

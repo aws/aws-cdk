@@ -601,12 +601,22 @@
         "Spec": {
           "Backends": [{
               "VirtualService": {
-                "VirtualServiceName": "service2.domain.local"
+                "VirtualServiceName": {
+                  "Fn::GetAtt": [
+                    "meshserviceVirtualServiceDD02B336",
+                    "VirtualServiceName"
+                  ]
+                }
               }
             },
             {
               "VirtualService": {
-                "VirtualServiceName": "service3.domain.local"
+                "VirtualServiceName": {
+                  "Fn::GetAtt": [
+                    "service2VirtualService95387A49",
+                    "VirtualServiceName"
+                  ]
+                }
               }
             }
           ],
@@ -653,7 +663,12 @@
         "Spec": {
           "Backends": [{
             "VirtualService": {
-              "VirtualServiceName": "service2.domain.local"
+              "VirtualServiceName": {
+                "Fn::GetAtt": [
+                  "service3VirtualService300EDED0",
+                  "VirtualServiceName"
+                ]
+              }
             }
           }],
           "Listeners": [{
@@ -727,6 +742,32 @@
           }
         },
         "VirtualNodeName": "node3"
+      }
+    },
+    "service2VirtualService95387A49": {
+      "Type": "AWS::AppMesh::VirtualService",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshAppMeshD6FCBDD7",
+            "MeshName"
+          ]
+        },
+        "Spec": {},
+        "VirtualServiceName": "service2.domain.local"
+      }
+    },
+    "service3VirtualService300EDED0": {
+      "Type": "AWS::AppMesh::VirtualService",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshAppMeshD6FCBDD7",
+            "MeshName"
+          ]
+        },
+        "Spec": {},
+        "VirtualServiceName": "service3.domain.local"
       }
     }
   }

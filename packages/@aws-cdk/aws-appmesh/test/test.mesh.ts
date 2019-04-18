@@ -462,6 +462,11 @@ export = {
           name: 'domain.local',
         });
 
+        const service1 = new appmesh.VirtualService(stack, 'service-1', {
+          virtualServiceName: 'service1.domain.local',
+          mesh,
+        });
+
         mesh.addVirtualNode('test-node', {
           hostname: 'test',
           namespace,
@@ -475,7 +480,7 @@ export = {
           },
           backends: [
             {
-              virtualServiceName: `test.service.backend`,
+              virtualService: service1,
             },
           ],
         });
@@ -487,7 +492,9 @@ export = {
               Backends: [
                 {
                   VirtualService: {
-                    VirtualServiceName: 'test.service.backend',
+                    VirtualServiceName: {
+                      'Fn::GetAtt': ['service1VirtualService34F32322', 'VirtualServiceName'],
+                    },
                   },
                 },
               ],

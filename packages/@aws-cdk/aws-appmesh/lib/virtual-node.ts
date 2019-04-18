@@ -4,6 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { HealthCheckProps, ListenerProps, PortMappingProps, Protocol } from './shared-interfaces';
+import { IVirtualService } from './virtual-service';
 
 /**
  * Interface with properties ncecessary to import a reusable VirtualNode
@@ -88,7 +89,7 @@ export interface VirtualNodeBackendProps {
   /**
    * The VirtualService name for the backend service
    */
-  readonly virtualServiceName: string;
+  readonly virtualService: IVirtualService;
 }
 
 /**
@@ -160,7 +161,7 @@ export abstract class VirtualNodeBase extends cdk.Construct implements IVirtualN
   public addBackend(props: VirtualNodeBackendProps) {
     this.backends.push({
       virtualService: {
-        virtualServiceName: props.virtualServiceName,
+        virtualServiceName: props.virtualService.virtualServiceName,
       },
     });
   }
@@ -172,7 +173,7 @@ export abstract class VirtualNodeBase extends cdk.Construct implements IVirtualN
     for (const s of props) {
       this.backends.push({
         virtualService: {
-          virtualServiceName: s.virtualServiceName,
+          virtualServiceName: s.virtualService.virtualServiceName,
         },
       });
     }
