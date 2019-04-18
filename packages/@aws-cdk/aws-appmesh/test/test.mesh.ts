@@ -163,7 +163,7 @@ export = {
         test.done();
       },
     },
-    'with single provider resource': {
+    'with single virtual router provider resource': {
       'should create service'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
@@ -195,6 +195,58 @@ export = {
                 VirtualRouter: {
                   VirtualRouterName: {
                     'Fn::GetAtt': ['meshtestrouterVirtualRouter43ECF978', 'VirtualRouterName'],
+                  },
+                },
+              },
+            },
+          })
+        );
+
+        test.done();
+      },
+    },
+    'with single virtual node provider resource': {
+      'should create service'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const vpc = new ec2.VpcNetwork(stack, 'vpc');
+        const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
+          vpc,
+          name: 'domain.local',
+        });
+
+        const node = mesh.addVirtualNode('test-node', {
+          hostname: 'test',
+          namespace,
+          listener: {
+            portMappings: [
+              {
+                port: 8080,
+                protocol: appmesh.Protocol.HTTP,
+              },
+            ],
+          },
+        });
+
+        mesh.addVirtualService('service2', {
+          virtualServiceName: 'test-service.domain.local',
+          virtualNode: node,
+        });
+
+        // THEN
+        expect(stack).to(
+          haveResource('AWS::AppMesh::VirtualService', {
+            Spec: {
+              Provider: {
+                VirtualNode: {
+                  VirtualNodeName: {
+                    'Fn::GetAtt': ['meshtestnodeVirtualNodeDC4F77E5', 'VirtualNodeName'],
                   },
                 },
               },
@@ -526,7 +578,7 @@ export = {
     expect(stack2).to(
       haveResourceLike('AWS::AppMesh::VirtualService', {
         MeshName: {
-          'Fn::ImportValue': 'Stack:ExportsOutputFnGetAttmeshAppMeshD6FCBDD7MeshName0F245A81',
+          'Fn::ImportValue': 'Stack:meshMeshName91369C94',
         },
         Spec: {},
         VirtualServiceName: 'test.domain.local',
