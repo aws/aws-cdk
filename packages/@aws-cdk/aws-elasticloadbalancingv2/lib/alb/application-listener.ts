@@ -5,7 +5,7 @@ import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import { ApplicationListenerRule } from './application-listener-rule';
+import { ApplicationListenerRule, FixedResponse, validateFixedResponse } from './application-listener-rule';
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 
@@ -153,9 +153,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    * At least one TargetGroup must be added without conditions.
    */
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
-    if ((props.hostHeader !== undefined || props.pathPattern !== undefined) !== (props.priority !== undefined)) {
-      throw new Error(`Setting 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa`);
-    }
+    checkAddRuleProps(props);
 
     if (props.priority !== undefined) {
       // New rule
@@ -213,6 +211,29 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     });
 
     return group;
+  }
+
+  /**
+   * Add a fixed response
+   */
+  public addFixedResponse(id: string, props: AddFixedResponseProps) {
+    checkAddRuleProps(props);
+
+    validateFixedResponse(props.fixedResponse);
+
+    if (props.priority) {
+      new ApplicationListenerRule(this, id + 'Rule', {
+        listener: this,
+        priority: props.priority,
+        fixedResponse: props.fixedResponse,
+        ...props
+      });
+    } else {
+      this._addDefaultAction({
+        fixedResponseConfig: props.fixedResponse,
+        type: 'fixed-response'
+      });
+    }
   }
 
   /**
@@ -538,4 +559,20 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * @default No health check
    */
   readonly healthCheck?: HealthCheck;
+}
+
+/**
+ * Properties for adding a fixed response to a listener
+ */
+export interface AddFixedResponseProps extends AddRuleProps {
+  /**
+   * The fixed response
+   */
+  readonly fixedResponse: FixedResponse
+}
+
+function checkAddRuleProps(props: AddRuleProps) {
+  if ((props.hostHeader !== undefined || props.pathPattern !== undefined) !== (props.priority !== undefined)) {
+    throw new Error(`Setting 'pathPattern' or 'hostHeader' also requires 'priority', and vice versa`);
+  }
 }

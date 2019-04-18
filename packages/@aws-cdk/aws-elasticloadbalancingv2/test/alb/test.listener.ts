@@ -482,6 +482,132 @@ export = {
 
     test.done();
   },
+
+  'Can add fixed responses'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc
+    });
+    const listener = lb.addListener('Listener', {
+      port: 80
+    });
+
+    // WHEN
+    listener.addFixedResponse('Default', {
+      fixedResponse: {
+        contentType: elbv2.ContentType.TEXT_PLAIN,
+        messageBody: 'Not Found',
+        statusCode: '404'
+      }
+    });
+    listener.addFixedResponse('Hello', {
+      priority: 10,
+      pathPattern: '/hello',
+      fixedResponse: {
+        statusCode: '503'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          FixedResponseConfig: {
+            ContentType: 'text/plain',
+            MessageBody: 'Not Found',
+            StatusCode: '404'
+          },
+          Type: 'fixed-response'
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Actions: [
+        {
+          FixedResponseConfig: {
+            StatusCode: '503'
+          },
+          Type: 'fixed-response'
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'Throws with bad fixed responses': {
+
+    'status code'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80
+      });
+
+      // THEN
+      test.throws(() => listener.addFixedResponse('Default', {
+        fixedResponse: {
+          statusCode: '301'
+        }
+      }), /`statusCode`/);
+
+      test.done();
+    },
+
+    'message body'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80
+      });
+
+      // THEN
+      test.throws(() => listener.addFixedResponse('Default', {
+        fixedResponse: {
+          messageBody: 'a'.repeat(1025),
+          statusCode: '500'
+        }
+      }), /`messageBody`/);
+
+      test.done();
+    }
+  },
+
+  'Throws when specifying both target groups and fixed reponse'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc
+    });
+    const listener = lb.addListener('Listener', {
+      port: 80
+    });
+
+    // THEN
+    test.throws(() => new elbv2.ApplicationListenerRule(stack, 'Rule', {
+      listener,
+      priority: 10,
+      pathPattern: '/hello',
+      targetGroups: [new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 })],
+      fixedResponse: {
+        statusCode: '500'
+      }
+    }), /`targetGroups`.*`fixedResponse`/);
+
+    test.done();
+  }
 };
 
 class ResourceWithLBDependency extends cdk.CfnResource {
