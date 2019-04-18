@@ -320,7 +320,7 @@ export class UserPool extends Resource implements IUserPool {
 
   private triggers: CfnUserPool.LambdaConfigProperty = { };
 
-  constructor(scope: Construct, id: string, props: UserPoolProps) {
+  constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id);
 
     let aliasAttributes: UserPoolAttribute[] | undefined;

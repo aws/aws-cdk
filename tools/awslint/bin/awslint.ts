@@ -118,7 +118,7 @@ async function main() {
     // process results
 
     for (const diag of results) {
-      const suppressionKey = `${diag.rule.code}:${colors.bold(diag.scope)}`;
+      const suppressionKey = `${diag.rule.code}:${diag.scope}`;
 
       let color;
       switch (diag.level) {
@@ -147,7 +147,7 @@ async function main() {
       }
 
       if (color) {
-        console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: ${diag.message} [${suppressionKey}]`));
+        console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: ${diag.message} [${colors.bold(diag.rule.code)}:${colors.bold(diag.scope)}]`));
       }
     }
 

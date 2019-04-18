@@ -8,25 +8,35 @@ import { CfnCustomResource } from './cloudformation.generated';
  */
 export type Properties = {[key: string]: any};
 
+export class CustomResourceProvider {
+  /**
+   * The Lambda provider that implements this custom resource.
+   *
+   * We recommend using a lambda.SingletonFunction for this.
+   */
+  public static lambda(handler: lambda.IFunction) { return new CustomResourceProvider(handler.functionArn); }
+
+  /**
+   * The SNS Topic for the provider that implements this custom resource.
+   */
+  public static topic(topic: sns.ITopic) { return new CustomResourceProvider(topic.topicArn); }
+
+  private constructor(public readonly serviceToken: string) {
+
+  }
+}
+
 /**
  * Properties to provide a Lambda-backed custom resource
  */
 export interface CustomResourceProps {
   /**
-   * The Lambda provider that implements this custom resource.
+   * The provider which implements the custom resource
    *
-   * We recommend using a lambda.SingletonFunction for this.
-   *
-   * Optional, exactly one of lamdaProvider or topicProvider must be set.
+   * @example CustomResourceProvider.lambda(myFunction)
+   * @example CustomResourceProvider.topic(myTopic)
    */
-  readonly lambdaProvider?: lambda.IFunction;
-
-  /**
-   * The SNS Topic for the provider that implements this custom resource.
-   *
-   * Optional, exactly one of lamdaProvider or topicProvider must be set.
-   */
-  readonly topicProvider?: sns.ITopic;
+  readonly provider: CustomResourceProvider;
 
   /**
    * Properties to pass to the Lambda
@@ -68,16 +78,12 @@ export class CustomResource extends Resource {
   constructor(scope: Construct, id: string, props: CustomResourceProps) {
     super(scope, id);
 
-    if (!!props.lambdaProvider === !!props.topicProvider) {
-      throw new Error('Exactly one of "lambdaProvider" or "topicProvider" must be set.');
-    }
-
     const type = renderResourceType(props.resourceType);
 
     this.resource = new CfnResource(this, 'Default', {
       type,
       properties: {
-        ServiceToken: props.lambdaProvider ? props.lambdaProvider.functionArn : props.topicProvider!.topicArn,
+        ServiceToken: props.provider.serviceToken,
         ...uppercaseProperties(props.properties || {})
       }
     });
