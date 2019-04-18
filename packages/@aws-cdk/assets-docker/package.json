@@ -80,7 +80,13 @@
     "@aws-cdk/aws-iam": "^0.28.0",
     "@aws-cdk/assets": "^0.28.0",
     "@aws-cdk/aws-s3": "^0.28.0",
-    "@aws-cdk/cdk": "^0.28.0"
+    "@aws-cdk/cdk": "^0.28.0",
+    "@aws-cdk/aws-cloudformation": "^0.28.0",
+    "@aws-cdk/aws-lambda": "^0.28.0",
+    "@aws-cdk/cx-api": "^0.28.0"
+  },
+  "nyc": {
+    "statements": 70
   },
   "engines": {
     "node": ">= 8.10.0"

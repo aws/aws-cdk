@@ -142,18 +142,18 @@ export = {
 
 class TestCustomResource extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string) {
-  super(scope, id);
+    super(scope, id);
 
-  const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {
-    uuid: 'TestCustomResourceProvider',
-    code: new lambda.InlineCode('def hello(): pass'),
-    runtime: lambda.Runtime.Python27,
-    handler: 'index.hello',
-    timeout: 300,
-  });
+    const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {
+      uuid: 'TestCustomResourceProvider',
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.Python27,
+      handler: 'index.hello',
+      timeout: 300,
+    });
 
-  new CustomResource(this, 'Resource', {
-    lambdaProvider: singletonLambda
-  });
+    new CustomResource(this, 'Resource', {
+      lambdaProvider: singletonLambda
+    });
   }
 }

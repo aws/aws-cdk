@@ -12,7 +12,7 @@ export async function readTemplate(templateFile: string) {
   return template;
 }
 
-export async function loadTypeSystem() {
+export async function loadTypeSystem(validate = true) {
   const typeSystem = new jsiiReflect.TypeSystem();
   const packageJson = require('../package.json');
 
@@ -21,7 +21,7 @@ export async function loadTypeSystem() {
     if (!fs.existsSync(path.resolve(jsiiModuleDir, '.jsii'))) {
       continue;
     }
-    await typeSystem.load(jsiiModuleDir);
+    await typeSystem.load(jsiiModuleDir, { validate });
   }
 
   return typeSystem;

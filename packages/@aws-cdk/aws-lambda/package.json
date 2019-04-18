@@ -64,17 +64,17 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.28.0",
-    "@types/aws-lambda": "^8.10.23",
+    "@types/aws-lambda": "^8.10.24",
     "@types/nock": "^9.3.1",
-    "@types/sinon": "^7.0.10",
-    "aws-sdk": "^2.425.0",
-    "aws-sdk-mock": "^4.3.1",
+    "@types/sinon": "^7.0.11",
+    "aws-sdk": "^2.438.0",
+    "aws-sdk-mock": "^4.4.0",
     "cdk-build-tools": "^0.28.0",
     "cdk-integ-tools": "^0.28.0",
     "cfn2ts": "^0.28.0",
     "nock": "^10.0.6",
     "pkglint": "^0.28.0",
-    "sinon": "^7.3.0"
+    "sinon": "^7.3.1"
   },
   "dependencies": {
     "@aws-cdk/assets": "^0.28.0",
@@ -102,7 +102,8 @@
     "@aws-cdk/aws-s3-notifications": "^0.28.0",
     "@aws-cdk/aws-sqs": "^0.28.0",
     "@aws-cdk/aws-stepfunctions": "^0.28.0",
-    "@aws-cdk/cdk": "^0.28.0"
+    "@aws-cdk/cdk": "^0.28.0",
+    "@aws-cdk/cx-api": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"

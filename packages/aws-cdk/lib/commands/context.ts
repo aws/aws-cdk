@@ -11,7 +11,7 @@ export const builder = {
     alias: 'e',
     desc: 'The context key (or its index) to reset',
     type: 'string',
-    requiresArg: 'KEY'
+    requiresArg: true
   },
   clear: {
     desc: 'Clear all context',
@@ -33,7 +33,7 @@ export async function realHandler(options: CommandOptions): Promise<number> {
     await configuration.saveContext();
     print('All context values cleared.');
   } else if (args.reset) {
-    invalidateContext(configuration.context, args.reset);
+    invalidateContext(configuration.context, args.reset as string);
     await configuration.saveContext();
   } else {
     // List -- support '--json' flag

@@ -1,6 +1,6 @@
 import { Token } from "./token";
 
-const REFERENCE_SYMBOL = Symbol('@aws-cdk/cdk.Reference');
+const REFERENCE_SYMBOL = Symbol.for('@aws-cdk/cdk.Reference');
 
 /**
  * A Token that represents a reference between two constructs

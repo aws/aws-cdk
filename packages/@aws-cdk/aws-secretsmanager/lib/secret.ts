@@ -1,13 +1,13 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IConstruct, SecretValue } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, SecretValue } from '@aws-cdk/cdk';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import secretsmanager = require('./secretsmanager.generated');
 
 /**
  * A secret in AWS Secrets Manager.
  */
-export interface ISecret extends IConstruct {
+export interface ISecret extends IResource {
   /**
    * The customer-managed encryption key that is used to encrypt this secret, if any. When not specified, the default
    * KMS key for the account and region is being used.
@@ -102,7 +102,7 @@ export interface SecretImportProps {
 /**
  * The common behavior of Secrets. Users should not use this class directly, and instead use ``Secret``.
  */
-export abstract class SecretBase extends Construct implements ISecret {
+export abstract class SecretBase extends Resource implements ISecret {
   public abstract readonly encryptionKey?: kms.IEncryptionKey;
   public abstract readonly secretArn: string;
 
