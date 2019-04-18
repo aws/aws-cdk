@@ -1,6 +1,6 @@
-import { MockSDK } from '@aws-cdk/cdk-common/test/util/mock-sdk';
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
+import { MockSDK } from 'toolchain-common/test/util/mock-sdk';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
 import { prepareContainerAsset } from '../lib/docker';
 

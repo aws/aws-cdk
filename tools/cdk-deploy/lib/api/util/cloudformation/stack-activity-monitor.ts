@@ -1,7 +1,7 @@
-import { error } from '@aws-cdk/cdk-common/lib/logging';
 import cxapi = require('@aws-cdk/cx-api');
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
+import { error } from 'toolchain-common';
 import util = require('util');
 
 interface StackActivity {

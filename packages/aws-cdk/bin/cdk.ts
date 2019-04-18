@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import { leftPad, SDK } from '@aws-cdk/cdk-common';
 import colors = require('colors/safe');
 import fs = require('fs-extra');
+import { leftPad, SDK } from 'toolchain-common';
 import util = require('util');
 import yargs = require('yargs');
 
-import { bootstrapEnvironment, CDKToolkit, destroyStack, RequireApproval } from '@aws-cdk/cdk-deploy';
-import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from '@aws-cdk/cdk-deploy/lib/api/deployment-target';
+import { bootstrapEnvironment, CDKToolkit, destroyStack, RequireApproval } from 'cdk-deploy';
+import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from 'cdk-deploy/lib/api/deployment-target';
 
-import { data, debug, error, highlight, PluginHost, print, serializeStructure, setVerbose, success } from '@aws-cdk/cdk-common';
+import { data, debug, error, highlight, PluginHost, print, serializeStructure, setVerbose, success } from 'toolchain-common';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';

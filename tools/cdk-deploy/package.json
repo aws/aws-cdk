@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/cdk-deploy",
+  "name": "cdk-deploy",
   "description": "Command-line utility for deploying CDK applications",
   "version": "0.28.0",
   "main": "lib/index.js",
@@ -45,7 +45,6 @@
   },
   "dependencies": {
     "@aws-cdk/applet-js": "^0.28.0",
-    "@aws-cdk/cdk-common": "^0.28.0",
     "@aws-cdk/cloudformation-diff": "^0.28.0",
     "@aws-cdk/cx-api": "^0.28.0",
     "@aws-cdk/region-info": "^0.28.0",
@@ -63,13 +62,14 @@
     "semver": "^5.5.0",
     "source-map-support": "^0.5.6",
     "table": "^5.2.1",
+    "toolchain-common": "^0.28.0",
     "yaml": "^1.1.0",
     "yargs": "^9.0.1"
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
     "type": "git",
-    "directory": "packages/@aws-cdk/cdk-deploy"
+    "directory": "tools/cdk-deploy"
   },
   "keywords": [
     "aws",

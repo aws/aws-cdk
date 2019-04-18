@@ -1,7 +1,7 @@
-import { debug, PleaseHold, print, shell } from '@aws-cdk/cdk-common';
 import { ContainerImageAssetMetadataEntry } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import crypto = require('crypto');
+import { debug, PleaseHold, print, shell } from 'toolchain-common';
 import { ToolkitInfo } from './api/toolkit-info';
 
 /**

@@ -1,10 +1,10 @@
-import { debug, SDK } from '@aws-cdk/cdk-common';
 import cxapi = require('@aws-cdk/cx-api');
 import childProcess = require('child_process');
 import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
 import semver = require('semver');
+import { debug, SDK } from 'toolchain-common';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 
 /** Invokes the cloud executable and returns JSON output */

@@ -1,7 +1,7 @@
-import { debug,  print, warning } from '@aws-cdk/cdk-common';
 import childProcess = require('child_process');
 import colors = require('colors/safe');
 import process = require('process');
+import { debug,  print, warning } from 'toolchain-common';
 import yargs = require('yargs');
 import { CommandOptions } from '../command-api';
 

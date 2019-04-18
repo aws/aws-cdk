@@ -1,5 +1,5 @@
-import { debug, Mode, SDK } from '@aws-cdk/cdk-common';
 import AWS = require('aws-sdk');
+import { debug, Mode, SDK } from 'toolchain-common';
 import { ContextProviderPlugin } from './provider';
 
 /**

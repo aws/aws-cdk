@@ -1,5 +1,5 @@
-import { SDK } from '@aws-cdk/cdk-common';
 import { Environment, SynthesizedStack } from '@aws-cdk/cx-api';
+import { SDK } from 'toolchain-common';
 import { deployStack, DeployStackResult } from './deploy-stack';
 
 // tslint:disable:max-line-length

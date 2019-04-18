@@ -1,7 +1,7 @@
-import { data, deserializeStructure, error, highlight, print, success } from '@aws-cdk/cdk-common';
 import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
+import { data, deserializeStructure, error, highlight, print, success } from 'toolchain-common';
 import { format, promisify } from 'util';
 import { IDeploymentTarget } from './api/deployment-target';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';

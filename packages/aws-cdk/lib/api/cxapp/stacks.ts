@@ -1,11 +1,11 @@
-import { debug, error, print, SDK, warning } from '@aws-cdk/cdk-common';
-import cdkUtil = require('@aws-cdk/cdk-common/lib/util');
-import { topologicalSort } from '@aws-cdk/cdk-common/lib/util/toposort';
-import { SelectedStack } from '@aws-cdk/cdk-deploy';
 import cxapi = require('@aws-cdk/cx-api');
 import regionInfo = require('@aws-cdk/region-info');
+import { SelectedStack } from 'cdk-deploy';
 import colors = require('colors/safe');
 import minimatch = require('minimatch');
+import { debug, error, print, SDK, warning } from 'toolchain-common';
+import cdkUtil = require('toolchain-common/lib/util');
+import { topologicalSort } from 'toolchain-common/lib/util/toposort';
 import contextproviders = require('../../context-providers');
 import { Renames } from '../../renames';
 import { Configuration } from '../../settings';

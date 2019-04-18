@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/cdk-common",
+  "name": "toolchain-common",
   "description": "Common classes and utilities for CDK CLI applications",
   "version": "0.28.0",
   "private": true,
@@ -66,7 +66,7 @@
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
     "type": "git",
-    "directory": "packages/@aws-cdk/cdk-common"
+    "directory": "tools/toolchain-common"
   },
   "keywords": [
     "aws",

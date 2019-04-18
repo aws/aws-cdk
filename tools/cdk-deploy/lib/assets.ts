@@ -1,11 +1,11 @@
 // tslint:disable-next-line:max-line-length
-import { debug, success } from '@aws-cdk/cdk-common';
 import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, FileAssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import colors = require('colors');
 import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
+import { debug, success } from 'toolchain-common';
 import { zipDirectory } from '../lib/archive';
 import { ToolkitInfo } from './api/toolkit-info';
 import { prepareContainerAsset } from './docker';
