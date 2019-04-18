@@ -89,7 +89,6 @@ export interface GitBuildSourceProps extends BuildSourceProps {
  * A common superclass of all build sources that are backed by Git.
  */
 export abstract class GitBuildSource extends BuildSource {
-  public readonly badgeSupported: boolean = true;
   private readonly cloneDepth?: number;
 
   protected constructor(props: GitBuildSourceProps) {
@@ -107,6 +106,67 @@ export abstract class GitBuildSource extends BuildSource {
 }
 
 /**
+ * The construction properties common to all external build sources that are backed by Git.
+ */
+export interface ExternalGitBuildSourceProps extends GitBuildSourceProps {
+  /**
+   * Whether to create a webhook that will trigger a build every time a commit is pushed to the repository.
+   *
+   * @default false
+   */
+  readonly webhook?: boolean;
+
+  /**
+   * Whether to send notifications on your build's start and end.
+   *
+   * @default true
+   */
+  readonly reportBuildStatus?: boolean;
+
+  /**
+   * A list of lists of WebhookFilter objects used to determine which webhook events are triggered.
+   */
+  readonly filterGroups?: WebhookFilter[][];
+}
+
+/**
+ * A common superclass of all external build sources that are backed by Git.
+ */
+export abstract class ExternalGitBuildSource extends GitBuildSource {
+  public readonly badgeSupported: boolean = true;
+  private readonly reportBuildStatus: boolean;
+  private readonly webhook?: boolean;
+  private readonly filterGroups?: WebhookFilter[][];
+
+  protected constructor(props: ExternalGitBuildSourceProps) {
+    super(props);
+
+    this.webhook = props.webhook;
+    this.reportBuildStatus = props.reportBuildStatus === undefined ? true : props.reportBuildStatus;
+    this.filterGroups = props.filterGroups;
+  }
+
+  public buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
+    if (!this.webhook && this.filterGroups) {
+      throw new Error("filterGroups property could only be set when webhook property is true");
+    }
+    return this.webhook === undefined
+      ? undefined
+      : {
+        webhook: this.webhook,
+        filterGroups: this.filterGroups,
+      };
+  }
+
+  public toSourceJSON(): CfnProject.SourceProperty {
+    return {
+      ...super.toSourceJSON(),
+      reportBuildStatus: this.reportBuildStatus,
+    };
+  }
+}
+
+/**
  * Construction properties for {@link CodeCommitSource}.
  */
 export interface CodeCommitSourceProps extends GitBuildSourceProps {
@@ -118,7 +178,6 @@ export interface CodeCommitSourceProps extends GitBuildSourceProps {
  */
 export class CodeCommitSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.CodeCommit;
-  public readonly badgeSupported: boolean = false;
   private readonly repo: codecommit.IRepository;
 
   constructor(props: CodeCommitSourceProps) {
@@ -195,7 +254,7 @@ export class CodePipelineSource extends BuildSource {
 /**
  * Construction properties for {@link GitHubSource} and {@link GitHubEnterpriseSource}.
  */
-export interface GitHubSourceProps extends GitBuildSourceProps {
+export interface GitHubSourceProps extends ExternalGitBuildSourceProps {
   /**
    * The GitHub account/user that owns the repo.
    *
@@ -209,50 +268,23 @@ export interface GitHubSourceProps extends GitBuildSourceProps {
    * @example 'aws-cdk'
    */
   readonly repo: string;
-
-  /**
-   * Whether to create a webhook that will trigger a build every time a commit is pushed to the GitHub repository.
-   *
-   * @default false
-   */
-  readonly webhook?: boolean;
-
-  /**
-   * Whether to send GitHub notifications on your build's start and end.
-   *
-   * @default true
-   */
-  readonly reportBuildStatus?: boolean;
 }
 
 /**
  * GitHub Source definition for a CodeBuild project.
  */
-export class GitHubSource extends GitBuildSource {
+export class GitHubSource extends ExternalGitBuildSource {
   public readonly type: SourceType = SourceType.GitHub;
   private readonly httpsCloneUrl: string;
-  private readonly reportBuildStatus: boolean;
-  private readonly webhook?: boolean;
 
   constructor(props: GitHubSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
-    this.webhook = props.webhook;
-    this.reportBuildStatus = props.reportBuildStatus === undefined ? true : props.reportBuildStatus;
-  }
-
-  public buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
-    return this.webhook === undefined
-      ? undefined
-      : {
-        webhook: this.webhook,
-      };
   }
 
   protected toSourceProperty(): any {
     return {
       location: this.httpsCloneUrl,
-      reportBuildStatus: this.reportBuildStatus,
     };
   }
 }
@@ -260,7 +292,7 @@ export class GitHubSource extends GitBuildSource {
 /**
  * Construction properties for {@link GitHubEnterpriseSource}.
  */
-export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
+export interface GitHubEnterpriseSourceProps extends ExternalGitBuildSourceProps {
   /**
    * The HTTPS URL of the repository in your GitHub Enterprise installation.
    */
@@ -277,7 +309,7 @@ export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
 /**
  * GitHub Enterprise Source definition for a CodeBuild project.
  */
-export class GitHubEnterpriseSource extends GitBuildSource {
+export class GitHubEnterpriseSource extends ExternalGitBuildSource {
   public readonly type: SourceType = SourceType.GitHubEnterprise;
   private readonly httpsCloneUrl: string;
   private readonly ignoreSslErrors?: boolean;
@@ -299,7 +331,7 @@ export class GitHubEnterpriseSource extends GitBuildSource {
 /**
  * Construction properties for {@link BitBucketSource}.
  */
-export interface BitBucketSourceProps extends GitBuildSourceProps {
+export interface BitBucketSourceProps extends ExternalGitBuildSourceProps {
   /**
    * The BitBucket account/user that owns the repo.
    *
@@ -318,7 +350,7 @@ export interface BitBucketSourceProps extends GitBuildSourceProps {
 /**
  * BitBucket Source definition for a CodeBuild project.
  */
-export class BitBucketSource extends GitBuildSource {
+export class BitBucketSource extends ExternalGitBuildSource {
   public readonly type: SourceType = SourceType.BitBucket;
   private readonly httpsCloneUrl: any;
 
@@ -332,6 +364,41 @@ export class BitBucketSource extends GitBuildSource {
       location: this.httpsCloneUrl
     };
   }
+}
+
+/**
+ * Filter used to determine which webhooks trigger a build
+ */
+export interface WebhookFilter {
+  /**
+   * The type of webhook filter.
+   */
+  readonly type: WebhookFilterType,
+
+  /**
+   * A regular expression pattern.
+   */
+  readonly pattern: string,
+
+  /**
+   * Used to indicate that the pattern determines which webhook events do not trigger a build.
+   * If true, then a webhook event that does not match the pattern triggers a build.
+   * If false, then a webhook event that matches the pattern triggers a build.
+   *
+   * @default false
+   */
+  readonly excludeMatchedPattern?: boolean,
+}
+
+/**
+ * Filter types for webhook filters
+ */
+export enum WebhookFilterType {
+  Event = 'EVENT',
+  ActorAccountId = 'ACTOR_ACCOUNT_ID',
+  HeadRef = 'HEAD_REF',
+  BaseRef = 'BASE_REF',
+  FilePath = 'FILE_PATH',
 }
 
 /**

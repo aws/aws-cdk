@@ -5,6 +5,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codebuild = require('../lib');
+import { WebhookFilterType } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -480,6 +481,16 @@ export = {
           cloneDepth: 3,
           webhook: true,
           reportBuildStatus: false,
+          filterGroups: [
+            [
+              { type: WebhookFilterType.Event, pattern: 'PUSH' },
+              { type: WebhookFilterType.HeadRef, pattern: 'master', excludeMatchedPattern: false },
+            ],
+            [
+              { type: WebhookFilterType.Event, pattern: 'PULL_REQUEST_OPEN' },
+              { type: WebhookFilterType.BaseRef, pattern: 'master' },
+            ],
+          ],
         })
       });
 
@@ -495,6 +506,16 @@ export = {
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         Triggers: {
           Webhook: true,
+          FilterGroups: [
+            [
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'HEAD_REF', Pattern: 'master', ExcludeMatchedPattern: false },
+            ],
+            [
+              { Type: 'EVENT', Pattern: 'PULL_REQUEST_OPEN' },
+              { Type: 'BASE_REF', Pattern: 'master' },
+            ],
+          ],
         },
       }));
 
@@ -508,6 +529,18 @@ export = {
           httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
           ignoreSslErrors: true,
           cloneDepth: 4,
+          webhook: true,
+          reportBuildStatus: false,
+          filterGroups: [
+            [
+              { type: WebhookFilterType.Event, pattern: 'PUSH' },
+              { type: WebhookFilterType.HeadRef, pattern: 'master', excludeMatchedPattern: false },
+            ],
+            [
+              { type: WebhookFilterType.Event, pattern: 'PULL_REQUEST_OPEN' },
+              { type: WebhookFilterType.BaseRef, pattern: 'master' },
+            ],
+          ],
         })
       });
 
@@ -516,8 +549,25 @@ export = {
           Type: "GITHUB_ENTERPRISE",
           InsecureSsl: true,
           GitCloneDepth: 4,
+          ReportBuildStatus: false,
           Location: 'https://github.testcompany.com/testowner/testrepo'
         }
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+          FilterGroups: [
+            [
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'HEAD_REF', Pattern: 'master', ExcludeMatchedPattern: false },
+            ],
+            [
+              { Type: 'EVENT', Pattern: 'PULL_REQUEST_OPEN' },
+              { Type: 'BASE_REF', Pattern: 'master' },
+            ],
+          ],
+        },
       }));
 
       test.done();
@@ -530,6 +580,18 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           cloneDepth: 5,
+          webhook: true,
+          reportBuildStatus: false,
+          filterGroups: [
+            [
+              { type: WebhookFilterType.Event, pattern: 'PUSH' },
+              { type: WebhookFilterType.HeadRef, pattern: 'master', excludeMatchedPattern: false },
+            ],
+            [
+              { type: WebhookFilterType.Event, pattern: 'PULL_REQUEST_OPEN' },
+              { type: WebhookFilterType.BaseRef, pattern: 'master' },
+            ],
+          ],
         })
       });
 
@@ -538,6 +600,23 @@ export = {
           Type: 'BITBUCKET',
           Location: 'https://bitbucket.org/testowner/testrepo.git',
           GitCloneDepth: 5,
+          ReportBuildStatus: false,
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+          FilterGroups: [
+            [
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'HEAD_REF', Pattern: 'master', ExcludeMatchedPattern: false },
+            ],
+            [
+              { Type: 'EVENT', Pattern: 'PULL_REQUEST_OPEN' },
+              { Type: 'BASE_REF', Pattern: 'master' },
+            ],
+          ],
         },
       }));
 
@@ -1152,6 +1231,28 @@ export = {
         test.throws(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
       }
     });
+
+    test.done();
+  },
+
+  'filter groups validation'(test: Test) {
+    const stack = new cdk.Stack();
+
+    // should throw exception when webhook is not specified but filterGroups is
+    test.throws(() => {
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          cloneDepth: 3,
+          filterGroups: [
+            [
+              { type: WebhookFilterType.Event, pattern: 'PUSH' }
+            ]
+          ],
+        })
+      });
+    }, Error, "filterGroups property could only be set when webhook property is true");
 
     test.done();
   }
