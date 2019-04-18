@@ -3,6 +3,7 @@ import cdk = require('@aws-cdk/cdk');
 import { CfnRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
 import { IVirtualNode } from './virtual-node';
+import { IVirtualRouter } from './virtual-router';
 
 /**
  * Interface with properties ncecessary to import a reusable Route
@@ -127,14 +128,14 @@ export abstract class RouteBase extends cdk.Construct implements IRoute {
  */
 export interface RouteProps extends RouteBaseProps {
   /**
-   * The name of the service mesh to define the route in
+   * The service mesh to define the route in
    */
   readonly mesh: IMesh;
 
   /**
-   * The name of the virtual router in which to define the route
+   * The virtual router in which to define the route
    */
-  readonly virtualRouterName: string;
+  readonly virtualRouter: IVirtualRouter;
 }
 
 /**
@@ -183,7 +184,7 @@ export class Route extends RouteBase {
     super(scope, id);
 
     this.routeMeshName = props.mesh.meshName;
-    this.routeVirtualRouterName = props.virtualRouterName;
+    this.routeVirtualRouterName = props.virtualRouter.virtualRouterName;
 
     this.routeName = props && props.routeName ? props.routeName : this.node.id;
 
@@ -212,9 +213,9 @@ export class Route extends RouteBase {
    */
   public export(): RouteImportProps {
     return {
-      routeName: this.routeName,
-      routeArn: this.routeArn,
-      routeUid: this.routeUid,
+      routeName: new cdk.CfnOutput(this, 'RouteName', { value: this.routeName }).makeImportValue().toString(),
+      routeArn: new cdk.CfnOutput(this, 'RouteArn', { value: this.routeArn }).makeImportValue().toString(),
+      routeUid: new cdk.CfnOutput(this, 'RouteUid', { value: this.routeUid }).makeImportValue().toString(),
     };
   }
 
@@ -271,7 +272,7 @@ export class ImportedRoute extends RouteBase {
    */
   public readonly routeUid: string;
 
-  constructor(scope: cdk.Construct, id: string, props: RouteImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: RouteImportProps) {
     super(scope, id);
 
     this.routeName = props.routeName;
@@ -282,11 +283,7 @@ export class ImportedRoute extends RouteBase {
   /**
    * Exports properties for a reusable Route
    */
-  public export(): RouteImportProps {
-    return {
-      routeName: this.routeName,
-      routeArn: this.routeArn,
-      routeUid: this.routeUid,
-    };
+  public export() {
+    return this.props;
   }
 }

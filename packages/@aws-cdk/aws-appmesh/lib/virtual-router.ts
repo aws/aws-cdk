@@ -108,11 +108,11 @@ export abstract class VirtualRouterBase extends cdk.Construct implements IVirtua
   /**
    * Utility method for adding a single route to the router
    */
-  public addRoute(id: string, props: RouteBaseProps) {
+  public addRoute(id: string, props: RouteBaseProps): Route {
     const route = new Route(this, id, {
       routeName: id,
       mesh: this.mesh,
-      virtualRouterName: this.virtualRouterName,
+      virtualRouter: this,
       routeTargets: props.routeTargets,
       isHttpRoute: props.isHttpRoute,
       prefix: props.prefix,
@@ -124,7 +124,7 @@ export abstract class VirtualRouterBase extends cdk.Construct implements IVirtua
   /**
    * Utility method to add multiple routes to the router
    */
-  public addRoutes(ids: string[], props: RouteBaseProps[]) {
+  public addRoutes(ids: string[], props: RouteBaseProps[]): Route[] {
     const routes = new Array<Route>();
 
     if (ids.length < 1 || props.length < 1) {
@@ -138,7 +138,7 @@ export abstract class VirtualRouterBase extends cdk.Construct implements IVirtua
       const route = new Route(this, ids[i], {
         routeName: ids[i],
         mesh: this.mesh,
-        virtualRouterName: this.virtualRouterName,
+        virtualRouter: this,
         routeTargets: props[i].routeTargets,
         isHttpRoute: props[i].isHttpRoute,
         prefix: props[i].prefix,
@@ -223,9 +223,15 @@ export class VirtualRouter extends VirtualRouterBase {
    */
   public export(): VirtualRouterImportProps {
     return {
-      virtualRouterName: this.virtualRouterName,
-      virtualRouterArn: this.virtualRouterArn,
-      virtualRouterUid: this.virtualRouterUid,
+      virtualRouterName: new cdk.CfnOutput(this, 'VirtualRouterName', { value: this.virtualRouterName })
+        .makeImportValue()
+        .toString(),
+      virtualRouterArn: new cdk.CfnOutput(this, 'VirtualRouterArn', { value: this.virtualRouterArn })
+        .makeImportValue()
+        .toString(),
+      virtualRouterUid: new cdk.CfnOutput(this, 'VirtualRouterUid', { value: this.virtualRouterUid })
+        .makeImportValue()
+        .toString(),
       mesh: this.mesh,
     };
   }
@@ -286,7 +292,7 @@ export class ImportedVirtualRouter extends VirtualRouterBase {
    */
   public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualRouterImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: VirtualRouterImportProps) {
     super(scope, id);
 
     this.virtualRouterName = props.virtualRouterName;
@@ -298,12 +304,7 @@ export class ImportedVirtualRouter extends VirtualRouterBase {
   /**
    * Exports the VirtualRouter to re-use accross stacks
    */
-  public export(): VirtualRouterImportProps {
-    return {
-      virtualRouterName: this.virtualRouterName,
-      virtualRouterArn: this.virtualRouterArn,
-      virtualRouterUid: this.virtualRouterUid,
-      mesh: this.mesh,
-    };
+  public export() {
+    return this.props;
   }
 }

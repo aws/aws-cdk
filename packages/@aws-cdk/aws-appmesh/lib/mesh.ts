@@ -261,9 +261,9 @@ export class Mesh extends MeshBase {
    */
   public export(): MeshImportProps {
     return {
-      meshName: this.meshName,
-      meshArn: this.meshArn,
-      meshUid: this.meshUid,
+      meshName: new cdk.CfnOutput(this, 'MeshName', { value: this.meshName }).makeImportValue().toString(),
+      meshArn: new cdk.CfnOutput(this, 'MeshArn', { value: this.meshArn }).makeImportValue().toString(),
+      meshUid: new cdk.CfnOutput(this, 'MeshUid', { value: this.meshUid }).makeImportValue().toString(),
     };
   }
 }
@@ -288,7 +288,7 @@ export class ImportedMesh extends MeshBase {
    */
   public readonly meshUid: string;
 
-  constructor(scope: cdk.Construct, id: string, props: MeshImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: MeshImportProps) {
     super(scope, id);
 
     this.meshName = props.meshName;
@@ -299,11 +299,7 @@ export class ImportedMesh extends MeshBase {
   /**
    * Exports the Mesh properties to re-use in other stacks
    */
-  public export(): MeshImportProps {
-    return {
-      meshName: this.meshName,
-      meshArn: this.meshArn,
-      meshUid: this.meshUid,
-    };
+  public export() {
+    return this.props;
   }
 }

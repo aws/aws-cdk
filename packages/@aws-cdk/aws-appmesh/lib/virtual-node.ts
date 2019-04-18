@@ -331,9 +331,15 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public export(): VirtualNodeImportProps {
     return {
-      virtualNodeName: this.virtualNodeName,
-      virtualNodeArn: this.virtualNodeArn,
-      virtualNodeUid: this.virtualNodeUid,
+      virtualNodeName: new cdk.CfnOutput(this, 'VirtualNodeName', { value: this.virtualNodeName })
+        .makeImportValue()
+        .toString(),
+      virtualNodeArn: new cdk.CfnOutput(this, 'VirtualNodeArn', { value: this.virtualNodeArn })
+        .makeImportValue()
+        .toString(),
+      virtualNodeUid: new cdk.CfnOutput(this, 'VirtualNodeUid', { value: this.virtualNodeUid })
+        .makeImportValue()
+        .toString(),
     };
   }
 }
@@ -357,7 +363,7 @@ export class ImportedVirtualNode extends VirtualNodeBase {
    */
   public readonly virtualNodeUid: string;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualNodeImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: VirtualNodeImportProps) {
     super(scope, id);
 
     this.virtualNodeName = props.virtualNodeName;
@@ -368,11 +374,7 @@ export class ImportedVirtualNode extends VirtualNodeBase {
   /**
    * Exports properties for VirtualNode reusability
    */
-  public export(): VirtualNodeImportProps {
-    return {
-      virtualNodeName: this.virtualNodeName,
-      virtualNodeArn: this.virtualNodeArn,
-      virtualNodeUid: this.virtualNodeUid,
-    };
+  public export() {
+    return this.props;
   }
 }

@@ -190,9 +190,15 @@ export class VirtualService extends VirtualServiceBase {
    */
   public export(): VirtualServiceImportProps {
     return {
-      virtualServiceName: this.virtualServiceName,
-      virtualServiceArn: this.virtualServiceArn,
-      virtualServiceUid: this.virtualServiceUid,
+      virtualServiceName: new cdk.CfnOutput(this, 'VirtualServiceName', { value: this.virtualServiceName })
+        .makeImportValue()
+        .toString(),
+      virtualServiceArn: new cdk.CfnOutput(this, 'VirtualServiceArn', { value: this.virtualServiceArn })
+        .makeImportValue()
+        .toString(),
+      virtualServiceUid: new cdk.CfnOutput(this, 'VirtualServiceUid', { value: this.virtualServiceUid })
+        .makeImportValue()
+        .toString(),
     };
   }
 
@@ -232,7 +238,7 @@ export class ImportedVirtualService extends VirtualServiceBase {
    */
   public readonly virtualServiceUid: string;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualServiceImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: VirtualServiceImportProps) {
     super(scope, id);
 
     this.virtualServiceName = props.virtualServiceName;
@@ -243,11 +249,7 @@ export class ImportedVirtualService extends VirtualServiceBase {
   /**
    * Exports properties for VirtualService reusability
    */
-  public export(): VirtualServiceImportProps {
-    return {
-      virtualServiceName: this.virtualServiceName,
-      virtualServiceArn: this.virtualServiceArn,
-      virtualServiceUid: this.virtualServiceUid,
-    };
+  public export() {
+    return this.props;
   }
 }
