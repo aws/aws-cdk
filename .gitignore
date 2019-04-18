@@ -1,3 +1,5 @@
+*.tsbuildinfo
+
 .vscode
 # VSCode extension
 /.favorites.json 

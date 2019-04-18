@@ -732,12 +732,17 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
   }
 }
 
+// tslint:disable-next-line:no-empty-interface
+export interface VpcPublicSubnetProps extends VpcSubnetProps {
+
+}
+
 /**
  * Represents a public VPC subnet resource
  */
 export class VpcPublicSubnet extends VpcSubnet {
 
-  constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
+  constructor(scope: cdk.Construct, id: string, props: VpcPublicSubnetProps) {
     super(scope, id, props);
   }
 
@@ -768,11 +773,16 @@ export class VpcPublicSubnet extends VpcSubnet {
   }
 }
 
+// tslint:disable-next-line:no-empty-interface
+export interface VpcPrivateSubnetProps extends VpcSubnetProps {
+
+}
+
 /**
  * Represents a private VPC subnet resource
  */
 export class VpcPrivateSubnet extends VpcSubnet {
-  constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
+  constructor(scope: cdk.Construct, id: string, props: VpcPrivateSubnetProps) {
     super(scope, id, props);
   }
 
