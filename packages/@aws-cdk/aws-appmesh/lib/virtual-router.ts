@@ -186,7 +186,7 @@ export class VirtualRouter extends VirtualRouterBase {
   /**
    * The AppMesh mesh name for whiich the VirtualService belongs to
    */
-  public readonly virtualNodeMeshName: string;
+  public readonly virtualRouterMeshName: string;
 
   /**
    * The AppMesh mesh the VirtualRouter belongs to
@@ -199,7 +199,7 @@ export class VirtualRouter extends VirtualRouterBase {
     super(scope, id);
 
     this.mesh = props.mesh;
-    this.virtualNodeMeshName = this.mesh.meshName;
+    this.virtualRouterMeshName = this.mesh.meshName;
 
     const name = props && props.virtualRouterName ? props.virtualRouterName : this.node.id;
 
