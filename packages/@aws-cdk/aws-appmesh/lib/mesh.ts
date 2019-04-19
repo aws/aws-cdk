@@ -87,7 +87,7 @@ export interface MeshImportProps {
   /**
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
-  readonly meshArn: string;
+  readonly meshArn?: string;
 
   /**
    * The unique identifier for the mesh
@@ -292,7 +292,15 @@ export class ImportedMesh extends MeshBase {
     super(scope, id);
 
     this.meshName = props.meshName;
-    this.meshArn = props.meshArn;
+
+    this.meshArn =
+      props.meshArn ||
+      this.node.stack.formatArn({
+        service: 'appmesh',
+        resource: `mesh`,
+        resourceName: props.meshName,
+      });
+
     this.meshUid = props.meshUid;
   }
 
