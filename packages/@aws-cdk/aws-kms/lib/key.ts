@@ -249,28 +249,13 @@ export class EncryptionKey extends EncryptionKeyBase {
   }
 
   /**
-   * Let users from this account admin this key.
-   * @link https://aws.amazon.com/premiumsupport/knowledge-center/update-key-policy-future/
+   * Gives the AWS account (root user) that owns the CMK full access to the CMK.
+   * @link https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
    */
   private allowAccountToAdmin() {
-    const actions = [
-      "kms:Create*",
-      "kms:Describe*",
-      "kms:Enable*",
-      "kms:List*",
-      "kms:Put*",
-      "kms:Update*",
-      "kms:Revoke*",
-      "kms:Disable*",
-      "kms:Get*",
-      "kms:Delete*",
-      "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion"
-    ];
-
     this.addToResourcePolicy(new PolicyStatement()
       .addAllResources()
-      .addActions(...actions)
+      .addAction('kms:*')
       .addAccountRootPrincipal());
   }
 }
