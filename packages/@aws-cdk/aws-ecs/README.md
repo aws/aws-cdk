@@ -32,6 +32,15 @@ const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
+
+// Instantiate an Amazon EC2 Task to run at a scheduled interval
+const ecsScheduledTask = new ScheduledEc2Task(this, 'ScheduledTask', {
+  cluster,
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  scheduleExpression: 'rate(1 minute)',
+  environment: [{ name: 'TRIGGER', value: 'CloudWatch Events' }],
+  memoryLimitMiB: 256
+});
 ```
 
 ## AWS Fargate vs Amazon ECS

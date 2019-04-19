@@ -26,6 +26,7 @@ export * from './images/ecr';
 
 export * from './log-drivers/aws-log-driver';
 export * from './log-drivers/log-driver';
+export * from './scheduled-ecs-task';
 
 // AWS::ECS CloudFormation Resources:
 //
