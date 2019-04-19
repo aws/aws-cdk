@@ -1,0 +1,1610 @@
+{
+  "program": {
+    "fileInfos": {
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es5.d.ts": {
+        "version": "c8665e66018917580e71792b91022bcaf53fb946fab4aaf8dfb0738ed564db88",
+        "signature": "c8665e66018917580e71792b91022bcaf53fb946fab4aaf8dfb0738ed564db88"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.d.ts": {
+        "version": "7994d44005046d1413ea31d046577cdda33b8b2470f30281fd9c8b3c99fe2d96",
+        "signature": "7994d44005046d1413ea31d046577cdda33b8b2470f30281fd9c8b3c99fe2d96"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2016.d.ts": {
+        "version": "5f217838d25704474d9ef93774f04164889169ca31475fe423a9de6758f058d1",
+        "signature": "5f217838d25704474d9ef93774f04164889169ca31475fe423a9de6758f058d1"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.core.d.ts": {
+        "version": "384f66a3422d80014c51de2682159bb26f1e35854029880ccd5f6d1f00e6a36d",
+        "signature": "384f66a3422d80014c51de2682159bb26f1e35854029880ccd5f6d1f00e6a36d"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.collection.d.ts": {
+        "version": "dd94d8ef48c562389eb58af8df3a3a34d11367f7c818192aa5f16470d469e3f0",
+        "signature": "dd94d8ef48c562389eb58af8df3a3a34d11367f7c818192aa5f16470d469e3f0"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.generator.d.ts": {
+        "version": "828413486bdcaa342558e8e4570b1b287b776cb61b4b70b0214bd10c5d9a94c3",
+        "signature": "828413486bdcaa342558e8e4570b1b287b776cb61b4b70b0214bd10c5d9a94c3"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.iterable.d.ts": {
+        "version": "4d1f39313a169b8599b8817688f504b56ba8204c2ebafd03f66ff77ddb1899a4",
+        "signature": "4d1f39313a169b8599b8817688f504b56ba8204c2ebafd03f66ff77ddb1899a4"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.promise.d.ts": {
+        "version": "7c07d934680d0e33275a44d22fb11a4ff31d46c8c26a8d056828a478753f1efe",
+        "signature": "7c07d934680d0e33275a44d22fb11a4ff31d46c8c26a8d056828a478753f1efe"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.proxy.d.ts": {
+        "version": "5e72f949a89717db444e3bd9433468890068bb21a5638d8ab15a1359e05e54fe",
+        "signature": "5e72f949a89717db444e3bd9433468890068bb21a5638d8ab15a1359e05e54fe"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.reflect.d.ts": {
+        "version": "f5b242136ae9bfb1cc99a5971cccc44e99947ae6b5ef6fd8aa54b5ade553b976",
+        "signature": "f5b242136ae9bfb1cc99a5971cccc44e99947ae6b5ef6fd8aa54b5ade553b976"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.symbol.d.ts": {
+        "version": "9ae2860252d6b5f16e2026d8a2c2069db7b2a3295e98b6031d01337b96437230",
+        "signature": "9ae2860252d6b5f16e2026d8a2c2069db7b2a3295e98b6031d01337b96437230"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts": {
+        "version": "3e0a459888f32b42138d5a39f706ff2d55d500ab1031e0988b5568b0f67c2303",
+        "signature": "3e0a459888f32b42138d5a39f706ff2d55d500ab1031e0988b5568b0f67c2303"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2016.array.include.d.ts": {
+        "version": "3f96f1e570aedbd97bf818c246727151e873125d0512e4ae904330286c721bc0",
+        "signature": "3f96f1e570aedbd97bf818c246727151e873125d0512e4ae904330286c721bc0"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2017.object.d.ts": {
+        "version": "ff8ad203e83338289b0f5defc1a5b5c253fb7d251b464db497383f915a0df3f4",
+        "signature": "ff8ad203e83338289b0f5defc1a5b5c253fb7d251b464db497383f915a0df3f4"
+      },
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2017.string.d.ts": {
+        "version": "21df2e0059f14dcb4c3a0e125859f6b6ff01332ee24b0065a741d121250bc71c",
+        "signature": "21df2e0059f14dcb4c3a0e125859f6b6ff01332ee24b0065a741d121250bc71c"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/base-types.ts": {
+        "version": "a147a690ca0d0f524bcf6feab4c0075ac33337c0622c51a666717599110458db",
+        "signature": "a147a690ca0d0f524bcf6feab4c0075ac33337c0622c51a666717599110458db"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/property.ts": {
+        "version": "daae2c895d5c6e90a1d556a8802dc234cd34f93f3d3e1d9d4bea0ad1395fe710",
+        "signature": "daae2c895d5c6e90a1d556a8802dc234cd34f93f3d3e1d9d4bea0ad1395fe710"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/resource-type.ts": {
+        "version": "11ac76549c915c31f409f468dc1d64d4db3f114abdf310638471ccba3e5bec31",
+        "signature": "11ac76549c915c31f409f468dc1d64d4db3f114abdf310638471ccba3e5bec31"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/specification.ts": {
+        "version": "5207d80143a0f86eee7083992a71afad6858ebba00819665548ad7bfc988e78d",
+        "signature": "5207d80143a0f86eee7083992a71afad6858ebba00819665548ad7bfc988e78d"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/augmentation.ts": {
+        "version": "4d53b6a1738f924a31d3dbdb93896db7b377301437ac16de6e7a87aaafd05b39",
+        "signature": "4d53b6a1738f924a31d3dbdb93896db7b377301437ac16de6e7a87aaafd05b39"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/index.ts": {
+        "version": "9f4facff5e902d8c7226a59f3a2f4a6a5b84f4bbc8f35321e08398e1cdb31bff",
+        "signature": "9f4facff5e902d8c7226a59f3a2f4a6a5b84f4bbc8f35321e08398e1cdb31bff"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/index.d.ts": {
+        "version": "c2d9ab35513f8734cbedb27b89db575451576fa7a5fa78d015e6320f028cdf9e",
+        "signature": "c2d9ab35513f8734cbedb27b89db575451576fa7a5fa78d015e6320f028cdf9e"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/colors/safe.d.ts": {
+        "version": "31c0a538946283248909d07a00e23d571f4a3d86778650119de24ef585a56d45",
+        "signature": "31c0a538946283248909d07a00e23d571f4a3d86778650119de24ef585a56d45"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diffable.ts": {
+        "version": "a6aa9fde5531736d3798cbf7edd765f3a3492842e3ed16877253554564540a81",
+        "signature": "be22b031768c18a575b5fccfa6bfefb42148df9113c7a62fa5d9f9679523025d"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/render-intrinsics.ts": {
+        "version": "9720530bb0d9df16b145cc380f0111eb810e86cdffe400dffd2ae0e7f0ff3d82",
+        "signature": "d9d80f69d497f67b9c9cdaf4c754e815267cb6543eac3f7f737eb4ba74ac9641"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/util.ts": {
+        "version": "e72d651a06cbba41eb62d8748c5734c38e50f3a454e6fed01777e58cdbc64e01",
+        "signature": "d42a2429609b0fe35447dbc8a9b78622bfaa4136353d9e91deff624a4264f2ba"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/managed-policy.ts": {
+        "version": "c8d54f9b279675baec79f7fac6137924923d924026e1324a4fdf13a204e1d367",
+        "signature": "f7dbf2935a778acaab3b398d5f80e9902bb49ebe8e40f464cb7560727d7f4436"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-deep-equal/index.d.ts": {
+        "version": "37ffe3c12813b6a6d512f7c27b71f3388d03dafa10555ad5094cea393ed3d1f6",
+        "signature": "37ffe3c12813b6a6d512f7c27b71f3388d03dafa10555ad5094cea393ed3d1f6"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/statement.ts": {
+        "version": "15399658be31fe191490086a0b317fd03070947e5a1f127e263b14d3865ec852",
+        "signature": "248dfade175b883b10263aea0c3f0383d4b844525e49b652d8b991f3df3c0474"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/iam-changes.ts": {
+        "version": "d03ed9b07ad86b006f113162b5237ec6428584f2b0b035cc90d639e64a6b4f98",
+        "signature": "0c617069ff35143623aba05b3cd3673747857faf1aa67f3e70d354c35829dd34"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-rule.ts": {
+        "version": "9a06d3d37fcbf3ff33a3fbb3e52c4e59d100044edda65584b993bef7d31afeac",
+        "signature": "ecea2acb1082670d4976eb89cf579119c6ab93be075ec39c65e8f498ab7bbc35"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-changes.ts": {
+        "version": "9d62c28b3b0f65616468e9c018c7ca188de624a46314406c0c4ae17f723fe433",
+        "signature": "981d5c61ae43fe6b6cb7d8ccb34a79cafba536793b22fd1da9d3e1eec30b14c6"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/util.ts": {
+        "version": "be180c1b692746f7e210c948d2d0cce0e98363361e39c90318b8bd84f56183b2",
+        "signature": "37c5a82abb4c35edd629cd34e3181f0fe55267ec51ddfe0f9160ba14978483ec"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts": {
+        "version": "6376ed862494a3e40f57c232b14c59a4fe8da8119ab8dafef526a158531ac1e8",
+        "signature": "1950ffe55a457926f832ab542772d190cb08d83a6143140ebaa3c936a220eb68"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/index.ts": {
+        "version": "cb9993c964d775c4ee231e3ace28e43c9356b96494a4c4e2bbea34cdea0bce83",
+        "signature": "fda06ee30f8148dab2daba0de346d15fea2807014ee5c2b2ba50de74d19ddd73"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff-template.ts": {
+        "version": "2eee34ffe687d1b200f601657d41dc59e9511f48b8af4c6a358b96805d06541f",
+        "signature": "6d45279ff8ee6c77e20b30b60e2bb29303723837c2d8f7f4f3bf1dec7bc2e474"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/string-width/index.d.ts": {
+        "version": "08f234e8871dacf59e1f194fd83c11d002d8d4d488f7be138900755e3e637a24",
+        "signature": "08f234e8871dacf59e1f194fd83c11d002d8d4d488f7be138900755e3e637a24"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/@types/table/index.d.ts": {
+        "version": "f155d2f1747d0e608f2eec30458f02afda89f3ce1042320faad618f26609dfbc",
+        "signature": "f155d2f1747d0e608f2eec30458f02afda89f3ce1042320faad618f26609dfbc"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format-table.ts": {
+        "version": "ee65ab7535fa802c7d526963d256eccbb88d67f29d9268fbd40227682b49081f",
+        "signature": "d7724c802cb43a019e08165908fc0e35bde9e003d004b8d1f6288b6d5358d1ca"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/artifacts.ts": {
+        "version": "6ad92300910a4089f17b3c92112bdb0cade5e8f7a654d764906bb767cc20b470",
+        "signature": "6ad92300910a4089f17b3c92112bdb0cade5e8f7a654d764906bb767cc20b470"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/environment.ts": {
+        "version": "d0d1caccf0476ac14c72ac8f637e4c44de9724c323860d111ab070836a3bddb8",
+        "signature": "d0d1caccf0476ac14c72ac8f637e4c44de9724c323860d111ab070836a3bddb8"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/cxapi.ts": {
+        "version": "b5851dd998b47118d7be166f8b8f0f419df5d620c81d89385e31550d6c7678de",
+        "signature": "b5851dd998b47118d7be166f8b8f0f419df5d620c81d89385e31550d6c7678de"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/hosted-zone.ts": {
+        "version": "40db46ff87595da507d0b18d22fefc4804bfea7f10582fcbcd1c5471eed942e5",
+        "signature": "40db46ff87595da507d0b18d22fefc4804bfea7f10582fcbcd1c5471eed942e5"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/vpc.ts": {
+        "version": "286b19e7a7cefdbba6e2bc9f9fae582b87fa4e4493f6291351a83bd852a76b6a",
+        "signature": "286b19e7a7cefdbba6e2bc9f9fae582b87fa4e4493f6291351a83bd852a76b6a"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/ssm-parameter.ts": {
+        "version": "721ae05e129670ff905d3a004263a634eb8b3f6742b7575753647955898f19d6",
+        "signature": "721ae05e129670ff905d3a004263a634eb8b3f6742b7575753647955898f19d6"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/availability-zones.ts": {
+        "version": "22e6450cea63b03f4fa62fe43782b989ccd255082e0118909c547d71ae0ded4c",
+        "signature": "22e6450cea63b03f4fa62fe43782b989ccd255082e0118909c547d71ae0ded4c"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/metadata/assets.ts": {
+        "version": "575e9b3d35f0c0f1ee27630385cc8a0e9d47ef550ce0c3af6565e8fb8bf9618b",
+        "signature": "575e9b3d35f0c0f1ee27630385cc8a0e9d47ef550ce0c3af6565e8fb8bf9618b"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/build.ts": {
+        "version": "175209773603cb861db99e2271e6352c5a148e62954fb24a43e34f3bc9b58857",
+        "signature": "175209773603cb861db99e2271e6352c5a148e62954fb24a43e34f3bc9b58857"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/index.d.ts": {
+        "version": "e5fb9d483169dd805e6557f3e28c611abda65ee84a64861f232fdaa743cdb005",
+        "signature": "e5fb9d483169dd805e6557f3e28c611abda65ee84a64861f232fdaa743cdb005"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format.ts": {
+        "version": "330622441c285706673c4ac861e96c289ce6aff0cc1278be08ce714adcac19ab",
+        "signature": "9c0878875cf36151180f4160402aa557848d79441ad80ae6ea55d534c4db9a0a"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/index.ts": {
+        "version": "2ed2ad703dad5952c58b6168c11a23b7d8922545de70ec3d4369b559648a29ca",
+        "signature": "2ed2ad703dad5952c58b6168c11a23b7d8922545de70ec3d4369b559648a29ca"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts": {
+        "version": "ea7145b8c37d051c1aebd8f7e0d8aad1d5a5cbffdf28224634862fe1ec93eeda",
+        "signature": "ea7145b8c37d051c1aebd8f7e0d8aad1d5a5cbffdf28224634862fe1ec93eeda"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/test.diff-template.ts": {
+        "version": "28170d40ba213761aab179d5229b08e518b998241b65a49e3713bdea6504d5bc",
+        "signature": "070c885788ae4d4e375416ed4a90b7669df68eb03cbd4c9aebd148c336f6e948"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/test.render-intrinsics.ts": {
+        "version": "1e19f6c5f52af26678cc64433e35f395b4bd9903791355cf326302a613f1d467",
+        "signature": "0f87cf25a3d64e03c495f2137e2e72c2dd80983e9cf918b55c70e838120ead6f"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/util.ts": {
+        "version": "613add94c5e9841b30a3c8853ad88f443b1653e3ee9233c658b2c5d78496fe42",
+        "signature": "dd11ab549e813594ea22516039c46b5214cf399edb8f0443995a622909f8dadd"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.broadening.ts": {
+        "version": "11c0c039539234fe01e7663b9be54e614ce4db415c2de059be506cda2a7fb9ee",
+        "signature": "df71518da781c1807759612fd2873131f3ebb47a87070e0cd01b6f415f2f1c07"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.detect-changes.ts": {
+        "version": "1dee7882ff0987723d15be1bba4400e03850b75385959b8630a894082edc25a7",
+        "signature": "7ce36b150897f4c0ad9ff9f531be3ee9680032c2192edfca972aa5c4e0967970"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/pre.d.ts": {
+        "version": "395f75bd1652446d57390fd1b293d4ca5aa5d56dae64f3f09bd98d4cfd395633",
+        "signature": "395f75bd1652446d57390fd1b293d4ca5aa5d56dae64f3f09bd98d4cfd395633"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts": {
+        "version": "3554c4547b1e2ae7588cbd20878e79ad6e2e692ffe1ee5d03b8558933a78c9b9",
+        "signature": "3554c4547b1e2ae7588cbd20878e79ad6e2e692ffe1ee5d03b8558933a78c9b9"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/linearcongruential.d.ts": {
+        "version": "62c18d0ed0eb7c5dc476d1a91d91286e8dfbcc544803b578d727fb7571d7a8cd",
+        "signature": "62c18d0ed0eb7c5dc476d1a91d91286e8dfbcc544803b578d727fb7571d7a8cd"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/mersennetwister.d.ts": {
+        "version": "cb96106676bce46a71940213137b3e2871ed524becff507aab30d3439ec1a53b",
+        "signature": "cb96106676bce46a71940213137b3e2871ed524becff507aab30d3439ec1a53b"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/xorshift.d.ts": {
+        "version": "8cf6440c1518d8823fcc3fa2b7f622d831041efdd4e733612871ed6eaf5a3bf9",
+        "signature": "8cf6440c1518d8823fcc3fa2b7f622d831041efdd4e733612871ed6eaf5a3bf9"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/distribution.d.ts": {
+        "version": "74a28e317a51160970d3b39c6f0adcae0e572b6ee28755690fadf7a6ee93cd53",
+        "signature": "74a28e317a51160970d3b39c6f0adcae0e572b6ee28755690fadf7a6ee93cd53"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformbigintdistribution.d.ts": {
+        "version": "d1660cfc0b16b3aeb586e9c0b4cdac765243bbcb5994192e893ac9227b03bac4",
+        "signature": "d1660cfc0b16b3aeb586e9c0b4cdac765243bbcb5994192e893ac9227b03bac4"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformintdistribution.d.ts": {
+        "version": "e87be9b750f348a72f5257e21993c1c5e90434533938355799d40d1a18eb078b",
+        "signature": "e87be9b750f348a72f5257e21993c1c5e90434533938355799d40d1a18eb078b"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand-default.d.ts": {
+        "version": "2b936eb5350683b6d343e54b227f6f8001bba21ebef0a5efe3591a373a1cbb48",
+        "signature": "2b936eb5350683b6d343e54b227f6f8001bba21ebef0a5efe3591a373a1cbb48"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand.d.ts": {
+        "version": "145f0dc7dae1495f8dcfd0fe31120f92415c509d143ebecaa89825d6c2a80e8d",
+        "signature": "145f0dc7dae1495f8dcfd0fe31120f92415c509d143ebecaa89825d6c2a80e8d"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts": {
+        "version": "7bce906a70be47734a156ec7ce2a33f7242fe795b6281df437ab5589f1a62395",
+        "signature": "7bce906a70be47734a156ec7ce2a33f7242fe795b6281df437ab5589f1a62395"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/stream/stream.d.ts": {
+        "version": "d206f5b22c2a9c05e8017fca2d7265146c9ab8c4695c0e559ac263f38fe1ce5b",
+        "signature": "d206f5b22c2a9c05e8017fca2d7265146c9ab8c4695c0e559ac263f38fe1ce5b"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts": {
+        "version": "e440f36c3cac0b81cffa7d34f843841947e3c0ea84bed5c1404482597a0257f3",
+        "signature": "e440f36c3cac0b81cffa7d34f843841947e3c0ea84bed5c1404482597a0257f3"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts": {
+        "version": "7519fcb8ce505d538cc4e863274bb026ef601fc74d7230794f87649714cee84a",
+        "signature": "7519fcb8ce505d538cc4e863274bb026ef601fc74d7230794f87649714cee84a"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/preconditionfailure.d.ts": {
+        "version": "2917bd9fb3fc9cc085fa8da9b64fa92664494582bf8b09f0293de925a0dcf7df",
+        "signature": "2917bd9fb3fc9cc085fa8da9b64fa92664494582bf8b09f0293de925a0dcf7df"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts": {
+        "version": "b1ab3ca146ffe2c12891ef60293e1eb97ceee18e8a1292d9c865b848c9b08a2c",
+        "signature": "b1ab3ca146ffe2c12891ef60293e1eb97ceee18e8a1292d9c865b848c9b08a2c"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generic.d.ts": {
+        "version": "0859d9a2003cee31ac3b70e48c85683d3e119fbd9901a074bd5fc2af83d59de6",
+        "signature": "0859d9a2003cee31ac3b70e48c85683d3e119fbd9901a074bd5fc2af83d59de6"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generated.d.ts": {
+        "version": "3e5ae049177abb112615f82271838b76cce2a3d964144b1d51da5239c727c851",
+        "signature": "3e5ae049177abb112615f82271838b76cce2a3d964144b1d51da5239c727c851"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.d.ts": {
+        "version": "494d1856881ebd59e302884e66b1e89e9e8c85c0adacdb3e3bfb0d4a05743b28",
+        "signature": "494d1856881ebd59e302884e66b1e89e9e8c85c0adacdb3e3bfb0d4a05743b28"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generic.d.ts": {
+        "version": "f4287bbbf636a0e483b148e11368b20b9ab465fd4c9dd973e384770c8d318ec0",
+        "signature": "f4287bbbf636a0e483b148e11368b20b9ab465fd4c9dd973e384770c8d318ec0"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generated.d.ts": {
+        "version": "d48a6feb653ab5cb39f087701e45587d1ab7af6969f6bc716ddf9f070d60d7d9",
+        "signature": "d48a6feb653ab5cb39f087701e45587d1ab7af6969f6bc716ddf9f070d60d7d9"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.d.ts": {
+        "version": "aeaaaa81a90dcbeabfc87b9cb5f232ceb4b2e9807d2a167e23254449a0c4ddda",
+        "signature": "aeaaaa81a90dcbeabfc87b9cb5f232ceb4b2e9807d2a167e23254449a0c4ddda"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/randomtype.d.ts": {
+        "version": "949bdef0bcba0eb5202aa511f47e6c7b80b3af6d8f95a820fa1314bfe7ffca2a",
+        "signature": "949bdef0bcba0eb5202aa511f47e6c7b80b3af6d8f95a820fa1314bfe7ffca2a"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/verbositylevel.d.ts": {
+        "version": "76fb27d4b7216fdb1ce4409ed62d28fb249912150e76b03b412e647dc2f027b1",
+        "signature": "76fb27d4b7216fdb1ce4409ed62d28fb249912150e76b03b412e647dc2f027b1"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/parameters.d.ts": {
+        "version": "0cc982a70fabecb90bbb9ffb076887b7028bff579572822d2790613cb52bc3ff",
+        "signature": "0cc982a70fabecb90bbb9ffb076887b7028bff579572822d2790613cb52bc3ff"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executionstatus.d.ts": {
+        "version": "127eba00b2309a635b1e4871d937adc359dd6ac775e39e183343e66b65de79b6",
+        "signature": "127eba00b2309a635b1e4871d937adc359dd6ac775e39e183343e66b65de79b6"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executiontree.d.ts": {
+        "version": "fd2123562bf41285741922c573aec1d127dd4e9938342e396cf87def1dc05c90",
+        "signature": "fd2123562bf41285741922c573aec1d127dd4e9938342e396cf87def1dc05c90"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/rundetails.d.ts": {
+        "version": "593bec2dae494da5e6afd35f44eda0d325553968e9c3dcc5455e58bbbdb621ca",
+        "signature": "593bec2dae494da5e6afd35f44eda0d325553968e9c3dcc5455e58bbbdb621ca"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/runner.d.ts": {
+        "version": "385f4f4c977ddcd47ce37d2904daf2c9ac7f98e33d64dbfad953a15cec89b8c9",
+        "signature": "385f4f4c977ddcd47ce37d2904daf2c9ac7f98e33d64dbfad953a15cec89b8c9"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/sampler.d.ts": {
+        "version": "b212f44a93e42d2cc0218b1a9a83464fd33cb7cd24f6b5d5b5722666c20d8c6a",
+        "signature": "b212f44a93e42d2cc0218b1a9a83464fd33cb7cd24f6b5d5b5722666c20d8c6a"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrarywithshrink.d.ts": {
+        "version": "41f5a138d970a993a732654f4394062425d5707bbd355cd001f7523cead65ef8",
+        "signature": "41f5a138d970a993a732654f4394062425d5707bbd355cd001f7523cead65ef8"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/arrayarbitrary.d.ts": {
+        "version": "e73ae894a8cec80ea92ac08e2a345170f237b6602f508a5a41976aefc6ea1319",
+        "signature": "e73ae894a8cec80ea92ac08e2a345170f237b6602f508a5a41976aefc6ea1319"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/bigintarbitrary.d.ts": {
+        "version": "2e0e5049690b14cee6a0708e46640f6c218d8b8cc5cc5f77646227d49ffbf787",
+        "signature": "2e0e5049690b14cee6a0708e46640f6c218d8b8cc5cc5f77646227d49ffbf787"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/booleanarbitrary.d.ts": {
+        "version": "8039666ffa3eb8ac34c0de2ae924c1eb4dca9c3283f5d8a846b33de94681ed61",
+        "signature": "8039666ffa3eb8ac34c0de2ae924c1eb4dca9c3283f5d8a846b33de94681ed61"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/characterarbitrary.d.ts": {
+        "version": "4820350ea07467bcce558a36e20bf49fe7bf2e9bfb9031b5083b4e514703c22c",
+        "signature": "4820350ea07467bcce558a36e20bf49fe7bf2e9bfb9031b5083b4e514703c22c"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/constantarbitrary.d.ts": {
+        "version": "6d2e9c9b9e6553fc243ac2ce7633540d3ea118763d159c661edde054901d18c6",
+        "signature": "6d2e9c9b9e6553fc243ac2ce7633540d3ea118763d159c661edde054901d18c6"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/contextarbitrary.d.ts": {
+        "version": "d309b7315db2b3dbcc0a8b130989168eb9f50f079775ea84a677776fd0b60827",
+        "signature": "d309b7315db2b3dbcc0a8b130989168eb9f50f079775ea84a677776fd0b60827"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/deduparbitrary.d.ts": {
+        "version": "e6781f462d45466ccb105c72eae280cbf34730a63064769cd546696bccc47857",
+        "signature": "e6781f462d45466ccb105c72eae280cbf34730a63064769cd546696bccc47857"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/dictionaryarbitrary.d.ts": {
+        "version": "62237afc11a7ef47a3858e015915d0b2e78c577c335e1f6ced42415d2f13d0d8",
+        "signature": "62237afc11a7ef47a3858e015915d0b2e78c577c335e1f6ced42415d2f13d0d8"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/emailarbitrary.d.ts": {
+        "version": "b9778485590822afd6a9a3041d0a779ab62fd30959f1627d542086c9ae94a1de",
+        "signature": "b9778485590822afd6a9a3041d0a779ab62fd30959f1627d542086c9ae94a1de"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/floatingpointarbitrary.d.ts": {
+        "version": "6fa16d76a798ad67ec4eacadccef1b447dd0613cf69828b4336d5ecbac16e09a",
+        "signature": "6fa16d76a798ad67ec4eacadccef1b447dd0613cf69828b4336d5ecbac16e09a"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/frequencyarbitrary.d.ts": {
+        "version": "ec4a94c46e811aca2a84f082bdcf2bb93c80151cedad29b2ae2c6e46664b857b",
+        "signature": "ec4a94c46e811aca2a84f082bdcf2bb93c80151cedad29b2ae2c6e46664b857b"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/functionarbitrary.d.ts": {
+        "version": "8e475804702610f77c7f9621dbbb5a698c9498865f053af9fa63445ce720c550",
+        "signature": "8e475804702610f77c7f9621dbbb5a698c9498865f053af9fa63445ce720c550"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/hostarbitrary.d.ts": {
+        "version": "4138cf4984e332be9473c98f8a65d237d417a6fd8d98b018d96080f2ca603a53",
+        "signature": "4138cf4984e332be9473c98f8a65d237d417a6fd8d98b018d96080f2ca603a53"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/integerarbitrary.d.ts": {
+        "version": "baeb2aaedd8500a313d47ca57addede7dbb41fef8650d19d92a37436eb76b3ce",
+        "signature": "baeb2aaedd8500a313d47ca57addede7dbb41fef8650d19d92a37436eb76b3ce"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/iparbitrary.d.ts": {
+        "version": "1209b541465db65c245cae442ea66423ef9af1b7b805e01b2e03557e746d564e",
+        "signature": "1209b541465db65c245cae442ea66423ef9af1b7b805e01b2e03557e746d564e"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/loremarbitrary.d.ts": {
+        "version": "c68f0cdfac618e5163d5909b470a66757c7f4b49a9a7b33c30fb86206f2c77a5",
+        "signature": "c68f0cdfac618e5163d5909b470a66757c7f4b49a9a7b33c30fb86206f2c77a5"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/maptoconstantarbitrary.d.ts": {
+        "version": "0495c38139276e593ecd656468b73a38423dce54c57eb608f3d354cd3c558cb8",
+        "signature": "0495c38139276e593ecd656468b73a38423dce54c57eb608f3d354cd3c558cb8"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/objectarbitrary.d.ts": {
+        "version": "847b1ecc92d79cacc199df3fab482c5f164264b9e4908848db083a6a51096478",
+        "signature": "847b1ecc92d79cacc199df3fab482c5f164264b9e4908848db083a6a51096478"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/oneofarbitrary.d.ts": {
+        "version": "b5ec970070de722194af078f15b9a2fdf503d6bdb80683296543e16b634c705a",
+        "signature": "b5ec970070de722194af078f15b9a2fdf503d6bdb80683296543e16b634c705a"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/optionarbitrary.d.ts": {
+        "version": "76874804614f8c4de4223b15ba4cd7da38f9d1b5fc818b436dd971260a8e2219",
+        "signature": "76874804614f8c4de4223b15ba4cd7da38f9d1b5fc818b436dd971260a8e2219"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/recordarbitrary.d.ts": {
+        "version": "b30f806df185eabcbb5de83bc09ce00d2b765e7de31e8d7ce8748804a6674ec9",
+        "signature": "b30f806df185eabcbb5de83bc09ce00d2b765e7de31e8d7ce8748804a6674ec9"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/setarbitrary.d.ts": {
+        "version": "71168ac789ed3c3f45b499e818b1973245c1d0e26cb5ffaf6128658a1a8667b4",
+        "signature": "71168ac789ed3c3f45b499e818b1973245c1d0e26cb5ffaf6128658a1a8667b4"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/streamarbitrary.d.ts": {
+        "version": "44d404b0b34d830b0d393bfc43ddff73fa9e54ba6c5c76861eb938c45ad921c8",
+        "signature": "44d404b0b34d830b0d393bfc43ddff73fa9e54ba6c5c76861eb938c45ad921c8"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/stringarbitrary.d.ts": {
+        "version": "ab518c5b1ff7ef487670db98895b3cef817c44315fb657b03ec49e9fb184a8a4",
+        "signature": "ab518c5b1ff7ef487670db98895b3cef817c44315fb657b03ec49e9fb184a8a4"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/subarrayarbitrary.d.ts": {
+        "version": "edb9b6162389bb567f12b2d42d8cb1fa7f35929262f6219b3d47eb52f6141f08",
+        "signature": "edb9b6162389bb567f12b2d42d8cb1fa7f35929262f6219b3d47eb52f6141f08"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generated.d.ts": {
+        "version": "b6b9af6ec6d316d325104ac77decd80ac4ac474264a00c31a70259c8dc419a48",
+        "signature": "b6b9af6ec6d316d325104ac77decd80ac4ac474264a00c31a70259c8dc419a48"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generic.d.ts": {
+        "version": "c0f55e077ab8f718528cce96b4ed85de37cff03a4c8c8789558517c3a5143785",
+        "signature": "c0f55e077ab8f718528cce96b4ed85de37cff03a4c8c8789558517c3a5143785"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.d.ts": {
+        "version": "e5ec3703730b5da5378ebb01bf0ecc1d0dcdfa36ead4649decf77591a6bf6f6a",
+        "signature": "e5ec3703730b5da5378ebb01bf0ecc1d0dcdfa36ead4649decf77591a6bf6f6a"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/webarbitrary.d.ts": {
+        "version": "3422cf373e2e74daef345e7b56e04f4e7f96498de3eca2290849f3508a75a73a",
+        "signature": "3422cf373e2e74daef345e7b56e04f4e7f96498de3eca2290849f3508a75a73a"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/icommand.d.ts": {
+        "version": "c88bda2d8615b087d98374af2dfb0677b5816eaeb389b5beae5ddbc8d1f5da64",
+        "signature": "c88bda2d8615b087d98374af2dfb0677b5816eaeb389b5beae5ddbc8d1f5da64"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/asynccommand.d.ts": {
+        "version": "8f6e105a57cd4e866c91921c70fdccce205be9fc9d7db6002e256933d3035ab0",
+        "signature": "8f6e105a57cd4e866c91921c70fdccce205be9fc9d7db6002e256933d3035ab0"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/command.d.ts": {
+        "version": "4e4f5c1c527808c847fb0adb075039e3b38fef654deaf38a9c3c6438ca657f01",
+        "signature": "4e4f5c1c527808c847fb0adb075039e3b38fef654deaf38a9c3c6438ca657f01"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandssettings.d.ts": {
+        "version": "200e4c13206cfbb219028dc37f45577c7b3efb283b0d7262fbf10a7386c20ee2",
+        "signature": "200e4c13206cfbb219028dc37f45577c7b3efb283b0d7262fbf10a7386c20ee2"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsarbitrary.d.ts": {
+        "version": "645f59ddf459e3c11f2326dfd885c94dd1fc154b0649e61c6ca8554d1d7a6d75",
+        "signature": "645f59ddf459e3c11f2326dfd885c94dd1fc154b0649e61c6ca8554d1d7a6d75"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/symbols.d.ts": {
+        "version": "9fe021afa50945f6a537a114917961e239ec0c394a0a4ced4a2c51e6ef363184",
+        "signature": "9fe021afa50945f6a537a114917961e239ec0c394a0a4ced4a2c51e6ef363184"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandwrapper.d.ts": {
+        "version": "a6348d9611a797ef616bca8df5178a97cf69a13f604e6c51764b14f2459763f0",
+        "signature": "a6348d9611a797ef616bca8df5178a97cf69a13f604e6c51764b14f2459763f0"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsiterable.d.ts": {
+        "version": "b0d18d98a042ba7e8cfa7e29ba63ec04035371e1fc992bfadc3e87f6f495efd2",
+        "signature": "b0d18d98a042ba7e8cfa7e29ba63ec04035371e1fc992bfadc3e87f6f495efd2"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/modelrunner.d.ts": {
+        "version": "26eec25e2bb1611f1efd2f7728954457f5c5374f7de26898fdc9b0541e339e37",
+        "signature": "26eec25e2bb1611f1efd2f7728954457f5c5374f7de26898fdc9b0541e339e37"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check-default.d.ts": {
+        "version": "b4b76fbb47df14d813a061d05d8fa0b13353bdbf63ed09afa7f82b31481e44e5",
+        "signature": "b4b76fbb47df14d813a061d05d8fa0b13353bdbf63ed09afa7f82b31481e44e5"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check.d.ts": {
+        "version": "85c7ffcdd4ce13945e09f7bd95b2217d006fb333d7a25dfecabf85fd2a1c3108",
+        "signature": "85c7ffcdd4ce13945e09f7bd95b2217d006fb333d7a25dfecabf85fd2a1c3108"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.statement.ts": {
+        "version": "798cfe14258c804628851d59e24a19ba19539a539a4116313f366c34b53c6bba",
+        "signature": "b1caca6f308d453b28af10a8d61e858fb56e15371bd043596377b0ba65e43cbc"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/network/test.detect-changes.ts": {
+        "version": "ff5044d160243c657ed3d73267515347a37bf6da30a9d06a01e2a658854467fb",
+        "signature": "2ed8cdec389fdc08df46e8180140077c32e6c5ac57091e80f646410179118bce"
+      },
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/network/test.rule.ts": {
+        "version": "07c3c2234ff30a2f3c0f8757beac540044e1c5b527baaf8e5abd358fcc9434a0",
+        "signature": "aa4958ecd6f74d1695bbc99146294b6d6546eedd1c0b7f0ef21bd4b8325ced42"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts": {
+        "version": "dfbcc61eedeb125ba4f12231aaf50c7d30f36f82901b92cbd85530b44de15b68",
+        "signature": "dfbcc61eedeb125ba4f12231aaf50c7d30f36f82901b92cbd85530b44de15b68"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__generator/index.d.ts": {
+        "version": "19fb2161edf60fbe73ee3650c1cee889df0525ed852eff2d5fa6e5480c132ae3",
+        "signature": "19fb2161edf60fbe73ee3650c1cee889df0525ed852eff2d5fa6e5480c132ae3"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__traverse/index.d.ts": {
+        "version": "30b805fe6d4272d147fea35fd859bc5f3e13b7c9d762bd35948fe842919452a5",
+        "signature": "30b805fe6d4272d147fea35fd859bc5f3e13b7c9d762bd35948fe842919452a5"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@babel/parser/typings/babel-parser.d.ts": {
+        "version": "ad5052782ad2d8a9d5db8e2a24216dac0ae66eb50f884851306777a47e23de9f",
+        "signature": "ad5052782ad2d8a9d5db8e2a24216dac0ae66eb50f884851306777a47e23de9f"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__template/index.d.ts": {
+        "version": "3e0a34f7207431d967dc32d593d1cda0c23975e9484bc8895b39d96ffca4a0d8",
+        "signature": "3e0a34f7207431d967dc32d593d1cda0c23975e9484bc8895b39d96ffca4a0d8"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__core/index.d.ts": {
+        "version": "9cf8e9d6b55ca6db5442191b1a107c613a59987692cfd59dc62e7be40ecbb326",
+        "signature": "9cf8e9d6b55ca6db5442191b1a107c613a59987692cfd59dc62e7be40ecbb326"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/istanbul-lib-coverage/index.d.ts": {
+        "version": "12da95fcea9e83a6bb87f785a4388e77a0e51ee8e2df10f35520bdc9178a0dda",
+        "signature": "12da95fcea9e83a6bb87f785a4388e77a0e51ee8e2df10f35520bdc9178a0dda"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/jest-diff/index.d.ts": {
+        "version": "6ecb326999da47034eff85653423767152858fbb7acf0433f7603c9abf1e3f06",
+        "signature": "6ecb326999da47034eff85653423767152858fbb7acf0433f7603c9abf1e3f06"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/jest-diff/build/types.d.ts": {
+        "version": "71ba0678a3c647f5c0706ae975c031ace0d464e60f9ce56eaa7f1678d065aab7",
+        "signature": "71ba0678a3c647f5c0706ae975c031ace0d464e60f9ce56eaa7f1678d065aab7"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/jest-diff/build/index.d.ts": {
+        "version": "b2c5ded6320c45c5d3e1c481c5d2808adf24dd1a59ffc944b72a418e95da5b17",
+        "signature": "b2c5ded6320c45c5d3e1c481c5d2808adf24dd1a59ffc944b72a418e95da5b17"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/jest/index.d.ts": {
+        "version": "a6ea3b29104efd7a3dd497d3496306f8350eb2ab05b7fa1b25fe82f9391bf879",
+        "signature": "a6ea3b29104efd7a3dd497d3496306f8350eb2ab05b7fa1b25fe82f9391bf879"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/inspector.d.ts": {
+        "version": "312541b24bc94fa90916b9197028248f633554269363610207868e37103b7fee",
+        "signature": "312541b24bc94fa90916b9197028248f633554269363610207868e37103b7fee"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/index.d.ts": {
+        "version": "07295ca6e1f6450e15bf21a1992f534ac810e11525b2fdf1c1602e0c44241e6e",
+        "signature": "07295ca6e1f6450e15bf21a1992f534ac810e11525b2fdf1c1602e0c44241e6e"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/stack-utils/index.d.ts": {
+        "version": "41422586881bcd739b4e62d9b91cd29909f8572aa3e3cdf316b7c50f14708d49",
+        "signature": "41422586881bcd739b4e62d9b91cd29909f8572aa3e3cdf316b7c50f14708d49"
+      },
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/yargs/index.d.ts": {
+        "version": "dd7d042b9ff1c36d86f82a20af35a990f003b6e2334e6fe6ce9455813bcc4865",
+        "signature": "dd7d042b9ff1c36d86f82a20af35a990f003b6e2334e6fe6ce9455813bcc4865"
+      }
+    },
+    "options": {
+      "target": 5,
+      "module": 1,
+      "lib": [
+        "lib.es2016.d.ts",
+        "lib.es2017.object.d.ts",
+        "lib.es2017.string.d.ts"
+      ],
+      "declaration": true,
+      "composite": true,
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "noImplicitThis": true,
+      "alwaysStrict": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": false,
+      "strictPropertyInitialization": false,
+      "inlineSourceMap": true,
+      "inlineSources": true,
+      "experimentalDecorators": true,
+      "configFilePath": "/Users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/tsconfig.json"
+    },
+    "referencedMap": {
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/property.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/base-types.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/resource-type.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/base-types.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/property.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/specification.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/base-types.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/property.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/resource-type.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/index.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/base-types.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/property.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/resource-type.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/specification.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/augmentation.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/statement.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-deep-equal/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/util.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/iam-changes.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/colors/safe.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diffable.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/render-intrinsics.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/util.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/managed-policy.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/statement.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-changes.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/colors/safe.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diffable.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/render-intrinsics.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/util.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-rule.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/iam-changes.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-changes.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/util.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/index.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/util.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff-template.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/index.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/util.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format-table.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/colors/safe.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/string-width/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/@types/table/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/cxapi.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/artifacts.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/environment.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/cxapi.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/environment.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/hosted-zone.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/vpc.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/ssm-parameter.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/availability-zones.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/metadata/assets.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/artifacts.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/build.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/colors/safe.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff-template.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/util.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format-table.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/iam-changes.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-changes.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/index.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff-template.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format-table.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/util.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/test.diff-template.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff-template.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/test.render-intrinsics.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/render-intrinsics.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.broadening.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/index.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/util.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.detect-changes.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/index.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/util.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/linearcongruential.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/mersennetwister.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/xorshift.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/distribution.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformbigintdistribution.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/distribution.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformintdistribution.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/distribution.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand-default.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/linearcongruential.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/mersennetwister.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/xorshift.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/distribution.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformbigintdistribution.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformintdistribution.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand-default.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/stream/stream.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/preconditionfailure.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generic.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/preconditionfailure.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generated.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generic.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generated.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generic.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generic.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/preconditionfailure.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generated.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generic.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generated.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generic.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/parameters.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/randomtype.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/verbositylevel.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executiontree.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executionstatus.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/rundetails.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/verbositylevel.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executiontree.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/runner.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/parameters.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/rundetails.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/sampler.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/parameters.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrarywithshrink.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/stream/stream.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/arrayarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrarywithshrink.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/bigintarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrarywithshrink.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/booleanarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/characterarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/constantarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/contextarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/deduparbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/dictionaryarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/emailarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/floatingpointarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/frequencyarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/functionarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/hostarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/integerarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrarywithshrink.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/iparbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/loremarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/maptoconstantarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/objectarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/oneofarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/optionarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/recordarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/setarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/streamarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/stream/stream.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/stringarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/subarrayarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generated.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generic.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generated.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generic.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/webarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/asynccommand.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/icommand.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/command.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/icommand.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/asynccommand.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/command.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandssettings.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandwrapper.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/icommand.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsiterable.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/symbols.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandwrapper.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/modelrunner.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/asynccommand.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/command.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsiterable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check-default.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/pre.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/parameters.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/rundetails.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/runner.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/sampler.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/arrayarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/bigintarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/booleanarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/characterarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/constantarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/contextarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/deduparbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/dictionaryarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/emailarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/floatingpointarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/frequencyarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/functionarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/hostarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/integerarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/iparbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/loremarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/maptoconstantarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/objectarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/oneofarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/optionarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/recordarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/setarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/streamarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/stringarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/subarrayarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/webarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/asynccommand.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/command.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/icommand.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/modelrunner.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/verbositylevel.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executionstatus.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executiontree.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/symbols.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/stream/stream.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check-default.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.statement.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/statement.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/network/test.detect-changes.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/index.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/util.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/network/test.rule.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-rule.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__generator/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__traverse/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@babel/parser/typings/babel-parser.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__template/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/parser/typings/babel-parser.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__core/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__generator/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__traverse/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__template/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/parser/typings/babel-parser.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/jest-diff/build/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/jest-diff/build/types.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/jest/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/jest-diff/build/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/jest-diff/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/inspector.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/inspector.d.ts"
+      ]
+    },
+    "exportedModulesMap": {
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/property.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/base-types.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/resource-type.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/base-types.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/property.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/specification.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/base-types.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/property.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/resource-type.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/index.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/base-types.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/property.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/resource-type.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/specification.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/augmentation.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/iam-changes.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/statement.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diffable.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/managed-policy.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-changes.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-rule.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diffable.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/iam-changes.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-changes.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/index.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff-template.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/cxapi.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/artifacts.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/environment.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/cxapi.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/environment.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/hosted-zone.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/vpc.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/ssm-parameter.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/availability-zones.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/metadata/assets.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/artifacts.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/build.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/index.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff-template.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format-table.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/util.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/test.render-intrinsics.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.broadening.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.detect-changes.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/linearcongruential.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/mersennetwister.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/xorshift.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/distribution.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformbigintdistribution.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/distribution.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformintdistribution.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/distribution.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand-default.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/linearcongruential.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/mersennetwister.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/xorshift.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/distribution.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformbigintdistribution.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformintdistribution.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand-default.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/stream/stream.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/preconditionfailure.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generic.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/preconditionfailure.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generated.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generic.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generated.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generic.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generic.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/preconditionfailure.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generated.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generic.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generated.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generic.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/parameters.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/randomtype.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/verbositylevel.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executiontree.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executionstatus.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/rundetails.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/verbositylevel.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executiontree.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/runner.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/parameters.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/rundetails.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/sampler.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/parameters.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrarywithshrink.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/stream/stream.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/arrayarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrarywithshrink.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/bigintarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrarywithshrink.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/booleanarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/characterarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/constantarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/contextarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/deduparbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/dictionaryarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/emailarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/floatingpointarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/frequencyarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/functionarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/hostarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/integerarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrarywithshrink.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/iparbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/loremarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/maptoconstantarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/objectarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/oneofarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/optionarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/recordarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/setarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/streamarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/stream/stream.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/stringarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/subarrayarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generated.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generic.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generated.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generic.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/webarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/asynccommand.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/icommand.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/command.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/icommand.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsarbitrary.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/asynccommand.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/command.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandssettings.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandwrapper.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/icommand.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsiterable.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/symbols.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandwrapper.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/modelrunner.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/asynccommand.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/command.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsiterable.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check-default.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/pre.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/parameters.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/rundetails.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/runner.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/sampler.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/arrayarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/bigintarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/booleanarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/characterarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/constantarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/contextarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/deduparbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/dictionaryarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/emailarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/floatingpointarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/frequencyarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/functionarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/hostarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/integerarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/iparbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/loremarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/maptoconstantarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/objectarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/oneofarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/optionarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/recordarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/setarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/streamarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/stringarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/subarrayarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/webarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/asynccommand.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/command.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/icommand.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsarbitrary.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/modelrunner.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/verbositylevel.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executionstatus.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executiontree.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/symbols.d.ts",
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/stream/stream.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check-default.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.statement.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/network/test.detect-changes.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/network/test.rule.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__generator/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__traverse/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@babel/parser/typings/babel-parser.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__template/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/parser/typings/babel-parser.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__core/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__generator/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__traverse/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__template/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@babel/parser/typings/babel-parser.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/jest-diff/build/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/jest-diff/build/types.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/jest/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/jest-diff/build/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/jest-diff/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/inspector.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/index.d.ts"
+      ],
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/index.d.ts": [
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/index.d.ts",
+        "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/inspector.d.ts"
+      ]
+    },
+    "semanticDiagnosticsPerFile": [
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es5.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2016.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.core.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.collection.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.generator.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.iterable.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.promise.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.proxy.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.reflect.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.symbol.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2016.array.include.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2017.object.d.ts",
+      "/users/samgood/workspaces/aws-cdk/tools/cdk-build-tools/node_modules/typescript/lib/lib.es2017.string.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/base-types.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/property.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/resource-type.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/specification.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/augmentation.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/schema/index.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cfnspec/lib/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/colors/safe.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diffable.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/render-intrinsics.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/util.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/managed-policy.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-deep-equal/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/statement.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/iam/iam-changes.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-rule.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/network/security-group-changes.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/util.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/types.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff/index.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/diff-template.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/string-width/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/@types/table/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format-table.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/artifacts.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/environment.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/cxapi.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/hosted-zone.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/vpc.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/ssm-parameter.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/context/availability-zones.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/metadata/assets.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/build.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cx-api/lib/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/format.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/lib/index.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/nodeunit/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/test.diff-template.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/test.render-intrinsics.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/util.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.broadening.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.detect-changes.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/pre.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/randomgenerator.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/linearcongruential.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/mersennetwister.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/generator/xorshift.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/distribution.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformbigintdistribution.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/distribution/uniformintdistribution.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand-default.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/pure-rand/lib/ts3.2/pure-rand.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/random/generator/random.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/stream/stream.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/shrinkable.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/precondition/preconditionfailure.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/iproperty.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generic.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.generated.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/asyncproperty.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generic.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.generated.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/property/property.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/randomtype.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/verbositylevel.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/configuration/parameters.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executionstatus.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/executiontree.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/reporter/rundetails.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/runner.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/runner/sampler.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/definition/arbitrarywithshrink.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/arrayarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/bigintarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/booleanarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/characterarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/constantarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/contextarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/deduparbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/dictionaryarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/emailarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/floatingpointarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/frequencyarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/functionarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/hostarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/integerarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/iparbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/loremarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/maptoconstantarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/objectarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/oneofarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/optionarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/recordarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/setarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/streamarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/stringarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/subarrayarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generated.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.generic.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/tuplearbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/arbitrary/webarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/icommand.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/asynccommand.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/command/command.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandssettings.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsarbitrary.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/symbols.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandwrapper.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/commands/commandsiterable.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/check/model/modelrunner.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check-default.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/node_modules/fast-check/lib/ts3.2/fast-check.d.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/iam/test.statement.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/network/test.detect-changes.ts",
+      "/users/samgood/workspaces/aws-cdk/packages/@aws-cdk/cloudformation-diff/test/network/test.rule.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@babel/types/lib/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__generator/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__traverse/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@babel/parser/typings/babel-parser.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__template/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/babel__core/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/istanbul-lib-coverage/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/jest-diff/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/jest-diff/build/types.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/jest-diff/build/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/jest/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/inspector.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/node/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/stack-utils/index.d.ts",
+      "/users/samgood/workspaces/aws-cdk/node_modules/@types/yargs/index.d.ts"
+    ]
+  },
+  "version": "3.4.3"
+}

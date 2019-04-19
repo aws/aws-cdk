@@ -1,5 +1,5 @@
-import { fromYAML, toYAML } from '@aws-cdk/toolchain-common';
 import { Test } from 'nodeunit';
+import { fromYAML, toYAML } from '../lib';
 
 // Preferred quote of the YAML library
 const q = '"';

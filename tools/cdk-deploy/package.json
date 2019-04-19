@@ -7,6 +7,11 @@
   "bin": {
     "cdk-deploy": "bin/cdk-deploy"
   },
+  "cdk-build": {
+    "pre": [
+      "./generate.sh"
+    ]
+  },
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",

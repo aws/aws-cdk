@@ -1,7 +1,6 @@
-import { SDK } from '@aws-cdk/toolchain-common';
+import { Configuration, SDK } from '@aws-cdk/toolchain-common';
 import yargs = require('yargs');
 import { AppStacks } from './api/cxapp/stacks';
-import { Configuration } from './settings';
 
 /**
  * Command handlers are supposed to be (args) => void, but ours are actually

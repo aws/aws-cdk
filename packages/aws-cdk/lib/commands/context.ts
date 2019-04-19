@@ -1,8 +1,7 @@
-import { print, renderTable } from '@aws-cdk/toolchain-common';
+import { Context, print, PROJECT_CONFIG, renderTable } from '@aws-cdk/toolchain-common';
 import colors = require('colors/safe');
 import yargs = require('yargs');
 import { CommandOptions } from '../command-api';
-import { Context, PROJECT_CONFIG } from '../settings';
 
 export const command = 'context';
 export const describe = 'Manage cached context values';

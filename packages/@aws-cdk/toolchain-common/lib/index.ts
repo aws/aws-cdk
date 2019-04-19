@@ -4,4 +4,6 @@ export * from './os';
 export * from './plugin';
 export * from './sdk';
 export * from './serialize';
+export * from './settings';
+export * from './stack-selector';
 export * from './util';

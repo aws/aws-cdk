@@ -1,8 +1,9 @@
-import { debug, deepClone, deepGet, deepMerge, deepSet, warning } from '@aws-cdk/toolchain-common';
 import fs = require('fs-extra');
 import os = require('os');
 import fs_path = require('path');
 import yargs = require('yargs');
+import { debug, warning } from './logging';
+import { deepClone, deepGet, deepMerge, deepSet } from './util';
 
 export type SettingsMap = {[key: string]: any};
 

@@ -1,8 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Configuration, SDK } from '@aws-cdk/toolchain-common';
 import { Test } from 'nodeunit';
-import { AppStacks, ExtendedStackSelection } from '../../lib/api/cxapp/stacks';
-import { Renames } from '../../lib/renames';
+import { ExtendedStackSelection, StackSelector } from '../lib/stack-selector';
 
 const FIXED_RESULT: cxapi.SynthesizeResponse = {
   version: '1',
@@ -33,10 +31,8 @@ const FIXED_RESULT: cxapi.SynthesizeResponse = {
 export = {
   async 'do not throw when selecting stack without errors'(test: Test) {
     // GIVEN
-    const stacks = new AppStacks({
-      configuration: new Configuration(),
-      aws: new SDK(),
-      synthesizer: async () => FIXED_RESULT,
+    const stacks = new StackSelector({
+      response: FIXED_RESULT,
     });
 
     // WHEN
@@ -50,10 +46,8 @@ export = {
 
   async 'do throw when selecting stack with errors'(test: Test) {
     // GIVEN
-    const stacks = new AppStacks({
-      configuration: new Configuration(),
-      aws: new SDK(),
-      synthesizer: async () => FIXED_RESULT,
+    const stacks = new StackSelector({
+      response: FIXED_RESULT,
     });
 
     // WHEN
@@ -67,28 +61,9 @@ export = {
     test.done();
   },
 
-  async 'renames get applied when stacks are selected'(test: Test) {
-    // GIVEN
-    const stacks = new AppStacks({
-      configuration: new Configuration(),
-      aws: new SDK(),
-      synthesizer: async () => FIXED_RESULT,
-      renames: new Renames({ withouterrors: 'withoutbananas' }),
-    });
-
-    // WHEN
-    const synthed = await stacks.selectStacks(['withouterrors'], ExtendedStackSelection.None);
-
-    // THEN
-    test.equal(synthed[0].name, 'withoutbananas');
-    test.equal(synthed[0].originalName, 'withouterrors');
-
-    test.done();
-  },
-
   async 'does not return non-autoDeployed Stacks when called without any selectors'(test: Test) {
     // GIVEN
-    const stacks = appStacksWith([
+    const stacks = StackSelectorWith([
       {
         name: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
@@ -109,7 +84,7 @@ export = {
 
   async 'does return non-autoDeployed Stacks when called with selectors matching it'(test: Test) {
     // GIVEN
-    const stacks = appStacksWith([
+    const stacks = StackSelectorWith([
       {
         name: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
@@ -130,7 +105,7 @@ export = {
 
   async "does return an non-autoDeployed Stack when it's a dependency of a selected Stack"(test: Test) {
     // GIVEN
-    const stacks = appStacksWith([
+    const stacks = StackSelectorWith([
       {
         name: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
@@ -157,14 +132,12 @@ export = {
   },
 };
 
-function appStacksWith(stacks: cxapi.SynthesizedStack[]): AppStacks {
+function StackSelectorWith(stacks: cxapi.SynthesizedStack[]): StackSelector {
   const response: cxapi.SynthesizeResponse = {
     version: '1',
     stacks,
   };
-  return new AppStacks({
-    configuration: new Configuration(),
-    aws: new SDK(),
-    synthesizer: async () => response,
+  return new StackSelector({
+    response
   });
 }

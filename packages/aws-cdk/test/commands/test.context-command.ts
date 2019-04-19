@@ -1,6 +1,6 @@
+import { Configuration } from '@aws-cdk/toolchain-common';
 import { Test } from 'nodeunit';
 import { realHandler } from '../../lib/commands/context';
-import { Configuration } from '../../lib/settings';
 
 export = {
   async 'context reset can remove a context key'(test: Test) {

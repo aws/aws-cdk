@@ -10,14 +10,14 @@ import yargs = require('yargs');
 import { bootstrapEnvironment, CDKToolkit, destroyStack, RequireApproval } from 'cdk-deploy';
 import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from 'cdk-deploy/lib/api/deployment-target';
 
-import { data, debug, error, highlight, PluginHost, print, serializeStructure, setVerbose, success } from '@aws-cdk/toolchain-common';
+import { Configuration, data, debug, error, highlight, PluginHost, print, serializeStructure, Settings,
+  setVerbose, success } from '@aws-cdk/toolchain-common';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
 import { parseRenames } from '../lib/renames';
-import { Configuration, Settings } from '../lib/settings';
 import { VERSION } from '../lib/version';
 
 // tslint:disable-next-line:no-var-requires

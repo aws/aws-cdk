@@ -1,17 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
-import regionInfo = require('@aws-cdk/region-info');
-import { Configuration, debug, error, print, SDK, warning } from '@aws-cdk/toolchain-common';
-import cdkUtil = require('@aws-cdk/toolchain-common/lib/util');
-import { topologicalSort } from '@aws-cdk/toolchain-common/lib/util/toposort';
-import { SelectedStack } from 'cdk-deploy';
 import colors = require('colors/safe');
 import minimatch = require('minimatch');
-import contextproviders = require('../../context-providers');
-import { Renames } from '../../renames';
+import { debug, error, print, warning } from './logging';
+import { topologicalSort } from './util/toposort';
 
-type Synthesizer = (aws: SDK, config: Configuration) => Promise<cxapi.SynthesizeResponse>;
-
-export interface AppStacksProps {
+export interface StackSelectorProps {
   /**
    * Whether to be verbose
    *
@@ -34,24 +27,9 @@ export interface AppStacksProps {
   strict?: boolean;
 
   /**
-   * Application configuration (settings and context)
+   * Synthesized application.
    */
-  configuration: Configuration;
-
-  /**
-   * AWS object (used by synthesizer and contextprovider)
-   */
-  aws: SDK;
-
-  /**
-   * Renames to apply
-   */
-  renames?: Renames;
-
-  /**
-   * Callback invoked to synthesize the actual stacks
-   */
-  synthesizer: Synthesizer;
+  response: cxapi.SynthesizeResponse;
 }
 
 /**
@@ -59,17 +37,8 @@ export interface AppStacksProps {
  *
  * In a class because it shares some global state
  */
-export class AppStacks {
-  /**
-   * Since app execution basically always synthesizes all the stacks,
-   * we can invoke it once and cache the response for subsequent calls.
-   */
-  private cachedResponse?: cxapi.SynthesizeResponse;
-  private readonly renames: Renames;
-
-  constructor(private readonly props: AppStacksProps) {
-    this.renames = props.renames || new Renames({});
-  }
+export class StackSelector {
+  constructor(private readonly props: StackSelectorProps) {}
 
   /**
    * List all stacks in the CX and return the selected ones
@@ -77,7 +46,7 @@ export class AppStacks {
    * It's an error if there are no stacks to select, or if one of the requested parameters
    * refers to a nonexistant stack.
    */
-  public async selectStacks(selectors: string[], extendedSelection: ExtendedStackSelection): Promise<SelectedStack[]> {
+  public async selectStacks(selectors: string[], extendedSelection: ExtendedStackSelection): Promise<cxapi.SynthesizedStack[]> {
     selectors = selectors.filter(s => s != null); // filter null/undefined
 
     const stacks: cxapi.SynthesizedStack[] = await this.listStacks();
@@ -89,7 +58,7 @@ export class AppStacks {
       // remove non-auto deployed Stacks
       const autoDeployedStacks = stacks.filter(s => s.autoDeploy !== false);
       debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(autoDeployedStacks));
-      return this.applyRenames(autoDeployedStacks);
+      return autoDeployedStacks;
     }
 
     const allStacks = new Map<string, cxapi.SynthesizedStack>();
@@ -128,7 +97,7 @@ export class AppStacks {
 
     // Only check selected stacks for errors
     this.processMessages(selectedList);
-    return this.applyRenames(selectedList);
+    return selectedList;
   }
 
   /**
@@ -142,88 +111,7 @@ export class AppStacks {
    * Renames are *NOT* applied in list mode.
    */
   public async listStacks(): Promise<cxapi.SynthesizedStack[]> {
-    const response = await this.synthesizeStacks();
-    return topologicalSort(response.stacks, s => s.name, s => s.dependsOn || []);
-  }
-
-  /**
-   * Synthesize a single stack
-   */
-  public async synthesizeStack(stackName: string): Promise<SelectedStack> {
-    const resp = await this.synthesizeStacks();
-    const stack = resp.stacks.find(s => s.name === stackName);
-    if (!stack) {
-      throw new Error(`Stack ${stackName} not found`);
-    }
-    return this.applyRenames([stack])[0];
-  }
-
-  /**
-   * Synthesize a set of stacks
-   */
-  public async synthesizeStacks(): Promise<cxapi.SynthesizeResponse> {
-    if (this.cachedResponse) {
-      return this.cachedResponse;
-    }
-
-    const trackVersions: boolean = this.props.configuration.settings.get(['versionReporting']);
-
-    // We may need to run the cloud executable multiple times in order to satisfy all missing context
-    while (true) {
-      const response: cxapi.SynthesizeResponse = await this.props.synthesizer(this.props.aws, this.props.configuration);
-      const allMissing = cdkUtil.deepMerge(...response.stacks.map(s => s.missing));
-
-      if (!cdkUtil.isEmpty(allMissing)) {
-        debug(`Some context information is missing. Fetching...`);
-
-        await contextproviders.provideContextValues(allMissing, this.props.configuration.context, this.props.aws);
-
-        // Cache the new context to disk
-        await this.props.configuration.saveContext();
-
-        continue;
-      }
-
-      if (trackVersions && response.runtime) {
-        const modules = formatModules(response.runtime);
-        for (const stack of response.stacks) {
-          if (!stack.template.Resources) {
-            stack.template.Resources = {};
-          }
-          const resourcePresent = stack.environment.region === 'default-region'
-            || regionInfo.Fact.find(stack.environment.region, regionInfo.FactName.cdkMetadataResourceAvailable) === 'YES';
-          if (resourcePresent) {
-            if (!stack.template.Resources.CDKMetadata) {
-              stack.template.Resources.CDKMetadata = {
-                Type: 'AWS::CDK::Metadata',
-                Properties: {
-                  Modules: modules
-                }
-              };
-            } else {
-              warning(`The stack ${stack.name} already includes a CDKMetadata resource`);
-            }
-          }
-        }
-      }
-
-      // All good, return
-      this.cachedResponse = response;
-      return response;
-
-      function formatModules(runtime: cxapi.AppRuntime): string {
-        const modules = new Array<string>();
-
-        // inject toolkit version to list of modules
-        const toolkitVersion = require('../../../package.json').version;
-        modules.push(`aws-cdk=${toolkitVersion}`);
-
-        for (const key of Object.keys(runtime.libraries).sort()) {
-          modules.push(`${key}=${runtime.libraries[key]}`);
-        }
-        return modules.join(',');
-      }
-    }
+    return topologicalSort(this.props.response.stacks, s => s.name, s => s.dependsOn || []);
   }
 
   /**
@@ -268,21 +156,6 @@ export class AppStacks {
     if (this.props.verbose) {
       logFn(`  ${entry.trace.join('\n  ')}`);
     }
-  }
-
-  private applyRenames(stacks: cxapi.SynthesizedStack[]): SelectedStack[] {
-    this.renames.validateSelectedStacks(stacks);
-
-    const ret = [];
-    for (const stack of stacks) {
-      ret.push({
-        ...stack,
-        originalName: stack.name,
-        name: this.renames.finalName(stack.name),
-      });
-    }
-
-    return ret;
   }
 }
 
