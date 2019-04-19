@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
@@ -67,6 +67,204 @@ export = {
     test.done();
   },
 
+  'pipeline with GitHub source with poll trigger'(test: Test) {
+    const stack = new Stack();
+
+    const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
+
+    const p = new codepipeline.Pipeline(stack, 'P');
+
+    p.addStage({
+      name: 'Source',
+      actions: [
+        new cpactions.GitHubSourceAction({
+          actionName: 'GH',
+          runOrder: 8,
+          outputArtifactName: 'A',
+          branch: 'branch',
+          oauthToken: SecretValue.plainText(secret.stringValue),
+          owner: 'foo',
+          repo: 'bar',
+          trigger: cpactions.TriggerType.Poll
+        }),
+      ],
+    });
+
+    p.addStage({
+      name: 'Two',
+      actions: [
+        new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
+      ],
+    });
+
+    expect(stack).to(not(haveResourceLike('AWS::CodePipeline::Webhook')));
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      "ArtifactStore": {
+      "Location": {
+        "Ref": "PArtifactsBucket5E711C12"
+      },
+      "Type": "S3"
+      },
+      "RoleArn": {
+      "Fn::GetAtt": [
+        "PRole07BDC907",
+        "Arn"
+      ]
+      },
+      "Stages": [
+      {
+        "Actions": [
+        {
+          "ActionTypeId": {
+          "Category": "Source",
+          "Owner": "ThirdParty",
+          "Provider": "GitHub",
+          "Version": "1"
+          },
+          "Configuration": {
+          "Owner": "foo",
+          "Repo": "bar",
+          "Branch": "branch",
+          "OAuthToken": {
+            "Ref": "GitHubToken"
+          },
+          "PollForSourceChanges": true
+          },
+          "InputArtifacts": [],
+          "Name": "GH",
+          "OutputArtifacts": [
+          {
+            "Name": "A"
+          }
+          ],
+          "RunOrder": 8
+        }
+        ],
+        "Name": "Source"
+      },
+      {
+        "Actions": [
+        {
+          "ActionTypeId": {
+          "Category": "Approval",
+          "Owner": "AWS",
+          "Provider": "Manual",
+          "Version": "1"
+          },
+          "InputArtifacts": [],
+          "Name": "Boo",
+          "OutputArtifacts": [],
+          "RunOrder": 1
+        }
+        ],
+        "Name": "Two"
+      }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'pipeline with GitHub source without triggers'(test: Test) {
+    const stack = new Stack();
+
+    const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
+
+    const p = new codepipeline.Pipeline(stack, 'P');
+
+    p.addStage({
+      name: 'Source',
+      actions: [
+        new cpactions.GitHubSourceAction({
+          actionName: 'GH',
+          runOrder: 8,
+          outputArtifactName: 'A',
+          branch: 'branch',
+          oauthToken: SecretValue.plainText(secret.stringValue),
+          owner: 'foo',
+          repo: 'bar',
+          trigger: cpactions.TriggerType.None
+        }),
+      ],
+    });
+
+    p.addStage({
+      name: 'Two',
+      actions: [
+        new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
+      ],
+    });
+
+    expect(stack).to(not(haveResourceLike('AWS::CodePipeline::Webhook')));
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      "ArtifactStore": {
+      "Location": {
+        "Ref": "PArtifactsBucket5E711C12"
+      },
+      "Type": "S3"
+      },
+      "RoleArn": {
+      "Fn::GetAtt": [
+        "PRole07BDC907",
+        "Arn"
+      ]
+      },
+      "Stages": [
+      {
+        "Actions": [
+        {
+          "ActionTypeId": {
+          "Category": "Source",
+          "Owner": "ThirdParty",
+          "Provider": "GitHub",
+          "Version": "1"
+          },
+          "Configuration": {
+          "Owner": "foo",
+          "Repo": "bar",
+          "Branch": "branch",
+          "OAuthToken": {
+            "Ref": "GitHubToken"
+          },
+          "PollForSourceChanges": false
+          },
+          "InputArtifacts": [],
+          "Name": "GH",
+          "OutputArtifacts": [
+          {
+            "Name": "A"
+          }
+          ],
+          "RunOrder": 8
+        }
+        ],
+        "Name": "Source"
+      },
+      {
+        "Actions": [
+        {
+          "ActionTypeId": {
+          "Category": "Approval",
+          "Owner": "AWS",
+          "Provider": "Manual",
+          "Version": "1"
+          },
+          "InputArtifacts": [],
+          "Name": "Boo",
+          "OutputArtifacts": [],
+          "RunOrder": 1
+        }
+        ],
+        "Name": "Two"
+      }
+      ]
+    }));
+
+    test.done();
+  },
+
   'github action uses ThirdParty owner'(test: Test) {
     const stack = new Stack();
 
@@ -95,6 +293,8 @@ export = {
         new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
       ],
     });
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Webhook'));
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "ArtifactStore": {
