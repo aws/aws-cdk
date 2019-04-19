@@ -1,4 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import { Construct } from '@aws-cdk/core';
+import { Action } from '../action';
 import { IJenkinsProvider, jenkinsArtifactsBounds } from "./jenkins-provider";
 
 /**
@@ -57,8 +59,8 @@ export interface JenkinsActionProps extends codepipeline.CommonActionProps {
  *
  * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/tutorials-four-stage-pipeline.html
  */
-export class JenkinsAction extends codepipeline.Action {
-  private readonly jenkinsProvider: IJenkinsProvider;
+export class JenkinsAction extends Action {
+  private readonly props: JenkinsActionProps;
 
   constructor(props: JenkinsActionProps) {
     super({
@@ -70,19 +72,23 @@ export class JenkinsAction extends codepipeline.Action {
       owner: 'Custom',
       artifactBounds: jenkinsArtifactsBounds,
       version: props.jenkinsProvider.version,
-      configuration: {
-        ProjectName: props.projectName,
-      },
     });
 
-    this.jenkinsProvider = props.jenkinsProvider;
+    this.props = props;
   }
 
-  protected bind(_info: codepipeline.ActionBind): void {
-    if (this.category === codepipeline.ActionCategory.BUILD) {
-      this.jenkinsProvider._registerBuildProvider();
+  protected bound(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
+    if (this.actionProperties.category === codepipeline.ActionCategory.BUILD) {
+      this.props.jenkinsProvider._registerBuildProvider();
     } else {
-      this.jenkinsProvider._registerTestProvider();
+      this.props.jenkinsProvider._registerTestProvider();
     }
+
+    return {
+      configuration: {
+        ProjectName: this.props.projectName,
+      },
+    };
   }
 }
