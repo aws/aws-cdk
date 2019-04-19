@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Configuration, SDK } from '@aws-cdk/toolchain-common';
+import { Configuration, ExtendedStackSelection, SDK } from '@aws-cdk/toolchain-common';
 import { Test } from 'nodeunit';
-import { AppStacks, ExtendedStackSelection } from '../../lib/api/cxapp/stacks';
+import { AppStacks } from '../../lib/api/cxapp/stacks';
 import { Renames } from '../../lib/renames';
 
 const FIXED_RESULT: cxapi.SynthesizeResponse = {
@@ -34,6 +34,7 @@ export = {
   async 'do not throw when selecting stack without errors'(test: Test) {
     // GIVEN
     const stacks = new AppStacks({
+      verbose: true,
       configuration: new Configuration(),
       aws: new SDK(),
       synthesizer: async () => FIXED_RESULT,

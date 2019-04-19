@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import { leftPad, SDK } from '@aws-cdk/toolchain-common';
+import { ExtendedStackSelection, leftPad, listStackNames, SDK } from '@aws-cdk/toolchain-common';
 import colors = require('colors/safe');
 import fs = require('fs-extra');
 import util = require('util');
@@ -14,7 +14,7 @@ import { Configuration, data, debug, error, highlight, PluginHost, print, serial
   setVerbose, success } from '@aws-cdk/toolchain-common';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
-import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';
+import { AppStacks } from '../lib/api/cxapp/stacks';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
 import { parseRenames } from '../lib/renames';

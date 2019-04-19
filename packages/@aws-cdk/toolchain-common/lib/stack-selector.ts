@@ -41,15 +41,29 @@ export class StackSelector {
   constructor(private readonly props: StackSelectorProps) {}
 
   /**
+   * Select a stack by its name.
+   * @param stackName name of the stack to select.
+   * @returns the stack if it exists, or else `undefined`.
+   */
+  public selectStackByName(stackName: string): cxapi.SynthesizedStack | undefined {
+    const stacks = this.selectStacks([stackName], ExtendedStackSelection.None);
+    if (stacks.length === 0) {
+      return undefined;
+    } else {
+      return stacks[0];
+    }
+  }
+
+  /**
    * List all stacks in the CX and return the selected ones
    *
    * It's an error if there are no stacks to select, or if one of the requested parameters
    * refers to a nonexistant stack.
    */
-  public async selectStacks(selectors: string[], extendedSelection: ExtendedStackSelection): Promise<cxapi.SynthesizedStack[]> {
+  public selectStacks(selectors: string[], extendedSelection: ExtendedStackSelection): cxapi.SynthesizedStack[] {
     selectors = selectors.filter(s => s != null); // filter null/undefined
 
-    const stacks: cxapi.SynthesizedStack[] = await this.listStacks();
+    const stacks: cxapi.SynthesizedStack[] = this.listStacks();
     if (stacks.length === 0) {
       throw new Error('This app contains no stacks');
     }
@@ -110,7 +124,7 @@ export class StackSelector {
    *
    * Renames are *NOT* applied in list mode.
    */
-  public async listStacks(): Promise<cxapi.SynthesizedStack[]> {
+  public listStacks(): cxapi.SynthesizedStack[] {
     return topologicalSort(this.props.response.stacks, s => s.name, s => s.dependsOn || []);
   }
 
