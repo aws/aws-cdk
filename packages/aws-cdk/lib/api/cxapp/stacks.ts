@@ -180,7 +180,6 @@ export class AppStacks {
     }
   }
 
-
   private applyRenames(stacks: cxapi.SynthesizedStack[]): SelectedStack[] {
     this.renames.validateSelectedStacks(stacks);
 

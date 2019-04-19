@@ -74,7 +74,7 @@
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
     "type": "git",
-    "directory": "tools/cdk-deploy"
+    "directory": "packages/cdk-deploy"
   },
   "keywords": [
     "aws",
