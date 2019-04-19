@@ -17,12 +17,22 @@ export interface RouteImportProps {
   /**
    * The Amazon Resource Name (ARN) for the route
    */
-  readonly routeArn: string;
+  readonly routeArn?: string;
 
   /**
    * The unique identifier for the route
    */
   readonly routeUid: string;
+
+  /**
+   * The name of the service mesh that the route resides in
+   */
+  readonly routeMeshName: string;
+
+  /**
+   * The name of the VirtualRouter the route is associated with
+   */
+  readonly routeVirtualRouterName: string;
 }
 
 /**
@@ -43,6 +53,16 @@ export interface IRoute extends cdk.IConstruct {
    * The unique identifier for the route
    */
   readonly routeUid: string;
+
+  /**
+   * The name of the service mesh that the route resides in
+   */
+  readonly routeMeshName: string;
+
+  /**
+   * The name of the VirtualRouter the route is associated with
+   */
+  readonly routeVirtualRouterName: string;
 
   /**
    * Exports properties for a reusable Route
@@ -99,31 +119,6 @@ export interface WeightedTargetProps {
 }
 
 /**
- * Represents a new or imported Route
- */
-export abstract class RouteBase extends cdk.Construct implements IRoute {
-  /**
-   * The name of the route
-   */
-  public abstract readonly routeName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) for the route
-   */
-  public abstract readonly routeArn: string;
-
-  /**
-   * The unique identifier for the route
-   */
-  public abstract readonly routeUid: string;
-
-  /**
-   * Exports properties for a reusable Route
-   */
-  public abstract export(): RouteImportProps;
-}
-
-/**
  * Properties to define new Routes
  */
 export interface RouteProps extends RouteBaseProps {
@@ -143,18 +138,13 @@ export interface RouteProps extends RouteBaseProps {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/routes.html
  */
-export class Route extends RouteBase {
+export class Route extends cdk.Construct implements IRoute {
   /**
    * A static method to import a Route an make it re-usable accross stacks
    */
   public static import(scope: cdk.Construct, id: string, props: RouteImportProps): IRoute {
     return new ImportedRoute(scope, id, props);
   }
-
-  /**
-   * The name of the service mesh that the route resides in
-   */
-  public readonly routeMeshName: string;
 
   /**
    * The name of the route
@@ -170,6 +160,11 @@ export class Route extends RouteBase {
    * The unique identifier for the route
    */
   public readonly routeUid: string;
+
+  /**
+   * The name of the service mesh that the route resides in
+   */
+  public readonly routeMeshName: string;
 
   /**
    * The name of the VirtualRouter the route is associated with
@@ -215,7 +210,11 @@ export class Route extends RouteBase {
     return {
       routeName: new cdk.CfnOutput(this, 'RouteName', { value: this.routeName }).makeImportValue().toString(),
       routeArn: new cdk.CfnOutput(this, 'RouteArn', { value: this.routeArn }).makeImportValue().toString(),
-      routeUid: new cdk.CfnOutput(this, 'RouteUid', { value: this.routeUid }).makeImportValue().toString(),
+      routeMeshName: new cdk.CfnOutput(this, 'RouteMeshName', { value: this.routeMeshName })
+        .makeImportValue()
+        .toString(),
+      routeVirtualRouterName: this.routeVirtualRouterName,
+      routeUid: this.routeUid,
     };
   }
 
@@ -256,7 +255,7 @@ export class Route extends RouteBase {
 /**
  * Represents and imported IRoute
  */
-export class ImportedRoute extends RouteBase {
+export class ImportedRoute extends cdk.Construct implements IRoute {
   /**
    * The name of the route
    */
@@ -272,11 +271,32 @@ export class ImportedRoute extends RouteBase {
    */
   public readonly routeUid: string;
 
+  /**
+   * The name of the service mesh that the route resides in
+   */
+  public readonly routeMeshName: string;
+
+  /**
+   * The name of the VirtualRouter the route is associated with
+   */
+  public readonly routeVirtualRouterName: string;
+
   constructor(scope: cdk.Construct, id: string, private readonly props: RouteImportProps) {
     super(scope, id);
 
     this.routeName = props.routeName;
-    this.routeArn = props.routeArn;
+    this.routeMeshName = props.routeMeshName;
+    this.routeVirtualRouterName = props.routeVirtualRouterName;
+
+    // arn:aws:appmesh:us-east-2:935516422975:mesh/awsm-mesh/virtualRouter/cars-router/route/cars-route
+    this.routeArn =
+      props.routeArn ||
+      this.node.stack.formatArn({
+        service: 'appmesh',
+        resource: `mesh/${this.routeMeshName}/virtualRouter/${this.routeVirtualRouterName}/route`,
+        resourceName: this.routeName,
+      });
+
     this.routeUid = props.routeUid;
   }
 
