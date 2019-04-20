@@ -81,5 +81,19 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "resource-attribute:@aws-cdk/aws-appmesh.IMesh.meshUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.IVirtualNode.virtualNodeUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.IVirtualService.virtualServiceUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.IVirtualRouter.virtualRouterUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.IRoute.routeUid",
+      "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedMesh",
+      "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedVirtualNode",
+      "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedVirtualService",
+      "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedVirtualRouter",
+      "construct-ctor-props-type:@aws-cdk/aws-appmesh.ImportedRoute"
+    ]
   }
 }

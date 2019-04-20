@@ -8,7 +8,7 @@ import { IVirtualRouter } from './virtual-router';
 /**
  * Interface with properties ncecessary to import a reusable VirtualService
  */
-export interface ImportedVirtualServiceProps {
+export interface VirtualServiceImportProps {
   /**
    * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
    */
@@ -20,11 +20,6 @@ export interface ImportedVirtualServiceProps {
    * @default if virtualServiceMeshName given, derived from serviceName and meshName
    */
   readonly virtualServiceArn?: string;
-
-  /**
-   * The unique identifier for the virtual service
-   */
-  readonly virtualServiceUid: string;
 
   /**
    * The name of the service mesh that the virtual service resides in
@@ -49,11 +44,6 @@ export interface IVirtualService extends cdk.IResource {
   readonly virtualServiceArn: string;
 
   /**
-   * The unique identifier for the virtual service
-   */
-  readonly virtualServiceUid: string;
-
-  /**
    * The name of the service mesh that the virtual service resides in
    */
   readonly virtualServiceMeshName: string;
@@ -61,7 +51,7 @@ export interface IVirtualService extends cdk.IResource {
   /**
    * Exports properties for VirtualService reusability
    */
-  export(): ImportedVirtualServiceProps;
+  export(): VirtualServiceImportProps;
 }
 
 /**
@@ -105,7 +95,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
   /**
    * A static method to import a VirtualService an make it re-usable accross stacks
    */
-  public static import(scope: cdk.Construct, id: string, props: ImportedVirtualServiceProps): IVirtualService {
+  public static import(scope: cdk.Construct, id: string, props: VirtualServiceImportProps): IVirtualService {
     return new ImportedVirtualService(scope, id, props);
   }
 
@@ -118,11 +108,6 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    * The Amazon Resource Name (ARN) for the virtual service
    */
   public readonly virtualServiceArn: string;
-
-  /**
-   * The unique identifier for the virtual service
-   */
-  public readonly virtualServiceUid: string;
 
   /**
    * The AppMesh mesh name for whiich the VirtualService belongs to
@@ -171,13 +156,12 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
     this.virtualServiceArn = svc.virtualServiceArn;
     this.virtualServiceName = svc.virtualServiceName;
-    this.virtualServiceUid = svc.virtualServiceUid;
   }
 
   /**
    * Exports properties for VirtualService reusability
    */
-  public export(): ImportedVirtualServiceProps {
+  public export(): VirtualServiceImportProps {
     return {
       virtualServiceName: new cdk.CfnOutput(this, 'VirtualServiceName', { value: this.virtualServiceName })
         .makeImportValue()
@@ -185,7 +169,6 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
       virtualServiceArn: new cdk.CfnOutput(this, 'VirtualServiceArn', { value: this.virtualServiceArn })
         .makeImportValue()
         .toString(),
-      virtualServiceUid: this.virtualServiceUid,
       virtualServiceMeshName: this.virtualServiceMeshName,
     };
   }
@@ -208,6 +191,30 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 }
 
 /**
+ * Interface with properties ncecessary to import a reusable VirtualService
+ */
+export interface ImportedVirtualServiceProps {
+  /**
+   * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
+   */
+  readonly virtualServiceName: string;
+
+  /**
+   * The Amazon Resource Name (ARN) for the virtual service
+   *
+   * @default if virtualServiceMeshName given, derived from serviceName and meshName
+   */
+  readonly virtualServiceArn?: string;
+
+  /**
+   * The name of the service mesh that the virtual service resides in
+   *
+   * @see use to derive ARN from mesh name if ARN not provided
+   */
+  readonly virtualServiceMeshName: string;
+}
+
+/**
  * Returns properties that allows a VirtualService to be imported
  */
 export class ImportedVirtualService extends cdk.Construct implements IVirtualService {
@@ -222,16 +229,11 @@ export class ImportedVirtualService extends cdk.Construct implements IVirtualSer
   public readonly virtualServiceArn: string;
 
   /**
-   * The unique identifier for the virtual service
-   */
-  public readonly virtualServiceUid: string;
-
-  /**
    * The name of the service mesh that the virtual service resides in
    */
   public readonly virtualServiceMeshName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ImportedVirtualServiceProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: VirtualServiceImportProps) {
     super(scope, id);
 
     this.virtualServiceName = props.virtualServiceName;
@@ -244,8 +246,6 @@ export class ImportedVirtualService extends cdk.Construct implements IVirtualSer
         resource: `mesh/${this.virtualServiceMeshName}/virtualService`,
         resourceName: this.virtualServiceName,
       });
-
-    this.virtualServiceUid = props.virtualServiceUid;
   }
 
   /**

@@ -8,7 +8,7 @@ import { IVirtualRouter } from './virtual-router';
 /**
  * Interface with properties ncecessary to import a reusable Route
  */
-export interface ImportedRouteProps {
+export interface RouteImportProps {
   /**
    * The name of the route
    */
@@ -18,11 +18,6 @@ export interface ImportedRouteProps {
    * The Amazon Resource Name (ARN) for the route
    */
   readonly routeArn?: string;
-
-  /**
-   * The unique identifier for the route
-   */
-  readonly routeUid: string;
 
   /**
    * The name of the service mesh that the route resides in
@@ -50,11 +45,6 @@ export interface IRoute extends cdk.IResource {
   readonly routeArn: string;
 
   /**
-   * The unique identifier for the route
-   */
-  readonly routeUid: string;
-
-  /**
    * The name of the service mesh that the route resides in
    */
   readonly routeMeshName: string;
@@ -67,7 +57,7 @@ export interface IRoute extends cdk.IResource {
   /**
    * Exports properties for a reusable Route
    */
-  export(): ImportedRouteProps;
+  export(): RouteImportProps;
 }
 
 /**
@@ -142,7 +132,7 @@ export class Route extends cdk.Resource implements IRoute {
   /**
    * A static method to import a Route an make it re-usable accross stacks
    */
-  public static import(scope: cdk.Construct, id: string, props: ImportedRouteProps): IRoute {
+  public static import(scope: cdk.Construct, id: string, props: RouteImportProps): IRoute {
     return new ImportedRoute(scope, id, props);
   }
 
@@ -155,11 +145,6 @@ export class Route extends cdk.Resource implements IRoute {
    * The Amazon Resource Name (ARN) for the route
    */
   public readonly routeArn: string;
-
-  /**
-   * The unique identifier for the route
-   */
-  public readonly routeUid: string;
 
   /**
    * The name of the service mesh that the route resides in
@@ -200,13 +185,12 @@ export class Route extends cdk.Resource implements IRoute {
     });
 
     this.routeArn = route.routeArn;
-    this.routeUid = route.routeUid;
   }
 
   /**
    * Exports properties for a reusable Route
    */
-  public export(): ImportedRouteProps {
+  public export(): RouteImportProps {
     return {
       routeName: new cdk.CfnOutput(this, 'RouteName', { value: this.routeName }).makeImportValue().toString(),
       routeArn: new cdk.CfnOutput(this, 'RouteArn', { value: this.routeArn }).makeImportValue().toString(),
@@ -214,7 +198,6 @@ export class Route extends cdk.Resource implements IRoute {
         .makeImportValue()
         .toString(),
       routeVirtualRouterName: this.routeVirtualRouterName,
-      routeUid: this.routeUid,
     };
   }
 
@@ -253,6 +236,31 @@ export class Route extends cdk.Resource implements IRoute {
 }
 
 /**
+ * Interface with properties ncecessary to import a reusable Route
+ */
+export interface ImportedRouteProps {
+  /**
+   * The name of the route
+   */
+  readonly routeName: string;
+
+  /**
+   * The Amazon Resource Name (ARN) for the route
+   */
+  readonly routeArn?: string;
+
+  /**
+   * The name of the service mesh that the route resides in
+   */
+  readonly routeMeshName: string;
+
+  /**
+   * The name of the VirtualRouter the route is associated with
+   */
+  readonly routeVirtualRouterName: string;
+}
+
+/**
  * Represents and imported IRoute
  */
 export class ImportedRoute extends cdk.Construct implements IRoute {
@@ -267,11 +275,6 @@ export class ImportedRoute extends cdk.Construct implements IRoute {
   public readonly routeArn: string;
 
   /**
-   * The unique identifier for the route
-   */
-  public readonly routeUid: string;
-
-  /**
    * The name of the service mesh that the route resides in
    */
   public readonly routeMeshName: string;
@@ -281,7 +284,7 @@ export class ImportedRoute extends cdk.Construct implements IRoute {
    */
   public readonly routeVirtualRouterName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ImportedRouteProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: RouteImportProps) {
     super(scope, id);
 
     this.routeName = props.routeName;
@@ -296,8 +299,6 @@ export class ImportedRoute extends cdk.Construct implements IRoute {
         resource: `mesh/${this.routeMeshName}/virtualRouter/${this.routeVirtualRouterName}/route`,
         resourceName: this.routeName,
       });
-
-    this.routeUid = props.routeUid;
   }
 
   /**

@@ -7,7 +7,6 @@ import { VirtualNode, VirtualNodeBackendProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
 import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
 
-
 /**
  * These properties are used when adding a VirtualNode through the Mesh type
  */
@@ -79,7 +78,7 @@ export interface MeshSpec {
 /**
  * Used for importing and exporting Mesh(es)
  */
-export interface ImportedMeshProps {
+export interface MeshImportProps {
   /**
    * The AppMesh name to import
    */
@@ -89,11 +88,6 @@ export interface ImportedMeshProps {
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
   readonly meshArn?: string;
-
-  /**
-   * The unique identifier for the mesh
-   */
-  readonly meshUid: string;
 }
 
 /**
@@ -109,11 +103,6 @@ export interface IMesh extends cdk.IResource {
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
   readonly meshArn: string;
-
-  /**
-   * The unique identifier for the mesh
-   */
-  readonly meshUid: string;
 
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
@@ -133,7 +122,7 @@ export interface IMesh extends cdk.IResource {
   /**
    * Exports the Mesh properties to re-use in other stacks
    */
-  export(): ImportedMeshProps;
+  export(): MeshImportProps;
 }
 
 /**
@@ -149,11 +138,6 @@ export abstract class MeshBase extends cdk.Resource implements IMesh {
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
   public abstract readonly meshArn: string;
-
-  /**
-   * The unique identifier for the mesh
-   */
-  public abstract readonly meshUid: string;
 
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props
@@ -190,7 +174,7 @@ export abstract class MeshBase extends cdk.Resource implements IMesh {
   /**
    * Exports the Mesh properties to re-use in other stacks
    */
-  public abstract export(): ImportedMeshProps;
+  public abstract export(): MeshImportProps;
 }
 
 /**
@@ -217,7 +201,7 @@ export class Mesh extends MeshBase {
   /**
    * A static method to import a mesh an make it re-usable accross stacks
    */
-  public static import(scope: cdk.Construct, id: string, props: ImportedMeshProps): IMesh {
+  public static import(scope: cdk.Construct, id: string, props: MeshImportProps): IMesh {
     return new ImportedMesh(scope, id, props);
   }
 
@@ -230,11 +214,6 @@ export class Mesh extends MeshBase {
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
   public readonly meshArn: string;
-
-  /**
-   * The unique identifier for the mesh
-   */
-  public readonly meshUid: string;
 
   constructor(scope: cdk.Construct, id: string, props: MeshProps = {}) {
     super(scope, id);
@@ -254,19 +233,32 @@ export class Mesh extends MeshBase {
 
     this.meshName = mesh.meshName;
     this.meshArn = mesh.meshArn;
-    this.meshUid = mesh.meshUid;
   }
 
   /**
    * Exports the Mesh properties to re-use in other stacks
    */
-  public export(): ImportedMeshProps {
+  public export(): MeshImportProps {
     return {
       meshName: new cdk.CfnOutput(this, 'MeshName', { value: this.meshName }).makeImportValue().toString(),
       meshArn: new cdk.CfnOutput(this, 'MeshArn', { value: this.meshArn }).makeImportValue().toString(),
-      meshUid: new cdk.CfnOutput(this, 'MeshUid', { value: this.meshUid }).makeImportValue().toString(),
     };
   }
+}
+
+/**
+ * Used for importing and exporting Mesh(es)
+ */
+export interface ImportedMeshProps {
+  /**
+   * The AppMesh name to import
+   */
+  readonly meshName: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the AppMesh mesh
+   */
+  readonly meshArn?: string;
 }
 
 /**
@@ -284,12 +276,7 @@ export class ImportedMesh extends MeshBase {
    */
   public readonly meshArn: string;
 
-  /**
-   * The unique identifier for the mesh
-   */
-  public readonly meshUid: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: ImportedMeshProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: MeshImportProps) {
     super(scope, id);
 
     this.meshName = props.meshName;
@@ -301,8 +288,6 @@ export class ImportedMesh extends MeshBase {
         resource: `mesh`,
         resourceName: props.meshName,
       });
-
-    this.meshUid = props.meshUid;
   }
 
   /**
