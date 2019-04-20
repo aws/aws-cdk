@@ -1,8 +1,8 @@
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
 
-export interface IRepository extends cdk.IConstruct {
+export interface IRepository extends IResource {
   /** The ARN of this Repository. */
   readonly repositoryArn: string;
 
@@ -95,7 +95,7 @@ export interface RepositoryImportProps {
  * If you want to reference an already existing Repository,
  * use the {@link Repository.import} method.
  */
-export abstract class RepositoryBase extends cdk.Construct implements IRepository {
+export abstract class RepositoryBase extends Resource implements IRepository {
   /** The ARN of this Repository. */
   public abstract readonly repositoryArn: string;
 
@@ -211,7 +211,7 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryArn: string;
   public readonly repositoryName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: RepositoryImportProps) {
     super(scope, id);
 
     this.repositoryArn = this.node.stack.formatArn({
@@ -264,14 +264,14 @@ export class Repository extends RepositoryBase {
    * @param props the properties used to identify the existing Repository
    * @returns a reference to the existing Repository
    */
-  public static import(scope: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
+  public static import(scope: Construct, id: string, props: RepositoryImportProps): IRepository {
     return new ImportedRepository(scope, id, props);
   }
 
   private readonly repository: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: RepositoryProps) {
+  constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id);
 
     this.repository = new CfnRepository(this, 'Resource', {
@@ -304,7 +304,7 @@ export class Repository extends RepositoryBase {
    */
   public export(): RepositoryImportProps {
     return {
-      repositoryName: new cdk.CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
+      repositoryName: new CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
     };
   }
 

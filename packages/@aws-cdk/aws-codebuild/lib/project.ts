@@ -7,7 +7,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { Aws, CfnOutput, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { CfnProject } from './codebuild.generated';
 import { BuildSource, NoSource, SourceType } from './source';
@@ -16,7 +16,7 @@ const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
-export interface IProject extends cdk.IConstruct, events.IEventRuleTarget, iam.IGrantable {
+export interface IProject extends IResource, events.IEventRuleTarget, iam.IGrantable {
   /** The ARN of this Project. */
   readonly projectArn: string;
 
@@ -155,7 +155,7 @@ export interface ProjectImportProps {
  * (or one defined in a different CDK Stack),
  * use the {@link import} method.
  */
-export abstract class ProjectBase extends cdk.Construct implements IProject {
+export abstract class ProjectBase extends Resource implements IProject {
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /** The ARN of this Project. */
@@ -376,7 +376,7 @@ class ImportedProject extends ProjectBase {
   public readonly projectName: string;
   public readonly role?: iam.Role = undefined;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ProjectImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: ProjectImportProps) {
     super(scope, id);
 
     this.projectArn = this.node.stack.formatArn({
@@ -567,12 +567,12 @@ export class Project extends ProjectBase {
    *   has permissions to access the S3 Bucket of that Pipeline -
    *   otherwise, builds in that Pipeline will always fail.
    *
-   * @param parent the parent Construct for this Construct
-   * @param name the logical name of this Construct
+   * @param scope the parent Construct for this Construct
+   * @param id the logical name of this Construct
    * @param props the properties of the referenced Project
    * @returns a reference to the existing Project
    */
-  public static import(scope: cdk.Construct, id: string, props: ProjectImportProps): IProject {
+  public static import(scope: Construct, id: string, props: ProjectImportProps): IProject {
     return new ImportedProject(scope, id, props);
   }
 
@@ -599,7 +599,7 @@ export class Project extends ProjectBase {
   private readonly _secondaryArtifacts: BuildArtifacts[];
   private _securityGroups: ec2.ISecurityGroup[] = [];
 
-  constructor(scope: cdk.Construct, id: string, props: ProjectProps) {
+  constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id);
 
     if (props.buildScriptAssetEntrypoint && !props.buildScriptAsset) {
@@ -613,10 +613,10 @@ export class Project extends ProjectBase {
 
     let cache: CfnProject.ProjectCacheProperty | undefined;
     if (props.cacheBucket) {
-      const cacheDir = props.cacheDir != null ? props.cacheDir : cdk.Aws.noValue;
+      const cacheDir = props.cacheDir != null ? props.cacheDir : Aws.noValue;
       cache = {
         type: 'S3',
-        location: cdk.Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),
+        location: Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),
       };
 
       props.cacheBucket.grantReadWrite(this.role);
@@ -692,8 +692,8 @@ export class Project extends ProjectBase {
       cache,
       name: props.projectName,
       timeoutInMinutes: props.timeout,
-      secondarySources: new cdk.Token(() => this.renderSecondarySources()),
-      secondaryArtifacts: new cdk.Token(() => this.renderSecondaryArtifacts()),
+      secondarySources: new Token(() => this.renderSecondarySources()),
+      secondaryArtifacts: new Token(() => this.renderSecondaryArtifacts()),
       triggers: this.source.buildTriggers(),
       vpcConfig: this.configureVpc(props),
     });
@@ -713,7 +713,7 @@ export class Project extends ProjectBase {
    */
   public export(): ProjectImportProps {
     return {
-      projectName: new cdk.CfnOutput(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
+      projectName: new CfnOutput(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
     };
   }
 
@@ -894,10 +894,10 @@ export class Project extends ProjectBase {
         'ec2:DescribeVpcs'
       ));
     this.addToRolePolicy(new iam.PolicyStatement()
-      .addResource(`arn:aws:ec2:${cdk.Aws.region}:${cdk.Aws.accountId}:network-interface/*`)
+      .addResource(`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`)
       .addCondition('StringEquals', {
         "ec2:Subnet": [
-          `arn:aws:ec2:${cdk.Aws.region}:${cdk.Aws.accountId}:subnet/[[subnets]]`
+          `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/[[subnets]]`
         ],
         "ec2:AuthorizedService": "codebuild.amazonaws.com"
       })
@@ -1085,7 +1085,7 @@ export class LinuxBuildImage implements IBuildImage {
   /**
    * Uses an Docker image asset as a Linux build image.
    */
-  public static fromAsset(scope: cdk.Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
     const image = new LinuxBuildImage(asset.imageUri);
 
@@ -1178,7 +1178,7 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Uses an Docker image asset as a Windows build image.
    */
-  public static fromAsset(scope: cdk.Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
     const image = new WindowsBuildImage(asset.imageUri);
 

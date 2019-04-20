@@ -1,8 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, applyRemovalPolicy, CfnCondition, CfnResource,
-    Construct, DeletionPolicy, Fn, HashedAddressingScheme,
-    RemovalPolicy, Root, Stack } from '../lib';
+import { App, App as Root, applyRemovalPolicy, CfnCondition,
+    CfnResource, Construct, DeletionPolicy, Fn,
+    HashedAddressingScheme, RemovalPolicy, Stack } from '../lib';
 
 export = {
   'all resources derive from Resource, which derives from Entity'(test: Test) {

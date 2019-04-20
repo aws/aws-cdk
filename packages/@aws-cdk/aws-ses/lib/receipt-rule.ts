@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { IReceiptRuleAction, LambdaInvocationType, ReceiptRuleActionProps, ReceiptRuleLambdaAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
@@ -7,7 +7,7 @@ import { CfnReceiptRule } from './ses.generated';
 /**
  * A receipt rule.
  */
-export interface IReceiptRule extends cdk.IConstruct {
+export interface IReceiptRule extends IResource {
   /**
    * The name of the receipt rule.
    */
@@ -101,24 +101,24 @@ export interface ReceiptRuleProps extends ReceiptRuleOptions {
 /**
  * A new receipt rule.
  */
-export class ReceiptRule extends cdk.Construct implements IReceiptRule {
+export class ReceiptRule extends Resource implements IReceiptRule {
   /**
    * Import an exported receipt rule.
    */
-  public static import(scope: cdk.Construct, id: string, props: ReceiptRuleImportProps): IReceiptRule {
+  public static import(scope: Construct, id: string, props: ReceiptRuleImportProps): IReceiptRule {
     return new ImportedReceiptRule(scope, id, props);
   }
 
   public readonly name: string;
   private readonly renderedActions = new Array<ReceiptRuleActionProps>();
 
-  constructor(scope: cdk.Construct, id: string, props: ReceiptRuleProps) {
+  constructor(scope: Construct, id: string, props: ReceiptRuleProps) {
     super(scope, id);
 
     const resource = new CfnReceiptRule(this, 'Resource', {
       after: props.after ? props.after.name : undefined,
       rule: {
-        actions: new cdk.Token(() => this.getRenderedActions()),
+        actions: new Token(() => this.getRenderedActions()),
         enabled: props.enabled === undefined ? true : props.enabled,
         name: props.name,
         recipients: props.recipients,
@@ -149,7 +149,7 @@ export class ReceiptRule extends cdk.Construct implements IReceiptRule {
    */
   public export(): ReceiptRuleImportProps {
     return {
-      name: new cdk.CfnOutput(this, 'ReceiptRuleName', { value: this.name }).makeImportValue().toString()
+      name: new CfnOutput(this, 'ReceiptRuleName', { value: this.name }).makeImportValue().toString()
     };
   }
 
@@ -172,10 +172,10 @@ export interface ReceiptRuleImportProps {
 /**
  * An imported receipt rule.
  */
-class ImportedReceiptRule extends cdk.Construct implements IReceiptRule {
+class ImportedReceiptRule extends Construct implements IReceiptRule {
   public readonly name: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ReceiptRuleImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: ReceiptRuleImportProps) {
     super(scope, id);
 
     this.name = props.name;
@@ -189,15 +189,20 @@ class ImportedReceiptRule extends cdk.Construct implements IReceiptRule {
   }
 }
 
+// tslint:disable-next-line:no-empty-interface
+export interface DropSpamReceiptRuleProps extends ReceiptRuleProps {
+
+}
+
 /**
  * A rule added at the top of the rule set to drop spam/virus.
  *
  * @see https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html
  */
-export class DropSpamReceiptRule extends cdk.Construct {
+export class DropSpamReceiptRule extends Construct {
   public readonly rule: ReceiptRule;
 
-  constructor(scope: cdk.Construct, id: string, props: ReceiptRuleProps) {
+  constructor(scope: Construct, id: string, props: DropSpamReceiptRuleProps) {
     super(scope, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {

@@ -1,0 +1,46 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "description": "Actions API for AWS Code Pipeline",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/aws-codepipeline-api",
+  "readme": {
+    "markdown": "## AWS CodePipeline Actions API\n\nThis package is no longer used, and will be removed in a future version of the CDK.\n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.AWS.Codepipeline.Api",
+      "packageId": "Amazon.CDK.AWS.Codepipeline.Api",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "codepipeline-api",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.codepipeline.api"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-codepipeline-api"
+    },
+    "python": {
+      "distName": "aws-cdk.aws-codepipeline-api",
+      "module": "aws_cdk.aws_codepipeline_api"
+    }
+  },
+  "version": "0.28.0",
+  "fingerprint": "rtmCU73frp0wBlSSTpYTuqK3GfsuhQWsd60OExYoYGo="
+}

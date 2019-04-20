@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnSubscription } from './sns.generated';
 import { ITopic } from './topic-base';
 
@@ -39,7 +39,7 @@ export interface SubscriptionProps {
  * Prefer to use the `ITopic.subscribeXxx()` methods to creating instances of
  * this class.
  */
-export class Subscription extends Construct {
+export class Subscription extends Resource {
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
 

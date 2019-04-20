@@ -470,6 +470,79 @@ export = {
       });
       test.done();
     },
+    'with GitHub source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          cloneDepth: 3,
+          webhook: true,
+          reportBuildStatus: false,
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: "GITHUB",
+          Location: 'https://github.com/testowner/testrepo.git',
+          ReportBuildStatus: false,
+          GitCloneDepth: 3,
+        }
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+        },
+      }));
+
+      test.done();
+    },
+    'with GitHubEnterprise source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.GitHubEnterpriseSource({
+          httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+          ignoreSslErrors: true,
+          cloneDepth: 4,
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: "GITHUB_ENTERPRISE",
+          InsecureSsl: true,
+          GitCloneDepth: 4,
+          Location: 'https://github.testcompany.com/testowner/testrepo'
+        }
+      }));
+
+      test.done();
+    },
+    'with Bitbucket source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.BitBucketSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          cloneDepth: 5,
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: 'BITBUCKET',
+          Location: 'https://bitbucket.org/testowner/testrepo.git',
+          GitCloneDepth: 5,
+        },
+      }));
+
+      test.done();
+    },
     'fail creating a Project when no build spec is given'(test: Test) {
       const stack = new cdk.Stack();
 
@@ -1065,8 +1138,8 @@ export = {
       { source: new codebuild.CodePipelineSource(), shouldPassValidation: false },
       { source: new codebuild.CodeCommitSource({ repository: repo }), shouldPassValidation: false },
       { source: new codebuild.S3BucketSource({ bucket, path: 'path/to/source.zip' }), shouldPassValidation: false },
-      { source: new codebuild.GitHubSource({ owner: 'awslabs', repo: 'aws-cdk', oauthToken: new cdk.SecretValue()}), shouldPassValidation: true },
-      { source: new codebuild.GitHubEnterpriseSource({ httpsCloneUrl: 'url', oauthToken: new cdk.SecretValue()}), shouldPassValidation: true },
+      { source: new codebuild.GitHubSource({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true },
+      { source: new codebuild.GitHubEnterpriseSource({ httpsCloneUrl: 'url' }), shouldPassValidation: true },
       { source: new codebuild.BitBucketSource({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true }
     ];
 
