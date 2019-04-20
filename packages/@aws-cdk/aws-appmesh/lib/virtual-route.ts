@@ -8,7 +8,7 @@ import { IVirtualRouter } from './virtual-router';
 /**
  * Interface with properties ncecessary to import a reusable Route
  */
-export interface RouteImportProps {
+export interface ImportedRouteProps {
   /**
    * The name of the route
    */
@@ -38,7 +38,7 @@ export interface RouteImportProps {
 /**
  * Interface for which all Route based classes MUST implement
  */
-export interface IRoute extends cdk.IConstruct {
+export interface IRoute extends cdk.IResource {
   /**
    * The name of the route
    */
@@ -67,7 +67,7 @@ export interface IRoute extends cdk.IConstruct {
   /**
    * Exports properties for a reusable Route
    */
-  export(): RouteImportProps;
+  export(): ImportedRouteProps;
 }
 
 /**
@@ -138,11 +138,11 @@ export interface RouteProps extends RouteBaseProps {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/routes.html
  */
-export class Route extends cdk.Construct implements IRoute {
+export class Route extends cdk.Resource implements IRoute {
   /**
    * A static method to import a Route an make it re-usable accross stacks
    */
-  public static import(scope: cdk.Construct, id: string, props: RouteImportProps): IRoute {
+  public static import(scope: cdk.Construct, id: string, props: ImportedRouteProps): IRoute {
     return new ImportedRoute(scope, id, props);
   }
 
@@ -206,7 +206,7 @@ export class Route extends cdk.Construct implements IRoute {
   /**
    * Exports properties for a reusable Route
    */
-  public export(): RouteImportProps {
+  public export(): ImportedRouteProps {
     return {
       routeName: new cdk.CfnOutput(this, 'RouteName', { value: this.routeName }).makeImportValue().toString(),
       routeArn: new cdk.CfnOutput(this, 'RouteArn', { value: this.routeArn }).makeImportValue().toString(),
@@ -281,7 +281,7 @@ export class ImportedRoute extends cdk.Construct implements IRoute {
    */
   public readonly routeVirtualRouterName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: RouteImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: ImportedRouteProps) {
     super(scope, id);
 
     this.routeName = props.routeName;

@@ -8,7 +8,7 @@ import { Route, RouteBaseProps } from './virtual-route';
 /**
  * Interface with properties ncecessary to import a reusable VirtualRouter
  */
-export interface VirtualRouterImportProps {
+export interface ImportedVirtualRouterProps {
   /**
    * The name of the VirtualRouter
    */
@@ -37,7 +37,7 @@ export interface VirtualRouterImportProps {
 /**
  * Interface which all VirtualRouter based classes MUST implement
  */
-export interface IVirtualRouter extends cdk.IConstruct {
+export interface IVirtualRouter extends cdk.IResource {
   /**
    * The name of the VirtualRouter
    */
@@ -71,7 +71,7 @@ export interface IVirtualRouter extends cdk.IConstruct {
   /**
    * Exports properties for reusable VirtualRouter
    */
-  export(): VirtualRouterImportProps;
+  export(): ImportedVirtualRouterProps;
 }
 
 /**
@@ -89,7 +89,7 @@ export interface VirtualRouterBaseProps {
   readonly virtualRouterName?: string;
 }
 
-export abstract class VirtualRouterBase extends cdk.Construct implements IVirtualRouter {
+export abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter {
   /**
    * The name of the VirtualRouter
    */
@@ -118,7 +118,7 @@ export abstract class VirtualRouterBase extends cdk.Construct implements IVirtua
   /**
    * Exports properties for reusable VirtualRouter
    */
-  public abstract export(): VirtualRouterImportProps;
+  public abstract export(): ImportedVirtualRouterProps;
 
   /**
    * Utility method for adding a single route to the router
@@ -179,7 +179,7 @@ export class VirtualRouter extends VirtualRouterBase {
   /**
    * A static method to import a VirtualRouter an make it re-usable accross stacks
    */
-  public static import(scope: cdk.Construct, id: string, props: VirtualRouterImportProps): IVirtualRouter {
+  public static import(scope: cdk.Construct, id: string, props: ImportedVirtualRouterProps): IVirtualRouter {
     return new ImportedVirtualRouter(scope, id, props);
   }
 
@@ -236,7 +236,7 @@ export class VirtualRouter extends VirtualRouterBase {
   /**
    * Exports properties for reusable VirtualRouter
    */
-  public export(): VirtualRouterImportProps {
+  public export(): ImportedVirtualRouterProps {
     return {
       virtualRouterName: new cdk.CfnOutput(this, 'VirtualRouterName', { value: this.virtualRouterName })
         .makeImportValue()
@@ -313,7 +313,7 @@ export class ImportedVirtualRouter extends VirtualRouterBase {
    */
   public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: VirtualRouterImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: ImportedVirtualRouterProps) {
     super(scope, id);
 
     this.virtualRouterName = props.virtualRouterName;

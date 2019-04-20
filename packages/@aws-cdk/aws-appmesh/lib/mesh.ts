@@ -7,6 +7,7 @@ import { VirtualNode, VirtualNodeBackendProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
 import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
 
+
 /**
  * These properties are used when adding a VirtualNode through the Mesh type
  */
@@ -78,7 +79,7 @@ export interface MeshSpec {
 /**
  * Used for importing and exporting Mesh(es)
  */
-export interface MeshImportProps {
+export interface ImportedMeshProps {
   /**
    * The AppMesh name to import
    */
@@ -98,7 +99,7 @@ export interface MeshImportProps {
 /**
  * Interface wich all Mesh based classes MUST implement
  */
-export interface IMesh extends cdk.IConstruct {
+export interface IMesh extends cdk.IResource {
   /**
    * The name of the AppMesh mesh
    */
@@ -132,13 +133,13 @@ export interface IMesh extends cdk.IConstruct {
   /**
    * Exports the Mesh properties to re-use in other stacks
    */
-  export(): MeshImportProps;
+  export(): ImportedMeshProps;
 }
 
 /**
  * Represents a new or imported AppMesh mesh
  */
-export abstract class MeshBase extends cdk.Construct implements IMesh {
+export abstract class MeshBase extends cdk.Resource implements IMesh {
   /**
    * The name of the AppMesh mesh
    */
@@ -189,7 +190,7 @@ export abstract class MeshBase extends cdk.Construct implements IMesh {
   /**
    * Exports the Mesh properties to re-use in other stacks
    */
-  public abstract export(): MeshImportProps;
+  public abstract export(): ImportedMeshProps;
 }
 
 /**
@@ -216,7 +217,7 @@ export class Mesh extends MeshBase {
   /**
    * A static method to import a mesh an make it re-usable accross stacks
    */
-  public static import(scope: cdk.Construct, id: string, props: MeshImportProps): IMesh {
+  public static import(scope: cdk.Construct, id: string, props: ImportedMeshProps): IMesh {
     return new ImportedMesh(scope, id, props);
   }
 
@@ -259,7 +260,7 @@ export class Mesh extends MeshBase {
   /**
    * Exports the Mesh properties to re-use in other stacks
    */
-  public export(): MeshImportProps {
+  public export(): ImportedMeshProps {
     return {
       meshName: new cdk.CfnOutput(this, 'MeshName', { value: this.meshName }).makeImportValue().toString(),
       meshArn: new cdk.CfnOutput(this, 'MeshArn', { value: this.meshArn }).makeImportValue().toString(),
@@ -288,7 +289,7 @@ export class ImportedMesh extends MeshBase {
    */
   public readonly meshUid: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: MeshImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: ImportedMeshProps) {
     super(scope, id);
 
     this.meshName = props.meshName;

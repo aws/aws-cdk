@@ -6,10 +6,11 @@ import { IMesh } from './mesh';
 import { HealthCheckProps, ListenerProps, PortMappingProps, Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
 
+
 /**
  * Interface with properties ncecessary to import a reusable VirtualNode
  */
-export interface VirtualNodeImportProps {
+export interface ImportedVirtualNodeProps {
   /**
    * The name of the VirtualNode
    */
@@ -33,7 +34,7 @@ export interface VirtualNodeImportProps {
 /**
  * Interface which all VirtualNode based classes must implement
  */
-export interface IVirtualNode extends cdk.IConstruct {
+export interface IVirtualNode extends cdk.IResource {
   /**
    * The name of the VirtualNode
    */
@@ -82,7 +83,7 @@ export interface IVirtualNode extends cdk.IConstruct {
   /**
    * Exports properties for VirtualNode reusability
    */
-  export(): VirtualNodeImportProps;
+  export(): ImportedVirtualNodeProps;
 }
 
 /**
@@ -136,7 +137,7 @@ export interface VirtualNodeProps {
   readonly listener?: ListenerProps;
 }
 
-export abstract class VirtualNodeBase extends cdk.Construct implements IVirtualNode {
+export abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   /**
    * The name of the VirtualNode
    */
@@ -163,7 +164,7 @@ export abstract class VirtualNodeBase extends cdk.Construct implements IVirtualN
   /**
    * Exports properties for VirtualNode reusability
    */
-  public abstract export(): VirtualNodeImportProps;
+  public abstract export(): ImportedVirtualNodeProps;
 
   /**
    * Utility method to add a single backend for existing or new VritualNodes
@@ -265,7 +266,7 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * A static method to import a VirtualNode an make it re-usable accross stacks
    */
-  public static import(scope: cdk.Construct, id: string, props: VirtualNodeImportProps): IVirtualNode {
+  public static import(scope: cdk.Construct, id: string, props: ImportedVirtualNodeProps): IVirtualNode {
     return new ImportedVirtualNode(scope, id, props);
   }
 
@@ -339,7 +340,7 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Exports properties for VirtualNode reusability
    */
-  public export(): VirtualNodeImportProps {
+  public export(): ImportedVirtualNodeProps {
     return {
       virtualNodeName: new cdk.CfnOutput(this, 'VirtualNodeName', { value: this.virtualNodeName })
         .makeImportValue()
@@ -377,7 +378,7 @@ export class ImportedVirtualNode extends VirtualNodeBase {
    */
   public readonly virtualNodeMeshName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: VirtualNodeImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: ImportedVirtualNodeProps) {
     super(scope, id);
 
     this.virtualNodeName = props.virtualNodeName;
