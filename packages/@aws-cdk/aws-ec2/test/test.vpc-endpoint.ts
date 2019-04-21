@@ -173,19 +173,15 @@ export = {
       test.done();
     },
 
-    'import/export'(test: Test) {
+    'import'(test: Test) {
       // GIVEN
-      const stack1 = new Stack();
       const stack2 = new Stack();
-      const vpc = new VpcNetwork(stack1, 'Vpc1');
-      const endpoint = vpc.addGatewayEndpoint('DynamoDB', {
-        service: GatewayVpcEndpointAwsService.DynamoDb
-      });
 
       // WHEN
-      GatewayVpcEndpoint.import(stack2, 'ImportedEndpoint', endpoint.export());
+      const imported = GatewayVpcEndpoint.fromVpcEndpointId(stack2, 'endpoint_id');
 
-      // THEN: No error
+      // THEN
+      test.deepEqual(imported.vpcEndpointId, 'endpoint_id');
       test.done();
     },
 

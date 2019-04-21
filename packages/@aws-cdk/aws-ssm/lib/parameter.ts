@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { CfnDynamicReference, CfnDynamicReferenceService, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
 import ssm = require('./ssm.generated');
 
 /**
@@ -107,7 +107,7 @@ export interface StringListParameterProps extends ParameterOptions {
 /**
  * Basic features shared across all types of SSM Parameters.
  */
-export abstract class ParameterBase extends Resource implements IParameter {
+abstract class ParameterBase extends Resource implements IParameter {
   public abstract readonly parameterName: string;
   public abstract readonly parameterType: string;
 
@@ -137,57 +137,27 @@ export abstract class ParameterBase extends Resource implements IParameter {
   }
 }
 
-export interface ParameterProps extends ParameterOptions {
-  /**
-   * The type of parameter.
-   */
-  readonly type: ParameterType;
-
-  /**
-   * The parameter value.
-   */
-  readonly value: string;
-}
-
-/**
- * The type of the SSM parameter.
- */
-export enum ParameterType {
-  STRING = 'String',
-  STRING_LIST = 'StringList'
-}
-
-/**
- * SSM parameter.
- *
- * Use `StringParameter` and `StringListParameter` for a strong-typed version.
- */
-export class Parameter extends ParameterBase {
-  public readonly parameterName: string;
-  public readonly parameterType: string;
-  public readonly parameterValue: string;
-
-  constructor(scope: Construct, id: string, props: ParameterProps) {
-    super(scope, id);
-
-    const resource = new ssm.CfnParameter(this, 'Resource', {
-      allowedPattern: props.allowedPattern,
-      description: props.description,
-      name: props.name,
-      type: props.type,
-      value: props.value
-    });
-
-    this.parameterName = resource.parameterName;
-    this.parameterType = resource.parameterType;
-    this.parameterValue = resource.parameterValue;
-  }
-}
+const STRING_PARAM_TYPE = 'String';
+const STRINGLIST_PARAM_TYPE = 'StringList';
 
 /**
  * Creates a new String SSM Parameter.
  */
 export class StringParameter extends ParameterBase implements IStringParameter {
+
+  /**
+   * Imports an external string parameter.
+   */
+  public static fromName(scope: Construct, parameterName: string): IStringParameter {
+    class Import extends ParameterBase {
+      public readonly parameterName = parameterName;
+      public readonly parameterType = STRING_PARAM_TYPE;
+      public readonly stringValue = new CfnDynamicReference(CfnDynamicReferenceService.Ssm, parameterName).toString();
+    }
+
+    return new Import(scope, parameterName);
+  }
+
   public readonly parameterName: string;
   public readonly parameterType: string;
   public readonly stringValue: string;
@@ -203,7 +173,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: props.name,
-      type: 'String',
+      type: STRING_PARAM_TYPE,
       value: props.stringValue,
     });
 
@@ -217,6 +187,20 @@ export class StringParameter extends ParameterBase implements IStringParameter {
  * Creates a new StringList SSM Parameter.
  */
 export class StringListParameter extends ParameterBase implements IStringListParameter {
+
+  /**
+   * Imports an external parameter of type string list.
+   */
+  public static fromName(scope: Construct, parameterName: string): IStringListParameter {
+    class Import extends ParameterBase {
+      public readonly parameterName = parameterName;
+      public readonly parameterType = STRINGLIST_PARAM_TYPE;
+      public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.Ssm, parameterName).toString());
+    }
+
+    return new Import(scope, parameterName);
+  }
+
   public readonly parameterName: string;
   public readonly parameterType: string;
   public readonly stringListValue: string[];
@@ -236,7 +220,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: props.name,
-      type: 'StringList',
+      type: STRINGLIST_PARAM_TYPE,
       value: props.stringListValue.join(','),
     });
 

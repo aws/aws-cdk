@@ -97,6 +97,14 @@ export interface PipelineProps {
   readonly stages?: StageProps[];
 }
 
+abstract class PipelineBase extends Resource implements IPipeline {
+  public abstract readonly pipelineName: string;
+  public abstract readonly pipelineArn: string;
+  public abstract grantBucketRead(identity: iam.IGrantable): iam.Grant;
+  public abstract grantBucketReadWrite(identity: iam.IGrantable): iam.Grant;
+  public abstract asEventRuleTarget(ruleArn: string, ruleUniqueId: string): events.EventRuleTargetProps;
+}
+
 /**
  * An AWS CodePipeline pipeline with its associated IAM role and S3 bucket.
  *
@@ -116,7 +124,32 @@ export interface PipelineProps {
  *
  * // ... add more stages
  */
-export class Pipeline extends Resource implements IPipeline {
+export class Pipeline extends PipelineBase implements IPipeline {
+
+  public static fromPipelineName(scope: Construct, pipelineName: string): IPipeline {
+    class Import extends PipelineBase {
+      public readonly pipelineName = pipelineName;
+      public readonly pipelineArn = scope.node.stack.formatArn({
+        service: 'codepipeline',
+        resource: pipelineName
+      });
+
+      public grantBucketRead(grantable: iam.IGrantable): iam.Grant {
+
+      }
+
+      public grantBucketReadWrite(grantable: iam.IGrantable): iam.Grant {
+        // drop
+      }
+
+      public asEventRuleTarget(_: string, _: string): events.EventRuleTargetProps {
+        // drop
+      }
+    }
+
+    return new Import(scope, pipelineName);
+  }
+
   /**
    * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
    * a more specific IAM role.
@@ -369,9 +402,7 @@ export class Pipeline extends Resource implements IPipeline {
       replicationBucketName = crossRegionScaffoldStack.replicationBucketName;
     }
 
-    const replicationBucket = s3.Bucket.import(this, 'CrossRegionCodePipelineReplicationBucket-' + region, {
-      bucketName: replicationBucketName,
-    });
+    const replicationBucket = s3.Bucket.fromBucketName(this, replicationBucketName);
     replicationBucket.grantReadWrite(this.role);
 
     this.artifactStores[region] = {

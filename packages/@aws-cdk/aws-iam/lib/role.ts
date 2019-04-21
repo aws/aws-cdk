@@ -94,6 +94,16 @@ export interface RoleProps {
  * the specified AWS service principal defined in `serviceAssumeRole`.
  */
 export class Role extends Resource implements IRole {
+
+  /**
+   * Imports an external role by ARN
+   * @param scope The construct scope
+   * @param roleArn The ARN of the role to import
+   */
+  public static fromRoleArn(scope: Construct, roleArn: string): IRole {
+    return new ImportedRole(scope, roleArn, { roleArn });
+  }
+
   /**
    * Import a role that already exists
    */

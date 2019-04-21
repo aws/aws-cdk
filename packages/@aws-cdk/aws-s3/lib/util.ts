@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
-import { BucketImportProps } from './bucket';
+import { BucketAttributes } from './bucket';
 
-export function parseBucketArn(construct: cdk.IConstruct, props: BucketImportProps): string {
+export function parseBucketArn(construct: cdk.IConstruct, props: BucketAttributes): string {
 
   // if we have an explicit bucket ARN, use it.
   if (props.bucketArn) {
@@ -22,29 +22,25 @@ export function parseBucketArn(construct: cdk.IConstruct, props: BucketImportPro
   throw new Error('Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed');
 }
 
-export function parseBucketName(construct: cdk.IConstruct, props: BucketImportProps): string | undefined {
-
+export function parseBucketName(construct: cdk.IConstruct, props: BucketAttributes): string {
   // if we have an explicit bucket name, use it.
   if (props.bucketName) {
     return props.bucketName;
   }
 
   // if we have a string arn, we can extract the bucket name from it.
-  if (props.bucketArn) {
-
-    const resolved = construct.node.resolve(props.bucketArn);
-    if (typeof(resolved) === 'string') {
-      const components = construct.node.stack.parseArn(resolved);
-      if (components.service !== 's3') {
-        throw new Error('Invalid ARN. Expecting "s3" service:' + resolved);
-      }
-      if (components.resourceName) {
-        throw new Error(`Bucket ARN must not contain a path`);
-      }
-      return components.resource;
-    }
+  const bucketArn = props.bucketArn;
+  if (!bucketArn || cdk.Token.unresolved(bucketArn)) {
+    throw new Error(`Unable to parse bucket name since bucket ARN uses tokens or is not defined`);
   }
 
-  // no bucket name is okay since it's optional.
-  return undefined;
+  const components = construct.node.stack.parseArn(bucketArn);
+  if (components.service !== 's3') {
+    throw new Error('Invalid ARN. Expecting "s3" service:' + bucketArn);
+  }
+  if (components.resourceName) {
+    throw new Error(`Bucket ARN must not contain a path`);
+  }
+
+  return components.resource!;
 }

@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { applyRemovalPolicy, CfnOutput, Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/cdk';
+import { applyRemovalPolicy, Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/cdk';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -46,11 +46,6 @@ export interface ILogGroup extends IResource {
   newMetricFilter(scope: Construct, id: string, props: NewMetricFilterProps): MetricFilter;
 
   /**
-   * Export this LogGroup
-   */
-  export(): LogGroupImportProps;
-
-  /**
    * Extract a metric from structured log events in the LogGroup
    *
    * Creates a MetricFilter on this LogGroup that will extract the value
@@ -78,16 +73,9 @@ export interface ILogGroup extends IResource {
 }
 
 /**
- * Properties for importing a LogGroup
- */
-export interface LogGroupImportProps {
-  readonly logGroupArn: string;
-}
-
-/**
  * An CloudWatch Log Group
  */
-export abstract class LogGroupBase extends Resource implements ILogGroup {
+abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * The ARN of this log group
    */
@@ -139,8 +127,6 @@ export abstract class LogGroupBase extends Resource implements ILogGroup {
       ...props
     });
   }
-
-  public abstract export(): LogGroupImportProps;
 
   /**
    * Extract a metric from structured log events in the LogGroup
@@ -320,8 +306,13 @@ export class LogGroup extends LogGroupBase {
   /**
    * Import an existing LogGroup
    */
-  public static import(scope: Construct, id: string, props: LogGroupImportProps): ILogGroup {
-    return new ImportedLogGroup(scope, id, props);
+  public static fromLogGroupArn(scope: Construct, logGroupArn: string): ILogGroup {
+    class Import extends LogGroupBase {
+      public readonly logGroupArn = logGroupArn;
+      public readonly logGroupName = scope.node.stack.parseArn(logGroupArn, ':').resourceName!;
+    }
+
+    return new Import(scope, logGroupArn);
   }
 
   /**
@@ -356,44 +347,6 @@ export class LogGroup extends LogGroupBase {
 
     this.logGroupArn = resource.logGroupArn;
     this.logGroupName = resource.logGroupName;
-  }
-
-  /**
-   * Export this LogGroup
-   */
-  public export(): LogGroupImportProps {
-    return {
-      logGroupArn: new CfnOutput(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue().toString()
-    };
-  }
-}
-
-/**
- * An imported CloudWatch Log Group
- */
-class ImportedLogGroup extends LogGroupBase {
-  /**
-   * The ARN of this log group
-   */
-  public readonly logGroupArn: string;
-
-  /**
-   * The name of this log group
-   */
-  public readonly logGroupName: string;
-
-  constructor(scope: Construct, id: string, private readonly props: LogGroupImportProps) {
-    super(scope, id);
-
-    this.logGroupArn = props.logGroupArn;
-    this.logGroupName = this.node.stack.parseArn(props.logGroupArn, ':').resourceName!;
-  }
-
-  /**
-   * Export this LogGroup
-   */
-  public export() {
-    return this.props;
   }
 }
 

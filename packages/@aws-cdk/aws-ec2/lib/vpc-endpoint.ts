@@ -4,7 +4,7 @@ import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { SecurityGroup } from './security-group';
 import { TcpPort, TcpPortFromAttribute } from './security-group-rule';
-import { IVpcNetwork, SubnetSelection, SubnetType } from './vpc-ref';
+import { IVpcNetwork, SubnetSelection, SubnetType } from './vpc';
 
 /**
  * A VPC endpoint.
@@ -47,10 +47,6 @@ export abstract class VpcEndpoint extends cdk.Construct implements IVpcEndpoint 
  * A gateway VPC endpoint.
  */
 export interface IGatewayVpcEndpoint extends IVpcEndpoint {
-  /**
-   * Exports this VPC endpoint from the stack.
-   */
-  export(): GatewayVpcEndpointImportProps;
 }
 
 /**
@@ -136,8 +132,15 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
   /**
    * Imports an existing gateway VPC endpoint.
    */
-  public static import(scope: cdk.Construct, id: string, props: GatewayVpcEndpointImportProps): IGatewayVpcEndpoint {
-    return new ImportedGatewayVpcEndpoint(scope, id, props);
+  public static fromVpcEndpointId(scope: cdk.Construct, vpcEndpointId: string): IGatewayVpcEndpoint {
+    /**
+     * An imported gateway VPC endpoint.
+     */
+    class Import extends cdk.Construct implements IGatewayVpcEndpoint {
+      get vpcEndpointId() { return vpcEndpointId; }
+    }
+
+    return new Import(scope, vpcEndpointId);
   }
 
   /**
@@ -170,48 +173,6 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
 
     this.vpcEndpointId = endpoint.vpcEndpointId;
     this.vpcEndpointCreationTimestamp = endpoint.vpcEndpointCreationTimestamp;
-  }
-
-  /**
-   * Exports this gateway VPC endpoint from the stack.
-   */
-  public export(): GatewayVpcEndpointImportProps {
-    return {
-      vpcEndpointId: new cdk.CfnOutput(this, 'VpcEndpointId', { value: this.vpcEndpointId }).makeImportValue().toString()
-    };
-  }
-}
-
-/**
- * Construction properties for an ImportedGatewayVpcEndpoint.
- */
-export interface GatewayVpcEndpointImportProps {
-  /**
-   * The gateway VPC endpoint identifier.
-   */
-  readonly vpcEndpointId: string;
-}
-
-/**
- * An imported gateway VPC endpoint.
- */
-class ImportedGatewayVpcEndpoint extends cdk.Construct implements IGatewayVpcEndpoint {
-  /**
-   * The gateway VPC endpoint identifier.
-   */
-  public readonly vpcEndpointId: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: GatewayVpcEndpointImportProps) {
-    super(scope, id);
-
-    this.vpcEndpointId = props.vpcEndpointId;
-  }
-
-  /**
-   * Exports this gateway VPC endpoint from the stack.
-   */
-  public export(): GatewayVpcEndpointImportProps {
-    return this.props;
   }
 }
 
@@ -328,10 +289,6 @@ export interface InterfaceVpcEndpointProps extends InterfaceVpcEndpointOptions {
  * An interface VPC endpoint.
  */
 export interface IInterfaceVpcEndpoint extends IVpcEndpoint, IConnectable {
-  /**
-   * Exports this interface VPC endpoint from the stack.
-   */
-  export(): InterfaceVpcEndpointImportProps;
 }
 
 /**
@@ -341,8 +298,18 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
   /**
    * Imports an existing interface VPC endpoint.
    */
-  public static import(scope: cdk.Construct, id: string, props: InterfaceVpcEndpointImportProps): IInterfaceVpcEndpoint {
-    return new ImportedInterfaceVpcEndpoint(scope, id, props);
+  public static import(scope: cdk.Construct, id: string, props: InterfaceVpcEndpointAttributes): IInterfaceVpcEndpoint {
+    const connections = new Connections({
+      defaultPortRange: new TcpPortFromAttribute(props.port),
+      securityGroups: [ SecurityGroup.fromSecurityGroupId(scope, id + `.` + props.securityGroupId )]
+    });
+
+    class Import extends cdk.Construct implements IInterfaceVpcEndpoint {
+      get vpcEndpointId() { return props.vpcEndpointId; }
+      get connections() { return connections; }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -413,7 +380,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
   /**
    * Exports this interface VPC endpoint from the stack.
    */
-  public export(): InterfaceVpcEndpointImportProps {
+  public export(): InterfaceVpcEndpointAttributes {
     return {
       vpcEndpointId: new cdk.CfnOutput(this, 'VpcEndpointId', { value: this.vpcEndpointId }).makeImportValue().toString(),
       securityGroupId: new cdk.CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString(),
@@ -425,7 +392,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 /**
  * Construction properties for an ImportedInterfaceVpcEndpoint.
  */
-export interface InterfaceVpcEndpointImportProps {
+export interface InterfaceVpcEndpointAttributes {
   /**
    * The interface VPC endpoint identifier.
    */
@@ -440,44 +407,4 @@ export interface InterfaceVpcEndpointImportProps {
    * The port of the service of the interface VPC endpoint.
    */
   readonly port: string;
-}
-
-/**
- * An imported VPC interface endpoint.
- */
-class ImportedInterfaceVpcEndpoint extends cdk.Construct implements IInterfaceVpcEndpoint {
-  /**
-   * The interface VPC endpoint identifier.
-   */
-  public readonly vpcEndpointId: string;
-
-  /**
-   * The identifier of the security group associated with the interface VPC endpoint.
-   */
-  public readonly securityGroupId: string;
-
-  /**
-   * Access to network connections.
-   */
-  public readonly connections: Connections;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: InterfaceVpcEndpointImportProps) {
-    super(scope, id);
-
-    this.vpcEndpointId = props.vpcEndpointId;
-
-    this.securityGroupId = props.securityGroupId;
-
-    this.connections = new Connections({
-      defaultPortRange: new TcpPortFromAttribute(props.port),
-      securityGroups: [SecurityGroup.import(this, 'SecurityGroup', props)],
-    });
-  }
-
-  /**
-   * Exports this interface VPC endpoint from the stack.
-   */
-  public export(): InterfaceVpcEndpointImportProps {
-    return this.props;
-  }
 }

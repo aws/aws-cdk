@@ -2,6 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ssm = require('../lib');
+import { Stack } from '@aws-cdk/cdk';
 
 export = {
   'creating a String SSM Parameter'(test: Test) {
@@ -121,6 +122,54 @@ export = {
         { Ref: 'Parameter9E1B4FBA' }
       ]]
     });
+    test.done();
+  },
+
+  'StringParameter.fromName'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const param = ssm.StringParameter.fromName(stack, 'MyParamName');
+
+    // THEN
+    test.deepEqual(stack.node.resolve(param.parameterArn), {
+      'Fn::Join': [ '', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameterMyParamName' ] ]
+    });
+    test.deepEqual(stack.node.resolve(param.parameterName), 'MyParamName');
+    test.deepEqual(stack.node.resolve(param.parameterType), 'String');
+    test.deepEqual(stack.node.resolve(param.stringValue), '{{resolve:ssm:MyParamName}}');
+    test.done();
+  },
+
+  'StringListParameter.fromName'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const param = ssm.StringListParameter.fromName(stack, 'MyParamName');
+
+    // THEN
+    test.deepEqual(stack.node.resolve(param.parameterArn), {
+      'Fn::Join': [ '', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameterMyParamName' ] ]
+    });
+    test.deepEqual(stack.node.resolve(param.parameterName), 'MyParamName');
+    test.deepEqual(stack.node.resolve(param.parameterType), 'StringList');
+    test.deepEqual(stack.node.resolve(param.stringListValue), { 'Fn::Split': [ ',', '{{resolve:ssm:MyParamName}}' ] });
     test.done();
   }
 };

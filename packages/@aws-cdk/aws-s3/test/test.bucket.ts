@@ -564,7 +564,7 @@ export = {
       const stack = new cdk.Stack();
 
       const bucketArn = 'arn:aws:s3:::my-bucket';
-      const bucket = s3.Bucket.import(stack, 'ImportedBucket', { bucketArn });
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn });
 
       // this is a no-op since the bucket is external
       bucket.addToResourcePolicy(new iam.PolicyStatement().addResource('foo').addAction('bar'));
@@ -587,7 +587,7 @@ export = {
 
     'import can also be used to import arbitrary ARNs'(test: Test) {
       const stack = new cdk.Stack();
-      const bucket = s3.Bucket.import(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
       bucket.addToResourcePolicy(new iam.PolicyStatement().addAllResources().addAction('*'));
 
       // at this point we technically didn't create any resources in the consuming stack.
@@ -690,7 +690,7 @@ export = {
       });
 
       const stack2 = new cdk.Stack(undefined, 'S2');
-      const importedBucket = s3.Bucket.import(stack2, 'ImportedBucket', bucketRef);
+      const importedBucket = s3.Bucket.fromBucketAttributes(stack2, 'ImportedBucket', bucketRef);
       const user = new iam.User(stack2, 'MyUser');
       importedBucket.grantRead(user);
 
@@ -1137,7 +1137,7 @@ export = {
 
     const stackB = new cdk.Stack();
     const user = new iam.User(stackB, 'UserWhoNeedsAccess');
-    const theBucketFromStackAAsARefInStackB = s3.Bucket.import(stackB, 'RefToBucketFromStackA', refToBucketFromStackA);
+    const theBucketFromStackAAsARefInStackB = s3.Bucket.fromBucketAttributes(stackB, 'RefToBucketFromStackA', refToBucketFromStackA);
     theBucketFromStackAAsARefInStackB.grantRead(user);
 
     expect(stackA).toMatch({

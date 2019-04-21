@@ -81,17 +81,16 @@ export = {
 
   'export/import'(test: Test) {
     // GIVEN
-    const stack1 = new Stack();
-    const lg = new LogGroup(stack1, 'LogGroup');
     const stack2 = new Stack();
 
     // WHEN
-    const imported = LogGroup.import(stack2, 'Import', lg.export());
+    const imported = LogGroup.fromLogGroupArn(stack2, 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
     imported.newStream(stack2, 'MakeMeAStream');
 
     // THEN
-    expect(stack2).to(haveResource('AWS::Logs::LogStream', {}));
-
+    expect(stack2).to(haveResource('AWS::Logs::LogStream', {
+      LogGroupName: "my-log-group"
+    }));
     test.done();
   },
 

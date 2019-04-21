@@ -177,7 +177,7 @@ export = {
     const stack2 = new cdk.Stack();
 
     // WHEN
-    const repo2 = ecr.Repository.import(stack2, 'Repo', repo1.export());
+    const repo2 = ecr.Repository.fromRepositoryAttributes(stack2, 'Repo', repo1.export());
 
     // THEN
     test.deepEqual(repo2.node.resolve(repo2.repositoryArn), {
@@ -196,17 +196,11 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const repo2 = ecr.Repository.import(stack, 'Repo', {
-      repositoryArn: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo'
-    });
-
-    const exportImport = repo2.export();
+    const repo2 = ecr.Repository.fromRepositoryArn(stack, 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
 
     // THEN
     test.deepEqual(repo2.node.resolve(repo2.repositoryArn), 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
     test.deepEqual(repo2.node.resolve(repo2.repositoryName), 'foo/bar/foo/fooo');
-    test.deepEqual(repo2.node.resolve(exportImport), { repositoryArn: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo' });
-
     test.done();
   },
 
@@ -215,9 +209,8 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN/THEN
-    test.throws(() => ecr.Repository.import(stack, 'Repo', {
-      repositoryArn: cdk.Fn.getAtt('Boom', 'Boom').toString()
-    }), /repositoryArn is a late-bound value, and therefore repositoryName is required/);
+    test.throws(() => ecr.Repository.fromRepositoryArn(stack, cdk.Fn.getAtt('Boom', 'Boom').toString()),
+      /repositoryArn is a late-bound value, and therefore repositoryName is required/);
 
     test.done();
   },
@@ -227,7 +220,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const repo = ecr.Repository.import(stack, 'Repo', {
+    const repo = ecr.Repository.fromRepositoryAttributes(stack, 'Repo', {
       repositoryArn: cdk.Fn.getAtt('Boom', 'Arn').toString(),
       repositoryName: cdk.Fn.getAtt('Boom', 'Name').toString()
     });
@@ -243,9 +236,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const repo = ecr.Repository.import(stack, 'Repo', {
-      repositoryName: 'my-repo'
-    });
+    const repo = ecr.Repository.fromRepositoryName(stack, 'my-repo');
 
     // THEN
     test.deepEqual(repo.node.resolve(repo.repositoryArn), {
@@ -269,7 +260,7 @@ export = {
     const repoName = cdk.Fn.getAtt('Boom', 'Name').toString();
 
     // WHEN
-    const repo = ecr.Repository.import(stack, 'Repo', {
+    const repo = ecr.Repository.fromRepositoryAttributes(stack, 'Repo', {
       repositoryArn: ecr.Repository.arnForLocalRepository(repoName, stack),
       repositoryName: repoName
     });
