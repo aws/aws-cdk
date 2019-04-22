@@ -62,3 +62,11 @@ onCommitRule.addTarget(topic, {
     }
 });
 ```
+
+## Event Targets
+
+The `@aws-cdk/aws-events-targets` module includes classes that implement the `IEventRuleTarget`
+interface for various AWS services.
+
+* `SnsTopicTarget`: use Amazon SNS topic as an event rule target.
+
