@@ -1,5 +1,4 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3n = require('@aws-cdk/aws-s3-notifications');
@@ -640,68 +639,6 @@ export = {
     test.done();
   },
 
-  'topics can be used as event rule targets (and then the topic policy will allow that too)'(test: Test) {
-    const stack = new cdk.Stack();
-
-    const topic = new sns.Topic(stack, 'MyTopic');
-
-    const rule = new events.EventRule(stack, 'MyRule', {
-      scheduleExpression: 'rate(1 hour)',
-    });
-
-    rule.addTarget(topic);
-
-    expect(stack).toMatch({
-      "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic"
-      },
-      "MyTopicPolicy12A5EC17": {
-        "Type": "AWS::SNS::TopicPolicy",
-        "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-          {
-            "Sid": "0",
-            "Action": "sns:Publish",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] }
-            },
-            "Resource": {
-            "Ref": "MyTopic86869434"
-            }
-          }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Topics": [
-          {
-          "Ref": "MyTopic86869434"
-          }
-        ]
-        }
-      },
-      "MyRuleA44AB831": {
-        "Type": "AWS::Events::Rule",
-        "Properties": {
-        "ScheduleExpression": "rate(1 hour)",
-        "State": "ENABLED",
-        "Targets": [
-          {
-          "Arn": {
-            "Ref": "MyTopic86869434"
-          },
-          "Id": "MyTopic"
-          }
-        ]
-        }
-      }
-      }
-    });
-
-    test.done();
-  },
   'topic resource policy includes unique SIDs'(test: Test) {
     const stack = new cdk.Stack();
 
