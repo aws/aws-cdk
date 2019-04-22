@@ -753,11 +753,11 @@ export class Project extends ProjectBase {
     if (this.source.type === SourceType.CodePipeline) {
       if (this._secondarySources.length > 0) {
         ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
-          "Use the CodeBuild Pipeline Actions' `additionalInputArtifacts` property instead");
+          "Use the CodeBuild Pipeline Actions' `extraInputs` property instead");
       }
       if (this._secondaryArtifacts.length > 0) {
         ret.push('A Project with a CodePipeline Source cannot have secondary artifacts. ' +
-          "Use the CodeBuild Pipeline Actions' `additionalOutputArtifactNames` property instead");
+          "Use the CodeBuild Pipeline Actions' `extraOutputs` property instead");
       }
     }
     return ret;

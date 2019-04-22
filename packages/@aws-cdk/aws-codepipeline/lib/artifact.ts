@@ -1,11 +1,31 @@
 import s3 = require("@aws-cdk/aws-s3");
 import { Token } from "@aws-cdk/cdk";
+import validation = require('./validation');
 
 /**
  * An output artifact of an action. Artifacts can be used as input by some actions.
  */
 export class Artifact {
-  constructor(readonly artifactName: string) {
+  /**
+   * A static factory method used to create instances of the Artifact class.
+   * Mainly meant to be used from `decdk`.
+   *
+   * @param name the (required) name of the Artifact
+   */
+  public static artifact(name: string): Artifact {
+    return new Artifact(name);
+  }
+
+  private _artifactName?: string;
+
+  constructor(artifactName?: string) {
+    validation.validateArtifactName(artifactName);
+
+    this._artifactName = artifactName;
+  }
+
+  public get artifactName(): string | undefined {
+    return this._artifactName;
   }
 
   /**
@@ -63,6 +83,15 @@ export class Artifact {
   public toString() {
     return this.artifactName;
   }
+
+  /** @internal */
+  protected _setName(name: string) {
+    if (this._artifactName) {
+      throw new Error(`Artifact already has name '${this._artifactName}', cannot override it`);
+    } else {
+      this._artifactName = name;
+    }
+  }
 }
 
 /**
@@ -72,12 +101,19 @@ export class Artifact {
  * for a CloudFormation action.
  */
 export class ArtifactPath {
+  public static artifactPath(artifactName: string, fileName: string): ArtifactPath {
+    return new ArtifactPath(Artifact.artifact(artifactName), fileName);
+  }
+
   constructor(readonly artifact: Artifact, readonly fileName: string) {
 
   }
 
-  get location() {
-    return `${this.artifact.artifactName}::${this.fileName}`;
+  public get location() {
+    const artifactName = this.artifact.artifactName
+      ? this.artifact.artifactName
+      : new Token(() => this.artifact.artifactName).toString();
+    return `${artifactName}::${this.fileName}`;
   }
 }
 

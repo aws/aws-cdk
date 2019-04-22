@@ -173,7 +173,7 @@
                 "Name": "CodeBuildAction",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_CodeBuildAction_awscdkpipelineeventtargetBuildProject106B7735"
+                    "Name": "Artifact_Build_CodeBuildAction"
                   }
                 ],
                 "RunOrder": 1
