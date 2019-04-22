@@ -1,7 +1,7 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, Tag } from '@aws-cdk/cdk';
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
 import { ClusterBase, ClusterImportProps, ICluster } from './cluster-base';
 import { CfnCluster } from './eks.generated';
@@ -20,8 +20,6 @@ export interface ClusterProps {
    * Where to place EKS Control Plane ENIs
    *
    * If you want to create public load balancers, this must include public subnets.
-   *
-   * @example
    *
    * For example, to only select private subnets, supply the following:
    *
@@ -78,7 +76,7 @@ export class Cluster extends ClusterBase {
    * @param id the id or name to import as
    * @param props the cluster properties to use for importing information
    */
-  public static import(scope: cdk.Construct, id: string, props: ClusterImportProps): ICluster {
+  public static import(scope: Construct, id: string, props: ClusterImportProps): ICluster {
     return new ImportedCluster(scope, id, props);
   }
 
@@ -135,7 +133,7 @@ export class Cluster extends ClusterBase {
    * @param name the name of the Construct to create
    * @param props properties in the IClusterProps interface
    */
-  constructor(scope: cdk.Construct, id: string, props: ClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
@@ -163,7 +161,7 @@ export class Cluster extends ClusterBase {
 
     // Get subnetIds for all selected subnets
     const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.Public }, { subnetType: ec2.SubnetType.Private }];
-    const subnetIds = flatMap(placements, p => this.vpc.subnetIds(p));
+    const subnetIds = [...new Set(Array().concat(...placements.map(s => props.vpc.selectSubnets(s).subnetIds)))];
 
     const resource = new CfnCluster(this, 'Resource', {
       name: props.clusterName,
@@ -180,7 +178,7 @@ export class Cluster extends ClusterBase {
     this.clusterEndpoint = resource.clusterEndpoint;
     this.clusterCertificateAuthorityData = resource.clusterCertificateAuthorityData;
 
-    new cdk.CfnOutput(this, 'ClusterName', { value: this.clusterName, disableExport: true });
+    new CfnOutput(this, 'ClusterName', { value: this.clusterName, disableExport: true });
   }
 
   /**
@@ -249,10 +247,10 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('AmazonEC2ContainerRegistryReadOnly', this).policyArn);
 
     // EKS Required Tags
-    autoScalingGroup.node.apply(new cdk.Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
+    autoScalingGroup.node.apply(new Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
 
     // Create an CfnOutput for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
-    new cdk.CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
+    new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
       disableExport: true,
       value: autoScalingGroup.role.roleArn
     });
@@ -273,7 +271,7 @@ export class Cluster extends ClusterBase {
         return;
       }
 
-      subnet.node.apply(new cdk.Tag("kubernetes.io/role/internal-elb", "1"));
+      subnet.node.apply(new Tag("kubernetes.io/role/internal-elb", "1"));
     }
   }
 }
@@ -316,7 +314,7 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterEndpoint: string;
   public readonly connections = new ec2.Connections();
 
-  constructor(scope: cdk.Construct, id: string, props: ClusterImportProps) {
+  constructor(scope: Construct, id: string, props: ClusterImportProps) {
     super(scope, id);
 
     this.vpc = ec2.VpcNetwork.import(this, "VPC", props.vpc);
@@ -331,12 +329,4 @@ class ImportedCluster extends ClusterBase {
       i++;
     }
   }
-}
-
-function flatMap<T, U>(xs: T[], f: (x: T) => U[]): U[] {
-  const ret = new Array<U>();
-  for (const x of xs) {
-    ret.push(...f(x));
-  }
-  return ret;
 }

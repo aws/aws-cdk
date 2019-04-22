@@ -38,7 +38,7 @@ export interface BaseServiceProps {
    * service's DesiredCount value, that can run in a service during a
    * deployment.
    *
-   * @default 200
+   * @default 100 if daemon, otherwise 200
    */
   readonly maximumPercent?: number;
 
@@ -47,7 +47,7 @@ export interface BaseServiceProps {
    * the Amazon ECS service's DesiredCount value, that must
    * continue to run and remain healthy during a deployment.
    *
-   * @default 50
+   * @default 0 if daemon, otherwise 50
    */
   readonly minimumHealthyPercent?: number;
 
@@ -62,6 +62,21 @@ export interface BaseServiceProps {
    * Options for enabling AWS Cloud Map service discovery for the service
    */
   readonly serviceDiscoveryOptions?: ServiceDiscoveryOptions;
+
+  /**
+   * Whether the new long ARN format has been enabled on ECS services.
+   * NOTE: This assumes customer has opted into the new format for the IAM role used for the service, and is a
+   * workaround for a current bug in Cloudformation in which the service name is not correctly returned when long ARN is
+   * enabled.
+   *
+   * Old ARN format: arn:aws:ecs:region:aws_account_id:service/service-name
+   * New ARN format: arn:aws:ecs:region:aws_account_id:service/cluster-name/service-name
+   *
+   * See: https://docs.aws.amazon.com/AmazonECS/latest/userguide/ecs-resource-ids.html
+   *
+   * @default false
+   */
+  readonly longArnEnabled?: boolean;
 }
 
 /**
@@ -128,15 +143,22 @@ export abstract class BaseService extends cdk.Construct
       serviceRegistries: new cdk.Token(() => this.serviceRegistries),
       ...additionalProps
     });
+
     this.serviceArn = this.resource.serviceArn;
-    this.serviceName = this.resource.serviceName;
+
+    // This is a workaround for CFN bug that returns the cluster name instead of the service name when long ARN formats
+    // are enabled for the principal in a given region.
+    const longArnEnabled = props.longArnEnabled !== undefined ? props.longArnEnabled : false;
+    this.serviceName = longArnEnabled
+      ? cdk.Fn.select(2, cdk.Fn.split('/', this.serviceArn))
+      : this.resource.serviceName;
+
     this.clusterName = clusterName;
     this.cluster = props.cluster;
 
     if (props.serviceDiscoveryOptions) {
       this.enableServiceDiscovery(props.serviceDiscoveryOptions);
     }
-
   }
 
   /**
@@ -177,7 +199,7 @@ export abstract class BaseService extends cdk.Construct
 
     return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
       serviceNamespace: appscaling.ServiceNamespace.Ecs,
-      resourceId: `service/${this.clusterName}/${this.resource.serviceName}`,
+      resourceId: `service/${this.clusterName}/${this.serviceName}`,
       dimension: 'ecs:service:DesiredCount',
       role: this.makeAutoScalingRole(),
       ...props
@@ -212,7 +234,7 @@ export abstract class BaseService extends cdk.Construct
     this.networkConfiguration = {
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
-        subnets: vpc.subnetIds(vpcSubnets),
+        subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
         securityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]).toList(),
       }
     };

@@ -1,5 +1,5 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { IBucket } from './bucket';
 import { CfnBucketPolicy } from './s3.generated';
 
@@ -13,7 +13,7 @@ export interface BucketPolicyProps {
 /**
  * Applies an Amazon S3 bucket policy to an Amazon S3 bucket.
  */
-export class BucketPolicy extends Construct {
+export class BucketPolicy extends Resource {
 
   /**
    * A policy document containing permissions to add to the specified bucket.

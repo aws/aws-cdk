@@ -128,7 +128,7 @@ export = {
           "Environment": {
             "Type": "LINUX_CONTAINER",
             "PrivilegedMode": false,
-            "Image": "aws/codebuild/ubuntu-base:14.04",
+            "Image": "aws/codebuild/standard:1.0",
             "ComputeType": "BUILD_GENERAL1_SMALL"
           }
           }
@@ -266,7 +266,7 @@ export = {
           },
           "Environment": {
             "ComputeType": "BUILD_GENERAL1_SMALL",
-            "Image": "aws/codebuild/ubuntu-base:14.04",
+            "Image": "aws/codebuild/standard:1.0",
             "PrivilegedMode": false,
             "Type": "LINUX_CONTAINER"
           },
@@ -468,6 +468,79 @@ export = {
         }
         }
       });
+      test.done();
+    },
+    'with GitHub source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          cloneDepth: 3,
+          webhook: true,
+          reportBuildStatus: false,
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: "GITHUB",
+          Location: 'https://github.com/testowner/testrepo.git',
+          ReportBuildStatus: false,
+          GitCloneDepth: 3,
+        }
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+        },
+      }));
+
+      test.done();
+    },
+    'with GitHubEnterprise source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.GitHubEnterpriseSource({
+          httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+          ignoreSslErrors: true,
+          cloneDepth: 4,
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: "GITHUB_ENTERPRISE",
+          InsecureSsl: true,
+          GitCloneDepth: 4,
+          Location: 'https://github.testcompany.com/testowner/testrepo'
+        }
+      }));
+
+      test.done();
+    },
+    'with Bitbucket source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.BitBucketSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          cloneDepth: 5,
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: 'BITBUCKET',
+          Location: 'https://bitbucket.org/testowner/testrepo.git',
+          GitCloneDepth: 5,
+        },
+      }));
+
       test.done();
     },
     'fail creating a Project when no build spec is given'(test: Test) {
@@ -766,7 +839,7 @@ export = {
           "Environment": {
           "Type": "LINUX_CONTAINER",
           "PrivilegedMode": false,
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "ComputeType": "BUILD_GENERAL1_SMALL"
           }
         }));
@@ -797,7 +870,7 @@ export = {
           "Environment": {
           "Type": "LINUX_CONTAINER",
           "PrivilegedMode": false,
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "ComputeType": "BUILD_GENERAL1_SMALL"
           }
         }));
@@ -1002,7 +1075,7 @@ export = {
         }
       ],
       "PrivilegedMode": false,
-      "Image": "aws/codebuild/ubuntu-base:14.04",
+      "Image": "aws/codebuild/standard:1.0",
       "ComputeType": "BUILD_GENERAL1_SMALL"
       }
     }));
@@ -1045,6 +1118,40 @@ export = {
         environment: invalidEnvironment,
       });
     }, /Windows images do not support the Small ComputeType/);
+
+    test.done();
+  },
+
+  'badge support test'(test: Test) {
+    const stack = new cdk.Stack();
+
+    interface BadgeValidationTestCase {
+      source: codebuild.BuildSource,
+      shouldPassValidation: boolean
+    }
+
+    const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'hello-cdk' });
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    const cases: BadgeValidationTestCase[] = [
+      { source: new codebuild.NoSource(), shouldPassValidation: false },
+      { source: new codebuild.CodePipelineSource(), shouldPassValidation: false },
+      { source: new codebuild.CodeCommitSource({ repository: repo }), shouldPassValidation: false },
+      { source: new codebuild.S3BucketSource({ bucket, path: 'path/to/source.zip' }), shouldPassValidation: false },
+      { source: new codebuild.GitHubSource({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true },
+      { source: new codebuild.GitHubEnterpriseSource({ httpsCloneUrl: 'url' }), shouldPassValidation: true },
+      { source: new codebuild.BitBucketSource({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true }
+    ];
+
+    cases.forEach(testCase => {
+      const source = testCase.source;
+      const validationBlock = () => { new codebuild.Project(stack, `MyProject-${source.type}`, { source, badge: true }); };
+      if (testCase.shouldPassValidation) {
+        test.doesNotThrow(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+      } else {
+        test.throws(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+      }
+    });
 
     test.done();
   }

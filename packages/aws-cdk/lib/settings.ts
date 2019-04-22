@@ -200,6 +200,7 @@ export class Settings {
       requireApproval: argv.requireApproval,
       toolkitStackName: argv.toolkitStackName,
       versionReporting: argv.versionReporting,
+      staging: argv.staging
     });
   }
 

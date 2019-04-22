@@ -1,4 +1,4 @@
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument, PolicyStatement } from './policy-document';
@@ -48,7 +48,7 @@ export interface PolicyProps {
  * Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
-export class Policy extends Construct {
+export class Policy extends Resource {
   /**
    * The policy document.
    */

@@ -60,7 +60,7 @@ export class DnsValidatedCertificate extends cdk.Construct implements ICertifica
         );
 
         const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {
-            lambdaProvider: requestorFunction,
+            provider: cfn.CustomResourceProvider.lambda(requestorFunction),
             properties: {
                 DomainName: props.domainName,
                 SubjectAlternativeNames: props.subjectAlternativeNames,
@@ -83,7 +83,7 @@ export class DnsValidatedCertificate extends cdk.Construct implements ICertifica
     protected validate(): string[] {
         const errors: string[] = [];
         // Ensure the zone name is a parent zone of the certificate domain name
-        if (!this.domainName.endsWith('.' + this.normalizedZoneName)) {
+        if (this.domainName !== this.normalizedZoneName && !this.domainName.endsWith('.' + this.normalizedZoneName)) {
             errors.push(`DNS zone ${this.normalizedZoneName} is not authoritative for certificate domain name ${this.domainName}`);
         }
         return errors;

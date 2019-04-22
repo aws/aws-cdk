@@ -782,20 +782,6 @@ export = {
     test.done();
   },
 
-  'error when adding more than 5 global secondary indexes'(test: Test) {
-    const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });
-    const gsiGenerator = GSI_GENERATOR();
-    for (let i = 0; i < 5; i++) {
-      table.addGlobalSecondaryIndex(gsiGenerator.next().value);
-    }
-
-    test.throws(() => table.addGlobalSecondaryIndex(gsiGenerator.next().value),
-      /a maximum number of global secondary index per table is 5/);
-
-    test.done();
-  },
-
   'when adding a global secondary index without specifying read and write capacity'(test: Test) {
     const stack = new Stack();
     const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, sortKey: TABLE_SORT_KEY });

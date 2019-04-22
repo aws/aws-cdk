@@ -1,11 +1,11 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
 import ssm = require('./ssm.generated');
 
 /**
  * An SSM Parameter reference.
  */
-export interface IParameter extends cdk.IConstruct {
+export interface IParameter extends IResource {
   /**
    * The ARN of the SSM Parameter resource.
    */
@@ -60,7 +60,7 @@ export interface IStringListParameter extends IParameter {
 /**
  * Properties needed to create a new SSM Parameter.
  */
-export interface ParameterProps {
+export interface ParameterOptions {
   /**
    * A regular expression used to validate the parameter value. For example, for String types with values restricted to
    * numbers, you can specify the following: ``^\d+$``
@@ -87,7 +87,7 @@ export interface ParameterProps {
 /**
  * Properties needed to create a String SSM parameter.
  */
-export interface StringParameterProps extends ParameterProps {
+export interface StringParameterProps extends ParameterOptions {
   /**
    * The value of the parameter. It may not reference another parameter and ``{{}}`` cannot be used in the value.
    */
@@ -97,7 +97,7 @@ export interface StringParameterProps extends ParameterProps {
 /**
  * Properties needed to create a StringList SSM Parameter
  */
-export interface StringListParameterProps extends ParameterProps {
+export interface StringListParameterProps extends ParameterOptions {
   /**
    * The values of the parameter. It may not reference another parameter and ``{{}}`` cannot be used in the value.
    */
@@ -107,13 +107,9 @@ export interface StringListParameterProps extends ParameterProps {
 /**
  * Basic features shared across all types of SSM Parameters.
  */
-export abstract class ParameterBase extends cdk.Construct implements IParameter {
+export abstract class ParameterBase extends Resource implements IParameter {
   public abstract readonly parameterName: string;
   public abstract readonly parameterType: string;
-
-  constructor(scope: cdk.Construct, id: string, _props: ParameterProps) {
-    super(scope, id);
-  }
 
   public get parameterArn(): string {
     return this.node.stack.formatArn({
@@ -141,6 +137,53 @@ export abstract class ParameterBase extends cdk.Construct implements IParameter 
   }
 }
 
+export interface ParameterProps extends ParameterOptions {
+  /**
+   * The type of parameter.
+   */
+  readonly type: ParameterType;
+
+  /**
+   * The parameter value.
+   */
+  readonly value: string;
+}
+
+/**
+ * The type of the SSM parameter.
+ */
+export enum ParameterType {
+  STRING = 'String',
+  STRING_LIST = 'StringList'
+}
+
+/**
+ * SSM parameter.
+ *
+ * Use `StringParameter` and `StringListParameter` for a strong-typed version.
+ */
+export class Parameter extends ParameterBase {
+  public readonly parameterName: string;
+  public readonly parameterType: string;
+  public readonly parameterValue: string;
+
+  constructor(scope: Construct, id: string, props: ParameterProps) {
+    super(scope, id);
+
+    const resource = new ssm.CfnParameter(this, 'Resource', {
+      allowedPattern: props.allowedPattern,
+      description: props.description,
+      name: props.name,
+      type: props.type,
+      value: props.value
+    });
+
+    this.parameterName = resource.parameterName;
+    this.parameterType = resource.parameterType;
+    this.parameterValue = resource.parameterValue;
+  }
+}
+
 /**
  * Creates a new String SSM Parameter.
  */
@@ -149,8 +192,8 @@ export class StringParameter extends ParameterBase implements IStringParameter {
   public readonly parameterType: string;
   public readonly stringValue: string;
 
-  constructor(scope: cdk.Construct, id: string, props: StringParameterProps) {
-    super(scope, id, props);
+  constructor(scope: Construct, id: string, props: StringParameterProps) {
+    super(scope, id);
 
     if (props.allowedPattern) {
       _assertValidValue(props.stringValue, props.allowedPattern);
@@ -178,14 +221,14 @@ export class StringListParameter extends ParameterBase implements IStringListPar
   public readonly parameterType: string;
   public readonly stringListValue: string[];
 
-  constructor(scope: cdk.Construct, id: string, props: StringListParameterProps) {
-    super(scope, id, props);
+  constructor(scope: Construct, id: string, props: StringListParameterProps) {
+    super(scope, id);
 
-    if (props.stringListValue.find(str => !cdk.unresolved(str) && str.indexOf(',') !== -1)) {
+    if (props.stringListValue.find(str => !Token.unresolved(str) && str.indexOf(',') !== -1)) {
       throw new Error('Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.');
     }
 
-    if (props.allowedPattern && !cdk.unresolved(props.stringListValue)) {
+    if (props.allowedPattern && !Token.unresolved(props.stringListValue)) {
       props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
@@ -199,7 +242,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
 
     this.parameterName = resource.parameterName;
     this.parameterType = resource.parameterType;
-    this.stringListValue = cdk.Fn.split(',', resource.parameterValue);
+    this.stringListValue = Fn.split(',', resource.parameterValue);
   }
 }
 
@@ -213,7 +256,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
  *         ``cdk.unresolved``).
  */
 function _assertValidValue(value: string, allowedPattern: string): void {
-  if (cdk.unresolved(value) || cdk.unresolved(allowedPattern)) {
+  if (Token.unresolved(value) || Token.unresolved(allowedPattern)) {
     // Unable to perform validations against unresolved tokens
     return;
   }

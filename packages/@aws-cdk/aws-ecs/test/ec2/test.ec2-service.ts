@@ -75,6 +75,56 @@ export = {
       test.done();
     },
 
+    "errors if daemon and maximumPercent not 100"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      taskDefinition.addContainer('BaseContainer', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryReservationMiB: 10,
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.Ec2Service(stack, "Ec2Service", {
+          cluster,
+          taskDefinition,
+          daemon: true,
+          maximumPercent: 300
+        });
+      }, /Maximum percent must be 100 for daemon mode./);
+
+      test.done();
+    },
+
+    "errors if daemon and minimum not 0"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      taskDefinition.addContainer('BaseContainer', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryReservationMiB: 10,
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.Ec2Service(stack, "Ec2Service", {
+          cluster,
+          taskDefinition,
+          daemon: true,
+          minimumHealthyPercent: 50
+        });
+      }, /Minimum healthy percent must be 0 for daemon mode./);
+
+      test.done();
+    },
+
     'Output does not contain DesiredCount if daemon mode is set'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -141,7 +191,11 @@ export = {
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
-        SchedulingStrategy: "DAEMON"
+        SchedulingStrategy: "DAEMON",
+        DeploymentConfiguration: {
+          MaximumPercent: 100,
+          MinimumHealthyPercent: 0
+        },
       }));
 
       test.done();

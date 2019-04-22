@@ -4,6 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
+import { Staging } from './staging';
 
 /**
  * Defines the way an asset is packaged before it is uploaded to S3.
@@ -21,7 +22,7 @@ export enum AssetPackaging {
   File = 'file',
 }
 
-export interface GenericAssetProps {
+export interface AssetProps {
   /**
    * The disk location of the asset.
    */
@@ -61,7 +62,10 @@ export class Asset extends cdk.Construct {
   public readonly s3Url: string;
 
   /**
-   * Resolved full-path location of this asset.
+   * The path to the asset (stringinfied token).
+   *
+   * If asset staging is disabled, this will just be the original path.
+   * If asset staging is enabled it will be the staged path.
    */
   public readonly assetPath: string;
 
@@ -81,19 +85,23 @@ export class Asset extends cdk.Construct {
    */
   private readonly s3Prefix: string;
 
-  constructor(scope: cdk.Construct, id: string, props: GenericAssetProps) {
+  constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
 
-    // resolve full path
-    this.assetPath = path.resolve(props.path);
+    // stage the asset source (conditionally).
+    const staging = new Staging(this, 'Stage', {
+      sourcePath: path.resolve(props.path)
+    });
+
+    this.assetPath = staging.stagedPath;
 
     // sets isZipArchive based on the type of packaging and file extension
     const allowedExtensions: string[] = ['.jar', '.zip'];
     this.isZipArchive = props.packaging === AssetPackaging.ZipDirectory
       ? true
-      : allowedExtensions.some(ext => this.assetPath.toLowerCase().endsWith(ext));
+      : allowedExtensions.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
 
-    validateAssetOnDisk(this.assetPath, props.packaging);
+    validateAssetOnDisk(staging.sourcePath, props.packaging);
 
     // add parameters for s3 bucket and s3 key. those will be set by
     // the toolkit or by CI/CD when the stack is deployed and will include

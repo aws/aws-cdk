@@ -4,8 +4,8 @@ import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
 
+import { AutoScalingRollingUpdate, Construct, Fn, IResource, Resource, Tag, Token } from '@aws-cdk/cdk';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -187,7 +187,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
  *
  * The ASG spans all availability zones.
  */
-export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup, elb.ILoadBalancerTarget, ec2.IConnectable,
+export class AutoScalingGroup extends Resource implements IAutoScalingGroup, elb.ILoadBalancerTarget, ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
   /**
    * The type of OS instances of this fleet are running.
@@ -217,7 +217,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   private readonly targetGroupArns: string[] = [];
   private albTargetGroup?: elbv2.ApplicationTargetGroup;
 
-  constructor(scope: cdk.Construct, id: string, props: AutoScalingGroupProps) {
+  constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id);
 
     if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
@@ -230,7 +230,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
+    this.node.apply(new Tag(NAME_TAG, this.node.path));
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
@@ -242,8 +242,8 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
 
     // use delayed evaluation
     const machineImage = props.machineImage.getImage(this);
-    const userDataToken = new cdk.Token(() => cdk.Fn.base64((machineImage.os.createUserData(this.userDataLines)))).toString();
-    const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
+    const userDataToken = new Token(() => Fn.base64((machineImage.os.createUserData(this.userDataLines)))).toString();
+    const securityGroupsToken = new Token(() => this.securityGroups.map(sg => sg.securityGroupId));
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
       imageId: machineImage.imageId,
@@ -268,15 +268,15 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
     }
 
-    const subnetIds = props.vpc.subnetIds(props.vpcSubnets);
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
       minSize: minCapacity.toString(),
       maxSize: maxCapacity.toString(),
       desiredCapacity: desiredCapacity.toString(),
       launchConfigurationName: launchConfig.ref,
-      loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined).toList(),
-      targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined).toList(),
+      loadBalancerNames: new Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined).toList(),
+      targetGroupArns: new Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined).toList(),
       notificationConfigurations: !props.notificationsTopic ? undefined : [
         {
           topicArn: props.notificationsTopic.topicArn,
@@ -614,7 +614,7 @@ export enum ScalingProcess {
 /**
  * Render the rolling update configuration into the appropriate object
  */
-function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): cdk.AutoScalingRollingUpdate {
+function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): AutoScalingRollingUpdate {
   const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined ? true : false;
   const pauseTimeSec = config.pauseTimeSec !== undefined ? config.pauseTimeSec : (waitOnResourceSignals ? 300 : 0);
 
@@ -665,7 +665,7 @@ function validatePercentage(x?: number): number | undefined {
 /**
  * An AutoScalingGroup
  */
-export interface IAutoScalingGroup {
+export interface IAutoScalingGroup extends IResource {
   /**
    * The name of the AutoScalingGroup
    */

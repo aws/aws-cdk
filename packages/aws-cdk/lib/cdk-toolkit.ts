@@ -9,7 +9,6 @@ import { deserializeStructure } from './serialize';
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
-const confirm = promisify(promptly.confirm);
 
 export interface CdkToolkitProps {
   /**
@@ -98,7 +97,7 @@ export class CdkToolkit {
               'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
           }
 
-          const confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
+          const confirmed = await promptly.confirm(`Do you wish to deploy these changes (y/n)?`);
           if (!confirmed) { throw new Error('Aborted by user'); }
         }
       }
@@ -235,9 +234,12 @@ export interface DeployOptions {
    * Reuse the assets with the given asset IDs
    */
   reuseAssets?: string[];
+<<<<<<< HEAD
 
   /**
    * Tags to pass to CloudFormation for deployment
    */
   tags?: Tag[];
+=======
+>>>>>>> master
 }

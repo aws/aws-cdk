@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Fn, Root, Token, unresolved } from '../lib';
+import { App as Root, Fn, Token, unresolved } from '../lib';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {

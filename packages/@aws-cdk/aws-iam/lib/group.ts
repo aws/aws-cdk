@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
@@ -36,7 +36,7 @@ export interface GroupProps {
   readonly path?: string;
 }
 
-export class Group extends Construct implements IIdentity {
+export class Group extends Resource implements IIdentity {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
   /**

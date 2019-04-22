@@ -324,9 +324,22 @@ This package defines the following actions:
   changes from the people (or system) applying the changes.
 * **CloudFormationExecuteChangeSetAction** - Execute a change set prepared previously.
 
+##### Lambda deployed through CodePipeline
+
+If you want to deploy your Lambda through CodePipeline,
+and you don't use assets (for example, because your CDK code and Lambda code are separate),
+you can use a special Lambda `Code` class, `CfnParametersCode`.
+Note that your Lambda must be in a different Stack than your Pipeline.
+The Lambda itself will be deployed, alongside the entire Stack it belongs to,
+using a CloudFormation CodePipeline Action. Example:
+
+[Example of deploying a Lambda through CodePipeline](test/integ.lambda-deployed-through-codepipeline.lit.ts)
+
 #### AWS CodeDeploy
 
-To use CodeDeploy in a Pipeline:
+##### Server deployments
+
+To use CodeDeploy for EC2/on-premise deployments in a Pipeline:
 
 ```ts
 import codedeploy = require('@aws-cdk/aws-codedeploy');
@@ -347,6 +360,62 @@ pipeline.addStage({
   actions: [deployAction],
 });
 ```
+
+##### Lambda deployments
+
+To use CodeDeploy for blue-green Lambda deployments in a Pipeline:
+
+```typescript
+const lambdaCode = lambda.Code.cfnParameters(); 
+const func = new lambda.Function(lambdaStack, 'Lambda', {
+  code: lambdaCode,
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NodeJS810,
+});
+// used to make sure each CDK synthesis produces a different Version
+const version = func.newVersion();
+const alias = new lambda.Alias(lambdaStack, 'LambdaAlias', {
+  aliasName: 'Prod',
+  version,
+});
+
+new codedeploy.LambdaDeploymentGroup(lambdaStack, 'DeploymentGroup', {
+  alias,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
+});
+```
+
+Then, you need to create your Pipeline Stack,
+where you will define your Pipeline,
+and deploy the `lambdaStack` using a CloudFormation CodePipeline Action
+(see above for a complete example).
+
+#### ECS
+
+CodePipeline can deploy an ECS service.
+The deploy Action receives one input Artifact which contains the [image definition file]:
+
+```typescript
+const deployStage = pipeline.addStage({
+  name: 'Deploy',
+  actions: [
+    new codepipeline_actions.EcsDeployAction({
+      actionName: 'DeployAction',
+      service,
+      // if your file is called imagedefinitions.json,
+      // use the `inputArtifact` property,
+      // and leave out the `imageFile` property
+      inputArtifact: buildAction.outputArtifact,
+      // if your file name is _not_ imagedefinitions.json,
+      // use the `imageFile` property,
+      // and leave out the `inputArtifact` property
+      imageFile: buildAction.outputArtifact.atPath('imageDef.json'),
+    }),
+  ],
+});
+```
+
+[image definition file]: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
 
 #### AWS S3
 

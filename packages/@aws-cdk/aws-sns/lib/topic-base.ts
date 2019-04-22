@@ -6,11 +6,12 @@ import lambda = require('@aws-cdk/aws-lambda');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import { TopicPolicy } from './policy';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
 export interface ITopic extends
-  cdk.IConstruct,
+  IResource,
   events.IEventRuleTarget,
   cloudwatch.IAlarmAction,
   s3n.IBucketNotificationDestination,
@@ -36,7 +37,6 @@ export interface ITopic extends
    * The queue resource policy will be updated to allow this SNS topic to send
    * messages to the queue.
    *
-   * @param name The subscription name
    * @param queue The target queue
    * @param rawMessageDelivery Enable raw message delivery
    */
@@ -48,7 +48,6 @@ export interface ITopic extends
    * The Lambda's resource policy will be updated to allow this topic to
    * invoke the function.
    *
-   * @param name A name for the subscription
    * @param lambdaFunction The Lambda function to invoke
    */
   subscribeLambda(lambdaFunction: lambda.IFunction): Subscription;
@@ -58,7 +57,7 @@ export interface ITopic extends
    *
    * @param name A name for the subscription
    * @param emailAddress The email address to use.
-   * @param jsonFormat True if the email content should be in JSON format (default is false).
+   * @param options Options to use for email subscription
    */
   subscribeEmail(name: string, emailAddress: string, options?: EmailSubscriptionOptions): Subscription;
 
@@ -89,7 +88,7 @@ export interface ITopic extends
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicBase extends cdk.Construct implements ITopic {
+export abstract class TopicBase extends Resource implements ITopic {
   public abstract readonly topicArn: string;
 
   public abstract readonly topicName: string;
@@ -135,7 +134,6 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    * The queue resource policy will be updated to allow this SNS topic to send
    * messages to the queue.
    *
-   * @param name The subscription name
    * @param queue The target queue
    * @param rawMessageDelivery Enable raw message delivery
    */
@@ -176,7 +174,6 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    * The Lambda's resource policy will be updated to allow this topic to
    * invoke the function.
    *
-   * @param name A name for the subscription
    * @param lambdaFunction The Lambda function to invoke
    */
   public subscribeLambda(lambdaFunction: lambda.IFunction): Subscription {

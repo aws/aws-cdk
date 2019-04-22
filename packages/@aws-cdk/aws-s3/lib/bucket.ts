@@ -2,7 +2,8 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
-import cdk = require('@aws-cdk/cdk');
+import { applyRemovalPolicy, CfnOutput, Construct, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
@@ -10,7 +11,7 @@ import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
-export interface IBucket extends cdk.IConstruct {
+export interface IBucket extends IResource {
   /**
    * The ARN of the bucket.
    */
@@ -231,7 +232,7 @@ export interface BucketImportProps {
  *   Bucket.import(this, 'MyImportedBucket', ref);
  *
  */
-export abstract class BucketBase extends cdk.Construct implements IBucket {
+export abstract class BucketBase extends Resource implements IBucket {
   /**
    * The ARN of the bucket.
    */
@@ -591,7 +592,7 @@ export interface BucketProps {
    *
    * @default The bucket will be orphaned
    */
-  readonly removalPolicy?: cdk.RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * Whether this bucket should have versioning turned on or not.
@@ -643,12 +644,12 @@ export class Bucket extends BucketBase {
   /**
    * Creates a Bucket construct that represents an external bucket.
    *
-   * @param parent The parent creating construct (usually `this`).
+   * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param props A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.
    */
-  public static import(scope: cdk.Construct, id: string, props: BucketImportProps): IBucket {
+  public static import(scope: Construct, id: string, props: BucketImportProps): IBucket {
     return new ImportedBucket(scope, id, props);
   }
 
@@ -665,21 +666,24 @@ export class Bucket extends BucketBase {
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
 
-  constructor(scope: cdk.Construct, id: string, props: BucketProps = {}) {
+  constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id);
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
+    if (props.bucketName && !Token.unresolved(props.bucketName)) {
+      this.validateBucketName(props.bucketName);
+    }
 
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: props && props.bucketName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-      lifecycleConfiguration: new cdk.Token(() => this.parseLifecycleConfiguration()),
+      lifecycleConfiguration: new Token(() => this.parseLifecycleConfiguration()),
       websiteConfiguration: this.renderWebsiteConfiguration(props),
       publicAccessBlockConfiguration: props.blockPublicAccess
     });
 
-    cdk.applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : cdk.RemovalPolicy.Orphan);
+    applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
@@ -707,10 +711,10 @@ export class Bucket extends BucketBase {
    */
   public export(): BucketImportProps {
     return {
-      bucketArn: new cdk.CfnOutput(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
-      bucketName: new cdk.CfnOutput(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
-      bucketDomainName: new cdk.CfnOutput(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
-      bucketWebsiteUrl: new cdk.CfnOutput(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
+      bucketArn: new CfnOutput(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
+      bucketName: new CfnOutput(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
+      bucketDomainName: new CfnOutput(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
+      bucketWebsiteUrl: new CfnOutput(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
     };
   }
 
@@ -774,6 +778,40 @@ export class Bucket extends BucketBase {
    */
   public onObjectRemoved(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     return this.onEvent(EventType.ObjectRemoved, dest, ...filters);
+  }
+
+  private validateBucketName(bucketName: string) {
+    const errors: string[] = [];
+
+    // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
+    if (bucketName.length < 3 || bucketName.length > 63) {
+      errors.push('Bucket name must be at least 3 and no more than 63 characters');
+    }
+    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
+    if (charsetMatch) {
+      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
+        + `(offset: ${charsetMatch.index})`);
+    }
+    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + '(offset: 0)');
+    }
+    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + `(offset: ${bucketName.length - 1})`);
+    }
+    const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
+    if (consecSymbolMatch) {
+      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods '
+        + `(offset: ${consecSymbolMatch.index})`);
+    }
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
+      errors.push('Bucket name must not resemble an IP address');
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
+    }
   }
 
   /**
@@ -1055,7 +1093,7 @@ class ImportedBucket extends BucketBase {
 
   protected disallowPublicAccess?: boolean;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: BucketImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: BucketImportProps) {
     super(scope, id);
 
     const bucketName = parseBucketName(this, props);

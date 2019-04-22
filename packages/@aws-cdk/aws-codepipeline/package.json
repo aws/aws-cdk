@@ -29,7 +29,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-codepipeline"
   },
   "scripts": {
     "build": "cdk-build",
@@ -75,7 +76,6 @@
     "@aws-cdk/aws-events": "^0.28.0",
     "@aws-cdk/aws-iam": "^0.28.0",
     "@aws-cdk/aws-s3": "^0.28.0",
-    "@aws-cdk/aws-sns": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
@@ -83,7 +83,6 @@
     "@aws-cdk/aws-events": "^0.28.0",
     "@aws-cdk/aws-iam": "^0.28.0",
     "@aws-cdk/aws-s3": "^0.28.0",
-    "@aws-cdk/aws-sns": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0"
   },
   "engines": {
@@ -94,7 +93,8 @@
       "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[0]",
       "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[1]",
       "export:@aws-cdk/aws-codepipeline.IPipeline",
-      "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps"
+      "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps",
+      "resource-attribute:@aws-cdk/aws-codepipeline.IPipeline.pipelineVersion"
     ]
   }
 }

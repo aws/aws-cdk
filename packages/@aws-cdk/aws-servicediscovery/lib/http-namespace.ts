@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct } from '@aws-cdk/cdk';
 import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
@@ -30,7 +30,7 @@ export class HttpNamespace extends NamespaceBase {
    */
   public readonly type: NamespaceType;
 
-  constructor(scope: cdk.Construct, id: string, props: HttpNamespaceProps) {
+  constructor(scope: Construct, id: string, props: HttpNamespaceProps) {
     super(scope, id);
 
     const ns = new CfnHttpNamespace(this, 'Resource', {
