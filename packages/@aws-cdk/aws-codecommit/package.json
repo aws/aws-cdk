@@ -68,7 +68,6 @@
     "@aws-cdk/aws-sns": "^0.28.0",
     "aws-sdk": "^2.438.0",
     "cdk-build-tools": "^0.28.0",
-    "@aws-cdk/aws-events-targets": "^0.28.0",
     "cdk-integ-tools": "^0.28.0",
     "cfn2ts": "^0.28.0",
     "pkglint": "^0.28.0"
