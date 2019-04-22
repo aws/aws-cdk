@@ -29,8 +29,7 @@ test('sns topic as an event rule target', () => {
       ],
       Version: "2012-10-17"
     },
-    Topics: [ { Ref: "MyTopic86869434" }
-    ]
+    Topics: [{ Ref: "MyTopic86869434" }]
   }));
 
   expect(stack).to(haveResource('AWS::Events::Rule', {
@@ -38,11 +37,38 @@ test('sns topic as an event rule target', () => {
     State: "ENABLED",
     Targets: [
       {
-        Arn: {
-          Ref: "MyTopic86869434"
-        },
+        Arn: { Ref: "MyTopic86869434" },
         Id: "MyTopic"
       }
     ]
+  }));
+});
+
+test('multiple uses of a topic as a target results in a single policy statement', () => {
+  // GIVEN
+  const stack = new Stack();
+  const topic = new sns.Topic(stack, 'MyTopic');
+
+  // WHEN
+  for (let i = 0; i < 5; ++i) {
+    const rule = new events.EventRule(stack, `Rule${i}`, { scheduleExpression: 'rate(1 hour)' });
+    rule.addTarget(new targets.SnsTopicTarget(topic));
+  }
+
+  // THEN
+  expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: "sns:Publish",
+          Effect: "Allow",
+          Principal: { Service: { "Fn::Join": [ "", [ "events.", { Ref: "AWS::URLSuffix" } ] ] } },
+          Resource: { Ref: "MyTopic86869434" },
+          Sid: "0"
+        }
+      ],
+      Version: "2012-10-17"
+    },
+    Topics: [ { Ref: "MyTopic86869434" } ]
   }));
 });
