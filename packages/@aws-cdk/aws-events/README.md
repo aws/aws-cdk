@@ -70,4 +70,6 @@ interface for various AWS services.
 
 The following targets are supported:
 
-* `targets.SnsTopic`: use Amazon SNS topic as an event rule target.
+* `targets.SnsTopic`: publish into an SNS topic when an event rule is triggered.
+* `targets.CodeBuildProject`: start a CodeBuild project when an event rule is triggered.
+
