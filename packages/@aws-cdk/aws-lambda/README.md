@@ -40,6 +40,16 @@ granting permissions to other AWS accounts or organizations.
 
 [Example of Lambda Layer usage](test/integ.layer-version.lit.ts)
 
+## Event Rule Target
+
+You can use an AWS Lambda function as a target for an Amazon CloudWatch event
+rule:
+
+```ts
+import targets = require('@aws-cdk/aws-events-targets');
+rule.addTarget(new targets.LambdaFunction(myFunction));
+```
+
 ### Event Sources
 
 AWS Lambda supports a [variety of event sources](https://docs.aws.amazon.com/lambda/latest/dg/invoking-lambda-function.html).

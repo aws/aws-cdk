@@ -1,5 +1,4 @@
-import { countResources, expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
-import events = require('@aws-cdk/aws-events');
+import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
@@ -255,57 +254,6 @@ export = {
 
       test.done();
     },
-  },
-
-  'Lambda can serve as EventRule target, permission gets added'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = newTestLambda(stack);
-    const rule1 = new events.EventRule(stack, 'Rule', { scheduleExpression: 'rate(1 minute)' });
-    const rule2 = new events.EventRule(stack, 'Rule2', { scheduleExpression: 'rate(5 minutes)' });
-
-    // WHEN
-    rule1.addTarget(fn);
-    rule2.addTarget(fn);
-
-    // THEN
-    const lambdaId = "MyLambdaCCE802FB";
-
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      "Action": "lambda:InvokeFunction",
-      "FunctionName": {
-        "Fn::GetAtt": [
-          lambdaId,
-          "Arn"
-        ]
-      },
-      "Principal": "events.amazonaws.com",
-      "SourceArn": { "Fn::GetAtt": [ "Rule4C995B7F", "Arn" ] }
-    }));
-
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      "Action": "lambda:InvokeFunction",
-      "FunctionName": {
-        "Fn::GetAtt": [
-          lambdaId,
-          "Arn"
-        ]
-      },
-      "Principal": "events.amazonaws.com",
-      "SourceArn": { "Fn::GetAtt": [ "Rule270732244", "Arn" ] }
-    }));
-
-    expect(stack).to(countResources('AWS::Events::Rule', 2));
-    expect(stack).to(haveResource('AWS::Events::Rule', {
-      "Targets": [
-        {
-        "Arn": { "Fn::GetAtt": [ lambdaId, "Arn" ] },
-        "Id": "MyLambda"
-        }
-      ]
-    }));
-
-    test.done();
   },
 
   'Lambda code can be read from a local directory via an asset'(test: Test) {
