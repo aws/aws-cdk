@@ -187,6 +187,28 @@
                   }
                 ],
                 "RunOrder": 1
+              },
+              {
+                "ActionTypeId": {
+                  "Category": "Source",
+                  "Owner": "AWS",
+                  "Provider": "S3",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "S3Bucket": {
+                    "Ref": "PipelineBucketB967BD35"
+                  },
+                  "S3ObjectKey": "additional/key"
+                },
+                "InputArtifacts": [],
+                "Name": "AdditionalSource",
+                "OutputArtifacts": [
+                  {
+                    "Name": "AdditionalArtifact"
+                  }
+                ],
+                "RunOrder": 1
               }
             ],
             "Name": "Source"

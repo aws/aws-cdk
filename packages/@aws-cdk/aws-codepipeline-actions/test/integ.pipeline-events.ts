@@ -19,9 +19,10 @@ const repository = new codecommit.Repository(stack, 'CodeCommitRepo', {
 });
 const project = new codebuild.PipelineProject(stack, 'BuildProject');
 
+const sourceOutput = new codepipeline.Artifact('Source');
 const sourceAction = new cpactions.CodeCommitSourceAction({
   actionName: 'CodeCommitSource',
-  outputArtifactName: 'Source',
+  output: sourceOutput,
   repository,
   pollForSourceChanges: true,
 });
@@ -33,10 +34,11 @@ const sourceStage = pipeline.addStage({
 pipeline.addStage({
   name: 'Build',
   actions: [
-    new cpactions.CodeBuildBuildAction({
+    new cpactions.CodeBuildAction({
       actionName: 'CodeBuildAction',
-      inputArtifact: sourceAction.outputArtifact,
+      input: sourceOutput,
       project,
+      output: new codepipeline.Artifact(),
     }),
   ],
 });
