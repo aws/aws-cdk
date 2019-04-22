@@ -58,7 +58,7 @@ export interface ServerDeploymentGroupImportProps {
  * or one defined in a different CDK Stack,
  * use the {@link #import} method.
  */
-export abstract class ServerDeploymentGroupBase extends cdk.Construct implements IServerDeploymentGroup {
+abstract class ServerDeploymentGroupBase extends cdk.Construct implements IServerDeploymentGroup {
   public abstract readonly application: IServerApplication;
   public abstract readonly role?: iam.Role;
   public abstract readonly deploymentGroupName: string;

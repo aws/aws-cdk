@@ -183,3 +183,13 @@ constructLinter.add({
     e.assert(e.ctx.interfaceType.extends(interfaceBase), e.ctx.interfaceType.fqn);
   }
 });
+
+constructLinter.add({
+  code: 'construct-base-is-private',
+  message: 'prefer that the construct base class is private',
+  eval: e => {
+    if (!e.ctx.interfaceType) { return; }
+    const baseFqn = `${e.ctx.classType.fqn}Base`;
+    e.assert(!e.ctx.sys.tryFindFqn(baseFqn), baseFqn);
+  }
+});

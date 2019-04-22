@@ -89,7 +89,7 @@
   },
   "awslint": {
     "exclude": [
-      "resource-attribute:@aws-cdk/aws-sqs.IQueue.queueName"
+      "construct-base-is-private:@aws-cdk/aws-sqs.QueueBase"
     ]
   }
 }

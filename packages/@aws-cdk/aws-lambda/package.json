@@ -110,7 +110,8 @@
   },
   "awslint": {
     "exclude": [
-      "grant-result:@aws-cdk/aws-lambda.LayerVersionBase.grantUsage"
+      "construct-base-is-private:@aws-cdk/aws-lambda.FunctionBase",
+      "grant-result:@aws-cdk/aws-lambda.LayerVersion.grantUsage"
     ]
   }
 }
