@@ -9,10 +9,10 @@ import sns = require('@aws-cdk/aws-sns');
  *
  *    // publish to an SNS topic every time code is committed
  *    // to a CodeCommit repository
- *    repository.onCommit(new SnsTopicTarget(topic));
+ *    repository.onCommit(new targets.SnsTopic(topic));
  *
  */
-export class SnsTopicTarget implements events.IEventRuleTarget {
+export class SnsTopic implements events.IEventRuleTarget {
   constructor(public readonly topic: sns.ITopic) {
 
   }

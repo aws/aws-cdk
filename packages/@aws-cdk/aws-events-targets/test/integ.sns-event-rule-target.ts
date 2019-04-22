@@ -21,6 +21,6 @@ const event = new events.EventRule(stack, 'EveryMinute', {
 const queue = new sqs.Queue(stack, 'MyQueue');
 topic.subscribeQueue(queue);
 
-event.addTarget(new targets.SnsTopicTarget(topic));
+event.addTarget(new targets.SnsTopic(topic));
 
 app.run();

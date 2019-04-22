@@ -13,7 +13,7 @@ test('sns topic as an event rule target', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.SnsTopicTarget(topic));
+  rule.addTarget(new targets.SnsTopic(topic));
 
   // THEN
   expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
@@ -52,7 +52,7 @@ test('multiple uses of a topic as a target results in a single policy statement'
   // WHEN
   for (let i = 0; i < 5; ++i) {
     const rule = new events.EventRule(stack, `Rule${i}`, { scheduleExpression: 'rate(1 hour)' });
-    rule.addTarget(new targets.SnsTopicTarget(topic));
+    rule.addTarget(new targets.SnsTopic(topic));
   }
 
   // THEN
