@@ -1,7 +1,8 @@
 import events = require('@aws-cdk/aws-events');
+import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
-import sns = require('../lib');
+import targets = require('../../lib');
 
 // ---------------------------------
 // Define a rule that triggers an SNS topic every 1min.
@@ -20,6 +21,6 @@ const event = new events.EventRule(stack, 'EveryMinute', {
 const queue = new sqs.Queue(stack, 'MyQueue');
 topic.subscribeQueue(queue);
 
-event.addTarget(topic);
+event.addTarget(new targets.SnsTopic(topic));
 
 app.run();

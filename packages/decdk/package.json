@@ -129,7 +129,8 @@
     "jsii-reflect": "^0.10.2",
     "jsonschema": "^1.2.4",
     "yaml": "1.5.0",
-    "yargs": "^13.2.2"
+    "yargs": "^13.2.2",
+    "@aws-cdk/aws-events-targets": "^0.28.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",

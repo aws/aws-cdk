@@ -152,12 +152,14 @@ by events via an event rule.
 
 ### Using Project as an event target
 
-The `Project` construct implements the `IEventRuleTarget` interface. This means
-that it can be used as a target for event rules:
+The `@aws-cdk/aws-events-targets.CodeBuildProject` allows using an AWS CodeBuild
+project as a AWS CloudWatch event rule target:
 
 ```ts
 // start build when a commit is pushed
-codeCommitRepository.onCommit('OnCommit', project);
+const targets = require('@aws-cdk/aws-events-targets');
+
+codeCommitRepository.onCommit('OnCommit', new targets.CodeBuildProject(project));
 ```
 
 ### Using Project as an event source

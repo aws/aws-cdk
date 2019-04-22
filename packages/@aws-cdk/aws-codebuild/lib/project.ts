@@ -16,7 +16,7 @@ const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
-export interface IProject extends IResource, events.IEventRuleTarget, iam.IGrantable {
+export interface IProject extends IResource, iam.IGrantable {
   /** The ARN of this Project. */
   readonly projectArn: string;
 
@@ -166,9 +166,6 @@ export abstract class ProjectBase extends Resource implements IProject {
 
   /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
-
-  /** A role used by CloudWatch events to trigger a build */
-  private eventsRole?: iam.Role;
 
   public abstract export(): ProjectImportProps;
 
@@ -346,27 +343,6 @@ export abstract class ProjectBase extends Resource implements IProject {
       statistic: 'sum',
       ...props,
     });
-  }
-
-  /**
-   * Allows using build projects as event rule targets.
-   */
-  public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
-    if (!this.eventsRole) {
-      this.eventsRole = new iam.Role(this, 'EventsRole', {
-        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
-      });
-
-      this.eventsRole.addToPolicy(new iam.PolicyStatement()
-        .addAction('codebuild:StartBuild')
-        .addResource(this.projectArn));
-    }
-
-    return {
-      id: this.node.id,
-      arn: this.projectArn,
-      roleArn: this.eventsRole.roleArn,
-    };
   }
 }
 

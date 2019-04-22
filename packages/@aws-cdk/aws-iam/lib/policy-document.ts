@@ -5,6 +5,7 @@ import { mergePrincipal } from './util';
 
 export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostProcessor {
   private statements = new Array<PolicyStatement>();
+  private _autoAssignSids = false;
 
   /**
    * Creates a new IAM policy document.
@@ -13,6 +14,13 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
    */
   constructor(private readonly baseDocument: any = {}) {
     super();
+  }
+
+  /**
+   * Will automatically assign a unique SID to each statement, unless an SID is provided.
+   */
+  public autoAssignSids() {
+    this._autoAssignSids = true;
   }
 
   public resolve(_context: cdk.ResolveContext): any {
@@ -38,7 +46,7 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
     }
 
     const jsonStatements = new Set<string>();
-    const uniqueStatements: PolicyStatement[] = [];
+    const uniqueStatements: any[] = [];
 
     for (const statement of input.Statement) {
       const jsonStatement = JSON.stringify(statement);
@@ -48,9 +56,18 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
       }
     }
 
+    // assign unique SIDs (the statement index) if `autoAssignSids` is enabled
+    const statements = uniqueStatements.map((s, i) => {
+      if (this._autoAssignSids && !s.Sid) {
+        s.Sid = i.toString();
+      }
+
+      return s;
+    });
+
     return {
       ...input,
-      Statement: uniqueStatements
+      Statement: statements
     };
   }
 
@@ -317,12 +334,13 @@ export class CompositePrincipal extends PrincipalBase {
  * Represents a statement in an IAM policy document.
  */
 export class PolicyStatement extends cdk.Token {
+  public sid?: string;
+
   private action = new Array<any>();
   private principal: { [key: string]: any[] } = {};
   private resource = new Array<any>();
   private condition: { [key: string]: any } = { };
   private effect?: PolicyStatementEffect;
-  private sid?: any;
 
   constructor(effect: PolicyStatementEffect = PolicyStatementEffect.Allow) {
     super();
@@ -427,6 +445,9 @@ export class PolicyStatement extends cdk.Token {
     return this.resource && this.resource.length > 0;
   }
 
+  /**
+   * @deprecated Use `statement.sid = value`
+   */
   public describe(sid: string): PolicyStatement {
     this.sid = sid;
     return this;

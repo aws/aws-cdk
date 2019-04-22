@@ -3,6 +3,7 @@
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import targets = require('@aws-cdk/aws-events-targets');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import cpactions = require('../lib');
@@ -42,7 +43,7 @@ pipeline.addStage({
 
 const topic = new sns.Topic(stack, 'MyTopic');
 
-pipeline.onStateChange('OnPipelineStateChange').addTarget(topic, {
+pipeline.onStateChange('OnPipelineStateChange').addTarget(new targets.SnsTopic(topic), {
   textTemplate: 'Pipeline <pipeline> changed state to <state>',
   pathsMap: {
     pipeline: '$.detail.pipeline',
@@ -50,9 +51,9 @@ pipeline.onStateChange('OnPipelineStateChange').addTarget(topic, {
   }
 });
 
-sourceStage.onStateChange('OnSourceStateChange', topic);
+sourceStage.onStateChange('OnSourceStateChange', new targets.SnsTopic(topic));
 
-sourceAction.onStateChange('OnActionStateChange', topic).addEventPattern({
+sourceAction.onStateChange('OnActionStateChange', new targets.SnsTopic(topic)).addEventPattern({
   detail: { state: [ 'STARTED' ] }
 });
 

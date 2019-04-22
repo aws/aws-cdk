@@ -533,5 +533,29 @@ export = {
       test.equal(stack.node.resolve(p).Statement.length, 1);
       test.done();
     }
+  },
+
+  'autoAssignSids enables auto-assignment of a unique SID for each statement'(test: Test) {
+    // GIVEN
+    const doc = new PolicyDocument();
+    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatement(new PolicyStatement().addAction('action2').addResource('resource2'));
+
+    // WHEN
+    doc.autoAssignSids();
+
+    // THEN
+    const stack = new Stack();
+    test.deepEqual(stack.node.resolve(doc), {
+      Version: '2012-10-17',
+      Statement: [
+        { Action: 'action1', Effect: 'Allow', Resource: 'resource1', Sid: '0' },
+        { Action: 'action2', Effect: 'Allow', Resource: 'resource2', Sid: '1' }
+      ],
+    });
+    test.done();
   }
 };
