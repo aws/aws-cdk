@@ -72,4 +72,5 @@ The following targets are supported:
 
 * `targets.SnsTopic`: publish into an SNS topic when an event rule is triggered.
 * `targets.CodeBuildProject`: start a CodeBuild project when an event rule is triggered.
+* `targets.LambdaFunction`: invoke an AWS Lambda function when an event rule is triggered.
 
