@@ -5,6 +5,7 @@ import { Construct, IConstruct, PATH_SEP } from './construct';
 import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { ISynthesisSession } from './synthesis';
+import { TagManager } from './tag-manager';
 import { makeUniqueId } from './uniqueid';
 
 export interface StackProps {
@@ -42,6 +43,13 @@ export interface StackProps {
   readonly autoDeploy?: boolean;
 }
 
+export interface ITaggable {
+  /**
+   * TagManager to set, remove and format tags
+   */
+  readonly tags: TagManager;
+}
+
 const STACK_SYMBOL = Symbol('@aws-cdk/cdk.CfnReference');
 
 /**
@@ -68,6 +76,13 @@ export class Stack extends Construct {
    */
   public static isStack(x: any): x is Stack {
     return x[STACK_SYMBOL] === true;
+  }
+
+  /**
+   * Check whether the given construct is Taggable
+   */
+  public static isTaggable(construct: any): construct is ITaggable {
+    return (construct as any).tags !== undefined;
   }
 
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;

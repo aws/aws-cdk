@@ -1,5 +1,6 @@
 import { IAspect } from './aspect';
 import { CfnResource, ITaggable } from './cfn-resource';
+import { Stack } from './stack';
 import { IConstruct } from './construct';
 
 /**
@@ -71,12 +72,21 @@ export abstract class TagBase implements IAspect {
   }
 
   public visit(construct: IConstruct): void {
-    if (!CfnResource.isCfnResource(construct)) {
+    const isCfnResource = CfnResource.isCfnResource(construct);
+    const isStack = Stack.isStack(construct);
+    if (!isCfnResource && !isStack) {
       return;
     }
-    const resource = construct as CfnResource;
-    if (CfnResource.isTaggable(resource)) {
-      this.applyTag(resource);
+    if (isCfnResource) {
+      const resource = construct as CfnResource;
+      if (CfnResource.isTaggable(resource)) {
+        this.applyTag(resource);
+      }
+    } else {
+      const resource = construct as Stack;
+      if (Stack.isTaggable(resource)) {
+        this.applyTag(resource);
+      }
     }
   }
 
