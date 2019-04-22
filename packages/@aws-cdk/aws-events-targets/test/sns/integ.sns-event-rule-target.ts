@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
-import targets = require('../lib');
+import targets = require('../../lib');
 
 // ---------------------------------
 // Define a rule that triggers an SNS topic every 1min.

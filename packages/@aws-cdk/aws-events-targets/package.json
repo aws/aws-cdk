@@ -72,7 +72,8 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.28.0",
     "cdk-build-tools": "^0.28.0",
-    "cdk-integ-tools":" ^0.28.0",
+    "@aws-cdk/aws-codecommit": "^0.28.0",
+    "cdk-integ-tools": "^0.28.0",
     "@aws-cdk/aws-sqs": "^0.28.0",
     "pkglint": "^0.28.0",
     "jest": "^24.7.1"
@@ -80,8 +81,8 @@
   "dependencies": {
     "@aws-cdk/aws-events": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0",
-    "@aws-cdk/aws-codebuild": "^0.28.0",
     "@aws-cdk/aws-iam": "^0.28.0",
+    "@aws-cdk/aws-codebuild": "^0.28.0",
     "@aws-cdk/aws-codepipeline": "^0.28.0",
     "@aws-cdk/aws-ecs": "^0.28.0",
     "@aws-cdk/aws-sns": "^0.28.0",
