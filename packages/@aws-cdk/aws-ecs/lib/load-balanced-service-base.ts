@@ -98,7 +98,8 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     }
 
     const targetProps = {
-      port: 80
+      port: 80,
+      deregistrationDelaySec: 30
     };
 
     const hasCertificate = props.certificate !== undefined;
