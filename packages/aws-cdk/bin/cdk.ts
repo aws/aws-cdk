@@ -3,7 +3,6 @@ import 'source-map-support/register';
 
 import colors = require('colors/safe');
 import fs = require('fs-extra');
-import util = require('util');
 import yargs = require('yargs');
 
 import { bootstrapEnvironment, destroyStack, SDK } from '../lib';
@@ -25,7 +24,6 @@ import { VERSION } from '../lib/version';
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
-const confirm = util.promisify(promptly.confirm);
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
@@ -359,7 +357,7 @@ async function initCommandLine() {
 
     if (!force) {
       // tslint:disable-next-line:max-line-length
-      const confirmed = await confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
+      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
