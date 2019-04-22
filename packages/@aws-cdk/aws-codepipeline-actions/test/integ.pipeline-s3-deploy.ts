@@ -11,9 +11,10 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
   removalPolicy: cdk.RemovalPolicy.Destroy,
 });
+const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.S3SourceAction({
   actionName: 'Source',
-  outputArtifactName: 'SourceArtifact',
+  output: sourceOutput,
   bucket,
   bucketKey: 'key',
 });
@@ -31,7 +32,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
       actions: [
         new cpactions.S3DeployAction({
           actionName: 'DeployAction',
-          inputArtifact: sourceAction.outputArtifact,
+          input: sourceOutput,
           bucket: deployBucket,
         })
       ],

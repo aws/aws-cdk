@@ -144,7 +144,7 @@
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
+                    "Name": "Artifact_Source_S3"
                   }
                 ],
                 "RunOrder": 1
@@ -166,13 +166,13 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
+                    "Name": "Artifact_Source_S3"
                   }
                 ],
                 "Name": "JenkinsBuild",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_JenkinsBuild_awscdkcodepipelinejenkinsJenkinsProviderF1B32E8D"
+                    "Name": "Artifact_Build_JenkinsBuild"
                   }
                 ],
                 "RunOrder": 1
@@ -189,7 +189,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
+                    "Name": "Artifact_Source_S3"
                   }
                 ],
                 "Name": "JenkinsTest",
@@ -208,7 +208,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_S3_awscdkcodepipelinejenkinsMyBucket1F504D45"
+                    "Name": "Artifact_Source_S3"
                   }
                 ],
                 "Name": "JenkinsTest2",

@@ -1,5 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import s3 = require('@aws-cdk/aws-s3');
+import { deployArtifactBounds } from '../common';
 
 /**
  * Construction properties of the {@link S3DeployAction S3 deploy Action}.
@@ -18,9 +19,9 @@ export interface S3DeployActionProps extends codepipeline.CommonActionProps {
   readonly objectKey?: string;
 
   /**
-   * The inputArtifact to deploy to Amazon S3.
+   * The input Artifact to deploy to Amazon S3.
    */
-  readonly inputArtifact: codepipeline.Artifact;
+  readonly input: codepipeline.Artifact;
 
   /**
    * The Amazon S3 bucket that is the deploy target.
@@ -31,19 +32,16 @@ export interface S3DeployActionProps extends codepipeline.CommonActionProps {
 /**
  * Deploys the sourceArtifact to Amazon S3.
  */
-export class S3DeployAction extends codepipeline.DeployAction {
+export class S3DeployAction extends codepipeline.Action {
   private readonly bucket: s3.IBucket;
 
   constructor(props: S3DeployActionProps) {
     super({
       ...props,
+      category: codepipeline.ActionCategory.Deploy,
       provider: 'S3',
-      artifactBounds: {
-        minInputs: 1,
-        maxInputs: 1,
-        minOutputs: 0,
-        maxOutputs: 0,
-      },
+      artifactBounds: deployArtifactBounds(),
+      inputs: [props.input],
       configuration: {
         BucketName: props.bucket.bucketName,
         Extract: (props.extract === false) ? 'false' : 'true',

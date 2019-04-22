@@ -146,7 +146,7 @@
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_S3_awscdkcodepipelinemanualapprovalBucketFF0B256C"
+                    "Name": "Artifact_Source_S3"
                   }
                 ],
                 "RunOrder": 1

@@ -1,9 +1,10 @@
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { ActionBind, IStage } from "../lib/action";
+import { IStage } from '../lib/action';
+import { Artifact } from '../lib/artifact';
 import { Pipeline } from '../lib/pipeline';
-import { SourceAction, SourceActionProps } from "../lib/source-action";
 import { validateName } from "../lib/validation";
+import { FakeSourceAction } from './fake-source-action';
 
 interface NameValidationTestCase {
   name: string;
@@ -62,8 +63,7 @@ export = {
         actions: [
           new FakeSourceAction({
             actionName: 'FakeSource',
-            provider: 'Fake',
-            outputArtifactName: 'SourceOutput',
+            output: new Artifact(),
           }),
         ],
       });
@@ -74,16 +74,6 @@ export = {
     }
   }
 };
-
-class FakeSourceAction extends SourceAction {
-  constructor(props: SourceActionProps) {
-    super(props);
-  }
-
-  protected bind(_info: ActionBind): void {
-    // do nothing
-  }
-}
 
 function stageForTesting(): IStage {
   const stack = new cdk.Stack();

@@ -19,6 +19,7 @@ const repository = new ecr.Repository(stack, 'MyEcrRepo');
 const sourceStage = pipeline.addStage({ name: 'Source' });
 sourceStage.addAction(new cpactions.EcrSourceAction({
   actionName: 'ECR_Source',
+  output: new codepipeline.Artifact(),
   repository,
 }));
 

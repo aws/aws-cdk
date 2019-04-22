@@ -21,7 +21,7 @@ const trail = new cloudtrail.CloudTrail(stack, 'CloudTrail');
 trail.addS3EventSelector([bucket.arnForObjects(key)], { readWriteType: cloudtrail.ReadWriteType.WriteOnly, includeManagementEvents: false });
 sourceStage.addAction(new cpactions.S3SourceAction({
   actionName: 'Source',
-  outputArtifactName: 'SourceArtifact',
+  output: new codepipeline.Artifact('SourceArtifact'),
   bucket,
   bucketKey: key,
   pollForSourceChanges: false,

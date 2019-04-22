@@ -1,6 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
+import { deployArtifactBounds } from '../common';
 
 /**
  * Construction properties of {@link EcsDeployAction}.
@@ -18,7 +19,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonActionProps {
    * @default - one of this property, or `imageFile`, is required
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
    */
-  readonly inputArtifact?: codepipeline.Artifact;
+  readonly input?: codepipeline.Artifact;
 
   /**
    * The name of the JSON image definitions file to use for deployments.
@@ -26,9 +27,9 @@ export interface EcsDeployActionProps extends codepipeline.CommonActionProps {
    * each with 2 keys: `name` is the name of the container in the Task Definition,
    * and `imageUri` is the Docker image URI you want to update your service with.
    * Use this property if you want to use a different name for this file than the default 'imagedefinitions.json'.
-   * If you use this property, you don't need to specify the `inputArtifact` property.
+   * If you use this property, you don't need to specify the `input` property.
    *
-   * @default - one of this property, or `inputArtifact`, is required
+   * @default - one of this property, or `input`, is required
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
    */
   readonly imageFile?: codepipeline.ArtifactPath;
@@ -42,18 +43,14 @@ export interface EcsDeployActionProps extends codepipeline.CommonActionProps {
 /**
  * CodePipeline Action to deploy an ECS Service.
  */
-export class EcsDeployAction extends codepipeline.DeployAction {
+export class EcsDeployAction extends codepipeline.Action {
   constructor(props: EcsDeployActionProps) {
     super({
       ...props,
-      inputArtifact: determineInputArtifact(props),
+      category: codepipeline.ActionCategory.Deploy,
       provider: 'ECS',
-      artifactBounds: {
-        minInputs: 1,
-        maxInputs: 1,
-        minOutputs: 0,
-        maxOutputs: 0,
-      },
+      artifactBounds: deployArtifactBounds(),
+      inputs: [determineInputArtifact(props)],
       configuration: {
         ClusterName: props.service.clusterName,
         ServiceName: props.service.serviceName,
@@ -91,14 +88,14 @@ export class EcsDeployAction extends codepipeline.DeployAction {
 }
 
 function determineInputArtifact(props: EcsDeployActionProps): codepipeline.Artifact {
-  if (props.imageFile && props.inputArtifact) {
-    throw new Error("Exactly one of 'inputArtifact' or 'imageFile' can be provided in the ECS deploy Action");
+  if (props.imageFile && props.input) {
+    throw new Error("Exactly one of 'input' or 'imageFile' can be provided in the ECS deploy Action");
   }
   if (props.imageFile) {
     return props.imageFile.artifact;
   }
-  if (props.inputArtifact) {
-    return props.inputArtifact;
+  if (props.input) {
+    return props.input;
   }
-  throw new Error("Specifying one of 'inputArtifact' or 'imageFile' is required for the ECS deploy Action");
+  throw new Error("Specifying one of 'input' or 'imageFile' is required for the ECS deploy Action");
 }

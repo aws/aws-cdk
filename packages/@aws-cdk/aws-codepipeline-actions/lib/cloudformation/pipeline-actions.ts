@@ -32,7 +32,7 @@ export interface CloudFormationActionProps extends codepipeline.CommonActionProp
    *
    * @default Automatically generated artifact name.
    */
-  readonly outputArtifactName?: string;
+  readonly output?: codepipeline.Artifact;
 
   /**
    * The AWS region the given Action resides in.
@@ -59,13 +59,6 @@ export interface CloudFormationActionProps extends codepipeline.CommonActionProp
  * Base class for Actions that execute CloudFormation
  */
 export abstract class CloudFormationAction extends codepipeline.Action {
-  /**
-   * CfnOutput artifact containing the CloudFormation call response
-   *
-   * Only present if configured by passing `outputFileName`.
-   */
-  public outputArtifact?: codepipeline.Artifact;
-
   constructor(props: CloudFormationActionProps, configuration?: any) {
     super({
       ...props,
@@ -76,6 +69,9 @@ export abstract class CloudFormationAction extends codepipeline.Action {
         minOutputs: 0,
         maxOutputs: 1,
       },
+      outputs: props.outputFileName
+        ? [props.output || new codepipeline.Artifact(`${props.actionName}_${props.stackName}_Artifact`)]
+        : undefined,
       provider: 'CloudFormation',
       category: codepipeline.ActionCategory.Deploy,
       configuration: {
@@ -84,11 +80,6 @@ export abstract class CloudFormationAction extends codepipeline.Action {
         ...configuration,
       }
     });
-
-    if (props.outputFileName) {
-      this.outputArtifact = this.addOutputArtifact(props.outputArtifactName ||
-        (`${props.actionName}_${props.stackName}_Artifact`));
-    }
   }
 }
 
@@ -213,10 +204,10 @@ export interface CloudFormationDeployActionProps extends CloudFormationActionPro
    *
    * , if the output Artifacts of `action1` and `action2` were not used to
    * set either the `templateConfiguration` or the `templatePath` properties,
-   * you need to make sure to include them in the `additionalInputArtifacts` -
+   * you need to make sure to include them in the `extraInputs` -
    * otherwise, you'll get an "unrecognized Artifact" error during your Pipeline's execution.
    */
-  readonly additionalInputArtifacts?: codepipeline.Artifact[];
+  readonly extraInputs?: codepipeline.Artifact[];
 }
 // tslint:enable:max-line-length
 
@@ -243,7 +234,7 @@ export abstract class CloudFormationDeployAction extends CloudFormationAction {
 
     this.props = props;
 
-    for (const inputArtifact of props.additionalInputArtifacts || []) {
+    for (const inputArtifact of props.extraInputs || []) {
       this.addInputArtifact(inputArtifact);
     }
   }

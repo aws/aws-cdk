@@ -34,8 +34,8 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
 
       // TODO: revert "as any" once we move all actions into a single package.
-      test.deepEqual((action as any).actionInputArtifacts, [artifact],
-                     'The inputArtifact was correctly registered');
+      test.deepEqual(action.inputs, [artifact],
+                     'The input was correctly registered');
 
       _assertActionMatches(test, stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_CREATE_REPLACE',

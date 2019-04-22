@@ -1,3 +1,4 @@
+import { countResources, expect, haveResource, isSuperObject } from '@aws-cdk/assert';
 import cfn = require('@aws-cdk/aws-cloudformation');
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
@@ -8,8 +9,6 @@ import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import fc = require('fast-check');
 import nodeunit = require('nodeunit');
-
-import { countResources, expect, haveResource, isSuperObject } from '@aws-cdk/assert';
 import { PipelineDeployStackAction } from '../lib/pipeline-deploy-stack-action';
 
 interface SelfUpdatingPipeline {
@@ -36,7 +35,7 @@ export = nodeunit.testCase({
             });
             new PipelineDeployStackAction(stack, 'Action', {
               changeSetName: 'ChangeSet',
-              inputArtifact: fakeAction.outputArtifact,
+              input: fakeAction.outputArtifact,
               stack: new cdk.Stack(app, 'DeployedStack', { env: { account: stackAccount } }),
               stage: pipeline.addStage({ name: 'DeployStage' }),
               adminPermissions: false,
@@ -67,7 +66,7 @@ export = nodeunit.testCase({
               changeSetName: 'ChangeSet',
               createChangeSetRunOrder: createRunOrder,
               executeChangeSetRunOrder: executeRunOrder,
-              inputArtifact: fakeAction.outputArtifact,
+              input: fakeAction.outputArtifact,
               stack: new cdk.Stack(app, 'DeployedStack'),
               stage: pipeline.addStage({ name: 'DeployStage' }),
               adminPermissions: false,
@@ -96,21 +95,21 @@ export = nodeunit.testCase({
     new PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
       stage: selfUpdateStage1,
       stack: pipelineStack,
-      inputArtifact: selfUpdatingStack.synthesizedApp,
+      input: selfUpdatingStack.synthesizedApp,
       capabilities: cfn.CloudFormationCapabilities.NamedIAM,
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack', {
       stage: selfUpdateStage2,
       stack: stackWithNoCapability,
-      inputArtifact: selfUpdatingStack.synthesizedApp,
+      input: selfUpdatingStack.synthesizedApp,
       capabilities: cfn.CloudFormationCapabilities.None,
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack2', {
       stage: selfUpdateStage3,
       stack: stackWithAnonymousCapability,
-      inputArtifact: selfUpdatingStack.synthesizedApp,
+      input: selfUpdatingStack.synthesizedApp,
       capabilities: cfn.CloudFormationCapabilities.AnonymousIAM,
       adminPermissions: false,
     });
@@ -159,7 +158,7 @@ export = nodeunit.testCase({
     new PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
       stage: selfUpdateStage,
       stack: pipelineStack,
-      inputArtifact: selfUpdatingStack.synthesizedApp,
+      input: selfUpdatingStack.synthesizedApp,
       adminPermissions: true,
     });
     expect(pipelineStack).to(haveResource('AWS::IAM::Policy', {
@@ -195,7 +194,7 @@ export = nodeunit.testCase({
     const deployAction = new PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
       stage: selfUpdateStage,
       stack: pipelineStack,
-      inputArtifact: selfUpdatingStack.synthesizedApp,
+      input: selfUpdatingStack.synthesizedApp,
       adminPermissions: false,
       role
     });
@@ -218,7 +217,7 @@ export = nodeunit.testCase({
     const deployAction = new PipelineDeployStackAction(pipelineStack, 'DeployServiceStackA', {
       stage: deployStage,
       stack: emptyStack,
-      inputArtifact: selfUpdatingStack.synthesizedApp,
+      input: selfUpdatingStack.synthesizedApp,
       adminPermissions: false,
     });
     // we might need to add permissions
@@ -282,7 +281,7 @@ export = nodeunit.testCase({
           const deployStage = pipeline.addStage({ name: 'DeployStage' });
           const action = new PipelineDeployStackAction(stack, 'Action', {
             changeSetName: 'ChangeSet',
-            inputArtifact: fakeAction.outputArtifact,
+            input: fakeAction.outputArtifact,
             stack: deployedStack,
             stage: deployStage,
             adminPermissions: false,
@@ -305,7 +304,7 @@ class FakeAction extends codepipeline.Action {
   constructor(actionName: string) {
     super({
       actionName,
-      artifactBounds: codepipeline.defaultBounds(),
+      artifactBounds: { minInputs: 0, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
       category: codepipeline.ActionCategory.Test,
       provider: 'Test',
     });
@@ -329,10 +328,12 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
 
   // simple source
   const bucket = s3.Bucket.import( pipeline, 'PatternBucket', { bucketArn: 'arn:aws:s3:::totally-fake-bucket' });
+  const sourceOutput = new codepipeline.Artifact('SourceOutput');
   const sourceAction = new cpactions.S3SourceAction({
     actionName: 'S3Source',
     bucket,
     bucketKey: 'the-great-key',
+    output: sourceOutput,
   });
   pipeline.addStage({
     name: 'source',
@@ -340,17 +341,18 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
   });
 
   const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild');
-  const buildAction = new cpactions.CodeBuildBuildAction({
+  const buildOutput = new codepipeline.Artifact('BuildOutput');
+  const buildAction = new cpactions.CodeBuildAction({
     actionName: 'CodeBuild',
     project,
-    inputArtifact: sourceAction.outputArtifact,
+    input: sourceOutput,
+    output: buildOutput,
   });
   pipeline.addStage({
     name: 'build',
     actions: [buildAction],
   });
-  const synthesizedApp = buildAction.outputArtifact;
-  return {synthesizedApp, pipeline};
+  return {synthesizedApp: buildOutput, pipeline};
 }
 
 function hasPipelineAction(expectedAction: any): (props: any) => boolean {

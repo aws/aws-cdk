@@ -19,6 +19,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
           actionName: 'S3',
           bucket,
           bucketKey: 'file.zip',
+          output: new codepipeline.Artifact(),
         }),
       ],
     },

@@ -27,15 +27,6 @@ export interface ActionArtifactBounds {
   readonly maxOutputs: number;
 }
 
-export function defaultBounds(): ActionArtifactBounds {
-  return {
-    minInputs: 0,
-    maxInputs: 5,
-    minOutputs: 0,
-    maxOutputs: 5
-  };
-}
-
 /**
  * The interface used in the {@link Action#bind()} callback.
  */
@@ -151,6 +142,8 @@ export interface ActionProps extends CommonActionProps {
   readonly role?: iam.IRole;
 
   readonly artifactBounds: ActionArtifactBounds;
+  readonly inputs?: Artifact[];
+  readonly outputs?: Artifact[];
   readonly configuration?: any;
   readonly version?: string;
   readonly owner?: string;
@@ -158,8 +151,6 @@ export interface ActionProps extends CommonActionProps {
 
 /**
  * Low-level class for generic CodePipeline Actions.
- * It is recommended that concrete types are used instead, such as {@link codecommit.PipelineSourceAction} or
- * {@link codebuild.PipelineBuildAction}.
  */
 export abstract class Action {
   /**
@@ -235,6 +226,14 @@ export abstract class Action {
     this.runOrder = props.runOrder === undefined ? 1 : props.runOrder;
     this.actionName = props.actionName;
     this.role = props.role;
+
+    for (const inputArtifact of props.inputs || []) {
+      this.addInputArtifact(inputArtifact);
+    }
+
+    for (const outputArtifact of props.outputs || []) {
+      this.addOutputArtifact(outputArtifact);
+    }
   }
 
   public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
@@ -252,49 +251,25 @@ export abstract class Action {
     return rule;
   }
 
-  protected get actionInputArtifacts(): Artifact[] {
+  public get inputs(): Artifact[] {
     return this._actionInputArtifacts.slice();
   }
 
-  protected get actionOutputArtifacts(): Artifact[] {
+  public get outputs(): Artifact[] {
     return this._actionOutputArtifacts.slice();
   }
 
-  protected validate(): string[] {
-    return validation.validateArtifactBounds('input', this._actionInputArtifacts, this.artifactBounds.minInputs,
+  /** @internal */
+  public _validate(): string[] {
+    return validation.validateArtifactBounds('input', this.inputs, this.artifactBounds.minInputs,
         this.artifactBounds.maxInputs, this.category, this.provider)
-      .concat(validation.validateArtifactBounds('output', this._actionOutputArtifacts, this.artifactBounds.minOutputs,
+      .concat(validation.validateArtifactBounds('output', this.outputs, this.artifactBounds.minOutputs,
         this.artifactBounds.maxOutputs, this.category, this.provider)
     );
   }
 
-  protected addOutputArtifact(name: string): Artifact {
-    // adding the same name multiple times doesn't do anything -
-    // addOutputArtifact is idempotent
-    const ret = this.actionOutputArtifacts.find(output => output.artifactName === name);
-    if (ret) {
-      return ret;
-    }
-
-    const artifact = new Artifact(name);
-    this._actionOutputArtifacts.push(artifact);
-    return artifact;
-  }
-
-  protected addInputArtifact(artifact: Artifact): Action {
-    // adding the same artifact multiple times doesn't do anything -
-    // addInputArtifact is idempotent
-    if (this._actionInputArtifacts.indexOf(artifact) !== -1) {
-      return this;
-    }
-
-    // however, a _different_ input with the same name is an error
-    if (this._actionInputArtifacts.find(input => input.artifactName === artifact.artifactName)) {
-      throw new Error(`Action ${this.actionName} already has an input with the name '${artifact.artifactName}'`);
-    }
-
-    this._actionInputArtifacts.push(artifact);
-    return this;
+  protected addInputArtifact(artifact: Artifact): void {
+    this.addToArtifacts(artifact, this._actionInputArtifacts);
   }
 
   /**
@@ -319,6 +294,27 @@ export abstract class Action {
    *   to configure itself, like a reference to the Pipeline, Stage, Role, etc.
    */
   protected abstract bind(info: ActionBind): void;
+
+  private addOutputArtifact(artifact: Artifact): void {
+    this.addToArtifacts(artifact, this._actionOutputArtifacts);
+  }
+
+  private addToArtifacts(artifact: Artifact, artifacts: Artifact[]): void {
+    // adding the same Artifact, or a different Artifact, but with the same name,
+    // multiple times, doesn't do anything -
+    // addToArtifacts is idempotent
+    if (artifact.artifactName) {
+      if (artifacts.find(a => a.artifactName === artifact.artifactName)) {
+        return;
+      }
+    } else {
+      if (artifacts.find(a => a === artifact)) {
+        return;
+      }
+    }
+
+    artifacts.push(artifact);
+  }
 
   // ignore unused private method (it's actually used in Pipeline)
   // @ts-ignore

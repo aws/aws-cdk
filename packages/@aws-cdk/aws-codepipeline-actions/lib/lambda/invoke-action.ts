@@ -18,7 +18,7 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonActionProps 
    * @default the Action will not have any inputs
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
    */
-  readonly inputArtifacts?: codepipeline.Artifact[];
+  readonly inputs?: codepipeline.Artifact[];
 
   // tslint:enable:max-line-length
 
@@ -31,7 +31,7 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonActionProps 
    *
    * @default the Action will not have any outputs
    */
-  readonly outputArtifactNames?: string[];
+  readonly outputs?: codepipeline.Artifact[];
 
   /**
    * String to be used in the event data parameter passed to the Lambda
@@ -78,37 +78,19 @@ export class LambdaInvokeAction extends codepipeline.Action {
       ...props,
       category: codepipeline.ActionCategory.Invoke,
       provider: 'Lambda',
-      artifactBounds: codepipeline.defaultBounds(),
+      artifactBounds: {
+        minInputs: 0,
+        maxInputs: 5,
+        minOutputs: 0,
+        maxOutputs: 5,
+      },
       configuration: {
         FunctionName: props.lambda.functionName,
         UserParameters: props.userParameters
       }
     });
 
-    // handle input artifacts
-    for (const inputArtifact of props.inputArtifacts || []) {
-      this.addInputArtifact(inputArtifact);
-    }
-
-    // handle output artifacts
-    for (const outputArtifactName of props.outputArtifactNames || []) {
-      this.addOutputArtifact(outputArtifactName);
-    }
-
     this.props = props;
-  }
-
-  public outputArtifacts(): codepipeline.Artifact[] {
-    return this.actionOutputArtifacts;
-  }
-
-  public outputArtifact(artifactName: string): codepipeline.Artifact {
-    const result = this.actionOutputArtifacts.find(a => (a.artifactName === artifactName));
-    if (result === undefined) {
-      throw new Error(`Could not find the output Artifact with name '${artifactName}'`);
-    } else {
-      return result;
-    }
   }
 
   protected bind(info: codepipeline.ActionBind): void {

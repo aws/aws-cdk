@@ -20,7 +20,7 @@ export interface PipelineDeployStackActionProps {
    * The CodePipeline artifact that holds the synthesized app, which is the
    * contents of the ``<directory>`` when running ``cdk synth -o <directory>``.
    */
-  readonly inputArtifact: codepipeline.Artifact;
+  readonly input: codepipeline.Artifact;
 
   /**
    * The name to use when creating a ChangeSet for the stack.
@@ -126,7 +126,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
       changeSetName,
       runOrder: createChangeSetRunOrder,
       stackName: props.stack.name,
-      templatePath: props.inputArtifact.atPath(`${props.stack.name}.template.yaml`),
+      templatePath: props.input.atPath(`${props.stack.name}.template.yaml`),
       adminPermissions: props.adminPermissions,
       deploymentRole: props.role,
       capabilities,

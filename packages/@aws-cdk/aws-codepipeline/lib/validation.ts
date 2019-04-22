@@ -44,13 +44,22 @@ const VALID_IDENTIFIER_REGEX = /^[a-zA-Z0-9.@_-]{1,100}$/;
  * Validate the given name of a pipeline component. Pipeline component names all have the same restrictions.
  * This can be used to validate the name of all components of a pipeline.
  */
-export function validateName(thing: string, name: string | undefined) {
+export function validateName(thing: string, name: string | undefined): void {
+  validateAgainstRegex(VALID_IDENTIFIER_REGEX, thing, name);
+}
+
+export function validateArtifactName(artifactName: string | undefined): void {
+  // https://docs.aws.amazon.com/codepipeline/latest/APIReference/API_Artifact.html#CodePipeline-Type-Artifact-name
+  validateAgainstRegex(/^[a-zA-Z0-9_-]{1,100}$/, 'Artifact', artifactName);
+}
+
+function validateAgainstRegex(regex: RegExp, thing: string, name: string | undefined) {
   // name could be a Token - in that case, skip validation altogether
   if (cdk.unresolved(name)) {
     return;
   }
 
-  if (name !== undefined && !VALID_IDENTIFIER_REGEX.test(name)) {
-    throw new Error(`${thing} name must match regular expression: ${VALID_IDENTIFIER_REGEX.toString()}, got '${name}'`);
+  if (name !== undefined && !regex.test(name)) {
+    throw new Error(`${thing} name must match regular expression: ${regex.toString()}, got '${name}'`);
   }
 }

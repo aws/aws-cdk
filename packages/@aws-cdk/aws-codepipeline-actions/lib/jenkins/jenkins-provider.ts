@@ -19,7 +19,7 @@ export interface IJenkinsProvider extends cdk.IConstruct {
   /**
    * Registers a Jenkins Provider for the build category.
    * This method will be automatically called when creating
-   * a {@link JenkinsBuildAction},
+   * a {@link JenkinsAction},
    * so you should never need to call it explicitly.
    *
    * @internal
@@ -87,7 +87,7 @@ export interface JenkinsProviderProps {
 
   /**
    * Whether to immediately register a Jenkins Provider for the build category.
-   * The Provider will always be registered if you create a {@link JenkinsBuildAction}.
+   * The Provider will always be registered if you create a {@link JenkinsAction}.
    */
   readonly forBuild?: boolean;
 
