@@ -2,6 +2,7 @@ import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/ass
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
@@ -188,7 +189,7 @@ export = {
       ],
     });
 
-    pipeline.onStateChange('OnStateChange', topic, {
+    pipeline.onStateChange('OnStateChange', new targets.SnsTopic(topic), {
       description: 'desc',
       scheduleExpression: 'now',
       eventPattern: {
