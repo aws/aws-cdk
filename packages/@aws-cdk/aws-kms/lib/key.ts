@@ -58,7 +58,7 @@ export interface EncryptionKeyImportProps {
   readonly keyArn: string;
 }
 
-export abstract class EncryptionKeyBase extends Construct implements IEncryptionKey {
+abstract class EncryptionKeyBase extends Construct implements IEncryptionKey {
   /**
    * The ARN of the key.
    */

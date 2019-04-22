@@ -5,7 +5,7 @@ import cdk = require('@aws-cdk/cdk');
 
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
-import { deploymentGroupNameToArn, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
+import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
 import { ILambdaApplication, LambdaApplication } from './application';
 import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-config';
 
@@ -156,7 +156,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
     });
 
     this.deploymentGroupName = resource.deploymentGroupName;
-    this.deploymentGroupArn = deploymentGroupNameToArn(this.application.applicationName, this.deploymentGroupName, this);
+    this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
 
     if (props.preHook) {
       this.onPreHook(props.preHook);
@@ -264,8 +264,7 @@ class ImportedLambdaDeploymentGroup extends cdk.Construct implements ILambdaDepl
     super(scope, id);
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
-    this.deploymentGroupArn = deploymentGroupNameToArn(props.application.applicationName,
-      props.deploymentGroupName, this);
+    this.deploymentGroupArn = arnForDeploymentGroup(props.application.applicationName, props.deploymentGroupName);
   }
 
   public export() {

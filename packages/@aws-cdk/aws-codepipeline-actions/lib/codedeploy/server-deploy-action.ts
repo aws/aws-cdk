@@ -54,7 +54,7 @@ export class CodeDeployServerDeployAction extends codepipeline.DeployAction {
       ));
 
     info.role.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.deploymentGroup.deploymentConfig.deploymentConfigArn(info.scope))
+      .addResource(this.deploymentGroup.deploymentConfig.deploymentConfigArn)
       .addActions(
         'codedeploy:GetDeploymentConfig',
       ));

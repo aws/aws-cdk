@@ -23,9 +23,19 @@ export interface IBucket extends IResource {
   readonly bucketName: string;
 
   /**
-   * The domain of the bucket.
+   * The IPv4 DNS name of the specified bucket.
    */
-  readonly domainName: string;
+  readonly bucketDomainName: string;
+
+  /**
+   * The IPv6 DNS name of the specified bucket.
+   */
+  readonly bucketDualStackDomainName: string;
+
+  /**
+   * The regional domain name of the specified bucket.
+   */
+  readonly bucketRegionalDomainName: string;
 
   /**
    * Optional KMS encryption key associated with this bucket.
@@ -207,6 +217,16 @@ export interface BucketImportProps {
   readonly bucketWebsiteUrl?: string;
 
   /**
+   * The regional domain name of the specified bucket.
+   */
+  readonly bucketRegionalDomainName?: string;
+
+  /**
+   * The IPv6 DNS name of the specified bucket.
+   */
+  readonly bucketDualStackDomainName?: string;
+
+  /**
    * The format of the website URL of the bucket. This should be true for
    * regions launched since 2014.
    *
@@ -232,21 +252,12 @@ export interface BucketImportProps {
  *   Bucket.import(this, 'MyImportedBucket', ref);
  *
  */
-export abstract class BucketBase extends Resource implements IBucket {
-  /**
-   * The ARN of the bucket.
-   */
+abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly bucketArn: string;
-
-  /**
-   * The name of the bucket.
-   */
   public abstract readonly bucketName: string;
-
-  /**
-   * The domain of the bucket.
-   */
-  public abstract readonly domainName: string;
+  public abstract readonly bucketDomainName: string;
+  public abstract readonly bucketRegionalDomainName: string;
+  public abstract readonly bucketDualStackDomainName: string;
 
   /**
    * Optional KMS encryption key associated with this bucket.
@@ -650,14 +661,53 @@ export class Bucket extends BucketBase {
    * `bucket.export()` or manually created.
    */
   public static import(scope: Construct, id: string, props: BucketImportProps): IBucket {
-    return new ImportedBucket(scope, id, props);
+    const region = scope.node.stack.region;
+    const urlSuffix = scope.node.stack.urlSuffix;
+
+    const bucketName = parseBucketName(scope, props);
+    if (!bucketName) {
+      throw new Error('Bucket name is required');
+    }
+
+    const newUrlFormat = props.bucketWebsiteNewUrlFormat === undefined
+      ? false
+      : props.bucketWebsiteNewUrlFormat;
+
+    const websiteUrl = newUrlFormat
+      ? `${bucketName}.s3-website.${region}.${urlSuffix}`
+      : `${bucketName}.s3-website-${region}.${urlSuffix}`;
+
+    class Import extends BucketBase {
+      public readonly bucketName = bucketName!;
+      public readonly bucketArn = parseBucketArn(scope, props);
+      public readonly bucketDomainName = props.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
+      public readonly bucketWebsiteUrl = props.bucketWebsiteUrl || websiteUrl;
+      public readonly bucketRegionalDomainName = props.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
+      public readonly bucketDualStackDomainName = props.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
+      public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
+      public readonly encryptionKey?: kms.EncryptionKey;
+      public policy?: BucketPolicy = undefined;
+      protected autoCreatePolicy = false;
+      protected disallowPublicAccess = false;
+
+      /**
+       * Exports this bucket from the stack.
+       */
+      public export() {
+        return props;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly bucketArn: string;
   public readonly bucketName: string;
-  public readonly domainName: string;
+  public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
-  public readonly dualstackDomainName: string;
+  public readonly bucketDualStackDomainName: string;
+  public readonly bucketRegionalDomainName: string;
+
   public readonly encryptionKey?: kms.IEncryptionKey;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
@@ -687,11 +737,14 @@ export class Bucket extends BucketBase {
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
+
     this.bucketArn = resource.bucketArn;
     this.bucketName = resource.bucketName;
-    this.domainName = resource.bucketDomainName;
+    this.bucketDomainName = resource.bucketDomainName;
     this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
-    this.dualstackDomainName = resource.bucketDualStackDomainName;
+    this.bucketDualStackDomainName = resource.bucketDualStackDomainName;
+    this.bucketRegionalDomainName = resource.bucketRegionalDomainName;
+
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
 
     // Add all lifecycle rules
@@ -713,7 +766,7 @@ export class Bucket extends BucketBase {
     return {
       bucketArn: new CfnOutput(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
       bucketName: new CfnOutput(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
-      bucketDomainName: new CfnOutput(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
+      bucketDomainName: new CfnOutput(this, 'DomainName', { value: this.bucketDomainName }).makeImportValue().toString(),
       bucketWebsiteUrl: new CfnOutput(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
     };
   }
@@ -1078,55 +1131,4 @@ export interface NotificationKeyFilter {
    * S3 keys must have the specified suffix.
    */
   readonly suffix?: string;
-}
-
-class ImportedBucket extends BucketBase {
-  public readonly bucketArn: string;
-  public readonly bucketName: string;
-  public readonly domainName: string;
-  public readonly bucketWebsiteUrl: string;
-  public readonly bucketWebsiteNewUrlFormat: boolean;
-  public readonly encryptionKey?: kms.EncryptionKey;
-
-  public policy?: BucketPolicy;
-  protected autoCreatePolicy: boolean;
-
-  protected disallowPublicAccess?: boolean;
-
-  constructor(scope: Construct, id: string, private readonly props: BucketImportProps) {
-    super(scope, id);
-
-    const bucketName = parseBucketName(this, props);
-    if (!bucketName) {
-      throw new Error('Bucket name is required');
-    }
-
-    this.bucketArn = parseBucketArn(this, props);
-    this.bucketName = bucketName;
-    this.domainName = props.bucketDomainName || this.generateDomainName();
-    this.bucketWebsiteUrl = props.bucketWebsiteUrl || this.generateBucketWebsiteUrl();
-    this.autoCreatePolicy = false;
-    this.bucketWebsiteNewUrlFormat = props.bucketWebsiteNewUrlFormat === undefined
-      ? false
-      : props.bucketWebsiteNewUrlFormat;
-    this.policy = undefined;
-    this.disallowPublicAccess = false;
-  }
-
-  /**
-   * Exports this bucket from the stack.
-   */
-  public export() {
-    return this.props;
-  }
-
-  private generateDomainName() {
-    return `${this.bucketName}.s3.amazonaws.com`;
-  }
-
-  private generateBucketWebsiteUrl() {
-    return this.bucketWebsiteNewUrlFormat
-      ? `${this.bucketName}.s3-website.${this.node.stack.region}.${this.node.stack.urlSuffix}`
-      : `${this.bucketName}.s3-website-${this.node.stack.region}.${this.node.stack.urlSuffix}`;
-  }
 }
