@@ -323,8 +323,10 @@ export class Pipeline extends Resource implements IPipeline {
    */
   protected validate(): string[] {
     return [
+      ...this.validateSourceActionLocations(),
       ...this.validateHasStages(),
-      ...this.validateSourceActionLocations()
+      ...this.validateStages(),
+      ...this.validateArtifacts(),
     ];
   }
 
@@ -443,6 +445,50 @@ export class Pipeline extends Resource implements IPipeline {
       return ['Pipeline must have at least two stages'];
     }
     return [];
+  }
+
+  private validateStages(): string[] {
+    const ret = new Array<string>();
+    for (const stage of this.stages) {
+      ret.push(...stage.validate());
+    }
+    return ret;
+  }
+
+  private validateArtifacts(): string[] {
+    const ret = new Array<string>();
+
+    const outputArtifactNames = new Set<string>();
+    for (const stage of this.stages) {
+      const sortedActions = stage.actions.sort((a1, a2) => a1.runOrder - a2.runOrder);
+
+      // start with inputs
+      for (const action of sortedActions) {
+        const inputArtifacts = action.inputs;
+        for (const inputArtifact of inputArtifacts) {
+          if (!inputArtifact.artifactName) {
+            ret.push(`Action '${action.actionName}' has an unnamed input Artifact that's not used as an output`);
+          } else if (!outputArtifactNames.has(inputArtifact.artifactName)) {
+            ret.push(`Artifact '${inputArtifact.artifactName}' was used as input before being used as output`);
+          }
+        }
+      }
+
+      // then process outputs by adding them to the Set
+      for (const action of sortedActions) {
+        const outputArtifacts = action.outputs;
+        for (const outputArtifact of outputArtifacts) {
+          // output Artifacts always have a name set
+          if (outputArtifactNames.has(outputArtifact.artifactName!)) {
+            ret.push(`Artifact '${outputArtifact.artifactName}' has been used as an output more than once`);
+          } else {
+            outputArtifactNames.add(outputArtifact.artifactName!);
+          }
+        }
+      }
+    }
+
+    return ret;
   }
 
   private renderArtifactStore(): CfnPipeline.ArtifactStoreProperty {
