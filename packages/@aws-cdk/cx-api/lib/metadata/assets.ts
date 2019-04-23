@@ -68,7 +68,7 @@ export interface FileAssetMetadataEntry extends BaseAssetMetadataEntry {
   /**
    * The name of the parameter where the hash of the bundled asset should be passed in.
    */
-  readonly bundleHashParameter: string;
+  readonly artifactHashParameter: string;
 }
 
 export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry {
@@ -78,7 +78,7 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
   readonly packaging: 'container-image';
 
   /**
-   * ECR Repository name and tag (separated by ":") where this asset is stored.
+   * ECR Repository name and repo digest (separated by "@sha256:") where this image is stored.
    */
   readonly imageNameParameter: string;
 

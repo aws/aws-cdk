@@ -8,9 +8,9 @@
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-asset-refs/SampleAsset\""
     },
-    "SampleAssetBundleHashDC778178": {
+    "SampleAssetArtifactHashE80944C9": {
       "Type": "String",
-      "Description": "Bundle hash for asset \"aws-cdk-asset-refs/SampleAsset\""
+      "Description": "Artifact hash for asset \"aws-cdk-asset-refs/SampleAsset\""
     }
   },
   "Outputs": {

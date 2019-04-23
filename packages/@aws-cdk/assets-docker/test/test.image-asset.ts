@@ -103,7 +103,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {
       "RepositoryName": {
-        "Fn::Select": [ 0, { "Fn::Split": [ ":", { "Ref": "ImageImageName5E684353" } ] } ]
+        "Fn::Select": [ 0, { "Fn::Split": [ "@sha256:", { "Ref": "ImageImageName5E684353" } ] } ]
       },
       "PolicyDocument": {
         "Statement": [

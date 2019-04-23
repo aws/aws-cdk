@@ -91,7 +91,7 @@ async function prepareFileAsset(
     return [
       { ParameterKey: asset.s3BucketParameter, UsePreviousValue: true },
       { ParameterKey: asset.s3KeyParameter, UsePreviousValue: true },
-      { ParameterKey: asset.bundleHashParameter, UsePreviousValue: true },
+      { ParameterKey: asset.artifactHashParameter, UsePreviousValue: true },
     ];
   }
 
@@ -121,7 +121,7 @@ async function prepareFileAsset(
   return [
     { ParameterKey: asset.s3BucketParameter, ParameterValue: toolkitInfo.bucketName },
     { ParameterKey: asset.s3KeyParameter, ParameterValue: `${s3KeyPrefix}${ASSET_PREFIX_SEPARATOR}${filename}` },
-    { ParameterKey: asset.bundleHashParameter, ParameterValue: hash },
+    { ParameterKey: asset.artifactHashParameter, ParameterValue: hash },
   ];
 }
 

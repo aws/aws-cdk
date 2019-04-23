@@ -9,7 +9,7 @@ const asset = new assets.DockerImageAsset(stack, 'DockerImage', {
   directory: path.join(__dirname, 'demo-image'),
 });
 
-new cdk.CfnOutput(stack, 'BundleHash', { value: asset.bundleHash });
+new cdk.CfnOutput(stack, 'ArtifactHash', { value: asset.artifactHash });
 new cdk.CfnOutput(stack, 'ImageUri', { value: asset.imageUri });
 
 app.run();

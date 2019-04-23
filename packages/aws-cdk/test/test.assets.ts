@@ -22,7 +22,7 @@ export = {
             packaging: 'file',
             s3BucketParameter: 'BucketParameter',
             s3KeyParameter: 'KeyParameter',
-            bundleHashParameter: 'BundleHashParameter',
+            artifactHashParameter: 'ArtifactHashParameter',
           } as AssetMetadataEntry,
           trace: []
         }]
@@ -44,7 +44,7 @@ export = {
     test.deepEqual(params, [
       { ParameterKey: 'BucketParameter', ParameterValue: 'bucket' },
       { ParameterKey: 'KeyParameter', ParameterValue: 'assets/SomeStackSomeResource4567/||12345.js' },
-      { ParameterKey: 'BundleHashParameter', ParameterValue: '12345' },
+      { ParameterKey: 'ArtifactHashParameter', ParameterValue: '12345' },
     ]);
 
     test.done();
@@ -68,7 +68,7 @@ export = {
             packaging: 'file',
             s3BucketParameter: 'BucketParameter',
             s3KeyParameter: 'KeyParameter',
-            bundleHashParameter: 'BundleHashParameter',
+            artifactHashParameter: 'ArtifactHashParameter',
           } as AssetMetadataEntry,
           trace: []
         }]
@@ -90,7 +90,7 @@ export = {
     test.deepEqual(params, [
       { ParameterKey: 'BucketParameter', UsePreviousValue: true },
       { ParameterKey: 'KeyParameter', UsePreviousValue: true },
-      { ParameterKey: 'BundleHashParameter', UsePreviousValue: true },
+      { ParameterKey: 'ArtifactHashParameter', UsePreviousValue: true },
     ]);
 
     test.done();

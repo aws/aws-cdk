@@ -42,7 +42,7 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
   public repository: ecr.IRepository;
 
   public readonly sourceHash: string;
-  public readonly bundleHash: string;
+  public readonly artifactHash: string;
 
   /**
    * Directory where the source files are stored
@@ -84,10 +84,10 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);
 
-    // parse repository name and tag from the parameter (<REPO_NAME>:<TAG>)
-    const components = cdk.Fn.split(':', imageNameParameter.stringValue);
+    // parse repository name and tag from the parameter (<REPO_NAME>@sha256:<TAG>)
+    const components = cdk.Fn.split('@sha256:', imageNameParameter.stringValue);
     const repositoryName = cdk.Fn.select(0, components).toString();
-    const imageTag = cdk.Fn.select(1, components).toString();
+    const imageSha = cdk.Fn.select(1, components).toString();
 
     // Require that repository adoption happens first, so we route the
     // input ARN into the Custom Resource and then get the URI which we use to
@@ -96,7 +96,7 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
     // If adoption fails (because the repository might be twice-adopted), we
     // haven't already started using the image.
     this.repository = new AdoptedRepository(this, 'AdoptRepository', { repositoryName });
-    this.imageUri = this.repository.repositoryUriForTag(imageTag);
-    this.bundleHash = imageTag;
+    this.imageUri = `${this.repository.repositoryUri}@sha256:${imageSha}`;
+    this.artifactHash = imageSha;
   }
 }

@@ -32,10 +32,8 @@ exports.handler = async function(event, context, _callback, respond) {
     }
     const isRepoUri = repo.match(/^(\d+\.dkr\.ecr\.[^.]+\.[^/]+\/)(.+)$/i);
     if (isRepoUri) {
-      console.log(`"${repo}" like a repository URI: dropping "${isRepoUri[1]}"`);
       repo = isRepoUri[2];
     }
-    console.log('RepositoryName', repo);
 
     const adopter = await getAdopter(repo);
     if (event.RequestType === 'Delete') {

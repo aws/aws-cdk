@@ -43,19 +43,19 @@ export interface AssetProps {
 export interface IAsset extends cdk.IConstruct {
   /**
    * A hash of the source of this asset, which is available at construction time. As this is a plain
-   * string, it can be used in `Construct` ids in order to enforce creation of a new resource when
+   * string, it can be used in construct IDs in order to enforce creation of a new resource when
    * the content hash has changed.
    */
   readonly sourceHash: string;
 
   /**
-   * A hash of the bundled for of this asset, which is only available at deployment time. As this is
-   * a late-bound token, it may not be used in `Construct` ids, but can be passed as a resource
+   * A hash of the bundle for of this asset, which is only available at deployment time. As this is
+   * a late-bound token, it may not be used in construct IDs, but can be passed as a resource
    * property in order to force a change on a resource when an asset is effectively updated. This is
    * more reliable than `sourceHash` in particular for assets which bundling phase involve external
    * resources that can change over time (such as Docker image builds).
    */
-  readonly bundleHash: string;
+  readonly artifactHash: string;
 }
 
 /**
@@ -99,7 +99,7 @@ export class Asset extends cdk.Construct implements IAsset {
   public readonly isZipArchive: boolean;
 
   public readonly sourceHash: string;
-  public readonly bundleHash: string;
+  public readonly artifactHash: string;
 
   /**
    * The S3 prefix where all different versions of this asset are stored
@@ -139,8 +139,8 @@ export class Asset extends cdk.Construct implements IAsset {
       description: `S3 key for asset version "${this.node.path}"`
     });
 
-    const hashParam = new cdk.CfnParameter(this, 'BundleHash', {
-      description: `Bundle hash for asset "${this.node.path}"`,
+    const hashParam = new cdk.CfnParameter(this, 'ArtifactHash', {
+      description: `Artifact hash for asset "${this.node.path}"`,
       type: 'String',
     });
 
@@ -148,7 +148,7 @@ export class Asset extends cdk.Construct implements IAsset {
     this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
     const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
-    this.bundleHash = hashParam.stringValue;
+    this.artifactHash = hashParam.stringValue;
 
     this.bucket = s3.Bucket.import(this, 'AssetBucket', {
       bucketName: this.s3BucketName
@@ -169,7 +169,7 @@ export class Asset extends cdk.Construct implements IAsset {
 
       s3BucketParameter: bucketParam.logicalId,
       s3KeyParameter: keyParam.logicalId,
-      bundleHashParameter: hashParam.logicalId,
+      artifactHashParameter: hashParam.logicalId,
     };
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);

@@ -379,9 +379,9 @@
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-lambda-log-retention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
     },
-    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeBundleHashA96F5860": {
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeArtifactHash327647CC": {
       "Type": "String",
-      "Description": "Bundle hash for asset \"aws-cdk-lambda-log-retention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
+      "Description": "Artifact hash for asset \"aws-cdk-lambda-log-retention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
     }
   }
 }

@@ -33,7 +33,7 @@ export = {
       sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
       s3BucketParameter: 'MyAssetS3Bucket68C9B344',
       s3KeyParameter: 'MyAssetS3VersionKey68E1A45D',
-      bundleHashParameter: 'MyAssetBundleHashB259CF93',
+      artifactHashParameter: 'MyAssetArtifactHashF518BDDE',
     });
 
     test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
@@ -60,7 +60,7 @@ export = {
       sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
       s3BucketParameter: "MyAssetS3Bucket68C9B344",
       s3KeyParameter: "MyAssetS3VersionKey68E1A45D",
-      bundleHashParameter: 'MyAssetBundleHashB259CF93',
+      artifactHashParameter: 'MyAssetArtifactHashF518BDDE',
     });
 
     test.done();
@@ -83,7 +83,7 @@ export = {
       sourceHash: '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197',
       s3BucketParameter: 'MyAssetS3Bucket68C9B344',
       s3KeyParameter: 'MyAssetS3VersionKey68E1A45D',
-      bundleHashParameter: 'MyAssetBundleHashB259CF93',
+      artifactHashParameter: 'MyAssetArtifactHashF518BDDE',
     });
 
     // verify that now the template contains parameters for this asset

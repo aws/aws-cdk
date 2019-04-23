@@ -244,9 +244,9 @@
         "Type": "String",
         "Description": "S3 key for asset version \"globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/Code\""
       },
-      "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeBundleHash58EC487E": {
+      "SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12CodeArtifactHashCE92982B": {
         "Type": "String",
-        "Description": "Bundle hash for asset \"globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/Code\""
+        "Description": "Artifact hash for asset \"globdynamodbinteg-CustomResource/SingletonLambdaD38B65A66B544FB69BAD9CD40A6DAC12/Code\""
       }
     }
   }

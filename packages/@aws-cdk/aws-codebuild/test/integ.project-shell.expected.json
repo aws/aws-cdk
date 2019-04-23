@@ -8,9 +8,9 @@
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-codebuild-project-shell/Bundle\""
     },
-    "BundleBundleHash2DCEE924": {
+    "BundleArtifactHashEA214C27": {
       "Type": "String",
-      "Description": "Bundle hash for asset \"aws-cdk-codebuild-project-shell/Bundle\""
+      "Description": "Artifact hash for asset \"aws-cdk-codebuild-project-shell/Bundle\""
     }
   },
   "Resources": {
