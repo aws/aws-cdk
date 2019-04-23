@@ -1,6 +1,7 @@
 # The basics
 *.ts
 *.tgz
+*.snk
 !*.d.ts
 !*.js
 
@@ -19,5 +20,5 @@ dist
 # Include .jsii
 !.jsii
 
-*.snk
 tsconfig.*
+
