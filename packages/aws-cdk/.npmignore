@@ -11,3 +11,5 @@ dist
 .LAST_BUILD
 *.snk
 tsconfig.*
+
+!lib/init-templates/*/*/tsconfig.json
