@@ -80,12 +80,12 @@ export = {
         new cpactions.GitHubSourceAction({
           actionName: 'GH',
           runOrder: 8,
-          outputArtifactName: 'A',
+          output: new codepipeline.Artifact('A'),
           branch: 'branch',
           oauthToken: SecretValue.plainText(secret.stringValue),
           owner: 'foo',
           repo: 'bar',
-          trigger: cpactions.TriggerType.Poll
+          trigger: cpactions.GitHubTrigger.Poll
         }),
       ],
     });
@@ -100,63 +100,23 @@ export = {
     expect(stack).to(not(haveResourceLike('AWS::CodePipeline::Webhook')));
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-      "ArtifactStore": {
-      "Location": {
-        "Ref": "PArtifactsBucket5E711C12"
-      },
-      "Type": "S3"
-      },
-      "RoleArn": {
-      "Fn::GetAtt": [
-        "PRole07BDC907",
-        "Arn"
-      ]
-      },
       "Stages": [
       {
         "Actions": [
-        {
-          "ActionTypeId": {
-          "Category": "Source",
-          "Owner": "ThirdParty",
-          "Provider": "GitHub",
-          "Version": "1"
-          },
-          "Configuration": {
-          "Owner": "foo",
-          "Repo": "bar",
-          "Branch": "branch",
-          "OAuthToken": {
-            "Ref": "GitHubToken"
-          },
-          "PollForSourceChanges": true
-          },
-          "InputArtifacts": [],
-          "Name": "GH",
-          "OutputArtifacts": [
           {
-            "Name": "A"
+            "Configuration": {
+              "PollForSourceChanges": true
+            },
+            "Name": "GH"
           }
-          ],
-          "RunOrder": 8
-        }
         ],
         "Name": "Source"
       },
       {
         "Actions": [
-        {
-          "ActionTypeId": {
-          "Category": "Approval",
-          "Owner": "AWS",
-          "Provider": "Manual",
-          "Version": "1"
-          },
-          "InputArtifacts": [],
-          "Name": "Boo",
-          "OutputArtifacts": [],
-          "RunOrder": 1
-        }
+          {
+            "Name": "Boo",
+          }
         ],
         "Name": "Two"
       }
@@ -179,12 +139,12 @@ export = {
         new cpactions.GitHubSourceAction({
           actionName: 'GH',
           runOrder: 8,
-          outputArtifactName: 'A',
+          output: new codepipeline.Artifact('A'),
           branch: 'branch',
           oauthToken: SecretValue.plainText(secret.stringValue),
           owner: 'foo',
           repo: 'bar',
-          trigger: cpactions.TriggerType.None
+          trigger: cpactions.GitHubTrigger.None
         }),
       ],
     });
@@ -199,63 +159,23 @@ export = {
     expect(stack).to(not(haveResourceLike('AWS::CodePipeline::Webhook')));
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-      "ArtifactStore": {
-      "Location": {
-        "Ref": "PArtifactsBucket5E711C12"
-      },
-      "Type": "S3"
-      },
-      "RoleArn": {
-      "Fn::GetAtt": [
-        "PRole07BDC907",
-        "Arn"
-      ]
-      },
       "Stages": [
       {
         "Actions": [
-        {
-          "ActionTypeId": {
-          "Category": "Source",
-          "Owner": "ThirdParty",
-          "Provider": "GitHub",
-          "Version": "1"
-          },
-          "Configuration": {
-          "Owner": "foo",
-          "Repo": "bar",
-          "Branch": "branch",
-          "OAuthToken": {
-            "Ref": "GitHubToken"
-          },
-          "PollForSourceChanges": false
-          },
-          "InputArtifacts": [],
-          "Name": "GH",
-          "OutputArtifacts": [
           {
-            "Name": "A"
+            "Configuration": {
+              "PollForSourceChanges": false
+            },
+            "Name": "GH"
           }
-          ],
-          "RunOrder": 8
-        }
         ],
         "Name": "Source"
       },
       {
         "Actions": [
-        {
-          "ActionTypeId": {
-          "Category": "Approval",
-          "Owner": "AWS",
-          "Provider": "Manual",
-          "Version": "1"
-          },
-          "InputArtifacts": [],
-          "Name": "Boo",
-          "OutputArtifacts": [],
-          "RunOrder": 1
-        }
+          {
+            "Name": "Boo",
+          }
         ],
         "Name": "Two"
       }
