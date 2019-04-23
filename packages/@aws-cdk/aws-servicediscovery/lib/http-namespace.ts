@@ -66,8 +66,8 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
     });
 
     this.namespaceName = props.name;
-    this.namespaceId = ns.httpNamespaceId;
-    this.namespaceArn = ns.httpNamespaceArn;
+    this.namespaceId = ns.attrId;
+    this.namespaceArn = ns.attrArn;
     this.type = NamespaceType.Http;
   }
 

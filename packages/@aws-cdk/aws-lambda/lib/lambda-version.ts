@@ -104,8 +104,8 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       functionName: props.lambda.functionName
     });
 
-    this.version = version.version;
-    this.functionArn = version.versionArn;
+    this.version = version.attrVersion;
+    this.functionArn = version.refAsString;
     this.functionName = `${this.lambda.functionName}:${this.version}`;
   }
 

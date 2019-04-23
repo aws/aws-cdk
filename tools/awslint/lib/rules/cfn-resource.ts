@@ -47,7 +47,6 @@ export class CfnResourceReflection {
   public readonly namespace: string; // AWS::S3
   public readonly basename: string; // Bucket
   public readonly attributeNames: string[]; // (normalized) bucketArn, bucketName, queueUrl
-  public readonly attributePrefix: string;
   public readonly doc: string; // link to CloudFormation docs
 
   constructor(cls: reflect.ClassType) {
@@ -67,13 +66,6 @@ export class CfnResourceReflection {
 
     this.namespace = fullname.split('::').slice(0, 2).join('::');
 
-    // special-case
-    const basename = this.basename
-      .replace(/VPC/g, 'Vpc')
-      .replace(/DB/g, 'Db');
-
-    this.attributePrefix = basename[0].toLowerCase() + basename.slice(1);
-
     this.attributeNames = cls.ownProperties
       .filter(p => (p.docs.docs.custom || {}).cloudformationAttribute)
       .map(p => p.docs.customTag('cloudformationAttribute') || '<error>')
@@ -89,9 +81,6 @@ export class CfnResourceReflection {
       return 'securityGroupId';
     }
 
-    const cfnName = name.startsWith(this.basename) ? name.slice(this.basename.length) : name;
-
-    // if the CFN attribute name already have the type name as a prefix (i.e. RoleId), we only take the "Id" as the "name".
-    return this.attributePrefix + camelcase(cfnName, { pascalCase: true });
+    return camelcase(name, { pascalCase: true });
   }
 }
