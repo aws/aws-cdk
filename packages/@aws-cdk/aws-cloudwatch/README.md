@@ -103,12 +103,6 @@ The following widgets are available:
 - `SingleValueWidget` -- shows the current value of a set of metrics.
 - `TextWidget` -- shows some static Markdown.
 
-> Warning! Due to a bug in CloudFormation, you cannot update a Dashboard after
-> initially creating it if you let its name automatically be generated. You
-> must set `dashboardName` if you intend to update the dashboard after creation.
->
-> (This note will be removed once the bug is fixed).
-
 ### Graph widget
 
 A graph widget can display any number of metrics on either the `left` or

@@ -71,7 +71,7 @@
             ]
           ]
         },
-        "DashboardName": "aws-cdk-cloudwatch-DashCCD7F836"
+        "DashboardName": "MyCustomDashboardName"
       }
     }
   }
