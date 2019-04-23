@@ -45,7 +45,7 @@ function displayAwsEnvironmentVariables() {
   }
   print('ℹ️ AWS environment variables:');
   for (const key of keys) {
-    print(`  - ${colors.blue(key)} = ${colors.green(process.env[key]!)}`);
+    print(`  - ${colors.blue(key)} = ${colors.green(anonymizeAwsVariable(key, process.env[key]!))}`);
   }
   return true;
 }
@@ -67,4 +67,10 @@ function displayCdkEnvironmentVariables() {
     }
   }
   return healthy;
+}
+
+function anonymizeAwsVariable(name: string, value: string) {
+  if (name === 'AWS_ACCESS_KEY_ID') { return value.substr(0, 4) + '<redacted>'; }  // Show ASIA/AKIA key type, but hide identifier
+  if (name === 'AWS_SECRET_ACCESS_KEY' || name === 'AWS_SESSION_TOKEN') { return '<redacted>'; }
+  return value;
 }
