@@ -1,9 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
 import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
-import { ICluster } from '../cluster';
-import { TaskDefinition } from './task-definition';
 
 /**
  * Properties for SendMessageTask
@@ -12,12 +11,12 @@ export interface BaseRunTaskProps extends stepfunctions.BasicTaskProps {
   /**
    * The topic to run the task on
    */
-  cluster: ICluster;
+  cluster: ecs.ICluster;
 
   /**
    * Task Definition used for running tasks in the service
    */
-  taskDefinition: TaskDefinition;
+  taskDefinition: ecs.TaskDefinition;
 
   /**
    * Container setting overrides
@@ -156,11 +155,13 @@ export class BaseRunTask extends stepfunctions.Task implements ec2.IConnectable 
 
   protected networkConfiguration?: any;
   protected readonly _parameters: {[key: string]: any} = {};
+  protected readonly taskDefinition: ecs.TaskDefinition;
+  private readonly sync: boolean;
 
   constructor(scope: cdk.Construct, id: string, props: BaseRunTaskProps) {
     super(scope, id, {
       ...props,
-      resource: new RunTaskResource(props),
+      resourceArn: 'arn:aws:states:::ecs:runTask' + (props.synchronous !== false ? '.sync' : ''),
       parameters: new cdk.Token(() => ({
         Cluster: props.cluster.clusterArn,
         TaskDefinition: props.taskDefinition.taskDefinitionArn,
@@ -169,30 +170,61 @@ export class BaseRunTask extends stepfunctions.Task implements ec2.IConnectable 
       }))
     });
 
+    this.sync = props.synchronous !== false;
     this._parameters.Overrides = this.renderOverrides(props.containerOverrides);
+    this.taskDefinition = props.taskDefinition;
   }
 
   protected configureAwsVpcNetworking(
       vpc: ec2.IVpcNetwork,
       assignPublicIp?: boolean,
-      vpcPlacement?: ec2.VpcPlacementStrategy,
+      subnetSelection?: ec2.VpcSubnetSelection,
       securityGroup?: ec2.ISecurityGroup) {
-    if (vpcPlacement === undefined) {
-      vpcPlacement = { subnetsToUse: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
+    if (subnetSelection === undefined) {
+      subnetSelection = { subnetsToUse: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
     }
     if (securityGroup === undefined) {
       securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
     }
-    const subnets = vpc.subnets(vpcPlacement);
+    const subnets = vpc.selectSubnets(subnetSelection);
     this.connections.addSecurityGroup(securityGroup);
 
     this.networkConfiguration = {
       AwsvpcConfiguration: {
         AssignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
-        Subnets: subnets.map(x => x.subnetId),
+        Subnets: subnets.subnetIds,
         SecurityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]),
       }
     };
+  }
+
+  protected onBindToGraph(graph: stepfunctions.StateGraph) {
+    super.onBindToGraph(graph);
+
+    const stack = this.node.stack;
+
+    // https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
+    const policyStatements = [
+      new iam.PolicyStatement()
+        .addAction('ecs:RunTask')
+        .addResource(this.taskDefinition.taskDefinitionArn),
+      new iam.PolicyStatement()
+        .addActions('ecs:StopTask', 'ecs:DescribeTasks')
+        .addAllResources(),
+      new iam.PolicyStatement()
+        .addAction('iam:PassRole')
+        .addResources(...new cdk.Token(() => this.taskExecutionRoles().map(r => r.roleArn)).toList())
+    ];
+
+    if (this.sync) {
+      policyStatements.push(new iam.PolicyStatement()
+        .addActions("events:PutTargets", "events:PutRule", "events:DescribeRule")
+        .addResource(stack.formatArn({
+          service: 'events',
+          resource: 'rule',
+          resourceName: 'StepFunctionsGetEventsForECSTaskRule'
+      })));
+    }
   }
 
   private renderOverrides(containerOverrides?: ContainerOverride[]) {
@@ -215,51 +247,13 @@ export class BaseRunTask extends stepfunctions.Task implements ec2.IConnectable 
 
     return { ContainerOverrides: ret };
   }
-}
-
-class RunTaskResource implements stepfunctions.IStepFunctionsTaskResource {
-  constructor(private readonly props: BaseRunTaskProps) {
-  }
-
-  public asStepFunctionsTaskResource(callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
-    const stack = cdk.Stack.find(callingTask);
-    const sync = this.props.synchronous !== false;
-
-    // https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
-    const policyStatements = [
-      new iam.PolicyStatement()
-        .addAction('ecs:RunTask')
-        .addResource(this.props.taskDefinition.taskDefinitionArn),
-      new iam.PolicyStatement()
-        .addActions('ecs:StopTask', 'ecs:DescribeTasks')
-        .addAllResources(),
-      new iam.PolicyStatement()
-        .addAction('iam:PassRole')
-        .addResources(...new cdk.Token(() => this.taskExecutionRoles().map(r => r.roleArn)).toList())
-    ];
-
-    if (sync) {
-      policyStatements.push(new iam.PolicyStatement()
-        .addActions("events:PutTargets", "events:PutRule", "events:DescribeRule")
-        .addResource(stack.formatArn({
-          service: 'events',
-          resource: 'rule',
-          resourceName: 'StepFunctionsGetEventsForECSTaskRule'
-        })));
-    }
-
-    return {
-      resourceArn: 'arn:aws:states:::ecs:runTask' + (sync ? '.sync' : ''),
-      policyStatements,
-    };
-  }
 
   private taskExecutionRoles(): iam.IRole[] {
     // Need to be able to pass both Task and Execution role, apparently
     const ret = new Array<iam.IRole>();
-    ret.push(this.props.taskDefinition.taskRole);
-    if ((this.props.taskDefinition as any).executionRole) {
-      ret.push((this.props.taskDefinition as any).executionRole);
+    ret.push(this.taskDefinition.taskRole);
+    if ((this.taskDefinition as any).executionRole) {
+      ret.push((this.taskDefinition as any).executionRole);
     }
     return ret;
   }

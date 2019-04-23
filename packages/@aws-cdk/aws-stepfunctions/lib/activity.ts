@@ -1,6 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, Resource } from '@aws-cdk/cdk';
-import { IStepFunctionsTaskResource, StepFunctionsTaskResourceProps, Task } from './states/task';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnActivity } from './stepfunctions.generated';
 
 export interface ActivityProps {
@@ -15,7 +14,7 @@ export interface ActivityProps {
 /**
  * Define a new StepFunctions activity
  */
-export class Activity extends Resource implements IActivity, IStepFunctionsTaskResource {
+export class Activity extends Resource implements IActivity {
     public readonly activityArn: string;
     public readonly activityName: string;
 
@@ -28,16 +27,6 @@ export class Activity extends Resource implements IActivity, IStepFunctionsTaskR
 
         this.activityArn = resource.activityArn;
         this.activityName = resource.activityName;
-    }
-
-    public asStepFunctionsTaskResource(_callingTask: Task): StepFunctionsTaskResourceProps {
-        // No IAM permissions necessary, execution role implicitly has Activity permissions.
-        return {
-            resourceArn: this.activityArn,
-            metricPrefixSingular: 'Activity',
-            metricPrefixPlural: 'Activities',
-            metricDimensions: { ActivityArn: this.activityArn },
-        };
     }
 
     /**
@@ -145,7 +134,7 @@ export class Activity extends Resource implements IActivity, IStepFunctionsTaskR
     }
 }
 
-export interface IActivity extends cdk.IConstruct, IStepFunctionsTaskResource {
+export interface IActivity extends IResource {
     /**
      * The ARN of the activity
      */

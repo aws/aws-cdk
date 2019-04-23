@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
+import sns = require('@aws-cdk/aws-sns');
 import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
-import { ITopic } from './topic-ref';
 
 /**
  * Properties for PublishTask
@@ -10,7 +10,7 @@ export interface PublishTaskProps extends stepfunctions.BasicTaskProps {
   /**
    * The topic to publish to
    */
-  topic: ITopic;
+  topic: sns.ITopic;
 
   /**
    * The text message to send to the queue.
@@ -73,7 +73,11 @@ export class PublishTask extends stepfunctions.Task {
 
     super(scope, id, {
       ...props,
-      resource: new PublishTaskResource(props),
+      resourceArn: 'arn:aws:states:::sns:publish',
+      policyStatements: [new iam.PolicyStatement()
+        .addAction('sns:Publish')
+        .addResource(props.topic.topicArn)
+      ],
       parameters: {
         "TopicArn": props.topic.topicArn,
         "Message": props.messageObject
@@ -85,19 +89,5 @@ export class PublishTask extends stepfunctions.Task {
         "Subject.$": props.subjectPath
       }
     });
-  }
-}
-
-class PublishTaskResource implements stepfunctions.IStepFunctionsTaskResource {
-  constructor(private readonly props: PublishTaskProps) {
-  }
-
-  public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
-    return {
-      resourceArn: 'arn:aws:states:::sns:publish',
-      policyStatements: [new iam.PolicyStatement()
-          .addAction('sns:Publish')
-          .addResource(this.props.topic.topicArn)],
-    };
   }
 }

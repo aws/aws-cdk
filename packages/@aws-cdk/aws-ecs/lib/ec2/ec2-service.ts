@@ -5,7 +5,6 @@ import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
-import { isEc2Compatible } from '../util';
 
 /**
  * Properties to define an ECS service
@@ -78,7 +77,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       throw new Error('Minimum healthy percent must be 0 for daemon mode.');
     }
 
-    if (!isEc2Compatible(props.taskDefinition.compatibility)) {
+    if (!TaskDefinition.isEc2Compatible(props.taskDefinition)) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 

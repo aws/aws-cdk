@@ -1,8 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
-import { BaseRunTask, BaseRunTaskProps } from '../base/base-run-task';
-import { isFargateCompatible } from '../util';
-import { FargatePlatformVersion } from './fargate-service';
+import { BaseRunTask, BaseRunTaskProps } from './base-run-task';
 
 /**
  * Properties to define an ECS service
@@ -37,7 +36,7 @@ export interface FargateRunTaskProps extends BaseRunTaskProps {
    *
    * @default Latest
    */
-  platformVersion?: FargatePlatformVersion;
+  platformVersion?: ecs.FargatePlatformVersion;
 }
 
 /**
@@ -45,7 +44,7 @@ export interface FargateRunTaskProps extends BaseRunTaskProps {
  */
 export class FargateRunTask extends BaseRunTask {
   constructor(scope: cdk.Construct, id: string, props: FargateRunTaskProps) {
-    if (!isFargateCompatible(props.taskDefinition.compatibility)) {
+    if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 

@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
+import sqs = require('@aws-cdk/aws-sqs');
 import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
-import { IQueue } from './queue-ref';
 
 /**
  * Properties for SendMessageTask
@@ -10,7 +10,7 @@ export interface SendMessageTaskProps extends stepfunctions.BasicTaskProps {
   /**
    * The topic to send a message to to
    */
-  queue: IQueue;
+  queue: sqs.IQueue;
 
   /**
    * The message body to send to the queue.
@@ -97,7 +97,11 @@ export class SendMessageTask extends stepfunctions.Task {
 
     super(scope, id, {
       ...props,
-      resource: new SendMessageTaskResource(props),
+      resourceArn: 'arn:aws:states:::sqs:sendMessage',
+      policyStatements: [new iam.PolicyStatement()
+        .addAction('sns:Publish')
+        .addResource(props.queue.queueArn)
+      ],
       parameters: {
         'QueueUrl': props.queue.queueUrl,
         'MessageBody': props.messageBody,
@@ -110,19 +114,5 @@ export class SendMessageTask extends stepfunctions.Task {
         'MessageGroupId.$': props.messageGroupIdPath,
       }
     });
-  }
-}
-
-class SendMessageTaskResource implements stepfunctions.IStepFunctionsTaskResource {
-  constructor(private readonly props: SendMessageTaskProps) {
-  }
-
-  public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
-    return {
-      resourceArn: 'arn:aws:states:::sqs:sendMessage',
-      policyStatements: [new iam.PolicyStatement()
-          .addAction('sns:Publish')
-          .addResource(this.props.queue.queueArn)],
-    };
   }
 }

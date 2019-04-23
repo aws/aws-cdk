@@ -1,6 +1,5 @@
 export * from './policy';
 export * from './queue';
-export * from './send-message-task';
 export * from './queue-base';
 
 // AWS::SQS CloudFormation Resources:

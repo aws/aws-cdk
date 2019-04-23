@@ -1,36 +1,36 @@
 {
-  "name": "@aws-cdk/aws-lambda",
+  "name": "@aws-cdk/aws-stepfunctions-tasks",
   "version": "0.28.0",
-  "description": "CDK Constructs for AWS Lambda",
+  "description": "Task integrations for AWS StepFunctions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.lambda",
+        "package": "software.amazon.awscdk.services.stepfunctions.tasks",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lambda"
+          "artifactId": "stepfunctions-tasks"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Lambda",
-        "packageId": "Amazon.CDK.AWS.Lambda",
+        "namespace": "Amazon.CDK.AWS.StepFunctions.Tasks",
+        "packageId": "Amazon.CDK.AWS.StepFunctions.Tasks",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {},
       "python": {
-        "distName": "aws-cdk.aws-lambda",
-        "module": "aws_cdk.aws_lambda"
+        "distName": "aws-cdk.aws-stepfunctions-tasks",
+        "module": "aws_cdk.aws_stepfunctions.tasks"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/awslabs/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-lambda"
+    "directory": "packages/@aws-cdk/aws-stepfunctions-tasks"
   },
   "scripts": {
     "build": "cdk-build",
@@ -43,18 +43,25 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts"
   },
-  "cdk-build": {
-    "cloudformation": "AWS::Lambda"
-  },
-  "nyc": {
-    "statements": 75,
-    "lines": 75
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "statements": 80
+      }
+    }
   },
   "keywords": [
     "aws",
     "cdk",
-    "constructs",
-    "lambda"
+    "cloudlib",
+    "aws-cloudlib",
+    "aws-clib",
+    "cloudwatch",
+    "events"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -64,51 +71,35 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.28.0",
-    "@types/aws-lambda": "^8.10.24",
-    "@types/nock": "^9.3.1",
-    "@types/sinon": "^7.0.11",
-    "aws-sdk": "^2.438.0",
-    "aws-sdk-mock": "^4.4.0",
     "cdk-build-tools": "^0.28.0",
     "cdk-integ-tools": "^0.28.0",
-    "cfn2ts": "^0.28.0",
-    "nock": "^10.0.6",
     "pkglint": "^0.28.0",
-    "sinon": "^7.3.1"
+    "jest": "^24.7.1"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^0.28.0",
     "@aws-cdk/aws-cloudwatch": "^0.28.0",
     "@aws-cdk/aws-ec2": "^0.28.0",
-    "@aws-cdk/aws-events": "^0.28.0",
-    "@aws-cdk/aws-iam": "^0.28.0",
-    "@aws-cdk/aws-logs": "^0.28.0",
-    "@aws-cdk/aws-s3": "^0.28.0",
-    "@aws-cdk/aws-s3-notifications": "^0.28.0",
-    "@aws-cdk/aws-sqs": "^0.28.0",
+    "@aws-cdk/aws-ecs": "^0.28.0",
+    "@aws-cdk/aws-stepfunctions": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0",
-    "@aws-cdk/cx-api": "^0.28.0"
+    "@aws-cdk/aws-iam": "^0.28.0",
+    "@aws-cdk/aws-lambda": "^0.28.0",
+    "@aws-cdk/aws-sns": "^0.28.0",
+    "@aws-cdk/aws-sqs": "^0.28.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^0.28.0",
     "@aws-cdk/aws-cloudwatch": "^0.28.0",
     "@aws-cdk/aws-ec2": "^0.28.0",
-    "@aws-cdk/aws-events": "^0.28.0",
-    "@aws-cdk/aws-iam": "^0.28.0",
-    "@aws-cdk/aws-logs": "^0.28.0",
-    "@aws-cdk/aws-s3": "^0.28.0",
-    "@aws-cdk/aws-s3-notifications": "^0.28.0",
-    "@aws-cdk/aws-sqs": "^0.28.0",
+    "@aws-cdk/aws-ecs": "^0.28.0",
+    "@aws-cdk/aws-stepfunctions": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0",
-    "@aws-cdk/cx-api": "^0.28.0"
+    "@aws-cdk/aws-iam": "^0.28.0",
+    "@aws-cdk/aws-lambda": "^0.28.0",
+    "@aws-cdk/aws-sns": "^0.28.0",
+    "@aws-cdk/aws-sqs": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"
-  },
-  "awslint": {
-    "exclude": [
-      "grant-result:@aws-cdk/aws-lambda.LayerVersionBase.grantUsage"
-    ]
   }
 }

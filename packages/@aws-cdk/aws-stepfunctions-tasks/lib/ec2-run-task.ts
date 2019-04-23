@@ -1,10 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
-import { BaseRunTask, BaseRunTaskProps } from '../base/base-run-task';
-import { NetworkMode } from '../base/task-definition';
-import { ICluster } from '../cluster';
-import { isEc2Compatible } from '../util';
-import { BinPackResource, BuiltInAttributes } from './ec2-service';
+import { BaseRunTask, BaseRunTaskProps } from './base-run-task';
 
 /**
  * Properties to run an ECS task on EC2 in StepFunctionsan ECS
@@ -42,10 +39,10 @@ export interface Ec2RunTaskProps extends BaseRunTaskProps {
 export class Ec2RunTask extends BaseRunTask {
   private readonly constraints: any[];
   private readonly strategies: any[];
-  private readonly cluster: ICluster;
+  private readonly cluster: ecs.ICluster;
 
   constructor(scope: cdk.Construct, id: string, props: Ec2RunTaskProps) {
-    if (!isEc2Compatible(props.taskDefinition.compatibility)) {
+    if (!props.taskDefinition.isEc2Compatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
@@ -63,7 +60,7 @@ export class Ec2RunTask extends BaseRunTask {
     this._parameters.PlacementConstraints = new cdk.Token(() => this.constraints.length > 0 ? this.constraints : undefined);
     this._parameters.PlacementStrategy = new cdk.Token(() => this.constraints.length > 0 ? this.strategies : undefined);
 
-    if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
+    if (props.taskDefinition.networkMode === ecs.NetworkMode.AwsVpc) {
       this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcPlacement, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
@@ -108,7 +105,7 @@ export class Ec2RunTask extends BaseRunTask {
    */
   public placeSpreadAcross(...fields: string[]) {
     if (fields.length === 0) {
-      fields = [BuiltInAttributes.InstanceId];
+      fields = [ecs.BuiltInAttributes.InstanceId];
     }
     for (const field of fields) {
       this.strategies.push({ Type: 'spread', Field: field });
@@ -120,7 +117,7 @@ export class Ec2RunTask extends BaseRunTask {
    *
    * This ensures the total consumption of this resource is lowest.
    */
-  public placePackedBy(resource: BinPackResource) {
+  public placePackedBy(resource: ecs.BinPackResource) {
     this.strategies.push({ Type: 'binpack', Field: resource });
   }
 

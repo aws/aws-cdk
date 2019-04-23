@@ -9,12 +9,12 @@ class JobPollerStack extends cdk.Stack {
         const checkJobActivity = new stepfunctions.Activity(this, 'CheckJob');
 
         const submitJob = new stepfunctions.Task(this, 'Submit Job', {
-            resource: submitJobActivity,
+            resourceArn: submitJobActivity.activityArn,
             resultPath: '$.guid',
         });
         const waitX = new stepfunctions.Wait(this, 'Wait X Seconds', { duration: stepfunctions.WaitDuration.secondsPath('$.wait_time') });
         const getStatus = new stepfunctions.Task(this, 'Get Job Status', {
-            resource: checkJobActivity,
+            resourceArn: checkJobActivity.activityArn,
             inputPath: '$.guid',
             resultPath: '$.status',
         });
@@ -24,7 +24,7 @@ class JobPollerStack extends cdk.Stack {
             error: 'DescribeJob returned FAILED',
         });
         const finalStatus = new stepfunctions.Task(this, 'Get Final Job Status', {
-            resource: checkJobActivity,
+            resourceArn: checkJobActivity.activityArn,
             inputPath: '$.guid',
         });
 

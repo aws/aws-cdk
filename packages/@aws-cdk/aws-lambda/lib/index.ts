@@ -6,7 +6,6 @@ export * from './permission';
 export * from './runtime';
 export * from './code';
 export * from './lambda-version';
-export * from './function-task';
 export * from './singleton-lambda';
 export * from './event-source';
 export * from './event-source-mapping';

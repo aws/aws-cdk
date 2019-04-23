@@ -1,17 +1,22 @@
 ## AWS Step Functions Construct Library
 
 The `@aws-cdk/aws-stepfunctions` package contains constructs for building
-serverless workflows. Using objects. Defining a workflow looks like this
-(for the [Step Functions Job Poller
+serverless workflows using objects. Use this in conjunction with the
+`@aws-cdk/aws-stepfunctions-tasks` package, which contains classes used
+to call other AWS services.
+
+Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
 ### TypeScript example
 
 ```ts
+import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
+
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
-const submitJob = new lambda.FunctionTask(this, 'Submit Job', {
+const submitJob = new tasks.InvokeFunction(this, 'Submit Job', {
     function: submitLambda,
     // Put Lambda's result here in the execution's state object
     resultPath: '$.guid',
@@ -19,7 +24,7 @@ const submitJob = new lambda.FunctionTask(this, 'Submit Job', {
 
 const waitX = new stepfunctions.Wait(this, 'Wait X Seconds', { secondsPath: '$.wait_time' });
 
-const getStatus = new lambda.FunctionTask(this, 'Get Job Status', {
+const getStatus = new tasks.InvokeFunction(this, 'Get Job Status', {
     function: getStatusLambda,
     // Pass just the field named "guid" into the Lambda, put the
     // Lambda's result in a field called "status"
@@ -32,7 +37,7 @@ const jobFailed = new stepfunctions.Fail(this, 'Job Failed', {
     error: 'DescribeJob returned FAILED',
 });
 
-const finalStatus = new lambda.FunctionTask(this, 'Get Final Job Status', {
+const finalStatus = new tasks.InvokeFunction(this, 'Get Final Job Status', {
     function: getStatusLambda,
     // Use "guid" field as input, output of the Lambda becomes the
     // entire state machine output.
@@ -67,7 +72,7 @@ var getStatusLambda = new Function(this, "CheckLambda", new FunctionProps
     // ...
 });
 
-var submitJob = new FunctionTask(this, "Submit Job", new TaskProps
+var submitJob = new InvokeFunction(this, "Submit Job", new TaskProps
 {
     Function = submitLambda,
     ResultPath = "$.guid"
@@ -78,7 +83,7 @@ var waitX = new Wait(this, "Wait X Seconds", new WaitProps
     SecondsPath = "$.wait_time"
 });
 
-var getStatus = new FunctionTask(this, "Get Job Status", new TaskProps
+var getStatus = new InvokeFunction(this, "Get Job Status", new TaskProps
 {
     Function = getStatusLambda,
     InputPath = "$.guid",
@@ -91,7 +96,7 @@ var jobFailed = new Fail(this, "Job Failed", new FailProps
     Error = "DescribeJob returned FAILED"
 });
 
-var finalStatus = new FunctionTask(this, "Get Final Job Status", new TaskProps
+var finalStatus = new InvokeFunction(this, "Get Final Job Status", new TaskProps
 {
     Function = getStatusLambda,
     // Use "guid" field as input, output of the Lambda becomes the
@@ -158,7 +163,7 @@ A `Task` represents some work that needs to be done. There are specific
 subclasses of `Task` which represent integrations with other AWS services
 that Step Functions supports. For example:
 
-* `lambda.FunctionTask` -- call a Lambda Function
+* `tasks.InvokeFunction` -- call a Lambda Function
 * `stepfunctions.ActivityTask` -- start an Activity (Activities represent a work
   queue that you poll on a compute fleet you manage yourself)
 * `sns.PublishTask` -- publish a message to an SNS topic
@@ -168,7 +173,7 @@ that Step Functions supports. For example:
 #### Lambda example
 
 ```ts
-const task = new lambda.FunctionTask(this, 'Invoke The Lambda', {
+const task = new tasks.InvokeFunction(this, 'Invoke The Lambda', {
     resource: myLambda,
     inputPath: '$.input',
     timeoutSeconds: 300,

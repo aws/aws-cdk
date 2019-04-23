@@ -2,7 +2,6 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
-import { isFargateCompatible } from '../util';
 
 /**
  * Properties to define a Fargate service
@@ -50,7 +49,7 @@ export interface FargateServiceProps extends BaseServiceProps {
  */
 export class FargateService extends BaseService {
   constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
-    if (!isFargateCompatible(props.taskDefinition.compatibility)) {
+    if (!TaskDefinition.isFargateCompatible(props.taskDefinition)) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
 
