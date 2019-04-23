@@ -49,6 +49,10 @@ function buildColumnConfig(widths: number[] | undefined): { [index: number]: tab
  * fair share.
  */
 function calculcateColumnWidths(rows: string[][], terminalWidth: number): number[] {
+  // The terminal is sometimes reported to be 0. Also if the terminal is VERY narrow,
+  // just assume a minimum size.
+  terminalWidth = Math.max(terminalWidth, 40);
+
   // use 'string-width' to not count ANSI chars as actual character width
   const columns = rows[0].map((_, i) => Math.max(...rows.map(row => stringWidth(row[i]))));
 
