@@ -11,9 +11,10 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
   removalPolicy: RemovalPolicy.Destroy,
 });
+const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.S3SourceAction({
   actionName: 'Source',
-  outputArtifactName: 'SourceArtifact',
+  output: sourceOutput,
   bucket,
   bucketKey: 'key',
 });
@@ -28,7 +29,7 @@ const deployStage = {
     new cpactions.AlexaSkillDeployAction({
       actionName: 'DeploySkill',
       runOrder: 1,
-      inputArtifact: sourceAction.outputArtifact,
+      input: sourceOutput,
       clientId: 'clientId',
       clientSecret: SecretValue.plainText('clientSecret'),
       refreshToken: SecretValue.plainText('refreshToken'),

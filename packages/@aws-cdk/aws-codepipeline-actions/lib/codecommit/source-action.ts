@@ -1,18 +1,16 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
+import { sourceArtifactBounds } from '../common';
 
 /**
  * Construction properties of the {@link CodeCommitSourceAction CodeCommit source CodePipeline Action}.
  */
 export interface CodeCommitSourceActionProps extends codepipeline.CommonActionProps {
   /**
-   * The name of the source's output artifact.
-   * Output artifacts are used by CodePipeline as inputs into other actions.
    *
-   * @default a name will be auto-generated
    */
-  readonly outputArtifactName?: string;
+  readonly output: codepipeline.Artifact;
 
   /**
    * @default 'master'
@@ -36,19 +34,21 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonActionPr
 /**
  * CodePipeline Source that is provided by an AWS CodeCommit repository.
  */
-export class CodeCommitSourceAction extends codepipeline.SourceAction {
+export class CodeCommitSourceAction extends codepipeline.Action {
   private readonly props: CodeCommitSourceActionProps;
 
   constructor(props: CodeCommitSourceActionProps) {
     super({
       ...props,
+      category: codepipeline.ActionCategory.Source,
       provider: 'CodeCommit',
+      artifactBounds: sourceArtifactBounds(),
+      outputs: [props.output],
       configuration: {
         RepositoryName: props.repository.repositoryName,
         BranchName: props.branch || 'master',
         PollForSourceChanges: props.pollForSourceChanges || false,
       },
-      outputArtifactName: props.outputArtifactName || `Artifact_${props.actionName}_${props.repository.node.uniqueId}`,
     });
 
     this.props = props;

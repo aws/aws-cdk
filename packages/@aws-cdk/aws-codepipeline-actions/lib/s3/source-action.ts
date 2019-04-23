@@ -1,17 +1,15 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import s3 = require('@aws-cdk/aws-s3');
+import { sourceArtifactBounds } from '../common';
 
 /**
  * Construction properties of the {@link S3SourceAction S3 source Action}.
  */
 export interface S3SourceActionProps extends codepipeline.CommonActionProps {
   /**
-   * The name of the source's output artifact. Output artifacts are used by CodePipeline as
-   * inputs into other actions.
    *
-   * @default a name will be auto-generated
    */
-  readonly outputArtifactName?: string;
+  readonly output: codepipeline.Artifact;
 
   /**
    * The key within the S3 bucket that stores the source code.
@@ -40,14 +38,16 @@ export interface S3SourceActionProps extends codepipeline.CommonActionProps {
 /**
  * Source that is provided by a specific Amazon S3 object.
  */
-export class S3SourceAction extends codepipeline.SourceAction {
+export class S3SourceAction extends codepipeline.Action {
   private readonly props: S3SourceActionProps;
 
   constructor(props: S3SourceActionProps) {
     super({
       ...props,
+      category: codepipeline.ActionCategory.Source,
       provider: 'S3',
-      outputArtifactName: props.outputArtifactName || `Artifact_${props.actionName}_${props.bucket.node.uniqueId}`,
+      artifactBounds: sourceArtifactBounds(),
+      outputs: [props.output],
       configuration: {
         S3Bucket: props.bucket.bucketName,
         S3ObjectKey: props.bucketKey,

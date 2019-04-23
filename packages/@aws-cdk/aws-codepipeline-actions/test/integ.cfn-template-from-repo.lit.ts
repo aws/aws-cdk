@@ -11,10 +11,11 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 const repo = new codecommit.Repository(stack, 'TemplateRepo', {
   repositoryName: 'template-repo'
 });
+const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const source = new cpactions.CodeCommitSourceAction({
   actionName: 'Source',
   repository: repo,
-  outputArtifactName: 'SourceArtifact',
+  output: sourceOutput,
   pollForSourceChanges: true,
 });
 const sourceStage = {
@@ -34,7 +35,7 @@ const prodStage = {
       stackName,
       changeSetName,
       adminPermissions: true,
-      templatePath: source.outputArtifact.atPath('template.yaml'),
+      templatePath: sourceOutput.atPath('template.yaml'),
       runOrder: 1,
     }),
     new cpactions.ManualApprovalAction({

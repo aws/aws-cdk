@@ -5,7 +5,7 @@
 # TypeScript incremental build states
 *.tsbuildinfo
 
-# Locak state files & OS specifics
+# Local state files & OS specifics
 .DS_Store
 node_modules/
 lerna-debug.log
