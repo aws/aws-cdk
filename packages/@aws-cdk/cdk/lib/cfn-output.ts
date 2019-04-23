@@ -13,7 +13,7 @@ export interface CfnOutputProps {
    * The value of an output can include literals, parameter references, pseudo-parameters,
    * a mapping value, or intrinsic functions.
    */
-  readonly value?: any;
+  readonly value: any;
 
   /**
    * The name used to export the value of this output across stacks.
@@ -72,11 +72,15 @@ export class CfnOutput extends CfnElement {
 
   /**
    * Creates an CfnOutput value for this stack.
-   * @param parent The parent construct.
+   * @param scope The parent construct.
    * @param props CfnOutput properties.
    */
-  constructor(scope: Construct, id: string, props: CfnOutputProps = {}) {
+  constructor(scope: Construct, id: string, props: CfnOutputProps) {
     super(scope, id);
+
+    if (props.value === undefined) {
+      throw new Error(`Missing value for CloudFormation output at path "${this.node.path}"`);
+    }
 
     this.description = props.description;
     this._value = props.value;

@@ -29,7 +29,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-codepipeline-actions"
   },
   "scripts": {
     "build": "cdk-build",
@@ -62,7 +63,8 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.28.0",
     "@aws-cdk/aws-cloudtrail": "^0.28.0",
-    "@types/lodash": "^4.14.118",
+    "@aws-cdk/aws-events-targets": "^0.28.0",
+    "@types/lodash": "^4.14.123",
     "cdk-build-tools": "^0.28.0",
     "cdk-integ-tools": "^0.28.0",
     "lodash": "^4.17.11",

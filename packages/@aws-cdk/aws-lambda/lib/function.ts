@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, Fn, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
@@ -229,12 +229,12 @@ export class Function extends FunctionBase {
    *
    *    Lambda.import(this, 'MyImportedFunction', { lambdaArn: new LambdaArn('arn:aws:...') });
    *
-   * @param parent The parent construct
+   * @param scope The parent construct
    * @param id The name of the lambda construct
    * @param props A reference to a Lambda function. Can be created manually (see
    * example above) or obtained through a call to `lambda.export()`.
    */
-  public static import(scope: cdk.Construct, id: string, props: FunctionImportProps): IFunction {
+  public static import(scope: Construct, id: string, props: FunctionImportProps): IFunction {
     return new ImportedFunction(scope, id, props);
   }
 
@@ -347,7 +347,7 @@ export class Function extends FunctionBase {
    */
   private readonly environment?: { [key: string]: any };
 
-  constructor(scope: cdk.Construct, id: string, props: FunctionProps) {
+  constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id);
 
     this.environment = props.environment || { };
@@ -381,13 +381,13 @@ export class Function extends FunctionBase {
     const resource = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
-      code: new cdk.Token(() => props.code._toJSON(resource)),
-      layers: new cdk.Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined).toList(),
+      code: new Token(() => props.code._toJSON(resource)),
+      layers: new Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined).toList(),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,
       role: this.role.roleArn,
-      environment: new cdk.Token(() => this.renderEnvironment()),
+      environment: new Token(() => this.renderEnvironment()),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(props),
@@ -427,9 +427,9 @@ export class Function extends FunctionBase {
    */
   public export(): FunctionImportProps {
     return {
-      functionArn: new cdk.CfnOutput(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
+      functionArn: new CfnOutput(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
       securityGroupId: this._connections && this._connections.securityGroups[0]
-          ? new cdk.CfnOutput(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
+          ? new CfnOutput(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
           : undefined
     };
   }
@@ -605,7 +605,7 @@ export class Function extends FunctionBase {
   }
 }
 
-export class ImportedFunction extends FunctionBase {
+class ImportedFunction extends FunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;
@@ -613,7 +613,7 @@ export class ImportedFunction extends FunctionBase {
 
   protected readonly canCreatePermissions = false;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: FunctionImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: FunctionImportProps) {
     super(scope, id);
 
     this.functionArn = props.functionArn;
@@ -649,5 +649,5 @@ export class ImportedFunction extends FunctionBase {
  * @returns `FnSelect(6, FnSplit(':', arn))`
  */
 function extractNameFromArn(arn: string) {
-  return cdk.Fn.select(6, cdk.Fn.split(':', arn));
+  return Fn.select(6, Fn.split(':', arn));
 }

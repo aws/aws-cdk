@@ -3,7 +3,6 @@ import 'source-map-support/register';
 
 import colors = require('colors/safe');
 import fs = require('fs-extra');
-import util = require('util');
 import yargs = require('yargs');
 
 import { bootstrapEnvironment, destroyStack, SDK } from '../lib';
@@ -25,7 +24,6 @@ import { VERSION } from '../lib/version';
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
-const confirm = util.promisify(promptly.confirm);
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
@@ -34,14 +32,14 @@ async function parseCommandLineArguments() {
     .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
     .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: Command-line for executing your CDK app (e.g. "node bin/my-app.js")', requiresArg: true })
-    .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter.', nargs: 1, requiresArg: 'KEY=VALUE' })
+    .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter (KEY=VALUE)', nargs: 1, requiresArg: true })
     .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
-    .option('rename', { type: 'string', desc: 'Rename stack name if different from the one defined in the cloud executable', requiresArg: '[ORIGINAL:]RENAMED' })
+    .option('rename', { type: 'string', desc: 'Rename stack name if different from the one defined in the cloud executable ([ORIGINAL:]RENAMED)', requiresArg: true })
     .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
     .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
     .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
-    .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
-    .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
+    .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML', default: false })
+    .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs', default: false })
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status.' })
@@ -114,7 +112,7 @@ async function initCommandLine() {
 
   const appStacks = new AppStacks({
     verbose: argv.trace || argv.verbose,
-    ignoreErrors: argv.ignoreErrors,
+    ignoreErrors: argv['ignore-errors'],
     strict: argv.strict,
     configuration,
     aws,
@@ -153,7 +151,9 @@ async function initCommandLine() {
   // Bundle up global objects so the commands have access to them
   const commandOptions = { args: argv, appStacks, configuration, aws };
 
-  const returnValue = argv.commandHandler ? await argv.commandHandler(commandOptions) : await main(cmd, argv);
+  const returnValue = argv.commandHandler
+    ? await (argv.commandHandler as (opts: typeof commandOptions) => any)(commandOptions)
+    : await main(cmd, argv);
   if (typeof returnValue === 'object') {
     return toJsonOrYaml(returnValue);
   } else if (typeof returnValue === 'string') {
@@ -357,7 +357,7 @@ async function initCommandLine() {
 
     if (!force) {
       // tslint:disable-next-line:max-line-length
-      const confirmed = await confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
+      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }

@@ -112,4 +112,31 @@ export = {
     test.throws(() => expect(stack), /DNS zone hello.com is not authoritative for certificate domain name example.com/);
     test.done();
   },
+
+  'test root certificate'(test: Test) {
+    const stack = new Stack();
+
+    const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+      zoneName: 'example.com'
+    });
+
+    new DnsValidatedCertificate(stack, 'Cert', {
+      domainName: 'example.com',
+      hostedZone: exampleDotComZone,
+    });
+
+    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+        ServiceToken: {
+        'Fn::GetAtt': [
+          'CertCertificateRequestorFunction98FDF273',
+          'Arn'
+          ]
+        },
+        DomainName: 'example.com',
+        HostedZoneId: {
+          Ref: 'ExampleDotCom4D1B83AA'
+        }
+      }));
+    test.done();
+  },
 };

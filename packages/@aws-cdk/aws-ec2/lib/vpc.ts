@@ -483,9 +483,13 @@ export class VpcNetwork extends VpcNetworkBase {
     const priv = new ExportSubnetGroup(this, 'PrivateSubnetIDs', this.privateSubnets, SubnetType.Private, this.availabilityZones.length);
     const iso = new ExportSubnetGroup(this, 'IsolatedSubnetIDs', this.isolatedSubnets, SubnetType.Isolated, this.availabilityZones.length);
 
+    const vpnGatewayId = this.vpnGatewayId
+      ? new cdk.CfnOutput(this, 'VpnGatewayId', { value: this.vpnGatewayId }).makeImportValue().toString()
+      : undefined;
+
     return {
       vpcId: new cdk.CfnOutput(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
-      vpnGatewayId: new cdk.CfnOutput(this, 'VpnGatewayId', { value: this.vpnGatewayId }).makeImportValue().toString(),
+      vpnGatewayId,
       availabilityZones: this.availabilityZones,
       publicSubnetIds: pub.ids,
       publicSubnetNames: pub.names,
@@ -728,12 +732,17 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
   }
 }
 
+// tslint:disable-next-line:no-empty-interface
+export interface VpcPublicSubnetProps extends VpcSubnetProps {
+
+}
+
 /**
  * Represents a public VPC subnet resource
  */
 export class VpcPublicSubnet extends VpcSubnet {
 
-  constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
+  constructor(scope: cdk.Construct, id: string, props: VpcPublicSubnetProps) {
     super(scope, id, props);
   }
 
@@ -764,11 +773,16 @@ export class VpcPublicSubnet extends VpcSubnet {
   }
 }
 
+// tslint:disable-next-line:no-empty-interface
+export interface VpcPrivateSubnetProps extends VpcSubnetProps {
+
+}
+
 /**
  * Represents a private VPC subnet resource
  */
 export class VpcPrivateSubnet extends VpcSubnet {
-  constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
+  constructor(scope: cdk.Construct, id: string, props: VpcPrivateSubnetProps) {
     super(scope, id, props);
   }
 

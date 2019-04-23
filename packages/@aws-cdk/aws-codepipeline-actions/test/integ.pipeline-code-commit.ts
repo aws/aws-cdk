@@ -17,7 +17,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
         new cpactions.CodeCommitSourceAction({
           actionName: 'source',
           repository: repo,
-          outputArtifactName: 'SourceArtifact',
+          output: new codepipeline.Artifact('SourceArtifact'),
         }),
       ],
     },

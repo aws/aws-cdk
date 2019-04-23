@@ -1,17 +1,16 @@
 import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import { TopicPolicy } from './policy';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
 export interface ITopic extends
-  cdk.IConstruct,
-  events.IEventRuleTarget,
+  IResource,
   cloudwatch.IAlarmAction,
   s3n.IBucketNotificationDestination,
   autoscaling_api.ILifecycleHookTarget {
@@ -36,7 +35,6 @@ export interface ITopic extends
    * The queue resource policy will be updated to allow this SNS topic to send
    * messages to the queue.
    *
-   * @param name The subscription name
    * @param queue The target queue
    * @param rawMessageDelivery Enable raw message delivery
    */
@@ -48,7 +46,6 @@ export interface ITopic extends
    * The Lambda's resource policy will be updated to allow this topic to
    * invoke the function.
    *
-   * @param name A name for the subscription
    * @param lambdaFunction The Lambda function to invoke
    */
   subscribeLambda(lambdaFunction: lambda.IFunction): Subscription;
@@ -58,7 +55,7 @@ export interface ITopic extends
    *
    * @param name A name for the subscription
    * @param emailAddress The email address to use.
-   * @param jsonFormat True if the email content should be in JSON format (default is false).
+   * @param options Options to use for email subscription
    */
   subscribeEmail(name: string, emailAddress: string, options?: EmailSubscriptionOptions): Subscription;
 
@@ -89,7 +86,7 @@ export interface ITopic extends
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicBase extends cdk.Construct implements ITopic {
+export abstract class TopicBase extends Resource implements ITopic {
   public abstract readonly topicArn: string;
 
   public abstract readonly topicName: string;
@@ -105,12 +102,6 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
 
   /** Buckets permitted to send notifications to this topic */
   private readonly notifyingBuckets = new Set<string>();
-
-  /**
-   * Indicates if the resource policy that allows CloudWatch events to publish
-   * notifications to this topic have been added.
-   */
-  private eventRuleTargetPolicyAdded = false;
 
   /**
    * Export this Topic
@@ -135,7 +126,6 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    * The queue resource policy will be updated to allow this SNS topic to send
    * messages to the queue.
    *
-   * @param name The subscription name
    * @param queue The target queue
    * @param rawMessageDelivery Enable raw message delivery
    */
@@ -176,7 +166,6 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
    * The Lambda's resource policy will be updated to allow this topic to
    * invoke the function.
    *
-   * @param name A name for the subscription
    * @param lambdaFunction The Lambda function to invoke
    */
   public subscribeLambda(lambdaFunction: lambda.IFunction): Subscription {
@@ -258,11 +247,6 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
     }
 
     if (this.policy) {
-      // statements must be unique, so we use the statement index.
-      // potantially SIDs can change as a result of order change, but this should
-      // not have an impact on the policy evaluation.
-      // https://docs.aws.amazon.com/sns/latest/dg/AccessPolicyLanguage_SpecialInfo.html
-      statement.describe(this.policy.document.statementCount.toString());
       this.policy.document.addStatement(statement);
     }
   }
@@ -277,28 +261,6 @@ export abstract class TopicBase extends cdk.Construct implements ITopic {
       resourceArns: [this.topicArn],
       resource: this,
     });
-  }
-
-  /**
-   * Returns a RuleTarget that can be used to trigger this SNS topic as a
-   * result from a CloudWatch event.
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sns-permissions
-   */
-  public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
-    if (!this.eventRuleTargetPolicyAdded) {
-      this.addToResourcePolicy(new iam.PolicyStatement()
-        .addAction('sns:Publish')
-        .addPrincipal(new iam.ServicePrincipal('events.amazonaws.com'))
-        .addResource(this.topicArn));
-
-      this.eventRuleTargetPolicyAdded = true;
-    }
-
-    return {
-      id: this.node.id,
-      arn: this.topicArn,
-    };
   }
 
   /**

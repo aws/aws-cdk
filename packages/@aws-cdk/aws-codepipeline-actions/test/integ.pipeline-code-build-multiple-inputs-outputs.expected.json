@@ -204,20 +204,6 @@
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": [
-                "codebuild:BatchGetBuilds",
-                "codebuild:StartBuild",
-                "codebuild:StopBuild"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyBuildProject30DB9D6E",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
@@ -263,7 +249,7 @@
                 "Name": "Source1",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_Source1_awscdkcodepipelinecodebuildmultipleinputsoutputsMyRepo8C065AEB"
+                    "Name": "Artifact_Source_Source1"
                   }
                 ],
                 "RunOrder": 1
@@ -285,7 +271,7 @@
                 "Name": "Source2",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_Source2_awscdkcodepipelinecodebuildmultipleinputsoutputsMyBucketF8E74713"
+                    "Name": "Artifact_Source_Source2"
                   }
                 ],
                 "RunOrder": 1
@@ -306,23 +292,23 @@
                   "ProjectName": {
                     "Ref": "MyBuildProject30DB9D6E"
                   },
-                  "PrimarySource": "Artifact_Source1_awscdkcodepipelinecodebuildmultipleinputsoutputsMyRepo8C065AEB"
+                  "PrimarySource": "Artifact_Source_Source1"
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_Source1_awscdkcodepipelinecodebuildmultipleinputsoutputsMyRepo8C065AEB"
+                    "Name": "Artifact_Source_Source1"
                   },
                   {
-                    "Name": "Artifact_Source2_awscdkcodepipelinecodebuildmultipleinputsoutputsMyBucketF8E74713"
+                    "Name": "Artifact_Source_Source2"
                   }
                 ],
                 "Name": "Build1",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_Build1_awscdkcodepipelinecodebuildmultipleinputsoutputsMyBuildProject66A94291"
+                    "Name": "Artifact_Build_Build1_1"
                   },
                   {
-                    "Name": "CustomOutput1"
+                    "Name": "Artifact_Build_Build1_2"
                   }
                 ],
                 "RunOrder": 1
@@ -338,14 +324,14 @@
                   "ProjectName": {
                     "Ref": "MyBuildProject30DB9D6E"
                   },
-                  "PrimarySource": "Artifact_Source2_awscdkcodepipelinecodebuildmultipleinputsoutputsMyBucketF8E74713"
+                  "PrimarySource": "Artifact_Source_Source2"
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_Source2_awscdkcodepipelinecodebuildmultipleinputsoutputsMyBucketF8E74713"
+                    "Name": "Artifact_Source_Source2"
                   },
                   {
-                    "Name": "Artifact_Source1_awscdkcodepipelinecodebuildmultipleinputsoutputsMyRepo8C065AEB"
+                    "Name": "Artifact_Source_Source1"
                   }
                 ],
                 "Name": "Build2",
@@ -563,39 +549,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "MyBucketF68F3FF0",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "MyBucketF68F3FF0",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
             }
           ],
           "Version": "2012-10-17"
@@ -616,7 +569,7 @@
         },
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },

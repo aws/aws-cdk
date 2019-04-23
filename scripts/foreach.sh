@@ -79,7 +79,7 @@ heading "${next}: ${command} (${remaining} remaining)"
 
 (
   cd ${next}
-  ${command} &> /tmp/foreach.stdio || {
+  sh -c "${command}" &> /tmp/foreach.stdio || {
     cd ${base}
     cat /tmp/foreach.stdio | ${scriptdir}/path-prefix ${next}
     error "error: last command failed. fix problem and resume by executing: $0"

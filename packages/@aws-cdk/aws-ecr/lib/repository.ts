@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, DeletionPolicy, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 import { RepositoryBase, RepositoryImportProps } from "./repository-ref";
@@ -48,18 +48,18 @@ export class Repository extends RepositoryBase {
   private readonly registryId?: string;
   private policyDocument?: iam.PolicyDocument;
 
-  constructor(scope: cdk.Construct, id: string, props: RepositoryProps = {}) {
+  constructor(scope: Construct, id: string, props: RepositoryProps = {}) {
     super(scope, id);
 
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       // It says "Text", but they actually mean "Object".
-      repositoryPolicyText: new cdk.Token(() => this.policyDocument),
-      lifecyclePolicy: new cdk.Token(() => this.renderLifecyclePolicy()),
+      repositoryPolicyText: new Token(() => this.policyDocument),
+      lifecyclePolicy: new Token(() => this.renderLifecyclePolicy()),
     });
 
     if (props.retain) {
-      resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
+      resource.options.deletionPolicy = DeletionPolicy.Retain;
     }
 
     this.registryId = props.lifecycleRegistryId;
@@ -76,8 +76,8 @@ export class Repository extends RepositoryBase {
    */
   public export(): RepositoryImportProps {
     return {
-      repositoryArn: new cdk.CfnOutput(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
-      repositoryName: new cdk.CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
+      repositoryArn: new CfnOutput(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
+      repositoryName: new CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
     };
   }
 

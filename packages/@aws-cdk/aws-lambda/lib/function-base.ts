@@ -1,16 +1,16 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import { IEventSource } from './event-source';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
-export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
+export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
   s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource, iam.IGrantable {
 
   /**
@@ -114,7 +114,7 @@ export interface FunctionImportProps {
   readonly securityGroupId?: string;
 }
 
-export abstract class FunctionBase extends cdk.Construct implements IFunction  {
+export abstract class FunctionBase extends Resource implements IFunction  {
   /**
    * The principal this Lambda Function is running as
    */
@@ -212,26 +212,6 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
    */
   public get isBoundToVpc(): boolean {
     return !!this._connections;
-  }
-
-  /**
-   * Returns a RuleTarget that can be used to trigger this Lambda as a
-   * result from a CloudWatch event.
-   */
-  public asEventRuleTarget(ruleArn: string, ruleId: string): events.EventRuleTargetProps {
-    const permissionId = `AllowEventRule${ruleId}`;
-    if (!this.node.tryFindChild(permissionId)) {
-      this.addPermission(permissionId, {
-        action: 'lambda:InvokeFunction',
-        principal: new iam.ServicePrincipal('events.amazonaws.com'),
-        sourceArn: ruleArn
-      });
-    }
-
-    return {
-      id: this.node.id,
-      arn: this.functionArn,
-    };
   }
 
   /**
