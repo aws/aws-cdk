@@ -19,3 +19,5 @@ dist
 
 # Include .jsii
 !.jsii
+
+tsconfig.*

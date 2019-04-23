@@ -2,7 +2,7 @@
 
 .vscode
 # VSCode extension
-/.favorites.json 
+/.favorites.json
 .DS_Store
 node_modules
 lerna-debug.log
@@ -20,3 +20,4 @@ coverage
 # we don't want tsconfig at the root
 /tsconfig.json
 cdk.context.json
+tsconfig.tsbuildinfo

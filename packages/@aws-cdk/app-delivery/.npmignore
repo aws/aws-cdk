@@ -13,3 +13,5 @@ coverage
 
 # Include .jsii
 !.jsii
+
+tsconfig.*

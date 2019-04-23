@@ -246,6 +246,20 @@ export class CDKPackage extends ValidationRule {
   }
 }
 
+export class NoTscBuildInfo extends ValidationRule {
+  public readonly name = 'no-tsc-build-info';
+
+  public validate(pkg: PackageJson): void {
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    // If we don't add this, the published package will contain TSC build files,
+    // (tsconfig.tsbuildinfo) and might as well strip tsconfig.json while we're
+    // at it.
+    fileShouldContain(this.name, pkg, '.npmignore', 'tsconfig.*');
+  }
+}
+
 /**
  * Verifies there is no dependency on "jsii" since it's defined at the repo
  * level.
