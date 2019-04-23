@@ -50,7 +50,7 @@ function buildColumnConfig(widths: number[] | undefined): { [index: number]: tab
  */
 function calculcateColumnWidths(rows: string[][], terminalWidth: number): number[] {
   // The terminal is sometimes reported to be 0. Also if the terminal is VERY narrow,
-  // just assume a minimum size.
+  // just assume a reasonable minimum size.
   terminalWidth = Math.max(terminalWidth, 40);
 
   // use 'string-width' to not count ANSI chars as actual character width
